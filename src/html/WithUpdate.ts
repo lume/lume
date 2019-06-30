@@ -1,8 +1,7 @@
 // forked from https://www.npmjs.com/package/skatejs v5.2.4
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
-import {Mixin} from 'lowclass'
-import {getInheritedDescriptor} from 'lowclass/utils'
+import {Mixin, getInheritedDescriptor, MixinFunction, Constructor} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
 
 export function normalizeAttributeDefinition(name: any, prop: any) {
@@ -201,8 +200,39 @@ export function prop(definition: any) {
 //     },
 // }))
 
-export default Mixin(function<T extends Constructor>(Base: T = HTMLElement as any) {
-    return class WithUpdate extends Base {
+// function MixinTest<T extends Constructor<HTMLElement>>(Base: T) {
+function MixinTest<T extends Constructor>(Base: T) {
+    return class Foo extends Base {
+        foobar(_f: boolean) {}
+    }
+}
+
+// function MixinTest(Base: Constructor<HTMLElement>) {
+//     return class Foo extends Base {}
+// }
+
+const f: MixinFunction = MixinTest
+f
+
+const F = MixinTest(HTMLElement)
+const t = new F()
+t.foobar('asdasdf')
+t.foobar(false)
+t.setAttribute('asdf', 12323)
+t.setAttribute('asdf', 'asdf')
+t.asdfasdfasdf()
+
+type PossibleCustomElement<T extends HTMLElement> = T & {
+    connectedCallback?(): void
+    disconnectedCallback?(): void
+    adoptedCallback?(): void
+    attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
+}
+
+type PossibleCustomElementConstructor<T extends HTMLElement> = Constructor<PossibleCustomElement<T>>
+
+export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
+    class WithUpdate extends ((Base as unknown) as PossibleCustomElementConstructor<HTMLElement>) {
         static _staticProps?: any
 
         static get props() {
@@ -258,8 +288,8 @@ export default Mixin(function<T extends Constructor>(Base: T = HTMLElement as an
             this.__modifiedProps = {}
         }
 
-        get props(): any {
-            return pick(this, Object.keys((this.constructor as any).props))
+        get props(this: any): any {
+            return pick(this, Object.keys(this.constructor.props))
         }
 
         set props(props: any) {
@@ -267,7 +297,7 @@ export default Mixin(function<T extends Constructor>(Base: T = HTMLElement as an
             Object.keys(props).forEach((k: string) => /*k in ctorProps && */ (this[k] = props[k]))
         }
 
-        attributeChangedCallback(name: any, oldValue: any, newValue: any) {
+        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
             const {_attributeToAttributeMap, _attributeToPropertyMap, _propsNormalized} = this.constructor as any
 
             if (super.attributeChangedCallback) {
@@ -311,6 +341,9 @@ export default Mixin(function<T extends Constructor>(Base: T = HTMLElement as an
 
         private __updating?: boolean
 
+        updating?(prevProps: any, modifiedProps: any): void
+        updated?(prevProps: any, modifiedProps: any): void
+
         triggerUpdate() {
             if (this.__updating) {
                 return
@@ -353,7 +386,28 @@ export default Mixin(function<T extends Constructor>(Base: T = HTMLElement as an
             return {}
         }
     }
-})
+
+    return WithUpdate as typeof WithUpdate & T
+    // return WithUpdate as typeof WithUpdate & PossibleCustomElementConstructor<HTMLElement> & T
+    // return WithUpdate as typeof WithUpdate & PossibleCustomElementConstructor<HTMLElement>
+}
+
+export const WithUpdate = Mixin(WithUpdateMixin)
+
+export type WithUpdate = InstanceType<typeof WithUpdate>
+
+// const Tmp = () => WithUpdateMixin(HTMLElement)
+// export type WithUpdate = InstanceType<ReturnType<typeof Tmp>>
+
+export default WithUpdate
+
+const w: WithUpdate = new WithUpdate()
+w.innerHTML = 123
+w.innerHTML = 'asdf'
+w.asdfasdf = 123
+w.setAttribute
+w.setAttribute('asdfasf', 123123)
+w.updating && w.updating()
 
 const {parse, stringify} = JSON
 const attribute = Object.freeze({source: true})

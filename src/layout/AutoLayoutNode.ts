@@ -185,10 +185,10 @@ export default class AutoLayoutNode extends Node {
      * @param {Node} [child] node to be removed
      * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
      */
-    remove(child: Node, id: string) {
+    removeNode(child: Node, id: string) {
         // PORTED
         if (child && id) {
-            super.remove(child) // PORTED
+            super.removeNode(child) // PORTED
             delete this._idToNode[id]
         } else if (child) {
             for (id in this._idToNode) {
@@ -197,9 +197,9 @@ export default class AutoLayoutNode extends Node {
                     break
                 }
             }
-            super.remove(child) // PORTED
+            super.removeNode(child) // PORTED
         } else if (id) {
-            super.remove(this._idToNode[id]) // PORTED
+            super.removeNode(this._idToNode[id]) // PORTED
             delete this._idToNode[id]
         }
         this.reflowLayout()

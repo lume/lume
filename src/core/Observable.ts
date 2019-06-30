@@ -2,9 +2,10 @@ import {Mixin} from 'lowclass'
 
 // XXX Could it need to be `T extends Constructor<{}>` instead of `T extends typeof Object`?
 // const ObservableMixin = <T extends typeof Object>(Base: T) => {
-function ObservableMixin<T extends Constructor>(Base: T) {
-    return class Observable extends Base {
-        on(eventName: string, callback: Function, context: any) {
+// function ObservableMixin<T extends Constructor>(Base: T) {
+export function ObservableMixin<T extends Constructor>(Base: T) {
+    class Observable extends ((Base as unknown) as Constructor) {
+        on(eventName: string, callback: Function, context?: any) {
             let eventMap = this.__eventMap
 
             if (!eventMap) eventMap = this.__eventMap = new Map()
@@ -38,7 +39,7 @@ function ObservableMixin<T extends Constructor>(Base: T) {
             if (eventMap.size === 0) this.__eventMap = null
         }
 
-        emit(eventName: string, data: any) {
+        emit(eventName: string, data?: any) {
             const eventMap = this.__eventMap
 
             if (!eventMap) return
@@ -71,7 +72,37 @@ function ObservableMixin<T extends Constructor>(Base: T) {
 
         private __eventMap: Map<string, Array<[Function, any]>> | null = null
     }
+
+    return Observable as typeof Observable & T
 }
 
 export const Observable = Mixin(ObservableMixin)
+
+export type Observable = InstanceType<typeof Observable>
+
+// const Tmp = () => ObservableMixin(class Observable {})
+// export type Observable = InstanceType<ReturnType<typeof Tmp>>
+
+// const Tmp = () => Observable.mixin(class {})
+// export type Observable = InstanceType<ReturnType<typeof Tmp>>
+
 export default Observable
+
+const a: Observable = new Observable()
+a.on()
+a.on('asdf', () => {})
+a.blah
+a.foo = 'asdf'
+
+const ObservableFoo = ObservableMixin(
+    class Foo {
+        foo = 123
+    }
+)
+type ObservableFoo = InstanceType<typeof ObservableFoo>
+
+const o: ObservableFoo = new ObservableFoo()
+o.on()
+o.on('asdf', () => {})
+o.blah
+o.foo = 'asdf'

@@ -2,10 +2,11 @@ import {Mixin} from 'lowclass'
 import WithUpdate from '../html/WithUpdate'
 // import TreeNode from './TreeNode'
 
-// TODO rid any
-function TreeNodeMixin<T extends Constructor>(Base: T) {
-    // return class TreeNode extends WithUpdate.mixin(Base) {
-    return class TreeNode extends (WithUpdate.mixin(Base) as typeof Base) {
+// function TreeNodeMixin<T extends Constructor>(Base: T) {
+export function TreeNodeMixin<T extends Constructor>(Base: T) {
+    // TODO WithUpdate.mixin isn't enforcing that we pass Constructor
+    // constrained to extend from HTMLElement
+    class TreeNode extends WithUpdate.mixin((Base as unknown) as Constructor<HTMLElement>) {
         private __parent: TreeNode | null = null
         private __children: TreeNode[] = []
 
@@ -31,13 +32,13 @@ function TreeNodeMixin<T extends Constructor>(Base: T) {
          *
          * @param {TreeNode} childNode The child node to add.
          */
-        add(childNode: TreeNode) {
+        add(childNode: TreeNode): this {
             if (!(childNode instanceof TreeNode))
                 throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
             if (childNode.__parent === this) throw new ReferenceError('childNode is already a child of this parent.')
 
-            if (childNode.__parent) childNode.__parent.remove(childNode)
+            if (childNode.__parent) childNode.__parent.removeNode(childNode)
 
             childNode.__parent = this
 
@@ -66,7 +67,7 @@ function TreeNodeMixin<T extends Constructor>(Base: T) {
          *
          * @param {TreeNode} childNode The node to remove.
          */
-        remove(childNode: TreeNode) {
+        removeNode(childNode: TreeNode): this {
             if (!(childNode instanceof TreeNode)) {
                 throw new Error(`
                     TreeNode.remove expects the childNode argument to be an
@@ -95,7 +96,7 @@ function TreeNodeMixin<T extends Constructor>(Base: T) {
          */
         removeChildren(nodes: TreeNode[]) {
             for (let i = nodes.length - 1; i >= 0; i -= 1) {
-                this.remove(nodes[i])
+                this.removeNode(nodes[i])
             }
             return this
         }
@@ -110,8 +111,8 @@ function TreeNodeMixin<T extends Constructor>(Base: T) {
         }
 
         /**
+         * How many children this TreeNode has.
          * @readonly
-         * @return {number} How many children this TreeNode has.
          */
         get childCount() {
             return this.__children.length
@@ -133,8 +134,28 @@ function TreeNodeMixin<T extends Constructor>(Base: T) {
             }
         }
     }
+
+    // return TreeNode as typeof TreeNode & Omit<typeof WithUpdate, 'mixin'> & T
+    // return TreeNode as typeof TreeNode & typeof WithUpdate & T
+    return TreeNode as typeof TreeNode & T
 }
 
-const _TreeNode = Mixin(TreeNodeMixin)
-export default _TreeNode
-export {_TreeNode as TreeNode}
+export const TreeNode = Mixin(TreeNodeMixin)
+
+export type TreeNode = InstanceType<typeof TreeNode>
+
+// const Tmp = () => TreeNodeMixin(WithUpdate)
+// export type TreeNode = InstanceType<ReturnType<typeof Tmp>>
+
+export default TreeNode
+
+const t: TreeNode = new TreeNode()
+t.asdfasdf
+t.asdfasdfadfasdf()
+t.childCount
+t.removeNode()
+t.removeNode(new TreeNode())
+t.innerHTML = 123
+t.innerHTML = 'asdf'
+t.setAttribute('foo', 123)
+t.setAttribute('foo', 'bar')

@@ -285,7 +285,7 @@ function makeDeclarativeBase() {
             if (child instanceof DeclarativeBase) {
                 child.__shadowRootParent = null
 
-                // this.remove(child)
+                // this.removeNode(child)
 
                 console.log(
                     '   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, SHADOW ROOT',

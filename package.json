@@ -66,7 +66,7 @@
     "jss-props-sort": "^1.0.0",
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
-    "lowclass": "^4.6.2",
+    "lowclass": "trusktr/lowclass#feature/typescript",
     "regexr": "^1.5.1",
     "three": "^0.103.0"
   },

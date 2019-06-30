@@ -130,11 +130,11 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
             // // mirror the connection in the imperative API's virtual scene graph.
             // if ((child instanceof ImperativeBase)) {
-            //     // If ImperativeBase#remove was called first, child's
+            //     // If ImperativeBase#removeNode was called first, child's
             //     // `parent` will already be null, so prevent recursion.
             //     if (!child.parent) return
             //
-            //     this.remove(child)
+            //     this.removeNode(child)
             // }
 
             // TODO handle in composed and remove this call
@@ -199,12 +199,12 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             if (child instanceof ImperativeBase) {
                 console.log(' ------------------ CHILD UNCOMPOSED', child.constructor.name + '#' + child.id)
 
-                // If ImperativeBase#remove was called first, child's
+                // If ImperativeBase#removeNode was called first, child's
                 // `parent` will already be null, so prevent recursion.
                 if ((child as any).parent) {
                     // mirror the connection in the imperative API's virtual scene graph.
                     const __updateDOMConnection = connectionType === 'actual'
-                    this.remove(child as any, __updateDOMConnection)
+                    this.removeNode(child as any, __updateDOMConnection)
                 }
 
                 this.off('sizechange', (child as any)._onParentSizeChange)
@@ -278,10 +278,10 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             return this
         }
 
-        remove(childNode: TreeNode, /* private */ __updateDOMConnection = true): this {
+        removeNode(childNode: TreeNode, /* private */ __updateDOMConnection = true): this {
             if (!(childNode instanceof Node)) return this
 
-            super.remove(childNode)
+            super.removeNode(childNode)
 
             // this.off('sizechange', childNode._onParentSizeChange, childNode)
 

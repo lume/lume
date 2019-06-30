@@ -45,7 +45,7 @@ describe('TreeNode', () => {
         expect(t.subnodes).toEqual([b, c, a])
     })
 
-    it('.remove', () => {
+    it('.removeNode', () => {
         const t = new TreeNode()
         const a = new TreeNode()
         const b = new TreeNode()
@@ -56,18 +56,18 @@ describe('TreeNode', () => {
         expect(t.childCount).toBe(3)
         expect(t.subnodes).toEqual([b, a, c])
 
-        t.remove(b)
-        expect(() => t.remove(b)).toThrowError(ReferenceError, 'childNode is not a child of this parent.')
+        t.removeNode(b)
+        expect(() => t.removeNode(b)).toThrowError(ReferenceError, 'childNode is not a child of this parent.')
 
         expect(t.childCount).toBe(2)
         expect(t.subnodes).toEqual([a, c])
 
-        t.remove(a)
+        t.removeNode(a)
 
         expect(t.childCount).toBe(1)
         expect(t.subnodes).toEqual([c])
 
-        t.remove(c)
+        t.removeNode(c)
 
         expect(t.childCount).toBe(0)
         expect(t.subnodes).toEqual([])
