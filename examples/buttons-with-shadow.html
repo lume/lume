@@ -79,6 +79,7 @@
                         >
                         <i-dom-plane
                             v-for="n in [0,1,2,3,4]"
+                            ref="btn"
                             :key="n"
                             size-mode="literal proportional"
                             size="100 1 0"
@@ -216,6 +217,11 @@
                         ) ) return true
                         return false
                     }
+
+                    console.log(
+                        ' ??????????????????????????? cast shadow?',
+                        this.$refs.btn[0].castShadow
+                    )
                 },
             })
         </script>
