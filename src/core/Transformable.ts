@@ -3,12 +3,22 @@ import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
 import {props} from './props'
+import {toRadians, Constructor} from './Utility'
+import {Object3D} from 'three'
+
+// TODO, this module augmentation doesn't work as prescribed in
+// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+// declare module 'three' {
+//     interface Object3D {
+//         pivot: Vector3
+//     }
+// }
 
 // This patches Object3D to have a `.pivot` property of type THREE.Vector3 that
 // allows the origin (pivot) of rotation and scale to be specified in local
 // coordinate space. For more info:
 // https://github.com/mrdoob/three.js/issues/15965
-THREE.Object3D.prototype.updateMatrix = function() {
+Object3D.prototype.updateMatrix = function() {
     this.matrix.compose(
         this.position,
         this.quaternion,
@@ -37,15 +47,13 @@ const mountPointAdjustment = [0, 0, 0]
 const appliedPosition = [0, 0, 0]
 
 function TransformableMixin<T extends Constructor>(Base: T) {
-    const Parent = Sizeable.mixin(Base) as typeof Base
-    // const Parent = Sizeable.mixin(Base) // TODO, should work without cast
+    const Parent = Sizeable.mixin(Constructor(Base))
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
-    return class Transformable extends Parent {
+    class Transformable extends Parent {
         static props = {
-            // TODO remove any
-            ...((Parent as any).props || {}),
+            ...(Parent.props || {}),
             position: props.XYZNumberValues,
             rotation: props.XYZNumberValues,
             scale: props.XYZNumberValues,
@@ -64,7 +72,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis position to apply.
          */
         set position(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'position', newValue)
+            this._setPropertyXYZ('position', newValue)
         }
         get position(): any {
             return this._props.position
@@ -77,7 +85,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
         set rotation(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'rotation', newValue)
+            this._setPropertyXYZ('rotation', newValue)
         }
         get rotation(): any {
             return this._props.rotation
@@ -90,7 +98,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
         set scale(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'scale', newValue)
+            this._setPropertyXYZ('scale', newValue)
         }
         get scale(): any {
             return this._props.scale
@@ -103,7 +111,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis origin to apply.
          */
         set origin(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'origin', newValue)
+            this._setPropertyXYZ('origin', newValue)
         }
         get origin(): any {
             return this._props.origin
@@ -132,7 +140,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis align to apply.
          */
         set align(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'align', newValue)
+            this._setPropertyXYZ('align', newValue)
         }
         get align(): any {
             return this._props.align
@@ -147,7 +155,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
         set mountPoint(newValue: any) {
-            this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
+            this._setPropertyXYZ('mountPoint', newValue)
         }
         get mountPoint(): any {
             return this._props.mountPoint
@@ -186,18 +194,22 @@ function TransformableMixin<T extends Constructor>(Base: T) {
                 prop === 'rotation' ||
                 prop === 'scale'
             ) {
-                this['_update_' + prop]()
+                ;(this as any)['_update_' + prop]()
             }
         }
 
         // TODO rename "render" to "update".
-        protected _render(): void {
-            super._render && super._render()
+        protected _render(_timestamp: number): void {
+            // super._render && super._render()
 
             // TODO: only run this when necessary (f.e. not if only opacity
             // changed, only if position/align/mountPoint changed, etc)
             this._calculateMatrix()
         }
+
+        // TODO These is from ImerativeBase. Refactor?
+        three!: Object3D
+        threeCSS!: Object3D
 
         protected _update_rotation(): void {
             // TODO make the rotation unit configurable (f.e. use degrees or
@@ -305,7 +317,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
                 // centered around (0,0,0) meaning Three.js origin goes from
                 // -0.5 to 0.5 instead of from 0 to 1.
 
-                this.three.pivot.set(
+                ;(this.three as any).pivot.set(
                     origin.x * size.x - size.x / 2,
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // positive Y means down instead of up (because Three,js Y
@@ -313,8 +325,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
                     -(origin.y * size.y - size.y / 2),
                     origin.z * size.z - size.z / 2
                 )
-
-                this.threeCSS.pivot.set(
+                ;(this.threeCSS as any).pivot.set(
                     origin.x * size.x - size.x / 2,
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // positive Y means down instead of up (because Three,js Y
@@ -326,8 +337,8 @@ function TransformableMixin<T extends Constructor>(Base: T) {
             // otherwise, use default Three.js origin of (0,0,0) which is
             // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
             else {
-                this.three.pivot.set(0, 0, 0)
-                this.threeCSS.pivot.set(0, 0, 0)
+                ;(this.three as any).pivot.set(0, 0, 0)
+                ;(this.threeCSS as any).pivot.set(0, 0, 0)
             }
 
             this.three.updateMatrix()
@@ -340,10 +351,47 @@ function TransformableMixin<T extends Constructor>(Base: T) {
             this.trigger('worldMatrixUpdate')
         }
     }
+
+    return Transformable as typeof Transformable & T
 }
 
-export default Mixin(TransformableMixin)
+export const Transformable = Mixin(TransformableMixin)
+export type Transformable = InstanceType<typeof Transformable>
+export default Transformable
 
-function toRadians(degrees: number): number {
-    return (degrees / 180) * Math.PI
-}
+// const s: Transformable = new Transformable()
+// s.asdfasdf
+// s.calculatedSize = 123
+// s.innerHTML = 123
+// s.innerHTML = 'asdf'
+// s.emit('asfasdf', 1, 2, 3)
+// s.removeNode('asfasdf')
+// s.updated(1, 2, 3, 4)
+// s.blahblah
+// s.sizeMode
+// s._render(1, 2, 3)
+// s.qwerqwer
+// s.rotation
+// s.three.sdf
+// s.threeCSS.sdf
+
+// const o = new (Transformable.mixin(
+//     class {
+//         test = 123
+//     }
+// ))()
+// o.asdfasdf
+// o.calculatedSize = 123
+// o.innerHTML = 123
+// o.innerHTML = 'asdf'
+// o.emit('asfasdf', 1, 2, 3)
+// o.removeNode('asfasdf')
+// o.updated(1, 2, 3, 4)
+// o.blahblah
+// o.sizeMode
+// o._render(1, 2, 3)
+// o.qwerqwer
+// o.rotation
+// o.three.sdf
+// o.threeCSS.sdf
+// o.test = 'asdfasdf'

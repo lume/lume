@@ -2,15 +2,11 @@
 
 import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
-import {observeChildren, hasShadowDomV1} from '../core/Utility'
+import {observeChildren, hasShadowDomV1, Constructor} from '../core/Utility'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
-
-var DeclarativeBase: _DeclarativeBase
-
-type _DeclarativeBase = ReturnType<typeof makeDeclarativeBase>
 
 initDeclarativeBase()
 
@@ -22,9 +18,9 @@ function makeDeclarativeBase() {
     /**
      * @implements {EventListener}
      */
-    return class DeclarativeBase extends WebComponent {
+    return class DeclarativeBase extends Constructor<WebComponent & HTMLElement>(WebComponent) {
         static defaultElementName: string = 'ERROR: Subclass needs to set defaultElementName'
-        static _definedElementName?: string
+        private static _definedElementName?: string
 
         static define(name?: string) {
             name = name || this.defaultElementName
@@ -53,7 +49,8 @@ function makeDeclarativeBase() {
 
             observers.set(root, observer)
 
-            const {children} = this
+            // Arrray.from isn't needed for older Safari which can't iterate on HTMLCollection
+            const children = Array.from(this.children)
 
             for (const child of children) {
                 // debugger
@@ -444,5 +441,10 @@ function makeDeclarativeBase() {
     }
 }
 
+type _DeclarativeBase = ReturnType<typeof makeDeclarativeBase>
+
+export var DeclarativeBase: _DeclarativeBase
+export type DeclarativeBase = InstanceType<_DeclarativeBase>
+
 // "as default" style default export is required here. Try it the othe way to see how it breaks.
-export {DeclarativeBase as default, DeclarativeBase}
+export {DeclarativeBase as default}

@@ -19,6 +19,18 @@ export default class PointLight extends LightBase {
         shadowCameraFar: {...props.number, default: 2000},
     }
 
+    distance!: number
+    decay!: number
+    castShadow!: boolean
+    shadowMapWidth!: number
+    shadowMapHeight!: number
+    shadowRadius!: number
+    shadowBias!: number
+    shadowCameraNear!: number
+    shadowCameraFar!: number
+
+    three!: ThreePointLight
+
     passInitialValuesToThree() {
         super.passInitialValuesToThree()
 

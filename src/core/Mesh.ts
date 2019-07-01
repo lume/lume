@@ -1,4 +1,4 @@
-import {Mesh as ThreeMesh} from 'three'
+import {Mesh as ThreeMesh, Material} from 'three'
 import Node from './Node'
 import {props, mapPropTo} from './props'
 
@@ -42,6 +42,11 @@ export default class Mesh extends Node {
         receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
     }
 
+    castShadow!: boolean
+    receiveShadow!: boolean
+
+    three!: ThreeMesh
+
     passInitialValuesToThree() {
         this.three.castShadow = this.castShadow
         console.log(' ?????????????????? Mesh, pass initial values to three', this.three.castShadow)
@@ -58,7 +63,8 @@ export default class Mesh extends Node {
         }
 
         if (modifiedProps.receiveShadow) {
-            this.three.material.needsUpdate = true
+            // TODO handle material arrays
+            ;(this.three.material as Material).needsUpdate = true
             this.needsUpdate()
         }
     }

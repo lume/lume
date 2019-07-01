@@ -1,12 +1,13 @@
 import {Mixin} from 'lowclass'
 import WithUpdate from '../html/WithUpdate'
+import {Constructor} from './Utility'
 // import TreeNode from './TreeNode'
 
 // function TreeNodeMixin<T extends Constructor>(Base: T) {
 export function TreeNodeMixin<T extends Constructor>(Base: T) {
     // TODO WithUpdate.mixin isn't enforcing that we pass Constructor
     // constrained to extend from HTMLElement
-    class TreeNode extends WithUpdate.mixin((Base as unknown) as Constructor<HTMLElement>) {
+    class TreeNode extends WithUpdate.mixin(Constructor<HTMLElement>(Base)) {
         private __parent: TreeNode | null = null
         private __children: TreeNode[] = []
 
@@ -141,21 +142,16 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 }
 
 export const TreeNode = Mixin(TreeNodeMixin)
-
 export type TreeNode = InstanceType<typeof TreeNode>
-
-// const Tmp = () => TreeNodeMixin(WithUpdate)
-// export type TreeNode = InstanceType<ReturnType<typeof Tmp>>
-
 export default TreeNode
 
-const t: TreeNode = new TreeNode()
-t.asdfasdf
-t.asdfasdfadfasdf()
-t.childCount
-t.removeNode()
-t.removeNode(new TreeNode())
-t.innerHTML = 123
-t.innerHTML = 'asdf'
-t.setAttribute('foo', 123)
-t.setAttribute('foo', 'bar')
+// const t: TreeNode = new TreeNode()
+// t.asdfasdf
+// t.asdfasdfadfasdf()
+// t.childCount
+// t.removeNode()
+// t.removeNode(new TreeNode())
+// t.innerHTML = 123
+// t.innerHTML = 'asdf'
+// t.setAttribute('foo', 123)
+// t.setAttribute('foo', 'bar')

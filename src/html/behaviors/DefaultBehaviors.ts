@@ -1,10 +1,12 @@
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
+import {Constructor} from '../../core/Utility'
+import {PossibleCustomElement} from '../WithUpdate'
 
-function DefaultBehaviorsMixin<T extends Constructor>(Base: T) {
+function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
     // TODO This is here for now. Make it an extension to
     // element-behaviors so that it can be applied to any element
     // generically.
-    return class DefaultBehaviors extends Base {
+    class DefaultBehaviors extends Constructor<PossibleCustomElement & HTMLElement>(Base) {
         // override in subclasses
         static defaultBehaviors: any = []
 
@@ -95,7 +97,10 @@ function DefaultBehaviorsMixin<T extends Constructor>(Base: T) {
             }
         }
     }
+
+    return DefaultBehaviors as Constructor<DefaultBehaviors & InstanceType<T>> & typeof DefaultBehaviors & T
 }
 
 export const DefaultBehaviors = Mixin(DefaultBehaviorsMixin)
+export type DefaultBehaviors = InstanceType<typeof DefaultBehaviors>
 export default DefaultBehaviors

@@ -42,14 +42,18 @@ type Viewport = {
  */
 export default class AutoLayoutNode extends Node {
     static defaultElementName = 'i-autolayout-node'
+
     static DEFAULT_PARSE_OPTIONS = {
         extended: true,
         strict: false,
     }
+
     static props = {
-        ...((Node as any).props || {}),
+        ...(Node.props || {}),
         visualFormat: String,
     }
+
+    visualFormat!: string
 
     /**
      * Constructor
@@ -87,6 +91,8 @@ export default class AutoLayoutNode extends Node {
             this.setVisualFormat(this.visualFormat)
         }
     }
+
+    private _autoLayoutView?: any | undefined
 
     childConnected(child: Node) {
         // TODO, this was working, although we were not passing child into childConnected. Why????
@@ -170,7 +176,12 @@ export default class AutoLayoutNode extends Node {
      * @param {String} id Unique id of the node which matches the id used in the Visual format.
      * @return {Node} the appended node.
      */
-    add(child: Node, id: string) {
+    // @ts-ignore: strictFunctionTypes requires same signature methods in subclasses
+    add(
+        // prettier-ignore
+        child: Node,
+        id: string
+    ) {
         // PORTED
         super.add(child) // PORTED
         if (id) this._idToNode[id] = child
@@ -185,7 +196,12 @@ export default class AutoLayoutNode extends Node {
      * @param {Node} [child] node to be removed
      * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
      */
-    removeNode(child: Node, id: string) {
+    // @ts-ignore: strictFunctionTypes requires same signature methods in subclasses
+    removeNode(
+        // prettier-ignore
+        child: Node,
+        id: string
+    ) {
         // PORTED
         if (child && id) {
             super.removeNode(child) // PORTED

@@ -1,4 +1,4 @@
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
 import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
@@ -6,18 +6,22 @@ import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'
+import {Constructor} from './Utility'
 
 initImperativeBase()
 
 function NodeMixin<T extends Constructor>(Base: T) {
-    const Parent = ImperativeBase.mixin(Base) as typeof Base
+    const Parent = ImperativeBase.mixin(Constructor(Base))
 
-    return class Node extends Parent {
+    class Node extends Parent {
         static defaultElementName = 'i-node'
+
         static props = {
-            ...((Parent as any).props || {}),
+            ...(Parent.props || {}),
             visible: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
         }
+
+        visible!: boolean
 
         /**
          * @constructor
@@ -111,10 +115,33 @@ function NodeMixin<T extends Constructor>(Base: T) {
             this.triggerUpdateForProp('visible')
         }
     }
+
+    // return Node as typeof Node & T
+    return (Node as unknown) as Constructor<Node & InstanceType<T>> & typeof Node & T
 }
 
 const _Node = Mixin(NodeMixin)
-
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 export const Node = _Node.mixin(HTMLInterface)
+export type Node = InstanceType<typeof Node>
 export default Node
+
+// const n: Node = new Node(1, 2, 3)
+// n.asdfasdf
+// n.calculatedSize = 123
+// n.innerHTML = 123
+// n.innerHTML = 'asdf'
+// n.emit('asfasdf', 1, 2, 3)
+// n.removeNode('asfasdf')
+// n.updated(1, 2, 3, 4)
+// n.blahblah
+// n.sizeMode
+// n._render(1, 2, 3)
+// n.qwerqwer
+// n.rotation
+// n.three.sdf
+// n.threeCSS.sdf
+// n.possiblyLoadThree(new ImperativeBase!())
+// n.possiblyLoadThree(1)
+// n.visible = false
+// n.visible = 123123

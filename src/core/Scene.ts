@@ -2,7 +2,7 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
 import documentReady from '@awaitbox/document-ready'
 import Motor, {RenderTask} from './Motor'
 import {getWebGLRendererThree} from './WebGLRendererThree'
@@ -13,7 +13,7 @@ import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
 import {props} from './props'
 import './Camera' // cause a circular dependency with Camera to enforce the SceneProtected gateway below
-import {documentBody} from './Utility'
+import {documentBody, Constructor} from './Utility'
 
 // TODO
 type Camera = any /*import('./Camera').Camera*/
@@ -23,19 +23,21 @@ import {
     PerspectiveCamera,
     //AmbientLight,
     Color,
+    ShadowMapType,
 } from 'three'
 import {XYZValuesObject} from './XYZValues'
+import Sizeable from './Sizeable'
 
 initImperativeBase()
 
 function SceneMixin<T extends Constructor>(Base: T) {
-    const Parent = ImperativeBase.mixin(Base) as typeof Base
+    const Parent = ImperativeBase.mixin(Constructor(Base))
 
-    return class Scene extends Parent {
+    class Scene extends Parent {
         static defaultElementName = 'i-scene'
 
         static props = {
-            ...((Parent as any).props || {}),
+            ...(Parent.props || {}),
             backgroundColor: props.THREE.Color,
             backgroundOpacity: props.number,
             shadowmapType: props.string,
@@ -44,12 +46,23 @@ function SceneMixin<T extends Constructor>(Base: T) {
             disableCss: props.boolean,
         }
 
+        // TODO replace WithUpdate props with decorators
+        backgroundColor!: Color | string | number
+        backgroundOpacity!: number
+        shadowmapType!: ShadowMapType
+        vr!: boolean
+        experimentalWebgl!: boolean
+        disableCss!: boolean
+
+        three!: ThreeScene
+
         // used in DeclarativeBase ATM, which is badly organized
         // TODO reorganize
         isScene = true
 
         // Used by the `scene` getter in ImperativeBase
-        protected _scene: Scene | null = this
+        // protected _scene: Scene | null = this
+        protected _scene: this | null = this
 
         constructor(...args: any[]) {
             super(...args)
@@ -207,7 +220,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
         }
 
         protected _mounted = false
-        protected _elementParentSize: XYZValuesObject<number> | null = null
+        protected _elementParentSize: XYZValuesObject<number>
 
         // TODO get default camera values from somewhere.
         protected _perspective = 1000
@@ -283,8 +296,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
         }
 
         /** @override */
-        protected _getParentSize() {
-            return this.parent ? this.parent.calculatedSize : this._elementParentSize
+        protected _getParentSize(): XYZValuesObject<number> {
+            return this.parent ? (this.parent as Sizeable).calculatedSize : this._elementParentSize
         }
 
         // For now, use the same program (with shaders) for all objects.
@@ -473,7 +486,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
         // we haven't taken that into consideration here.
         // HTM-API
         private __checkSize() {
-            const parent = this.parentNode
+            const parent = this.parentNode! as Element
             const parentSize = this.__parentSize
             const style = getComputedStyle(parent)
             const width = parseFloat(style.width || '0')
@@ -495,12 +508,34 @@ function SceneMixin<T extends Constructor>(Base: T) {
             this.needsUpdate()
         }
     }
-}
 
-const _Scene = Mixin(SceneMixin)
+    return Scene as typeof Scene & T
+}
 
 // TODO cleanup above parentsizechange code
 
+const _Scene = Mixin(SceneMixin)
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 export const Scene = _Scene.mixin(HTMLInterface)
+export type Scene = InstanceType<typeof Scene>
 export default Scene
+
+// const s: Scene = new Scene()
+// s.asdfasdf
+// s.calculatedSize = 123
+// s.innerHTML = 123
+// s.innerHTML = 'asdf'
+// s.emit('asfasdf', 1, 2, 3)
+// s.removeNode('asfasdf')
+// s.updated(1, 2, 3, 4)
+// s.blahblah
+// s.sizeMode
+// s._render(1, 2, 3)
+// s.qwerqwer
+// s.rotation
+// s.three.sdf
+// s.threeCSS.sdf
+// s.possiblyLoadThree(new ImperativeBase!())
+// s.possiblyLoadThree(1)
+// s.mount('somewhere')
+// s.mount(123)

@@ -5,6 +5,7 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
 import {props} from './props'
+import {Constructor} from './Utility'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 type XYZValuesArray<T> = import('./XYZValues').XYZValuesArray<T>
 
@@ -26,7 +27,7 @@ const previousSize: Partial<XYZValuesObject<number>> = {}
 // function SizeableMixin<T extends Constructor>(Base: T) {
 function SizeableMixin<T extends Constructor>(Base: T) {
     // TODO how to do it without casting?
-    const Parent = Observable.mixin(TreeNode.mixin((Base as unknown) as Constructor))
+    const Parent = Observable.mixin(TreeNode.mixin(Constructor(Base)))
 
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
     // calculating proportional sizes. Also Transformable knows about it's parent
@@ -75,7 +76,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          */
         set sizeMode(newValue) {
             if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
-            this._setPropertyXYZ(null, 'sizeMode', newValue)
+            this._setPropertyXYZ('sizeMode', newValue)
         }
         get sizeMode() {
             return this._props.sizeMode
@@ -110,7 +111,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis size to apply.
          */
         set size(newValue) {
-            this._setPropertyXYZ(Sizeable, 'size', newValue)
+            this._setPropertyXYZ('size', newValue)
         }
         get size() {
             return this._props.size
@@ -154,7 +155,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 
         makeDefaultProps() {
             return Object.assign(super.makeDefaultProps(), {
-                // TODO remove any
                 sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
                 size: new XYZNonNegativeValues(100, 100, 100),
             })
@@ -230,7 +230,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
         }
 
         // TODO remove _Class arg
-        protected _setPropertyXYZ(_Class: any, name: string, newValue: any) {
+        protected _setPropertyXYZ(name: string, newValue: any) {
             if (typeof newValue === 'function') {
                 this.__handleXYZPropertyFunction(newValue, name)
             } else {
@@ -328,20 +328,20 @@ function SizeableMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    return Sizeable
+    return Sizeable as typeof Sizeable & T
 }
 
 export const Sizeable = Mixin(SizeableMixin)
 export type Sizeable = InstanceType<typeof Sizeable>
 export default Sizeable
 
-const s: Sizeable = new Sizeable()
-s.sizeMode
-s.asdfasdf
-s.calculatedSize = 123
-s.innerHTML = 123
-s.innerHTML = 'asdf'
-s.emit('asfasdf', 1, 2, 3)
-s.removeNode('asfasdf')
-s.updated(1, 2, 3, 4)
-s.blahblah
+// const s: Sizeable = new Sizeable()
+// s.sizeMode
+// s.asdfasdf
+// s.calculatedSize = 123
+// s.innerHTML = 123
+// s.innerHTML = 'asdf'
+// s.emit('asfasdf', 1, 2, 3)
+// s.removeNode('asfasdf')
+// s.updated(1, 2, 3, 4)
+// s.blahblah

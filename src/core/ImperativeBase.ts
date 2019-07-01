@@ -10,7 +10,9 @@ import Motor from './Motor'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
-type TreeNode = typeof import('./TreeNode').default
+import {Constructor} from './Utility'
+import {TreeNode} from './TreeNode'
+import {XYZValuesObject} from './XYZValues'
 type ConnectionType = import('../html/DeclarativeBase').ConnectionType
 
 window.addEventListener('error', event => {
@@ -24,8 +26,38 @@ window.addEventListener('error', event => {
     }
 })
 
+// TODO replace with Partial<WebComponent> instead of re-writing properties manually
+// @prod-prune @dev-prune
+class PossiblyWebComponent {
+    // TODO re-organize properties from WebComponent/DeclarativeBase
+    childConnectedCallback?(child: Element): void
+    childDisconnectedCallback?(child: Element): void
+    protected _isPossiblyDistributedToShadowRoot?: boolean
+    protected _distributedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+    protected _deinit?(): void
+}
+
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
-    return class ImperativeBase extends ((Transformable as any).mixin(Base) as typeof Base) {
+    const Parent = Transformable.mixin(Constructor<PossiblyWebComponent>(Base))
+
+    // type Parent = InstanceType<typeof Parent>
+    // const s = new Parent()
+    // s.asdfasdf
+    // s.calculatedSize = 123
+    // s.innerHTML = 123
+    // s.innerHTML = 'asdf'
+    // s.emit('asfasdf', 1, 2, 3)
+    // s.removeNode('asfasdf')
+    // s.updated(1, 2, 3, 4)
+    // s.blahblah
+    // s.sizeMode
+    // s._render(1, 2, 3)
+    // s.qwerqwer
+    // s.rotation
+    // s.three.sdf
+    // s.threeCSS.sdf
+
+    class ImperativeBase extends Parent {
         // we don't need this, keep for backward compatibility (mainly
         // all my demos at trusktr.io).
         imperativeCounterpart = this
@@ -62,7 +94,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             return this.__three
         }
 
-        get threeCSS(): CSS3DObjectNested {
+        get threeCSS(): Object3D {
             // if (!(this.scene && !this.scene.disableCss)) return null
 
             if (!this.__threeCSS) {
@@ -103,7 +135,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         // distributed to a slot or added to a shadow root. For that,
         // see childComposedCallback
         childConnectedCallback(child: Element): void {
-            super.childConnectedCallback(child)
+            super.childConnectedCallback && super.childConnectedCallback(child)
 
             // console.log(' ================== CHILD CONNECTED', child.parentElement.constructor.name, child.constructor.name, child.id)
 
@@ -126,7 +158,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         // when undistributed from a slot or removed from a shadow root.
         // For that, see childUncomposedCallback
         childDisconnectedCallback(child: Element): void {
-            super.childDisconnectedCallback(child)
+            super.childDisconnectedCallback && super.childDisconnectedCallback(child)
 
             // // mirror the connection in the imperative API's virtual scene graph.
             // if ((child instanceof ImperativeBase)) {
@@ -140,6 +172,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // TODO handle in composed and remove this call
             // this.possiblyUnloadThree(child)
         }
+
+        protected _onParentSizeChange?(size: XYZValuesObject<number>): void
 
         /**
          * Called whenever a node is connected, but this is called with
@@ -162,7 +196,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             if (child instanceof ImperativeBase) {
                 console.log(
                     ' ------------------ CHILD COMPOSED',
-                    (child as any)._composedParent.constructor.name + '#' + (child as any)._composedParent.id,
+                    child._composedParent!.constructor.name + '#' + (child as any)._composedParent.id,
                     child.constructor.name + '#' + child.id
                 )
 
@@ -177,21 +211,21 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                 // If ImperativeBase#add was called first, child's
                 // `parent` will already be set, so prevent recursion.
                 // debugger
-                if (!(child as any).parent) {
+                if (!child.parent) {
                     // mirror the DOM connections in the imperative API's virtual scene graph.
                     const __updateDOMConnection = connectionType === 'actual'
-                    this.add(child as any, __updateDOMConnection)
+                    this.add(child, __updateDOMConnection)
                 }
 
                 // Calculate sizing because proportional size might depend on
                 // the new parent.
-                ;(child as any)._calcSize()
-                ;(child as any).needsUpdate()
+                child._calcSize()
+                child.needsUpdate()
 
                 // child should watch the parent for size changes.
-                this.on('sizechange', (child as any)._onParentSizeChange, child)
+                if (child._onParentSizeChange) this.on('sizechange', child._onParentSizeChange, child)
 
-                this.possiblyLoadThree(child as any)
+                this.possiblyLoadThree(child)
             }
         }
 
@@ -201,17 +235,17 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
                 // If ImperativeBase#removeNode was called first, child's
                 // `parent` will already be null, so prevent recursion.
-                if ((child as any).parent) {
+                if (child.parent) {
                     // mirror the connection in the imperative API's virtual scene graph.
                     const __updateDOMConnection = connectionType === 'actual'
-                    this.removeNode(child as any, __updateDOMConnection)
+                    this.removeNode(child, __updateDOMConnection)
                 }
 
-                this.off('sizechange', (child as any)._onParentSizeChange)
+                this.off('sizechange', child._onParentSizeChange!)
 
                 // Unload GL/CSS on _deinit instead of here, but change
                 // Object3D hierarchy here.
-                this.possiblyUnloadThree(child as any)
+                this.possiblyUnloadThree(child)
             }
         }
 
@@ -221,9 +255,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
          *
          * @readonly
          */
-        get scene(): InstanceType<typeof Scene> {
-            // TODO why do we need InstanceType here
-
+        // TODO remove any
+        // get scene(): Scene {
+        get scene(): any {
             // NOTE: this._scene is initally null.
 
             const parent = this.parent
@@ -231,6 +265,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // if already cached, return it. Or if no parent, return it (it'll be null).
             // Additionally, Scenes have this._scene already set to themselves.
             if (this._scene || !parent) return this._scene!
+
+            if (!(parent instanceof ImperativeBase)) throw new Error('Expected instance of ImperativeBase')
 
             // if the parent node already has a ref to the scene, use that.
             if (parent._scene) {
@@ -251,7 +287,12 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         /**
          * @override
          */
-        add(childNode: TreeNode, __updateDOMConnection = true): this {
+        // @ts-ignore: strict function types normally prevent differing subclass method signatures.
+        add(
+            // prettier-ignore
+            childNode: TreeNode,
+            __updateDOMConnection = true
+        ): this {
             if (!(childNode instanceof ImperativeBase)) return this
 
             // We cannot add Scenes to Nodes, for now.
@@ -273,7 +314,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // // child should watch the parent for size changes.
             // this.on('sizechange', childNode._onParentSizeChange, childNode)
 
-            if (__updateDOMConnection) this._elementOperations.connectChildElement(childNode as any)
+            if (__updateDOMConnection) this._elementOperations.connectChildElement(childNode)
 
             return this
         }
@@ -285,7 +326,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
             // this.off('sizechange', childNode._onParentSizeChange, childNode)
 
-            if (__updateDOMConnection) this._elementOperations.disconnectChildElement(childNode as any)
+            if (__updateDOMConnection) this._elementOperations.disconnectChildElement(childNode)
 
             return this
         }
@@ -296,6 +337,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // TODO make sure we render when connected into a tree with a scene
 
             this._willBeRendered = true
+
+            // TODO remove as any
             Motor.setNodeToBeRendered(this as any)
         }
 
@@ -304,19 +347,19 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         protected _willBeRendered = false
         // Here we create the DOM HTMLElement associated with this
         // Imperative-API Node.
-        protected _elementOperations: ElementOperations = new ElementOperations(this as any)
+        protected _elementOperations: ElementOperations = new ElementOperations(this)
 
         // stores a ref to this Node's root Scene when/if this Node is
         // in a scene.
-        protected _scene = null as InstanceType<typeof Scene> | null
-        // TODO why do we need InstanceType here?
+        // protected _scene = null as Scene | null
+        protected _scene = null as any | null
 
         protected _makeThreeObject3d(): Object3D {
             return new Object3D()
         }
 
-        protected _makeThreeCSSObject(): CSS3DObjectNested {
-            return new CSS3DObjectNested(this as any)
+        protected _makeThreeCSSObject(): Object3D {
+            return new CSS3DObjectNested(this)
         }
 
         protected _connectThree(): void {
@@ -328,12 +371,18 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                 // other Nodes.
                 this.parent !== this.scene
             ) {
+                this.scene.removeNode
                 if (this._distributedParent) {
                     console.log(
                         '    --- CONNECT THREE TO SHADOW PARENT',
                         this._distributedParent.constructor.name,
                         this.constructor.name
                     )
+
+                    // @prod-prune
+                    if (!(this._distributedParent instanceof ImperativeBase))
+                        throw new Error('expected _distributedParent to be ImperativeBase')
+
                     this._distributedParent && this._distributedParent.three.add(this.three)
                 }
             } else {
@@ -343,6 +392,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                         this.parent.constructor.name,
                         this.constructor.name
                     )
+
+                // @prod-prune
+                if (!(this.parent instanceof ImperativeBase)) throw new Error('expected parent to be ImperativeBase')
 
                 this.parent && this.parent.three.add(this.three)
             }
@@ -365,6 +417,11 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                         this._distributedParent.constructor.name,
                         this.constructor.name
                     )
+
+                    // @prod-prune
+                    if (!(this._distributedParent instanceof ImperativeBase))
+                        throw new Error('expected _distributedParent to be ImperativeBase')
+
                     this._distributedParent && this._distributedParent.threeCSS.add(this.threeCSS)
                 }
             } else {
@@ -375,11 +432,16 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                         this.constructor.name
                     )
 
+                // @prod-prune
+                if (!(this.parent instanceof ImperativeBase)) throw new Error('expected parent to be ImperativeBase')
+
                 this.parent && this.parent.threeCSS.add(this.threeCSS)
             }
 
             this.needsUpdate()
         }
+
+        passInitialValuesToThree?(): void
 
         protected _loadGL(): void {
             if (!(this.scene && this.scene.experimentalWebgl)) return
@@ -487,8 +549,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             this.emit(Events.CSS_UNLOAD, this)
         }
 
-        protected _render(_timestamp: number): void {
-            if (super._render) super._render()
+        protected _render(timestamp: number): void {
+            if (super._render) super._render(timestamp)
 
             this._elementOperations.applyImperativeNodeProperties()
         }
@@ -498,6 +560,10 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             let parent = this.parent
 
             while (parent) {
+                // TODO it'd be nice to have a way to prune away runtime type checks in prod mode.
+                // @prod-prune
+                if (!(parent instanceof ImperativeBase)) throw new Error('expected ImperativeBase')
+
                 if (parent._willBeRendered) return parent
                 parent = parent.parent
             }
@@ -506,7 +572,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         }
 
         private __three: Object3D | null = null
-        private __threeCSS: CSS3DObjectNested | null = null
+        private __threeCSS: Object3D | null = null // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
 
         private __onPropertyChange(prop: string /*TODO keyof props*/): void {
             if (prop == 'sizeMode' || prop == 'size') {
@@ -522,6 +588,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             this.needsUpdate()
         }
     }
+
+    return ImperativeBase as typeof ImperativeBase & T
 }
 
 type _ImperativeBase = ReturnType<typeof makeMixin>
@@ -532,6 +600,7 @@ type _ImperativeBase = ReturnType<typeof makeMixin>
 // Scene modules to work. For details on why, see
 // https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem.
 export var ImperativeBase: _ImperativeBase
+export type ImperativeBase = InstanceType<_ImperativeBase>
 
 // Here we wrap the definition of the ImperativeBase class with this function in
 // order to solve the circular depdendency problem caused by the
@@ -561,3 +630,21 @@ function makeMixin() {
 
 // "as default" form is required here, otherwise it'll break.
 export {ImperativeBase as default}
+
+// const i: ImperativeBase = new ImperativeBase()
+// i.asdfasdf
+// i.calculatedSize = 123
+// i.innerHTML = 123
+// i.innerHTML = 'asdf'
+// i.emit('asfasdf', 1, 2, 3)
+// i.removeNode('asfasdf')
+// i.updated(1, 2, 3, 4)
+// i.blahblah
+// i.sizeMode
+// i._render(1, 2, 3)
+// i.qwerqwer
+// i.rotation
+// i.three.sdf
+// i.threeCSS.sdf
+// i.possiblyLoadThree(new ImperativeBase!())
+// i.possiblyLoadThree(1)
