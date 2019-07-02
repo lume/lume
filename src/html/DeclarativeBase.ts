@@ -8,6 +8,12 @@ export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
 
+// using isHTMLNode instead of instanceof HTMLNode to avoid runtime reference,
+// thus prevent circular dependency between this module and HTMLNode
+function isHTMLNode(n: any): n is HTMLNode {
+    return n.isHTMLNode
+}
+
 initDeclarativeBase()
 
 export function initDeclarativeBase() {
@@ -76,10 +82,14 @@ function makeDeclarativeBase() {
         // TODO PossiblyScene type for this mixin?
         isScene!: boolean
 
+        // from HTMLNode
+        // TODO PossiblyHTMLNode type for this mixin?
+        isHTMLNode!: boolean
+
         childConnectedCallback(child: HTMLElement) {
             console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4')
             // mirror the DOM connections in the imperative API's virtual scene graph.
-            if (child instanceof HTMLNode) {
+            if (isHTMLNode(child)) {
                 console.log(
                     ' ----------------------- childConnectedCallback',
                     this.constructor.name,
@@ -116,7 +126,7 @@ function makeDeclarativeBase() {
 
         childDisconnectedCallback(child: HTMLElement) {
             // mirror the connection in the imperative API's virtual scene graph.
-            if (child instanceof HTMLNode) {
+            if (isHTMLNode(child)) {
                 if (this.__shadowRoot) {
                     child.__isPossiblyDistributedToShadowRoot = false
                 } else {
@@ -160,12 +170,10 @@ function makeDeclarativeBase() {
             // DOM API.
             const hasHtmlApi = this.hasHtmlApi
 
-            const children = this.children
-
+            const {children} = this
             for (let l = children.length, i = 0; i < l; i += 1) {
                 const child = children[i]
 
-                // @prod-prune @dev-prune
                 if (!(child instanceof DeclarativeBase)) continue
 
                 // skip nodes that are possiblyDistributed, i.e. they have a parent
