@@ -1,3 +1,5 @@
+import {Constructor} from 'lowclass'
+
 function epsilon(value: any) {
     return Math.abs(value) < 0.000001 ? 0 : value
 }
@@ -96,6 +98,14 @@ function documentBody(): Promise<void> {
     })
 }
 
+function toRadians(degrees: number): number {
+    return (degrees / 180) * Math.PI
+}
+
+function Constructor<T = object>(Ctor: Constructor<any>) {
+    return (Ctor as unknown) as Constructor<T>
+}
+
 export {
     epsilon,
     applyCSSLabel,
@@ -105,4 +115,6 @@ export {
     // static Symbol.hasInstance method, because the behavior of instanceof isn't
     // polyfillable.
     documentBody,
+    toRadians,
+    Constructor,
 }

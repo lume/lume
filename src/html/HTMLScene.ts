@@ -63,17 +63,24 @@ export default class HTMLScene extends DeclarativeBase {
         return styles
     }
 
+    // from Scene
+    // TODO PossiblyScene type, or perhaps a mixin that can be applied to the
+    // Scene class to make it gain the HTML interface
+    protected _mounted!: boolean
+    mount?(f?: string | Element | null): void
+    unmount?(): void
+
     connectedCallback() {
         super.connectedCallback()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!this._mounted) this.mount(this.parentNode)
+        if (!this._mounted) this.mount!(this.parentNode as Element)
     }
 
-    disconnectedCallback() {
+    async disconnectedCallback() {
         super.disconnectedCallback()
 
-        this.unmount()
+        this.unmount!()
     }
 
     protected _glLayer: HTMLDivElement | null = null

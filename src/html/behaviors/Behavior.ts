@@ -16,7 +16,7 @@ export default class Behavior extends WithUpdate.mixin(ForwardProps) {
         return Node
     }
 
-    constructor(public element: HTMLElement) {
+    constructor(public element: Node) {
         super()
 
         this.__checkElementIsLibraryElement(element)
@@ -24,7 +24,7 @@ export default class Behavior extends WithUpdate.mixin(ForwardProps) {
 
     // This could be useful, but at the moment it is only used by SkateJS in
     // triggerUpdate, expecting `this` to be a DOM node.
-    get parentNode(): Node | null {
+    get parentNode() {
         // seems to be a bug in the `get`ter, as this.element works fine in regular methods
         return this.element.parentNode
     }
@@ -91,7 +91,7 @@ export default class Behavior extends WithUpdate.mixin(ForwardProps) {
     private __elementDefined = false
 
     // TODO add a test to make sure this check works
-    private async __checkElementIsLibraryElement(element: HTMLElement) {
+    private async __checkElementIsLibraryElement(element: Element) {
         // TODO TS `this.constructor` type.
         const BaseClass = (this.constructor as any).requiredElementType
 

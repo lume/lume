@@ -1,6 +1,7 @@
 import BaseMeshBehavior from './BaseMeshBehavior'
 import {props, changePropContext} from '../../core/props'
 import XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
+import {XYZSizeModeValues, SizeModeValue, XYZPartialValuesArray, XYZPartialValuesObject} from '../../core'
 
 // base class for geometry behaviors
 export default class BaseGeometryBehavior extends BaseMeshBehavior {
@@ -13,14 +14,14 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
         sizeMode: changePropContext(props.XYZSizeModeValues as any, (self: any) => self.element),
     }
 
-    // TODO no any
-    element: any
+    size!: XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+    sizeMode!: XYZSizeModeValues | XYZPartialValuesArray<SizeModeValue> | XYZPartialValuesObject<SizeModeValue> | string
 
     updated(_oldProps: any, modifiedProps: any) {
         const {size, sizeMode} = modifiedProps
 
         if (size || sizeMode) {
-            this.__updateGeometryOnSizeChange(this.size)
+            this.__updateGeometryOnSizeChange(this.size as XYZNonNegativeValues)
         }
     }
 

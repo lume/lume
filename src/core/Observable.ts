@@ -1,10 +1,12 @@
 import {Mixin} from 'lowclass'
+import {Constructor} from './Utility'
+import {Nothing} from '../html/utils'
 
 // XXX Could it need to be `T extends Constructor<{}>` instead of `T extends typeof Object`?
 // const ObservableMixin = <T extends typeof Object>(Base: T) => {
 // function ObservableMixin<T extends Constructor>(Base: T) {
 export function ObservableMixin<T extends Constructor>(Base: T) {
-    class Observable extends ((Base as unknown) as Constructor) {
+    class Observable extends Constructor(Base) {
         on(eventName: string, callback: Function, context?: any) {
             let eventMap = this.__eventMap
 
@@ -19,7 +21,7 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
             else throw new Error('Expected a function in callback argument of Observable#on.')
         }
 
-        off(eventName: string, callback: Function) {
+        off(eventName: string, callback: Function | Nothing) {
             const eventMap = this.__eventMap
 
             if (!eventMap) return
@@ -61,12 +63,12 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
         }
 
         // alias for emit
-        trigger(eventName: string, data: any) {
+        trigger(eventName: string, data?: any) {
             return this.emit(eventName, data)
         }
 
         // alias for emit
-        triggerEvent(eventName: string, data: any) {
+        triggerEvent(eventName: string, data?: any) {
             return this.emit(eventName, data)
         }
 
@@ -77,32 +79,24 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
 }
 
 export const Observable = Mixin(ObservableMixin)
-
 export type Observable = InstanceType<typeof Observable>
-
-// const Tmp = () => ObservableMixin(class Observable {})
-// export type Observable = InstanceType<ReturnType<typeof Tmp>>
-
-// const Tmp = () => Observable.mixin(class {})
-// export type Observable = InstanceType<ReturnType<typeof Tmp>>
-
 export default Observable
 
-const a: Observable = new Observable()
-a.on()
-a.on('asdf', () => {})
-a.blah
-a.foo = 'asdf'
+// const a: Observable = new Observable()
+// a.on()
+// a.on('asdf', () => {})
+// a.blah
+// a.foo = 'asdf'
 
-const ObservableFoo = ObservableMixin(
-    class Foo {
-        foo = 123
-    }
-)
-type ObservableFoo = InstanceType<typeof ObservableFoo>
+// const ObservableFoo = ObservableMixin(
+//     class Foo {
+//         foo = 123
+//     }
+// )
+// type ObservableFoo = InstanceType<typeof ObservableFoo>
 
-const o: ObservableFoo = new ObservableFoo()
-o.on()
-o.on('asdf', () => {})
-o.blah
-o.foo = 'asdf'
+// const o: ObservableFoo = new ObservableFoo()
+// o.on()
+// o.on('asdf', () => {})
+// o.blah
+// o.foo = 'asdf'

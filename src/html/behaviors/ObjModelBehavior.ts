@@ -6,6 +6,13 @@ import {Events} from '../../core/Events'
 import Behavior from './Behavior'
 import {disposeObjectTree, setRandomColorPhongMaterial} from '../../utils/three'
 import {Object3D} from 'three'
+import BaseMaterialBehavior from './BaseMaterialBehavior'
+
+declare global {
+    interface Element {
+        behaviors: Map<string, unknown>
+    }
+}
 
 export default class ObjModelBehavior extends Behavior {
     static props = {
@@ -13,8 +20,8 @@ export default class ObjModelBehavior extends Behavior {
         mtl: String, // path to mtl file
     }
 
-    // TODO no any, should be constrained to Node
-    element: any
+    obj!: string
+    mtl!: string
 
     // TODO no any
     model: any
@@ -34,6 +41,7 @@ export default class ObjModelBehavior extends Behavior {
     async connectedCallback() {
         super.connectedCallback()
         this.model = null
+        // TODO augment THREE module so any is not needed
         this.objLoader = new (THREE as any).OBJLoader() // TODO types for loaders
         this.mtlLoader = new (THREE as any).MTLLoader(this.objLoader.manager)
         // Allow cross-origin images to be loaded.
@@ -71,10 +79,13 @@ export default class ObjModelBehavior extends Behavior {
             })
         } else {
             objLoader.load(obj, (model: any) => {
-                let materialBehavior = this.element.behaviors.get('basic-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('phong-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('standard-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('lambert-material')
+                let materialBehavior = this.element.behaviors.get('basic-material') as BaseMaterialBehavior
+                if (!materialBehavior)
+                    materialBehavior = this.element.behaviors.get('phong-material') as BaseMaterialBehavior
+                if (!materialBehavior)
+                    materialBehavior = this.element.behaviors.get('standard-material') as BaseMaterialBehavior
+                if (!materialBehavior)
+                    materialBehavior = this.element.behaviors.get('lambert-material') as BaseMaterialBehavior
 
                 if (materialBehavior) {
                     this.__materialIsFromMaterialBehavior = true

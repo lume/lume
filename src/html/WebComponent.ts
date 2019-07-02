@@ -1,7 +1,9 @@
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
 import jss from '../lib/jss'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
 import WithChildren from './WithChildren'
+import {Constructor} from '../core/Utility'
+import {PossibleCustomElement} from './WithUpdate'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -26,10 +28,9 @@ function classExtendsHTMLElement(constructor: any): boolean {
  * base class will extend from.
  *
  * @example
- * const WebComponent = WebComponentMixin(HTMLButtonElement)
- * class AwesomeButton extends WebComponent { ... }
+ * class AwesomeButton extends WebComponentMixin(HTMLButtonElement) { ... }
  */
-function WebComponentMixin<T extends Constructor>(Base: T) {
+function WebComponentMixin<T extends Constructor<HTMLElement>>(Base: T) {
     Base = Base || HTMLElement
 
     // XXX: In the future, possibly check for Element if other things besides
@@ -42,7 +43,9 @@ function WebComponentMixin<T extends Constructor>(Base: T) {
 
     // const Parent = WithChildren.mixin(DefaultBehaviors.mixin(Base))
 
-    return class WebComponent extends (WithChildren.mixin(DefaultBehaviors.mixin(Base)) as typeof Base) {
+    class WebComponent extends WithChildren.mixin(
+        DefaultBehaviors.mixin(Constructor<PossibleCustomElement & HTMLElement>(Base))
+    ) {
         constructor(...args: any[]) {
             super(...args)
 
@@ -106,8 +109,8 @@ function WebComponentMixin<T extends Constructor>(Base: T) {
 
         // TODO: when we make setAttribute accept non-strings, we need to move
         // logic from attributeChangedCallback
-        attributeChangedCallback(...args: any[]) {
-            if (super.attributeChangedCallback) super.attributeChangedCallback(...args)
+        attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
+            if (super.attributeChangedCallback) super.attributeChangedCallback(name, oldVal, newVal)
             this.__initialAttributeChange = true
         }
 
@@ -173,7 +176,10 @@ function WebComponentMixin<T extends Constructor>(Base: T) {
             return rule
         }
     }
+
+    return WebComponent as Constructor<WebComponent & InstanceType<T>> & typeof WebComponent & T
 }
 
 export const WebComponent = Mixin(WebComponentMixin, HTMLElement)
+export type WebComponent = InstanceType<typeof WebComponent>
 export default WebComponent

@@ -1,8 +1,207 @@
 // forked from https://www.npmjs.com/package/skatejs v5.2.4
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
-import {Mixin, getInheritedDescriptor, MixinFunction, Constructor} from 'lowclass'
+import {Mixin, getInheritedDescriptor} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
+import {Constructor} from '../core/Utility'
+
+// TODO This class is currently unused. We'll see about refactoring to make
+// _props private instead of protected, in which case this will be a protected
+// read-only interface (_props) to the private cache (__props).
+// const PropsReadonly = Class('PropsReadonly', ({ Private }) => ({
+//     constructor(withUpdateInstance) {
+//         Private(this).__instance = withUpdateInstance
+//
+//         for (const prop in withUpdateInstance.constructor.props) {
+//             Object.defineProperty(this, prop, {
+//                 get: function get() {
+//                     return WithUpdatePrivate(this).__props[prop]
+//                 },
+//             })
+//         }
+//
+//         // Object.freeze(this)
+//     },
+// }))
+
+// @prod-prune @dev-prune
+export class PossibleCustomElement {
+    connectedCallback?(): void
+    disconnectedCallback?(): void
+    adoptedCallback?(): void
+    attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
+}
+
+export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
+    class WithUpdate extends Constructor<PossibleCustomElement & HTMLElement>(Base) {
+        static _staticProps?: any
+
+        static get props() {
+            if (!this._staticProps) this._staticProps = {}
+            return this._staticProps
+        }
+
+        static set props(props) {
+            this._staticProps = props
+        }
+
+        private static _attributeToAttributeMap?: any
+        private static _attributeToPropertyMap?: any
+        private static _observedAttributes?: any
+
+        static get observedAttributes() {
+            // make sure to create a new instance of these static props per constructor.
+            if (!this._attributeToAttributeMap) this._attributeToAttributeMap = {}
+            if (!this._attributeToPropertyMap) this._attributeToPropertyMap = {}
+            if (!this._observedAttributes) this._observedAttributes = []
+
+            // We have to define props here because observedAttributes are retrieved
+            // only once when the custom element is defined. If we did this only in
+            // the constructor, then props would not link to attributes.
+            defineProps(this)
+            return unique(this._observedAttributes.concat((Base as any).observedAttributes || []))
+        }
+
+        private __prevProps?: any
+        private __modifiedProps?: any
+        protected _props?: any
+
+        constructor(...args: any[]) {
+            super(...args)
+
+            this.__prevProps = {}
+
+            // this._props extends from __existingPrototypeValues in case we
+            // overwrote a prototype property that had an existing value during
+            // definition of the props. This ensures we get the original
+            // prototype value when we read from a prop that we haven't set yet.
+            this._props = {
+                ...((this.constructor as any).__existingPrototypeValues || {}),
+                ...this.makeDefaultProps(),
+            }
+
+            // TODO (trusktr), I was thinking to make the protected _props
+            // readonly. Should it be private only (requires refactoring
+            // Sizeable and Transformable)? Or is convenient for subclasses to
+            // read from the cache? I'm leaning towards protected readonly.
+            // Protected(this)._props = new PropsReadonly(this)
+
+            this.__modifiedProps = {}
+        }
+
+        get props(this: any): any {
+            return pick(this, Object.keys(this.constructor.props))
+        }
+
+        set props(props: any) {
+            // const ctorProps = (this.constructor as any).props
+            Object.keys(props).forEach((k: string) => /*k in ctorProps && */ (this[k] = props[k]))
+        }
+
+        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+            const {_attributeToAttributeMap, _attributeToPropertyMap, _propsNormalized} = this.constructor as any
+
+            if (super.attributeChangedCallback) {
+                super.attributeChangedCallback(name, oldValue, newValue)
+            }
+
+            const propertyName = _attributeToPropertyMap[name]
+            if (propertyName) {
+                const propertyDefinition = _propsNormalized[propertyName]
+                if (propertyDefinition) {
+                    const {default: defaultValue, deserialize} = propertyDefinition
+                    const propertyValue = deserialize ? deserialize.call(this, newValue, propertyName) : newValue
+                    this._props[propertyName] = propertyValue == null ? defaultValue.call(this) : propertyValue
+                    this.__modifiedProps[propertyName] = true
+                    this.triggerUpdate()
+                }
+            }
+
+            const targetAttributeName = _attributeToAttributeMap[name]
+            if (targetAttributeName) {
+                if (newValue == null) {
+                    this.removeAttribute(targetAttributeName)
+                } else {
+                    this.setAttribute(targetAttributeName, newValue)
+                }
+            }
+        }
+
+        connectedCallback() {
+            if (super.connectedCallback) {
+                super.connectedCallback()
+            }
+            const propsList = (this.constructor as any)._propNames
+            for (let i = 0, l = propsList.length; i < l; i += 1) this.__modifiedProps[propsList[i]] = true
+            this.triggerUpdate()
+        }
+
+        shouldUpdate(_prevProps: any, _modifiedProps: any) {
+            return true
+        }
+
+        private __updating?: boolean
+
+        updating?(prevProps: any, modifiedProps: any): void
+        updated?(prevProps: any, modifiedProps: any): void
+
+        triggerUpdate() {
+            if (this.__updating) {
+                return
+            }
+            this.__updating = true
+            delay(() => {
+                const {__prevProps, __modifiedProps} = this
+                if (this.updating) {
+                    this.updating(__prevProps, __modifiedProps)
+                }
+                if (this.updated && this.shouldUpdate(__prevProps, __modifiedProps)) {
+                    this.updated(__prevProps, __modifiedProps)
+                }
+                this.__prevProps = this.props
+                const {_propNames} = this.constructor as any
+                for (let i = 0, l = _propNames.length; i < l; i += 1) this.__modifiedProps[_propNames[i]] = false
+                this.__updating = false
+            })
+        }
+
+        triggerUpdateForProp(prop: string) {
+            this.__modifiedProps[prop] = true
+            this.triggerUpdate()
+        }
+
+        triggerUpdateForProps(props: string[]) {
+            for (const prop of props) this.__modifiedProps[prop] = true
+
+            this.triggerUpdate()
+        }
+
+        triggerUpdateForAllProps() {
+            const {_propNames} = this.constructor as any
+            _propNames && this.triggerUpdateForProps(_propNames)
+        }
+
+        // subclasses should extend this method and assign default props values
+        // to the returned object.
+        makeDefaultProps() {
+            return {}
+        }
+    }
+
+    return WithUpdate as typeof WithUpdate & T
+}
+
+export const WithUpdate = Mixin(WithUpdateMixin)
+export type WithUpdate = InstanceType<typeof WithUpdate>
+export default WithUpdate
+
+// const w: WithUpdate = new WithUpdate()
+// w.innerHTML = 123
+// w.innerHTML = 'asdf'
+// w.asdfasdf = 123
+// w.setAttribute
+// w.setAttribute('asdfasf', 123123)
+// w.updating && w.updating()
 
 export function normalizeAttributeDefinition(name: any, prop: any) {
     const {attribute} = prop
@@ -180,234 +379,6 @@ export function prop(definition: any) {
 
     return func
 }
-
-// TODO This class is currently unused. We'll see about refactoring to make
-// _props private instead of protected, in which case this will be a protected
-// read-only interface (_props) to the private cache (__props).
-// const PropsReadonly = Class('PropsReadonly', ({ Private }) => ({
-//     constructor(withUpdateInstance) {
-//         Private(this).__instance = withUpdateInstance
-//
-//         for (const prop in withUpdateInstance.constructor.props) {
-//             Object.defineProperty(this, prop, {
-//                 get: function get() {
-//                     return WithUpdatePrivate(this).__props[prop]
-//                 },
-//             })
-//         }
-//
-//         // Object.freeze(this)
-//     },
-// }))
-
-// function MixinTest<T extends Constructor<HTMLElement>>(Base: T) {
-function MixinTest<T extends Constructor>(Base: T) {
-    return class Foo extends Base {
-        foobar(_f: boolean) {}
-    }
-}
-
-// function MixinTest(Base: Constructor<HTMLElement>) {
-//     return class Foo extends Base {}
-// }
-
-const f: MixinFunction = MixinTest
-f
-
-const F = MixinTest(HTMLElement)
-const t = new F()
-t.foobar('asdasdf')
-t.foobar(false)
-t.setAttribute('asdf', 12323)
-t.setAttribute('asdf', 'asdf')
-t.asdfasdfasdf()
-
-type PossibleCustomElement<T extends HTMLElement> = T & {
-    connectedCallback?(): void
-    disconnectedCallback?(): void
-    adoptedCallback?(): void
-    attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
-}
-
-type PossibleCustomElementConstructor<T extends HTMLElement> = Constructor<PossibleCustomElement<T>>
-
-export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
-    class WithUpdate extends ((Base as unknown) as PossibleCustomElementConstructor<HTMLElement>) {
-        static _staticProps?: any
-
-        static get props() {
-            if (!this._staticProps) this._staticProps = {}
-            return this._staticProps
-        }
-
-        static set props(props) {
-            this._staticProps = props
-        }
-
-        private static _attributeToAttributeMap?: any
-        private static _attributeToPropertyMap?: any
-        private static _observedAttributes?: any
-
-        static get observedAttributes() {
-            // make sure to create a new instance of these static props per constructor.
-            if (!this._attributeToAttributeMap) this._attributeToAttributeMap = {}
-            if (!this._attributeToPropertyMap) this._attributeToPropertyMap = {}
-            if (!this._observedAttributes) this._observedAttributes = []
-
-            // We have to define props here because observedAttributes are retrieved
-            // only once when the custom element is defined. If we did this only in
-            // the constructor, then props would not link to attributes.
-            defineProps(this)
-            return unique(this._observedAttributes.concat((Base as any).observedAttributes || []))
-        }
-
-        private __prevProps?: any
-        private __modifiedProps?: any
-        protected _props?: any
-
-        constructor(...args: any[]) {
-            super(...args)
-
-            this.__prevProps = {}
-
-            // this._props extends from __existingPrototypeValues in case we
-            // overwrote a prototype property that had an existing value during
-            // definition of the props. This ensures we get the original
-            // prototype value when we read from a prop that we haven't set yet.
-            this._props = {
-                ...((this.constructor as any).__existingPrototypeValues || {}),
-                ...this.makeDefaultProps(),
-            }
-
-            // TODO (trusktr), I was thinking to make the protected _props
-            // readonly. Should it be private only (requires refactoring
-            // Sizeable and Transformable)? Or is convenient for subclasses to
-            // read from the cache? I'm leaning towards protected readonly.
-            // Protected(this)._props = new PropsReadonly(this)
-
-            this.__modifiedProps = {}
-        }
-
-        get props(this: any): any {
-            return pick(this, Object.keys(this.constructor.props))
-        }
-
-        set props(props: any) {
-            // const ctorProps = (this.constructor as any).props
-            Object.keys(props).forEach((k: string) => /*k in ctorProps && */ (this[k] = props[k]))
-        }
-
-        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-            const {_attributeToAttributeMap, _attributeToPropertyMap, _propsNormalized} = this.constructor as any
-
-            if (super.attributeChangedCallback) {
-                super.attributeChangedCallback(name, oldValue, newValue)
-            }
-
-            const propertyName = _attributeToPropertyMap[name]
-            if (propertyName) {
-                const propertyDefinition = _propsNormalized[propertyName]
-                if (propertyDefinition) {
-                    const {default: defaultValue, deserialize} = propertyDefinition
-                    const propertyValue = deserialize ? deserialize.call(this, newValue, propertyName) : newValue
-                    this._props[propertyName] = propertyValue == null ? defaultValue.call(this) : propertyValue
-                    this.__modifiedProps[propertyName] = true
-                    this.triggerUpdate()
-                }
-            }
-
-            const targetAttributeName = _attributeToAttributeMap[name]
-            if (targetAttributeName) {
-                if (newValue == null) {
-                    this.removeAttribute(targetAttributeName)
-                } else {
-                    this.setAttribute(targetAttributeName, newValue)
-                }
-            }
-        }
-
-        connectedCallback() {
-            if (super.connectedCallback) {
-                super.connectedCallback()
-            }
-            const propsList = (this.constructor as any)._propNames
-            for (let i = 0, l = propsList.length; i < l; i += 1) this.__modifiedProps[propsList[i]] = true
-            this.triggerUpdate()
-        }
-
-        shouldUpdate(_prevProps: any, _modifiedProps: any) {
-            return true
-        }
-
-        private __updating?: boolean
-
-        updating?(prevProps: any, modifiedProps: any): void
-        updated?(prevProps: any, modifiedProps: any): void
-
-        triggerUpdate() {
-            if (this.__updating) {
-                return
-            }
-            this.__updating = true
-            delay(() => {
-                const {__prevProps, __modifiedProps} = this
-                if (this.updating) {
-                    this.updating(__prevProps, __modifiedProps)
-                }
-                if (this.updated && this.shouldUpdate(__prevProps, __modifiedProps)) {
-                    this.updated(__prevProps, __modifiedProps)
-                }
-                this.__prevProps = this.props
-                const {_propNames} = this.constructor as any
-                for (let i = 0, l = _propNames.length; i < l; i += 1) this.__modifiedProps[_propNames[i]] = false
-                this.__updating = false
-            })
-        }
-
-        triggerUpdateForProp(prop: string) {
-            this.__modifiedProps[prop] = true
-            this.triggerUpdate()
-        }
-
-        triggerUpdateForProps(props: string[]) {
-            for (const prop of props) this.__modifiedProps[prop] = true
-
-            this.triggerUpdate()
-        }
-
-        triggerUpdateForAllProps() {
-            const {_propNames} = this.constructor as any
-            _propNames && this.triggerUpdateForProps(_propNames)
-        }
-
-        // subclasses should extend this method and assign default props values
-        // to the returned object.
-        makeDefaultProps() {
-            return {}
-        }
-    }
-
-    return WithUpdate as typeof WithUpdate & T
-    // return WithUpdate as typeof WithUpdate & PossibleCustomElementConstructor<HTMLElement> & T
-    // return WithUpdate as typeof WithUpdate & PossibleCustomElementConstructor<HTMLElement>
-}
-
-export const WithUpdate = Mixin(WithUpdateMixin)
-
-export type WithUpdate = InstanceType<typeof WithUpdate>
-
-// const Tmp = () => WithUpdateMixin(HTMLElement)
-// export type WithUpdate = InstanceType<ReturnType<typeof Tmp>>
-
-export default WithUpdate
-
-const w: WithUpdate = new WithUpdate()
-w.innerHTML = 123
-w.innerHTML = 'asdf'
-w.asdfasdf = 123
-w.setAttribute
-w.setAttribute('asdfasf', 123123)
-w.updating && w.updating()
 
 const {parse, stringify} = JSON
 const attribute = Object.freeze({source: true})

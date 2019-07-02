@@ -1,4 +1,4 @@
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
 import {observeChildren} from '../core/Utility'
 
 interface CustomElement extends HTMLElement {
@@ -35,7 +35,7 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
 }
 
 function WithChildrenMixin<T extends Constructor<CustomElement>>(Base: T) {
-    return class WithChildren extends Base {
+    class WithChildren extends Base {
         constructor(...args: any[]) {
             super(...args)
 
@@ -66,8 +66,8 @@ function WithChildrenMixin<T extends Constructor<CustomElement>>(Base: T) {
             this.__handleChildrenWhenConnected = true
         }
 
-        childConnectedCallback(_child: Element): void {}
-        childDisconnectedCallback(_child: Element): void {}
+        childConnectedCallback?(_child: Element): void
+        childDisconnectedCallback?(_child: Element): void
 
         private __handleChildrenWhenConnected = false
         private __observer: MutationObserver | null = null
@@ -116,11 +116,14 @@ function WithChildrenMixin<T extends Constructor<CustomElement>>(Base: T) {
             })
         }
     }
-}
 
-// TODO fix as any
-export default Mixin(WithChildrenMixin as any)
+    return WithChildren as Constructor<WithChildren & InstanceType<T>> & typeof WithChildren
+}
 
 function isNotPossiblyCustom(element: Element) {
     return !element.localName.includes('-')
 }
+
+export const WithChildren = Mixin(WithChildrenMixin)
+export type WithChildren = InstanceType<typeof WithChildren>
+export default WithChildren

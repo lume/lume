@@ -15,6 +15,7 @@ declare module 'army-knife/forLength' {
 
 declare module 'autolayout'
 declare module 'james-bond'
+declare module 'jss'
 
 declare module 'element-behaviors' {
     class ElementBehaviors {

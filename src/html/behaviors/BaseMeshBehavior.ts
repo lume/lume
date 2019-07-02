@@ -16,8 +16,7 @@ export default class BaseMeshBehavior extends Behavior {
         return Mesh
     }
 
-    // TODO no any, should be constrained to Mesh
-    element: any
+    element!: Mesh
 
     get glLoaded() {
         return this._glLoaded
@@ -70,7 +69,7 @@ export default class BaseMeshBehavior extends Behavior {
     }
 
     getMeshComponent(name: string) {
-        return this.element.three[name]
+        return (this.element.three as any)[name]
     }
 
     protected _glLoaded = false
@@ -99,13 +98,14 @@ export default class BaseMeshBehavior extends Behavior {
     // private __initialSize: null,
 
     private __disposeMeshComponent(element: Mesh, name: 'geometry' | 'material') {
-        if (element.three[name]) element.three[name].dispose()
+        // TODO handle material arrays
+        if (element.three[name]) (element.three[name] as Geometry | Material).dispose()
     }
 
     private __setMeshComponent(element: Mesh, name: 'geometry' | 'material', newComponent: Geometry | Material) {
         this.__disposeMeshComponent(element, name)
 
-        element.three[name] = newComponent
+        element.three[name] = newComponent as any
     }
 
     private __setDefaultComponent(element: Mesh, name: 'geometry' | 'material') {

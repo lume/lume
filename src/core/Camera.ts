@@ -31,6 +31,15 @@ export default class PerspectiveCamera extends Node {
         active: {...props.boolean, default: false},
     }
 
+    fov!: number
+    aspect!: number
+    near!: number
+    far!: number
+    zoom!: number
+    active!: boolean
+
+    three!: ThreePerspectiveCamera
+
     updated(oldProps: any, modifiedProps: any) {
         super.updated(oldProps, modifiedProps)
 
@@ -73,7 +82,7 @@ export default class PerspectiveCamera extends Node {
 
     // TODO replace with unmountedCallback #150
     protected _deinit() {
-        super._deinit()
+        super._deinit && super._deinit()
 
         // TODO we want to call this in the upcoming
         // unmountedCallback, but for now it's harmless but
@@ -86,44 +95,48 @@ export default class PerspectiveCamera extends Node {
 
     // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
     private __attributeRemoved(attr: string) {
+        const three = this.three
+
         if (attr == 'fov') {
-            this.three.fov = 75
-            this.three.updateProjectionMatrix()
+            three.fov = 75
+            three.updateProjectionMatrix()
         } else if (attr == 'aspect') {
             this.__startAutoAspect()
-            this.three.aspect = this.__getDefaultAspect()
-            this.three.updateProjectionMatrix()
+            three.aspect = this.__getDefaultAspect()
+            three.updateProjectionMatrix()
         } else if (attr == 'near') {
-            this.three.near = 0.1
-            this.three.updateProjectionMatrix()
+            three.near = 0.1
+            three.updateProjectionMatrix()
         } else if (attr == 'far') {
-            this.three.far = 1000
-            this.three.updateProjectionMatrix()
+            three.far = 1000
+            three.updateProjectionMatrix()
         } else if (attr == 'zoom') {
-            this.three.zoom = 1
-            this.three.updateProjectionMatrix()
+            three.zoom = 1
+            three.updateProjectionMatrix()
         } else if (attr == 'active') {
             this.__setSceneCamera('unset')
         }
     }
 
     private __attributeAddedOrChanged(attr: string, newVal: string) {
+        const three = this.three
+
         if (attr == 'fov') {
-            this.three.fov = parseFloat(newVal)
-            this.three.updateProjectionMatrix()
+            three.fov = parseFloat(newVal)
+            three.updateProjectionMatrix()
         } else if (attr == 'aspect') {
             this.__stopAutoAspect()
-            this.three.aspect = parseFloat(newVal)
-            this.three.updateProjectionMatrix()
+            three.aspect = parseFloat(newVal)
+            three.updateProjectionMatrix()
         } else if (attr == 'near') {
-            this.three.near = parseFloat(newVal)
-            this.three.updateProjectionMatrix()
+            three.near = parseFloat(newVal)
+            three.updateProjectionMatrix()
         } else if (attr == 'far') {
-            this.three.far = parseFloat(newVal)
-            this.three.updateProjectionMatrix()
+            three.far = parseFloat(newVal)
+            three.updateProjectionMatrix()
         } else if (attr == 'zoom') {
-            this.three.zoom = parseFloat(newVal)
-            this.three.updateProjectionMatrix()
+            three.zoom = parseFloat(newVal)
+            three.updateProjectionMatrix()
         } else if (attr == 'active') {
             this.__setSceneCamera()
         }
@@ -145,7 +158,7 @@ export default class PerspectiveCamera extends Node {
     }
 
     private __updateAspectOnSceneResize({x, y}: XYZValuesObject<number>) {
-        this.three.aspect = x / y
+        ;(this.three as ThreePerspectiveCamera).aspect = x / y
     }
 
     private __getDefaultAspect() {

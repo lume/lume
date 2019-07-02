@@ -2,15 +2,11 @@
 
 import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
-import {observeChildren, hasShadowDomV1} from '../core/Utility'
+import {observeChildren, hasShadowDomV1, Constructor} from '../core/Utility'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
-
-var DeclarativeBase: _DeclarativeBase
-
-type _DeclarativeBase = ReturnType<typeof makeDeclarativeBase>
 
 initDeclarativeBase()
 
@@ -22,9 +18,9 @@ function makeDeclarativeBase() {
     /**
      * @implements {EventListener}
      */
-    return class DeclarativeBase extends WebComponent {
+    return class DeclarativeBase extends Constructor<WebComponent & HTMLElement>(WebComponent) {
         static defaultElementName: string = 'ERROR: Subclass needs to set defaultElementName'
-        static _definedElementName?: string
+        private static _definedElementName?: string
 
         static define(name?: string) {
             name = name || this.defaultElementName
@@ -53,7 +49,8 @@ function makeDeclarativeBase() {
 
             observers.set(root, observer)
 
-            const {children} = this
+            // Arrray.from isn't needed for older Safari which can't iterate on HTMLCollection
+            const children = Array.from(this.children)
 
             for (const child of children) {
                 // debugger
@@ -74,6 +71,10 @@ function makeDeclarativeBase() {
 
             return root
         }
+
+        // from Scene
+        // TODO PossiblyScene type for this mixin?
+        isScene!: boolean
 
         childConnectedCallback(child: HTMLElement) {
             console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4')
@@ -139,24 +140,38 @@ function makeDeclarativeBase() {
             }
         }
 
+        // TODO use this to render only to WebGL without HTMLElements.
         get hasHtmlApi() {
             if (this instanceof HTMLElement) return true
             return false
         }
 
         // Traverses a tree while considering ShadowDOM disribution.
-        traverseComposed(isShadowChild: boolean) {
+        //
+        // This isn't used for anything at the moment. It was going to be used
+        // to traverse the composed tree and render using our own WebGL
+        // renderer, but at the moment we're using Three.js nodes and composing
+        // them in the structured of the composed tree, then Three.js handles
+        // the traversal for rendering the WebGL.
+        traverseComposed(isShadowChild?: boolean) {
             console.log(isShadowChild ? 'distributedNode:' : 'node:', this)
 
             // in the future, the user will be use a pure-JS API with no HTML
             // DOM API.
             const hasHtmlApi = this.hasHtmlApi
 
-            const {children} = this
+            const children = this.children
+
             for (let l = children.length, i = 0; i < l; i += 1) {
+                const child = children[i]
+
+                // @prod-prune @dev-prune
+                if (!(child instanceof DeclarativeBase)) continue
+
                 // skip nodes that are possiblyDistributed, i.e. they have a parent
                 // that has a ShadowRoot.
-                if (!hasHtmlApi || !children[i].__isPossiblyDistributedToShadowRoot) children[i].traverseComposed()
+                if ((!hasHtmlApi || !child.__isPossiblyDistributedToShadowRoot) && child.traverseComposed)
+                    child.traverseComposed()
             }
 
             const distributedChildren = this.__distributedChildren
@@ -208,7 +223,7 @@ function makeDeclarativeBase() {
             } else {
                 return [
                     ...(this.__distributedChildren || []), // TODO perhaps use slot.assignedNodes instead?
-                    ...this.children,
+                    ...Array.from(this.children),
                 ]
             }
         }
@@ -311,6 +326,9 @@ function makeDeclarativeBase() {
                 this.__handleDistributedChildren(slot)
             }
         }
+
+        childComposedCallback?(child: Element, connectionType: ConnectionType): void
+        childUncomposedCallback?(child: Element, connectionType: ConnectionType): void
 
         private __childComposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
             if (child.__isComposed) return
@@ -444,5 +462,10 @@ function makeDeclarativeBase() {
     }
 }
 
+type _DeclarativeBase = ReturnType<typeof makeDeclarativeBase>
+
+export var DeclarativeBase: _DeclarativeBase
+export type DeclarativeBase = InstanceType<_DeclarativeBase>
+
 // "as default" style default export is required here. Try it the othe way to see how it breaks.
-export {DeclarativeBase as default, DeclarativeBase}
+export {DeclarativeBase as default}

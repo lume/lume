@@ -1,8 +1,10 @@
 import {observe, unobserve} from 'james-bond'
-import Mixin from 'lowclass/Mixin'
+import {Mixin} from 'lowclass'
+import {Constructor} from '../../core/Utility'
+import {PossibleCustomElement} from '../WithUpdate'
 
-function ForwardPropsMixin<T extends Constructor>(Base: T) {
-    return class ForwardProps extends Base {
+function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
+    class ForwardProps extends Constructor<PossibleCustomElement>(Base) {
         constructor(...args: any[]) {
             super(...args)
             this.__propChangedCallback = this.__propChangedCallback.bind(this)
@@ -28,7 +30,7 @@ function ForwardPropsMixin<T extends Constructor>(Base: T) {
         }
 
         private __propChangedCallback(propName: string, value: any) {
-            this[propName] = value
+            ;(this as any)[propName] = value
         }
 
         private __observeProps() {
@@ -62,7 +64,10 @@ function ForwardPropsMixin<T extends Constructor>(Base: T) {
             }
         }
     }
+
+    return ForwardProps as Constructor<ForwardProps & InstanceType<T>> & typeof ForwardProps & T
 }
 
 export const ForwardProps = Mixin(ForwardPropsMixin)
+export type ForwardProps = InstanceType<typeof ForwardProps>
 export default ForwardProps
