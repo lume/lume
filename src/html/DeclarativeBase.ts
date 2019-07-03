@@ -8,10 +8,11 @@ export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
 
-// using isHTMLNode instead of instanceof HTMLNode to avoid runtime reference,
+// using isNode instead of instanceof HTMLNode to avoid runtime reference,
 // thus prevent circular dependency between this module and HTMLNode
-function isHTMLNode(n: any): n is HTMLNode {
-    return n.isHTMLNode
+// TODO consolidate with one in ImperativeBase
+function isNode(n: any): n is HTMLNode {
+    return n.isNode
 }
 
 initDeclarativeBase()
@@ -80,16 +81,16 @@ function makeDeclarativeBase() {
 
         // from Scene
         // TODO PossiblyScene type for this mixin?
-        isScene!: boolean
+        isScene = false
 
         // from HTMLNode
         // TODO PossiblyHTMLNode type for this mixin?
-        isHTMLNode!: boolean
+        isNode = false
 
         childConnectedCallback(child: HTMLElement) {
             console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4')
             // mirror the DOM connections in the imperative API's virtual scene graph.
-            if (isHTMLNode(child)) {
+            if (isNode(child)) {
                 console.log(
                     ' ----------------------- childConnectedCallback',
                     this.constructor.name,
@@ -126,7 +127,7 @@ function makeDeclarativeBase() {
 
         childDisconnectedCallback(child: HTMLElement) {
             // mirror the connection in the imperative API's virtual scene graph.
-            if (isHTMLNode(child)) {
+            if (isNode(child)) {
                 if (this.__shadowRoot) {
                     child.__isPossiblyDistributedToShadowRoot = false
                 } else {
