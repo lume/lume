@@ -12,7 +12,6 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
 import {props} from './props'
-import './Camera' // cause a circular dependency with Camera to enforce the SceneProtected gateway below
 import {documentBody, Constructor} from './Utility'
 
 // TODO
@@ -56,8 +55,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
         three!: ThreeScene
 
-        // used in DeclarativeBase ATM, which is badly organized
-        // TODO reorganize
         isScene = true
 
         // Used by the `scene` getter in ImperativeBase

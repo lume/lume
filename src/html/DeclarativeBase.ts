@@ -447,6 +447,8 @@ function makeDeclarativeBase() {
                 removed: [],
             }
 
+            // let last: Node
+
             for (let i = 0, l = previousNodes.length; i < l; i += 1) {
                 const oldNode = previousNodes[i]
                 const newIndex = newNodes.indexOf(oldNode)
@@ -460,6 +462,11 @@ function makeDeclarativeBase() {
                 // otherwise the node wasn't added or removed.
                 else {
                     newNodes.splice(i, 1)
+
+                    // TODO test version faster than slice:
+                    // last = newNodes[newNodes.length - 1]
+                    // newNodes[i] = last
+                    // newNodes.pop()
                 }
             }
 

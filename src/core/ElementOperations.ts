@@ -1,5 +1,3 @@
-import './Camera'
-
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
     if (typeof CSSStyleDeclaration !== 'undefined') {

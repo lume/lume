@@ -1,18 +1,17 @@
-///// <reference path="../lib/three/global.d.ts" />
-// import * as THREE from 'three'
+import {Object3D, Vector3} from 'three'
 import {Mixin} from 'lowclass'
-import {Object3D} from 'three'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
-import Node from './Node'
-import Scene from './Scene'
 import Motor from './Motor'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
 import {Constructor} from './Utility'
-import {TreeNode} from './TreeNode'
-import {XYZValuesObject} from './XYZValues'
+
+type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
+type TreeNode = import('./TreeNode').TreeNode
+type Node = import('./Node').Node
+type Scene = import('./Scene').Scene
 type ConnectionType = import('../html/DeclarativeBase').ConnectionType
 
 window.addEventListener('error', event => {
@@ -25,6 +24,24 @@ window.addEventListener('error', event => {
         `)
     }
 })
+
+// The following isScene and isNode functions are used in order to avoid using
+// instanceof, which would mean that we would need to import Node and Scene as
+// references, which would cause a circular depdency problem. The problem exists
+// only when compiling to CommonJS modules, where the initImperativeBase trick
+// won't work because functions don't hoiste in CommonJS like they do with
+// ES-Module-compliant builds like with Webpack. We can look into the "internal
+// module" pattern to solve the issue if we wish to switch back to using
+// instanceof:
+// https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de
+
+function isScene(s: ImperativeBase): s is Scene {
+    return s.isScene
+}
+
+function isNode(n: ImperativeBase): n is Node {
+    return n.isNode
+}
 
 // TODO replace with Partial<WebComponent> instead of re-writing properties manually
 // @prod-prune @dev-prune
@@ -62,6 +79,15 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         // all my demos at trusktr.io).
         imperativeCounterpart = this
 
+        // TODO re-organize variables like isScene and isNode, so they come from
+        // one place. f.e. isScene is currently also used in DeclarativeBase.
+
+        // for Scene instances
+        isScene = false
+
+        // for Node instances
+        isNode = false
+
         // constructor(options = {}) {
         constructor(...args: any[]) {
             // super(options)
@@ -88,7 +114,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
             if (!this.__three) {
                 this.__three = this._makeThreeObject3d()
-                ;(this.__three as any).pivot = new THREE.Vector3()
+                ;(this.__three as any).pivot = new Vector3()
             }
 
             return this.__three
@@ -99,7 +125,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
             if (!this.__threeCSS) {
                 this.__threeCSS = this._makeThreeCSSObject()
-                ;(this.__threeCSS as any).pivot = new THREE.Vector3()
+                ;(this.__threeCSS as any).pivot = new Vector3()
             }
 
             return this.__threeCSS!
@@ -107,7 +133,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
         possiblyLoadThree(child: ImperativeBase): void {
             // children can be non-lib DOM nodes (f.e. div, h1, etc)
-            if (child instanceof Node) {
+            if (isNode(child)) {
                 console.log(
                     '     >> LOAD THREE',
                     child._renderParent.constructor.name,
@@ -124,7 +150,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // TODO, this check is redundant because call site already checks
             // for ImperativeBase? Or do we not want to run this on Scene
             // instances?
-            if (child instanceof Node) {
+            if (isNode(child)) {
                 console.log('     >> UNLOAD THREE', '<No Parent>', child.constructor.name, child.id)
                 child._triggerUnloadGL()
                 child._triggerUnloadCSS()
@@ -271,7 +297,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             // if the parent node already has a ref to the scene, use that.
             if (parent._scene) {
                 this._scene = parent._scene
-            } else if (parent instanceof Scene) {
+            } else if (isScene(parent)) {
+                // we could use instanceof here, but that causes a circular dependency
                 this._scene = parent
             }
             // otherwise call the scene getter on the parent, which triggers
@@ -290,13 +317,13 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         // @ts-ignore: strict function types normally prevent differing subclass method signatures.
         add(
             // prettier-ignore
-            childNode: TreeNode,
+            childNode: ImperativeBase,
             __updateDOMConnection = true
         ): this {
             if (!(childNode instanceof ImperativeBase)) return this
 
             // We cannot add Scenes to Nodes, for now.
-            if (childNode instanceof Scene) {
+            if (isScene(childNode)) {
                 throw new TypeError(`
                     A Scene cannot be added to another Node or Scene (at
                     least for now). To place a Scene in a Node, just mount
@@ -319,8 +346,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             return this
         }
 
-        removeNode(childNode: TreeNode, /* private */ __updateDOMConnection = true): this {
-            if (!(childNode instanceof Node)) return this
+        removeNode(childNode: ImperativeBase, /* private */ __updateDOMConnection = true): this {
+            if (!isNode(childNode)) return this
 
             super.removeNode(childNode)
 

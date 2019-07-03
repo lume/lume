@@ -3,10 +3,10 @@ import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
 import {props, mapPropTo} from './props'
+import {Constructor} from './Utility'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'
-import {Constructor} from './Utility'
 
 initImperativeBase()
 
@@ -22,6 +22,8 @@ function NodeMixin<T extends Constructor>(Base: T) {
         }
 
         visible!: boolean
+
+        isNode = true
 
         /**
          * @constructor

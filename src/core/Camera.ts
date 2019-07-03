@@ -1,5 +1,4 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
-// import Motor from './Motor'
 import {props} from './props'
 import Node from './Node'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
@@ -12,7 +11,7 @@ export default class PerspectiveCamera extends Node {
 
     // TODO remove attributeChangedCallback, replace with updated based on these props
     static props = {
-        ...((Node as any).props || {}),
+        ...(Node.props || {}),
         fov: {...props.number, default: 75},
         aspect: {
             ...props.number,
