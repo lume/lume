@@ -317,21 +317,21 @@ export default class AutoLayoutNode extends Node {
     }
 
     private _updateNode(node: Node, subView: any, x: number, y: number, widths: any, heights: any) {
-        ;(node as any).sizeMode = [
+        node.sizeMode = [
             // PORTED
             // @ts-ignore: TODO, key is not defined from anywhere, but it was working???
             widths && widths[key] === true ? 'proportional' : 'literal',
             // @ts-ignore: TODO, key is not defined from anywhere, but it was working???
             heights && heights[key] === true ? 'proportional' : 'literal',
         ]
-        ;(node as any).size = [
+        node.size = [
             // PORTED
             // @ts-ignore: TODO, key is not defined from anywhere, but it was working???
             widths && widths[key] === true ? 1 : subView.width,
             // @ts-ignore: TODO, key is not defined from anywhere, but it was working???
             heights && heights[key] === true ? 1 : subView.height,
         ]
-        ;(node as any).position = [
+        node.position = [
             // PORTED
             x + subView.left,
             y + subView.top,

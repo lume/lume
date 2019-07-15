@@ -1,5 +1,5 @@
-import {Mixin} from 'lowclass'
-import {TextureLoader, Material} from 'three'
+import {Mixin, MixinResult} from 'lowclass'
+import {TextureLoader, MeshPhongMaterial} from 'three'
 import WithUpdate from '../WithUpdate'
 import {Constructor} from '../../core/Utility'
 import Behavior from './Behavior'
@@ -29,19 +29,22 @@ function MaterialTextureMixin<T extends Constructor<Behavior>>(Base: T) {
                 // texture should be white
 
                 const texture = new TextureLoader().load(this.texture, () => this.element.needsUpdate())
-                    // as any needed because we don't know what material it will
-                    // be, and Material base class doesn't have `map`., but most
-                    // other materrials do.
+
+                    // "as MeshPhongMaterial" needed because we don't know what
+                    // material it will be, and Material base class doesn't have
+                    // `map`., but most other materrials do. So this shows
+                    // intent, and we assume all materials are subclasses of
+                    // Material, and have `.map`, at least for now.
                     // TODO handle material arrays
-                ;((this.element.three.material as Material) as any).map = texture
+                ;(this.element.three.material as MeshPhongMaterial).map = texture
                 this.element.needsUpdate()
             }
         }
     }
 
-    return MaterialTexture as Constructor<MaterialTexture & InstanceType<T>> & typeof MaterialTexture & T
+    return MaterialTexture as MixinResult<typeof MaterialTexture, T>
 }
 
 export const MaterialTexture = Mixin(MaterialTextureMixin)
-export type MaterialTexture = InstanceType<typeof MaterialTexture>
+export interface MaterialTexture extends InstanceType<typeof MaterialTexture> {}
 export default MaterialTexture

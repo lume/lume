@@ -115,7 +115,13 @@ function makeDeclarativeBase() {
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
                 if (!this.__slots) this.__slots = []
                 this.__slots.push(child)
-                child.addEventListener('slotchange', this as any) // any needed here to allow handleEvent to be private (upstream type needs update)
+                child.addEventListener(
+                    'slotchange',
+                    // @ts-ignore: allow handleEvent to be protected (upstream
+                    // type needs update, the addEventListener method expects it
+                    // to be public)
+                    this
+                )
                 // TODO do we need __handleDistributedChildren for initial
                 // slotted nodes? Or does `slotchange` conver that? Also, does
                 // `slotchange` fire for distributed slots? Or do we need to
@@ -142,7 +148,13 @@ function makeDeclarativeBase() {
                     this.__childUncomposedCallback(child, 'actual')
                 }
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-                child.removeEventListener('slotchange', this as any)
+                child.removeEventListener(
+                    'slotchange',
+                    // @ts-ignore: allow handleEvent to be protected (upstream
+                    // type needs update, the addEventListener method expects it
+                    // to be public)
+                    this
+                )
 
                 this.__slots!.splice(this.__slots!.indexOf(child), 1)
                 if (!this.__slots!.length) this.__slots = null
@@ -298,7 +310,13 @@ function makeDeclarativeBase() {
                 )
                 this.__childComposedCallback(child, 'root')
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-                child.addEventListener('slotchange', this as any)
+                child.addEventListener(
+                    'slotchange',
+                    // @ts-ignore: allow handleEvent to be protected (upstream
+                    // type needs update, the addEventListener method expects it
+                    // to be public)
+                    this
+                )
                 this.__handleDistributedChildren(child /*, true*/)
             }
         }
@@ -318,7 +336,13 @@ function makeDeclarativeBase() {
                 )
                 this.__childUncomposedCallback(child, 'root')
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-                child.removeEventListener('slotchange', this as any)
+                child.removeEventListener(
+                    'slotchange',
+                    // @ts-ignore: allow handleEvent to be protected (upstream
+                    // type needs update, the addEventListener method expects it
+                    // to be public)
+                    this
+                )
                 this.__handleDistributedChildren(child)
                 this.__previousSlotAssignedNodes.delete(child)
             }
@@ -481,7 +505,7 @@ function makeDeclarativeBase() {
 type _DeclarativeBase = ReturnType<typeof makeDeclarativeBase>
 
 export var DeclarativeBase: _DeclarativeBase
-export type DeclarativeBase = InstanceType<_DeclarativeBase>
+export interface DeclarativeBase extends InstanceType<_DeclarativeBase> {}
 
 // "as default" style default export is required here. Try it the othe way to see how it breaks.
 export {DeclarativeBase as default}

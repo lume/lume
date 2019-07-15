@@ -39,9 +39,6 @@ export default abstract class XYZValues<T = any> extends Observable {
     }
 
     protected abstract get default(): XYZValuesObject<T>
-    // {
-    //     return {x: undefined as any, y: undefined as any, z: undefined as any}
-    // }
 
     private get _default(): XYZValuesObject<T> {
         return this.default || defaultValues
@@ -49,7 +46,6 @@ export default abstract class XYZValues<T = any> extends Observable {
 
     private __from(x?: XYZValuesParameters<T>, y?: T, z?: T): this {
         if (x === undefined && y === undefined && z === undefined) {
-            // if (this.constructor.name === 'XYZNumberValues') console.log(' ######################## from default!')
             this.fromDefault()
         } else if (Array.isArray(x)) {
             this.fromArray(x)
@@ -58,18 +54,6 @@ export default abstract class XYZValues<T = any> extends Observable {
         } else if (typeof x === 'string' && y === undefined && z === undefined) {
             this.fromString(x)
         } else this.set(x as any, y as any, z as any)
-
-        // if (x !== undefined && y !== undefined && z !== undefined) {
-        //     this.set(x as any, y, z)
-        // } else if (Array.isArray(x)) {
-        //     this.fromArray(x)
-        // } else if (typeof x === 'object' && x !== null && x !== this) {
-        //     this.fromObject(x)
-        // } else if (typeof x === 'string' && y !== undefined && z !== undefined) {
-        //     this.fromString(x)
-        // } else {
-        //     this.fromDefault()
-        // }
 
         return this
     }

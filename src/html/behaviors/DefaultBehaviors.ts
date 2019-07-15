@@ -1,4 +1,4 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import {Constructor} from '../../core/Utility'
 import {PossibleCustomElement} from '../WithUpdate'
 
@@ -98,9 +98,9 @@ function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
         }
     }
 
-    return DefaultBehaviors as Constructor<DefaultBehaviors & InstanceType<T>> & typeof DefaultBehaviors & T
+    return DefaultBehaviors as MixinResult<typeof DefaultBehaviors, T>
 }
 
 export const DefaultBehaviors = Mixin(DefaultBehaviorsMixin)
-export type DefaultBehaviors = InstanceType<typeof DefaultBehaviors>
+export interface DefaultBehaviors extends InstanceType<typeof DefaultBehaviors> {}
 export default DefaultBehaviors

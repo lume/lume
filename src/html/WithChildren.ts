@@ -1,13 +1,6 @@
-import {Mixin} from 'lowclass'
-import {observeChildren} from '../core/Utility'
-
-interface CustomElement extends HTMLElement {
-    // new (...args: any): CustomElement
-    connectedCallback?(): void
-    disconnectedCallback?(): void
-    adoptedCallback?(): void
-    attributeChangedCallback?(attrName: string, oldVal: string | null, newVal: string | null): void
-}
+import {Mixin, MixinResult} from 'lowclass'
+import {observeChildren, Constructor} from '../core/Utility'
+import {PossibleCustomElement, PossibleCustomElementConstructor} from './WithUpdate'
 
 // polyfill for Node.isConnected based on Ryosuke Niwa's
 // https://github.com/w3c/webcomponents/issues/789#issuecomment-459858405
@@ -34,8 +27,8 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
     })
 }
 
-function WithChildrenMixin<T extends Constructor<CustomElement>>(Base: T) {
-    class WithChildren extends Base {
+function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
+    class WithChildren extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base) {
         constructor(...args: any[]) {
             super(...args)
 
@@ -117,7 +110,7 @@ function WithChildrenMixin<T extends Constructor<CustomElement>>(Base: T) {
         }
     }
 
-    return WithChildren as Constructor<WithChildren & InstanceType<T>> & typeof WithChildren
+    return WithChildren as MixinResult<typeof WithChildren, T>
 }
 
 function isNotPossiblyCustom(element: Element) {
@@ -125,5 +118,5 @@ function isNotPossiblyCustom(element: Element) {
 }
 
 export const WithChildren = Mixin(WithChildrenMixin)
-export type WithChildren = InstanceType<typeof WithChildren>
+export interface WithChildren extends InstanceType<typeof WithChildren> {}
 export default WithChildren

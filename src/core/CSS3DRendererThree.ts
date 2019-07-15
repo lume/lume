@@ -1,9 +1,31 @@
 import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
-type Scene = typeof import('./Scene').default
+import {Scene} from './Scene'
 
 const sceneStates = new WeakMap()
 
-class CSS3DRendererThree {
+let instance: CSS3DRendererThree | null = null
+let isCreatingSingleton = false
+
+export class CSS3DRendererThree {
+    static singleton() {
+        if (instance) return instance
+        else {
+            try {
+                isCreatingSingleton = true
+                return (instance = new CSS3DRendererThree())
+            } catch (e) {
+                throw e
+            } finally {
+                isCreatingSingleton = false
+            }
+        }
+    }
+
+    private constructor() {
+        if (!isCreatingSingleton)
+            throw new Error('class is a singleton, use the static .singleton() method to get an instance')
+    }
+
     // TODO rename
     initialize(scene: Scene) {
         let sceneState = sceneStates.get(scene)
@@ -22,16 +44,26 @@ class CSS3DRendererThree {
         this.updateResolution(scene)
 
         sceneState.sizeChangeHandler = () => this.updateResolution(scene)
-        ;(scene as any).on('sizechange', sceneState.sizeChangeHandler)
-        ;(scene as any)._cssLayer.appendChild(renderer.domElement)
+        scene.on('sizechange', sceneState.sizeChangeHandler)
+
+        // @ts-ignore: access protected property
+        scene._cssLayer
+            //
+            .appendChild(renderer.domElement)
     }
 
     uninitialize(scene: Scene) {
         const sceneState = sceneStates.get(scene)
 
         if (!sceneState) return
-        ;(scene as any).off('sizechange', sceneState.sizeChangeHandler)
-        ;(scene as any)._cssLayer.removeChild(sceneState.renderer.domElement)
+
+        scene.off('sizechange', sceneState.sizeChangeHandler)
+
+        // @ts-ignore: access protected property
+        scene._cssLayer
+            //
+            .removeChild(sceneState.renderer.domElement)
+
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null
 
@@ -41,14 +73,17 @@ class CSS3DRendererThree {
     drawScene(scene: Scene) {
         const {renderer} = sceneStates.get(scene)
 
-        renderer.render((scene as any).threeCSS, (scene as any).threeCamera)
+        renderer.render(scene.threeCSS, scene.threeCamera)
     }
 
-    updateResolution(scene: any /*TODO no any*/) {
+    updateResolution(scene: Scene) {
         const state = sceneStates.get(scene)
 
+        // @ts-ignore: call protected method
         scene._updateCameraAspect()
+        // @ts-ignore: call protected method
         scene._updateCameraPerspective()
+        // @ts-ignore: call protected method
         scene._updateCameraProjection()
 
         const {x, y} = scene.calculatedSize
@@ -62,13 +97,6 @@ class CSS3DRendererThree {
     }
 }
 
-let instance: CSS3DRendererThree | null = null
-
-export function getCSS3DRendererThree(_scene: Scene) {
-    if (instance) return instance
-    else return (instance = new CSS3DRendererThree())
-}
-
-export function destroyCSS3DRendererThree() {
+export function releaseCSS3DRendererThree() {
     instance = null
 }

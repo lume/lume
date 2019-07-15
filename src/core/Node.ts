@@ -1,4 +1,4 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
@@ -11,14 +11,15 @@ import '../html/behaviors/ObjModelBehavior'
 initImperativeBase()
 
 function NodeMixin<T extends Constructor>(Base: T) {
-    const Parent = ImperativeBase.mixin(Constructor(Base))
+    // NOTE for now, we assume Node is mixed with its HTMLInterface.
+    const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
     class Node extends Parent {
         static defaultElementName = 'i-node'
 
         static props = {
             ...(Parent.props || {}),
-            visible: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
+            visible: {...mapPropTo(props.boolean, (self: ImperativeBase) => self.three), default: true},
         }
 
         visible!: boolean
@@ -118,14 +119,13 @@ function NodeMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    // return Node as typeof Node & T
-    return (Node as unknown) as Constructor<Node & InstanceType<T>> & typeof Node & T
+    return Node as MixinResult<typeof Node, T>
 }
 
 const _Node = Mixin(NodeMixin)
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 export const Node = _Node.mixin(HTMLInterface)
-export type Node = InstanceType<typeof Node>
+export interface Node extends InstanceType<typeof Node> {}
 export default Node
 
 // const n: Node = new Node(1, 2, 3)

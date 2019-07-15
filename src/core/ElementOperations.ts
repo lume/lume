@@ -1,3 +1,5 @@
+import ImperativeBase from './ImperativeBase'
+
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
     if (typeof CSSStyleDeclaration !== 'undefined') {
@@ -19,9 +21,9 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * DOM efficiently. Currently doesn't do much yet...
  */
 export default class ElementOperations {
-    constructor(private __element: HTMLElement) {}
+    constructor(private __element: ImperativeBase) {}
 
-    connectChildElement(child: HTMLElement) {
+    connectChildElement(child: ImperativeBase) {
         if (
             // When using the imperative API, this statement is
             // true, so the DOM elements need to be connected.
@@ -45,7 +47,7 @@ export default class ElementOperations {
         }
     }
 
-    disconnectChildElement(child: HTMLElement) {
+    disconnectChildElement(child: ImperativeBase) {
         // If DeclarativeBase#remove was called first, we don't need to
         // call this again.
         if (!child.parentNode) return
@@ -72,18 +74,18 @@ export default class ElementOperations {
         return this.__shouldRender
     }
 
-    private __add(child: HTMLElement) {
+    private __add(child: ImperativeBase) {
         this.__element.appendChild(child)
     }
 
-    private __remove(child: HTMLElement) {
+    private __remove(child: ImperativeBase) {
         // This conditional check is needed incase the element was already
         // removed from the HTML-API side.
         if (child.parentNode === this.__element) this.__element.removeChild(child)
     }
 
     private __applySize() {
-        const {x, y} = (this.__element as any).calculatedSize // TODO TS ImperativeBase typing
+        const {x, y} = this.__element.calculatedSize
 
         this.__applyStyle('width', `${x}px`)
         this.__applyStyle('height', `${y}px`)
@@ -92,7 +94,7 @@ export default class ElementOperations {
     }
 
     private __applyOpacity() {
-        this.__applyStyle('opacity', (this.__element as any).opacity) // TODO TS ImperativeBase typing
+        this.__applyStyle('opacity', this.__element.opacity)
     }
 
     /**

@@ -1,6 +1,8 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import {Constructor} from './Utility'
 import {Nothing} from '../html/utils'
+
+// TODO strongly typed events. Combine with stuff in Events.ts
 
 // XXX Could it need to be `T extends Constructor<{}>` instead of `T extends typeof Object`?
 // const ObservableMixin = <T extends typeof Object>(Base: T) => {
@@ -75,11 +77,11 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
         private __eventMap: Map<string, Array<[Function, any]>> | null = null
     }
 
-    return Observable as typeof Observable & T
+    return Observable as MixinResult<typeof Observable, T>
 }
 
 export const Observable = Mixin(ObservableMixin)
-export type Observable = InstanceType<typeof Observable>
+export interface Observable extends InstanceType<typeof Observable> {}
 export default Observable
 
 // const a: Observable = new Observable()

@@ -6,13 +6,37 @@ import {
     PCFSoftShadowMap,
     PCFShadowMap,
 } from 'three'
-type Scene = typeof import('./Scene').default
+import {Scene} from './Scene'
 
 const sceneStates = new WeakMap()
 
+let instance: WebGLRendererThree | null = null
+let isCreatingSingleton = false
+
+export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
+
 // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
-class WebGLRendererThree {
+export class WebGLRendererThree {
+    static singleton() {
+        if (instance) return instance
+        else {
+            try {
+                isCreatingSingleton = true
+                return (instance = new WebGLRendererThree())
+            } catch (e) {
+                throw e
+            } finally {
+                isCreatingSingleton = false
+            }
+        }
+    }
+
+    private constructor() {
+        if (!isCreatingSingleton)
+            throw new Error('class is a singleton, use the static .singleton() method to get an instance')
+    }
+
     initialize(scene: Scene) {
         let sceneState = sceneStates.get(scene)
 
@@ -43,24 +67,29 @@ class WebGLRendererThree {
         renderer.setPixelRatio(window.devicePixelRatio)
         renderer.shadowMap.enabled = true
         renderer.shadowMap.type = PCFSoftShadowMap // default PCFShadowMap
-        ;(window as any).renderer = renderer
 
         this.updateResolution(scene)
 
         sceneState.sizeChangeHandler = () => this.updateResolution(scene)
-        ;(scene as any).on('sizechange', sceneState.sizeChangeHandler)
+        scene.on('sizechange', sceneState.sizeChangeHandler)
 
         // TODO? Maybe the html/scene.js element should be responsible for
         // making this, so that DOM logic is encapsulated there?
-        ;(scene as any)._glLayer.appendChild(renderer.domElement)
+        // @ts-ignore: access protected member
+        scene._glLayer
+            //
+            .appendChild(renderer.domElement)
     }
 
     uninitialize(scene: Scene) {
         const sceneState = sceneStates.get(scene)
 
         if (!sceneState) return
-        ;(scene as any).off('sizechange', sceneState.sizeChangeHandler)
-        ;(scene as any)._glLayer.removeChild(sceneState.renderer.domElement)
+        scene.off('sizechange', sceneState.sizeChangeHandler)
+        // @ts-ignore: access protected member
+        scene._glLayer
+            //
+            .removeChild(sceneState.renderer.domElement)
         sceneState.renderer.dispose()
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null
@@ -71,7 +100,7 @@ class WebGLRendererThree {
     drawScene(scene: Scene) {
         const {renderer} = sceneStates.get(scene)
 
-        renderer.render((scene as any).three, (scene as any).threeCamera)
+        renderer.render(scene.three, scene.threeCamera)
     }
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means
@@ -81,13 +110,16 @@ class WebGLRendererThree {
     // the loop. #66
     updateResolution(scene: Scene) {
         const state = sceneStates.get(scene)
-        ;(scene as any)._updateCameraAspect()
-        ;(scene as any)._updateCameraPerspective()
-        ;(scene as any)._updateCameraProjection()
+        // @ts-ignore: access protected member
+        scene._updateCameraAspect()
+        // @ts-ignore: access protected member
+        scene._updateCameraPerspective()
+        // @ts-ignore: access protected member
+        scene._updateCameraProjection()
 
-        const {x, y} = (scene as any).calculatedSize
+        const {x, y} = scene.calculatedSize
         state.renderer.setSize(x, y)
-        ;(scene as any).needsUpdate()
+        scene.needsUpdate()
     }
 
     setClearColor(scene: Scene, color: any, opacity: number) {
@@ -98,9 +130,9 @@ class WebGLRendererThree {
         sceneStates.get(scene).renderer.setClearAlpha(opacity)
     }
 
-    setShadowMapType(scene: Scene, type: 'pcf' | 'pcfsoft' | 'basic') {
+    setShadowMapType(scene: Scene, type: ShadowMapTypeString) {
         // TODO shouldn't need a cast here. Bug on TypeScript: https://github.com/microsoft/TypeScript/issues/32054
-        type = type.toLowerCase() as 'pcf' | 'pcfsoft' | 'basic'
+        type = type.toLowerCase() as ShadowMapTypeString
 
         if (type == 'pcf') {
             sceneStates.get(scene).renderer.shadowMap.type = PCFShadowMap
@@ -165,19 +197,12 @@ class WebGLRendererThree {
         button.style.setProperty('border-color', 'black')
 
         button.setAttribute('slot', 'misc')
-        ;(scene as any).appendChild(button)
+        scene.appendChild(button)
 
         return button
     }
 }
 
-let instance: WebGLRendererThree | null = null
-
-export function getWebGLRendererThree(_scene: Scene) {
-    if (instance) return instance
-    else return (instance = new WebGLRendererThree())
-}
-
-export function destroyWebGLRendererThree() {
+export function releaseWebGLRendererThree() {
     instance = null
 }

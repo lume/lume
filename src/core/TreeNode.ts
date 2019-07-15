@@ -1,4 +1,4 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import WithUpdate from '../html/WithUpdate'
 import {Constructor} from './Utility'
 // import TreeNode from './TreeNode'
@@ -136,13 +136,11 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    // return TreeNode as typeof TreeNode & Omit<typeof WithUpdate, 'mixin'> & T
-    // return TreeNode as typeof TreeNode & typeof WithUpdate & T
-    return TreeNode as typeof TreeNode & T
+    return TreeNode as MixinResult<typeof TreeNode, T>
 }
 
 export const TreeNode = Mixin(TreeNodeMixin)
-export type TreeNode = InstanceType<typeof TreeNode>
+export interface TreeNode extends InstanceType<typeof TreeNode> {}
 export default TreeNode
 
 // const t: TreeNode = new TreeNode()

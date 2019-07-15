@@ -1,11 +1,11 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import jss from '../lib/jss'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
 import WithChildren from './WithChildren'
 import {Constructor} from '../core/Utility'
 import {PossibleCustomElement} from './WithUpdate'
 
-// Very very stupid hack needed for Safari in order for us to be able to extend
+// Very very bad hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
 // https://github.com/google/traceur-compiler/issues/1709
 if (typeof (window as any).HTMLElement != 'function') {
@@ -43,9 +43,7 @@ function WebComponentMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
     // const Parent = WithChildren.mixin(DefaultBehaviors.mixin(Base))
 
-    class WebComponent extends WithChildren.mixin(
-        DefaultBehaviors.mixin(Constructor<PossibleCustomElement & HTMLElement>(Base))
-    ) {
+    class WebComponent extends WithChildren.mixin(DefaultBehaviors.mixin(Constructor<PossibleCustomElement>(Base))) {
         constructor(...args: any[]) {
             super(...args)
 
@@ -177,9 +175,9 @@ function WebComponentMixin<T extends Constructor<HTMLElement>>(Base: T) {
         }
     }
 
-    return WebComponent as Constructor<WebComponent & InstanceType<T>> & typeof WebComponent & T
+    return WebComponent as MixinResult<typeof WebComponent, T>
 }
 
 export const WebComponent = Mixin(WebComponentMixin, HTMLElement)
-export type WebComponent = InstanceType<typeof WebComponent>
+export interface WebComponent extends InstanceType<typeof WebComponent> {}
 export default WebComponent

@@ -1,7 +1,7 @@
 // forked from https://www.npmjs.com/package/skatejs v5.2.4
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
-import {Mixin, getInheritedDescriptor} from 'lowclass'
+import {Mixin, getInheritedDescriptor, MixinResult} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
 import {Constructor} from '../core/Utility'
 
@@ -24,16 +24,21 @@ import {Constructor} from '../core/Utility'
 //     },
 // }))
 
-// @prod-prune @dev-prune
-export class PossibleCustomElement {
+export interface PossibleCustomElement extends HTMLElement {
     connectedCallback?(): void
     disconnectedCallback?(): void
     adoptedCallback?(): void
     attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
 }
 
+export interface PossibleCustomElementConstructor extends Constructor<HTMLElement> {
+    observedAttributes?: string[]
+}
+
 export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
-    class WithUpdate extends Constructor<PossibleCustomElement & HTMLElement>(Base) {
+    const Parent = Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base)
+
+    class WithUpdate extends Parent {
         static _staticProps?: any
 
         static get props() {
@@ -49,7 +54,7 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
         private static _attributeToPropertyMap?: any
         private static _observedAttributes?: any
 
-        static get observedAttributes() {
+        static get observedAttributes(): string[] {
             // make sure to create a new instance of these static props per constructor.
             if (!this._attributeToAttributeMap) this._attributeToAttributeMap = {}
             if (!this._attributeToPropertyMap) this._attributeToPropertyMap = {}
@@ -59,7 +64,7 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             // only once when the custom element is defined. If we did this only in
             // the constructor, then props would not link to attributes.
             defineProps(this)
-            return unique(this._observedAttributes.concat((Base as any).observedAttributes || []))
+            return unique(this._observedAttributes.concat(Parent.observedAttributes || []))
         }
 
         private __prevProps?: any
@@ -188,11 +193,11 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
         }
     }
 
-    return WithUpdate as typeof WithUpdate & T
+    return WithUpdate as MixinResult<typeof WithUpdate, T>
 }
 
 export const WithUpdate = Mixin(WithUpdateMixin)
-export type WithUpdate = InstanceType<typeof WithUpdate>
+export interface WithUpdate extends InstanceType<typeof WithUpdate> {}
 export default WithUpdate
 
 // const w: WithUpdate = new WithUpdate()

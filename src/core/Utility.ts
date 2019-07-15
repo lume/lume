@@ -102,8 +102,8 @@ function toRadians(degrees: number): number {
     return (degrees / 180) * Math.PI
 }
 
-function Constructor<T = object>(Ctor: Constructor<any>) {
-    return (Ctor as unknown) as Constructor<T>
+function Constructor<T = object, Static = {}>(Ctor: Constructor<any>) {
+    return (Ctor as unknown) as Constructor<T> & Static
 }
 
 export {

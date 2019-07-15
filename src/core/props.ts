@@ -35,7 +35,7 @@ function createXYZPropType<T extends XYZValuesConstructor, I extends InstanceTyp
             return this[propName].fromString(val)
         },
         serialize(this: any, _val: I, propName: string) {
-            this[propName].toString()
+            return this[propName].toString()
         },
         ...override,
     }
@@ -82,7 +82,7 @@ export const props = {
 type PropDefinition<T = any> = {
     // attribute?: {source?: boolean; target?: boolean}
     coerce?<This>(this: This, val: any, propName: string): T
-    default?: <This>(this: This, propName: string) => T | T
+    default?: T | (<This>(this: This, propName: string) => T)
     deserialize?<This>(this: This, val: string, propName: string): T
     serialize?<This>(this: This, val: any, propName: string): string
 }
@@ -93,17 +93,17 @@ export const mapPropTo = (prop: PropDefinition, getTarget: (ctx: any) => object)
     ...prop,
     coerce: prop.coerce
         ? function coerce(this: any, val: any, key: string): any {
-              const target = getTarget.call(this, this)
+              const target: any = getTarget.call(this, this)
               const coerced = prop.coerce!.call(this, val, key)
-              if (target) (target as any)[key] = coerced
+              if (target) target[key] = coerced
               return coerced
           }
         : undefined,
     deserialize: prop.deserialize
         ? function deserialize(this: any, val: string, key: string): any {
-              const target = getTarget.call(this, this)
+              const target: any = getTarget.call(this, this)
               const deserialized = prop.deserialize!.call(this, val, key)
-              if (target) (target as any)[key] = deserialized
+              if (target) target[key] = deserialized
               return deserialized
           }
         : undefined,

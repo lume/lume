@@ -1,11 +1,11 @@
 import 'element-behaviors'
-import '../../lib/three/make-global'
-import 'three/examples/js/loaders/OBJLoader'
-import 'three/examples/js/loaders/MTLLoader'
+import {OBJLoader} from '../../lib/three/OBJLoader'
+import {MTLLoader} from '../../lib/three/MTLLoader'
 import {Events} from '../../core/Events'
 import Behavior from './Behavior'
-import {disposeObjectTree, setRandomColorPhongMaterial} from '../../utils/three'
+import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three'
 import {Object3D} from 'three'
+// import * as THREE from 'three' // this import needed for OBJLoader and MTLLoader
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 
 declare global {
@@ -41,9 +41,9 @@ export default class ObjModelBehavior extends Behavior {
     async connectedCallback() {
         super.connectedCallback()
         this.model = null
-        // TODO augment THREE module so any is not needed
-        this.objLoader = new (THREE as any).OBJLoader() // TODO types for loaders
-        this.mtlLoader = new (THREE as any).MTLLoader(this.objLoader.manager)
+        // TODO TS augment the THREE module so 'as any' is not needed
+        this.objLoader = new OBJLoader() // TODO types for loaders
+        this.mtlLoader = new MTLLoader(this.objLoader.manager)
         // Allow cross-origin images to be loaded.
         this.mtlLoader.crossOrigin = ''
 
@@ -95,9 +95,9 @@ export default class ObjModelBehavior extends Behavior {
                     // behavior, and other behaviors can use the geometry or
                     // material features.
                     model.traverse((child: Object3D) => {
-                        if ('material' in child) {
+                        if (isRenderItem(child)) {
                             console.log(materialBehavior.getMeshComponent('material'))
-                            ;(child as any).material = materialBehavior.getMeshComponent('material')
+                            child.material = materialBehavior.getMeshComponent('material')
                         }
                     })
                 } else {

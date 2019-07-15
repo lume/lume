@@ -3,16 +3,20 @@ import Behavior from './Behavior'
 import {Events} from '../../core/Events'
 import Mesh from '../../core/Mesh'
 
+export type MeshComponentType = 'geometry' | 'material'
+
 /**
  * Base class for Geometry and Material behaviors, not intended for direct use.
  *
  * Subclasses should implement:
  * _createComponent() - return a geometry or material instance.
  */
-export default class BaseMeshBehavior extends Behavior {
+export default abstract class BaseMeshBehavior extends Behavior {
+    abstract type: MeshComponentType
+
     // use a getter because Mesh is undefined at module evaluation time due
     // to a circular dependency.
-    static get requiredElementType() {
+    get requiredElementType() {
         return Mesh
     }
 
@@ -55,8 +59,8 @@ export default class BaseMeshBehavior extends Behavior {
         // if the behavior is being disconnected, but the element still has GL
         // mode (.three), then leave the element with a default mesh GL
         // component to be rendered.
-        if (this.element.three) this.__setDefaultComponent(this.element, (this.constructor as any).type)
-        else this.__disposeMeshComponent(this.element, (this.constructor as any).type)
+        if (this.element.three) this.__setDefaultComponent(this.element, this.type)
+        else this.__disposeMeshComponent(this.element, this.type)
         this.element.needsUpdate()
     }
 
@@ -64,12 +68,12 @@ export default class BaseMeshBehavior extends Behavior {
         // TODO We might have to defer so that calculatedSize is already calculated
         // (note, resetMeshComponent is only called when the size prop has
         // changed)
-        this.__setMeshComponent(this.element, (this.constructor as any).type, this._createComponent())
+        this.__setMeshComponent(this.element, this.type, this._createComponent())
         this.element.needsUpdate()
     }
 
-    getMeshComponent(name: string) {
-        return (this.element.three as any)[name]
+    getMeshComponent<T>(name: 'geometry' | 'material'): T {
+        return (this.element.three[name] as unknown) as T
     }
 
     protected _glLoaded = false
@@ -105,7 +109,10 @@ export default class BaseMeshBehavior extends Behavior {
     private __setMeshComponent(element: Mesh, name: 'geometry' | 'material', newComponent: Geometry | Material) {
         this.__disposeMeshComponent(element, name)
 
-        element.three[name] = newComponent as any
+        // the following type casting is not type safe, but shows what we intend
+        // (we can't type this sort of JavaScript in TypeScript)
+        element.three[name as 'geometry'] = newComponent as Geometry
+        // or element.three[name as 'material'] = newComponent as Material
     }
 
     private __setDefaultComponent(element: Mesh, name: 'geometry' | 'material') {

@@ -7,19 +7,17 @@ import Node from '../../core/Node'
  * Base class for all behaviors
  *
  */
-export default class Behavior extends WithUpdate.mixin(ForwardProps) {
-    // use a getter because Mesh is undefined at module evaluation time due
-    // to a circular dependency.
-    // TODO TS this is `any` ATM, We need to access it as
-    // `this.constructor`, for inheritance.
-    static get requiredElementType() {
-        return Node
-    }
-
+export default abstract class Behavior extends WithUpdate.mixin(ForwardProps) {
     constructor(public element: Node) {
         super()
 
         this.__checkElementIsLibraryElement(element)
+    }
+
+    // use a getter because Mesh is undefined at module evaluation time due
+    // to a circular dependency.
+    get requiredElementType() {
+        return Node
     }
 
     // This could be useful, but at the moment it is only used by SkateJS in
@@ -92,8 +90,7 @@ export default class Behavior extends WithUpdate.mixin(ForwardProps) {
 
     // TODO add a test to make sure this check works
     private async __checkElementIsLibraryElement(element: Element) {
-        // TODO TS `this.constructor` type.
-        const BaseClass = (this.constructor as any).requiredElementType
+        const BaseClass = this.requiredElementType
 
         if (element.nodeName.includes('-')) {
             this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())

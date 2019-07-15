@@ -1,4 +1,4 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import Observable from './Observable'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
@@ -19,14 +19,14 @@ type XYZPropertyFunction = (
 
 type SinglePropertyFunction = (value: number, time: number) => number | false
 
+export type SizeProp = 'sizeMode' | 'size'
+
 // working variables (used synchronously only, to avoid making new variables in
 // repeatedly-called methods)
 let propFunctionTask: RenderTask | undefined | null
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
-// function SizeableMixin<T extends Constructor>(Base: T) {
 function SizeableMixin<T extends Constructor>(Base: T) {
-    // TODO how to do it without casting?
     const Parent = Observable.mixin(TreeNode.mixin(Constructor(Base)))
 
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
@@ -76,7 +76,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          */
         set sizeMode(newValue) {
             if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
-            this._setPropertyXYZ('sizeMode', newValue)
+            this._setPropertyXYZ<Sizeable, SizeProp>('sizeMode', newValue)
         }
         get sizeMode() {
             return this._props.sizeMode
@@ -111,7 +111,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis size to apply.
          */
         set size(newValue) {
-            this._setPropertyXYZ('size', newValue)
+            this._setPropertyXYZ<Sizeable, SizeProp>('size', newValue)
         }
         get size() {
             return this._props.size
@@ -146,8 +146,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          * }
          */
         set properties(properties) {
-            // TODO remove any
-            ;(this as any).props = properties
+            this.props = properties
         }
         get properties() {
             return this.props
@@ -229,23 +228,22 @@ function SizeableMixin<T extends Constructor>(Base: T) {
             }
         }
 
-        // TODO remove _Class arg
-        protected _setPropertyXYZ(name: string, newValue: any) {
-            if (typeof newValue === 'function') {
-                this.__handleXYZPropertyFunction(newValue, name)
+        protected _setPropertyXYZ<T, K extends keyof T>(name: K, newValue: T[K]) {
+            if (isXYZPropertyFunction(newValue)) {
+                this.__handleXYZPropertyFunction<T, K>(newValue, name)
             } else {
-                if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
+                if (!this.__settingValueFromPropFunction) this.__removePropertyFunction<T, K>(name)
                 else this.__settingValueFromPropFunction = false
 
                 this._props[name] = newValue
             }
         }
 
-        protected _setPropertySingle(name: string, newValue: any) {
-            if (typeof newValue === 'function') {
-                this.__handleSinglePropertyFunction(newValue, name)
+        protected _setPropertySingle<T, K extends keyof T>(name: K, newValue: T[K]) {
+            if (isSinglePropertyFunction(newValue)) {
+                this.__handleSinglePropertyFunction<T, K>(newValue, name)
             } else {
-                if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
+                if (!this.__settingValueFromPropFunction) this.__removePropertyFunction<T, K>(name)
                 else this.__settingValueFromPropFunction = false
 
                 this._props[name] = newValue
@@ -256,16 +254,16 @@ function SizeableMixin<T extends Constructor>(Base: T) {
         private __propertyFunctions: Map<string, RenderTask> | null = null
         private __settingValueFromPropFunction = false
 
-        private __handleXYZPropertyFunction(fn: XYZPropertyFunction, name: string) {
+        private __handleXYZPropertyFunction<T, K extends keyof T>(fn: XYZPropertyFunction, name: K) {
             if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
-            if ((propFunctionTask = this.__propertyFunctions.get(name))) {
+            if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
                 Motor.removeRenderTask(propFunctionTask)
                 propFunctionTask = null
             }
 
             this.__propertyFunctions.set(
-                name,
+                name as string,
                 Motor.addRenderTask(time => {
                     const result = fn(
                         this._properties[name].x,
@@ -275,7 +273,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
                     )
 
                     if (result === false) {
-                        this.__propertyFunctions!.delete(name)
+                        this.__propertyFunctions!.delete(name as string)
                         return false
                     }
 
@@ -285,54 +283,64 @@ function SizeableMixin<T extends Constructor>(Base: T) {
                     // to disable the prop function).
                     this.__settingValueFromPropFunction = true
 
-                    //
-                    ;(this as any)[name] = result
+                    this[name as SizeProp] = result
                 })
             )
         }
 
-        private __handleSinglePropertyFunction(fn: SinglePropertyFunction, name: string) {
+        private __handleSinglePropertyFunction<T, K extends keyof T>(fn: SinglePropertyFunction, name: K) {
             if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
-            if ((propFunctionTask = this.__propertyFunctions.get(name))) {
+            if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
                 Motor.removeRenderTask(propFunctionTask)
                 propFunctionTask = null
             }
 
             this.__propertyFunctions.set(
-                name,
+                name as string,
                 Motor.addRenderTask(time => {
                     const result = fn(this._properties[name], time)
 
                     if (result === false) {
-                        this.__propertyFunctions!.delete(name)
+                        this.__propertyFunctions!.delete(name as string)
                         return false
                     }
 
                     this.__settingValueFromPropFunction = true
 
-                    //
-                    ;(this as any)[name] = result
+                    this[name as SizeProp] = result
                 })
             )
         }
 
         // remove property function (render task) if any.
-        private __removePropertyFunction(name: string) {
-            if (this.__propertyFunctions && (propFunctionTask = this.__propertyFunctions.get(name))) {
+        private __removePropertyFunction<T, K extends keyof T>(name: K) {
+            if (this.__propertyFunctions && (propFunctionTask = this.__propertyFunctions.get(name as string))) {
                 Motor.removeRenderTask(propFunctionTask)
-                this.__propertyFunctions.delete(name)
+                this.__propertyFunctions.delete(name as string)
                 if (!this.__propertyFunctions.size) this.__propertyFunctions = null
                 propFunctionTask = null
             }
         }
     }
 
-    return Sizeable as typeof Sizeable & T
+    return Sizeable as MixinResult<typeof Sizeable, T>
+}
+
+// the following type guards are used above just to satisfy the type system,
+// though the actual runtime check does not guarantee that the functions are of
+// the expected shape.
+
+function isXYZPropertyFunction(f: any): f is XYZPropertyFunction {
+    return typeof f === 'function'
+}
+
+function isSinglePropertyFunction(f: any): f is SinglePropertyFunction {
+    return typeof f === 'function'
 }
 
 export const Sizeable = Mixin(SizeableMixin)
-export type Sizeable = InstanceType<typeof Sizeable>
+export interface Sizeable extends InstanceType<typeof Sizeable> {}
 export default Sizeable
 
 // const s: Sizeable = new Sizeable()

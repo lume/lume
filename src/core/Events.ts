@@ -38,11 +38,11 @@ export const Events = makeEnumFromClassProperties(EventTypes)
 // loop on the keys of a dummy class instance in order to create an enum-like
 // object.
 export function makeEnumFromClassProperties<T>(Class: Constructor<T>) {
-    const Enum = {} as {[k in keyof T]: k}
+    const Enum = {} as any
 
     for (const key in new (Class as any)()) {
-        ;(Enum as any)[key] = key
+        Enum[key] = key
     }
 
-    return Object.freeze(Enum)
+    return Object.freeze(Enum as {[k in keyof T]: k})
 }

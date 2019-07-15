@@ -1,8 +1,8 @@
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import {Object3D} from 'three'
 import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
-import Sizeable from './Sizeable'
+import Sizeable, {SizeProp} from './Sizeable'
 import {props} from './props'
 import {toRadians, Constructor} from './Utility'
 
@@ -46,6 +46,8 @@ const alignAdjustment = [0, 0, 0]
 const mountPointAdjustment = [0, 0, 0]
 const appliedPosition = [0, 0, 0]
 
+type TransformProp = SizeProp | 'position' | 'rotation' | 'scale' | 'origin' | 'align' | 'mountPoint' | 'opacity'
+
 function TransformableMixin<T extends Constructor>(Base: T) {
     const Parent = Sizeable.mixin(Constructor(Base))
 
@@ -72,7 +74,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis position to apply.
          */
         set position(newValue: any) {
-            this._setPropertyXYZ('position', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('position', newValue)
         }
         get position(): any {
             return this._props.position
@@ -85,7 +87,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
         set rotation(newValue: any) {
-            this._setPropertyXYZ('rotation', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('rotation', newValue)
         }
         get rotation(): any {
             return this._props.rotation
@@ -98,7 +100,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
         set scale(newValue: any) {
-            this._setPropertyXYZ('scale', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('scale', newValue)
         }
         get scale(): any {
             return this._props.scale
@@ -111,7 +113,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis origin to apply.
          */
         set origin(newValue: any) {
-            this._setPropertyXYZ('origin', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('origin', newValue)
         }
         get origin(): any {
             return this._props.origin
@@ -124,7 +126,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
         set opacity(newValue: any) {
-            this._setPropertySingle('opacity', newValue)
+            this._setPropertySingle<Transformable, TransformProp>('opacity', newValue)
         }
         get opacity(): any {
             return this._props.opacity
@@ -140,7 +142,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis align to apply.
          */
         set align(newValue: any) {
-            this._setPropertyXYZ('align', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('align', newValue)
         }
         get align(): any {
             return this._props.align
@@ -155,7 +157,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
         set mountPoint(newValue: any) {
-            this._setPropertyXYZ('mountPoint', newValue)
+            this._setPropertyXYZ<Transformable, TransformProp>('mountPoint', newValue)
         }
         get mountPoint(): any {
             return this._props.mountPoint
@@ -352,11 +354,11 @@ function TransformableMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    return Transformable as typeof Transformable & T
+    return Transformable as MixinResult<typeof Transformable, T>
 }
 
 export const Transformable = Mixin(TransformableMixin)
-export type Transformable = InstanceType<typeof Transformable>
+export interface Transformable extends InstanceType<typeof Transformable> {}
 export default Transformable
 
 // const s: Transformable = new Transformable()

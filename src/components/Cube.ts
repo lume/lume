@@ -51,9 +51,7 @@ export default class Cube extends Node {
             size: [this.size, this.size],
         })
 
-        // The `as any` casst is needed because TS doesn't understand the mixin
-        // class type. GitHub issue: https://github.com/microsoft/TypeScript/issues/32080
-        this.sides.push(side as any)
+        this.sides.push(side)
 
         rotator.add(side)
 
@@ -84,7 +82,7 @@ export default class Cube extends Node {
     setContent(content: Node[]) {
         forLength(6, index => {
             //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
-            ;(this.sides[index] as any).add(content[index])
+            this.sides[index].add(content[index])
         })
         return this
     }

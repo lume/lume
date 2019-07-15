@@ -1,7 +1,7 @@
 // TODO import and use animation-loop
 
-type ImperativeBase = typeof import('./ImperativeBase').default
-type Scene = typeof import('./Scene').default
+import {ImperativeBase} from './ImperativeBase'
+import {Scene} from './Scene'
 
 export type RenderTask = (timestamp: number) => false | void
 
@@ -64,7 +64,7 @@ class _Motor {
     }
 
     // TODO better typing for fn
-    setFrameRequester(requester: (fn: Function) => any) {
+    setFrameRequester(requester: (fn: FrameRequestCallback) => any) {
         this.__requestFrame = requester
     }
 
@@ -140,37 +140,51 @@ class _Motor {
 
         for (let i = 0, l = this.__nodesToUpdate.length; i < l; i += 1) {
             const node = this.__nodesToUpdate[i]
-            ;(node as any)._render(timestamp)
+
+            // @ts-ignore: call protected method
+            node._render(
+                //
+                timestamp
+            )
 
             // if there is no ancestor of the current node that should be
             // rendered, then the current node is a root node of a subtree
             // that needs to be updated
-            if (!(node as any)._getNearestAncestorThatShouldBeRendered() && !this.__treesToUpdate.includes(node)) {
+            if (
+                // @ts-ignore: call protected method
+                !node._getNearestAncestorThatShouldBeRendered() &&
+                !this.__treesToUpdate.includes(node)
+            ) {
                 this.__treesToUpdate.push(node)
             }
 
             // keep track of which scenes are modified so we can render webgl
             // only for those scenes.
-            if (!this.__modifiedScenes.includes((node as any).scene)) this.__modifiedScenes.push((node as any).scene)
+            if (!this.__modifiedScenes.includes(node.scene)) this.__modifiedScenes.push(node.scene)
         }
 
         // Update world matrices of the subtrees.
         const treesToUpdate = this.__treesToUpdate
         for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
-            ;(treesToUpdate[i] as any)._calculateWorldMatricesInSubtree()
+            treesToUpdate[i]
+                // @ts-ignore: call protected method
+                ._calculateWorldMatricesInSubtree()
         }
         treesToUpdate.length = 0
 
         // render webgl of modified scenes.
         const modifiedScenes = this.__modifiedScenes
         for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
-            ;(modifiedScenes[i] as any).drawScene()
+            modifiedScenes[i].drawScene()
         }
         modifiedScenes.length = 0
 
         const nodesToUpdate = this.__nodesToUpdate
         for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
-            ;(nodesToUpdate[i] as any)._willBeRendered = false
+            // prettier-ignore
+            nodesToUpdate[i]
+                // @ts-ignore: access protected property
+                ._willBeRendered = false
         }
         nodesToUpdate.length = 0
     }

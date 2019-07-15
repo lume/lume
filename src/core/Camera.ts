@@ -1,8 +1,8 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
 import {props} from './props'
 import Node from './Node'
+import {Scene} from './Scene'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
-type Scene = typeof import('./Scene').default
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
@@ -16,12 +16,10 @@ export default class PerspectiveCamera extends Node {
         aspect: {
             ...props.number,
             default(): any {
-                return (this as any)._getDefaultAspect()
+                return this._getDefaultAspect()
             },
             deserialize(val: any) {
-                val == null
-                    ? (this as any).constructor.props.aspect.default.call(this)
-                    : (props as any).number.deserialize(val)
+                val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
             },
         },
         near: {...props.number, default: 0.1},
@@ -178,11 +176,19 @@ export default class PerspectiveCamera extends Node {
             // TODO: unset might be triggered before the scene was mounted, so
             // there might not be a last known scene. We won't need this check
             // when we add unmountedCallback. #150
-            if (this.__lastKnownScene) (this.__lastKnownScene as any)._removeCamera(this)
+            if (this.__lastKnownScene)
+                this.__lastKnownScene
+                    // @ts-ignore: call protected method
+                    ._removeCamera(this)
         } else {
             if (!this.scene || !this.isConnected) return
 
-            this.scene._addCamera(this)
+            this.scene
+                // @ts-ignore: call protected method
+                ._addCamera(
+                    //
+                    this
+                )
         }
     }
 }

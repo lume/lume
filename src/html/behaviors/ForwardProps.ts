@@ -1,5 +1,5 @@
 import {observe, unobserve} from 'james-bond'
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import {Constructor} from '../../core/Utility'
 import {PossibleCustomElement} from '../WithUpdate'
 
@@ -65,9 +65,9 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
         }
     }
 
-    return ForwardProps as Constructor<ForwardProps & InstanceType<T>> & typeof ForwardProps & T
+    return ForwardProps as MixinResult<typeof ForwardProps, T>
 }
 
 export const ForwardProps = Mixin(ForwardPropsMixin)
-export type ForwardProps = InstanceType<typeof ForwardProps>
+export interface ForwardProps extends InstanceType<typeof ForwardProps> {}
 export default ForwardProps

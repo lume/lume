@@ -2,35 +2,33 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import documentReady from '@awaitbox/document-ready'
+import {
+    Scene as ThreeScene,
+    PerspectiveCamera as ThreePerspectiveCamera,
+    //AmbientLight,
+    Color,
+} from 'three'
 import Motor, {RenderTask} from './Motor'
-import {getWebGLRendererThree} from './WebGLRendererThree'
-import {getCSS3DRendererThree} from './CSS3DRendererThree'
+import {WebGLRendererThree, ShadowMapTypeString} from './WebGLRendererThree'
+import {CSS3DRendererThree} from './CSS3DRendererThree'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
 import {props} from './props'
 import {documentBody, Constructor} from './Utility'
-
-// TODO
-type Camera = any /*import('./Camera').Camera*/
-
-import {
-    Scene as ThreeScene, // so as not to confuse with Infamous Scene.
-    PerspectiveCamera,
-    //AmbientLight,
-    Color,
-    ShadowMapType,
-} from 'three'
+import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
+import TreeNode from './TreeNode'
 
 initImperativeBase()
 
 function SceneMixin<T extends Constructor>(Base: T) {
-    const Parent = ImperativeBase.mixin(Constructor(Base))
+    // NOTE for now, we assume Scene is mixed with its HTMLInterface.
+    const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
     class Scene extends Parent {
         static defaultElementName = 'i-scene'
@@ -39,7 +37,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
             ...(Parent.props || {}),
             backgroundColor: props.THREE.Color,
             backgroundOpacity: props.number,
-            shadowmapType: props.string,
+            shadowmapType: props.string, //  TODO runtime check for ShadowMapTypeString
             vr: props.boolean,
             experimentalWebgl: props.boolean,
             disableCss: props.boolean,
@@ -48,7 +46,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
         // TODO replace WithUpdate props with decorators
         backgroundColor!: Color | string | number
         backgroundOpacity!: number
-        shadowmapType!: ShadowMapType
+        shadowmapType!: ShadowMapTypeString
         vr!: boolean
         experimentalWebgl!: boolean
         disableCss!: boolean
@@ -58,8 +56,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
         isScene = true
 
         // Used by the `scene` getter in ImperativeBase
-        // protected _scene: Scene | null = this
-        protected _scene: this | null = this
+        protected _scene: Scene | null = this
+        // protected _scene: this | null = this
 
         constructor(...args: any[]) {
             super(...args)
@@ -141,7 +139,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
             // first. Call it automatically in that case.
             if (this._mounted) this.unmount()
 
-            if (mountPoint !== this.parentNode) mountPoint.appendChild(this as any)
+            if (mountPoint !== this.parentNode) mountPoint.appendChild(this)
 
             this._mounted = true
 
@@ -179,25 +177,26 @@ function SceneMixin<T extends Constructor>(Base: T) {
             // stuff will be ready in super.updated()
             super.updated(oldProps, moddedProps)
 
+            // if this.experimentalWebgl is true, then this.__glRenderer is defined in the following
             if (this.experimentalWebgl) {
                 if (moddedProps.backgroundColor) {
-                    this.__glRenderer.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
+                    this.__glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
                     this.needsUpdate()
                 }
                 if (moddedProps.backgroundOpacity) {
-                    this.__glRenderer.setClearAlpha(this, this.backgroundOpacity)
+                    this.__glRenderer!.setClearAlpha(this, this.backgroundOpacity)
                     this.needsUpdate()
                 }
                 if (moddedProps.shadowmapType) {
-                    this.__glRenderer.setShadowMapType(this, this.shadowmapType)
+                    this.__glRenderer!.setShadowMapType(this, this.shadowmapType)
                     this.needsUpdate()
                 }
                 if (moddedProps.vr) {
-                    this.__glRenderer.enableVR(this, this.vr)
+                    this.__glRenderer!.enableVR(this, this.vr)
 
                     if (this.vr) {
-                        Motor.setFrameRequester(fn => this.__glRenderer.requestFrame(this, fn))
-                        this.__glRenderer.createDefaultWebVREntryUI(this)
+                        Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
+                        this.__glRenderer!.createDefaultWebVREntryUI(this)
                     } else {
                         // TODO else return back to normal requestAnimationFrame
                     }
@@ -230,7 +229,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
             return new ThreeScene()
         }
 
-        threeCamera: PerspectiveCamera | null = null
+        threeCamera: ThreePerspectiveCamera | null = null
 
         protected _cameraSetup() {
             // this.threeCamera holds the active camera. There can be many
@@ -255,7 +254,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
             // We apply Three perspective the same way as CSS3D perspective here.
             // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
             // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-            this.threeCamera = new PerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
+            this.threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
             this.perspective = 1000
         }
 
@@ -276,12 +275,12 @@ function SceneMixin<T extends Constructor>(Base: T) {
         }
 
         // TODO leak SceneProtected to Camera to call this, and move to protected
-        protected _addCamera(camera: Camera) {
+        protected _addCamera(camera: PerspectiveCamera) {
             this.__activeCameras!.add(camera)
             this.__setCamera(camera)
         }
 
-        protected _removeCamera(camera: Camera) {
+        protected _removeCamera(camera: PerspectiveCamera) {
             this.__activeCameras!.delete(camera)
 
             if (this.__activeCameras!.size) {
@@ -326,11 +325,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
             // customize.
             this.__glRenderer.setClearColor(this, new Color(0xff6600), 0)
 
-            this.traverse((node: any /*ImperativeBase*/) => {
+            this.traverse((node: TreeNode) => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node._triggerLoadGL()
+                if (isImperativeBase(node))
+                    // @ts-ignore: access protected member
+                    node._triggerLoadGL()
             })
         }
 
@@ -346,11 +347,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
                 this.__glRenderer = null
             }
 
-            this.traverse((node: any) => {
+            this.traverse((node: TreeNode) => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node._triggerUnloadGL()
+                if (isImperativeBase(node))
+                    // @ts-ignore: access protected member
+                    node._triggerUnloadGL()
             })
         }
 
@@ -362,11 +365,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
             this.__cssRenderer = this.__getCSSRenderer('three')
 
-            this.traverse((node: any) => {
+            this.traverse((node: TreeNode) => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node._loadCSS()
+                if (isImperativeBase(node))
+                    // @ts-ignore: access protected member
+                    node._loadCSS()
             })
 
             console.log([].map.call(this.children, (n: any) => [n.constructor.name, n.parent, n.position]))
@@ -387,30 +392,33 @@ function SceneMixin<T extends Constructor>(Base: T) {
                 this.__cssRenderer = null
             }
 
-            this.traverse((node: any) => {
+            this.traverse((node: TreeNode) => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node._unloadCSS()
+                if (isImperativeBase(node))
+                    // @ts-ignore: access protected member
+                    node._unloadCSS()
             })
         }
 
-        private __glRenderer: any = null
-        private __cssRenderer: any = null
-        private __activeCameras: Set<Camera> | null = null // Set<Camera>
+        private __glRenderer: WebGLRendererThree | null = null
+        private __cssRenderer: CSS3DRendererThree | null = null
+        private __activeCameras: Set<PerspectiveCamera> | null = null // Set<Camera>
 
         // The idea here is that in the future we might have "babylon",
-        // "playcanvas", etc, on a per scene basis.
-        private __getRenderer(type: 'three') {
+        // "playcanvas", etc, on a per scene basis. We'd needed to abstract the
+        // renderer more, have abstract base classes to define the common
+        // interfaces.
+        private __getRenderer(type: 'three'): WebGLRendererThree {
             if (this.__glRenderer) return this.__glRenderer
 
-            let rendererGetter: typeof getWebGLRendererThree
+            let renderer: WebGLRendererThree
 
-            if (type === 'three') rendererGetter = getWebGLRendererThree
+            if (type === 'three') renderer = WebGLRendererThree.singleton()
             else throw new Error('invalid WebGL renderer')
 
-            const renderer = rendererGetter(this as any)
-            renderer.initialize(this as any)
+            renderer.initialize(this)
 
             return renderer
         }
@@ -418,20 +426,19 @@ function SceneMixin<T extends Constructor>(Base: T) {
         private __getCSSRenderer(type: 'three') {
             if (this.__cssRenderer) return this.__cssRenderer
 
-            let rendererGetter: typeof getCSS3DRendererThree
+            let renderer: CSS3DRendererThree
 
-            if (type === 'three') rendererGetter = getCSS3DRendererThree
+            if (type === 'three') renderer = CSS3DRendererThree.singleton()
             else throw new Error('invalid WebGL renderer')
 
-            const renderer = rendererGetter(this as any)
-            renderer.initialize(this as any)
+            renderer.initialize(this)
 
             return renderer
         }
 
         // TODO FIXME: manual camera doesn't work after we've added the
         // default-camera feature.
-        private __setCamera(camera: Camera) {
+        private __setCamera(camera: PerspectiveCamera) {
             if (!camera) {
                 this._createDefaultCamera()
             } else {
@@ -506,7 +513,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    return Scene as typeof Scene & T
+    return Scene as MixinResult<typeof Scene, T>
+}
+
+function isImperativeBase(_n: TreeNode): _n is ImperativeBase {
+    // TODO make sure instanceof works. For all intents and purposes, we assume
+    // to always have an ImperativeNode where we use this.
+    // return n instanceof ImperativeBase
+    return true
 }
 
 // TODO cleanup above parentsizechange code
@@ -514,7 +528,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
 const _Scene = Mixin(SceneMixin)
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 export const Scene = _Scene.mixin(HTMLInterface)
-export type Scene = InstanceType<typeof Scene>
+export interface Scene extends InstanceType<typeof Scene> {}
+// export interface Scene extends InstanceType<typeof _Scene> {}
 export default Scene
 
 // const s: Scene = new Scene()

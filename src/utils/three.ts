@@ -1,4 +1,4 @@
-import {MeshPhongMaterial, Color} from 'three'
+import {MeshPhongMaterial, Color, Camera, PerspectiveCamera, OrthographicCamera} from 'three'
 import {Nothing} from '../html/utils'
 
 type Object3D = import('three').Object3D
@@ -7,7 +7,7 @@ type Material = import('three').Material
 type RenderItem = import('three').RenderItem
 type Quaternion = import('three').Quaternion
 
-function isRenderItem(obj: any): obj is RenderItem {
+export function isRenderItem(obj: any): obj is RenderItem {
     return 'geometry' in obj && 'material' in obj
 }
 
@@ -15,7 +15,7 @@ export function disposeMaterial(obj: Object3D) {
     if (!isRenderItem(obj)) return
 
     // because obj.material can be a material or array of materials
-    const materials: Material[] = [].concat(obj.material as any)
+    const materials: Material[] = ([] as Material[]).concat(obj.material)
 
     for (const material of materials) {
         material.dispose()
@@ -86,4 +86,12 @@ export function setColorPhongMaterial(obj: Object3D, color: TColor, dispose?: bo
 
     if (traverse) obj.traverse(node => applyMaterial(node, material, dispose))
     else applyMaterial(obj, material, dispose)
+}
+
+export function isPerspectiveCamera(camera: Camera): camera is PerspectiveCamera {
+    return !!(camera as any).isPerspectiveCamera
+}
+
+export function isOrthographicCamera(camera: Camera): camera is OrthographicCamera {
+    return !!(camera as any).isOrthographicCamera
 }

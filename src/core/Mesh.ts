@@ -37,7 +37,7 @@ export default class Mesh extends Node {
     }
 
     static props = {
-        ...((Node as any).props || {}),
+        ...(Node.props || {}),
         castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
         receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
     }

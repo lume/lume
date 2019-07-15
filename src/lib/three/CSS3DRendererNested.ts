@@ -1,6 +1,7 @@
 // based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 
 import * as THREE from 'three'
+import {isPerspectiveCamera, isOrthographicCamera} from '../../utils/three'
 
 export class CSS3DObjectNested extends THREE.Object3D {
     private __initialFrame = requestAnimationFrame(() => {
@@ -136,20 +137,12 @@ export class CSS3DRendererNested {
 
         if (camera.parent === null) camera.updateMatrixWorld((void 0)!)
 
-        console.log('TODO does this work???')
-        // TODO, does this work?????
-        //  --- new version:
         let tx = 0
         let ty = 0
         if (isOrthographicCamera(camera)) {
             tx = -(camera.right + camera.left) / 2
             ty = (camera.top + camera.bottom) / 2
         }
-        //  --- old version:
-        // if (camera.isOrthographicCamera) {
-        //     var tx = -(camera.right + camera.left) / 2
-        //     var ty = (camera.top + camera.bottom) / 2
-        // }
 
         // prettier-ignore
         const cameraCSSMatrix = isOrthographicCamera(camera)
@@ -254,12 +247,4 @@ function getObjectCSSMatrix(object: THREE.Object3D, matrix: THREE.Matrix4) {
 
 function epsilon(value: number) {
     return Math.abs(value) < 1e-10 ? 0 : value
-}
-
-function isPerspectiveCamera(camera: THREE.Camera): camera is THREE.PerspectiveCamera {
-    return !!(camera as any).isPerspectiveCamera
-}
-
-function isOrthographicCamera(camera: THREE.Camera): camera is THREE.OrthographicCamera {
-    return !!(camera as any).isOrthographicCamera
 }

@@ -1,5 +1,5 @@
 import {Object3D, Vector3} from 'three'
-import {Mixin} from 'lowclass'
+import {Mixin, MixinResult} from 'lowclass'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
 import Motor from './Motor'
@@ -7,11 +7,10 @@ import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
 import {Constructor} from './Utility'
-
+import {TreeNode} from './TreeNode'
+import {Node} from './Node'
+import {Scene} from './Scene'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
-type TreeNode = import('./TreeNode').TreeNode
-type Node = import('./Node').Node
-type Scene = import('./Scene').Scene
 type ConnectionType = import('../html/DeclarativeBase').ConnectionType
 
 window.addEventListener('error', event => {
@@ -43,7 +42,7 @@ function isNode(n: ImperativeBase): n is Node {
     return n.isNode
 }
 
-// TODO replace with Partial<WebComponent> instead of re-writing properties manually
+// TODO replace with Partial<DeclarativeBase> instead of re-writing properties manually
 // @prod-prune @dev-prune
 class PossiblyWebComponent {
     // TODO re-organize properties from WebComponent/DeclarativeBase
@@ -281,9 +280,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
          *
          * @readonly
          */
-        // TODO remove any
-        // get scene(): Scene {
-        get scene(): any {
+        get scene(): Scene {
             // NOTE: this._scene is initally null.
 
             const parent = this.parent
@@ -365,8 +362,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
             this._willBeRendered = true
 
-            // TODO remove as any
-            Motor.setNodeToBeRendered(this as any)
+            Motor.setNodeToBeRendered(this)
         }
 
         protected _glLoaded = false
@@ -378,8 +374,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
         // stores a ref to this Node's root Scene when/if this Node is
         // in a scene.
-        // protected _scene = null as Scene | null
-        protected _scene = null as any | null
+        // protected _scene: Scene | null = null
+        protected _scene: any | null = null
 
         protected _makeThreeObject3d(): Object3D {
             return new Object3D()
@@ -617,8 +613,20 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
         }
     }
 
-    return ImperativeBase as typeof ImperativeBase & T
+    return ImperativeBase as MixinResult<typeof ImperativeBase, T>
+
+    // TODO see "function MixinResult" below
+    // return MixinResult<T>(class ImperativeBase extends Parent {
+    //     // ...
+    // })
 }
+
+// TODO Once we get type-inference on generic types with partially-elided args,
+// then we can use this MixinResult function to make the defintions more terse.
+// See: https://github.com/microsoft/TypeScript/pull/26349#issuecomment-511222214
+// function MixinResult<TBase extends Constructor, TClass extends Constructor = Constructor>(Class: TClass) {
+//     return Class as Constructor<InstanceType<TClass> & InstanceType<TBase>> & TClass & TBase
+// }
 
 type _ImperativeBase = ReturnType<typeof makeMixin>
 
@@ -628,7 +636,7 @@ type _ImperativeBase = ReturnType<typeof makeMixin>
 // Scene modules to work. For details on why, see
 // https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem.
 export var ImperativeBase: _ImperativeBase
-export type ImperativeBase = InstanceType<_ImperativeBase>
+export interface ImperativeBase extends InstanceType<_ImperativeBase> {}
 
 // Here we wrap the definition of the ImperativeBase class with this function in
 // order to solve the circular depdendency problem caused by the
