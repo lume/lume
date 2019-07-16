@@ -9,7 +9,7 @@
  *
  */
 
-import Engine from 'famous/src/core/Engine';
+import Engine from 'famous/src/core/Engine'
 
 /**
  * Creates a [famous/src/core/Context](#famous/src/core/Context) having the specified 3D perspective.
@@ -18,9 +18,9 @@ import Engine from 'famous/src/core/Engine';
  * @returns {module: famous/src/core/Context} The `Context` with the applied perspective.
  */
 export function contextWithPerspective(perspective) {
-    const context = Engine.createContext();
-    context.setPerspective(perspective);
-    return context;
+    const context = Engine.createContext()
+    context.setPerspective(perspective)
+    return context
 }
 
 export function simpleExtend(object, ...others) {

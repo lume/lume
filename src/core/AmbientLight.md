@@ -1,5 +1,4 @@
-`class AmbientLight {}`
-=======================
+# `class AmbientLight {}`
 
 The AmbientLight class is the implementation behind `<i-ambient-light>` elements.
 

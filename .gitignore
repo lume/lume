@@ -21,11 +21,16 @@
 !/.all-contributorsrc
 !/.builderrc
 !/.editorconfig
+!/.eslintignore
+!/.eslintrc.js
 !/.gitignore
 !/.npmignore
 !/.npmrc
+!/.prettierignore
+!/.prettierrc.js
 !/bower.json
 !/builder.config.js
+!/tsconfig.json
 !/package.json
 
 # the basics!

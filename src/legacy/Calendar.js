@@ -7,15 +7,15 @@
  *
  */
 
-import Transform from 'famous/src/core/Transform';
-import Transitionable from 'famous/src/transitions/Transitionable';
-import Easing from 'famous/src/transitions/Easing';
+import Transform from 'famous/src/core/Transform'
+import Transitionable from 'famous/src/transitions/Transitionable'
+import Easing from 'famous/src/transitions/Easing'
 
-import Molecule from './Molecule';
-import Grid from './Grid';
-import DoubleSidedPlane from './DoubleSidedPlane';
+import Molecule from './Molecule'
+import Grid from './Grid'
+import DoubleSidedPlane from './DoubleSidedPlane'
 
-import forLength from 'army-knife/forLength';
+import forLength from 'army-knife/forLength'
 
 /**
  * A calendar widget for selecting a date (WIP).
@@ -24,7 +24,6 @@ import forLength from 'army-knife/forLength';
  * @extends Molecule
  */
 export class Calendar extends Molecule {
-
     /**
      * Create a new `Calendar` with the given Famo.us-style size array and
      * transition. The transition is the type of animation used when switching
@@ -35,20 +34,23 @@ export class Calendar extends Molecule {
      * @param {String} transition The name of the animation transition to use when switching months.
      */
     constructor(calendarSize, transition) {
-        super({size: calendarSize});
+        super({size: calendarSize})
 
-        this.transition = transition;
-        this.flipSide = 0; // 0 means the initial front faces are showing, 1 means the initial back faces are showing.
-        this.columnsRows = [7,6];
-        this.planes = [];
+        this.transition = transition
+        this.flipSide = 0 // 0 means the initial front faces are showing, 1 means the initial back faces are showing.
+        this.columnsRows = [7, 6]
+        this.planes = []
 
-        this._initializeTransitions();
-        this._createGrid();
+        this._initializeTransitions()
+        this._createGrid()
 
-        setTimeout( function() {
-            this.transitions[this.transition]();
-            setInterval(this.transitions[this.transition], 2000);
-        }.bind(this) , 800);
+        setTimeout(
+            function() {
+                this.transitions[this.transition]()
+                setInterval(this.transitions[this.transition], 2000)
+            }.bind(this),
+            800
+        )
     }
 
     /**
@@ -57,19 +59,22 @@ export class Calendar extends Molecule {
      * @private
      */
     _createGrid() {
-        const grid = new Grid(this.columnsRows[0], this.columnsRows[1], this.options.size);
+        const grid = new Grid(this.columnsRows[0], this.columnsRows[1], this.options.size)
 
-        forLength(this.columnsRows[0]*this.columnsRows[1], function(i) {
-            const plane = new DoubleSidedPlane({
-                properties: {
-                    background: 'teal',
-                }
-            });
-            this.planes.push(plane);
-        }.bind(this));
+        forLength(
+            this.columnsRows[0] * this.columnsRows[1],
+            function(i) {
+                const plane = new DoubleSidedPlane({
+                    properties: {
+                        background: 'teal',
+                    },
+                })
+                this.planes.push(plane)
+            }.bind(this)
+        )
 
-        grid.setChildren(this.planes);
-        this.add(grid);
+        grid.setChildren(this.planes)
+        this.add(grid)
     }
 
     /**
@@ -81,49 +86,56 @@ export class Calendar extends Molecule {
     _initializeTransitions() {
         this.transitions = {
             flipDiagonal: function() {
-                this.flipSide = +!this.flipSide;
+                this.flipSide = +!this.flipSide
                 // determine which dimension of the grid is shorter and which is longer.
-                let shortest = 0;
-                let longest;
-                this.columnsRows.forEach(function(item, index) {
-                    if (item < this.columnsRows[shortest])
-                        shortest = index;
-                }.bind(this));
-                longest = +!shortest;
+                let shortest = 0
+                let longest
+                this.columnsRows.forEach(
+                    function(item, index) {
+                        if (item < this.columnsRows[shortest]) shortest = index
+                    }.bind(this)
+                )
+                longest = +!shortest
 
                 // for each diagonal of the grid, flip those cells.
-                forLength(this.columnsRows[0]+this.columnsRows[1]-1, function(column) {
-                    forLength(this.columnsRows[shortest], function(row) {
-                        if (column-row >= 0 && column-row < this.columnsRows[longest]) {
-                            const plane = this.planes[column-row + this.columnsRows[longest]*row];
-                            flipOne(plane, column);
-                        }
-                    }.bind(this));
-                }.bind(this));
+                forLength(
+                    this.columnsRows[0] + this.columnsRows[1] - 1,
+                    function(column) {
+                        forLength(
+                            this.columnsRows[shortest],
+                            function(row) {
+                                if (column - row >= 0 && column - row < this.columnsRows[longest]) {
+                                    const plane = this.planes[column - row + this.columnsRows[longest] * row]
+                                    flipOne(plane, column)
+                                }
+                            }.bind(this)
+                        )
+                    }.bind(this)
+                )
 
                 function flipOne(item, column) {
                     if (typeof item.__targetRotation == 'undefined') {
-                        item.__targetRotation = new Transitionable(0);
+                        item.__targetRotation = new Transitionable(0)
                     }
-                    const rotation = new Transitionable(item.__targetRotation.get());
-                    item.__targetRotation.set(item.__targetRotation.get()+Math.PI);
+                    const rotation = new Transitionable(item.__targetRotation.get())
+                    item.__targetRotation.set(item.__targetRotation.get() + Math.PI)
 
                     //item.get().transformFrom(function() {
-                        //return Transform.rotateY(rotation.get());
+                    //return Transform.rotateY(rotation.get());
                     //});
                     item.children[0].get().transformFrom(function() {
-                        return Transform.rotateY(rotation.get());
-                    });
+                        return Transform.rotateY(rotation.get())
+                    })
                     item.children[1].get().transformFrom(function() {
-                        return Transform.rotateY(rotation.get()+Math.PI);
-                    });
+                        return Transform.rotateY(rotation.get() + Math.PI)
+                    })
 
                     setTimeout(function() {
-                        rotation.set(item.__targetRotation.get(), { duration: 2000, curve: Easing.outExpo });
-                    }, 0+50*column);
+                        rotation.set(item.__targetRotation.get(), {duration: 2000, curve: Easing.outExpo})
+                    }, 0 + 50 * column)
                 }
-            }.bind(this)
-        };
+            }.bind(this),
+        }
     }
 }
-export default Calendar;
+export default Calendar

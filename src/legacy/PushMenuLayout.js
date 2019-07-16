@@ -7,19 +7,19 @@
  *
  */
 
-import jss from './lib/jss';
+import jss from './lib/jss'
 
-import Surface from 'famous/src/core/Surface';
-import Transitionable from 'famous/src/transitions/Transitionable';
-import Easing from 'famous/src/transitions/Easing';
-import TouchSync from 'famous/src/inputs/TouchSync';
-import GenericSync from 'famous/src/inputs/GenericSync';
+import Surface from 'famous/src/core/Surface'
+import Transitionable from 'famous/src/transitions/Transitionable'
+import Easing from 'famous/src/transitions/Easing'
+import TouchSync from 'famous/src/inputs/TouchSync'
+import GenericSync from 'famous/src/inputs/GenericSync'
 
-import Plane from './Plane';
-import Molecule from './Molecule';
+import Plane from './Plane'
+import Molecule from './Molecule'
 import {simpleExtend} from './utils'
 
-import callAfter from 'army-knife/callAfter';
+import callAfter from 'army-knife/callAfter'
 
 /**
  * A scenegraph with two Molecule leafnodes: the menu area and the content
@@ -44,7 +44,6 @@ import callAfter from 'army-knife/callAfter';
  * @extends Molecule
  */
 export class PushMenuLayout extends Molecule {
-
     /**
      * Creates a new PushMenuLayout.
      *
@@ -55,7 +54,7 @@ export class PushMenuLayout extends Molecule {
      * just get passed into super() for the Molecule constructor to handle.
      */
     constructor(initialOptions) {
-        super(initialOptions);
+        super(initialOptions)
 
         // Add default values for this PushMenuLayout
         // TODO: Make default options static for the class.
@@ -74,35 +73,35 @@ export class PushMenuLayout extends Molecule {
             fadeEndColor: 'rgba(255,255,255,1)',
 
             blur: false, // XXX: WIP, so false by default.
-            blurRadius: 5
+            blurRadius: 5,
         })
 
         // TODO: performance hit, this setter is invoked in the Molecule constructor, then here again.
         this.options = initialOptions
 
         // TODO v0.1.0: Mark these as private.
-            // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
-            // the layout, but we're just using it as a whole-page app for now. Get
-            // size from a commit? UPDATE: See the new famous/src/views/SizeAwareView
-            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
+        // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
+        // the layout, but we're just using it as a whole-page app for now. Get
+        // size from a commit? UPDATE: See the new famous/src/views/SizeAwareView
+        this.contentWidth = document.body.clientWidth - this.options.menuHintSize
 
-            // Changing these values outside of an instance of PushMenuLayout might
-            // cause the layout to break. They are designed to be modified
-            // internally only.
-            this.isOpen = false;
-            this.isOpening = false;
-            this.isClosing = false;
-            this.isAnimating = false; // keep track of whether the menu is opening or closing.
-            this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
-            this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
+        // Changing these values outside of an instance of PushMenuLayout might
+        // cause the layout to break. They are designed to be modified
+        // internally only.
+        this.isOpen = false
+        this.isOpening = false
+        this.isClosing = false
+        this.isAnimating = false // keep track of whether the menu is opening or closing.
+        this.isBeingDragged = false // whether the user is dragging/pushing the menu or not.
+        this.transitionCallback = undefined // holds the callback to the current open or close menu animation.
 
         // Set the touch sync for pulling/pushing the menu open/closed.
         GenericSync.register({
-            touch: TouchSync
-        });
+            touch: TouchSync,
+        })
 
-        this._createComponents();
-        this._initializeEvents();
+        this._createComponents()
+        this._initializeEvents()
     }
 
     /**
@@ -129,114 +128,118 @@ export class PushMenuLayout extends Molecule {
      * @private
      */
     _createComponents() {
-        var layout = this;
+        var layout = this
 
-        this.touchSync = new GenericSync(['touch']);
+        this.touchSync = new GenericSync(['touch'])
 
-        this.alignment = (this.options.menuSide == "left"? 0: 1);
-        this.animationTransition = new Transitionable(0);
+        this.alignment = this.options.menuSide == 'left' ? 0 : 1
+        this.animationTransition = new Transitionable(0)
 
-        this.mainMol = new Molecule();
+        this.mainMol = new Molecule()
 
         this.menuMol = new Molecule({
-            size: [this.options.menuWidth,undefined]
-        });
-        this.menuMol.oldTransform = this.menuMol.transform;
-        this.menuMol.transform = function() { // override
-            var currentPosition = layout.animationTransition.get();
-            switch(layout.options.animationType) {
-                case "foldDown":
+            size: [this.options.menuWidth, undefined],
+        })
+        this.menuMol.oldTransform = this.menuMol.transform
+        this.menuMol.transform = function() {
+            // override
+            var currentPosition = layout.animationTransition.get()
+            switch (layout.options.animationType) {
+                case 'foldDown':
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
-                    );
-                    break;
-                case "moveBack":
+                        layout.options.menuSide == 'left'
+                            ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ -
+                                  (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+                            : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ +
+                                  (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+                    )
+                    break
+                case 'moveBack':
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
-                    );
-                    break;
+                        layout.options.menuSide == 'left'
+                            ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ -
+                                  (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+                            : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ +
+                                  (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+                    )
+                    break
             }
-            return this.oldTransform.get();
-        }.bind(this.menuMol);
+            return this.oldTransform.get()
+        }.bind(this.menuMol)
 
         // contains the user's menu content.
-        this.menuContentMol = new Molecule();
+        this.menuContentMol = new Molecule()
 
         this.contentMol = new Molecule({
-            size: [this.contentWidth,undefined]
-        });
-        this.contentMol.oldTransform = this.contentMol.transform;
-        this.contentMol.transform = function() { // override
-            var currentPosition = layout.animationTransition.get();
-            switch(layout.options.animationType) {
-                case "foldDown":
+            size: [this.contentWidth, undefined],
+        })
+        this.contentMol.oldTransform = this.contentMol.transform
+        this.contentMol.transform = function() {
+            // override
+            var currentPosition = layout.animationTransition.get()
+            switch (layout.options.animationType) {
+                case 'foldDown':
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth - layout.options.menuHintSize)/*range*/ + layout.options.menuHintSize/*offset*/:
-                            currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize)/*range*/ - layout.options.menuHintSize/*offset*/
-                    );
+                        layout.options.menuSide == 'left'
+                            ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ +
+                                  layout.options.menuHintSize /*offset*/
+                            : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ -
+                                  layout.options.menuHintSize /*offset*/
+                    )
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setRotateY(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  Math.PI/8:
-                            currentPosition * -Math.PI/8
-                    );
-                    break;
-                case "moveBack":
-                    var depth = 100;
+                        layout.options.menuSide == 'left'
+                            ? (currentPosition * Math.PI) / 8
+                            : (currentPosition * -Math.PI) / 8
+                    )
+                    break
+                case 'moveBack':
+                    var depth = 100
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            layout.options.menuHintSize:
-                            -layout.options.menuHintSize
-                    );
-                    this.oldTransform.setTranslateZ(
-                        currentPosition * -depth
-                    );
-                    break;
+                        layout.options.menuSide == 'left' ? layout.options.menuHintSize : -layout.options.menuHintSize
+                    )
+                    this.oldTransform.setTranslateZ(currentPosition * -depth)
+                    break
             }
-            return this.oldTransform.get();
-        }.bind(this.contentMol);
+            return this.oldTransform.get()
+        }.bind(this.contentMol)
 
         this.menuTouchPlane = new Plane({
             size: [this.options.menuWidth + this.options.pushAreaWidth - this.options.menuHintSize, undefined],
             properties: {
-                zIndex: '-1000' // below everything
-            }
-        });
+                zIndex: '-1000', // below everything
+            },
+        })
 
         this.mainMol.setOptions({
             origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
+            align: [this.alignment, 0.5],
+        })
         this.menuMol.setOptions({
             origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
+            align: [this.alignment, 0.5],
+        })
         this.contentMol.setOptions({
             origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
+            align: [this.alignment, 0.5],
+        })
 
         // FIXME: WHY THE EFF must I also set align and origin on menuTouchPlane
         // when I've already set it on it's parent (this.menuMol)?????
         this.menuTouchPlane.setOptions({
             origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
+            align: [this.alignment, 0.5],
+        })
 
         // Bring the menu content molecule and touch plane forward just
         // slightly so they're just above the content and content's fade plane,
         // so touch and mouse interaction works. HTML, the bad parts. ;)
-        this.menuContentMol.transform.setTranslateZ(2);
-        this.menuTouchPlane.transform.setTranslateZ(2);
+        this.menuContentMol.transform.setTranslateZ(2)
+        this.menuTouchPlane.transform.setTranslateZ(2)
 
         /*
          * Styles for the fadePlane
@@ -246,91 +249,103 @@ export class PushMenuLayout extends Molecule {
             var startColor
             var endColor
 
-            switch(this.options.animationType) {
-                case "foldDown":
+            switch (this.options.animationType) {
+                case 'foldDown':
                     startColor = this.options.fadeStartColor
                     endColor = this.options.fadeEndColor
-                    break;
-                case "moveBack":
+                    break
+                case 'moveBack':
                     startColor = endColor = this.options.fadeEndColor
-                    break;
+                    break
             }
 
             var styles = {
                 '.infamous-fadeLeft': {
                     background: [
                         endColor,
-                        '-moz-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+endColor+'), color-stop(100%, '+startColor+'))',
-                        '-webkit-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-o-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-ms-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        'linear-gradient(to right, '+endColor+' 0%, '+startColor+' 100%)'
+                        '-moz-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, ' +
+                            endColor +
+                            '), color-stop(100%, ' +
+                            startColor +
+                            '))',
+                        '-webkit-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)',
+                        '-o-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)',
+                        '-ms-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)',
+                        'linear-gradient(to right, ' + endColor + ' 0%, ' + startColor + ' 100%)',
                     ],
-                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
+                    filter:
+                        "progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc000000', endColorstr='#4d000000', GradientType=1 )",
                 },
                 '.infamous-fadeRight': {
                     background: [
                         startColor,
-                        '-moz-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+startColor+'), color-stop(100%, '+endColor+'))',
-                        '-webkit-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-o-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-ms-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        'linear-gradient(to right, '+startColor+' 0%, '+endColor+' 100%)'
+                        '-moz-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, ' +
+                            startColor +
+                            '), color-stop(100%, ' +
+                            endColor +
+                            '))',
+                        '-webkit-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)',
+                        '-o-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)',
+                        '-ms-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)',
+                        'linear-gradient(to right, ' + startColor + ' 0%, ' + endColor + ' 100%)',
                     ],
-                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
-                }
-            };
+                    filter:
+                        "progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d000000', endColorstr='#cc000000', GradientType=1 )",
+                },
+            }
 
-            if (this.fadeStylesheet) { this.fadeStylesheet.detach(); }
-            this.fadeStylesheet = jss.createStyleSheet(styles);
-            this.fadeStylesheet.attach();
-        };
+            if (this.fadeStylesheet) {
+                this.fadeStylesheet.detach()
+            }
+            this.fadeStylesheet = jss.createStyleSheet(styles)
+            this.fadeStylesheet.attach()
+        }
 
         if (this.options.fade) {
-            this.updateStyles();
+            this.updateStyles()
 
             this.fadePlane = new Plane({
-                size: [undefined,undefined],
+                size: [undefined, undefined],
                 classes: [
                     // TODO: switch to jss namespace.
-                    (this.options.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
+                    this.options.menuSide == 'left' ? 'infamous-fadeRight' : 'infamous-fadeLeft',
                 ],
                 properties: {
                     zIndex: '1000',
-                    pointerEvents: 'none'
-                }
-            });
+                    pointerEvents: 'none',
+                },
+            })
 
             // FIXME: Why the EFF must I also set align and origin on fadePlane when
             // I've already set it on it's parent (this.contentMol)?????
             this.fadePlane.setOptions({
                 origin: [this.alignment, 0.5],
-                align: [this.alignment, 0.5]
-            });
+                align: [this.alignment, 0.5],
+            })
 
             // move the fadePlane forward by 1px so it doesn't glitch out.
             // Chrome will make the fadePlane and the surface in the content
             // area (if any) blink randomly when the two surfaces are in the
             // same exact position together.
-            this.fadePlane.transform.setTranslateZ(1);
+            this.fadePlane.transform.setTranslateZ(1)
 
             this.fadePlane.setOptions({
-                opacity: this.animationTransition
-            });
+                opacity: this.animationTransition,
+            })
 
             // TODO: Make fadePlane a sibling to menuMol and contentMol so that
             // contentMol contains only the user;s content. This will affect
             // the code in this.render().
-            this.contentMol.add(this.fadePlane);
+            this.contentMol.add(this.fadePlane)
         }
 
-        this.add(this.mainMol);
-        this.mainMol.add(this.contentMol);
-        this.menuMol.add(this.menuTouchPlane);
-        this.menuMol.add(this.menuContentMol);
-        this.mainMol.add(this.menuMol);
+        this.add(this.mainMol)
+        this.mainMol.add(this.contentMol)
+        this.menuMol.add(this.menuTouchPlane)
+        this.menuMol.add(this.menuContentMol)
+        this.mainMol.add(this.menuMol)
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
 
@@ -341,72 +356,89 @@ export class PushMenuLayout extends Molecule {
      * @private
      */
     _initializeEvents() {
-
         // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
-        this.options.handler.on('update', function(event) { // update == drag
-            this.isBeingDragged = true;
+        this.options.handler.on(
+            'update',
+            function(event) {
+                // update == drag
+                this.isBeingDragged = true
 
-            // stop the current transitions if any, along with the current callback if any.
-            this._haltAnimation(true);
+                // stop the current transitions if any, along with the current callback if any.
+                this._haltAnimation(true)
 
-            var currentPosition = this.animationTransition.get();
+                var currentPosition = this.animationTransition.get()
 
-            // TODO: handle the right-side menu.
-            switch(this.options.animationType) {
-                case "foldDown":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
-                    break;
-                case "moveBack":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
-                    break;
-            }
+                // TODO: handle the right-side menu.
+                switch (this.options.animationType) {
+                    case 'foldDown':
+                        this.animationTransition.set(
+                            currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize)
+                        )
+                        break
+                    case 'moveBack':
+                        this.animationTransition.set(
+                            currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize)
+                        )
+                        break
+                }
 
-            currentPosition = this.animationTransition.get();
+                currentPosition = this.animationTransition.get()
 
-            if (currentPosition > 1) {
-                this.animationTransition.set(1);
-            }
-            else if (currentPosition < 0) {
-                this.animationTransition.set(0);
-            }
-        }.bind(this));
+                if (currentPosition > 1) {
+                    this.animationTransition.set(1)
+                } else if (currentPosition < 0) {
+                    this.animationTransition.set(0)
+                }
+            }.bind(this)
+        )
 
-        this.options.handler.on('end', function(event) {
-            this.isBeingDragged = false;
+        this.options.handler.on(
+            'end',
+            function(event) {
+                this.isBeingDragged = false
 
-            var currentPosition = this.animationTransition.get();
+                var currentPosition = this.animationTransition.get()
 
-            if (currentPosition < 0.5) {
-                this.closeMenu();
-            }
-            else {
-                this.openMenu();
-            }
-        }.bind(this));
+                if (currentPosition < 0.5) {
+                    this.closeMenu()
+                } else {
+                    this.openMenu()
+                }
+            }.bind(this)
+        )
 
         // TODO v0.1.0: Use a SizeAwareView instead of relying on the body, since we
         // might not be directly in the body.
-        window.addEventListener('resize', function(event) {
-            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
-            this.contentMol.setOptions({size: [this.contentWidth, undefined]});
-        }.bind(this));
+        window.addEventListener(
+            'resize',
+            function(event) {
+                this.contentWidth = document.body.clientWidth - this.options.menuHintSize
+                this.contentMol.setOptions({size: [this.contentWidth, undefined]})
+            }.bind(this)
+        )
 
         /*
          * Wire up events
          * TODO: consolidate dup code here and in setMenu
          */
-        this.menuTouchPlane.pipe(this.touchSync);
-        this.menuTouchPlane.on('mouseenter', function() {
-            if (!this.isOpening) {
-                this.openMenu();
-            }
-        }.bind(this))
-        this.menuTouchPlane.on('mouseleave', function() {
-            if (!this.isClosing) {
-                this.closeMenu();
-            }
-        }.bind(this))
-        this.touchSync.pipe(this.options.handler);
+        this.menuTouchPlane.pipe(this.touchSync)
+        this.menuTouchPlane.on(
+            'mouseenter',
+            function() {
+                if (!this.isOpening) {
+                    this.openMenu()
+                }
+            }.bind(this)
+        )
+        this.menuTouchPlane.on(
+            'mouseleave',
+            function() {
+                if (!this.isClosing) {
+                    this.closeMenu()
+                }
+            }.bind(this)
+        )
+        this.touchSync.pipe(this.options.handler)
     }
 
     /**
@@ -447,16 +479,22 @@ export class PushMenuLayout extends Molecule {
         this.menuContentMol.add(node)
         if (node instanceof Molecule) {
             node.pipe(this.touchSync)
-            node.on('mouseenter', function() {
-                if (!this.isOpening) {
-                    this.openMenu();
-                }
-            }.bind(this))
-            node.on('mouseleave', function() {
-                if (!this.isClosing) {
-                    this.closeMenu();
-                }
-            }.bind(this))
+            node.on(
+                'mouseenter',
+                function() {
+                    if (!this.isOpening) {
+                        this.openMenu()
+                    }
+                }.bind(this)
+            )
+            node.on(
+                'mouseleave',
+                function() {
+                    if (!this.isClosing) {
+                        this.closeMenu()
+                    }
+                }.bind(this)
+            )
         }
     }
 
@@ -475,12 +513,12 @@ export class PushMenuLayout extends Molecule {
      * will be fired immediately before the animation for this animation begins.
      */
     openMenu(callback, cancelPreviousCallback) {
-        this._haltAnimation(cancelPreviousCallback);
+        this._haltAnimation(cancelPreviousCallback)
 
-        this.isClosing = false;
-        this.isOpening = true;
+        this.isClosing = false
+        this.isOpening = true
 
-        this._animate('open', callback);
+        this._animate('open', callback)
     }
 
     /**
@@ -494,12 +532,12 @@ export class PushMenuLayout extends Molecule {
      * will be fired immediately before the animation for this animation begins.
      */
     closeMenu(callback, cancelPreviousCallback) {
-        this._haltAnimation(cancelPreviousCallback);
+        this._haltAnimation(cancelPreviousCallback)
 
-        this.isClosing = true;
-        this.isOpening = false;
+        this.isClosing = true
+        this.isOpening = false
 
-        this._animate('close', callback);
+        this._animate('close', callback)
     }
 
     /**
@@ -515,10 +553,9 @@ export class PushMenuLayout extends Molecule {
      */
     toggleMenu(callback, cancelPreviousCallback) {
         if (this.isOpen || this.isOpening) {
-            this.closeMenu(callback, cancelPreviousCallback);
-        }
-        else if (!this.isOpen || this.isClosing) {
-            this.openMenu(callback, cancelPreviousCallback);
+            this.closeMenu(callback, cancelPreviousCallback)
+        } else if (!this.isOpen || this.isClosing) {
+            this.openMenu(callback, cancelPreviousCallback)
         }
     }
 
@@ -530,29 +567,39 @@ export class PushMenuLayout extends Molecule {
      * @param {Function} callback The function to call after the animation completes.
      */
     _animate(targetState, callback) {
-        this.isAnimating = true;
-        this.transitionCallback = callback;
-        var _callback;
+        this.isAnimating = true
+        this.transitionCallback = callback
+        var _callback
 
-        var self = this;
+        var self = this
         function setupCallback(numberOfTransitions) {
             // Fire callback after numberOfTransitions calls, when the 4 transitions are complete.
-            _callback = callAfter(numberOfTransitions, function() {
-                self.isAnimating = self.isOpening = self.isClosing = false;
-                self.isOpen = targetState == 'open'? true: false;
-                if (typeof self.transitionCallback == 'function') {
-                    self.transitionCallback();
-                }
-                self.transitionCallback = undefined;
-            }.bind(self));
+            _callback = callAfter(
+                numberOfTransitions,
+                function() {
+                    self.isAnimating = self.isOpening = self.isClosing = false
+                    self.isOpen = targetState == 'open' ? true : false
+                    if (typeof self.transitionCallback == 'function') {
+                        self.transitionCallback()
+                    }
+                    self.transitionCallback = undefined
+                }.bind(self)
+            )
         }
 
-        setupCallback(1);
+        setupCallback(1)
         if (targetState == 'open') {
-            this.animationTransition.set(1, {duration: this.options.animationDuration, curve: Easing.outExpo}, _callback);
-        }
-        else if (targetState == 'close') {
-            this.animationTransition.set(0, {duration: this.options.animationDuration, curve: Easing.outExpo}, _callback);
+            this.animationTransition.set(
+                1,
+                {duration: this.options.animationDuration, curve: Easing.outExpo},
+                _callback
+            )
+        } else if (targetState == 'close') {
+            this.animationTransition.set(
+                0,
+                {duration: this.options.animationDuration, curve: Easing.outExpo},
+                _callback
+            )
         }
     }
 
@@ -566,10 +613,10 @@ export class PushMenuLayout extends Molecule {
     _haltAnimation(cancelCallback) {
         if (this.isAnimating) {
             if (!cancelCallback && typeof this.transitionCallback == 'function') {
-                this.transitionCallback();
+                this.transitionCallback()
             }
-            this.transitionCallback = undefined;
-            this.animationTransition.halt();
+            this.transitionCallback = undefined
+            this.animationTransition.halt()
         }
     }
 
@@ -577,19 +624,18 @@ export class PushMenuLayout extends Molecule {
      * @override
      */
     render() {
-
         // Blur the content if this.options.blur is true, and the animation is moveBack.
         //
         // TODO: Make the item to to be blur specifiable, perhaps with a method on
         // this.
         if (this.options.blur && this.options.fade && this.options.animationType == 'moveBack') {
-            let momentaryBlur = (this.animationTransition.get() * this.options.blurRadius)
+            let momentaryBlur = this.animationTransition.get() * this.options.blurRadius
             let filter = {
-                "-webkit-filter": 'blur('+momentaryBlur+'px)',
-                "-moz-filter":    'blur('+momentaryBlur+'px)',
-                "-ms-filter":     'blur('+momentaryBlur+'px)',
-                "-o-filter":      'blur('+momentaryBlur+'px)',
-                filter:           'blur('+momentaryBlur+'px)'
+                '-webkit-filter': 'blur(' + momentaryBlur + 'px)',
+                '-moz-filter': 'blur(' + momentaryBlur + 'px)',
+                '-ms-filter': 'blur(' + momentaryBlur + 'px)',
+                '-o-filter': 'blur(' + momentaryBlur + 'px)',
+                filter: 'blur(' + momentaryBlur + 'px)',
             }
 
             // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
@@ -598,8 +644,7 @@ export class PushMenuLayout extends Molecule {
             // statement above.
             if (this.contentMol._child[1].get() instanceof Surface) {
                 this.contentMol.get().setProperties(filter)
-            }
-            else if (this.contentMol._child[1] instanceof Plane) {
+            } else if (this.contentMol._child[1] instanceof Plane) {
                 this.contentMol._child[1].surface.setProperties(filter)
             }
         }
@@ -607,4 +652,4 @@ export class PushMenuLayout extends Molecule {
         return super.render()
     }
 }
-export default PushMenuLayout;
+export default PushMenuLayout

@@ -7,14 +7,14 @@
  *
  */
 
-import Modifier from 'famous/src/core/Modifier';
-import RenderNode from 'famous/src/core/RenderNode';
-import TransitionableTransform from 'famous/src/transitions/TransitionableTransform';
-import EventHandler from 'famous/src/core/EventHandler';
+import Modifier from 'famous/src/core/Modifier'
+import RenderNode from 'famous/src/core/RenderNode'
+import TransitionableTransform from 'famous/src/transitions/TransitionableTransform'
+import EventHandler from 'famous/src/core/EventHandler'
 
 import {simpleExtend} from './utils'
 
-import "army-knife/polyfill.Function.name";
+import 'army-knife/polyfill.Function.name'
 
 /**
  * Molecules are the basic building blocks of all UI components. Molecules
@@ -41,7 +41,6 @@ import "army-knife/polyfill.Function.name";
  * @extends {module: famous/src/core/RenderNode}
  */
 export class Molecule extends RenderNode {
-
     /**
      * Creates a new `Molecule` and applies `initialOptions` to it's internal
      * `famous/src/core/Modifier`. See [famous/src/core/Modifier](#famous/src/core/Modifier)
@@ -73,16 +72,16 @@ export class Molecule extends RenderNode {
         // TODO: Use a WeakMap to store these at some point.
         this._ = {
             options: {}, // set and get with this.options
-            defaultOptions: {}
+            defaultOptions: {},
         }
 
         // Add default values for this Molecule
         // TODO: Make default options static for the class.
         simpleExtend(this._.defaultOptions, {
-            align: [0.5,0.5],
-            origin: [0.5,0.5],
-            transform: new TransitionableTransform,
-            handler: new EventHandler
+            align: [0.5, 0.5],
+            origin: [0.5, 0.5],
+            transform: new TransitionableTransform(),
+            handler: new EventHandler(),
         })
 
         // set the user's initial options. This automatically creates
@@ -91,7 +90,7 @@ export class Molecule extends RenderNode {
         //
         // NOTE: this.options is a setter property. This statement applies all
         // relevant properties to this.modifier.
-        this.options = initialOptions;
+        this.options = initialOptions
     }
 
     /**
@@ -105,11 +104,11 @@ export class Molecule extends RenderNode {
      * to a new [famous/src/core/Modifier](#famous/src/core/Modifier).
      */
     set options(newOptions) {
-        this.resetOptions();
-        this.setOptions(newOptions);
+        this.resetOptions()
+        this.setOptions(newOptions)
     }
     get options() {
-        return this._.options;
+        return this._.options
     }
 
     /**
@@ -120,10 +119,10 @@ export class Molecule extends RenderNode {
      * See [famous/src/core/Modifier.transformFrom](#famous/src/core/Modifier.transformFrom).
      */
     set transform(newTransform) {
-        this.setOptions({transform: newTransform});
+        this.setOptions({transform: newTransform})
     }
     get transform() {
-        return this.options.transform;
+        return this.options.transform
     }
 
     /**
@@ -143,16 +142,15 @@ export class Molecule extends RenderNode {
      * @param {Object} newOptions An object containing the new options to apply to this `Molecule`.
      */
     setOptions(newOptions) {
-        if (typeof newOptions == 'undefined' || newOptions.constructor.name != "Object")
-            newOptions = {}
+        if (typeof newOptions == 'undefined' || newOptions.constructor.name != 'Object') newOptions = {}
 
         for (const prop in newOptions) {
             // Subject to change when Famo.us API changes.
-            if (Modifier.prototype[''+prop+'From']) {
-                this.modifier[''+prop+'From'](newOptions[prop]);
+            if (Modifier.prototype['' + prop + 'From']) {
+                this.modifier['' + prop + 'From'](newOptions[prop])
             }
 
-            this._.options[prop] = newOptions[prop];
+            this._.options[prop] = newOptions[prop]
         }
     }
 
@@ -164,9 +162,9 @@ export class Molecule extends RenderNode {
      * options.
      */
     resetOptions() {
-        this.modifier = new Modifier();
-        this.set(this.modifier);
-        this.setOptions(this._.defaultOptions);
+        this.modifier = new Modifier()
+        this.set(this.modifier)
+        this.setOptions(this._.defaultOptions)
     }
 
     /**
@@ -179,8 +177,8 @@ export class Molecule extends RenderNode {
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
      */
     pipe() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.pipe.apply(this.options.handler, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.options.handler.pipe.apply(this.options.handler, args)
     }
 
     /**
@@ -193,8 +191,8 @@ export class Molecule extends RenderNode {
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
      */
     unpipe() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.unpipe.apply(this.options.handler, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.options.handler.unpipe.apply(this.options.handler, args)
     }
 
     /**
@@ -202,8 +200,8 @@ export class Molecule extends RenderNode {
      * See [famous/src/core/EventHandler.on](#famous/src/core/EventHandler.on).
      */
     on() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.on.apply(this.options.handler, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.options.handler.on.apply(this.options.handler, args)
     }
 
     /**
@@ -211,8 +209,8 @@ export class Molecule extends RenderNode {
      * See [famous/src/core/EventHandler.off](#famous/src/core/EventHandler.off).
      */
     off() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.on.apply(this.options.handler, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.options.handler.on.apply(this.options.handler, args)
     }
 }
-export default Molecule;
+export default Molecule

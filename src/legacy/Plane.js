@@ -7,9 +7,9 @@
  *
  */
 
-import Surface from 'famous/src/core/Surface';
+import Surface from 'famous/src/core/Surface'
 
-import Molecule from './Molecule';
+import Molecule from './Molecule'
 
 /**
  * Planes have the properties of [Molecules](#Molecule), plus they contain a
@@ -22,7 +22,6 @@ import Molecule from './Molecule';
  * @extends Molecule
  */
 export class Plane extends Molecule {
-
     /**
      * Creates a new `Plane`. Properties from the `initialOptions` parameter
      * are applied to this Plane's [famous/src/core/Surface](#famous/src/core/Surface) as well as to
@@ -33,11 +32,11 @@ export class Plane extends Molecule {
      * @param {Object} initialOptions Options for the new Plane.
      */
     constructor(initialOptions) {
-        super(initialOptions);
+        super(initialOptions)
 
-        this.surface = new Surface(this.options);
-        this.add(this.surface);
-        this.surface.pipe(this.options.handler);
+        this.surface = new Surface(this.options)
+        this.add(this.surface)
+        this.surface.pipe(this.options.handler)
     }
 
     /**
@@ -45,8 +44,8 @@ export class Plane extends Molecule {
      * See [famous/src/core/Surface.getContent](#famous/src/core/Surface.getContent).
      */
     getContent() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.surface.getContent.apply(this.surface, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.surface.getContent.apply(this.surface, args)
     }
 
     /**
@@ -54,8 +53,8 @@ export class Plane extends Molecule {
      * See [famous/src/core/Surface.setContent](#famous/src/core/Surface.setContent).
      */
     setContent() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.surface.setContent.apply(this.surface, args);
+        const args = Array.prototype.splice.call(arguments, 0)
+        return this.surface.setContent.apply(this.surface, args)
     }
 }
-export default Plane;
+export default Plane

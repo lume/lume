@@ -9,10 +9,10 @@
 
         <!-- version 1.1.0 is the last version where MutationObserver on a shadow root works. -->
         <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-sd-ce.js"></script> -->
-        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script>
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
 
-        <script src="https://unpkg.com/vue@2.5.11/dist/vue.js"></script>
-        <script src="https://unpkg.com/tween.js@16.6.0/src/Tween.js"></script>
+        <script src="../node_modules/vue/dist/vue.js"></script>
+        <script src="../node_modules/tween.js/src/Tween.js"></script>
 
         <!-- the library -->
         <script src="../global.js"></script>
@@ -27,8 +27,6 @@
                 overflow: hidden;
                 font-family: sans-serif;
                 touch-action: none;
-            }
-            body, html {
             }
             i-node {
                 text-align: center;
@@ -81,6 +79,7 @@
                         >
                         <i-dom-plane
                             v-for="n in [0,1,2,3,4]"
+                            ref="btn"
                             :key="n"
                             size-mode="literal proportional"
                             size="100 1 0"
@@ -218,6 +217,11 @@
                         ) ) return true
                         return false
                     }
+
+                    console.log(
+                        ' ??????????????????????????? cast shadow?',
+                        this.$refs.btn[0].castShadow
+                    )
                 },
             })
         </script>

@@ -13,35 +13,35 @@ function BasicHTMLRenderer(Base = {}) {
         },
 
         connectedCallback() {
-            Super(this).connectedCallback()
+            super.connectedCallback()
             this.shouldRender()
         },
 
         disconnectedCallback() {
-            Super(this).disconnectedCallback()
+            super.disconnectedCallback()
 
-            cancelAnimationFrame(Private(this).__frame)
-            Private(this).__frame = null
+            cancelAnimationFrame(this.__frame)
+            this.__frame = null
         },
 
         shouldRender() {
-            if (Private(this).__frame) return
+            if (this.__frame) return
 
-            Private(this).__frame = requestAnimationFrame(() => {
-                Private(this).__frame = null
+            this.__frame = requestAnimationFrame(() => {
+                this.__frame = null
 
-                const {__renderMode} = Private(this)
+                const {__renderMode} = this
 
-                if (['replace', 'shadow'].includes(Private(this).__renderMode))
-                    Protected(this)._root.innerHTML = Protected(this)._render()
-                else if (Private(this).__renderMode === 'append')
-                    Protected(this)._root.insertAdjacentHTML('beforeend', Protected(this)._render())
+                if (['replace', 'shadow'].includes(this.__renderMode))
+                    this._root.innerHTML = this._render()
+                else if (this.__renderMode === 'append')
+                    this._root.insertAdjacentHTML('beforeend', this._render())
             })
         },
 
         private: {
             get __renderMode() {
-                return Public(this).constructor.htmlRenderMode || "shadow"
+                return this.constructor.htmlRenderMode || "shadow"
             },
         },
 
@@ -52,11 +52,11 @@ function BasicHTMLRenderer(Base = {}) {
             },
 
             get _root() {
-                if (['replace', 'append'].includes(Private(this).__renderMode))
-                    return Public(this)
+                if (['replace', 'append'].includes(this.__renderMode))
+                    return this
 
-                if (Private(this).__renderMode === 'shadow')
-                    return Private(this).__root || (Private(this).__root = Public(this).attachShadow({mode: 'open'}))
+                if (this.__renderMode === 'shadow')
+                    return this.__root || (this.__root = this.attachShadow({mode: 'open'}))
             },
         },
     }), BasicHTMLRendererBrand)
@@ -77,7 +77,7 @@ const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
 
         if (modifiedProps.color) {
             this.shouldRender()
@@ -87,7 +87,7 @@ const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super
     protected: {
         _render() {
             // const {r, g, b} = { r: 244/255, g: 196/255, b: 48/255 }
-            const {r, g, b} = Public(this).color
+            const {r, g, b} = this.color
 
             // prettier-ignore
             return html`
@@ -124,7 +124,7 @@ const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super
 
 customElements.define('shimmer-surface', ShimmerSurface)
 
-const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({ Super, Public }) => ({
+const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Public}) => ({
     static: {
         props: {
             ...infamous.Node.props,
@@ -135,7 +135,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({ Super, Pub
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
 
         if (modifiedProps.color) {
             this.shouldRender()
@@ -143,9 +143,8 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({ Super, Pub
     },
 
     protected: {
-
         _render() {
-            const {r, g, b} = Public(this).color
+            const {r, g, b} = this.color
 
             // prettier-ignore
             const cubeFaceOrientations = [
@@ -160,7 +159,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({ Super, Pub
             // prettier-ignore
             return html`
                 <i-box
-                    ${Public(this).id ? `id="${Public(this).id}-box"` : ``}
+                    ${this.id ? `id="${this.id}-box"` : ``}
                     color="#364659"
                     size-mode="proportional proportional proportional"
                     size="1 1 1"
@@ -171,7 +170,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({ Super, Pub
 
                 ${cubeFaceOrientations.map(orientation => html`
                     <shimmer-surface
-                        ${Public(this).id ? `id="${Public(this).id}-shimmer-surface"` : ``}
+                        ${this.id ? `id="${this.id}-shimmer-surface"` : ``}
                         color="rgb(${r*255}, ${g*255}, ${b*255})"
                         size-mode="proportional proportional proportional"
                         size="1 1 1"
