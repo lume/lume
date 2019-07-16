@@ -8,7 +8,12 @@ import {
 } from 'three'
 import {Scene} from './Scene'
 
-const sceneStates = new WeakMap()
+interface SceneState {
+    renderer: WebGLRenderer
+    sizeChangeHandler: () => void
+}
+
+const sceneStates = new WeakMap<Scene, SceneState>()
 
 let instance: WebGLRendererThree | null = null
 let isCreatingSingleton = false
@@ -57,7 +62,7 @@ export class WebGLRendererThree {
                     antialias: true,
                 }),
 
-                sizeChangeHandler: null,
+                sizeChangeHandler: () => this.updateResolution(scene),
             })
         )
 
@@ -70,7 +75,6 @@ export class WebGLRendererThree {
 
         this.updateResolution(scene)
 
-        sceneState.sizeChangeHandler = () => this.updateResolution(scene)
         scene.on('sizechange', sceneState.sizeChangeHandler)
 
         // TODO? Maybe the html/scene.js element should be responsible for
@@ -85,20 +89,25 @@ export class WebGLRendererThree {
         const sceneState = sceneStates.get(scene)
 
         if (!sceneState) return
+
         scene.off('sizechange', sceneState.sizeChangeHandler)
+
         // @ts-ignore: access protected member
         scene._glLayer
             //
             .removeChild(sceneState.renderer.domElement)
+
         sceneState.renderer.dispose()
-        sceneState.renderer = null
-        sceneState.sizeChangeHandler = null
 
         sceneStates.delete(scene)
     }
 
     drawScene(scene: Scene) {
-        const {renderer} = sceneStates.get(scene)
+        const sceneState = sceneStates.get(scene)
+
+        if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
+
+        const {renderer} = sceneState
 
         renderer.render(scene.three, scene.threeCamera)
     }
@@ -110,6 +119,9 @@ export class WebGLRendererThree {
     // the loop. #66
     updateResolution(scene: Scene) {
         const state = sceneStates.get(scene)
+
+        if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
+
         // @ts-ignore: access protected member
         scene._updateCameraAspect()
         // @ts-ignore: access protected member
@@ -123,31 +135,41 @@ export class WebGLRendererThree {
     }
 
     setClearColor(scene: Scene, color: any, opacity: number) {
-        sceneStates.get(scene).renderer.setClearColor(color, opacity)
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to set clear color. Scene state should be initialized first.')
+        state.renderer.setClearColor(color, opacity)
     }
 
     setClearAlpha(scene: Scene, opacity: number) {
-        sceneStates.get(scene).renderer.setClearAlpha(opacity)
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to set clear alpha. Scene state should be initialized first.')
+        state.renderer.setClearAlpha(opacity)
     }
 
     setShadowMapType(scene: Scene, type: ShadowMapTypeString) {
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to set clear alpha. Scene state should be initialized first.')
+
         // TODO shouldn't need a cast here. Bug on TypeScript: https://github.com/microsoft/TypeScript/issues/32054
         type = type.toLowerCase() as ShadowMapTypeString
 
         if (type == 'pcf') {
-            sceneStates.get(scene).renderer.shadowMap.type = PCFShadowMap
+            state.renderer.shadowMap.type = PCFShadowMap
         } else if (type == 'pcfsoft') {
-            sceneStates.get(scene).renderer.shadowMap.type = PCFSoftShadowMap
+            state.renderer.shadowMap.type = PCFSoftShadowMap
         } else if (type == 'basic') {
-            sceneStates.get(scene).renderer.shadowMap.type = BasicShadowMap
+            state.renderer.shadowMap.type = BasicShadowMap
         } else {
             // default
-            sceneStates.get(scene).renderer.shadowMap.type = PCFShadowMap
+            state.renderer.shadowMap.type = PCFShadowMap
         }
     }
 
     requestFrame(scene: Scene, fn: FrameRequestCallback) {
-        const renderer = sceneStates.get(scene).renderer
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to request frame. Scene state should be initialized first.')
+
+        const {renderer} = state
 
         if (renderer.animate)
             // < r94
@@ -160,13 +182,19 @@ export class WebGLRendererThree {
     // TODO: at the moment this has only been tested toggling it on
     // once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
     enableVR(scene: Scene, enable: boolean) {
-        const renderer = sceneStates.get(scene).renderer
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
+
+        const {renderer} = state
         renderer.vr.enabled = enable
     }
 
     // TODO the UI here should be configurable via HTML
     createDefaultWebVREntryUI(scene: Scene) {
-        const renderer = sceneStates.get(scene).renderer
+        const state = sceneStates.get(scene)
+        if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
+
+        const {renderer} = state
 
         window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false)
         window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false)

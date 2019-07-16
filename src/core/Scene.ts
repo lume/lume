@@ -52,6 +52,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
         disableCss!: boolean
 
         three!: ThreeScene
+        threeCSS!: ThreeScene
+        threeCamera!: ThreePerspectiveCamera
 
         isScene = true
 
@@ -228,8 +230,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
         protected _makeThreeCSSObject() {
             return new ThreeScene()
         }
-
-        threeCamera: ThreePerspectiveCamera | null = null
 
         protected _cameraSetup() {
             // this.threeCamera holds the active camera. There can be many

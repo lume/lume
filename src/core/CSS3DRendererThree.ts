@@ -1,7 +1,12 @@
 import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
 import {Scene} from './Scene'
 
-const sceneStates = new WeakMap()
+interface SceneState {
+    renderer: CSS3DRendererNested
+    sizeChangeHandler: () => void
+}
+
+const sceneStates = new WeakMap<Scene, SceneState>()
 
 let instance: CSS3DRendererThree | null = null
 let isCreatingSingleton = false
@@ -36,6 +41,7 @@ export class CSS3DRendererThree {
             scene,
             (sceneState = {
                 renderer: new CSS3DRendererNested(),
+                sizeChangeHandler: () => this.updateResolution(scene),
             })
         )
 
@@ -43,7 +49,6 @@ export class CSS3DRendererThree {
 
         this.updateResolution(scene)
 
-        sceneState.sizeChangeHandler = () => this.updateResolution(scene)
         scene.on('sizechange', sceneState.sizeChangeHandler)
 
         // @ts-ignore: access protected property
@@ -64,20 +69,23 @@ export class CSS3DRendererThree {
             //
             .removeChild(sceneState.renderer.domElement)
 
-        sceneState.renderer = null
-        sceneState.sizeChangeHandler = null
-
         sceneStates.delete(scene)
     }
 
     drawScene(scene: Scene) {
-        const {renderer} = sceneStates.get(scene)
+        const sceneState = sceneStates.get(scene)
+
+        if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
+
+        const {renderer} = sceneState
 
         renderer.render(scene.threeCSS, scene.threeCamera)
     }
 
     updateResolution(scene: Scene) {
         const state = sceneStates.get(scene)
+
+        if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
         // @ts-ignore: call protected method
         scene._updateCameraAspect()

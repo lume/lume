@@ -28,7 +28,7 @@ export class CSS3DNestedSprite extends CSS3DObjectNested {}
 //
 
 export class CSS3DRendererNested {
-    private domElement: HTMLDivElement
+    domElement: HTMLDivElement
     private matrix = new THREE.Matrix4()
 
     private cache = {
