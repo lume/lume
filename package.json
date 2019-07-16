@@ -76,7 +76,7 @@
         "all-contributors-cli": "^4.4.0",
         "babel-eslint": "8.2.6",
         "builder": "4.0.0",
-        "builder-js-package": "trusktr/builder-js-package#feature/typescript",
+        "builder-js-package": "trusktr/builder-js-package#17d73e2f28678773d7ebb731d96e7b114e49b368",
         "docpress": "0.7.1",
         "eslint": "5.2.0",
         "eslint-config-prettier": "^3.1.0",
