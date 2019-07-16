@@ -1,3 +1,5 @@
+import {Constructor} from 'lowclass'
+
 export class EventTypes {
     constructor(
         // Listen to this event on an element to run custom logic after the

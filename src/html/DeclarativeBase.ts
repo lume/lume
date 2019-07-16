@@ -2,7 +2,8 @@
 
 import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
-import {observeChildren, hasShadowDomV1, Constructor} from '../core/Utility'
+import {observeChildren, hasShadowDomV1} from '../core/Utility'
+import {Constructor} from 'lowclass'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 

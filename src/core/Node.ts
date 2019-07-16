@@ -1,9 +1,8 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
 import {props, mapPropTo} from './props'
-import {Constructor} from './Utility'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'

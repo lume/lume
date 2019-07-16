@@ -68,7 +68,7 @@
         "jss-px": "^1.0.0",
         "jss-vendor-prefixer": "^1.0.0",
         "live-server": "^1.2.1",
-        "lowclass": "trusktr/lowclass#feature/typescript",
+        "lowclass": "^4.7.0",
         "regexr": "^1.5.1",
         "three": "^0.103.0"
     },

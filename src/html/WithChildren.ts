@@ -1,5 +1,5 @@
-import {Mixin, MixinResult} from 'lowclass'
-import {observeChildren, Constructor} from '../core/Utility'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
+import {observeChildren} from '../core/Utility'
 import {PossibleCustomElement, PossibleCustomElementConstructor} from './WithUpdate'
 
 // polyfill for Node.isConnected based on Ryosuke Niwa's

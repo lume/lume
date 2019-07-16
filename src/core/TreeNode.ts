@@ -1,9 +1,6 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import WithUpdate from '../html/WithUpdate'
-import {Constructor} from './Utility'
-// import TreeNode from './TreeNode'
 
-// function TreeNodeMixin<T extends Constructor>(Base: T) {
 export function TreeNodeMixin<T extends Constructor>(Base: T) {
     // TODO WithUpdate.mixin isn't enforcing that we pass Constructor
     // constrained to extend from HTMLElement

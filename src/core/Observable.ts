@@ -1,12 +1,8 @@
-import {Mixin, MixinResult} from 'lowclass'
-import {Constructor} from './Utility'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {Nothing} from '../html/utils'
 
 // TODO strongly typed events. Combine with stuff in Events.ts
 
-// XXX Could it need to be `T extends Constructor<{}>` instead of `T extends typeof Object`?
-// const ObservableMixin = <T extends typeof Object>(Base: T) => {
-// function ObservableMixin<T extends Constructor>(Base: T) {
 export function ObservableMixin<T extends Constructor>(Base: T) {
     class Observable extends Constructor(Base) {
         on(eventName: string, callback: Function, context?: any) {

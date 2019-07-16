@@ -1,9 +1,5 @@
-type Constructor<T = object, A extends any[] = any[]> = new (...a: A) => T
-
 // TODO regexr types
-declare module 'regexr' {
-    export default any
-}
+declare module 'regexr'
 
 declare module '@awaitbox/document-ready' {
     export default function documentReady(): Promise<void>
@@ -18,10 +14,13 @@ declare module 'james-bond'
 declare module 'jss'
 
 declare module 'element-behaviors' {
+    import {Constructor} from 'lowclass'
+
     class ElementBehaviors {
         define(name: string, Class: Constructor): void
     }
-    declare global {
+
+    global {
         const elementBehaviors: ElementBehaviors
     }
 }

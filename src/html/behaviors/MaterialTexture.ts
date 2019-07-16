@@ -1,7 +1,6 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {TextureLoader, MeshPhongMaterial} from 'three'
 import WithUpdate from '../WithUpdate'
-import {Constructor} from '../../core/Utility'
 import Behavior from './Behavior'
 import {Mesh} from '../../core'
 

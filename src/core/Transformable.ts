@@ -1,10 +1,10 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {Object3D} from 'three'
 import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable, {SizeProp} from './Sizeable'
 import {props} from './props'
-import {toRadians, Constructor} from './Utility'
+import {toRadians} from './Utility'
 
 // TODO, this module augmentation doesn't work as prescribed in
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation

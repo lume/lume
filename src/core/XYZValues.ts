@@ -1,6 +1,5 @@
 import Observable from './Observable'
 import r from 'regexr'
-console.log(r)
 
 // StrictUnion<A | B | C>
 // see https://github.com/trusktr/typebox/blob/master/src/StrictUnion.ts

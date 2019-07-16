@@ -1,5 +1,3 @@
-import {Constructor} from 'lowclass'
-
 function epsilon(value: any) {
     return Math.abs(value) < 0.000001 ? 0 : value
 }
@@ -102,10 +100,6 @@ function toRadians(degrees: number): number {
     return (degrees / 180) * Math.PI
 }
 
-function Constructor<T = object, Static = {}>(Ctor: Constructor<any>) {
-    return (Ctor as unknown) as Constructor<T> & Static
-}
-
 export {
     epsilon,
     applyCSSLabel,
@@ -116,5 +110,4 @@ export {
     // polyfillable.
     documentBody,
     toRadians,
-    Constructor,
 }

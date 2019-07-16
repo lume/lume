@@ -2,7 +2,7 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import documentReady from '@awaitbox/document-ready'
 import {
     Scene as ThreeScene,
@@ -18,7 +18,7 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
 import {props} from './props'
-import {documentBody, Constructor} from './Utility'
+import {documentBody} from './Utility'
 import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'

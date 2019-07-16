@@ -1,11 +1,10 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import Observable from './Observable'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
 import {props} from './props'
-import {Constructor} from './Utility'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 type XYZValuesArray<T> = import('./XYZValues').XYZValuesArray<T>
 

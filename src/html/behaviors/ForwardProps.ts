@@ -1,6 +1,5 @@
 import {observe, unobserve} from 'james-bond'
-import {Mixin, MixinResult} from 'lowclass'
-import {Constructor} from '../../core/Utility'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {PossibleCustomElement} from '../WithUpdate'
 
 function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {

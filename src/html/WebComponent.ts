@@ -1,8 +1,7 @@
-import {Mixin, MixinResult} from 'lowclass'
+import {Mixin, MixinResult, Constructor} from 'lowclass'
 import jss from '../lib/jss'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
 import WithChildren from './WithChildren'
-import {Constructor} from '../core/Utility'
 import {PossibleCustomElement} from './WithUpdate'
 
 // Very very bad hack needed for Safari in order for us to be able to extend

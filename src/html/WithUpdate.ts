@@ -1,9 +1,8 @@
 // forked from https://www.npmjs.com/package/skatejs v5.2.4
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
-import {Mixin, getInheritedDescriptor, MixinResult} from 'lowclass'
+import {Mixin, getInheritedDescriptor, MixinResult, Constructor} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
-import {Constructor} from '../core/Utility'
 
 // TODO This class is currently unused. We'll see about refactoring to make
 // _props private instead of protected, in which case this will be a protected

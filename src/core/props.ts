@@ -5,6 +5,7 @@ import XYZNumberValues from './XYZNumberValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import XYZStringValues from './XYZStringValues'
 import XYZSizeModeValues from './XYZSizeModeValues'
+import {Constructor} from 'lowclass'
 
 // NOTES
 // - In a prop definition's functions, `this` refers to instances of the class
