@@ -56,7 +56,7 @@
         "army-knife": "^0.2.1",
         "autolayout": "^0.7.0",
         "element-behaviors": "^2.1.0",
-        "famous": "trusktr/famous#commonjs",
+        "famous": "0.3.5",
         "famousify": "^0.1.5",
         "geometry-interfaces": "^1.1.3",
         "james-bond": "^0.4.2",
