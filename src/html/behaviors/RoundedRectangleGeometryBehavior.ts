@@ -18,8 +18,8 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 
     // element!: RoundedRectangle
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+    updated(modifiedProps: any) {
+        super.updated(modifiedProps)
 
         if (modifiedProps.cornerRadius) {
             // TODO this is extra work if super.updated already called this. See

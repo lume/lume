@@ -50,11 +50,14 @@ function SizeableMixin<T extends Constructor>(Base: T) {
             this.__calculatedSize = {x: 0, y: 0, z: 0}
             this._properties = this._props // alias to WithUpdate._props
             this._setPropertyObservers()
-            this.properties = options
+
+            // is there a better way, without having to expose public "properties" or "props" properties like we did before?
+            // this.properties = options
+            Object.assign(this, options)
         }
 
         // TODO types for props
-        updated(_oldProps: any, modifiedProps: any) {
+        updated(modifiedProps: any) {
             if (!this.isConnected) return
 
             // this covers single-valued properties like opacity, but has the
@@ -131,24 +134,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
             // TODO
             // if (this.__sizeDirty) Protected(this._calcSize)
             return {...this.__calculatedSize}
-        }
-
-        /**
-         * Set all properties of a Sizeable in one method.
-         *
-         * @param {Object} properties Properties object - see example
-         *
-         * @example
-         * node.properties = {
-         *   sizeMode: {x:'literal', y:'proportional', z:'literal'},
-         *   size: {x:300, y:0.2, z:200},
-         * }
-         */
-        set properties(properties) {
-            this.props = properties
-        }
-        get properties() {
-            return this.props
         }
 
         makeDefaultProps() {

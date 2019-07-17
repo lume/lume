@@ -59,8 +59,8 @@ function NodeMixin<T extends Constructor>(Base: T) {
             }
         }
 
-        updated(oldProps: any, modifiedProps: any) {
-            super.updated(oldProps, modifiedProps)
+        updated(modifiedProps: any) {
+            super.updated(modifiedProps)
 
             if (modifiedProps.visible) {
                 console.log(

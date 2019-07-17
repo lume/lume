@@ -16,7 +16,7 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
     size!: XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
     sizeMode!: XYZSizeModeValues | XYZPartialValuesArray<SizeModeValue> | XYZPartialValuesObject<SizeModeValue> | string
 
-    updated(_oldProps: any, modifiedProps: any) {
+    updated(modifiedProps: any) {
         const {size, sizeMode} = modifiedProps
 
         if (size || sizeMode) {

@@ -162,7 +162,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
             this._mounted = false
         }
 
-        updated(oldProps: any, moddedProps: any) {
+        updated(moddedProps: any) {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
@@ -177,7 +177,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
             // call super.updated() after the above _triggerLoadGL() so that WebGL
             // stuff will be ready in super.updated()
-            super.updated(oldProps, moddedProps)
+            super.updated(moddedProps)
 
             // if this.experimentalWebgl is true, then this.__glRenderer is defined in the following
             if (this.experimentalWebgl) {

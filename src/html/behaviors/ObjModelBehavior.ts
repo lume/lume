@@ -28,7 +28,7 @@ export default class ObjModelBehavior extends Behavior {
     objLoader: any
     mtlLoader: any
 
-    updated(_oldProps: any, modifiedProps: any) {
+    updated(modifiedProps: any) {
         if (modifiedProps.obj || modifiedProps.mtl) {
             // TODO if only mtl changes, maybe we can update only the material
             // instead of reloading the whole object?

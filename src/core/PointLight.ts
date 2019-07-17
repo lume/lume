@@ -54,8 +54,8 @@ export default class PointLight extends LightBase {
         shadow.camera.far = this.shadowCameraFar
     }
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+    updated(modifiedProps: any) {
+        super.updated(modifiedProps)
 
         if (!this.isConnected) return
 

@@ -23,8 +23,8 @@ export default class LightBase extends Node {
         this.three.intensity = this.intensity
     }
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+    updated(modifiedProps: any) {
+        super.updated(modifiedProps)
 
         if (!this.isConnected) return
 

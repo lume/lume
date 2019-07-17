@@ -14,7 +14,7 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
     color!: Color | string | number
     opacity!: number
 
-    updated(_oldProps: any, modifiedProps: any) {
+    updated(modifiedProps: any) {
         const {color, opacity} = modifiedProps
 
         if (color) this.updateMaterial('color')

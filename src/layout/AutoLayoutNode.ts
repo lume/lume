@@ -85,8 +85,8 @@ export default class AutoLayoutNode extends Node {
         }
     }
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+    updated(modifiedProps: any) {
+        super.updated(modifiedProps)
         if (modifiedProps.visualFormat) {
             this.setVisualFormat(this.visualFormat)
         }

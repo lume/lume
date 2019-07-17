@@ -2,7 +2,7 @@
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
 import {Mixin, getInheritedDescriptor, MixinResult, Constructor} from 'lowclass'
-import {dashCase, empty, unique, pick, identity} from './utils'
+import {dashCase, empty, unique, identity} from './utils'
 
 // TODO This class is currently unused. We'll see about refactoring to make
 // _props private instead of protected, in which case this will be a protected
@@ -38,16 +38,7 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
     const Parent = Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base)
 
     class WithUpdate extends Parent {
-        static _staticProps?: any
-
-        static get props() {
-            if (!this._staticProps) this._staticProps = {}
-            return this._staticProps
-        }
-
-        static set props(props) {
-            this._staticProps = props
-        }
+        static props?: any
 
         private static _attributeToAttributeMap?: any
         private static _attributeToPropertyMap?: any
@@ -66,14 +57,15 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             return unique(this._observedAttributes.concat(Parent.observedAttributes || []))
         }
 
-        private __prevProps?: any
         private __modifiedProps?: any
         protected _props?: any
 
+        // a jquery-like interfae for querying (grand)children could be cool.
+        // $?: any
+        // scene.$('.car')
+
         constructor(...args: any[]) {
             super(...args)
-
-            this.__prevProps = {}
 
             // this._props extends from __existingPrototypeValues in case we
             // overwrote a prototype property that had an existing value during
@@ -91,15 +83,6 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             // Protected(this)._props = new PropsReadonly(this)
 
             this.__modifiedProps = {}
-        }
-
-        get props(this: any): any {
-            return pick(this, Object.keys(this.constructor.props))
-        }
-
-        set props(props: any) {
-            // const ctorProps = (this.constructor as any).props
-            Object.keys(props).forEach((k: string) => /*k in ctorProps && */ (this[k] = props[k]))
         }
 
         attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
@@ -140,14 +123,17 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             this.triggerUpdate()
         }
 
-        shouldUpdate(_prevProps: any, _modifiedProps: any) {
-            return true
-        }
+        /**
+         * If a subclass implements this, then we only call `updated()` is
+         * shouldUpdate returns true. If a subclass doesn't implement it, we
+         * assume that `update()` should be called.
+         */
+        shouldUpdate?(modifiedProps: any): boolean
+
+        updating?(modifiedProps: any): void
+        updated?(modifiedProps: any): void
 
         private __updating?: boolean
-
-        updating?(prevProps: any, modifiedProps: any): void
-        updated?(prevProps: any, modifiedProps: any): void
 
         triggerUpdate() {
             if (this.__updating) {
@@ -155,14 +141,13 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             }
             this.__updating = true
             delay(() => {
-                const {__prevProps, __modifiedProps} = this
+                const {__modifiedProps} = this
                 if (this.updating) {
-                    this.updating(__prevProps, __modifiedProps)
+                    this.updating(__modifiedProps)
                 }
-                if (this.updated && this.shouldUpdate(__prevProps, __modifiedProps)) {
-                    this.updated(__prevProps, __modifiedProps)
+                if (this.updated && (!this.shouldUpdate || (this.shouldUpdate && this.shouldUpdate(__modifiedProps)))) {
+                    this.updated(__modifiedProps)
                 }
-                this.__prevProps = this.props
                 const {_propNames} = this.constructor as any
                 for (let i = 0, l = _propNames.length; i < l; i += 1) this.__modifiedProps[_propNames[i]] = false
                 this.__updating = false

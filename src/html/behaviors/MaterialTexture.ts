@@ -18,8 +18,8 @@ function MaterialTextureMixin<T extends Constructor<Behavior>>(Base: T) {
         texture!: string
         element!: Mesh
 
-        updated(oldProps: any, modifiedProps: any) {
-            super.updated && super.updated(oldProps, modifiedProps)
+        updated(modifiedProps: any) {
+            super.updated && super.updated(modifiedProps)
 
             const {texture} = modifiedProps
 

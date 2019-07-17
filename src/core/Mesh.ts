@@ -53,8 +53,8 @@ export default class Mesh extends Node {
         this.three.receiveShadow = this.receiveShadow
     }
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+    updated(modifiedProps: any) {
+        super.updated(modifiedProps)
 
         if (!this.isConnected) return
 
