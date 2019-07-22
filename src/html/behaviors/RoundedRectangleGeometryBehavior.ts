@@ -3,10 +3,10 @@ import {Shape /*, ShapeGeometry*/, ExtrudeGeometry} from 'three'
 // import {RoundedRectangle} from '../../components/RoundedRectangle'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 import {props, changePropContext} from '../../core/props'
+import {Props} from '../WithUpdate'
 
 export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
-    static props = {
-        ...BaseGeometryBehavior.props,
+    static props: Props = {
         cornerRadius: changePropContext(props.number, (self: any) => self.element),
     }
 

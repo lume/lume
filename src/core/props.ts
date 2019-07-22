@@ -1,4 +1,4 @@
-import {props as basicProps} from '../html/WithUpdate'
+import {props as basicProps, PropDefinitionObject} from '../html/WithUpdate'
 import {Color} from 'three'
 import XYZValues from './XYZValues'
 import XYZNumberValues from './XYZNumberValues'
@@ -18,7 +18,7 @@ type XYZValuesConstructor = new (...args: any[]) => XYZValues
 // Behavior class hierarchies.
 function createXYZPropType<T extends XYZValuesConstructor, I extends InstanceType<T>>(_Type: T, override = {}) {
     return {
-        attribute: {source: true, target: false}, // get the value from an attribute (but don't mirror it back)
+        attribute: true, // get the value from an attribute (but don't reflect it back)
         coerce(this: any, val: any, propName: string): I {
             // if we have a property function, pass it along as is
             if (typeof val === 'function') return val
@@ -44,7 +44,7 @@ function createXYZPropType<T extends XYZValuesConstructor, I extends InstanceTyp
 
 function createGenericPropType<T extends Constructor<{}>>(Type: T, override = {}) {
     return {
-        attribute: {source: true, target: false}, // get the value from an attribute (but don't mirror it back)
+        attribute: true, // get the value from an attribute (but don't mirror it back)
         coerce: (val: any) => (val instanceof Type ? val : new Type(val)),
         default: new Type(),
         deserialize: (val: string) => new Type(val),
@@ -80,17 +80,9 @@ export const props = {
     XYZSizeModeValues: createXYZPropType(XYZSizeModeValues),
 }
 
-type PropDefinition<T = any> = {
-    // attribute?: {source?: boolean; target?: boolean}
-    coerce?<This>(this: This, val: any, propName: string): T
-    default?: T | (<This>(this: This, propName: string) => T)
-    deserialize?<This>(this: This, val: string, propName: string): T
-    serialize?<This>(this: This, val: any, propName: string): string
-}
-
 // map a SkateJS prop value to another target specified by getTarget
 // NOTE `this` refers to the instance on which the prop exists
-export const mapPropTo = (prop: PropDefinition, getTarget: (ctx: any) => object) => ({
+export const mapPropTo = (prop: PropDefinitionObject, getTarget: (ctx: any) => object) => ({
     ...prop,
     coerce: prop.coerce
         ? function coerce(this: any, val: any, key: string): any {
@@ -110,7 +102,7 @@ export const mapPropTo = (prop: PropDefinition, getTarget: (ctx: any) => object)
         : undefined,
 })
 
-export const changePropContext = (prop: PropDefinition, getContext: (ctx: any) => any) => ({
+export const changePropContext = (prop: PropDefinitionObject, getContext: (ctx: any) => any) => ({
     ...prop,
     coerce: prop.coerce
         ? function coerce(this: any, val: any, propName: string) {

@@ -1,12 +1,13 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 import {props} from '../../core/props'
 import {Color, MeshPhongMaterial} from 'three'
+import {Props} from '../WithUpdate'
 
 // base class for geometry behaviors
 export default class BaseMaterialBehavior extends BaseMeshBehavior {
     type: MeshComponentType = 'material'
 
-    static props = {
+    static props: Props = {
         color: props.THREE.Color,
         opacity: {...props.number, default: 1},
     }

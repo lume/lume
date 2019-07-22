@@ -5,6 +5,7 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
 import {props} from './props'
+import {Props} from '../html/WithUpdate'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 type XYZValuesArray<T> = import('./XYZValues').XYZValuesArray<T>
 
@@ -32,8 +33,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
     class Sizeable extends Parent {
-        static props = {
-            ...(Parent.props || {}),
+        static props: Props = {
             size: props.XYZNonNegativeValues, // FIXME the whole app breaks on a negative value. Handle the error.
             sizeMode: props.XYZSizeModeValues,
         }

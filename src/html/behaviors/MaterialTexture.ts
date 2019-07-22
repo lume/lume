@@ -1,6 +1,6 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {TextureLoader, MeshPhongMaterial} from 'three'
-import WithUpdate from '../WithUpdate'
+import WithUpdate, {Props} from '../WithUpdate'
 import Behavior from './Behavior'
 import {Mesh} from '../../core'
 
@@ -10,8 +10,7 @@ import {Mesh} from '../../core'
 function MaterialTextureMixin<T extends Constructor<Behavior>>(Base: T) {
     // TODO, use a Pick<> of HTMLElement instead, pick just parts WithUpdate needs.
     class MaterialTexture extends WithUpdate.mixin(Constructor<Behavior>(Base)) {
-        static props = {
-            ...((Base as any).props || {}),
+        static props: Props = {
             texture: String,
         }
 

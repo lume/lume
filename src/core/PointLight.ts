@@ -2,12 +2,12 @@ import {PointLight as ThreePointLight} from 'three'
 import LightBase from './LightBase'
 import {props} from './props'
 import {mapPropTo} from './props'
+import {Props} from '../html/WithUpdate'
 
 export default class PointLight extends LightBase {
     static defaultElementName = 'i-point-light'
 
-    static props = {
-        ...LightBase.props,
+    static props: Props = {
         distance: mapPropTo({...props.number, default: 0}, (self: any) => self.three),
         decay: mapPropTo({...props.number, default: 1}, (self: any) => self.three),
         castShadow: mapPropTo({...props.boolean, default: true}, (self: any) => self.three),

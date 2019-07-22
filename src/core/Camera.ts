@@ -2,6 +2,7 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
 import {props} from './props'
 import Node from './Node'
 import {Scene} from './Scene'
+import {Props} from '../html/WithUpdate'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
@@ -10,18 +11,18 @@ export default class PerspectiveCamera extends Node {
     static defaultElementName = 'i-perspective-camera'
 
     // TODO remove attributeChangedCallback, replace with updated based on these props
-    static props = {
-        ...(Node.props || {}),
+    static props: Props = {
         fov: {...props.number, default: 75},
         aspect: {
             ...props.number,
             default(): any {
                 return this._getDefaultAspect()
             },
-            deserialize(val: any) {
-                val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
+            deserialize(val: any, name: string) {
+                // TODO TS NormalizedPropDefinition, and remove the following non-null assertion
+                val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize!(val, name)
             },
-        },
+        } as ThisType<any>, // TODO TS `this` type for props
         near: {...props.number, default: 0.1},
         far: {...props.number, default: 1000},
         zoom: {...props.number, default: 1},

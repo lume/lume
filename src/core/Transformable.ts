@@ -5,6 +5,8 @@ import XYZNumberValues from './XYZNumberValues'
 import Sizeable, {SizeProp} from './Sizeable'
 import {props} from './props'
 import {toRadians} from './Utility'
+import {Props} from '../html/WithUpdate'
+// import {prop} from '../html/WithUpdate'
 
 // TODO, this module augmentation doesn't work as prescribed in
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
@@ -54,8 +56,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
     class Transformable extends Parent {
-        static props = {
-            ...(Parent.props || {}),
+        static props: Props = {
             position: props.XYZNumberValues,
             rotation: props.XYZNumberValues,
             scale: props.XYZNumberValues,
@@ -86,6 +87,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis rotation to apply.
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
+        // @prop(props.XYZNumberValues)
         set rotation(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('rotation', newValue)
         }

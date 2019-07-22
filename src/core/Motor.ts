@@ -91,7 +91,7 @@ class _Motor {
      * -- silence, crickets.
      */
     private async __startAnimationLoop() {
-        if (document.readyState === 'loading') await new Promise(resolve => setTimeout(resolve))
+        // if (document.readyState === 'loading') await new Promise(resolve => setTimeout(resolve))
 
         if (this.__loopStarted) return
 

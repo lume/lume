@@ -7,6 +7,7 @@ import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../.
 import {Object3D} from 'three'
 // import * as THREE from 'three' // this import needed for OBJLoader and MTLLoader
 import BaseMaterialBehavior from './BaseMaterialBehavior'
+import {Props} from '../WithUpdate'
 
 declare global {
     interface Element {
@@ -15,7 +16,7 @@ declare global {
 }
 
 export default class ObjModelBehavior extends Behavior {
-    static props = {
+    static props: Props = {
         obj: String, // path to obj file
         mtl: String, // path to mtl file
     }
