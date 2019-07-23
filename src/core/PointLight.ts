@@ -2,31 +2,36 @@ import {PointLight as ThreePointLight} from 'three'
 import LightBase from './LightBase'
 import {props} from './props'
 import {mapPropTo} from './props'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 export default class PointLight extends LightBase {
     static defaultElementName = 'i-point-light'
 
-    static props: Props = {
-        distance: mapPropTo({...props.number, default: 0}, (self: any) => self.three),
-        decay: mapPropTo({...props.number, default: 1}, (self: any) => self.three),
-        castShadow: mapPropTo({...props.boolean, default: true}, (self: any) => self.three),
-        shadowMapWidth: {...props.number, default: 512},
-        shadowMapHeight: {...props.number, default: 512},
-        shadowRadius: {...props.number, default: 3},
-        shadowBias: {...props.number, default: 0},
-        shadowCameraNear: {...props.number, default: 1},
-        shadowCameraFar: {...props.number, default: 2000},
-    }
-
+    @prop(mapPropTo({...props.number, default: 0}, (self: any) => self.three))
     distance!: number
+
+    @prop(mapPropTo({...props.number, default: 1}, (self: any) => self.three))
     decay!: number
+
+    @prop(mapPropTo({...props.boolean, default: true}, (self: any) => self.three))
     castShadow!: boolean
+
+    @prop({...props.number, default: 512})
     shadowMapWidth!: number
+
+    @prop({...props.number, default: 512})
     shadowMapHeight!: number
+
+    @prop({...props.number, default: 3})
     shadowRadius!: number
+
+    @prop({...props.number, default: 0})
     shadowBias!: number
+
+    @prop({...props.number, default: 1})
     shadowCameraNear!: number
+
+    @prop({...props.number, default: 2000})
     shadowCameraFar!: number
 
     three!: ThreePointLight

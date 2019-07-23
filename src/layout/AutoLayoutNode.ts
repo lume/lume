@@ -23,7 +23,7 @@ import * as AutoLayout from 'autolayout'
 import Node from '../core/Node'
 import Motor from '../core/Motor'
 import {XYZPartialValuesArray} from '../core/XYZValues'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 export {AutoLayout}
 
@@ -49,10 +49,7 @@ export default class AutoLayoutNode extends Node {
         strict: false,
     }
 
-    static props: Props = {
-        visualFormat: String,
-    }
-
+    @prop(String)
     visualFormat!: string
 
     /**

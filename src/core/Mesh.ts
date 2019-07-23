@@ -12,7 +12,7 @@ import '../html/behaviors/BoxGeometryBehavior'
 import '../html/behaviors/SphereGeometryBehavior'
 import '../html/behaviors/PlaneGeometryBehavior'
 import '../html/behaviors/DOMNodeGeometryBehavior'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
@@ -37,12 +37,10 @@ export default class Mesh extends Node {
         },
     }
 
-    static props: Props = {
-        castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-        receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-    }
-
+    @prop({...mapPropTo(props.boolean, (self: any) => self.three), default: true})
     castShadow!: boolean
+
+    @prop({...mapPropTo(props.boolean, (self: any) => self.three), default: true})
     receiveShadow!: boolean
 
     three!: ThreeMesh

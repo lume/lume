@@ -2,16 +2,14 @@ import {Color, Light} from 'three'
 import Node from './Node'
 import {props} from './props'
 import {mapPropTo} from './props'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 // base class for light elements.
 export default class LightBase extends Node {
-    static props: Props = {
-        color: mapPropTo({...props.THREE.Color, default: new Color('white')}, (self: any) => self.three),
-        intensity: mapPropTo({...props.number, default: 1}, (self: any) => self.three),
-    }
-
+    @prop(mapPropTo({...props.THREE.Color, default: new Color('white')}, (self: any) => self.three))
     color!: Color | string | number
+
+    @prop(mapPropTo({...props.number, default: 1}, (self: any) => self.three))
     intensity!: number
 
     three!: Light

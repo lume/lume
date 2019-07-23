@@ -5,7 +5,7 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
 import {props} from './props'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 type XYZValuesArray<T> = import('./XYZValues').XYZValuesArray<T>
 
@@ -33,11 +33,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
     class Sizeable extends Parent {
-        static props: Props = {
-            size: props.XYZNonNegativeValues, // FIXME the whole app breaks on a negative value. Handle the error.
-            sizeMode: props.XYZSizeModeValues,
-        }
-
         // TODO remove any
         // protected _properties: (typeof Parent)['_props']
         protected _properties: any
@@ -76,6 +71,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          * Set the size mode for each axis. Possible size modes are "literal"
          * and "proportional". The default values are "literal" for all axes.
          */
+        @prop(props.XYZSizeModeValues)
         set sizeMode(newValue) {
             if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
             this._setPropertyXYZ<Sizeable, SizeProp>('sizeMode', newValue)
@@ -112,6 +108,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis size to apply.
          * @param {number} [newValue.z] The z-axis size to apply.
          */
+        // TODO A scene breaks on a negative values. Should we clamp it to 0?
+        @prop(props.XYZNonNegativeValues)
         set size(newValue) {
             this._setPropertyXYZ<Sizeable, SizeProp>('size', newValue)
         }

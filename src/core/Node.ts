@@ -6,7 +6,7 @@ import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 initImperativeBase()
 
@@ -17,10 +17,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
     class Node extends Parent {
         static defaultElementName = 'i-node'
 
-        static props: Props = {
-            visible: {...mapPropTo(props.boolean, (self: ImperativeBase) => self.three), default: true},
-        }
-
+        @prop({...mapPropTo(props.boolean, (self: ImperativeBase) => self.three), default: true})
         visible!: boolean
 
         isNode = true

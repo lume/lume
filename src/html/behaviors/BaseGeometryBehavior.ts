@@ -2,19 +2,16 @@ import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 import {props, changePropContext} from '../../core/props'
 import XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
 import {XYZSizeModeValues, SizeModeValue, XYZPartialValuesArray, XYZPartialValuesObject} from '../../core'
-import {Props} from '../WithUpdate'
+import {prop} from '../WithUpdate'
 
 // base class for geometry behaviors
 export default class BaseGeometryBehavior extends BaseMeshBehavior {
     type: MeshComponentType = 'geometry'
 
-    static props: Props = {
-        // if we have no props defined here, WithUpdate breaks
-        size: changePropContext(props.XYZNonNegativeValues, (self: BaseGeometryBehavior) => self.element),
-        sizeMode: changePropContext(props.XYZSizeModeValues, (self: BaseGeometryBehavior) => self.element),
-    }
-
+    @prop(changePropContext(props.XYZNonNegativeValues, (self: BaseGeometryBehavior) => self.element))
     size!: XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+
+    @prop(changePropContext(props.XYZSizeModeValues, (self: BaseGeometryBehavior) => self.element))
     sizeMode!: XYZSizeModeValues | XYZPartialValuesArray<SizeModeValue> | XYZPartialValuesObject<SizeModeValue> | string
 
     updated(modifiedProps: any) {

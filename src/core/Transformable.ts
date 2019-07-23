@@ -5,8 +5,13 @@ import XYZNumberValues from './XYZNumberValues'
 import Sizeable, {SizeProp} from './Sizeable'
 import {props} from './props'
 import {toRadians} from './Utility'
-import {Props} from '../html/WithUpdate'
-// import {prop} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
+
+// TODO TS accessor typed also as Array, so that the accessors don't have to be
+// any, because accessor getters and setters currently have to have the same
+// type.
+//
+// type XYZAccessorType<T> = [T, T, T] & {x: T, y: T, z: T} & XYZValues<T>
 
 // TODO, this module augmentation doesn't work as prescribed in
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
@@ -56,16 +61,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
     class Transformable extends Parent {
-        static props: Props = {
-            position: props.XYZNumberValues,
-            rotation: props.XYZNumberValues,
-            scale: props.XYZNumberValues,
-            origin: props.XYZNumberValues,
-            align: props.XYZNumberValues,
-            mountPoint: props.XYZNumberValues,
-            opacity: props.number,
-        }
-
         /**
          * Set the position of the Transformable.
          *
@@ -74,6 +69,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis position to apply.
          * @param {number} [newValue.z] The z-axis position to apply.
          */
+        @prop(props.XYZNumberValues)
         set position(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('position', newValue)
         }
@@ -87,7 +83,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis rotation to apply.
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
-        // @prop(props.XYZNumberValues)
+        @prop(props.XYZNumberValues)
         set rotation(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('rotation', newValue)
         }
@@ -101,6 +97,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis scale to apply.
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
+        @prop(props.XYZNumberValues)
         set scale(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('scale', newValue)
         }
@@ -114,6 +111,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis origin to apply.
          * @param {number} [newValue.z] The z-axis origin to apply.
          */
+        @prop(props.XYZNumberValues)
         set origin(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('origin', newValue)
         }
@@ -127,6 +125,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} opacity A floating point number clamped between 0 and
          * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
+        @prop(props.number)
         set opacity(newValue: any) {
             this._setPropertySingle<Transformable, TransformProp>('opacity', newValue)
         }
@@ -143,6 +142,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis align to apply.
          * @param {number} [newValue.z] The z-axis align to apply.
          */
+        @prop(props.XYZNumberValues)
         set align(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('align', newValue)
         }
@@ -158,6 +158,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
          * @param {number} [newValue.y] The y-axis mountPoint to apply.
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
+        @prop(props.XYZNumberValues)
         set mountPoint(newValue: any) {
             this._setPropertyXYZ<Transformable, TransformProp>('mountPoint', newValue)
         }

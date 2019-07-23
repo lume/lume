@@ -21,7 +21,6 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
     const Parent = Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base)
 
     class WithUpdate extends Parent {
-        // TODO better type.
         static props: Props = {}
 
         // prettier-ignore
@@ -41,15 +40,15 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
         // prettier-ignore
         // @ts-ignore: unused private var is actually used by the prop() implementation
-        private static _attributeToPropertyMap
+        private static __attributeToPropertyMap
             :any = {}
 
         // prettier-ignore
         // @ts-ignore: unused private var is actually used by the prop() implementation
-        private static _propsNormalized
+        private static __propsNormalized
             :Record<string, NormalizedPropDefinition> = {}
 
-        private static _observedAttributes: any = []
+        private static __observedAttributes: any = []
 
         static get observedAttributes(): string[] {
             // We have to define props here because observedAttributes are retrieved
@@ -57,7 +56,7 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             // the constructor, then props would not link to attributes.
             reactive(this)
 
-            return this._observedAttributes.concat(super.observedAttributes || [])
+            return this.__observedAttributes.concat(super.observedAttributes || [])
         }
 
         private __modifiedProps?: any
@@ -89,15 +88,15 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
         }
 
         attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-            const {__propToAttributeMap, _attributeToPropertyMap, _propsNormalized} = this.constructor as any
+            const {__propToAttributeMap, __attributeToPropertyMap, __propsNormalized} = this.constructor as any
 
             if (super.attributeChangedCallback) {
                 super.attributeChangedCallback(name, oldValue, newValue)
             }
 
-            const propertyName = _attributeToPropertyMap[name]
+            const propertyName = __attributeToPropertyMap[name]
             if (propertyName) {
-                const propertyDefinition: NormalizedPropDefinition = _propsNormalized[propertyName] // TODO TS NormalizedPropDefinition type
+                const propertyDefinition: NormalizedPropDefinition = __propsNormalized[propertyName] // TODO TS NormalizedPropDefinition type
                 if (propertyDefinition) {
                     const {default: defaultValue, deserialize} = propertyDefinition
                     const propertyValue =
@@ -221,7 +220,9 @@ export type PropDefinitionObject<T = any> = {
     serialize?<This>(this: This, val: any, propName: string): string | null
 }
 
-export type PropDefinition<T = any> = PropDefinitionObject<T> | Constructor<T> | PropDecorator
+// TODO add RegExp type
+// export type PropDefinition<T = any> = PropDefinitionObject<T> | Constructor<T>
+export type PropDefinition<T = any> = PropDefinitionObject<T> | String | Number | Boolean | Object | Array<any>
 
 type NormalizedPropDefinition<T = any> = {
     attribute: NormalizedAttributeDefinition
@@ -256,8 +257,16 @@ function normalizeAttributeDefinition(name: string, attribute: AttributeDefiniti
     return false
 }
 
-export function normalizePropertyDefinition(name: string, prop: any): NormalizedPropDefinition {
-    const {attribute, coerce, default: def, deserialize, serialize} = prop
+function normalizePropertyDefinition(name: string, definition: any): NormalizedPropDefinition {
+    // f.e. if definition is `String`, `Number`, etc.
+    if (typeof definition === 'function' && defaultTypesMap.has(definition as Constructor))
+        return _normalizePropDefinition(name, defaultTypesMap.get(definition as Constructor)!)
+
+    return _normalizePropDefinition(name, definition)
+}
+
+function _normalizePropDefinition(name: string, definition: PropDefinitionObject): NormalizedPropDefinition {
+    const {attribute, coerce, default: def, deserialize, serialize} = definition
 
     return {
         attribute: normalizeAttributeDefinition(name, attribute),
@@ -268,33 +277,111 @@ export function normalizePropertyDefinition(name: string, prop: any): Normalized
     }
 }
 
-type PropDecorator = PropertyDecorator & PropDefinitionObject
-
-const defaultTypesMap = new Map<Constructor, PropDecorator>()
+const defaultTypesMap = new Map<Constructor, PropDefinitionObject>()
 
 type WithUpdateClass = Omit<typeof WithUpdate, 'mixin'>
 
-function reactive<T extends WithUpdateClass>(constructor: T): T {
-    if (!(constructor as any).__hasWithUpdate)
+/**
+ * Makes the given `Class` reactive, assuming that reactive props have been
+ * defined in the class using the @prop() decorator on the properties that
+ * should be reactive. The class being made reactive must inherit the
+ * `WithUpdate` mixin class.
+ *
+ * @param Class The class to enable reactivity for
+ * @returns The same class that is passed in.
+ *
+ * In environments with support for decorators (latest ES and TypeScript
+ * environments), enable reactivity for the Foo class by using the `@reactive`
+ * and `@prop()` decorators (preferred method):
+ *
+ * ```ts
+ * @reactive
+ * export class Foo extends WithUpdate.mixin(HTMLButtonElement) {
+ *   // reactive property
+ *   @prop(props.number)
+ *   foo = 123
+ *
+ *   // regular non-reactive property
+ *   bar = 456
+ * }
+ * ```
+ *
+ * In environments without decorator support but with class fields support,
+ * you can use `reactive()` as a plain function, along with `static props`:
+ *
+ * ```ts
+ * // or simply call reactive as a function and pass the class in:
+ * export class Foo extends WithUpdate.mixin(HTMLButtonElement) {
+ *   static props = {
+ *     foo: { ...props.number, default: 123 }
+ *   }
+ *
+ * 	// regular non-reactive property
+ *   bar = 456
+ * }
+ *
+ * // reactive() returns the same class, you don't need to export the result of this call directly.
+ * reactive(Foo)
+ * ```
+ *
+ * In environments without decorator support and without class fields support,
+ * you can use `reactive()` as a plain function, along with `static get props()`:
+ *
+ * ```ts
+ * export class Foo extends WithUpdate.mixin(HTMLButtonElement) {
+ *   static get props() {
+ *     return {
+ *       foo: { ...props.number, default: 123 },
+ *     }
+ *   }
+ *
+ *   constructor() {
+ *     // regular non-reactive property
+ *     this.bar = 456
+ *   }
+ * }
+ *
+ * // reactive() returns the same class, you don't need to export the result of this call directly.
+ * reactive(Foo)
+ * ```
+ *
+ * Another option in environments without decorators is to pass the class to
+ * `reactive()` inline and export the result dierectly:
+ *
+ * ```ts
+ * export default reactive(class Foo extends WithUpdate.mixin(HTMLButtonElement) {
+ *   // same as before in here
+ * })
+ * ```
+ *
+ * In all examples, the `foo` prop is reactive, and the `bar` prop is not:
+ *
+ * ```ts
+ * const f = new Foo
+ * f.foo = 42 // causes HTML template to re-render, and updated() method to be called
+ * f.bar = 3.14 // nothing happens
+ * ```
+ */
+export function reactive<T extends WithUpdateClass>(Class: T): T {
+    if (!(Class as any).__hasWithUpdate)
         throw new TypeError('The @reactive decorator should be called on a class that extends from WithUpdate')
 
     // TODO TS no any
     let ctors: any[] = []
 
     for (
-        let currentConstructor = constructor;
-        currentConstructor;
+        let currentConstructor = Class;
+        // check it is a function, because the last prototype in the chain will
+        // be Object.prototype which isn't a Function.
+        currentConstructor && typeof currentConstructor === 'function';
         currentConstructor = Object.getPrototypeOf(currentConstructor)
-    ) {
+    )
         ctors.unshift(currentConstructor)
-    }
 
     // make props reactive starting from the base-most class
-    for (let i = 0, l = ctors.length; i < l; i += 1) {
-        makePropsReactive(ctors[i])
-    }
+    for (let i = 0, l = ctors.length; i < l; i += 1) makePropsReactive(ctors[i])
 
-    return constructor
+    return Class
 }
 
 function makePropsReactive<T extends WithUpdateClass>(constructor: T) {
@@ -313,201 +400,188 @@ function makePropsReactive<T extends WithUpdateClass>(constructor: T) {
     for (let i = 0, l = propsToMakeReactive.length; i < l; i += 1) {
         name = propsToMakeReactive[i]
 
-        let decorator: PropertyDecorator | PropDefinition | Constructor
+        let definition: PropDefinition
 
-        if (!Array.isArray(propDefinitions)) decorator = propDefinitions[name] || props.any
-        else decorator = props.any
-
-        if (defaultTypesMap.has(decorator as Constructor)) decorator = defaultTypesMap.get(decorator as Constructor)!
-
-        if (typeof decorator !== 'function') decorator = prop(decorator)
-
-        // We must have a PropertyDecorator at this point.
-        const _decorator = decorator as PropertyDecorator
+        if (Array.isArray(propDefinitions)) definition = props.any
+        else definition = propDefinitions[name] || props.any
 
         // The decorator is assumed to be used only on non-static instance
         // properties, and in that case it is passed the class prototype.
-        _decorator(constructor.prototype, name)
+        makeReactiveProp(definition, constructor.prototype, name)
     }
 }
 
-export function prop(definition: PropDefinition = {}) {
-    let decorator: PropDecorator
+export function prop(definition: PropDefinition = props.any) {
+    const decorator: PropertyDecorator = function WithUpdatePropertyDecorator(prototype: any, name: PropertyKey) {
+        const {constructor} = prototype
 
-    // f.e. if definition is `String`, `Number`, etc.
-    if (typeof definition === 'function' && defaultTypesMap.has(definition as any)) {
-        decorator = defaultTypesMap.get(definition as Constructor)!
-    }
+        if (!constructor.hasOwnProperty('props')) constructor.props = {}
 
-    // Allows decorators, or imperative definitions.
-    else {
-        // we know better than TS here, definition must be a prop defition object
-        const def = definition as PropDefinitionObject
-
-        const _decorator: PropertyDecorator = function WithUpdatePropertyDecorator(prototype: any, name: PropertyKey) {
-            // we only work with string properties, at least for now.
-            if (typeof name !== 'string') return
-
-            const {constructor} = prototype
-
-            if (!constructor.__hasWithUpdate)
-                throw new TypeError('The @prop() decorator should be used on a class that extends from WithUpdate.')
-
-            // the returned descriptor contains an "owner" property which is the
-            // prototype object on which the descriptor was found.
-            const existingDescriptor = getInheritedDescriptor(prototype, name)
-
-            const {__propNames: existingProps} = constructor
-
-            if (existingProps.includes(name)) {
-                const Owner = existingDescriptor && existingDescriptor.owner.constructor
-
-                // @prune-prod
-                console.warn(
-                    singleLine(`
-                        Warning: Overriding property "${name}" from super
-                        class "${Owner.name}" in class "${constructor.name}".
-                    `)
-                )
-            }
-
-            const normalized = normalizePropertyDefinition(name, def)
-
-            if (!constructor.hasOwnProperty('_propsNormalized'))
-                constructor._propsNormalized = Object.create(constructor._propsNormalized || null)
-
-            // Cache the value so we can reference when syncing the attribute to the property.
-            constructor._propsNormalized[name] = normalized
-
-            const {attribute} = normalized
-
-            if (attribute) {
-                const {source, reflect} = attribute
-                // we need to create one per constructor, otherwise the base
-                // WithUpdate class will accumulate values for all subclasses that
-                // define props, which means all subclasses will have the same set
-                // of reactive props, but each subclass should have its own
-                // specified set (including any that are inherited but not from
-                // sibling classes)
-                if (!constructor.hasOwnProperty('_observedAttributes'))
-                    constructor._observedAttributes = [...(constructor._observedAttributes || [])]
-
-                if (!constructor._observedAttributes.includes(source)) constructor._observedAttributes.push(source)
-
-                if (!constructor.hasOwnProperty('_attributeToPropertyMap'))
-                    constructor._attributeToPropertyMap = Object.create(constructor._attributeToPropertyMap || null)
-
-                constructor._attributeToPropertyMap[source] = name
-
-                if (reflect) {
-                    if (!constructor.hasOwnProperty('__propToAttributeMap'))
-                        constructor.__propToAttributeMap = Object.create(constructor.__propToAttributeMap || null)
-
-                    constructor.__propToAttributeMap[name] = source
-                }
-            }
-
-            let existingDescriptorType: any
-            let existingGetter: any
-            let existingSetter: any
-
-            if (existingDescriptor) {
-                if (!existingDescriptor.configurable) {
-                    console.error(
-                        `Unable to create reactivity for prop "${name}" because existing descriptor is non-configurable.`
-                    )
-                    return
-                }
-
-                existingDescriptorType = 'value' in existingDescriptor ? 'data' : 'accessor'
-
-                if (existingDescriptorType === 'data') {
-                    // in case there's existing properties on a contructor's prototype
-                    // before we overwrite the descriptor. we store those values in this
-                    // cache so we can use them as initial values.
-                    if (!constructor.__existingPrototypeValues) constructor.__existingPrototypeValues = {}
-
-                    constructor.__existingPrototypeValues[name] = existingDescriptor.value
-                } else if (existingDescriptorType === 'accessor') {
-                    existingGetter = existingDescriptor.get
-                    existingSetter = existingDescriptor.set
-                }
-            } else {
-                // if there's no descriptor, we want to use the logic associaated
-                // with data descriptors
-                existingDescriptorType = 'data'
-            }
-
-            // although WithUpdate already defines a static __propNames, we need to
-            // define it on any subclass so that there is a list of reactive
-            // properties per subclass. If we don't do this, then WithUpdate will
-            // accumulate the names of reactive properties for all subclasses,
-            // meaning that subclasses will effectively contain the property names
-            // of all their sibling classes, which we don't want.
-            if (!constructor.hasOwnProperty('__propNames'))
-                constructor.__propNames = [...(constructor.__propNames || [])]
-
-            if (!constructor.__propNames.includes(name)) constructor.__propNames.push(name)
-
-            const newDescriptor = {
-                enumerable: existingDescriptor ? existingDescriptor.enumerable : undefined,
-                configurable: true,
-                get: existingDescriptorType === 'accessor' && !existingGetter ? undefined : newGetter,
-                set: existingDescriptorType === 'accessor' && !existingSetter ? undefined : newSetter,
-            }
-
-            Object.defineProperty(prototype, name, newDescriptor)
-
-            // trick: tells TypeScript that name is a string inside the following functions
-            const _name = name
-
-            function newGetter(this: any) {
-                let val: any
-
-                if (existingDescriptorType === 'accessor' && existingGetter) val = existingGetter.call(this)
-                else if (existingDescriptorType === 'data') val = this._props[_name]
-
-                if (val == null) {
-                    val = normalized.default.call(this, _name)
-
-                    if (existingDescriptorType === 'accessor' && existingSetter) existingSetter.call(this, val)
-                    else if (existingDescriptorType === 'data') this._props[_name] = val
-                }
-
-                return val
-            }
-
-            function newSetter(this: any, val: any) {
-                const {attribute, serialize, coerce} = normalized
-
-                if (attribute && attribute.reflect) {
-                    const serializedVal = serialize.call(this, val, _name)
-
-                    if (serializedVal == null) {
-                        this.removeAttribute(attribute.source)
-                    } else {
-                        this.setAttribute(attribute.source, serializedVal)
-                    }
-                }
-
-                val = coerce.call(this, val, _name)
-
-                if (existingDescriptorType === 'accessor' && existingSetter) existingSetter.call(this, val)
-                else if (existingDescriptorType === 'data') this._props[_name] = val
-
-                this.__modifiedProps[_name] = true
-                this.triggerUpdate()
-            }
-        }
-
-        // Allows easy extension of pre-defined props, f.e.
-        // static props: Props = {
-        //   foo: { ...props.number, default: 42 }
-        // }
-        decorator = Object.assign(_decorator, def)
+        constructor.props[name] = definition
     }
 
     return decorator
+}
+
+function makeReactiveProp(definition: PropDefinition, prototype: any, name: string): void {
+    // we know better than TS here, definition must be a prop defition object
+    const def = definition as PropDefinitionObject
+
+    // // we only work with string properties, at least for now.
+    // if (typeof name !== 'string') return
+
+    const {constructor} = prototype
+
+    if (!constructor.__hasWithUpdate)
+        throw new TypeError('The @prop() decorator should be used on a class that extends from WithUpdate.')
+
+    // the returned descriptor contains an "owner" property which is the
+    // prototype object on which the descriptor was found.
+    const existingDescriptor = getInheritedDescriptor(prototype, name)
+
+    const existingProps = constructor.hasOwnProperty('__propNames') ? constructor.__propNames : null
+
+    if (existingProps && existingProps.includes(name)) {
+        const Owner = existingDescriptor && existingDescriptor.owner.constructor
+
+        // @prune-prod
+        console.warn(
+            singleLine(
+                `Warning: Overriding property "${name}" from super class
+                "${Owner.name}" in class "${constructor.name}".`
+            )
+        )
+    }
+
+    const normalized = normalizePropertyDefinition(name, def)
+
+    if (!constructor.hasOwnProperty('__propsNormalized'))
+        constructor.__propsNormalized = Object.create(constructor.__propsNormalized || null)
+
+    // Cache the value so we can reference when syncing the attribute to the property.
+    constructor.__propsNormalized[name] = normalized
+
+    const {attribute} = normalized
+
+    if (attribute) {
+        const {source, reflect} = attribute
+        // we need to create one per constructor, otherwise the base
+        // WithUpdate class will accumulate values for all subclasses that
+        // define props, which means all subclasses will have the same set
+        // of reactive props, but each subclass should have its own
+        // specified set (including any that are inherited but not from
+        // sibling classes)
+        if (!constructor.hasOwnProperty('__observedAttributes'))
+            constructor.__observedAttributes = [...(constructor.__observedAttributes || [])]
+
+        if (!constructor.__observedAttributes.includes(source)) constructor.__observedAttributes.push(source)
+
+        if (!constructor.hasOwnProperty('__attributeToPropertyMap'))
+            constructor.__attributeToPropertyMap = Object.create(constructor.__attributeToPropertyMap || null)
+
+        constructor.__attributeToPropertyMap[source] = name
+
+        if (reflect) {
+            if (!constructor.hasOwnProperty('__propToAttributeMap'))
+                constructor.__propToAttributeMap = Object.create(constructor.__propToAttributeMap || null)
+
+            constructor.__propToAttributeMap[name] = source
+        }
+    }
+
+    let existingDescriptorType: 'data' | 'accessor'
+    let existingGetter: Function | undefined
+    let existingSetter: Function | undefined
+
+    if (existingDescriptor) {
+        if (!existingDescriptor.configurable) {
+            throw new TypeError(
+                singleLine(
+                    `Unable to create reactivity for prop "${name}" on class
+                    "${constructor.name}" because a pre-existing descriptor
+                    is non-configurable.`
+                )
+            )
+        }
+
+        existingDescriptorType = 'value' in existingDescriptor ? 'data' : 'accessor'
+
+        if (existingDescriptorType === 'data') {
+            // in case there's existing properties on a contructor's prototype
+            // before we overwrite the descriptor. we store those values in this
+            // cache so we can use them as initial values.
+            if (!constructor.__existingPrototypeValues) constructor.__existingPrototypeValues = {}
+
+            constructor.__existingPrototypeValues[name] = existingDescriptor.value
+        } else if (existingDescriptorType === 'accessor') {
+            existingGetter = existingDescriptor.get!
+            existingSetter = existingDescriptor.set!
+        }
+    } else {
+        // if there's no descriptor, we want to use the logic associaated
+        // with data descriptors
+        existingDescriptorType = 'data'
+    }
+
+    // although WithUpdate already defines a static __propNames, we need to
+    // define it on any subclass so that there is a list of reactive
+    // properties per subclass. If we don't do this, then WithUpdate will
+    // accumulate the names of reactive properties for all subclasses,
+    // meaning that subclasses will effectively contain the property names
+    // of all their sibling classes, which we don't want.
+    if (!constructor.hasOwnProperty('__propNames')) constructor.__propNames = [...(constructor.__propNames || [])]
+
+    if (!constructor.__propNames.includes(name)) constructor.__propNames.push(name)
+
+    const newDescriptor = {
+        enumerable: existingDescriptor ? existingDescriptor.enumerable : undefined,
+        configurable: true,
+        get: existingDescriptorType === 'accessor' && !existingGetter ? undefined : newGetter,
+        set: existingDescriptorType === 'accessor' && !existingSetter ? undefined : newSetter,
+    }
+
+    Object.defineProperty(prototype, name, newDescriptor)
+
+    // trick: tells TypeScript that name is a string inside the following functions
+    const _name = name
+
+    function newGetter(this: any) {
+        let val: any
+
+        if (existingDescriptorType === 'accessor' && existingGetter) val = existingGetter.call(this)
+        else if (existingDescriptorType === 'data') val = this._props[_name]
+
+        if (val == null) {
+            val = normalized.default.call(this, _name)
+
+            if (existingDescriptorType === 'accessor' && existingSetter) existingSetter.call(this, val)
+            else if (existingDescriptorType === 'data') this._props[_name] = val
+        }
+
+        return val
+    }
+
+    function newSetter(this: any, val: any) {
+        const {attribute, serialize, coerce} = normalized
+
+        if (attribute && attribute.reflect) {
+            const serializedVal = serialize.call(this, val, _name)
+
+            if (serializedVal == null) {
+                this.removeAttribute(attribute.source)
+            } else {
+                this.setAttribute(attribute.source, serializedVal)
+            }
+        }
+
+        val = coerce.call(this, val, _name)
+
+        if (existingDescriptorType === 'accessor' && existingSetter) existingSetter.call(this, val)
+        else if (existingDescriptorType === 'data') this._props[_name] = val
+
+        this.__modifiedProps[_name] = true
+        this.triggerUpdate()
+    }
 }
 
 const {parse: _parse, stringify} = JSON
@@ -515,47 +589,47 @@ const parse = (txt: string) => _parse(txt)
 const attribute = true
 const zeroOrNumber = (val: any) => (empty(val) ? 0 : Number(val))
 
-const any = prop({
+const any = {
     attribute,
-})
+}
 
-const array = prop({
+const array = {
     attribute,
     coerce: (val: any) => (Array.isArray(val) ? val : empty(val) ? null : [val]),
     default: Object.freeze([]),
     deserialize: parse,
     serialize: (val: any) => (val == null ? null : stringify(val)),
-})
+}
 
-const boolean = prop({
+const boolean = {
     attribute,
     coerce: Boolean,
     default: false,
     deserialize: (val: any) => !empty(val),
     serialize: (val: any) => (val ? '' : null),
-})
+}
 
-const number = prop({
+const number = {
     attribute,
     default: 0,
     coerce: zeroOrNumber,
     deserialize: zeroOrNumber,
     serialize: (val: any) => (empty(val) ? null : String(Number(val))),
-})
+}
 
-const object = prop({
+const object = {
     attribute,
     default: Object.freeze({}),
     deserialize: parse,
     serialize: (val: any) => (val == null ? null : stringify(val)),
-})
+}
 
-const string = prop({
+const string = {
     attribute,
     default: '',
     coerce: (val: any) => (empty(val) ? '' : String(val)),
     serialize: (val: any) => (empty(val) ? null : String(val)),
-})
+}
 
 defaultTypesMap.set(Array, array)
 defaultTypesMap.set(Boolean, boolean)

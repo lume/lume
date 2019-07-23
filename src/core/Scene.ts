@@ -23,7 +23,7 @@ import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
 import TreeNode from './TreeNode'
-import {Props} from '../html/WithUpdate'
+import {prop} from '../html/WithUpdate'
 
 initImperativeBase()
 
@@ -34,21 +34,22 @@ function SceneMixin<T extends Constructor>(Base: T) {
     class Scene extends Parent {
         static defaultElementName = 'i-scene'
 
-        static props: Props = {
-            backgroundColor: props.THREE.Color,
-            backgroundOpacity: props.number,
-            shadowmapType: props.string, //  TODO runtime check for ShadowMapTypeString
-            vr: props.boolean,
-            experimentalWebgl: props.boolean,
-            disableCss: props.boolean,
-        }
-
-        // TODO replace WithUpdate props with decorators
+        @prop(props.THREE.Color)
         backgroundColor!: Color | string | number
+
+        @prop(Number)
         backgroundOpacity!: number
+
+        @prop(String)
         shadowmapType!: ShadowMapTypeString
+
+        @prop(Boolean)
         vr!: boolean
+
+        @prop(Boolean)
         experimentalWebgl!: boolean
+
+        @prop(Boolean)
         disableCss!: boolean
 
         three!: ThreeScene
