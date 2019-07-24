@@ -170,10 +170,6 @@ async function main() {
     const username = Variable('John')
     const count = Variable(0)
 
-    // if (this.prop('foo').changesTo(456)) console.log('changed')
-    // //...
-    // this.foo = 456
-
     auto(() => {
         console.log(username())
 
