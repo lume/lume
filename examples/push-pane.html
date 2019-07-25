@@ -1,0 +1,61 @@
+<title>PushPaneLayout</title>
+
+<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
+<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+
+<script src="../global.js"></script>
+
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #333;
+    }
+    i-node {
+        outline: 2px solid red;
+    }
+</style>
+
+<!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
+<i-scene>
+    <i-push-pane-layout class="layout">
+        <!-- TODO better defaults: We shouldn't need size="" attributes on
+        the following content, but we need to set Z size to zero because the
+        default value is 100. -->
+
+        <!-- slot="pane" tells the layout to place this content in the side pane area. -->
+        <i-node slot="pane" size="1 1 0">
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+            <p>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</p>
+        </i-node>
+
+        <!-- slot="body" tells the layout to place this content in the main body area. -->
+        <i-node slot="body" size="1 1 0">
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+            <h1>woo hoooo oh yeah this will work! woo hoooo oh yeah this will work!</h1>
+        </i-node>
+    </i-push-pane-layout>
+</i-scene>
+
+<script>
+    infamous.useDefaultNames()
+</script>

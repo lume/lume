@@ -100,8 +100,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
         /**
          * Mount the scene into the given target.
-         * Resolves the Scene's mountPromise, which can be use to do something once
-         * the scene is mounted.
          *
          * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
          * the mount point will be selected from the DOM. If an HTMLElement is
@@ -149,8 +147,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
         }
 
         /**
-         * Unmount the scene from it's mount point. Resets the Scene's
-         * mountPromise.
+         * Unmount the scene from it's mount point.
          */
         unmount() {
             if (!this._mounted) return
@@ -533,6 +530,7 @@ export interface Scene extends InstanceType<typeof Scene> {}
 export default Scene
 
 // const s: Scene = new Scene()
+// s._removeCamera()
 // s.asdfasdf
 // s.calculatedSize = 123
 // s.innerHTML = 123

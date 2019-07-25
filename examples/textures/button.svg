@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 20.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    x="0px"
+    y="0px"
+    viewBox="0 0 1934.3 1280"
+    style="enable-background:new 0 0 1934.3 1280;"
+    xml:space="preserve"
+>
+    <!-- Background -->
+    <path
+        style="opacity:0.48;mask:url(#SVGID_8_);fill:#37C6F4;"
+        d="M448.9,708.5H209c-5.5,0-10-4.5-10-10V584.6c0-5.5,4.5-10,10-10
+            h239.8c5.5,0,10,4.5,10,10v113.9C458.9,704,454.4,708.5,448.9,708.5z"
+    />
+    <rect x="1.1" y="0.4" style="fill:#3F3F3F;" width="1935" height="1282.2" />
+
+    <g id="button1">
+        <linearGradient
+            id="SVGID_11_"
+            gradientUnits="userSpaceOnUse"
+            x1="197.7449"
+            y1="640.5712"
+            x2="457.5892"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#2E256D" />
+            <stop offset="1" style="stop-color:#2C7CC0" />
+        </linearGradient>
+        <linearGradient
+            id="SVGID_12_"
+            gradientUnits="userSpaceOnUse"
+            x1="459.0892"
+            y1="640.5712"
+            x2="196.2449"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#2E256D" />
+            <stop offset="1" style="stop-color:#2C7CC0" />
+        </linearGradient>
+        <path
+            style="fill:url(#SVGID_11_);stroke:url(#SVGID_12_);stroke-width:3;stroke-miterlimit:10;"
+            d="M447.6,707.5H207.7
+                c-5.5,0-10-4.5-10-10V583.6c0-5.5,4.5-10,10-10h239.8c5.5,0,10,4.5,10,10v113.9C457.6,703,453.1,707.5,447.6,707.5z"
+        />
+        <text
+            transform="matrix(1 0 0 1 287.4273 649.5027)"
+            style="fill:#FFFFFF; font-family:'National-Regular'; font-size:40px; letter-spacing:1;"
+        >
+            just
+        </text>
+    </g>
+
+    <g id="button2">
+        <linearGradient
+            id="SVGID_15_"
+            gradientUnits="userSpaceOnUse"
+            x1="517.6705"
+            y1="640.5712"
+            x2="777.5148"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#624C9D" />
+            <stop offset="1" style="stop-color:#D0157E" />
+        </linearGradient>
+        <linearGradient
+            id="SVGID_16_"
+            gradientUnits="userSpaceOnUse"
+            x1="779.0148"
+            y1="640.5712"
+            x2="516.1705"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#624C9D" />
+            <stop offset="1" style="stop-color:#D0157E" />
+        </linearGradient>
+        <path
+            style="fill:url(#SVGID_15_);stroke:url(#SVGID_16_);stroke-width:3;stroke-miterlimit:10;"
+            d="M767.5,707.5H527.7
+                c-5.5,0-10-4.5-10-10V583.6c0-5.5,4.5-10,10-10h239.8c5.5,0,10,4.5,10,10v113.9C777.5,703,773,707.5,767.5,707.5z"
+        />
+        <text
+            transform="matrix(1 0 0 1 618.1935 649.5027)"
+            style="fill:#FFFFFF; font-family:'National-Regular'; font-size:40px; letter-spacing:1;"
+        >
+            say
+        </text>
+    </g>
+
+    <g id="button3">
+        <linearGradient
+            id="SVGID_13_"
+            gradientUnits="userSpaceOnUse"
+            x1="837.6889"
+            y1="640.5712"
+            x2="1097.5332"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#E51954" />
+            <stop offset="0.5109" style="stop-color:#F05B84" />
+            <stop offset="1" style="stop-color:#F89F6D" />
+        </linearGradient>
+        <linearGradient
+            id="SVGID_14_"
+            gradientUnits="userSpaceOnUse"
+            x1="1099.0332"
+            y1="640.5712"
+            x2="836.1889"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#E51954" />
+            <stop offset="0.5109" style="stop-color:#F05B84" />
+            <stop offset="1" style="stop-color:#F89F6D" />
+        </linearGradient>
+        <path
+            style="fill:url(#SVGID_13_);stroke:url(#SVGID_14_);stroke-width:3;stroke-miterlimit:10;"
+            d="M1087.5,707.5H847.7
+                c-5.5,0-10-4.5-10-10V583.6c0-5.5,4.5-10,10-10h239.8c5.5,0,10,4.5,10,10v113.9C1097.5,703,1093,707.5,1087.5,707.5z"
+        />
+        <g>
+            <polyline
+                style="fill:none;stroke:#FFFFFF;stroke-width:3.1309;stroke-miterlimit:10;"
+                points="986.8,656 1002.4,640.3 986.8,624.7"
+            />
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:3.1309;stroke-miterlimit:10;"
+                x1="1001.9"
+                y1="640.4"
+                x2="932.5"
+                y2="640.4"
+            />
+        </g>
+    </g>
+
+    <g id="button4">
+        <linearGradient
+            id="SVGID_17_"
+            gradientUnits="userSpaceOnUse"
+            x1="1157.4807"
+            y1="640.5712"
+            x2="1417.325"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#4182C3" />
+            <stop offset="0.4994" style="stop-color:#2CBEC3" />
+            <stop offset="1" style="stop-color:#B0C145" />
+        </linearGradient>
+        <linearGradient
+            id="SVGID_18_"
+            gradientUnits="userSpaceOnUse"
+            x1="1418.825"
+            y1="640.5712"
+            x2="1155.9807"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#4182C3" />
+            <stop offset="0.4994" style="stop-color:#2CBEC3" />
+            <stop offset="1" style="stop-color:#B0C145" />
+        </linearGradient>
+        <path
+            style="fill:url(#SVGID_17_);stroke:url(#SVGID_18_);stroke-width:3;stroke-miterlimit:10;"
+            d="M1407.3,707.5h-239.8
+                c-5.5,0-10-4.5-10-10V583.6c0-5.5,4.5-10,10-10h239.8c5.5,0,10,4.5,10,10v113.9C1417.3,703,1412.8,707.5,1407.3,707.5z"
+        />
+        <text
+            transform="matrix(1 0 0 1 1252.0621 649.5027)"
+            style="fill:#FFFFFF; font-family:'National-Regular'; font-size:40px; letter-spacing:1;"
+        >
+            yes!
+        </text>
+    </g>
+
+    <g id="button5">
+        <linearGradient
+            id="SVGID_19_"
+            gradientUnits="userSpaceOnUse"
+            x1="1477.4807"
+            y1="640.5712"
+            x2="1737.325"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#EF3A34" />
+            <stop offset="1" style="stop-color:#D9A261" />
+        </linearGradient>
+        <linearGradient
+            id="SVGID_20_"
+            gradientUnits="userSpaceOnUse"
+            x1="1475.9807"
+            y1="640.5712"
+            x2="1738.825"
+            y2="640.5712"
+        >
+            <stop offset="0" style="stop-color:#DAA261" />
+            <stop offset="2.706110e-03" style="stop-color:#DAA261" />
+            <stop offset="0.1602" style="stop-color:#E08852" />
+            <stop offset="0.3204" style="stop-color:#E57246" />
+            <stop offset="0.4833" style="stop-color:#E85D3E" />
+            <stop offset="0.649" style="stop-color:#EB4C39" />
+            <stop offset="0.8189" style="stop-color:#EE4036" />
+            <stop offset="1" style="stop-color:#EF3C35" />
+        </linearGradient>
+        <path
+            style="fill:url(#SVGID_19_);stroke:url(#SVGID_20_);stroke-width:3;stroke-miterlimit:10;"
+            d="M1727.3,707.5h-239.8
+                c-5.5,0-10-4.5-10-10V583.6c0-5.5,4.5-10,10-10h239.8c5.5,0,10,4.5,10,10v113.9C1737.3,703,1732.8,707.5,1727.3,707.5z"
+        />
+        <g>
+            <circle
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                cx="1607.1"
+                cy="640.3"
+                r="21"
+            />
+
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1607.1"
+                y1="604.7"
+                x2="1607.1"
+                y2="619.2"
+            />
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1607.1"
+                y1="661"
+                x2="1607.1"
+                y2="675.9"
+            />
+
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1571.5"
+                y1="640.5"
+                x2="1586.6"
+                y2="640.5"
+            />
+
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1627.4"
+                y1="640.5"
+                x2="1642.8"
+                y2="640.5"
+            />
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1621.4"
+                y1="626"
+                x2="1632.3"
+                y2="615.1"
+            />
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1582"
+                y1="665.4"
+                x2="1592.7"
+                y2="654.7"
+            />
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1592.8"
+                y1="626"
+                x2="1581.9"
+                y2="615.1"
+            />
+
+            <line
+                style="fill:none;stroke:#FFFFFF;stroke-width:1.5886;stroke-miterlimit:10;"
+                x1="1632.2"
+                y1="665.4"
+                x2="1621.5"
+                y2="654.7"
+            />
+        </g>
+    </g>
+</svg>

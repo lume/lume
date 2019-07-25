@@ -1,0 +1,137 @@
+<title>RoundedRectangle</title>
+
+<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
+<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+
+<script src="../global.js"></script>
+<link rel="stylesheet" href="./css/reset.css" />
+
+<!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
+<i-scene id="scene" experimental-webgl>
+    <i-ambient-light intensity="0.7"></i-ambient-light>
+    <i-point-light id="light" align="0.5 0.5 0.5" position="0 0 200" intensity="0.8" size="0 0 0" cast-shadow="true">
+        <!-- Enable the i-sphere to visualize where the light is located -->
+        <i-sphere
+            size="10 10 10"
+            has="basic-material"
+            cast-shadow="false"
+            color="white"
+            mount-point="0.5 0.5 0.5"
+        ></i-sphere>
+    </i-point-light>
+
+    <i-plane
+        id="bg"
+        Xcolor="rgb(154, 77, 255)"
+        color="rgb(0, 89, 255)"
+        size-mode="proportional proportional"
+        size="1 1"
+        receive-shadow="true"
+        cast-shadow="false"
+    ></i-plane>
+
+    <i-rounded-rectangle
+        id="rect"
+        corner-radius="30"
+        size="100 100 0"
+        color="#111111"
+        align="0.5 0.5 0"
+        mount-point="0.5 0.5 0"
+        position="0 0 100"
+        cast-shadow="true"
+        TODO
+        Xmaterial-opacity="0.5"
+        Xopacity="0.5"
+    >
+        <!-- gradient-border-box -->
+        <div class="gradient-border-box box">
+            <div class="gradient-border-box-inner">
+                <!-- <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent bibendum, lorem vel tincidunt
+                    imperdiet, nibh elit laoreet felis, a bibendum nisl tortor non orci. Donec pretium fermentum felis,
+                    quis aliquet est rutrum ut. Integer quis massa ut lacus viverra pharetra in eu lacus. Aliquam tempus
+                    odio adipiscing diam pellentesque rhoncus. Curabitur a bibendum est.
+                </p> -->
+            </div>
+        </div>
+    </i-rounded-rectangle>
+</i-scene>
+
+<script>
+    const {Events} = infamous
+    infamous.useDefaultNames()
+    rect.rotation = (x, y, z, t) => [x, 30 * Math.sin(t * 0.001), z]
+    light.position = (x, y, z, t) => [100 * Math.sin(t * 0.001), 100 * Math.sin(t * 0.001), z]
+
+    scene.on(Events.GL_LOAD, () => {
+        light.three.shadow.radius = 2
+        light.three.distance = 800
+        light.three.shadow.bias = -0.001
+
+        bg.three.material.transparent = true
+        bg.three.material.opacity = 0.5
+        bg.three.material.dithering = true
+
+        // rect.three.transparent = true
+        // rect.three.material.opacity = 0.3
+        // rect.three.material.transparent = true
+        rect.three.material.blending = THREE.NoBlending
+
+        // TODO the props aren't working
+        // rect.side = THREE.DoubleSide
+        // rect.shadowSide = THREE.DoubleSide
+
+        rect.three.material.side = THREE.FrontSide
+        rect.three.material.shadowSide = THREE.FrontSide
+    })
+</script>
+
+<style>
+    body {
+        background: #6f2a84;
+        background: #888888;
+    }
+    p {
+        padding: 5px;
+        margin: 0;
+    }
+
+    .box {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .gradient-border-box {
+        transform: translate3d(0, 0, 0px);
+        --gradient-box-border-width: 5px;
+        --gradient-box-border-radius: 30px;
+    }
+
+    .gradient-border-box-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        box-sizing: border-box;
+
+        /* background: #666; */
+        background: linear-gradient(to right, orange, red);
+        background-clip: padding-box; /* !importanté */
+        border: solid var(--gradient-box-border-width) transparent; /* !importanté */
+        border-radius: var(--gradient-box-border-radius);
+    }
+
+    .gradient-border-box-inner:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        margin: calc(var(--gradient-box-border-width) * -1); /* !importanté */
+        border-radius: inherit; /* !importanté */
+        background: linear-gradient(to right, rgb(0, 89, 255), orange);
+        background: linear-gradient(to right, red, orange);
+    }
+</style>

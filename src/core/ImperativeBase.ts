@@ -218,11 +218,11 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
                 child.tagName
             )
             if (child instanceof ImperativeBase) {
-                console.log(
-                    ' ------------------ CHILD COMPOSED',
-                    child._composedParent!.constructor.name + '#' + (child as any)._composedParent.id,
-                    child.constructor.name + '#' + child.id
-                )
+                // console.log(
+                //     ' ------------------ CHILD COMPOSED',
+                //     child._composedParent!.constructor.name + '#' + (child as any)._composedParent.id,
+                //     child.constructor.name + '#' + child.id
+                // )
 
                 if (connectionType === 'root') {
                     console.log('    >>> CHILD CONNECTED VIA SHADOW ROOT')

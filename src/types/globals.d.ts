@@ -12,6 +12,9 @@ declare module 'army-knife/forLength' {
 declare module 'autolayout'
 declare module 'james-bond'
 declare module 'jss'
+declare module 'army-knife'
+declare module 'army-knife/callAfter'
+declare module 'tween.js'
 
 declare module 'element-behaviors' {
     import {Constructor} from 'lowclass'

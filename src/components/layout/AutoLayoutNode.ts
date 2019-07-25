@@ -20,9 +20,9 @@
 // - Allow visual-format to be fetch by path (like img src attribute).
 
 import * as AutoLayout from 'autolayout'
-import Node from '../core/Node'
-import Motor from '../core/Motor'
-import {XYZPartialValuesArray} from '../core/XYZValues'
+import Node from '../../core/Node'
+import Motor from '../../core/Motor'
+import {XYZPartialValuesArray} from '../../core/XYZValues'
 
 export {AutoLayout}
 

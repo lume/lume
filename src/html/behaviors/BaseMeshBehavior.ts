@@ -119,6 +119,7 @@ export default abstract class BaseMeshBehavior extends Behavior {
         this.__setMeshComponent(element, name, this.__makeDefaultComponent(element, name))
     }
 
+    // TODO subclasses need to define this too.
     private __makeDefaultComponent(element: Mesh, name: 'geometry' | 'material'): Geometry | Material {
         switch (name) {
             case 'geometry':
