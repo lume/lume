@@ -1,12 +1,3 @@
-// TODO?: support nested computations. For now, we must break them out to
-// non-nested separate computations. Not sure if it is worth adding this
-// feature, because it is totally possible to achieve the same thing without
-// nesting, and thus less complexity. If we do this, we'll need to keep track of
-// parent/child relationships between computations. Not sure it is worth it
-// honestly. Is there a really good reason that I don't know about?
-
-// TODO better types than Function
-
 const dependenciesOfReactions = new WeakMap<Function, Set<Function>>()
 const dependentsOfVariables = new WeakMap<Function, Set<Function>>()
 
@@ -41,10 +32,6 @@ function Variable<T>(initialValue: T) {
     return v
 }
 
-function auto<T extends Function>(reaction: T) {
-    runReaction(reaction)
-}
-
 function trackDependency(v: Function, reaction: Function) {
     let vars = dependenciesOfReactions.get(reaction)
     if (!vars) dependenciesOfReactions.set(reaction, (vars = new Set()))
@@ -59,10 +46,7 @@ let areScheduled = false
 
 function scheduleReactions(reactions?: Set<Function>) {
     if (!reactions) return
-
-    for (const reaction of reactions) {
-        scheduleReaction(reaction)
-    }
+    for (const reaction of reactions) scheduleReaction(reaction)
 }
 
 function scheduleReaction(reaction: Function) {
@@ -73,24 +57,28 @@ function scheduleReaction(reaction: Function) {
 
     Promise.resolve().then(() => {
         areScheduled = false
-
         runReactions()
     })
 }
 
 function runReactions() {
     const reactions = scheduledReactions
-
     scheduledReactions = new Set()
-
-    for (const reaction of reactions) {
-        runReaction(reaction)
-    }
+    for (const reaction of reactions) runReaction(reaction)
 }
+
+let reactionToStop: Function = () => {}
+const stop = () => removeDependencies(reactionToStop)
 
 function runReaction(reaction: Function) {
     currentReaction = reaction
+    removeDependencies(reaction)
+    reactionToStop = reaction
+    reaction(stop)
+    currentReaction = null
+}
 
+function removeDependencies(reaction: Function) {
     const dependencies = dependenciesOfReactions.get(reaction)
 
     // unassociate the current reaction from its dependencies, so that
@@ -103,17 +91,14 @@ function runReaction(reaction: Function) {
     if (dependencies) {
         for (const v of dependencies) {
             dependencies.delete(v)
-
             const dependents = dependentsOfVariables.get(v)
-
             if (dependents) dependents.delete(reaction)
         }
     }
+}
 
-    // run it the first time.
-    reaction()
-
-    currentReaction = null
+export function auto<T extends (stop: () => void) => void>(reaction: T) {
+    runReaction(reaction)
 }
 
 function once<T>(v: Function, value: T): boolean {
@@ -143,27 +128,23 @@ function changesTo<T>(v: Function, value: T, once: boolean = false): boolean {
     return false
 }
 
-function prop<T>() {
-    return function(prototype: any, name: any) {
-        const v = Variable<T>(undefined!)
+export function variable<T>(prototype: any, name: any) {
+    const v = Variable<T>(undefined!)
 
-        Object.defineProperty(prototype, 'v_' + name, {
-            value: v,
-        })
+    Object.defineProperty(prototype, 'v_' + name, {value: v})
 
-        Object.defineProperty(prototype, name, {
-            get(): T {
-                return this['v_' + name]()
-            },
-            set(v: T) {
-                this['v_' + name](v)
-            },
-        })
-    }
+    Object.defineProperty(prototype, name, {
+        get(): T {
+            return this['v_' + name]()
+        },
+        set(v: T) {
+            this['v_' + name](v)
+        },
+    })
 }
 
 class Test {
-    @prop<number>() foo = 123
+    @variable foo = 123
 }
 
 async function main() {
@@ -181,8 +162,10 @@ async function main() {
 
     const t = new Test()
 
-    auto(() => {
+    const start = performance.now()
+    auto(done => {
         console.log(t.foo)
+        if (performance.now() - start > 5000) return done()
     })
 
     const words = ['mary', 'foo', 'bar']
@@ -195,3 +178,12 @@ async function main() {
 }
 
 main()
+
+// TODO?: support nested computations. For now, we must break them out to
+// non-nested separate computations. Not sure if it is worth adding this
+// feature, because it is totally possible to achieve the same thing without
+// nesting, and thus less complexity. If we do this, we'll need to keep track of
+// parent/child relationships between computations. Not sure it is worth it
+// honestly. Is there a really good reason that I don't know about?
+
+// TODO better types than Function

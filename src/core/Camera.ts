@@ -3,6 +3,7 @@ import {props} from './props'
 import Node from './Node'
 import {Scene} from './Scene'
 import {prop} from '../html/WithUpdate'
+// import {auto} from '../html/variable'
 type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
@@ -146,6 +147,7 @@ export default class PerspectiveCamera extends Node {
         if (!this.__startedAutoAspect) {
             this.__startedAutoAspect = true
             this.scene.on('sizechange', this.__updateAspectOnSceneResize, this)
+            // auto(() => this.__updateAspectOnSceneResize(this.sizeVar))
         }
     }
     private __stopAutoAspect() {
