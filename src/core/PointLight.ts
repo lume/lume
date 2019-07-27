@@ -1,38 +1,19 @@
 import {PointLight as ThreePointLight} from 'three'
 import LightBase from './LightBase'
-import {props} from './props'
-import {mapPropTo} from './props'
 import {prop} from '../html/WithUpdate'
 
 export default class PointLight extends LightBase {
     static defaultElementName = 'i-point-light'
 
-    @prop(mapPropTo(props.number, (self: any) => self.three))
-    distance = 0
-
-    @prop(mapPropTo(props.number, (self: any) => self.three))
-    decay = 1
-
-    @prop(mapPropTo(props.boolean, (self: any) => self.three))
-    castShadow = true
-
-    @prop(Number)
-    shadowMapWidth = 512
-
-    @prop(Number)
-    shadowMapHeight = 512
-
-    @prop(Number)
-    shadowRadius = 3
-
-    @prop(Number)
-    shadowBias = 0
-
-    @prop(Number)
-    shadowCameraNear = 1
-
-    @prop(Number)
-    shadowCameraFar = 2000
+    @prop(Number) distance = 0
+    @prop(Number) decay = 1
+    @prop(Boolean) castShadow = true
+    @prop(Number) shadowMapWidth = 512
+    @prop(Number) shadowMapHeight = 512
+    @prop(Number) shadowRadius = 3
+    @prop(Number) shadowBias = 0
+    @prop(Number) shadowCameraNear = 1
+    @prop(Number) shadowCameraFar = 2000
 
     three!: ThreePointLight
 
@@ -63,6 +44,10 @@ export default class PointLight extends LightBase {
         super.updated(modifiedProps)
 
         if (!this.isConnected) return
+
+        if (modifiedProps.distance) this._forwardProp('distance', this.three)
+        if (modifiedProps.decay) this._forwardProp('decay', this.three)
+        if (modifiedProps.castShadow) this._forwardProp('castShadow', this.three)
 
         const shadow = this.three.shadow
 

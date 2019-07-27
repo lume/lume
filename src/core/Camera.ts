@@ -12,29 +12,21 @@ export default class PerspectiveCamera extends Node {
 
     // TODO remove attributeChangedCallback, replace with updated based on these props
 
-    @prop(Number)
-    fov = 75
+    @prop(Number) fov = 75
+    @prop(Number) near = 0.1
+    @prop(Number) far = 1000
+    @prop(Number) zoom = 1
+    @prop(Boolean) active = false
 
+    // TODO TS `this` type for props
     @prop({
         ...props.number,
         deserialize(val: any, _name: string) {
             // TODO TS NormalizedPropDefinition, and remove the following non-null assertion
             val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
         },
-    } as ThisType<any>) // TODO TS `this` type for props
+    } as ThisType<any>)
     aspect = this.__getDefaultAspect()
-
-    @prop(Number)
-    near = 0.1
-
-    @prop(Number)
-    far = 1000
-
-    @prop(Number)
-    zoom = 1
-
-    @prop(Boolean)
-    active = false
 
     three!: ThreePerspectiveCamera
 
