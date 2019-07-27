@@ -358,7 +358,7 @@ define(function(require, exports, module){
         return [angle, x, y, z];
     }
 
-     /**
+    /**
      * Get the angle associated with the quaternion rotation.
      *
      * @method getAngle
@@ -370,7 +370,7 @@ define(function(require, exports, module){
         return 2 * Math.acos(q[0]);
     }
 
-     /**
+    /**
      * Get the axis associated with the quaternion rotation.
      *
      * @method getAxis
@@ -395,7 +395,7 @@ define(function(require, exports, module){
         return [x, y, z];
     }
 
-     /**
+    /**
      * Set the angle of a quaternion, keeping its axis constant.
      *
      * @method setAngle
@@ -410,7 +410,7 @@ define(function(require, exports, module){
         Quaternion.fromAngleAxis(axis, out);
     }
 
-     /**
+    /**
      * Rotate a vector (3-dimensional array) by a quaternion.
      *  v' = ~q * v * q.
      *
