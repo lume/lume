@@ -45,7 +45,7 @@
   "homepage": "https://github.com/dmvaldman/samsara#readme",
   "devDependencies": {
     "docco": "^0.7.0",
-    "eslint": "^3.0.1",
+    "eslint": "^4.18.2",
     "phantomjs": "^2.1.3",
     "uglify-js": "^2.6.1",
     "webpack": "^1.12.9",
