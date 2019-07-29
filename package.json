@@ -1,6 +1,6 @@
 {
   "name": "infamous",
-  "version": "21.0.6",
+  "version": "21.1.0",
   "description": "A CSS3D/WebGL UI library.",
   "main": "index.js",
   "license": "MIT",
@@ -115,8 +115,6 @@
     "touch-interface",
     "responsive",
     "mobile",
-    "famous",
-    "famo.us",
     "web",
     "web-development",
     "webdev",
