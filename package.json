@@ -72,7 +72,8 @@
         "live-server": "^1.2.1",
         "lowclass": "^4.7.0",
         "regexr": "^1.5.1",
-        "three": "^0.103.0"
+        "three": "^0.103.0",
+        "tween.js": "^16.6.0"
     },
     "devDependencies": {
         "all-contributors-cli": "^4.4.0",

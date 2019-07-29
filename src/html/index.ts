@@ -9,15 +9,16 @@ import Node from '../core/Node'
 import Mesh from '../core/Mesh'
 import Box from '../core/Box'
 import Sphere from '../core/Sphere'
+import {RoundedRectangle} from '../components/RoundedRectangle'
 import Plane from '../core/Plane'
 import PointLight from '../core/PointLight'
 import DOMNode from '../core/DOMNode'
 import DOMPlane from '../core/DOMPlane'
 import AmbientLight from '../core/AmbientLight'
 import Camera from '../core/Camera'
-import AutoLayoutNode from '../layout/AutoLayoutNode'
+import AutoLayoutNode from '../components/layout/AutoLayoutNode'
 import ObjModel from '../core/ObjModel'
-// import PushPaneLayout from '../components/PushPaneLayout'
+import PushPaneLayout from '../components/layout/PushPaneLayout'
 
 export * from './behaviors'
 
@@ -28,6 +29,7 @@ export function useDefaultNames() {
         Mesh,
         Box,
         Sphere,
+        RoundedRectangle,
         Plane,
         PointLight,
         DOMNode,
@@ -36,10 +38,11 @@ export function useDefaultNames() {
         Camera,
         AutoLayoutNode,
         ObjModel,
-        // PushPaneLayout,
+        PushPaneLayout,
     ]
 
     for (const constructor of classes) {
+        console.log('define element: ', constructor.defaultElementName)
         if (!customElements.get(constructor.defaultElementName)) constructor.define()
     }
 }

@@ -81,7 +81,10 @@ export default class Cube extends Node {
      */
     setContent(content: Node[]) {
         forLength(6, index => {
-            //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
+            // TODO: previous content needs to be replaced. ShadowDOM will come
+            // handy here; we'll let the user add/remove content.
+            //this.sides[index].set(null);
+
             this.sides[index].add(content[index])
         })
         return this

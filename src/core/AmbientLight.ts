@@ -9,6 +9,16 @@ export default class AmbientLight extends LightBase {
         light.intensity = 1 // default
         return light
     }
+
+    getStyles() {
+        return {
+            ...super.getStyles(),
+
+            // ambient light is not a physical object in the world, we don't want
+            // the mouse to interact with it in CSS rendering.
+            pointerEvents: 'none',
+        }
+    }
 }
 
 export {AmbientLight}

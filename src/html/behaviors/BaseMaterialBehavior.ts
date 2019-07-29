@@ -1,6 +1,6 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 import {props} from '../../core/props'
-import {Color, MeshPhongMaterial} from 'three'
+import {Color, MeshPhongMaterial, Side, FrontSide, BackSide /*, NoBlending*/, NormalBlending, Blending} from 'three'
 
 // base class for geometry behaviors
 export default class BaseMaterialBehavior extends BaseMeshBehavior {
@@ -9,12 +9,19 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
     static props = {
         color: props.THREE.Color,
         opacity: {...props.number, default: 1},
+        side: {...props.number, default: FrontSide},
+        shadowSide: {...props.number, default: BackSide},
+        blending: {...props.number, default: NormalBlending},
     }
 
     color!: Color | string | number
     opacity!: number
+    // TODO these don't propagate from the element, see rounded-rectangle
+    side!: Side
+    shadowSide!: Side
+    blending!: Blending
 
-    updated(_oldProps: any, modifiedProps: any) {
+    updated(modifiedProps: any) {
         const {color, opacity} = modifiedProps
 
         if (color) this.updateMaterial('color')

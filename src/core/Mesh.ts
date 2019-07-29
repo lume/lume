@@ -1,10 +1,10 @@
-import {Mesh as ThreeMesh, Material} from 'three'
+import {Mesh as ThreeMesh, Material, Side, BackSide, FrontSide} from 'three'
 import Node from './Node'
 import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
-// choose names for better flexibility. See TODO NAMING below.
+// not choose names for better flexibility. See TODO NAMING below.
 import '../html/behaviors/BasicMaterialBehavior'
 import '../html/behaviors/PhongMaterialBehavior'
 import '../html/behaviors/DOMNodeMaterialBehavior'
@@ -12,6 +12,7 @@ import '../html/behaviors/BoxGeometryBehavior'
 import '../html/behaviors/SphereGeometryBehavior'
 import '../html/behaviors/PlaneGeometryBehavior'
 import '../html/behaviors/DOMNodeGeometryBehavior'
+import '../html/behaviors/RoundedRectangleGeometryBehavior'
 
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
@@ -36,14 +37,20 @@ export default class Mesh extends Node {
         },
     }
 
+    // TODO does color attribute work?
+
     static props = {
         ...(Node.props || {}),
         castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
         receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
+        side: {...props.number, default: FrontSide},
+        shadowSide: {...props.number, default: BackSide},
     }
 
     castShadow!: boolean
     receiveShadow!: boolean
+    side!: Side
+    shadowSide!: Side
 
     three!: ThreeMesh
 
