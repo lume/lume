@@ -29,8 +29,6 @@
     "@babel/runtime": "7.0.0-beta.46",
     "army-knife": "^0.2.1",
     "element-behaviors": "^2.0.1",
-    "famous": "trusktr/famous#commonjs",
-    "famousify": "^0.1.5",
     "geometry-interfaces": "^1.1.3",
     "james-bond": "^0.4.2",
     "jss": "^3.0.0",
