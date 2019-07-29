@@ -8,4 +8,4 @@ export {
     components,
 }
 
-export const version = '21.1.0'
+export const version = '21.2.0'

@@ -82,7 +82,7 @@ var infamous =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 224);
+/******/ 	return __webpack_require__(__webpack_require__.s = 152);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -95,784 +95,86 @@ var infamous =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createClassHelper = createClassHelper;
-exports.version = exports.default = exports.staticBlacklist = exports.InvalidAccessError = exports.InvalidSuperAccessError = exports.Class = void 0;
+var _exportNames = {
+  version: true,
+  instanceOf: true
+};
+Object.defineProperty(exports, "instanceOf", {
+  enumerable: true,
+  get: function () {
+    return _instanceOf.default;
+  }
+});
+exports.version = exports.default = void 0;
 
-var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(88));
+var _Class = _interopRequireDefault(__webpack_require__(82));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(20));
+Object.keys(_Class).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Class[key];
+    }
+  });
+});
 
-var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
+var _Mixin = __webpack_require__(47);
 
-var _create = _interopRequireDefault(__webpack_require__(60));
+Object.keys(_Mixin).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Mixin[key];
+    }
+  });
+});
 
-var _objectSpread2 = _interopRequireDefault(__webpack_require__(61));
+var _instanceOf = _interopRequireDefault(__webpack_require__(83));
 
-var _classCallCheck2 = _interopRequireDefault(__webpack_require__(97));
+var _native = __webpack_require__(6);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(162));
+Object.keys(_native).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _native[key];
+    }
+  });
+});
 
-var _getPrototypeOf2 = _interopRequireDefault(__webpack_require__(99));
+var _utils = __webpack_require__(18);
 
-var _inherits2 = _interopRequireDefault(__webpack_require__(176));
-
-var _wrapNativeSuper2 = _interopRequireDefault(__webpack_require__(180));
-
-var _weakMap = _interopRequireDefault(__webpack_require__(46));
-
-var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(76));
-
-var _utils = __webpack_require__(47);
+Object.keys(_utils).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _utils[key];
+    }
+  });
+});
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// TODO
-//  [x] remove the now-unnecessary modes (leave just what was 'es5' mode)
-//  [x] link helpers to each other, making it possible to destructure the arguments to definer functions
-//  [x] let access helper prototype objects extend from Object, otherwise common tools are not available.
-//  [x] accept a function as return value of function definer, to be treated as a class to derive the definition from, so that it can have access to Protected and Private helpers
-//  [x] let the returned class define protected and private getters which return the protected and private definitions.
-//  [x] migrate to builder-js-package so tests can run in the browser, and we can test custom elements
-//  [ ] protected and private static members
-//  [ ] other TODOs in the code
-var staticBlacklist = ['subclass', 'extends'].concat((0, _getOwnPropertyNames.default)(new Function()));
-exports.staticBlacklist = staticBlacklist;
-var publicProtoToProtectedProto = new _weakMap.default();
-var publicProtoToPrivateProto = new _weakMap.default(); // A two-way map to associate public instances with protected instances.
-// There is one protected instance per public instance
+// the bread and butter
+var _default = _Class.default; // mix and match your classes!
 
-var publicToProtected = new _utils.WeakTwoWayMap(); // so we can get the class scope associated with a private instance
-
-var privateInstanceToClassScope = new _weakMap.default();
-var defaultOptions = {
-  // es5 class inheritance is simple, nice, easy, and robust
-  // There was another mode, but it has been removed
-  mode: 'es5',
-  // false is better for performance, but true will use Function (similar to
-  // eval) to name your class functions in the most accurate way.
-  nativeNaming: false,
-  // similar to ES6 classes:
-  prototypeWritable: false,
-  defaultClassDescriptor: {
-    writable: true,
-    enumerable: false,
-    configurable: true
-  },
-  setClassDescriptors: true
-};
-
-var InvalidSuperAccessError =
-/*#__PURE__*/
-function (_Error) {
-  (0, _inherits2.default)(InvalidSuperAccessError, _Error);
-
-  function InvalidSuperAccessError() {
-    (0, _classCallCheck2.default)(this, InvalidSuperAccessError);
-    return (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(InvalidSuperAccessError).apply(this, arguments));
-  }
-
-  return InvalidSuperAccessError;
-}((0, _wrapNativeSuper2.default)(Error));
-
-exports.InvalidSuperAccessError = InvalidSuperAccessError;
-
-var InvalidAccessError =
-/*#__PURE__*/
-function (_Error2) {
-  (0, _inherits2.default)(InvalidAccessError, _Error2);
-
-  function InvalidAccessError() {
-    (0, _classCallCheck2.default)(this, InvalidAccessError);
-    return (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(InvalidAccessError).apply(this, arguments));
-  }
-
-  return InvalidAccessError;
-}((0, _wrapNativeSuper2.default)(Error));
-
-exports.InvalidAccessError = InvalidAccessError;
-var Class = createClassHelper();
-exports.Class = Class;
-var _default = Class;
 exports.default = _default;
-
-function createClassHelper(options) {
-  options = options ? (0, _objectSpread2.default)({}, defaultOptions, options) : defaultOptions;
-  options.defaultClassDescriptor = (0, _objectSpread2.default)({}, defaultOptions.defaultClassDescriptor, options.defaultClassDescriptor);
-  var mode = options.mode;
-  var prototypeWritable = options.prototypeWritable;
-  var setClassDescriptors = options.setClassDescriptors;
-  var nativeNaming = options.nativeNaming;
-  /*
-   * this is just the public interface adapter for createClass(). Depending
-   * on how you call this interface, you can do various things like:
-   *
-   * - anonymous empty class
-   *
-   *    Class()
-   *
-   * - named empty class
-   *
-   *    Class('Foo')
-   *
-   * - base class named Foo
-   *
-   *    Class('Foo', (Public, Protected, Private) => {
-   *      someMethod() { ... },
-   *    })
-   *
-   * - anonymous base class
-   *
-   *    Class((Public, Protected, Private) => {
-   *      someMethod() { ... },
-   *    })
-   *
-   *    Class('Foo').extends(OtherClass, (Public, Protected, Private) => ({
-   *      someMethod() { ... },
-   *    }))
-   *
-   *    OtherClass.subclass = Class
-   *    const Bar = OtherClass.subclass((Public, Protected, Private) => {
-   *      ...
-   *    })
-   *
-   * - any class made with lowclass has a static subclass if you prefer using
-   *   that:
-   *
-   *    Bar.subclass('Baz', (Public, Protected, Private) => {...})
-   *
-   * - but you could as well do
-   *
-   *    Class('Baz').extends(Bar, (Public, Protected, Private) => {...})
-   */
-
-  return function Class() {
-    var args = [],
-        len = arguments.length;
-
-    while (len--) args[len] = arguments[len];
-
-    var makingSubclass = false; // if called as SomeConstructor.subclass, or bound to SomeConstructor
-
-    if (typeof this === 'function') {
-      makingSubclass = true;
-    } // f.e. `Class()` or `Class('Foo')`, similar to `class {}` or
-    // `class Foo {}`
-
-
-    if (args.length <= 2) {
-      var name = '';
-      var definer = null; // f.e. `Class('Foo')`
-
-      if (typeof args[0] === 'string') {
-        name = args[0];
-      } // f.e. `Class((pub, prot, priv) => ({ ... }))`
-      else if (typeof args[0] === 'function' || typeof args[0] === 'object') {
-          definer = args[0];
-        } // f.e. `Class('Foo', (pub, prot, priv) => ({ ... }))`
-
-
-      if (typeof args[1] === 'function' || typeof args[1] === 'object') {
-        definer = args[1];
-      } // Make a class in case we wanted to do just `Class()` or
-      // `Class('Foo')`...
-
-
-      var Ctor = makingSubclass ? createClass.call(this, name, definer) : createClass(name, definer); // ...but add the extends helper in case we wanted to do like:
-      // Class().extends(OtherClass, (Public, Protected, Private) => ({
-      //   ...
-      // }))
-
-      Ctor.extends = function (ParentClass, def) {
-        def = def || definer;
-        return createClass.call(ParentClass, name, def);
-      };
-
-      return Ctor;
-    }
-
-    throw new TypeError('invalid args');
-  };
-  /**
-   * @param {string} className The name that the class being defined should
-   * have.
-   * @param {Function} definer A function or object for defining the class.
-   * If definer a function, it is passed the Public, Protected, Private, and
-   * Super helpers. Methods and properties can be defined on the helpers
-   * directly.  An object containing methods and properties can also be
-   * returned from the function. If definer is an object, the object should
-   * be in the same format as the one returned if definer were a function.
-   */
-
-  function createClass(className, definer) {
-    "use strict"; // f.e. ParentClass.subclass((Public, Protected, Private) => {...})
-
-    var ParentClass = this;
-
-    if (typeof className !== 'string') {
-      throw new TypeError("\n                You must specify a string for the 'className' argument.\n            ");
-    }
-
-    var definition = null; // f.e. Class('Foo', { ... })
-
-    if (definer && typeof definer === 'object') {
-      definition = definer;
-    } // Return early if there's no definition or parent class, just a simple
-    // extension of Object. f.e. when doing just `Class()` or
-    // `Class('Foo')`
-    else if (!ParentClass && (!definer || typeof definer !== 'function' && typeof definer !== 'object')) {
-        var Ctor;
-
-        if (nativeNaming && className) {
-          Ctor = new Function("return function " + className + "() {}")();
-        } else {
-          // force anonymous even in ES6+
-          Ctor = function () {
-            return function () {};
-          }();
-
-          if (className) {
-            (0, _utils.setDescriptor)(Ctor, 'name', {
-              value: className
-            });
-          }
-        }
-
-        Ctor.prototype = {
-          __proto__: Object.prototype,
-          constructor: Ctor // no static inheritance here, just like with `class Foo {}`
-
-        };
-        (0, _utils.setDescriptor)(Ctor, 'subclass', {
-          value: Class,
-          writable: true,
-          // TODO maybe let's make this non writable
-          enumerable: false,
-          configurable: false
-        });
-        return Ctor;
-      } // A two-way map to associate public instances with private instances.
-    // Unlike publicToProtected, this is inside here because there is one
-    // private instance per class scope per instance (or to say it another
-    // way, each instance has as many private instances as the number of
-    // classes that the given instance has in its inheritance chain, one
-    // private instance per class)
-
-
-    var publicToPrivate = new _utils.WeakTwoWayMap(); // the class "scope" that we will bind to the helper functions
-
-    var scope = {
-      publicToPrivate: publicToPrivate // create the super helper for this class scope
-
-    };
-    var supers = new _weakMap.default();
-    var Super = superHelper.bind(null, supers, scope); // bind this class' scope to the helper functions
-
-    var Public = getPublicMembers.bind(null, scope);
-    var Protected = getProtectedMembers.bind(null, scope);
-    var Private = getPrivateMembers.bind(null, scope);
-    Public.prototype = {};
-    Protected.prototype = {};
-    Private.prototype = {}; // alows the user to destructure arguments to definer functions
-
-    Public.Public = Public;
-    Public.Protected = Protected;
-    Public.Private = Private;
-    Public.Super = Super;
-    Protected.Public = Public;
-    Protected.Protected = Protected;
-    Protected.Private = Private;
-    Protected.Super = Super; // Private and Super are never passed as first argument
-    // pass the helper functions to the user's class definition function
-
-    definition = definition || definer && definer(Public, Protected, Private, Super); // the user has the option of returning an object that defines which
-    // properties are public/protected/private.
-
-    if (definition && typeof definition !== 'object' && typeof definition !== 'function') {
-      throw new TypeError("\n                The return value of a class definer function, if any, should be\n                an object, or a class constructor.\n            ");
-    } // if a function was returned, we assume it is a class from which we
-    // get the public definition from.
-
-
-    var customClass = null;
-
-    if (typeof definition === 'function') {
-      customClass = definition;
-      definition = definition.prototype;
-      ParentClass = customClass.prototype.__proto__.constructor;
-    }
-
-    var staticMembers; // if functions were provided for the public/protected/private
-    // properties of the definition object, execute them with their
-    // respective access helpers, and use the objects returned from them.
-
-    if (definition) {
-      staticMembers = definition.static;
-      delete definition.static;
-
-      if (typeof definition.public === 'function') {
-        definition.public = definition.public(Protected, Private);
-      }
-
-      if (typeof definition.protected === 'function') {
-        definition.protected = definition.protected(Public, Private);
-      }
-
-      if (typeof definition.private === 'function') {
-        definition.private = definition.private(Public, Protected);
-      }
-    }
-
-    ParentClass = ParentClass || Object; // extend the parent class
-
-    var parentPublicPrototype = ParentClass.prototype;
-    var publicPrototype = definition && definition.public || definition || (0, _create.default)(parentPublicPrototype);
-
-    if (publicPrototype.__proto__ !== parentPublicPrototype) {
-      publicPrototype.__proto__ = parentPublicPrototype;
-    } // extend the parent protected prototype
-
-
-    var parentProtectedPrototype = publicProtoToProtectedProto.get(parentPublicPrototype) || {};
-    var protectedPrototype = definition && definition.protected || (0, _create.default)(parentProtectedPrototype);
-
-    if (protectedPrototype.__proto__ !== parentProtectedPrototype) {
-      protectedPrototype.__proto__ = parentProtectedPrototype;
-    }
-
-    publicProtoToProtectedProto.set(publicPrototype, protectedPrototype); // private prototype inherits from parent, but each private instance is
-    // private only for the class of this scope
-
-    var parentPrivatePrototype = publicProtoToPrivateProto.get(parentPublicPrototype) || {};
-    var privatePrototype = definition && definition.private || (0, _create.default)(parentPrivatePrototype);
-
-    if (privatePrototype.__proto__ !== parentPrivatePrototype) {
-      privatePrototype.__proto__ = parentPrivatePrototype;
-    }
-
-    publicProtoToPrivateProto.set(publicPrototype, privatePrototype);
-    scope.publicPrototype = publicPrototype;
-    scope.privatePrototype = privatePrototype;
-    scope.protectedPrototype = protectedPrototype;
-    scope.parentPublicPrototype = parentPublicPrototype;
-    scope.parentProtectedPrototype = parentProtectedPrototype;
-    scope.parentPrivatePrototype = parentPrivatePrototype; // the user has the option of assigning methods and properties to the
-    // helpers that we passed in, to let us know which methods and
-    // properties are public/protected/private so we can assign them onto
-    // the respective prototypes.
-
-    copyDescriptors(Public.prototype, publicPrototype);
-    copyDescriptors(Protected.prototype, protectedPrototype);
-    copyDescriptors(Private.prototype, privatePrototype);
-
-    if (definition) {
-      // delete these so we don't expose them on the class' public
-      // prototype
-      delete definition.public;
-      delete definition.protected;
-      delete definition.private; // if a `public` object was also supplied, we treat that as the public
-      // prototype instead of the base definition object, so we copy the
-      // definition's props to the `public` object
-      //
-      // TODO For now we copy from the definition object to the 'public'
-      // object (publicPrototype), but this won't work with native `super`.
-      // Maybe later, we can use a Proxy to read props from both the root
-      // object and the public object, so that `super` works from both.
-      // Another option is to not allow a `public` object, only protected
-      // and private
-
-      if (definition !== publicPrototype) {
-        // copy whatever remains
-        copyDescriptors(definition, publicPrototype);
-      }
-    }
-
-    if (customClass) {
-      if (staticMembers) {
-        copyDescriptors(staticMembers, customClass);
-      }
-
-      return customClass;
-    }
-
-    var userConstructor = publicPrototype.hasOwnProperty('constructor') ? publicPrototype.constructor : null;
-    var NewClass = null;
-    var newPrototype = null; // ES5 version (which seems to be so much better)
-
-    if (mode === 'es5') {
-      NewClass = function () {
-        return function () {
-          var ret = null;
-          var constructor = null;
-
-          if (userConstructor) {
-            constructor = userConstructor;
-          } else {
-            constructor = ParentClass;
-          } // Object is a special case because otherwise
-          // `Object.apply(this)` returns a different object and we don't
-          // want to deal with return value in that case
-
-
-          if (constructor !== Object) {
-            ret = constructor.apply(this, arguments);
-          }
-
-          if (ret && typeof ret === 'object') {
-            // XXX should we set ret.__proto__ = constructor.prototype
-            // here? Or let the user deal with that?
-            return ret;
-          }
-        };
-      }();
-
-      newPrototype = publicPrototype;
-    } else {
-      throw new TypeError("\n                The lowclass mode option can only be 'es5' for now.\n            ");
-    }
-
-    if (className) {
-      if (nativeNaming) {
-        var code = (0, _utils.getFunctionBody)(NewClass);
-        var proto = NewClass.prototype;
-        NewClass = new Function(" userConstructor, ParentClass ", "\n                    return function " + className + "() { " + code + " }\n                ")(userConstructor, ParentClass);
-        NewClass.prototype = proto;
-      } else {
-        (0, _utils.setDescriptor)(NewClass, 'name', {
-          value: className
-        });
-      }
-    }
-
-    if (userConstructor && userConstructor.length) {
-      // length is not writable, only configurable, therefore the value
-      // has to be set with a descriptor update
-      (0, _utils.setDescriptor)(NewClass, 'length', {
-        value: userConstructor.length
-      });
-    } // static stuff {
-    // static inheritance
-
-
-    NewClass.__proto__ = ParentClass;
-
-    if (staticMembers) {
-      copyDescriptors(staticMembers, NewClass);
-    } // allow users to make subclasses. When subclass is called on a
-    // constructor, it defines `this` which is assigned to ParentClass
-    // above.
-
-
-    (0, _utils.setDescriptor)(NewClass, 'subclass', {
-      value: Class,
-      writable: true,
-      enumerable: false,
-      configurable: false
-    }); // }
-    // prototype stuff {
-
-    NewClass.prototype = newPrototype;
-    NewClass.prototype.constructor = NewClass; // }
-
-    if (setClassDescriptors) {
-      setDefaultStaticDescriptors(NewClass, options);
-      (0, _utils.setDescriptor)(NewClass, 'prototype', {
-        writable: prototypeWritable
-      });
-      setDefaultPrototypeDescriptors(NewClass.prototype, options);
-      setDefaultPrototypeDescriptors(protectedPrototype, options);
-      setDefaultPrototypeDescriptors(privatePrototype, options);
-    }
-
-    return NewClass;
-  }
-} // XXX PERFORMANCE: instead of doing multiple prototype traversals with
-// hasPrototype in the following access helpers, maybe we can do a single
-// traversal and check along the way?
-//
-// Worst case examples:
-//
-//   currently:
-//     If class hierarchy has 20 classes
-//     If we detect which instance we have in order of public, protected, private
-//     If the instance we're checking is the private instance of the middle class (f.e. class 10)
-//     We'll traverse 20 public prototypes with 20 conditional checks
-//     We'll traverse 20 protected prototypes with 20 conditional checks
-//     And finally we'll traverse 10 private prototypes with 10 conditional checks
-//     TOTAL: We traverse over 50 prototypes with 50 conditional checks
-//
-//   proposed:
-//     If class hierarchy has 20 classes
-//     If we detect which instance we have in order of public, protected, private
-//     If the instance we're checking is the private instance of the middle class (f.e. class 10)
-//     We'll traverse 10 public prototypes with 3 conditional checks at each prototype
-//     TOTAL: We traverse over 10 prototypes with 30 conditional checks
-//     BUT: The conditional checking will involve reading WeakMaps instead of
-//     checking just reference equality. If we can optimize how this part
-//     works, it might be worth it.
-//
-// Can the tradeoff (less traversal and conditional checks) outweigh the
-// heavier conditional checks?
-//
-// XXX PERFORMANCE: We can also cache the access-helper results, which requires more memory,
-// but will make use of access helpers much faster, especially important for
-// animations.
-
-
-function getPublicMembers(scope, instance) {
-  // check only for the private instance of this class scope
-  if (hasPrototype(instance, scope.privatePrototype)) {
-    return getSubclassScope(instance).publicToPrivate.get(instance);
-  } // check for an instance of the class (or its subclasses) of this scope
-  else if (hasPrototype(instance, scope.protectedPrototype)) {
-      return publicToProtected.get(instance);
-    } // otherwise just return whatever was passed in, it's public already!
-    else {
-        return instance;
-      }
-}
-
-function getProtectedMembers(scope, instance) {
-  // check for an instance of the class (or its subclasses) of this scope
-  // This allows for example an instance of an Animal base class to access
-  // protected members of an instance of a Dog child class.
-  if (hasPrototype(instance, scope.publicPrototype)) {
-    return publicToProtected.get(instance) || createProtectedInstance(instance);
-  } // check for a private instance inheriting from this class scope
-  else if (hasPrototype(instance, scope.privatePrototype)) {
-      var publicInstance = getSubclassScope(instance).publicToPrivate.get(instance);
-      return publicToProtected.get(publicInstance) || createProtectedInstance(publicInstance);
-    } // return the protected instance if it was passed in
-    else if (hasPrototype(instance, scope.protectedPrototype)) {
-        return instance;
-      }
-
-  throw new InvalidAccessError('invalid access of protected member');
-}
-
-function getSubclassScope(privateInstance) {
-  return privateInstanceToClassScope.get(privateInstance);
-}
-
-function createProtectedInstance(publicInstance) {
-  // traverse instance proto chain, find first protected prototype
-  var protectedPrototype = findLeafmostProtectedPrototype(publicInstance); // make the protected instance from the found protected prototype
-
-  var protectedInstance = (0, _create.default)(protectedPrototype);
-  publicToProtected.set(publicInstance, protectedInstance);
-  return protectedInstance;
-}
-
-function findLeafmostProtectedPrototype(publicInstance) {
-  var result = null;
-  var currentProto = publicInstance.__proto__;
-
-  while (currentProto) {
-    result = publicProtoToProtectedProto.get(currentProto);
-
-    if (result) {
-      return result;
-    }
-
-    currentProto = currentProto.__proto__;
-  }
-
-  return result;
-}
-
-function getPrivateMembers(scope, instance) {
-  // check for a public instance that is or inherits from this class
-  if (hasPrototype(instance, scope.publicPrototype)) {
-    return scope.publicToPrivate.get(instance) || createPrivateInstance(scope, instance);
-  } // check for a protected instance that is or inherits from this class'
-  // protectedPrototype
-  else if (hasPrototype(instance, scope.protectedPrototype)) {
-      var publicInstance = publicToProtected.get(instance);
-      return scope.publicToPrivate.get(publicInstance) || createPrivateInstance(scope, publicInstance);
-    } // return the private instance if it was passed in
-    else if (hasPrototype(instance, scope.privatePrototype)) {
-        return instance;
-      }
-
-  throw new InvalidAccessError('invalid access of private member');
-}
-
-function createPrivateInstance(scope, publicInstance) {
-  var privateInstance = (0, _create.default)(scope.privatePrototype);
-  scope.publicToPrivate.set(publicInstance, privateInstance);
-  privateInstanceToClassScope.set(privateInstance, scope);
-  return privateInstance;
-} // check if an object has the given prototype in its chain
-
-
-function hasPrototype(obj, proto) {
-  var currentProto = obj.__proto__;
-
-  do {
-    if (proto === currentProto) {
-      return true;
-    }
-
-    currentProto = currentProto.__proto__;
-  } while (currentProto);
-
-  return false;
-} // copy all properties (as descriptors) from source to destination
-
-
-function copyDescriptors(source, destination, mod) {
-  var props = (0, _getOwnPropertyNames.default)(source);
-  var i = props.length;
-
-  while (i--) {
-    var prop = props[i];
-    var descriptor = (0, _getOwnPropertyDescriptor.default)(source, prop);
-
-    if (mod) {
-      mod(descriptor);
-    }
-
-    (0, _defineProperty.default)(destination, prop, descriptor);
-  }
-}
-
-function superHelper(supers, scope, instance) {
-  var publicPrototype = scope.publicPrototype;
-  var protectedPrototype = scope.protectedPrototype;
-  var privatePrototype = scope.privatePrototype;
-  var parentPublicPrototype = scope.parentPublicPrototype;
-  var parentProtectedPrototype = scope.parentProtectedPrototype;
-  var parentPrivatePrototype = scope.parentPrivatePrototype;
-
-  if (hasPrototype(instance, publicPrototype)) {
-    return getSuperHelperObject(instance, parentPublicPrototype, supers);
-  }
-
-  if (hasPrototype(instance, protectedPrototype)) {
-    return getSuperHelperObject(instance, parentProtectedPrototype, supers);
-  }
-
-  if (hasPrototype(instance, privatePrototype)) {
-    return getSuperHelperObject(instance, parentPrivatePrototype, supers);
-  }
-
-  throw new InvalidSuperAccessError('invalid super access');
-}
-
-function getSuperHelperObject(instance, parentPrototype, supers) {
-  var _super = supers.get(instance); // XXX PERFORMANCE: there's probably some ways to improve speed here using caching
-
-
-  if (!_super) {
-    supers.set(instance, _super = (0, _create.default)(parentPrototype));
-    var keys = (0, _utils.getInheritedPropertyNames)(parentPrototype);
-    var i = keys.length;
-
-    var loop = function () {
-      var key = keys[i];
-      (0, _utils.setDescriptor)(_super, key, {
-        get: function () {
-          var value = void undefined;
-          var descriptor = (0, _utils.getInheritedDescriptor)(parentPrototype, key);
-
-          if (descriptor && (0, _utils.propertyIsAccessor)(descriptor)) {
-            var getter = descriptor.get;
-
-            if (getter) {
-              value = getter.call(instance);
-            }
-          } else {
-            value = parentPrototype[key];
-          }
-
-          if (value && value.call && typeof value === 'function') {
-            value = value.bind(instance);
-          }
-
-          return value;
-        },
-        // like native `super`, setting a super property does nothing.
-        set: function (value) {
-          var descriptor = (0, _utils.getInheritedDescriptor)(parentPrototype, key);
-
-          if (descriptor && (0, _utils.propertyIsAccessor)(descriptor)) {
-            var setter = descriptor.set;
-
-            if (setter) {
-              value = setter.call(instance, value);
-            }
-          } else {
-            // just like native `super`
-            instance[key] = value;
-          }
-        }
-      }, true);
-    };
-
-    while (i--) loop();
-  }
-
-  return _super;
-}
-
-function setDefaultPrototypeDescriptors(prototype, ref) {
-  var ref_defaultClassDescriptor = ref.defaultClassDescriptor;
-  var writable = ref_defaultClassDescriptor.writable;
-  var enumerable = ref_defaultClassDescriptor.enumerable;
-  var configurable = ref_defaultClassDescriptor.configurable;
-  var descriptors = (0, _getOwnPropertyDescriptors.default)(prototype);
-  var descriptor;
-
-  for (var key in descriptors) {
-    descriptor = descriptors[key]; // regular value
-
-    if ('value' in descriptor || 'writable' in descriptor) {
-      descriptor.writable = writable;
-    } // accessor or regular value
-
-
-    descriptor.enumerable = enumerable;
-    descriptor.configurable = configurable;
-  }
-
-  (0, _utils.setDescriptors)(prototype, descriptors);
-}
-
-function setDefaultStaticDescriptors(Ctor, ref) {
-  var ref_defaultClassDescriptor = ref.defaultClassDescriptor;
-  var writable = ref_defaultClassDescriptor.writable;
-  var enumerable = ref_defaultClassDescriptor.enumerable;
-  var configurable = ref_defaultClassDescriptor.configurable;
-  var descriptors = (0, _getOwnPropertyDescriptors.default)(Ctor);
-  var descriptor;
-
-  for (var key in descriptors) {
-    if (staticBlacklist.indexOf(key) !== -1) {
-      delete descriptors[key];
-      continue;
-    }
-
-    descriptor = descriptors[key]; // regular value
-
-    if ('value' in descriptor || 'writable' in descriptor) {
-      descriptor.writable = writable;
-    } // accessor or regular value
-
-
-    descriptor.enumerable = enumerable;
-    descriptor.configurable = configurable;
-  }
-
-  (0, _utils.setDescriptors)(Ctor, descriptors);
-}
-
-var version = '4.2.1';
+const version = '4.7.0';
 exports.version = version;
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.0' };
+var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -880,11 +182,359 @@ if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(6);
+var store = __webpack_require__(37)('wks');
+var uid = __webpack_require__(26);
+var Symbol = __webpack_require__(4).Symbol;
+var USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function (name) {
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(13)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
+  // eslint-disable-next-line no-new-func
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(14);
+var IE8_DOM_DEFINE = __webpack_require__(55);
+var toPrimitive = __webpack_require__(35);
+var dP = Object.defineProperty;
+
+exports.f = __webpack_require__(3) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.native = newless;
+exports.default = void 0;
+
+var _utils = __webpack_require__(18);
+
+// borrowed from (and slightly modified) https://github.com/Mr0grog/newless
+// The newless license is BSD 3:
+
+/*
+ * Copyright (c) 2013-2016, Rob Brackett
+ * Copyright (c) 2018, Joseph Orbegoso Pea
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+var _default = newless;
+exports.default = _default;
+var supportsSpread = isSyntaxSupported("Object(...[{}])");
+var supportsClass = isSyntaxSupported("class Test {}");
+var supportsNewTarget = isSyntaxSupported("new.target"); // Used to track the original wrapped constructor on a newless instance
+
+var TRUE_CONSTRUCTOR = Symbol ? Symbol("trueConstructor") : "__newlessTrueConstructor__"; // Polyfills for get/set prototype
+
+var getPrototype = Object.getPrototypeOf || function getPrototype(object) {
+  return object.__proto__ || object.constructor && object.constructor.prototype || Object.prototype;
+};
+
+var setPrototype = Object.setPrototypeOf || function setPrototypeOf(object, newPrototype) {
+  object.__proto__ = newPrototype;
+}; // Polyfill for Reflect.construct
+
+
+var construct = Reflect && Reflect.construct || function () {
+  if (supportsClass) {
+    return Function("constructor, args, target", `
+      'use strict';
+
+      if (arguments.length === 3 && typeof target !== 'function')
+        throw new TypeError(target + ' is not a constructor');
+
+      target = target || constructor;
+
+      // extend target so the right prototype is constructed (or nearly the
+      // right one; ideally we'd do instantiator.prototype = target.prototype,
+      // but a class's prototype property is not writable)
+      class instantiator extends target {};
+      // but ensure the *logic* is 'constructor' for ES2015-compliant engines
+      Object.setPrototypeOf(instantiator, constructor);
+      // ...and for Safari 9
+      instantiator.prototype.constructor = constructor;
+
+      // The spread operator is *dramatically faster, so use it if we can:
+      // http://jsperf.com/new-via-spread-vs-dynamic-function/4
+      ${supportsSpread ? `
+
+        var value = new instantiator(...([].slice.call(args)));
+
+      ` : `
+
+        // otherwise, create a dynamic function in order to use 'new'
+        // Note using 'function.bind' would be simpler, but is much slower:
+        // http://jsperf.com/new-operator-with-dynamic-function-vs-bind
+        var argList = '';
+        for (var i = 0, len = args.length; i < len; i++) {
+          if (i > 0) argList += ',';
+          argList += 'args[' + i + ']';
+        }
+        var constructCall = Function('constructor, args',
+          'return new constructor( ' + argList + ' );'
+        );
+        var value = constructCall(constructor, args);
+
+        args = Array.prototype.slice.call(args);
+        args = [null].concat(args);
+        var value = new constructor.bind.apply(constructor, args);
+
+      `}
+
+      // fix up the prototype so it matches the intended one, not one who's
+      // prototype is the intended one :P
+      Object.setPrototypeOf(value, target.prototype);
+      return value;
+    `); //return Function("constructor, args, newTarget", `
+    //  'use strict';
+    //  if (arguments.length === 3 && typeof newTarget === undefined)
+    //    throw new TypeError('undefined is not a constructor');
+    //  newTarget = newTarget || constructor;
+    //  ${ supportsSpread ? `
+    //    var value = new constructor(...([].slice.call(args)));
+    //  `:`
+    //    args = Array.prototype.slice.call(args);
+    //    args = [null].concat(args);
+    //    var value = new constructor.bind.apply(constructor, args);
+    //  `}
+    //  Object.setPrototypeOf(value, newTarget.prototype);
+    //  return value;
+    //`);
+  } else {
+    var instantiator = function () {};
+
+    return function construct(constructor, args, target) {
+      if (arguments.length === 3 && typeof target !== 'function') throw new TypeError(target + ' is not a constructor');
+      instantiator.prototype = (target || constructor).prototype;
+      var instance = new instantiator();
+      var value = constructor.apply(instance, args);
+
+      if (typeof value === "object" && value) {
+        // we can do better if __proto__ is available (in some ES5 environments)
+        value.__proto__ = (target || constructor).prototype;
+        return value;
+      }
+
+      return instance;
+    };
+  }
+}(); // ES2015 class methods are non-enumerable; we need a helper for copying them.
+
+
+var SKIP_PROPERTIES = ["arguments", "caller", "length", "name", "prototype"];
+
+function copyProperties(source, destination) {
+  if (Object.getOwnPropertyNames && Object.defineProperty) {
+    var properties = Object.getOwnPropertyNames(source);
+
+    if (Object.getOwnPropertySymbols) {
+      properties = properties.concat(Object.getOwnPropertySymbols(source));
+    }
+
+    for (var i = properties.length - 1; i >= 0; i--) {
+      if (SKIP_PROPERTIES.indexOf(properties[i]) === -1) {
+        Object.defineProperty(destination, properties[i], Object.getOwnPropertyDescriptor(source, properties[i]));
+      }
+    }
+  } else {
+    for (var property in source) {
+      destination[property] = source[property];
+    }
+  }
+}
+
+function newless(constructor) {
+  var name = constructor.name; // V8 and newer versions of JSCore return the full class declaration from
+  // `toString()`, which lets us be a little smarter and more performant
+  // about what to do, since we know we are dealing with a "class". Note,
+  // however, not all engines do this. This could be false and the constructor
+  // might still use class syntax.
+
+  var usesClassSyntax = constructor.toString().substr(0, 5) === "class";
+  var requiresNew = usesClassSyntax ? true : null;
+
+  var newlessConstructor = (() => function () {
+    // If called with an already valid 'this', preserve that 'this' value
+    // in the super-type's constructor whenever possible. With function
+    // constructors (as opposed to class constructors), it's possible to
+    // alter the instance before calling the super constructor--so it's
+    // important to preserve that instance if at all possible.
+    if (!requiresNew && this instanceof newlessConstructor) {
+      // requiresNew = 'false' indicates we know the 'new' operator isn't
+      // necessary for this constructor, but 'null' indicates uncertainty,
+      // so the call needs to handle potential errors the first time in
+      // order to determine whether 'new' is definitely required.
+      if (requiresNew === false) {
+        var returnValue = constructor.apply(this, arguments);
+        return typeof returnValue === 'object' && returnValue || this;
+      }
+
+      try {
+        requiresNew = false;
+        var returnValue = constructor.apply(this, arguments);
+        return typeof returnValue === 'object' && returnValue || this;
+      } catch (error) {
+        // Do our best to only capture errors triggred by class syntax.
+        // Unfortunately, there's no special error type for this and the
+        // message is non-standard, so this is the best check we can do.
+        if (error instanceof TypeError && (/class constructor/i.test(error.message) || /use the 'new' operator/i.test(error.message) // Custom Elements in Chrome
+        // TODO: there might be other error messages we need to catch,
+        // depending on engine and use case. We need to test in all browsers
+        )) {
+          // mark this constructor as requiring 'new' for next time
+          requiresNew = true;
+        } else {
+          if (/Illegal constructor/i.test(error.message) && Object.create(constructor.prototype) instanceof Node) {
+            console.error(`
+                    The following error can happen if a Custom Element is called
+                    with 'new' before being defined. The constructor was ${constructor.name}:
+                `, constructor);
+          }
+
+          throw error;
+        }
+      }
+    } // make a reasonably good replacement for 'new.target' which is a
+    // syntax error in older engines
+
+
+    var newTarget;
+    var hasNewTarget = false;
+
+    if (supportsNewTarget) {
+      eval('newTarget = new.target');
+      if (newTarget) hasNewTarget = true;
+    }
+
+    if (!supportsNewTarget || !hasNewTarget) {
+      newTarget = this instanceof newlessConstructor ? this.constructor : constructor;
+    }
+
+    var returnValue = construct(constructor, arguments, newTarget); // best effort to make things easy for functions inheriting from classes
+
+    if (this instanceof newlessConstructor) {
+      setPrototype(this, returnValue);
+    }
+
+    return returnValue;
+  })();
+
+  if (name) {
+    const code = (0, _utils.getFunctionBody)(newlessConstructor);
+    newlessConstructor = Function("constructor, construct, setPrototype, requiresNew, supportsNewTarget", `
+      var newlessConstructor = function ${name}() { ${code} };
+      return newlessConstructor
+    `)(constructor, construct, setPrototype, requiresNew, supportsNewTarget);
+  } // copy the `.length` value to the newless constructor
+
+
+  if (constructor.length) {
+    // length is not writable, only configurable, therefore the value
+    // has to be set with a descriptor update
+    (0, _utils.setDescriptor)(newlessConstructor, 'length', {
+      value: constructor.length
+    });
+  }
+
+  newlessConstructor.prototype = Object.create(constructor.prototype);
+  newlessConstructor.prototype.constructor = newlessConstructor; // NOTE: *usually* the below will already be true, but we ensure it here.
+  // Safari 9 requires this for the 'super' keyword to work. Newer versions
+  // of WebKit and other engines do not. Instead, they use the constructor's
+  // prototype chain (which is correct by ES2015 spec) (see below).
+
+  constructor.prototype.constructor = constructor; // for ES2015 classes, we need to make sure the constructor's prototype
+  // is the super class's constructor. Further, optimize performance by
+  // pointing at the actual constructor implementation instead of the
+  // newless wrapper (in the case that it is wrapped by newless).
+
+  newlessConstructor[TRUE_CONSTRUCTOR] = constructor;
+  copyProperties(constructor, newlessConstructor);
+  setPrototype(newlessConstructor, constructor);
+  return newlessConstructor;
+}
+
+; // Test whether a given syntax is supported
+
+function isSyntaxSupported(example, useStrict = true) {
+  try {
+    return !!Function("", (useStrict ? "'use strict';" : "") + example);
+  } catch (error) {
+    return false;
+  }
+}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(4);
 var core = __webpack_require__(1);
-var ctx = __webpack_require__(19);
-var hide = __webpack_require__(14);
-var has = __webpack_require__(15);
+var ctx = __webpack_require__(16);
+var hide = __webpack_require__(10);
+var has = __webpack_require__(9);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -945,1280 +595,7 @@ module.exports = $export;
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var store = __webpack_require__(58)('wks');
-var uid = __webpack_require__(36);
-var Symbol = __webpack_require__(6).Symbol;
-var USE_SYMBOL = typeof Symbol == 'function';
-
-var $exports = module.exports = function (name) {
-  return store[name] || (store[name] =
-    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
-};
-
-$exports.store = store;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-
-    /**
-     *  A high-performance static matrix math library used to calculate
-     *    affine transforms on surfaces and other renderables.
-     *    Famo.us uses 4x4 matrices corresponding directly to
-     *    WebKit matrices (column-major order).
-     *
-     *    The internal "type" of a Matrix is a 16-long float array in
-     *    row-major order, with:
-     *    elements [0],[1],[2],[4],[5],[6],[8],[9],[10] forming the 3x3
-     *          transformation matrix;
-     *    elements [12], [13], [14] corresponding to the t_x, t_y, t_z
-     *           translation;
-     *    elements [3], [7], [11] set to 0;
-     *    element [15] set to 1.
-     *    All methods are static.
-     *
-     * @static
-     *
-     * @class Transform
-     */
-    var Transform = {};
-
-    // WARNING: these matrices correspond to WebKit matrices, which are
-    //    transposed from their math counterparts
-    Transform.precision = 1e-6;
-    Transform.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-
-    /**
-     * Multiply two or more Transform matrix types to return a Transform matrix.
-     *
-     * @method multiply4x4
-     * @static
-     * @param {Transform} a left Transform
-     * @param {Transform} b right Transform
-     * @return {Transform}
-     */
-    Transform.multiply4x4 = function multiply4x4(a, b) {
-        return [
-            a[0] * b[0] + a[4] * b[1] + a[8] * b[2] + a[12] * b[3],
-            a[1] * b[0] + a[5] * b[1] + a[9] * b[2] + a[13] * b[3],
-            a[2] * b[0] + a[6] * b[1] + a[10] * b[2] + a[14] * b[3],
-            a[3] * b[0] + a[7] * b[1] + a[11] * b[2] + a[15] * b[3],
-            a[0] * b[4] + a[4] * b[5] + a[8] * b[6] + a[12] * b[7],
-            a[1] * b[4] + a[5] * b[5] + a[9] * b[6] + a[13] * b[7],
-            a[2] * b[4] + a[6] * b[5] + a[10] * b[6] + a[14] * b[7],
-            a[3] * b[4] + a[7] * b[5] + a[11] * b[6] + a[15] * b[7],
-            a[0] * b[8] + a[4] * b[9] + a[8] * b[10] + a[12] * b[11],
-            a[1] * b[8] + a[5] * b[9] + a[9] * b[10] + a[13] * b[11],
-            a[2] * b[8] + a[6] * b[9] + a[10] * b[10] + a[14] * b[11],
-            a[3] * b[8] + a[7] * b[9] + a[11] * b[10] + a[15] * b[11],
-            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12] * b[15],
-            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13] * b[15],
-            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14] * b[15],
-            a[3] * b[12] + a[7] * b[13] + a[11] * b[14] + a[15] * b[15]
-        ];
-    };
-
-    /**
-     * Fast-multiply two Transform matrix types to return a
-     *    Matrix, assuming bottom row on each is [0 0 0 1].
-     *
-     * @method multiply
-     * @static
-     * @param {Transform} a left Transform
-     * @param {Transform} b right Transform
-     * @return {Transform}
-     */
-    Transform.multiply = function multiply(a, b) {
-        return [
-            a[0] * b[0] + a[4] * b[1] + a[8] * b[2],
-            a[1] * b[0] + a[5] * b[1] + a[9] * b[2],
-            a[2] * b[0] + a[6] * b[1] + a[10] * b[2],
-            0,
-            a[0] * b[4] + a[4] * b[5] + a[8] * b[6],
-            a[1] * b[4] + a[5] * b[5] + a[9] * b[6],
-            a[2] * b[4] + a[6] * b[5] + a[10] * b[6],
-            0,
-            a[0] * b[8] + a[4] * b[9] + a[8] * b[10],
-            a[1] * b[8] + a[5] * b[9] + a[9] * b[10],
-            a[2] * b[8] + a[6] * b[9] + a[10] * b[10],
-            0,
-            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12],
-            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13],
-            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14],
-            1
-        ];
-    };
-
-    /**
-     * Return a Transform translated by additional amounts in each
-     *    dimension. This is equivalent to the result of
-     *
-     *    Transform.multiply(Matrix.translate(t[0], t[1], t[2]), m).
-     *
-     * @method thenMove
-     * @static
-     * @param {Transform} m a Transform
-     * @param {Array.Number} t floats delta vector of length 2 or 3
-     * @return {Transform}
-     */
-    Transform.thenMove = function thenMove(m, t) {
-        if (!t[2]) t[2] = 0;
-        return [m[0], m[1], m[2], 0, m[4], m[5], m[6], 0, m[8], m[9], m[10], 0, m[12] + t[0], m[13] + t[1], m[14] + t[2], 1];
-    };
-
-    /**
-     * Return a Transform matrix which represents the result of a transform matrix
-     *    applied after a move. This is faster than the equivalent multiply.
-     *    This is equivalent to the result of:
-     *
-     *    Transform.multiply(m, Transform.translate(t[0], t[1], t[2])).
-     *
-     * @method moveThen
-     * @static
-     * @param {Array.Number} v vector representing initial movement
-     * @param {Transform} m matrix to apply afterwards
-     * @return {Transform} the resulting matrix
-     */
-    Transform.moveThen = function moveThen(v, m) {
-        if (!v[2]) v[2] = 0;
-        var t0 = v[0] * m[0] + v[1] * m[4] + v[2] * m[8];
-        var t1 = v[0] * m[1] + v[1] * m[5] + v[2] * m[9];
-        var t2 = v[0] * m[2] + v[1] * m[6] + v[2] * m[10];
-        return Transform.thenMove(m, [t0, t1, t2]);
-    };
-
-    /**
-     * Return a Transform which represents a translation by specified
-     *    amounts in each dimension.
-     *
-     * @method translate
-     * @static
-     * @param {Number} x x translation
-     * @param {Number} y y translation
-     * @param {Number} z z translation
-     * @return {Transform}
-     */
-    Transform.translate = function translate(x, y, z) {
-        if (z === undefined) z = 0;
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
-    };
-
-    /**
-     * Return a Transform scaled by a vector in each
-     *    dimension. This is a more performant equivalent to the result of
-     *
-     *    Transform.multiply(Transform.scale(s[0], s[1], s[2]), m).
-     *
-     * @method thenScale
-     * @static
-     * @param {Transform} m a matrix
-     * @param {Array.Number} s delta vector (array of floats &&
-     *    array.length == 3)
-     * @return {Transform}
-     */
-    Transform.thenScale = function thenScale(m, s) {
-        return [
-            s[0] * m[0], s[1] * m[1], s[2] * m[2], 0,
-            s[0] * m[4], s[1] * m[5], s[2] * m[6], 0,
-            s[0] * m[8], s[1] * m[9], s[2] * m[10], 0,
-            s[0] * m[12], s[1] * m[13], s[2] * m[14], 1
-        ];
-    };
-
-    /**
-     * Return a Transform which represents a scale by specified amounts
-     *    in each dimension.
-     *
-     * @method scale
-     * @static
-     * @param {Number} x x scale factor
-     * @param {Number} y y scale factor
-     * @param {Number} z z scale factor
-     * @return {Transform}
-     */
-    Transform.scale = function scale(x, y, z) {
-        if (z === undefined) z = 1;
-        if (y === undefined) y = x;
-        return [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the x axis.
-     *
-     * @method rotateX
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
-     */
-    Transform.rotateX = function rotateX(theta) {
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
-        return [1, 0, 0, 0, 0, cosTheta, sinTheta, 0, 0, -sinTheta, cosTheta, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the y axis.
-     *
-     * @method rotateY
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
-     */
-    Transform.rotateY = function rotateY(theta) {
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
-        return [cosTheta, 0, -sinTheta, 0, 0, 1, 0, 0, sinTheta, 0, cosTheta, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the z axis.
-     *
-     * @method rotateZ
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
-     */
-    Transform.rotateZ = function rotateZ(theta) {
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
-        return [cosTheta, sinTheta, 0, 0, -sinTheta, cosTheta, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform which represents composed clockwise
-     *    rotations along each of the axes. Equivalent to the result of
-     *    Matrix.multiply(rotateX(phi), rotateY(theta), rotateZ(psi)).
-     *
-     * @method rotate
-     * @static
-     * @param {Number} phi radians to rotate about the positive x axis
-     * @param {Number} theta radians to rotate about the positive y axis
-     * @param {Number} psi radians to rotate about the positive z axis
-     * @return {Transform}
-     */
-    Transform.rotate = function rotate(phi, theta, psi) {
-        var cosPhi = Math.cos(phi);
-        var sinPhi = Math.sin(phi);
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
-        var cosPsi = Math.cos(psi);
-        var sinPsi = Math.sin(psi);
-        var result = [
-            cosTheta * cosPsi,
-            cosPhi * sinPsi + sinPhi * sinTheta * cosPsi,
-            sinPhi * sinPsi - cosPhi * sinTheta * cosPsi,
-            0,
-            -cosTheta * sinPsi,
-            cosPhi * cosPsi - sinPhi * sinTheta * sinPsi,
-            sinPhi * cosPsi + cosPhi * sinTheta * sinPsi,
-            0,
-            sinTheta,
-            -sinPhi * cosTheta,
-            cosPhi * cosTheta,
-            0,
-            0, 0, 0, 1
-        ];
-        return result;
-    };
-
-    /**
-     * Return a Transform which represents an axis-angle rotation
-     *
-     * @method rotateAxis
-     * @static
-     * @param {Array.Number} v unit vector representing the axis to rotate about
-     * @param {Number} theta radians to rotate clockwise about the axis
-     * @return {Transform}
-     */
-    Transform.rotateAxis = function rotateAxis(v, theta) {
-        var sinTheta = Math.sin(theta);
-        var cosTheta = Math.cos(theta);
-        var verTheta = 1 - cosTheta; // versine of theta
-
-        var xxV = v[0] * v[0] * verTheta;
-        var xyV = v[0] * v[1] * verTheta;
-        var xzV = v[0] * v[2] * verTheta;
-        var yyV = v[1] * v[1] * verTheta;
-        var yzV = v[1] * v[2] * verTheta;
-        var zzV = v[2] * v[2] * verTheta;
-        var xs = v[0] * sinTheta;
-        var ys = v[1] * sinTheta;
-        var zs = v[2] * sinTheta;
-
-        var result = [
-            xxV + cosTheta, xyV + zs, xzV - ys, 0,
-            xyV - zs, yyV + cosTheta, yzV + xs, 0,
-            xzV + ys, yzV - xs, zzV + cosTheta, 0,
-            0, 0, 0, 1
-        ];
-        return result;
-    };
-
-    /**
-     * Return a Transform which represents a transform matrix applied about
-     * a separate origin point.
-     *
-     * @method aboutOrigin
-     * @static
-     * @param {Array.Number} v origin point to apply matrix
-     * @param {Transform} m matrix to apply
-     * @return {Transform}
-     */
-    Transform.aboutOrigin = function aboutOrigin(v, m) {
-        var t0 = v[0] - (v[0] * m[0] + v[1] * m[4] + v[2] * m[8]);
-        var t1 = v[1] - (v[0] * m[1] + v[1] * m[5] + v[2] * m[9]);
-        var t2 = v[2] - (v[0] * m[2] + v[1] * m[6] + v[2] * m[10]);
-        return Transform.thenMove(m, [t0, t1, t2]);
-    };
-
-    /**
-     * Return a Transform representation of a skew transformation
-     *
-     * @method skew
-     * @static
-     * @param {Number} phi scale factor skew in the x axis
-     * @param {Number} theta scale factor skew in the y axis
-     * @param {Number} psi scale factor skew in the z axis
-     * @return {Transform}
-     */
-    Transform.skew = function skew(phi, theta, psi) {
-        return [1, Math.tan(theta), 0, 0, Math.tan(psi), 1, 0, 0, 0, Math.tan(phi), 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform representation of a skew in the x-direction
-     *
-     * @method skewX
-     * @static
-     * @param {Number} angle the angle between the top and left sides
-     * @return {Transform}
-     */
-    Transform.skewX = function skewX(angle) {
-        return [1, 0, 0, 0, Math.tan(angle), 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform representation of a skew in the y-direction
-     *
-     * @method skewY
-     * @static
-     * @param {Number} angle the angle between the top and right sides
-     * @return {Transform}
-     */
-    Transform.skewY = function skewY(angle) {
-        return [1, Math.tan(angle), 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Returns a perspective Transform matrix
-     *
-     * @method perspective
-     * @static
-     * @param {Number} focusZ z position of focal point
-     * @return {Transform}
-     */
-    Transform.perspective = function perspective(focusZ) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / focusZ, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return translation vector component of given Transform
-     *
-     * @method getTranslate
-     * @static
-     * @param {Transform} m Transform
-     * @return {Array.Number} the translation vector [t_x, t_y, t_z]
-     */
-    Transform.getTranslate = function getTranslate(m) {
-        return [m[12], m[13], m[14]];
-    };
-
-    /**
-     * Return inverse affine transform for given Transform.
-     *   Note: This assumes m[3] = m[7] = m[11] = 0, and m[15] = 1.
-     *   Will provide incorrect results if not invertible or preconditions not met.
-     *
-     * @method inverse
-     * @static
-     * @param {Transform} m Transform
-     * @return {Transform}
-     */
-    Transform.inverse = function inverse(m) {
-        // only need to consider 3x3 section for affine
-        var c0 = m[5] * m[10] - m[6] * m[9];
-        var c1 = m[4] * m[10] - m[6] * m[8];
-        var c2 = m[4] * m[9] - m[5] * m[8];
-        var c4 = m[1] * m[10] - m[2] * m[9];
-        var c5 = m[0] * m[10] - m[2] * m[8];
-        var c6 = m[0] * m[9] - m[1] * m[8];
-        var c8 = m[1] * m[6] - m[2] * m[5];
-        var c9 = m[0] * m[6] - m[2] * m[4];
-        var c10 = m[0] * m[5] - m[1] * m[4];
-        var detM = m[0] * c0 - m[1] * c1 + m[2] * c2;
-        var invD = 1 / detM;
-        var result = [
-            invD * c0, -invD * c4, invD * c8, 0,
-            -invD * c1, invD * c5, -invD * c9, 0,
-            invD * c2, -invD * c6, invD * c10, 0,
-            0, 0, 0, 1
-        ];
-        result[12] = -m[12] * result[0] - m[13] * result[4] - m[14] * result[8];
-        result[13] = -m[12] * result[1] - m[13] * result[5] - m[14] * result[9];
-        result[14] = -m[12] * result[2] - m[13] * result[6] - m[14] * result[10];
-        return result;
-    };
-
-    /**
-     * Returns the transpose of a 4x4 matrix
-     *
-     * @method transpose
-     * @static
-     * @param {Transform} m matrix
-     * @return {Transform} the resulting transposed matrix
-     */
-    Transform.transpose = function transpose(m) {
-        return [m[0], m[4], m[8], m[12], m[1], m[5], m[9], m[13], m[2], m[6], m[10], m[14], m[3], m[7], m[11], m[15]];
-    };
-
-    function _normSquared(v) {
-        return (v.length === 2) ? v[0] * v[0] + v[1] * v[1] : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-    }
-    function _norm(v) {
-        return Math.sqrt(_normSquared(v));
-    }
-    function _sign(n) {
-        return (n < 0) ? -1 : 1;
-    }
-
-    /**
-     * Decompose Transform into separate .translate, .rotate, .scale,
-     *    and .skew components.
-     *
-     * @method interpret
-     * @static
-     * @param {Transform} M transform matrix
-     * @return {Object} matrix spec object with component matrices .translate,
-     *    .rotate, .scale, .skew
-     */
-    Transform.interpret = function interpret(M) {
-
-        // QR decomposition via Householder reflections
-        //FIRST ITERATION
-
-        //default Q1 to the identity matrix;
-        var x = [M[0], M[1], M[2]];                // first column vector
-        var sgn = _sign(x[0]);                     // sign of first component of x (for stability)
-        var xNorm = _norm(x);                      // norm of first column vector
-        var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
-        var mult = 2 / _normSquared(v);            // mult = 2/v'v
-
-        //bail out if our Matrix is singular
-        if (mult >= Infinity) {
-            return {translate: Transform.getTranslate(M), rotate: [0, 0, 0], scale: [0, 0, 0], skew: [0, 0, 0]};
-        }
-
-        //evaluate Q1 = I - 2vv'/v'v
-        var Q1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
-
-        //diagonals
-        Q1[0]  = 1 - mult * v[0] * v[0];    // 0,0 entry
-        Q1[5]  = 1 - mult * v[1] * v[1];    // 1,1 entry
-        Q1[10] = 1 - mult * v[2] * v[2];    // 2,2 entry
-
-        //upper diagonal
-        Q1[1] = -mult * v[0] * v[1];        // 0,1 entry
-        Q1[2] = -mult * v[0] * v[2];        // 0,2 entry
-        Q1[6] = -mult * v[1] * v[2];        // 1,2 entry
-
-        //lower diagonal
-        Q1[4] = Q1[1];                      // 1,0 entry
-        Q1[8] = Q1[2];                      // 2,0 entry
-        Q1[9] = Q1[6];                      // 2,1 entry
-
-        //reduce first column of M
-        var MQ1 = Transform.multiply(Q1, M);
-
-        //SECOND ITERATION on (1,1) minor
-        var x2 = [MQ1[5], MQ1[6]];
-        var sgn2 = _sign(x2[0]);                    // sign of first component of x (for stability)
-        var x2Norm = _norm(x2);                     // norm of first column vector
-        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];    // v = x + sign(x[0])|x|e1
-        var mult2 = 2 / _normSquared(v2);           // mult = 2/v'v
-
-        //evaluate Q2 = I - 2vv'/v'v
-        var Q2 = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
-
-        //diagonal
-        Q2[5]  = 1 - mult2 * v2[0] * v2[0]; // 1,1 entry
-        Q2[10] = 1 - mult2 * v2[1] * v2[1]; // 2,2 entry
-
-        //off diagonals
-        Q2[6] = -mult2 * v2[0] * v2[1];     // 2,1 entry
-        Q2[9] = Q2[6];                      // 1,2 entry
-
-        //calc QR decomposition. Q = Q1*Q2, R = Q'*M
-        var Q = Transform.multiply(Q2, Q1);      //note: really Q transpose
-        var R = Transform.multiply(Q, M);
-
-        //remove negative scaling
-        var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
-        R = Transform.multiply(R, remover);
-        Q = Transform.multiply(remover, Q);
-
-        //decompose into rotate/scale/skew matrices
-        var result = {};
-        result.translate = Transform.getTranslate(M);
-        result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
-        if (!result.rotate[0]) {
-            result.rotate[0] = 0;
-            result.rotate[2] = Math.atan2(Q[4], Q[5]);
-        }
-        result.scale = [R[0], R[5], R[10]];
-        result.skew = [Math.atan2(R[9], result.scale[2]), Math.atan2(R[8], result.scale[2]), Math.atan2(R[4], result.scale[0])];
-
-        //double rotation workaround
-        if (Math.abs(result.rotate[0]) + Math.abs(result.rotate[2]) > 1.5 * Math.PI) {
-            result.rotate[1] = Math.PI - result.rotate[1];
-            if (result.rotate[1] > Math.PI) result.rotate[1] -= 2 * Math.PI;
-            if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
-            if (result.rotate[0] < 0) result.rotate[0] += Math.PI;
-            else result.rotate[0] -= Math.PI;
-            if (result.rotate[2] < 0) result.rotate[2] += Math.PI;
-            else result.rotate[2] -= Math.PI;
-        }
-
-        return result;
-    };
-
-    /**
-     * Weighted average between two matrices by averaging their
-     *     translation, rotation, scale, skew components.
-     *     f(M1,M2,t) = (1 - t) * M1 + t * M2
-     *
-     * @method average
-     * @static
-     * @param {Transform} M1 f(M1,M2,0) = M1
-     * @param {Transform} M2 f(M1,M2,1) = M2
-     * @param {Number} t
-     * @return {Transform}
-     */
-    Transform.average = function average(M1, M2, t) {
-        t = (t === undefined) ? 0.5 : t;
-        var specM1 = Transform.interpret(M1);
-        var specM2 = Transform.interpret(M2);
-
-        var specAvg = {
-            translate: [0, 0, 0],
-            rotate: [0, 0, 0],
-            scale: [0, 0, 0],
-            skew: [0, 0, 0]
-        };
-
-        for (var i = 0; i < 3; i++) {
-            specAvg.translate[i] = (1 - t) * specM1.translate[i] + t * specM2.translate[i];
-            specAvg.rotate[i] = (1 - t) * specM1.rotate[i] + t * specM2.rotate[i];
-            specAvg.scale[i] = (1 - t) * specM1.scale[i] + t * specM2.scale[i];
-            specAvg.skew[i] = (1 - t) * specM1.skew[i] + t * specM2.skew[i];
-        }
-        return Transform.build(specAvg);
-    };
-
-    /**
-     * Compose .translate, .rotate, .scale, .skew components into
-     * Transform matrix
-     *
-     * @method build
-     * @static
-     * @param {matrixSpec} spec object with component matrices .translate,
-     *    .rotate, .scale, .skew
-     * @return {Transform} composed transform
-     */
-    Transform.build = function build(spec) {
-        var scaleMatrix = Transform.scale(spec.scale[0], spec.scale[1], spec.scale[2]);
-        var skewMatrix = Transform.skew(spec.skew[0], spec.skew[1], spec.skew[2]);
-        var rotateMatrix = Transform.rotate(spec.rotate[0], spec.rotate[1], spec.rotate[2]);
-        return Transform.thenMove(Transform.multiply(Transform.multiply(rotateMatrix, skewMatrix), scaleMatrix), spec.translate);
-    };
-
-    /**
-     * Determine if two Transforms are component-wise equal
-     *   Warning: breaks on perspective Transforms
-     *
-     * @method equals
-     * @static
-     * @param {Transform} a matrix
-     * @param {Transform} b matrix
-     * @return {boolean}
-     */
-    Transform.equals = function equals(a, b) {
-        return !Transform.notEquals(a, b);
-    };
-
-    /**
-     * Determine if two Transforms are component-wise unequal
-     *   Warning: breaks on perspective Transforms
-     *
-     * @method notEquals
-     * @static
-     * @param {Transform} a matrix
-     * @param {Transform} b matrix
-     * @return {boolean}
-     */
-    Transform.notEquals = function notEquals(a, b) {
-        if (a === b) return false;
-
-        // shortci
-        return !(a && b) ||
-            a[12] !== b[12] || a[13] !== b[13] || a[14] !== b[14] ||
-            a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] ||
-            a[4] !== b[4] || a[5] !== b[5] || a[6] !== b[6] ||
-            a[8] !== b[8] || a[9] !== b[9] || a[10] !== b[10];
-    };
-
-    /**
-     * Constrain angle-trio components to range of [-pi, pi).
-     *
-     * @method normalizeRotation
-     * @static
-     * @param {Array.Number} rotation phi, theta, psi (array of floats
-     *    && array.length == 3)
-     * @return {Array.Number} new phi, theta, psi triplet
-     *    (array of floats && array.length == 3)
-     */
-    Transform.normalizeRotation = function normalizeRotation(rotation) {
-        var result = rotation.slice(0);
-        if (result[0] === Math.PI * 0.5 || result[0] === -Math.PI * 0.5) {
-            result[0] = -result[0];
-            result[1] = Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        if (result[0] > Math.PI * 0.5) {
-            result[0] = result[0] - Math.PI;
-            result[1] = Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        if (result[0] < -Math.PI * 0.5) {
-            result[0] = result[0] + Math.PI;
-            result[1] = -Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        while (result[1] < -Math.PI) result[1] += 2 * Math.PI;
-        while (result[1] >= Math.PI) result[1] -= 2 * Math.PI;
-        while (result[2] < -Math.PI) result[2] += 2 * Math.PI;
-        while (result[2] >= Math.PI) result[2] -= 2 * Math.PI;
-        return result;
-    };
-
-    /**
-     * (Property) Array defining a translation forward in z by 1
-     *
-     * @property {array} inFront
-     * @static
-     * @final
-     */
-    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1e-3, 1];
-
-    /**
-     * (Property) Array defining a translation backwards in z by 1
-     *
-     * @property {array} behind
-     * @static
-     * @final
-     */
-    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1e-3, 1];
-
-    module.exports = Transform;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global = module.exports = typeof window != 'undefined' && window.Math == Math
-  ? window : typeof self != 'undefined' && self.Math == Math ? self
-  // eslint-disable-next-line no-new-func
-  : Function('return this')();
-if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(9);
-var IE8_DOM_DEFINE = __webpack_require__(89);
-var toPrimitive = __webpack_require__(51);
-var dP = Object.defineProperty;
-
-exports.f = __webpack_require__(8) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (IE8_DOM_DEFINE) try {
-    return dP(O, P, Attributes);
-  } catch (e) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(12)(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-
-/***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(3);
-module.exports = function (it) {
-  if (!isObject(it)) throw TypeError(it + ' is not an object!');
-  return it;
-};
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.native = newless;
-exports.default = void 0;
-
-var _create = _interopRequireDefault(__webpack_require__(60));
-
-var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
-
-var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(62));
-
-var _defineProperty = _interopRequireDefault(__webpack_require__(20));
-
-var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(76));
-
-var _construct = _interopRequireDefault(__webpack_require__(108));
-
-var _setPrototypeOf = _interopRequireDefault(__webpack_require__(100));
-
-var _getPrototypeOf = _interopRequireDefault(__webpack_require__(68));
-
-var _symbol = _interopRequireDefault(__webpack_require__(67));
-
-var _utils = __webpack_require__(47);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// borrowed from (and slightly modified) https://github.com/Mr0grog/newless
-// The newless license is BSD 3:
-
-/*
- * Copyright (c) 2013-2016, Rob Brackett
- * Copyright (c) 2018, Joseph Orbegoso Pea
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-var _default = newless;
-exports.default = _default;
-var supportsSpread = isSyntaxSupported("Object(...[{}])");
-var supportsClass = isSyntaxSupported("class Test {}");
-var supportsNewTarget = isSyntaxSupported("new.target"); // Used to track the original wrapped constructor on a newless instance
-
-var TRUE_CONSTRUCTOR = _symbol.default ? (0, _symbol.default)("trueConstructor") : "__newlessTrueConstructor__"; // Polyfills for get/set prototype
-
-var getPrototype = _getPrototypeOf.default || function getPrototype(object) {
-  return object.__proto__ || object.constructor && object.constructor.prototype || Object.prototype;
-};
-
-var setPrototype = _setPrototypeOf.default || function setPrototypeOf(object, newPrototype) {
-  object.__proto__ = newPrototype;
-}; // Polyfill for Reflect.construct
-
-
-var construct = Reflect && _construct.default || function () {
-  if (supportsClass) {
-    return Function("constructor, args, target", "\n      'use strict';\n\n      if (arguments.length === 3 && typeof target !== 'function')\n        throw new TypeError(target + ' is not a constructor');\n\n      target = target || constructor;\n\n      // extend target so the right prototype is constructed (or nearly the\n      // right one; ideally we'd do instantiator.prototype = target.prototype,\n      // but a class's prototype property is not writable)\n      class instantiator extends target {};\n      // but ensure the *logic* is 'constructor' for ES2015-compliant engines\n      Object.setPrototypeOf(instantiator, constructor);\n      // ...and for Safari 9\n      instantiator.prototype.constructor = constructor;\n\n      // The spread operator is *dramatically faster, so use it if we can:\n      // http://jsperf.com/new-via-spread-vs-dynamic-function/4\n      " + (supportsSpread ? "\n\n        var value = new instantiator(...([].slice.call(args)));\n\n      " : "\n\n        // otherwise, create a dynamic function in order to use 'new'\n        // Note using 'function.bind' would be simpler, but is much slower:\n        // http://jsperf.com/new-operator-with-dynamic-function-vs-bind\n        var argList = '';\n        for (var i = 0, len = args.length; i < len; i++) {\n          if (i > 0) argList += ',';\n          argList += 'args[' + i + ']';\n        }\n        var constructCall = Function('constructor, args',\n          'return new constructor( ' + argList + ' );'\n        );\n        var value = constructCall(constructor, args);\n\n        args = Array.prototype.slice.call(args);\n        args = [null].concat(args);\n        var value = new constructor.bind.apply(constructor, args);\n\n      ") + "\n\n      // fix up the prototype so it matches the intended one, not one who's\n      // prototype is the intended one :P\n      Object.setPrototypeOf(value, target.prototype);\n      return value;\n    "); //return Function("constructor, args, newTarget", `
-    //  'use strict';
-    //  if (arguments.length === 3 && typeof newTarget === undefined)
-    //    throw new TypeError('undefined is not a constructor');
-    //  newTarget = newTarget || constructor;
-    //  ${ supportsSpread ? `
-    //    var value = new constructor(...([].slice.call(args)));
-    //  `:`
-    //    args = Array.prototype.slice.call(args);
-    //    args = [null].concat(args);
-    //    var value = new constructor.bind.apply(constructor, args);
-    //  `}
-    //  Object.setPrototypeOf(value, newTarget.prototype);
-    //  return value;
-    //`);
-  } else {
-    var instantiator = function () {};
-
-    return function construct(constructor, args, target) {
-      if (arguments.length === 3 && typeof target !== 'function') {
-        throw new TypeError(target + ' is not a constructor');
-      }
-
-      instantiator.prototype = (target || constructor).prototype;
-      var instance = new instantiator();
-      var value = constructor.apply(instance, args);
-
-      if (typeof value === "object" && value) {
-        // we can do better if __proto__ is available (in some ES5 environments)
-        value.__proto__ = (target || constructor).prototype;
-        return value;
-      }
-
-      return instance;
-    };
-  }
-}(); // ES2015 class methods are non-enumerable; we need a helper for copying them.
-
-
-var SKIP_PROPERTIES = ["arguments", "caller", "length", "name", "prototype"];
-
-function copyProperties(source, destination) {
-  if (_getOwnPropertyNames.default && _defineProperty.default) {
-    var properties = (0, _getOwnPropertyNames.default)(source);
-
-    if (_getOwnPropertySymbols.default) {
-      properties = properties.concat((0, _getOwnPropertySymbols.default)(source));
-    }
-
-    for (var i = properties.length - 1; i >= 0; i--) {
-      if (SKIP_PROPERTIES.indexOf(properties[i]) === -1) {
-        (0, _defineProperty.default)(destination, properties[i], (0, _getOwnPropertyDescriptor.default)(source, properties[i]));
-      }
-    }
-  } else {
-    for (var property in source) {
-      destination[property] = source[property];
-    }
-  }
-}
-
-function newless(constructor) {
-  var name = constructor.name; // V8 and newer versions of JSCore return the full class declaration from
-  // `toString()`, which lets us be a little smarter and more performant
-  // about what to do, since we know we are dealing with a "class". Note,
-  // however, not all engines do this. This could be false and the constructor
-  // might still use class syntax.
-
-  var usesClassSyntax = constructor.toString().substr(0, 5) === "class";
-  var requiresNew = usesClassSyntax ? true : null;
-
-  var newlessConstructor = function () {
-    return function () {
-      // If called with an already valid 'this', preserve that 'this' value
-      // in the super-type's constructor whenever possible. With function
-      // constructors (as opposed to class constructors), it's possible to
-      // alter the instance before calling the super constructor--so it's
-      // important to preserve that instance if at all possible.
-      if (!requiresNew && this instanceof newlessConstructor) {
-        // requiresNew = 'false' indicates we know the 'new' operator isn't
-        // necessary for this constructor, but 'null' indicates uncertainty,
-        // so the call needs to handle potential errors the first time in
-        // order to determine whether 'new' is definitely required.
-        if (requiresNew === false) {
-          var returnValue = constructor.apply(this, arguments);
-          return typeof returnValue === 'object' && returnValue || this;
-        }
-
-        try {
-          requiresNew = false;
-          var returnValue = constructor.apply(this, arguments);
-          return typeof returnValue === 'object' && returnValue || this;
-        } catch (error) {
-          // Do our best to only capture errors triggred by class syntax.
-          // Unfortunately, there's no special error type for this and the
-          // message is non-standard, so this is the best check we can do.
-          if (!(error instanceof TypeError && (/class constructor/i.test(error.message) || /use the 'new' operator/i.test(error.message) // Custom Elements in Chrome
-          // TODO: there might be other error messages we need to catch,
-          // depending on engine and use case. Need to test in all browsers
-          // TODO See if this code is even reached with Custom Elements
-          ))) {
-            throw error;
-          } // mark this constructor as requiring 'new' for next time
-
-
-          requiresNew = true;
-        }
-      } // make a reasonably good replacement for 'new.target' which is a
-      // syntax error in older engines
-
-
-      var newTarget;
-      var hasNewTarget = false;
-
-      if (supportsNewTarget) {
-        eval('newTarget = new.target');
-
-        if (newTarget) {
-          hasNewTarget = true;
-        }
-      }
-
-      if (!supportsNewTarget || !hasNewTarget) {
-        newTarget = this instanceof newlessConstructor ? this.constructor : constructor;
-      }
-
-      var returnValue = construct(constructor, arguments, newTarget); // best effort to make things easy for functions inheriting from classes
-
-      if (this instanceof newlessConstructor) {
-        setPrototype(this, returnValue);
-      }
-
-      return returnValue;
-    };
-  }();
-
-  if (name) {
-    var code = (0, _utils.getFunctionBody)(newlessConstructor);
-    newlessConstructor = Function("constructor, construct, setPrototype, requiresNew, supportsNewTarget", "\n      var newlessConstructor = function " + name + "() { " + code + " };\n      return newlessConstructor\n    ")(constructor, construct, setPrototype, requiresNew, supportsNewTarget);
-  } // copy the `.length` value to the newless constructor
-
-
-  if (constructor.length) {
-    // length is not writable, only configurable, therefore the value
-    // has to be set with a descriptor update
-    (0, _utils.setDescriptor)(newlessConstructor, 'length', {
-      value: constructor.length
-    });
-  }
-
-  newlessConstructor.prototype = (0, _create.default)(constructor.prototype);
-  newlessConstructor.prototype.constructor = newlessConstructor; // NOTE: *usually* the below will already be true, but we ensure it here.
-  // Safari 9 requires this for the 'super' keyword to work. Newer versions
-  // of WebKit and other engines do not. Instead, they use the constructor's
-  // prototype chain (which is correct by ES2015 spec) (see below).
-
-  constructor.prototype.constructor = constructor; // for ES2015 classes, we need to make sure the constructor's prototype
-  // is the super class's constructor. Further, optimize performance by
-  // pointing at the actual constructor implementation instead of the
-  // newless wrapper (in the case that it is wrapped by newless).
-
-  newlessConstructor[TRUE_CONSTRUCTOR] = constructor;
-  copyProperties(constructor, newlessConstructor);
-  setPrototype(newlessConstructor, constructor);
-  return newlessConstructor;
-}
-
-; // Test whether a given syntax is supported
-
-function isSyntaxSupported(example, useStrict) {
-  if (useStrict === void 0) useStrict = true;
-
-  try {
-    return !!Function("", (useStrict ? "'use strict';" : "") + example);
-  } catch (error) {
-    return false;
-  }
-}
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// loop for a given length, performing action each loop iteration. action receives the index of the loop.
-exports.forLength = forLength;
-function forLength(length, action) {
-    for (var i = 0; i < length; i += 1) {
-        action(i);
-    }
-}
-exports["default"] = forLength;
-exports.__esModule = true;
-//# sourceMappingURL=forLength.js.map
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (e) {
-    return true;
-  }
-};
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var EventEmitter = __webpack_require__(124);
-
-    /**
-     * EventHandler forwards received events to a set of provided callback functions.
-     * It allows events to be captured, processed, and optionally piped through to other event handlers.
-     *
-     * @class EventHandler
-     * @extends EventEmitter
-     * @constructor
-     */
-    function EventHandler() {
-        EventEmitter.apply(this, arguments);
-
-        this.downstream = []; // downstream event handlers
-        this.downstreamFn = []; // downstream functions
-
-        this.upstream = []; // upstream event handlers
-        this.upstreamListeners = {}; // upstream listeners
-    }
-    EventHandler.prototype = Object.create(EventEmitter.prototype);
-    EventHandler.prototype.constructor = EventHandler;
-
-    /**
-     * Assign an event handler to receive an object's input events.
-     *
-     * @method setInputHandler
-     * @static
-     *
-     * @param {Object} object object to mix trigger, subscribe, and unsubscribe functions into
-     * @param {EventHandler} handler assigned event handler
-     */
-    EventHandler.setInputHandler = function setInputHandler(object, handler) {
-        object.trigger = handler.trigger.bind(handler);
-        if (handler.subscribe && handler.unsubscribe) {
-            object.subscribe = handler.subscribe.bind(handler);
-            object.unsubscribe = handler.unsubscribe.bind(handler);
-        }
-    };
-
-    /**
-     * Assign an event handler to receive an object's output events.
-     *
-     * @method setOutputHandler
-     * @static
-     *
-     * @param {Object} object object to mix pipe, unpipe, on, addListener, and removeListener functions into
-     * @param {EventHandler} handler assigned event handler
-     */
-    EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
-        if (handler instanceof EventHandler) handler.bindThis(object);
-        object.pipe = handler.pipe.bind(handler);
-        object.unpipe = handler.unpipe.bind(handler);
-        object.on = handler.on.bind(handler);
-        object.addListener = object.on;
-        object.removeListener = handler.removeListener.bind(handler);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.emit = function emit(type, event) {
-        EventEmitter.prototype.emit.apply(this, arguments);
-        var i = 0;
-        for (i = 0; i < this.downstream.length; i++) {
-            if (this.downstream[i].trigger) this.downstream[i].trigger(type, event);
-        }
-        for (i = 0; i < this.downstreamFn.length; i++) {
-            this.downstreamFn[i](type, event);
-        }
-        return this;
-    };
-
-    /**
-     * Alias for emit
-     * @method addListener
-     */
-    EventHandler.prototype.trigger = EventHandler.prototype.emit;
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    EventHandler.prototype.pipe = function pipe(target) {
-        if (target.subscribe instanceof Function) return target.subscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index < 0) downstreamCtx.push(target);
-
-        if (target instanceof Function) target('pipe', null);
-        else if (target.trigger) target.trigger('pipe', null);
-
-        return target;
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    EventHandler.prototype.unpipe = function unpipe(target) {
-        if (target.unsubscribe instanceof Function) return target.unsubscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index >= 0) {
-            downstreamCtx.splice(index, 1);
-            if (target instanceof Function) target('unpipe', null);
-            else if (target.trigger) target.trigger('unpipe', null);
-            return target;
-        }
-        else return false;
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.on = function on(type, handler) {
-        EventEmitter.prototype.on.apply(this, arguments);
-        if (!(type in this.upstreamListeners)) {
-            var upstreamListener = this.trigger.bind(this, type);
-            this.upstreamListeners[type] = upstreamListener;
-            for (var i = 0; i < this.upstream.length; i++) {
-                this.upstream[i].on(type, upstreamListener);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Alias for "on"
-     * @method addListener
-     */
-    EventHandler.prototype.addListener = EventHandler.prototype.on;
-
-    /**
-     * Listen for events from an upstream event handler.
-     *
-     * @method subscribe
-     *
-     * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.subscribe = function subscribe(source) {
-        var index = this.upstream.indexOf(source);
-        if (index < 0) {
-            this.upstream.push(source);
-            for (var type in this.upstreamListeners) {
-                source.on(type, this.upstreamListeners[type]);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Stop listening to events from an upstream event handler.
-     *
-     * @method unsubscribe
-     *
-     * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
-        var index = this.upstream.indexOf(source);
-        if (index >= 0) {
-            this.upstream.splice(index, 1);
-            for (var type in this.upstreamListeners) {
-                source.removeListener(type, this.upstreamListeners[type]);
-            }
-        }
-        return this;
-    };
-
-    module.exports = EventHandler;
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP = __webpack_require__(7);
-var createDesc = __webpack_require__(24);
-module.exports = __webpack_require__(8) ? function (object, key, value) {
-  return dP.f(object, key, createDesc(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-
-/***/ }),
-/* 15 */
 /***/ (function(module, exports) {
 
 var hasOwnProperty = {}.hasOwnProperty;
@@ -2228,250 +605,21 @@ module.exports = function (it, key) {
 
 
 /***/ }),
-/* 16 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(53);
-var defined = __webpack_require__(55);
-module.exports = function (it) {
-  return IObject(defined(it));
+var dP = __webpack_require__(5);
+var createDesc = __webpack_require__(19);
+module.exports = __webpack_require__(3) ? function (object, key, value) {
+  return dP.f(object, key, createDesc(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
 };
 
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-/*eslint-disable new-cap */
-    var MultipleTransition = __webpack_require__(121);
-    var TweenTransition = __webpack_require__(122);
-
-    /**
-     * A state maintainer for a smooth transition between
-     *    numerically-specified states. Example numeric states include floats or
-     *    Transform objects.
-     *
-     * An initial state is set with the constructor or set(startState). A
-     *    corresponding end state and transition are set with set(endState,
-     *    transition). Subsequent calls to set(endState, transition) begin at
-     *    the last state. Calls to get(timestamp) provide the interpolated state
-     *    along the way.
-     *
-     * Note that there is no event loop here - calls to get() are the only way
-     *    to find state projected to the current (or provided) time and are
-     *    the only way to trigger callbacks. Usually this kind of object would
-     *    be part of the render() path of a visible component.
-     *
-     * @class Transitionable
-     * @constructor
-     * @param {number|Array.Number|Object.<number|string, number>} start
-     *    beginning state
-     */
-    function Transitionable(start) {
-        this.currentAction = null;
-        this.actionQueue = [];
-        this.callbackQueue = [];
-
-        this.state = 0;
-        this.velocity = undefined;
-        this._callback = undefined;
-        this._engineInstance = null;
-        this._currentMethod = null;
-
-        this.set(start);
-    }
-
-    var transitionMethods = {};
-
-    Transitionable.register = function register(methods) {
-        var success = true;
-        for (var method in methods) {
-            if (!Transitionable.registerMethod(method, methods[method]))
-                success = false;
-        }
-        return success;
-    };
-
-    Transitionable.registerMethod = function registerMethod(name, engineClass) {
-        if (!(name in transitionMethods)) {
-            transitionMethods[name] = engineClass;
-            return true;
-        }
-        else return false;
-    };
-
-    Transitionable.unregisterMethod = function unregisterMethod(name) {
-        if (name in transitionMethods) {
-            delete transitionMethods[name];
-            return true;
-        }
-        else return false;
-    };
-
-    function _loadNext() {
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
-        }
-        if (this.actionQueue.length <= 0) {
-            this.set(this.get()); // no update required
-            return;
-        }
-        this.currentAction = this.actionQueue.shift();
-        this._callback = this.callbackQueue.shift();
-
-        var method = null;
-        var endValue = this.currentAction[0];
-        var transition = this.currentAction[1];
-        if (transition instanceof Object && transition.method) {
-            method = transition.method;
-            if (typeof method === 'string') method = transitionMethods[method];
-        }
-        else {
-            method = TweenTransition;
-        }
-
-        if (this._currentMethod !== method) {
-            if (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE) {
-                this._engineInstance = new method();
-            }
-            else {
-                this._engineInstance = new MultipleTransition(method);
-            }
-            this._currentMethod = method;
-        }
-
-        this._engineInstance.reset(this.state, this.velocity);
-        if (this.velocity !== undefined) transition.velocity = this.velocity;
-        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
-    }
-
-    /**
-     * Add transition to end state to the queue of pending transitions. Special
-     *    Use: calling without a transition resets the object to that state with
-     *    no pending actions
-     *
-     * @method set
-     *
-     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endState
-     *    end state to which we interpolate
-     * @param {transition=} transition object of type {duration: number, curve:
-     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
-     *    instantaneous.
-     * @param {function()=} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    Transitionable.prototype.set = function set(endState, transition, callback) {
-        if (!transition) {
-            this.reset(endState);
-            if (callback) callback();
-            return this;
-        }
-
-        var action = [endState, transition];
-        this.actionQueue.push(action);
-        this.callbackQueue.push(callback);
-        if (!this.currentAction) _loadNext.call(this);
-        return this;
-    };
-
-    /**
-     * Cancel all transitions and reset to a stable state
-     *
-     * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startState
-     *    stable state to set to
-     */
-    Transitionable.prototype.reset = function reset(startState, startVelocity) {
-        this._currentMethod = null;
-        this._engineInstance = null;
-        this._callback = undefined;
-        this.state = startState;
-        this.velocity = startVelocity;
-        this.currentAction = null;
-        this.actionQueue = [];
-        this.callbackQueue = [];
-    };
-
-    /**
-     * Add delay action to the pending action queue queue.
-     *
-     * @method delay
-     *
-     * @param {number} duration delay time (ms)
-     * @param {function} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    Transitionable.prototype.delay = function delay(duration, callback) {
-        var endValue;
-        if (this.actionQueue.length) endValue = this.actionQueue[this.actionQueue.length - 1][0];
-        else if (this.currentAction) endValue = this.currentAction[0];
-        else endValue = this.get();
-
-        return this.set(endValue, { duration: duration,
-            curve: function() {
-                return 0;
-            }},
-            callback
-        );
-    };
-
-    /**
-     * Get interpolated state of current action at provided time. If the last
-     *    action has completed, invoke its callback.
-     *
-     * @method get
-     *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
-     * @return {number|Object.<number|string, number>} beginning state
-     *    interpolated to this point in time.
-     */
-    Transitionable.prototype.get = function get(timestamp) {
-        if (this._engineInstance) {
-            if (this._engineInstance.getVelocity)
-                this.velocity = this._engineInstance.getVelocity();
-            this.state = this._engineInstance.get(timestamp);
-        }
-        return this.state;
-    };
-
-    /**
-     * Is there at least one action pending completion?
-     *
-     * @method isActive
-     *
-     * @return {boolean}
-     */
-    Transitionable.prototype.isActive = function isActive() {
-        return !!this.currentAction;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    Transitionable.prototype.halt = function halt() {
-        return this.set(this.get());
-    };
-
-    module.exports = Transitionable;
-
-
-/***/ }),
-/* 18 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2621,42 +769,46 @@ var findClassNames = exports.findClassNames = function () {
     return classes.join(' ').replace(dotsRegExp, '');
   };
 }();
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(130)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(86)))
 
 /***/ }),
-/* 19 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// optional / simple context binding
-var aFunction = __webpack_require__(33);
-module.exports = function (fn, that, length) {
-  aFunction(fn);
-  if (that === undefined) return fn;
-  switch (length) {
-    case 1: return function (a) {
-      return fn.call(that, a);
-    };
-    case 2: return function (a, b) {
-      return fn.call(that, a, b);
-    };
-    case 3: return function (a, b, c) {
-      return fn.call(that, a, b, c);
-    };
-  }
-  return function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(32);
+var defined = __webpack_require__(34);
+module.exports = function (it) {
+  return IObject(defined(it));
 };
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 13 */
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(149);
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
 
 /***/ }),
-/* 21 */
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(7);
+module.exports = function (it) {
+  if (!isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports) {
 
 /**
@@ -2684,456 +836,222 @@ module.exports = documentReady
 
 
 /***/ }),
-/* 22 */
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// optional / simple context binding
+var aFunction = __webpack_require__(58);
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(55);
+var defined = __webpack_require__(34);
 module.exports = function (it) {
   return Object(defined(it));
 };
 
 
 /***/ }),
-/* 23 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
+"use strict";
 
-    var Transform = __webpack_require__(5);
 
-    /* TODO: remove these dependencies when deprecation complete */
-    var Transitionable = __webpack_require__(17);
-    var TransitionableTransform = __webpack_require__(77);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getFunctionBody = getFunctionBody;
+exports.setDescriptor = setDescriptor;
+exports.setDescriptors = setDescriptors;
+exports.propertyIsAccessor = propertyIsAccessor;
+exports.getInheritedDescriptor = getInheritedDescriptor;
+exports.getInheritedPropertyNames = getInheritedPropertyNames;
+exports.Constructor = Constructor;
+exports.WeakTwoWayMap = void 0;
 
-    /**
-     *
-     *  A collection of visual changes to be
-     *    applied to another renderable component. This collection includes a
-     *    transform matrix, an opacity constant, a size, an origin specifier.
-     *    Modifier objects can be added to any RenderNode or object
-     *    capable of displaying renderables.  The Modifier's children and descendants
-     *    are transformed by the amounts specified in the Modifier's properties.
-     *
-     * @class Modifier
-     * @constructor
-     * @param {Object} [options] overrides of default options
-     * @param {Transform} [options.transform] affine transformation matrix
-     * @param {Number} [options.opacity]
-     * @param {Array.Number} [options.origin] origin adjustment
-     * @param {Array.Number} [options.size] size to apply to descendants
-     */
-    function Modifier(options) {
-        this._transformGetter = null;
-        this._opacityGetter = null;
-        this._originGetter = null;
-        this._alignGetter = null;
-        this._sizeGetter = null;
-        this._proportionGetter = null;
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
 
-        /* TODO: remove this when deprecation complete */
-        this._legacyStates = {};
-
-        this._output = {
-            transform: Transform.identity,
-            opacity: 1,
-            origin: null,
-            align: null,
-            size: null,
-            proportions: null,
-            target: null
-        };
-
-        if (options) {
-            if (options.transform) this.transformFrom(options.transform);
-            if (options.opacity !== undefined) this.opacityFrom(options.opacity);
-            if (options.origin) this.originFrom(options.origin);
-            if (options.align) this.alignFrom(options.align);
-            if (options.size) this.sizeFrom(options.size);
-            if (options.proportions) this.proportionsFrom(options.proportions);
-        }
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
     }
 
-    /**
-     * Function, object, or static transform matrix which provides the transform.
-     *   This is evaluated on every tick of the engine.
-     *
-     * @method transformFrom
-     *
-     * @param {Object} transform transform provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.transformFrom = function transformFrom(transform) {
-        if (transform instanceof Function) this._transformGetter = transform;
-        else if (transform instanceof Object && transform.get) this._transformGetter = transform.get.bind(transform);
-        else {
-            this._transformGetter = null;
-            this._output.transform = transform;
-        }
-        return this;
-    };
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
 
-    /**
-     * Set function, object, or number to provide opacity, in range [0,1].
-     *
-     * @method opacityFrom
-     *
-     * @param {Object} opacity provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        if (opacity instanceof Function) this._opacityGetter = opacity;
-        else if (opacity instanceof Object && opacity.get) this._opacityGetter = opacity.get.bind(opacity);
-        else {
-            this._opacityGetter = null;
-            this._output.opacity = opacity;
-        }
-        return this;
-    };
+  return target;
+}
 
-    /**
-     * Set function, object, or numerical array to provide origin, as [x,y],
-     *   where x and y are in the range [0,1].
-     *
-     * @method originFrom
-     *
-     * @param {Object} origin provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.originFrom = function originFrom(origin) {
-        if (origin instanceof Function) this._originGetter = origin;
-        else if (origin instanceof Object && origin.get) this._originGetter = origin.get.bind(origin);
-        else {
-            this._originGetter = null;
-            this._output.origin = origin;
-        }
-        return this;
-    };
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
 
-    /**
-     * Set function, object, or numerical array to provide align, as [x,y],
-     *   where x and y are in the range [0,1].
-     *
-     * @method alignFrom
-     *
-     * @param {Object} align provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.alignFrom = function alignFrom(align) {
-        if (align instanceof Function) this._alignGetter = align;
-        else if (align instanceof Object && align.get) this._alignGetter = align.get.bind(align);
-        else {
-            this._alignGetter = null;
-            this._output.align = align;
-        }
-        return this;
-    };
+  return obj;
+}
 
-    /**
-     * Set function, object, or numerical array to provide size, as [width, height].
-     *
-     * @method sizeFrom
-     *
-     * @param {Object} size provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.sizeFrom = function sizeFrom(size) {
-        if (size instanceof Function) this._sizeGetter = size;
-        else if (size instanceof Object && size.get) this._sizeGetter = size.get.bind(size);
-        else {
-            this._sizeGetter = null;
-            this._output.size = size;
-        }
-        return this;
-    };
+class WeakTwoWayMap {
+  constructor() {
+    this.m = new WeakMap();
+  }
 
-    /**
-     * Set function, object, or numerical array to provide proportions, as [percent of width, percent of height].
-     *
-     * @method proportionsFrom
-     *
-     * @param {Object} proportions provider object
-     * @return {Modifier} this
-     */
-    Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
-        if (proportions instanceof Function) this._proportionGetter = proportions;
-        else if (proportions instanceof Object && proportions.get) this._proportionGetter = proportions.get.bind(proportions);
-        else {
-            this._proportionGetter = null;
-            this._output.proportions = proportions;
-        }
-        return this;
-    };
+  set(a, b) {
+    this.m.set(a, b);
+    this.m.set(b, a);
+  }
 
-     /**
-     * Deprecated: Prefer transformFrom with static Transform, or use a TransitionableTransform.
-     * @deprecated
-     * @method setTransform
-     *
-     * @param {Transform} transform Transform to transition to
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setTransform = function setTransform(transform, transition, callback) {
-        if (transition || this._legacyStates.transform) {
-            if (!this._legacyStates.transform) {
-                this._legacyStates.transform = new TransitionableTransform(this._output.transform);
-            }
-            if (!this._transformGetter) this.transformFrom(this._legacyStates.transform);
+  get(item) {
+    return this.m.get(item);
+  }
 
-            this._legacyStates.transform.set(transform, transition, callback);
-            return this;
-        }
-        else return this.transformFrom(transform);
-    };
+  has(item) {
+    return this.m.has(item);
+  }
 
-    /**
-     * Deprecated: Prefer opacityFrom with static opacity array, or use a Transitionable with that opacity.
-     * @deprecated
-     * @method setOpacity
-     *
-     * @param {Number} opacity Opacity value to transition to.
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setOpacity = function setOpacity(opacity, transition, callback) {
-        if (transition || this._legacyStates.opacity) {
-            if (!this._legacyStates.opacity) {
-                this._legacyStates.opacity = new Transitionable(this._output.opacity);
-            }
-            if (!this._opacityGetter) this.opacityFrom(this._legacyStates.opacity);
+}
 
-            return this._legacyStates.opacity.set(opacity, transition, callback);
-        }
-        else return this.opacityFrom(opacity);
-    };
+exports.WeakTwoWayMap = WeakTwoWayMap;
 
-    /**
-     * Deprecated: Prefer originFrom with static origin array, or use a Transitionable with that origin.
-     * @deprecated
-     * @method setOrigin
-     *
-     * @param {Array.Number} origin two element array with values between 0 and 1.
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setOrigin = function setOrigin(origin, transition, callback) {
-        /* TODO: remove this if statement when deprecation complete */
-        if (transition || this._legacyStates.origin) {
+// assumes the function opening, body, and closing are on separate lines
+function getFunctionBody(fn) {
+  const code = fn.toString().split("\n");
+  code.shift(); // remove opening line (function() {)
 
-            if (!this._legacyStates.origin) {
-                this._legacyStates.origin = new Transitionable(this._output.origin || [0, 0]);
-            }
-            if (!this._originGetter) this.originFrom(this._legacyStates.origin);
+  code.pop(); // remove closing line (})
 
-            this._legacyStates.origin.set(origin, transition, callback);
-            return this;
-        }
-        else return this.originFrom(origin);
-    };
+  return code.join("\n");
+}
 
-    /**
-     * Deprecated: Prefer alignFrom with static align array, or use a Transitionable with that align.
-     * @deprecated
-     * @method setAlign
-     *
-     * @param {Array.Number} align two element array with values between 0 and 1.
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setAlign = function setAlign(align, transition, callback) {
-        /* TODO: remove this if statement when deprecation complete */
-        if (transition || this._legacyStates.align) {
+const descriptorDefaults = {
+  enumerable: true,
+  configurable: true // makes it easier and less verbose to work with descriptors
 
-            if (!this._legacyStates.align) {
-                this._legacyStates.align = new Transitionable(this._output.align || [0, 0]);
-            }
-            if (!this._alignGetter) this.alignFrom(this._legacyStates.align);
+};
 
-            this._legacyStates.align.set(align, transition, callback);
-            return this;
-        }
-        else return this.alignFrom(align);
-    };
+function setDescriptor(obj, key, newDescriptor, inherited = false) {
+  let currentDescriptor = inherited ? getInheritedDescriptor(obj, key) : Object.getOwnPropertyDescriptor(obj, key);
+  newDescriptor = overrideDescriptor(currentDescriptor, newDescriptor);
+  Object.defineProperty(obj, key, newDescriptor);
+}
 
-    /**
-     * Deprecated: Prefer sizeFrom with static origin array, or use a Transitionable with that size.
-     * @deprecated
-     * @method setSize
-     * @param {Array.Number} size two element array of [width, height]
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setSize = function setSize(size, transition, callback) {
-        if (size && (transition || this._legacyStates.size)) {
-            if (!this._legacyStates.size) {
-                this._legacyStates.size = new Transitionable(this._output.size || [0, 0]);
-            }
-            if (!this._sizeGetter) this.sizeFrom(this._legacyStates.size);
+function setDescriptors(obj, newDescriptors) {
+  let newDescriptor;
+  let currentDescriptor;
+  const currentDescriptors = Object.getOwnPropertyDescriptors(obj);
 
-            this._legacyStates.size.set(size, transition, callback);
-            return this;
-        }
-        else return this.sizeFrom(size);
-    };
+  for (const key in newDescriptors) {
+    newDescriptor = newDescriptors[key];
+    currentDescriptor = currentDescriptors[key];
+    newDescriptors[key] = overrideDescriptor(currentDescriptor, newDescriptor);
+  }
 
-    /**
-     * Deprecated: Prefer proportionsFrom with static origin array, or use a Transitionable with those proportions.
-     * @deprecated
-     * @method setProportions
-     * @param {Array.Number} proportions two element array of [percent of width, percent of height]
-     * @param {Transitionable} transition Valid transitionable object
-     * @param {Function} callback callback to call after transition completes
-     * @return {Modifier} this
-     */
-    Modifier.prototype.setProportions = function setProportions(proportions, transition, callback) {
-        if (proportions && (transition || this._legacyStates.proportions)) {
-            if (!this._legacyStates.proportions) {
-                this._legacyStates.proportions = new Transitionable(this._output.proportions || [0, 0]);
-            }
-            if (!this._proportionGetter) this.proportionsFrom(this._legacyStates.proportions);
+  Object.defineProperties(obj, newDescriptors);
+}
 
-            this._legacyStates.proportions.set(proportions, transition, callback);
-            return this;
-        }
-        else return this.proportionsFrom(proportions);
-    };
+function overrideDescriptor(oldDescriptor, newDescriptor) {
+  if (('get' in newDescriptor || 'set' in newDescriptor) && ('value' in newDescriptor || 'writable' in newDescriptor)) {
+    throw new TypeError('cannot specify both accessors and a value or writable attribute');
+  }
 
-    /**
-     * Deprecated: Prefer to stop transform in your provider object.
-     * @deprecated
-     * @method halt
-     */
-    Modifier.prototype.halt = function halt() {
-        if (this._legacyStates.transform) this._legacyStates.transform.halt();
-        if (this._legacyStates.opacity) this._legacyStates.opacity.halt();
-        if (this._legacyStates.origin) this._legacyStates.origin.halt();
-        if (this._legacyStates.align) this._legacyStates.align.halt();
-        if (this._legacyStates.size) this._legacyStates.size.halt();
-        if (this._legacyStates.proportions) this._legacyStates.proportions.halt();
-        this._transformGetter = null;
-        this._opacityGetter = null;
-        this._originGetter = null;
-        this._alignGetter = null;
-        this._sizeGetter = null;
-        this._proportionGetter = null;
-    };
+  if (oldDescriptor) {
+    if ('get' in newDescriptor || 'set' in newDescriptor) {
+      delete oldDescriptor.value;
+      delete oldDescriptor.writable;
+    } else if ('value' in newDescriptor || 'writable' in newDescriptor) {
+      delete oldDescriptor.get;
+      delete oldDescriptor.set;
+    }
+  }
 
-    /**
-     * Deprecated: Prefer to use your provided transform or output of your transform provider.
-     * @deprecated
-     * @method getTransform
-     * @return {Object} transform provider object
-     */
-    Modifier.prototype.getTransform = function getTransform() {
-        return this._transformGetter();
-    };
+  return _objectSpread({}, descriptorDefaults, oldDescriptor, newDescriptor);
+}
 
-    /**
-     * Deprecated: Prefer to determine the end state of your transform from your transform provider
-     * @deprecated
-     * @method getFinalTransform
-     * @return {Transform} transform matrix
-     */
-    Modifier.prototype.getFinalTransform = function getFinalTransform() {
-        return this._legacyStates.transform ? this._legacyStates.transform.getFinal() : this._output.transform;
-    };
+function propertyIsAccessor(obj, key, inherited = true) {
+  let result = false;
+  let descriptor;
 
-    /**
-     * Deprecated: Prefer to use your provided opacity or output of your opacity provider.
-     * @deprecated
-     * @method getOpacity
-     * @return {Object} opacity provider object
-     */
-    Modifier.prototype.getOpacity = function getOpacity() {
-        return this._opacityGetter();
-    };
+  if (arguments.length === 1) {
+    descriptor = obj;
+  } else {
+    descriptor = inherited ? getInheritedDescriptor(obj, key) : Object.getOwnPropertyDescriptor(obj, key);
+  }
 
-    /**
-     * Deprecated: Prefer to use your provided origin or output of your origin provider.
-     * @deprecated
-     * @method getOrigin
-     * @return {Object} origin provider object
-     */
-    Modifier.prototype.getOrigin = function getOrigin() {
-        return this._originGetter();
-    };
+  if (descriptor && (descriptor.get || descriptor.set)) result = true;
+  return result;
+}
 
-    /**
-     * Deprecated: Prefer to use your provided align or output of your align provider.
-     * @deprecated
-     * @method getAlign
-     * @return {Object} align provider object
-     */
-    Modifier.prototype.getAlign = function getAlign() {
-        return this._alignGetter();
-    };
+function getInheritedDescriptor(obj, key) {
+  let currentProto = obj;
+  let descriptor;
 
-    /**
-     * Deprecated: Prefer to use your provided size or output of your size provider.
-     * @deprecated
-     * @method getSize
-     * @return {Object} size provider object
-     */
-    Modifier.prototype.getSize = function getSize() {
-        return this._sizeGetter ? this._sizeGetter() : this._output.size;
-    };
+  while (currentProto) {
+    descriptor = Object.getOwnPropertyDescriptor(currentProto, key);
 
-    /**
-     * Deprecated: Prefer to use your provided proportions or output of your proportions provider.
-     * @deprecated
-     * @method getProportions
-     * @return {Object} proportions provider object
-     */
-    Modifier.prototype.getProportions = function getProportions() {
-        return this._proportionGetter ? this._proportionGetter() : this._output.proportions;
-    };
-
-    // call providers on tick to receive render spec elements to apply
-    function _update() {
-        if (this._transformGetter) this._output.transform = this._transformGetter();
-        if (this._opacityGetter) this._output.opacity = this._opacityGetter();
-        if (this._originGetter) this._output.origin = this._originGetter();
-        if (this._alignGetter) this._output.align = this._alignGetter();
-        if (this._sizeGetter) this._output.size = this._sizeGetter();
-        if (this._proportionGetter) this._output.proportions = this._proportionGetter();
+    if (descriptor) {
+      descriptor.owner = currentProto;
+      return descriptor;
     }
 
-    /**
-     * Return render spec for this Modifier, applying to the provided
-     *    target component.  This is similar to render() for Surfaces.
-     *
-     * @private
-     * @method modify
-     *
-     * @param {Object} target (already rendered) render spec to
-     *    which to apply the transform.
-     * @return {Object} render spec for this Modifier, including the
-     *    provided target
-     */
-    Modifier.prototype.modify = function modify(target) {
-        _update.call(this);
-        this._output.target = target;
-        return this._output;
-    };
+    currentProto = currentProto.__proto__;
+  }
+}
 
-    module.exports = Modifier;
+function getInheritedPropertyNames(obj) {
+  let currentProto = obj;
+  let keys = [];
 
+  while (currentProto) {
+    keys = keys.concat(Object.getOwnPropertyNames(currentProto));
+    currentProto = currentProto.__proto__;
+  } // remove duplicates
+
+
+  keys = Array.from(new Set(keys));
+  return keys;
+} // this is used for type casting in special cases, see the declaration file
+
+
+function Constructor(Ctor) {
+  return Ctor;
+}
 
 /***/ }),
-/* 24 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = function (bitmap, value) {
@@ -3147,84 +1065,18 @@ module.exports = function (bitmap, value) {
 
 
 /***/ }),
-/* 25 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(151);
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject = __webpack_require__(9);
-var dPs = __webpack_require__(93);
-var enumBugKeys = __webpack_require__(59);
-var IE_PROTO = __webpack_require__(57)('IE_PROTO');
-var Empty = function () { /* empty */ };
-var PROTOTYPE = 'prototype';
-
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
-var createDict = function () {
-  // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(90)('iframe');
-  var i = enumBugKeys.length;
-  var lt = '<';
-  var gt = '>';
-  var iframeDocument;
-  iframe.style.display = 'none';
-  __webpack_require__(155).appendChild(iframe);
-  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
-  // createDict = iframe.contentWindow.Object;
-  // html.removeChild(iframe);
-  iframeDocument = iframe.contentWindow.document;
-  iframeDocument.open();
-  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
-  iframeDocument.close();
-  createDict = iframeDocument.F;
-  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
-  return createDict();
-};
-
-module.exports = Object.create || function create(O, Properties) {
-  var result;
-  if (O !== null) {
-    Empty[PROTOTYPE] = anObject(O);
-    result = new Empty();
-    Empty[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
-    result[IE_PROTO] = O;
-  } else result = createDict();
-  return Properties === undefined ? result : dPs(result, Properties);
-};
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(91);
-var enumBugKeys = __webpack_require__(59);
-
-module.exports = Object.keys || function keys(O) {
-  return $keys(O, enumBugKeys);
-};
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var META = __webpack_require__(36)('meta');
-var isObject = __webpack_require__(3);
-var has = __webpack_require__(15);
-var setDesc = __webpack_require__(7).f;
+var META = __webpack_require__(26)('meta');
+var isObject = __webpack_require__(7);
+var has = __webpack_require__(9);
+var setDesc = __webpack_require__(5).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
 };
-var FREEZE = !__webpack_require__(12)(function () {
+var FREEZE = !__webpack_require__(13)(function () {
   return isExtensible(Object.preventExtensions({}));
 });
 var setMeta = function (it) {
@@ -3272,22 +1124,35 @@ var meta = module.exports = {
 
 
 /***/ }),
-/* 29 */
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys = __webpack_require__(60);
+var enumBugKeys = __webpack_require__(40);
+
+module.exports = Object.keys || function keys(O) {
+  return $keys(O, enumBugKeys);
+};
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = {};
 
 
 /***/ }),
-/* 30 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(19);
-var call = __webpack_require__(103);
-var isArrayIter = __webpack_require__(104);
-var anObject = __webpack_require__(9);
-var toLength = __webpack_require__(34);
-var getIterFn = __webpack_require__(105);
+var ctx = __webpack_require__(16);
+var call = __webpack_require__(65);
+var isArrayIter = __webpack_require__(66);
+var anObject = __webpack_require__(14);
+var toLength = __webpack_require__(29);
+var getIterFn = __webpack_require__(67);
 var BREAK = {};
 var RETURN = {};
 var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
@@ -3310,10 +1175,10 @@ exports.RETURN = RETURN;
 
 
 /***/ }),
-/* 31 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(3);
+var isObject = __webpack_require__(7);
 module.exports = function (it, TYPE) {
   if (!isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
   return it;
@@ -3321,332 +1186,14 @@ module.exports = function (it, TYPE) {
 
 
 /***/ }),
-/* 32 */
+/* 25 */
 /***/ (function(module, exports) {
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-
-    /**
-     * A library of curves which map an animation explicitly as a function of time.
-     *
-     * @class Easing
-     */
-    var Easing = {
-
-        /**
-         * @property inQuad
-         * @static
-         */
-        inQuad: function(t) {
-            return t*t;
-        },
-
-        /**
-         * @property outQuad
-         * @static
-         */
-        outQuad: function(t) {
-            return -(t-=1)*t+1;
-        },
-
-        /**
-         * @property inOutQuad
-         * @static
-         */
-        inOutQuad: function(t) {
-            if ((t/=.5) < 1) return .5*t*t;
-            return -.5*((--t)*(t-2) - 1);
-        },
-
-        /**
-         * @property inCubic
-         * @static
-         */
-        inCubic: function(t) {
-            return t*t*t;
-        },
-
-        /**
-         * @property outCubic
-         * @static
-         */
-        outCubic: function(t) {
-            return ((--t)*t*t + 1);
-        },
-
-        /**
-         * @property inOutCubic
-         * @static
-         */
-        inOutCubic: function(t) {
-            if ((t/=.5) < 1) return .5*t*t*t;
-            return .5*((t-=2)*t*t + 2);
-        },
-
-        /**
-         * @property inQuart
-         * @static
-         */
-        inQuart: function(t) {
-            return t*t*t*t;
-        },
-
-        /**
-         * @property outQuart
-         * @static
-         */
-        outQuart: function(t) {
-            return -((--t)*t*t*t - 1);
-        },
-
-        /**
-         * @property inOutQuart
-         * @static
-         */
-        inOutQuart: function(t) {
-            if ((t/=.5) < 1) return .5*t*t*t*t;
-            return -.5 * ((t-=2)*t*t*t - 2);
-        },
-
-        /**
-         * @property inQuint
-         * @static
-         */
-        inQuint: function(t) {
-            return t*t*t*t*t;
-        },
-
-        /**
-         * @property outQuint
-         * @static
-         */
-        outQuint: function(t) {
-            return ((--t)*t*t*t*t + 1);
-        },
-
-        /**
-         * @property inOutQuint
-         * @static
-         */
-        inOutQuint: function(t) {
-            if ((t/=.5) < 1) return .5*t*t*t*t*t;
-            return .5*((t-=2)*t*t*t*t + 2);
-        },
-
-        /**
-         * @property inSine
-         * @static
-         */
-        inSine: function(t) {
-            return -1.0*Math.cos(t * (Math.PI/2)) + 1.0;
-        },
-
-        /**
-         * @property outSine
-         * @static
-         */
-        outSine: function(t) {
-            return Math.sin(t * (Math.PI/2));
-        },
-
-        /**
-         * @property inOutSine
-         * @static
-         */
-        inOutSine: function(t) {
-            return -.5*(Math.cos(Math.PI*t) - 1);
-        },
-
-        /**
-         * @property inExpo
-         * @static
-         */
-        inExpo: function(t) {
-            return (t===0) ? 0.0 : Math.pow(2, 10 * (t - 1));
-        },
-
-        /**
-         * @property outExpo
-         * @static
-         */
-        outExpo: function(t) {
-            return (t===1.0) ? 1.0 : (-Math.pow(2, -10 * t) + 1);
-        },
-
-        /**
-         * @property inOutExpo
-         * @static
-         */
-        inOutExpo: function(t) {
-            if (t===0) return 0.0;
-            if (t===1.0) return 1.0;
-            if ((t/=.5) < 1) return .5 * Math.pow(2, 10 * (t - 1));
-            return .5 * (-Math.pow(2, -10 * --t) + 2);
-        },
-
-        /**
-         * @property inCirc
-         * @static
-         */
-        inCirc: function(t) {
-            return -(Math.sqrt(1 - t*t) - 1);
-        },
-
-        /**
-         * @property outCirc
-         * @static
-         */
-        outCirc: function(t) {
-            return Math.sqrt(1 - (--t)*t);
-        },
-
-        /**
-         * @property inOutCirc
-         * @static
-         */
-        inOutCirc: function(t) {
-            if ((t/=.5) < 1) return -.5 * (Math.sqrt(1 - t*t) - 1);
-            return .5 * (Math.sqrt(1 - (t-=2)*t) + 1);
-        },
-
-        /**
-         * @property inElastic
-         * @static
-         */
-        inElastic: function(t) {
-            var s=1.70158;var p=0;var a=1.0;
-            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
-            s = p/(2*Math.PI) * Math.asin(1.0/a);
-            return -(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/ p));
-        },
-
-        /**
-         * @property outElastic
-         * @static
-         */
-        outElastic: function(t) {
-            var s=1.70158;var p=0;var a=1.0;
-            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
-            s = p/(2*Math.PI) * Math.asin(1.0/a);
-            return a*Math.pow(2,-10*t) * Math.sin((t-s)*(2*Math.PI)/p) + 1.0;
-        },
-
-        /**
-         * @property inOutElastic
-         * @static
-         */
-        inOutElastic: function(t) {
-            var s=1.70158;var p=0;var a=1.0;
-            if (t===0) return 0.0;  if ((t/=.5)===2) return 1.0;  if (!p) p=(.3*1.5);
-            s = p/(2*Math.PI) * Math.asin(1.0/a);
-            if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p));
-            return a*Math.pow(2,-10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p)*.5 + 1.0;
-        },
-
-        /**
-         * @property inBack
-         * @static
-         */
-        inBack: function(t, s) {
-            if (s === undefined) s = 1.70158;
-            return t*t*((s+1)*t - s);
-        },
-
-        /**
-         * @property outBack
-         * @static
-         */
-        outBack: function(t, s) {
-            if (s === undefined) s = 1.70158;
-            return ((--t)*t*((s+1)*t + s) + 1);
-        },
-
-        /**
-         * @property inOutBack
-         * @static
-         */
-        inOutBack: function(t, s) {
-            if (s === undefined) s = 1.70158;
-            if ((t/=.5) < 1) return .5*(t*t*(((s*=(1.525))+1)*t - s));
-            return .5*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2);
-        },
-
-        /**
-         * @property inBounce
-         * @static
-         */
-        inBounce: function(t) {
-            return 1.0 - Easing.outBounce(1.0-t);
-        },
-
-        /**
-         * @property outBounce
-         * @static
-         */
-        outBounce: function(t) {
-            if (t < (1/2.75)) {
-                return (7.5625*t*t);
-            } else if (t < (2/2.75)) {
-                return (7.5625*(t-=(1.5/2.75))*t + .75);
-            } else if (t < (2.5/2.75)) {
-                return (7.5625*(t-=(2.25/2.75))*t + .9375);
-            } else {
-                return (7.5625*(t-=(2.625/2.75))*t + .984375);
-            }
-        },
-
-        /**
-         * @property inOutBounce
-         * @static
-         */
-        inOutBounce: function(t) {
-            if (t < .5) return Easing.inBounce(t*2) * .5;
-            return Easing.outBounce(t*2-1.0) * .5 + .5;
-        }
-    };
-
-    module.exports = Easing;
+exports.f = {}.propertyIsEnumerable;
 
 
 /***/ }),
-/* 33 */
-/***/ (function(module, exports) {
-
-module.exports = function (it) {
-  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
-  return it;
-};
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.15 ToLength
-var toInteger = __webpack_require__(56);
-var min = Math.min;
-module.exports = function (it) {
-  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
-};
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports) {
-
-module.exports = true;
-
-
-/***/ }),
-/* 36 */
+/* 26 */
 /***/ (function(module, exports) {
 
 var id = 0;
@@ -3657,64 +1204,19 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 37 */
+/* 27 */
 /***/ (function(module, exports) {
 
-exports.f = Object.getOwnPropertySymbols;
+module.exports = true;
 
 
 /***/ }),
-/* 38 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE = __webpack_require__(39);
-var createDesc = __webpack_require__(24);
-var toIObject = __webpack_require__(16);
-var toPrimitive = __webpack_require__(51);
-var has = __webpack_require__(15);
-var IE8_DOM_DEFINE = __webpack_require__(89);
-var gOPD = Object.getOwnPropertyDescriptor;
-
-exports.f = __webpack_require__(8) ? gOPD : function getOwnPropertyDescriptor(O, P) {
-  O = toIObject(O);
-  P = toPrimitive(P, true);
-  if (IE8_DOM_DEFINE) try {
-    return gOPD(O, P);
-  } catch (e) { /* empty */ }
-  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
-};
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports) {
-
-exports.f = {}.propertyIsEnumerable;
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// most Object methods by ES6 should accept primitives
-var $export = __webpack_require__(2);
-var core = __webpack_require__(1);
-var fails = __webpack_require__(12);
-module.exports = function (KEY, exec) {
-  var fn = (core.Object || {})[KEY] || Object[KEY];
-  var exp = {};
-  exp[KEY] = exec(fn);
-  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
-};
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var def = __webpack_require__(7).f;
-var has = __webpack_require__(15);
-var TAG = __webpack_require__(4)('toStringTag');
+var def = __webpack_require__(5).f;
+var has = __webpack_require__(9);
+var TAG = __webpack_require__(2)('toStringTag');
 
 module.exports = function (it, tag, stat) {
   if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
@@ -3722,750 +1224,19 @@ module.exports = function (it, tag, stat) {
 
 
 /***/ }),
-/* 42 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.f = __webpack_require__(4);
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $at = __webpack_require__(166)(true);
-
-// 21.1.3.27 String.prototype[@@iterator]()
-__webpack_require__(65)(String, 'String', function (iterated) {
-  this._t = String(iterated); // target
-  this._i = 0;                // next index
-// 21.1.5.2.1 %StringIteratorPrototype%.next()
-}, function () {
-  var O = this._t;
-  var index = this._i;
-  var point;
-  if (index >= O.length) return { value: undefined, done: true };
-  point = $at(O, index);
-  this._i += point.length;
-  return { value: point, done: false };
-});
-
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(168);
-var global = __webpack_require__(6);
-var hide = __webpack_require__(14);
-var Iterators = __webpack_require__(29);
-var TO_STRING_TAG = __webpack_require__(4)('toStringTag');
-
-var DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +
-  'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' +
-  'MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,' +
-  'SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,' +
-  'TextTrackList,TouchList').split(',');
-
-for (var i = 0; i < DOMIterables.length; i++) {
-  var NAME = DOMIterables[i];
-  var Collection = global[NAME];
-  var proto = Collection && Collection.prototype;
-  if (proto && !proto[TO_STRING_TAG]) hide(proto, TO_STRING_TAG, NAME);
-  Iterators[NAME] = Iterators.Array;
-}
-
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports) {
-
-
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(195);
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getFunctionBody = getFunctionBody;
-exports.setDescriptor = setDescriptor;
-exports.setDescriptors = setDescriptors;
-exports.propertyIsAccessor = propertyIsAccessor;
-exports.getInheritedDescriptor = getInheritedDescriptor;
-exports.getInheritedPropertyNames = getInheritedPropertyNames;
-exports.WeakTwoWayMap = void 0;
-
-var _set = _interopRequireDefault(__webpack_require__(203));
-
-var _from = _interopRequireDefault(__webpack_require__(109));
-
-var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(76));
-
-var _objectSpread2 = _interopRequireDefault(__webpack_require__(61));
-
-var _defineProperties = _interopRequireDefault(__webpack_require__(212));
-
-var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(88));
-
-var _defineProperty = _interopRequireDefault(__webpack_require__(20));
-
-var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
-
-var _weakMap = _interopRequireDefault(__webpack_require__(46));
-
-var _classCallCheck2 = _interopRequireDefault(__webpack_require__(97));
-
-var _createClass2 = _interopRequireDefault(__webpack_require__(215));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var WeakTwoWayMap =
-/*#__PURE__*/
-function () {
-  function WeakTwoWayMap() {
-    (0, _classCallCheck2.default)(this, WeakTwoWayMap);
-    this.m = new _weakMap.default();
-  }
-
-  (0, _createClass2.default)(WeakTwoWayMap, [{
-    key: "set",
-    value: function set(a, b) {
-      this.m.set(a, b);
-      this.m.set(b, a);
-    }
-  }, {
-    key: "get",
-    value: function get(item) {
-      return this.m.get(item);
-    }
-  }, {
-    key: "has",
-    value: function has(item) {
-      return this.m.has(item);
-    }
-  }]);
-  return WeakTwoWayMap;
-}();
-
-exports.WeakTwoWayMap = WeakTwoWayMap;
-
-// assumes the function opening, body, and closing are on separate lines
-function getFunctionBody(fn) {
-  var code = fn.toString().split("\n");
-  code.shift(); // remove opening line (function() {)
-
-  code.pop(); // remove closing line (})
-
-  return code.join("\n");
-}
-
-var descriptorDefaults = {
-  enumerable: true,
-  configurable: true // makes it easier and less verbose to work with descriptors
-
+// 7.1.15 ToLength
+var toInteger = __webpack_require__(38);
+var min = Math.min;
+module.exports = function (it) {
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
 
-function setDescriptor(obj, key, newDescriptor, inherited) {
-  if (inherited === void 0) inherited = false;
-  var currentDescriptor = inherited ? getInheritedDescriptor(obj, key) : (0, _getOwnPropertyDescriptor.default)(obj, key);
-  newDescriptor = overrideDescriptor(currentDescriptor, newDescriptor);
-  (0, _defineProperty.default)(obj, key, newDescriptor);
-}
-
-function setDescriptors(obj, newDescriptors) {
-  var newDescriptor;
-  var currentDescriptor;
-  var currentDescriptors = (0, _getOwnPropertyDescriptors.default)(obj);
-
-  for (var key in newDescriptors) {
-    newDescriptor = newDescriptors[key];
-    currentDescriptor = currentDescriptors[key];
-    newDescriptors[key] = overrideDescriptor(currentDescriptor, newDescriptor);
-  }
-
-  (0, _defineProperties.default)(obj, newDescriptors);
-}
-
-function overrideDescriptor(oldDescriptor, newDescriptor) {
-  if (('get' in newDescriptor || 'set' in newDescriptor) && ('value' in newDescriptor || 'writable' in newDescriptor)) {
-    throw new TypeError('cannot specify both accessors and a value or writable attribute');
-  }
-
-  if (oldDescriptor) {
-    if ('get' in newDescriptor || 'set' in newDescriptor) {
-      delete oldDescriptor.value;
-      delete oldDescriptor.writable;
-    } else if ('value' in newDescriptor || 'writable' in newDescriptor) {
-      delete oldDescriptor.get;
-      delete oldDescriptor.set;
-    }
-  }
-
-  return (0, _objectSpread2.default)({}, descriptorDefaults, oldDescriptor, newDescriptor);
-}
-
-function propertyIsAccessor(obj, key, inherited) {
-  if (inherited === void 0) inherited = true;
-  var result = false;
-  var descriptor;
-
-  if (arguments.length === 1) {
-    descriptor = obj;
-  } else {
-    descriptor = inherited ? getInheritedDescriptor(obj, key) : (0, _getOwnPropertyDescriptor.default)(obj, key);
-  }
-
-  if (descriptor && (descriptor.get || descriptor.set)) {
-    result = true;
-  }
-
-  return result;
-}
-
-function getInheritedDescriptor(obj, key) {
-  var currentProto = obj;
-  var descriptor;
-
-  while (currentProto) {
-    descriptor = (0, _getOwnPropertyDescriptor.default)(currentProto, key);
-
-    if (descriptor) {
-      descriptor.owner = currentProto;
-      return descriptor;
-    }
-
-    currentProto = currentProto.__proto__;
-  }
-}
-
-function getInheritedPropertyNames(obj) {
-  var currentProto = obj;
-  var keys = [];
-
-  while (currentProto) {
-    keys = keys.concat((0, _getOwnPropertyNames.default)(currentProto));
-    currentProto = currentProto.__proto__;
-  } // remove duplicates
-
-
-  keys = (0, _from.default)(new _set.default(keys));
-  return keys;
-}
 
 /***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var ElementOutput = __webpack_require__(128);
-
-    /**
-     * A base class for viewable content and event
-     *   targets inside a Famo.us application, containing a renderable document
-     *   fragment. Like an HTML div, it can accept internal markup,
-     *   properties, classes, and handle events.
-     *
-     * @class Surface
-     * @constructor
-     *
-     * @param {Object} [options] default option overrides
-     * @param {Array.Number} [options.size] [width, height] in pixels
-     * @param {Array.string} [options.classes] CSS classes to set on target div
-     * @param {Array} [options.properties] string dictionary of CSS properties to set on target div
-     * @param {Array} [options.attributes] string dictionary of HTML attributes to set on target div
-     * @param {string} [options.content] inner (HTML) content of surface
-     */
-    function Surface(options) {
-        ElementOutput.call(this);
-
-        this.options = {};
-
-        this.properties = {};
-        this.attributes = {};
-        this.content = '';
-        this.classList = [];
-        this.size = null;
-
-        this._classesDirty = true;
-        this._stylesDirty = true;
-        this._attributesDirty = true;
-        this._sizeDirty = true;
-        this._contentDirty = true;
-        this._trueSizeCheck = true;
-
-        this._dirtyClasses = [];
-
-        if (options) this.setOptions(options);
-
-        this._currentTarget = null;
-    }
-    Surface.prototype = Object.create(ElementOutput.prototype);
-    Surface.prototype.constructor = Surface;
-    Surface.prototype.elementType = 'div';
-    Surface.prototype.elementClass = 'famous-surface';
-
-    /**
-     * Set HTML attributes on this Surface. Note that this will cause
-     *    dirtying and thus re-rendering, even if values do not change.
-     *
-     * @method setAttributes
-    * @param {Object} attributes property dictionary of "key" => "value"
-     */
-    Surface.prototype.setAttributes = function setAttributes(attributes) {
-        for (var n in attributes) {
-            if (n === 'style') throw new Error('Cannot set styles via "setAttributes" as it will break Famo.us.  Use "setProperties" instead.');
-            this.attributes[n] = attributes[n];
-        }
-        this._attributesDirty = true;
-    };
-
-    /**
-     * Get HTML attributes on this Surface.
-     *
-     * @method getAttributes
-     *
-     * @return {Object} Dictionary of this Surface's attributes.
-     */
-    Surface.prototype.getAttributes = function getAttributes() {
-        return this.attributes;
-    };
-
-    /**
-     * Set CSS-style properties on this Surface. Note that this will cause
-     *    dirtying and thus re-rendering, even if values do not change.
-     *
-     * @method setProperties
-     * @chainable
-     * @param {Object} properties property dictionary of "key" => "value"
-     */
-    Surface.prototype.setProperties = function setProperties(properties) {
-        for (var n in properties) {
-            this.properties[n] = properties[n];
-        }
-        this._stylesDirty = true;
-        return this;
-    };
-
-    /**
-     * Get CSS-style properties on this Surface.
-     *
-     * @method getProperties
-     *
-     * @return {Object} Dictionary of this Surface's properties.
-     */
-    Surface.prototype.getProperties = function getProperties() {
-        return this.properties;
-    };
-
-    /**
-     * Add CSS-style class to the list of classes on this Surface. Note
-     *   this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
-     *
-     * @method addClass
-     * @chainable
-     * @param {string} className name of class to add
-     */
-    Surface.prototype.addClass = function addClass(className) {
-        if (this.classList.indexOf(className) < 0) {
-            this.classList.push(className);
-            this._classesDirty = true;
-        }
-        return this;
-    };
-
-    /**
-     * Remove CSS-style class from the list of classes on this Surface.
-     *   Note this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
-     *
-     * @method removeClass
-     * @chainable
-     * @param {string} className name of class to remove
-     */
-    Surface.prototype.removeClass = function removeClass(className) {
-        var i = this.classList.indexOf(className);
-        if (i >= 0) {
-            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
-            this._classesDirty = true;
-        }
-        return this;
-    };
-
-    /**
-     * Toggle CSS-style class from the list of classes on this Surface.
-     *   Note this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
-     *
-     * @method toggleClass
-     * @param {string} className name of class to toggle
-     */
-    Surface.prototype.toggleClass = function toggleClass(className) {
-        var i = this.classList.indexOf(className);
-        if (i >= 0) {
-            this.removeClass(className);
-        } else {
-            this.addClass(className);
-        }
-        return this;
-    };
-
-    /**
-     * Reset class list to provided dictionary.
-     * @method setClasses
-     * @chainable
-     * @param {Array.string} classList
-     */
-    Surface.prototype.setClasses = function setClasses(classList) {
-        var i = 0;
-        var removal = [];
-        for (i = 0; i < this.classList.length; i++) {
-            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
-        }
-        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
-        // duplicates are already checked by addClass()
-        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
-        return this;
-    };
-
-    /**
-     * Get array of CSS-style classes attached to this div.
-     *
-     * @method getClasslist
-     * @return {Array.string} array of class names
-     */
-    Surface.prototype.getClassList = function getClassList() {
-        return this.classList;
-    };
-
-    /**
-     * Set or overwrite inner (HTML) content of this surface. Note that this
-     *    causes a re-rendering if the content has changed.
-     *
-     * @method setContent
-     * @chainable
-     * @param {string|Document Fragment} content HTML content
-     */
-    Surface.prototype.setContent = function setContent(content) {
-        if (this.content !== content) {
-            this.content = content;
-            this._contentDirty = true;
-        }
-        return this;
-    };
-
-    /**
-     * Return inner (HTML) content of this surface.
-     *
-     * @method getContent
-     *
-     * @return {string} inner (HTML) content
-     */
-    Surface.prototype.getContent = function getContent() {
-        return this.content;
-    };
-
-    /**
-     * Set options for this surface
-     *
-     * @method setOptions
-     * @chainable
-     * @param {Object} [options] overrides for default options.  See constructor.
-     */
-    Surface.prototype.setOptions = function setOptions(options) {
-        if (options.size) this.setSize(options.size);
-        if (options.classes) this.setClasses(options.classes);
-        if (options.properties) this.setProperties(options.properties);
-        if (options.attributes) this.setAttributes(options.attributes);
-        if (options.content) this.setContent(options.content);
-        return this;
-    };
-
-    //  Apply to document all changes from removeClass() since last setup().
-    function _cleanupClasses(target) {
-        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
-        this._dirtyClasses = [];
-    }
-
-    // Apply values of all Famous-managed styles to the document element.
-    //  These will be deployed to the document on call to #setup().
-    function _applyStyles(target) {
-        for (var n in this.properties) {
-            target.style[n] = this.properties[n];
-        }
-    }
-
-    // Clear all Famous-managed styles from the document element.
-    // These will be deployed to the document on call to #setup().
-    function _cleanupStyles(target) {
-        for (var n in this.properties) {
-            target.style[n] = '';
-        }
-    }
-
-    // Apply values of all Famous-managed attributes to the document element.
-    //  These will be deployed to the document on call to #setup().
-    function _applyAttributes(target) {
-        for (var n in this.attributes) {
-            target.setAttribute(n, this.attributes[n]);
-        }
-    }
-
-    // Clear all Famous-managed attributes from the document element.
-    // These will be deployed to the document on call to #setup().
-    function _cleanupAttributes(target) {
-        for (var n in this.attributes) {
-            target.removeAttribute(n);
-        }
-    }
-
-    function _xyNotEquals(a, b) {
-        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
-    }
-
-    /**
-     * One-time setup for an element to be ready for commits to document.
-     *
-     * @private
-     * @method setup
-     *
-     * @param {ElementAllocator} allocator document element pool for this context
-     */
-    Surface.prototype.setup = function setup(allocator) {
-        var target = allocator.allocate(this.elementType);
-        if (this.elementClass) {
-            if (this.elementClass instanceof Array) {
-                for (var i = 0; i < this.elementClass.length; i++) {
-                    target.classList.add(this.elementClass[i]);
-                }
-            }
-            else {
-                target.classList.add(this.elementClass);
-            }
-        }
-        target.style.display = '';
-        this.attach(target);
-        this._opacity = null;
-        this._currentTarget = target;
-        this._stylesDirty = true;
-        this._classesDirty = true;
-        this._attributesDirty = true;
-        this._sizeDirty = true;
-        this._contentDirty = true;
-        this._originDirty = true;
-        this._transformDirty = true;
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    Surface.prototype.commit = function commit(context) {
-        if (!this._currentTarget) this.setup(context.allocator);
-        var target = this._currentTarget;
-        var size = context.size;
-
-        if (this._classesDirty) {
-            _cleanupClasses.call(this, target);
-            var classList = this.getClassList();
-            for (var i = 0; i < classList.length; i++) target.classList.add(classList[i]);
-            this._classesDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        if (this._stylesDirty) {
-            _applyStyles.call(this, target);
-            this._stylesDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        if (this._attributesDirty) {
-            _applyAttributes.call(this, target);
-            this._attributesDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        if (this.size) {
-            var origSize = context.size;
-            size = [this.size[0], this.size[1]];
-            if (size[0] === undefined) size[0] = origSize[0];
-            if (size[1] === undefined) size[1] = origSize[1];
-            if (size[0] === true || size[1] === true) {
-                if (size[0] === true){
-                    if (this._trueSizeCheck || (this._size[0] === 0)) {
-                        var width = target.offsetWidth;
-                        if (this._size && this._size[0] !== width) {
-                            this._size[0] = width;
-                            this._sizeDirty = true;
-                        }
-                        size[0] = width;
-                    } else {
-                        if (this._size) size[0] = this._size[0];
-                    }
-                }
-                if (size[1] === true){
-                    if (this._trueSizeCheck || (this._size[1] === 0)) {
-                        var height = target.offsetHeight;
-                        if (this._size && this._size[1] !== height) {
-                            this._size[1] = height;
-                            this._sizeDirty = true;
-                        }
-                        size[1] = height;
-                    } else {
-                        if (this._size) size[1] = this._size[1];
-                    }
-                }
-                this._trueSizeCheck = false;
-            }
-        }
-
-        if (_xyNotEquals(this._size, size)) {
-            if (!this._size) this._size = [0, 0];
-            this._size[0] = size[0];
-            this._size[1] = size[1];
-
-            this._sizeDirty = true;
-        }
-
-        if (this._sizeDirty) {
-            if (this._size) {
-                target.style.width = (this.size && this.size[0] === true) ? '' : this._size[0] + 'px';
-                target.style.height = (this.size && this.size[1] === true) ?  '' : this._size[1] + 'px';
-            }
-
-            this._eventOutput.emit('resize');
-        }
-
-        if (this._contentDirty) {
-            this.deploy(target);
-            this._eventOutput.emit('deploy');
-            this._contentDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        ElementOutput.prototype.commit.call(this, context);
-    };
-
-    /**
-     *  Remove all Famous-relevant attributes from a document element.
-     *    This is called by SurfaceManager's detach().
-     *    This is in some sense the reverse of .deploy().
-     *
-     * @private
-     * @method cleanup
-     * @param {ElementAllocator} allocator
-     */
-    Surface.prototype.cleanup = function cleanup(allocator) {
-        var i = 0;
-        var target = this._currentTarget;
-        this._eventOutput.emit('recall');
-        this.recall(target);
-        target.style.display = 'none';
-        target.style.opacity = '';
-        target.style.width = '';
-        target.style.height = '';
-        _cleanupStyles.call(this, target);
-        _cleanupAttributes.call(this, target);
-        var classList = this.getClassList();
-        _cleanupClasses.call(this, target);
-        for (i = 0; i < classList.length; i++) target.classList.remove(classList[i]);
-        if (this.elementClass) {
-            if (this.elementClass instanceof Array) {
-                for (i = 0; i < this.elementClass.length; i++) {
-                    target.classList.remove(this.elementClass[i]);
-                }
-            }
-            else {
-                target.classList.remove(this.elementClass);
-            }
-        }
-        this.detach(target);
-        this._currentTarget = null;
-        allocator.deallocate(target);
-    };
-
-    /**
-     * Place the document element that this component manages into the document.
-     *
-     * @private
-     * @method deploy
-     * @param {Node} target document parent of this container
-     */
-    Surface.prototype.deploy = function deploy(target) {
-        var content = this.getContent();
-        if (content instanceof Node) {
-            while (target.hasChildNodes()) target.removeChild(target.firstChild);
-            target.appendChild(content);
-        }
-        else target.innerHTML = content;
-    };
-
-    /**
-     * Remove any contained document content associated with this surface
-     *   from the actual document.
-     *
-     * @private
-     * @method recall
-     */
-    Surface.prototype.recall = function recall(target) {
-        var df = document.createDocumentFragment();
-        while (target.hasChildNodes()) df.appendChild(target.firstChild);
-        this.setContent(df);
-    };
-
-    /**
-     *  Get the x and y dimensions of the surface.
-     *
-     * @method getSize
-     * @return {Array.Number} [x,y] size of surface
-     */
-    Surface.prototype.getSize = function getSize() {
-        return this._size ? this._size : this.size;
-    };
-
-    /**
-     * Set x and y dimensions of the surface.
-     *
-     * @method setSize
-     * @chainable
-     * @param {Array.Number} size as [width, height]
-     */
-    Surface.prototype.setSize = function setSize(size) {
-        this.size = size ? [size[0], size[1]] : null;
-        this._sizeDirty = true;
-        return this;
-    };
-
-    module.exports = Surface;
-
-
-/***/ }),
-/* 49 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4475,7 +1246,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _isInBrowser = __webpack_require__(50);
+var _isInBrowser = __webpack_require__(31);
 
 var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 
@@ -4520,7 +1291,7 @@ if (_isInBrowser2['default']) {
 exports['default'] = { js: js, css: css };
 
 /***/ }),
-/* 50 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4534,11 +1305,45 @@ var isBrowser = (typeof window === "undefined" ? "undefined" : _typeof(window)) 
 
 
 /***/ }),
-/* 51 */
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = __webpack_require__(33);
+// eslint-disable-next-line no-prototype-builtins
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
+  return it;
+};
+
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(3);
+var isObject = __webpack_require__(7);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 module.exports = function (it, S) {
@@ -4552,54 +1357,32 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 52 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys = __webpack_require__(91);
-var hiddenKeys = __webpack_require__(59).concat('length', 'prototype');
-
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return $keys(O, hiddenKeys);
-};
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
-/* 53 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(54);
-// eslint-disable-next-line no-prototype-builtins
-module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
-  return cof(it) == 'String' ? it.split('') : Object(it);
-};
+var core = __webpack_require__(1);
+var global = __webpack_require__(4);
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: core.version,
+  mode: __webpack_require__(27) ? 'pure' : 'global',
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+});
 
 
 /***/ }),
-/* 54 */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = function (it) {
-  return toString.call(it).slice(8, -1);
-};
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports) {
-
-// 7.2.1 RequireObjectCoercible(argument)
-module.exports = function (it) {
-  if (it == undefined) throw TypeError("Can't call method on  " + it);
-  return it;
-};
-
-
-/***/ }),
-/* 56 */
+/* 38 */
 /***/ (function(module, exports) {
 
 // 7.1.4 ToInteger
@@ -4611,36 +1394,18 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 57 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(58)('keys');
-var uid = __webpack_require__(36);
+var shared = __webpack_require__(37)('keys');
+var uid = __webpack_require__(26);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 
 
 /***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var core = __webpack_require__(1);
-var global = __webpack_require__(6);
-var SHARED = '__core-js_shared__';
-var store = global[SHARED] || (global[SHARED] = {});
-
-(module.exports = function (key, value) {
-  return store[key] || (store[key] = value !== undefined ? value : {});
-})('versions', []).push({
-  version: core.version,
-  mode: __webpack_require__(35) ? 'pure' : 'global',
-  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
-});
-
-
-/***/ }),
-/* 59 */
+/* 40 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -4650,88 +1415,74 @@ module.exports = (
 
 
 /***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 41 */
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(153);
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$getOwnPropertyDescriptor = __webpack_require__(25);
-
-var _Object$getOwnPropertySymbols = __webpack_require__(62);
-
-var _Object$keys = __webpack_require__(158);
-
-var defineProperty = __webpack_require__(161);
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    var ownKeys = _Object$keys(source);
-
-    if (typeof _Object$getOwnPropertySymbols === 'function') {
-      ownKeys = ownKeys.concat(_Object$getOwnPropertySymbols(source).filter(function (sym) {
-        return _Object$getOwnPropertyDescriptor(source, sym).enumerable;
-      }));
-    }
-
-    ownKeys.forEach(function (key) {
-      defineProperty(target, key, source[key]);
-    });
-  }
-
-  return target;
-}
-
-module.exports = _objectSpread;
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(156);
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(14);
+exports.f = Object.getOwnPropertySymbols;
 
 
 /***/ }),
-/* 64 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(6);
-var core = __webpack_require__(1);
-var LIBRARY = __webpack_require__(35);
-var wksExt = __webpack_require__(42);
-var defineProperty = __webpack_require__(7).f;
-module.exports = function (name) {
-  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
-  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject = __webpack_require__(14);
+var dPs = __webpack_require__(114);
+var enumBugKeys = __webpack_require__(40);
+var IE_PROTO = __webpack_require__(39)('IE_PROTO');
+var Empty = function () { /* empty */ };
+var PROTOTYPE = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function () {
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = __webpack_require__(56)('iframe');
+  var i = enumBugKeys.length;
+  var lt = '<';
+  var gt = '>';
+  var iframeDocument;
+  iframe.style.display = 'none';
+  __webpack_require__(115).appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties) {
+  var result;
+  if (O !== null) {
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty();
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
 };
 
 
 /***/ }),
-/* 65 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(35);
-var $export = __webpack_require__(2);
-var redefine = __webpack_require__(63);
-var hide = __webpack_require__(14);
-var Iterators = __webpack_require__(29);
-var $iterCreate = __webpack_require__(167);
-var setToStringTag = __webpack_require__(41);
-var getPrototypeOf = __webpack_require__(66);
-var ITERATOR = __webpack_require__(4)('iterator');
+var LIBRARY = __webpack_require__(27);
+var $export = __webpack_require__(8);
+var redefine = __webpack_require__(36);
+var hide = __webpack_require__(10);
+var Iterators = __webpack_require__(22);
+var $iterCreate = __webpack_require__(126);
+var setToStringTag = __webpack_require__(28);
+var getPrototypeOf = __webpack_require__(127);
+var ITERATOR = __webpack_require__(2)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
 var FF_ITERATOR = '@@iterator';
 var KEYS = 'keys';
@@ -4794,58 +1545,10 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 
 /***/ }),
-/* 66 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has = __webpack_require__(15);
-var toObject = __webpack_require__(22);
-var IE_PROTO = __webpack_require__(57)('IE_PROTO');
-var ObjectProto = Object.prototype;
-
-module.exports = Object.getPrototypeOf || function (O) {
-  O = toObject(O);
-  if (has(O, IE_PROTO)) return O[IE_PROTO];
-  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
-    return O.constructor.prototype;
-  } return O instanceof Object ? ObjectProto : null;
-};
-
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(170);
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(174);
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$setPrototypeOf = __webpack_require__(100);
-
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = _Object$setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var hide = __webpack_require__(14);
+var hide = __webpack_require__(10);
 module.exports = function (target, src, safe) {
   for (var key in src) {
     if (safe && target[key]) target[key] = src[key];
@@ -4855,7 +1558,7 @@ module.exports = function (target, src, safe) {
 
 
 /***/ }),
-/* 71 */
+/* 45 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name, forbiddenField) {
@@ -4866,73 +1569,7 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 
 
 /***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global = __webpack_require__(6);
-var $export = __webpack_require__(2);
-var meta = __webpack_require__(28);
-var fails = __webpack_require__(12);
-var hide = __webpack_require__(14);
-var redefineAll = __webpack_require__(70);
-var forOf = __webpack_require__(30);
-var anInstance = __webpack_require__(71);
-var isObject = __webpack_require__(3);
-var setToStringTag = __webpack_require__(41);
-var dP = __webpack_require__(7).f;
-var each = __webpack_require__(73)(0);
-var DESCRIPTORS = __webpack_require__(8);
-
-module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
-  var Base = global[NAME];
-  var C = Base;
-  var ADDER = IS_MAP ? 'set' : 'add';
-  var proto = C && C.prototype;
-  var O = {};
-  if (!DESCRIPTORS || typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function () {
-    new C().entries().next();
-  }))) {
-    // create collection constructor
-    C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
-    redefineAll(C.prototype, methods);
-    meta.NEED = true;
-  } else {
-    C = wrapper(function (target, iterable) {
-      anInstance(target, C, NAME, '_c');
-      target._c = new Base();
-      if (iterable != undefined) forOf(iterable, IS_MAP, target[ADDER], target);
-    });
-    each('add,clear,delete,forEach,get,has,set,keys,values,entries,toJSON'.split(','), function (KEY) {
-      var IS_ADDER = KEY == 'add' || KEY == 'set';
-      if (KEY in proto && !(IS_WEAK && KEY == 'clear')) hide(C.prototype, KEY, function (a, b) {
-        anInstance(this, C, KEY);
-        if (!IS_ADDER && IS_WEAK && !isObject(a)) return KEY == 'get' ? undefined : false;
-        var result = this._c[KEY](a === 0 ? 0 : a, b);
-        return IS_ADDER ? this : result;
-      });
-    });
-    IS_WEAK || dP(C.prototype, 'size', {
-      get: function () {
-        return this._c.size;
-      }
-    });
-  }
-
-  setToStringTag(C, NAME);
-
-  O[NAME] = C;
-  $export($export.G + $export.W + $export.F, O);
-
-  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
-
-  return C;
-};
-
-
-/***/ }),
-/* 73 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 0 -> Array#forEach
@@ -4942,11 +1579,11 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx = __webpack_require__(19);
-var IObject = __webpack_require__(53);
-var toObject = __webpack_require__(22);
-var toLength = __webpack_require__(34);
-var asc = __webpack_require__(184);
+var ctx = __webpack_require__(16);
+var IObject = __webpack_require__(32);
+var toObject = __webpack_require__(17);
+var toLength = __webpack_require__(29);
+var asc = __webpack_require__(138);
 module.exports = function (TYPE, $create) {
   var IS_MAP = TYPE == 1;
   var IS_FILTER = TYPE == 2;
@@ -4982,878 +1619,169 @@ module.exports = function (TYPE, $create) {
 
 
 /***/ }),
-/* 74 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-// https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(2);
 
-module.exports = function (COLLECTION) {
-  $export($export.S, COLLECTION, { of: function of() {
-    var length = arguments.length;
-    var A = new Array(length);
-    while (length--) A[length] = arguments[length];
-    return new this(A);
-  } });
-};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Mixin = exports.default = Mixin;
+exports.WithDefault = WithDefault;
+exports.Cached = Cached;
+exports.HasInstance = HasInstance;
+exports.ApplyDefault = ApplyDefault;
+exports.Dedupe = Dedupe;
 
+var _ = _interopRequireDefault(__webpack_require__(0));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function Mixin(factory, Default) {
+  // XXX Maybe Cached should go last.
+  factory = Cached(factory);
+  factory = HasInstance(factory);
+  factory = Dedupe(factory);
+  factory = WithDefault(factory, Default || (0, _.default)());
+  factory = ApplyDefault(factory);
+  return factory();
+}
+
+function WithDefault(classFactory, Default) {
+  return named(classFactory.name, Base => {
+    Base = Base || Default;
+    return classFactory(Base);
+  });
+}
+
+function Cached(classFactory) {
+  const classCache = new WeakMap();
+  return named(classFactory.name, Base => {
+    let Class = classCache.get(Base);
+
+    if (!Class) {
+      classCache.set(Base, Class = classFactory(Base));
+    }
+
+    return Class;
+  });
+}
+
+function HasInstance(classFactory) {
+  let instanceofSymbol;
+  return named(classFactory.name, Base => {
+    const Class = classFactory(Base);
+    if (typeof Symbol === 'undefined' || !Symbol.hasInstance) return Class;
+    if (Object.getOwnPropertySymbols(Class).includes(Symbol.hasInstance)) return Class;
+    if (!instanceofSymbol) instanceofSymbol = Symbol('instanceofSymbol'); // NOTE we could also use a WeakMap instead of placing a flag on the
+    // Class directly.
+
+    Class[instanceofSymbol] = true;
+    Object.defineProperty(Class, Symbol.hasInstance, {
+      value: function hasInstance(obj) {
+        // we do this check because a subclass of `Class` may not have
+        // it's own `[Symbol.hasInstance]()` method, therefore `this`
+        // will be the subclass, not this `Class`, when the prototype
+        // lookup on the subclass finds the `[Symbol.hasInstance]()`
+        // method of this `Class`. In this case, we don't want to run
+        // our logic here, so we delegate to the super class of this
+        // `Class` to take over with the instanceof check. In many
+        // cases, the super class `[Symbol.hasInstance]()` method will
+        // be `Function.prototype[Symbol.hasInstance]` which will
+        // perform the standard check.
+        if (this !== Class) // This is effectively a `super` call.
+          return Class.__proto__[Symbol.hasInstance].call(this, obj);
+        let currentProto = obj;
+
+        while (currentProto) {
+          const descriptor = Object.getOwnPropertyDescriptor(currentProto, "constructor");
+          if (descriptor && descriptor.value && descriptor.value.hasOwnProperty(instanceofSymbol)) return true;
+          currentProto = currentProto.__proto__;
+        }
+
+        return false;
+      }
+    });
+    return Class;
+  });
+} // requires WithDefault or a classFactory that can accept no args
+
+
+function ApplyDefault(classFactory) {
+  const DefaultClass = classFactory();
+  DefaultClass.mixin = classFactory;
+  return classFactory;
+} // requires Cached
+
+
+function Dedupe(classFactory) {
+  const map = new WeakMap();
+  return named(classFactory.name, Base => {
+    if (hasMixin(Base, classFactory, map)) return Base;
+    const Class = classFactory(Base);
+    map.set(Class, classFactory);
+    return Class;
+  });
+}
+
+function hasMixin(Class, mixin, map) {
+  while (Class) {
+    if (map.get(Class) === mixin) return true;
+    Class = Class.__proto__;
+  }
+
+  return false;
+}
+
+function named(name, func) {
+  try {
+    Object.defineProperty(func, 'name', _objectSpread({}, Object.getOwnPropertyDescriptor(func, 'name'), {
+      value: name
+    }));
+  } catch (e) {// do nohing in case the property is non-configurable.
+  }
+
+  return func;
+}
 
 /***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(2);
-var aFunction = __webpack_require__(33);
-var ctx = __webpack_require__(19);
-var forOf = __webpack_require__(30);
-
-module.exports = function (COLLECTION) {
-  $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
-    var mapFn = arguments[1];
-    var mapping, A, n, cb;
-    aFunction(this);
-    mapping = mapFn !== undefined;
-    if (mapping) aFunction(mapFn);
-    if (source == undefined) return new this();
-    A = [];
-    if (mapping) {
-      n = 0;
-      cb = ctx(mapFn, arguments[2], 2);
-      forOf(source, false, function (nextItem) {
-        A.push(cb(nextItem, n++));
-      });
-    } else {
-      forOf(source, false, A.push, A);
-    }
-    return new this(A);
-  } });
-};
-
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(201);
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var Transitionable = __webpack_require__(17);
-    var Transform = __webpack_require__(5);
-    var Utility = __webpack_require__(81);
-
-    /**
-     * A class for transitioning the state of a Transform by transitioning the
-     * X, Y, and Z axes of it's translate, scale, skew and rotate components
-     * independently.
-     *
-     * @class TransitionableTransform
-     * @constructor
-     *
-     * @param [transform=Transform.identity] {Transform} The initial transform state
-     */
-    function TransitionableTransform(transform) {
-        this._final = Transform.identity.slice();
-
-        this._finalTranslate = [0, 0, 0];
-        this._finalRotate = [0, 0, 0];
-        this._finalSkew = [0, 0, 0];
-        this._finalScale = [1, 1, 1];
-
-        this.translate = [];
-        this.rotate    = [];
-        this.skew      = [];
-        this.scale     = [];
-
-        for (var i=0; i<3; i+=1) {
-            this.translate[i] = new Transitionable(this._finalTranslate[i]);
-            this.rotate[i]    = new Transitionable(this._finalRotate[i]);
-            this.skew[i]      = new Transitionable(this._finalSkew[i]);
-            this.scale[i]     = new Transitionable(this._finalScale[i]);
-        }
-
-        if (transform) this.set(transform);
-    }
-
-    function _build() {
-        return Transform.build({
-            translate: [this.translate[0].get(), this.translate[1].get(), this.translate[2].get()],
-            rotate:    [this.rotate[0].get(),    this.rotate[1].get(),    this.rotate[2].get()],
-            skew:      [this.skew[0].get(),      this.skew[1].get(),      this.skew[2].get()],
-            scale:     [this.scale[0].get(),     this.scale[1].get(),     this.scale[2].get()]
-        });
-    }
-
-    function _buildFinal() {
-        return Transform.build({
-            translate: this._finalTranslate,
-            rotate: this._finalRotate,
-            skew: this._finalSkew,
-            scale: this._finalScale
-        });
-    }
-
-    function _countOfType(array, type) {
-        var count = 0;
-        for (var i=0; i<array.length; i+=1) {
-            if (typeof array[i] === type+'') {
-                count+=1;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * An optimized way of setting only the translation component of a Transform. Axes who's values are null will not be affected.
-     *
-     * @method setTranslate
-     * @chainable
-     *
-     * @param translate {Array}     New translation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setTranslate = function setTranslate(translate, transition, callback) {
-        var numberOfAxes = _countOfType(translate, 'number');
-        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
-        for (var i=0; i<translate.length; i+=1) {
-            if (typeof translate[i] === 'number') {
-                this.translate[i].set(translate[i], transition, _callback);
-                this._finalTranslate[i] = translate[i];
-            }
-        }
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Translate only along the X axis of the translation component of a Transform.
-     *
-     * @method setTranslateX
-     * @chainable
-     *
-     * @param translate {Number}     New translation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setTranslateX = function setTranslateX(translate, transition, callback) {
-        this.translate[0].set(translate, transition, callback);
-        this._finalTranslate[0] = translate;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Translate only along the Y axis of the translation component of a Transform.
-     *
-     * @method setTranslateY
-     * @chainable
-     *
-     * @param translate {Number}     New translation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setTranslateY = function setTranslateY(translate, transition, callback) {
-        this.translate[1].set(translate, transition, callback);
-        this._finalTranslate[1] = translate;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Translate only along the Z axis of the translation component of a Transform.
-     *
-     * @method setTranslateZ
-     * @chainable
-     *
-     * @param translate {Number}     New translation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setTranslateZ = function setTranslateZ(translate, transition, callback) {
-        this.translate[2].set(translate, transition, callback);
-        this._finalTranslate[2] = translate;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the scale component of a Transform. Axes who's values are null will not be affected.
-     *
-     * @method setScale
-     * @chainable
-     *
-     * @param scale {Array}         New scale state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setScale = function setScale(scale, transition, callback) {
-        var numberOfAxes = _countOfType(scale, 'number');
-        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
-        for (var i=0; i<scale.length; i+=1) {
-            if (typeof scale[i] === 'number') {
-                this.scale[i].set(scale[i], transition, _callback);
-                this._finalScale[i] = scale[i];
-            }
-        }
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Scale only along the X axis of the scale component of a Transform.
-     *
-     * @method setScaleX
-     * @chainable
-     *
-     * @param scale {Number}     New scale state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setScaleX = function setScaleX(scale, transition, callback) {
-        this.scale[0].set(scale, transition, callback);
-        this._finalScale[0] = scale;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Scale only along the Y axis of the scale component of a Transform.
-     *
-     * @method setScaleY
-     * @chainable
-     *
-     * @param scale {Number}     New scale state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setScaleY = function setScaleY(scale, transition, callback) {
-        this.scale[1].set(scale, transition, callback);
-        this._finalScale[1] = scale;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Scale only along the Z axis of the scale component of a Transform.
-     *
-     * @method setScaleZ
-     * @chainable
-     *
-     * @param scale {Number}     New scale state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setScaleZ = function setScaleZ(scale, transition, callback) {
-        this.scale[2].set(scale, transition, callback);
-        this._finalScale[2] = scale;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the rotational component of a Transform. Axes who's values are null will not be affected.
-     *
-     * @method setRotate
-     * @chainable
-     *
-     * @param eulerAngles {Array}   Euler angles for new rotation state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setRotate = function setRotate(eulerAngles, transition, callback) {
-        var numberOfAxes = _countOfType(eulerAngles, 'number');
-        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
-        for (var i=0; i<eulerAngles.length; i+=1) {
-            if (typeof eulerAngles[i] === 'number') {
-                this.rotate[i].set(eulerAngles[i], transition, _callback);
-                this._finalRotate[i] = eulerAngles[i];
-            }
-        }
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Rotate only about the X axis of the rotational component of a Transform.
-     *
-     * @method setScaleX
-     * @chainable
-     *
-     * @param eulerAngle {Number}     New rotational state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setRotateX = function setRotateX(eulerAngle, transition, callback) {
-        this.rotate[0].set(eulerAngle, transition, callback);
-        this._finalRotate[0] = eulerAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Rotate only about the Y axis of the rotational component of a Transform.
-     *
-     * @method setScaleY
-     * @chainable
-     *
-     * @param eulerAngle {Number}     New rotational state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setRotateY = function setRotateY(eulerAngle, transition, callback) {
-        this.rotate[1].set(eulerAngle, transition, callback);
-        this._finalRotate[1] = eulerAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Rotate only about the Z axis of the rotational component of a Transform.
-     *
-     * @method setScaleZ
-     * @chainable
-     *
-     * @param eulerAngle {Number}     New rotational state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setRotateZ = function setRotateZ(eulerAngle, transition, callback) {
-        this.rotate[2].set(eulerAngle, transition, callback);
-        this._finalRotate[2] = eulerAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * An optimized way of setting only the skew component of a Transform. Axes who's values are null will not be affected.
-     *
-     * @method setSkew
-     * @chainable
-     *
-     * @param skewAngles {Array}    New skew state. Axes who's values are null will not be affected.
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setSkew = function setSkew(skewAngles, transition, callback) {
-        var numberOfAxes = _countOfType(skewAngles, 'number');
-        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
-        for (var i=0; i<skewAngles.length; i+=1) {
-            if (typeof skewAngles[i] === 'number') {
-                this.skew[i].set(skewAngles[i], transition, _callback);
-                this._finalSkew[i] = skewAngles[i];
-            }
-        }
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Skew only about the X axis of the skew component of a Transform.
-     *
-     * @method setSkewX
-     * @chainable
-     *
-     * @param skewAngle {Number}     New skew state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setSkewX = function setSkewX(skewAngle, transition, callback) {
-        this.skew[0].set(skewAngle, transition, callback);
-        this._finalSkew[0] = skewAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Skew only about the Y axis of the skew component of a Transform.
-     *
-     * @method setSkewY
-     * @chainable
-     *
-     * @param skewAngle {Number}     New skew state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setSkewY = function setSkewY(skewAngle, transition, callback) {
-        this.skew[1].set(skewAngle, transition, callback);
-        this._finalSkew[1] = skewAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Skew only about the Z axis of the skew component of a Transform.
-     *
-     * @method setSkewZ
-     * @chainable
-     *
-     * @param skewAngle {Number}     New skew state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.setSkewZ = function setSkewZ(skewAngle, transition, callback) {
-        this.skew[2].set(skewAngle, transition, callback);
-        this._finalSkew[2] = skewAngle;
-        this._final = _buildFinal.call(this);
-        return this;
-    };
-
-    /**
-     * Setter for a TransitionableTransform with optional parameters to transition
-     * between Transforms. Animates all axes of all components.
-     *
-     * @method set
-     * @chainable
-     *
-     * @param transform {Array}     New transform state
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback
-     * @return {TransitionableTransform}
-     */
-    TransitionableTransform.prototype.set = function set(transform, transition, callback) {
-        var components = Transform.interpret(transform);
-
-        this._finalTranslate = components.translate;
-        this._finalRotate = components.rotate;
-        this._finalSkew = components.skew;
-        this._finalScale = components.scale;
-        this._final = transform;
-
-        var _callback = callback ? Utility.after(12, callback) : null;
-        for (var i=0; i<3; i+=1) {
-            this.translate[i].set(components.translate[i], transition, _callback);
-            this.rotate[i].set(components.rotate[i], transition, _callback);
-            this.skew[i].set(components.skew[i], transition, _callback);
-            this.scale[i].set(components.scale[i], transition, _callback);
-        }
-        return this;
-    };
-
-    /**
-     * Sets the default transition to use for transitioning betwen Transform states
-     *
-     * @method setDefaultTransition
-     *
-     * @param transition {Object} Transition definition
-     */
-    TransitionableTransform.prototype.setDefaultTransition = function setDefaultTransition(transition) {
-        for (var i=0; i<3; i+=1) {
-            this.translate[i].setDefault(transition);
-            this.rotate[i].setDefault(transition);
-            this.skew[i].setDefault(transition);
-            this.scale[i].setDefault(transition);
-        }
-    };
-
-    /**
-     * Getter. Returns the current state of the Transform
-     *
-     * @method get
-     *
-     * @return {Transform}
-     */
-    TransitionableTransform.prototype.get = function get() {
-        if (this.isActive()) {
-            return _build.call(this);
-        }
-        else return this._final;
-    };
-
-    /**
-     * Get the destination state of the Transform
-     *
-     * @method getFinal
-     *
-     * @return Transform {Transform}
-     */
-    TransitionableTransform.prototype.getFinal = function getFinal() {
-        return this._final;
-    };
-
-    /**
-     * Determine if the TransitionableTransform is currently transitioning
-     *
-     * @method isActive
-     *
-     * @return {Boolean}
-     */
-    TransitionableTransform.prototype.isActive = function isActive() {
-        var isActive = false;
-
-        for (var i=0; i<3; i+=1) {
-            if (
-                this.translate[i].isActive()
-                || this.rotate[i].isActive()
-                || this.skew[i].isActive()
-                || this.scale[i].isActive()
-            ) {
-                isActive = true; break;
-            }
-        }
-        return isActive;
-    };
-
-    /**
-     * Halts the transition
-     *
-     * @method halt
-     */
-    TransitionableTransform.prototype.halt = function halt() {
-        for (var i=0; i<3; i+=1) {
-            this.translate[i].halt();
-            this.rotate[i].halt();
-            this.skew[i].halt();
-            this.scale[i].halt();
-
-            this._finalTranslate[i] = this.translate[i].get();
-            this._finalRotate[i] = this.rotate[i].get();
-            this._finalSkew[i] = this.skew[i].get();
-            this._finalScale[i] = this.scale[i].get();
-        }
-
-        this._final = this.get();
-
-        return this;
-    };
-
-    module.exports = TransitionableTransform;
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var Entity = __webpack_require__(82);
-    var SpecParser = __webpack_require__(123);
-
-    /**
-     * A wrapper for inserting a renderable component (like a Modifer or
-     *   Surface) into the render tree.
-     *
-     * @class RenderNode
-     * @constructor
-     *
-     * @param {Object} object Target renderable component
-     */
-    function RenderNode(object) {
-        this._object = null;
-        this._child = null;
-        this._hasMultipleChildren = false;
-        this._isRenderable = false;
-        this._isModifier = false;
-
-        this._resultCache = {};
-        this._prevResults = {};
-
-        this._childResult = null;
-
-        if (object) this.set(object);
-    }
-
-    /**
-     * Append a renderable to the list of this node's children.
-     *   This produces a new RenderNode in the tree.
-     *   Note: Does not double-wrap if child is a RenderNode already.
-     *
-     * @method add
-     * @param {Object} child renderable object
-     * @return {RenderNode} new render node wrapping child
-     */
-    RenderNode.prototype.add = function add(child) {
-        var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
-        if (this._child instanceof Array) this._child.push(childNode);
-        else if (this._child) {
-            this._child = [this._child, childNode];
-            this._hasMultipleChildren = true;
-            this._childResult = []; // to be used later
-        }
-        else this._child = childNode;
-
-        return childNode;
-    };
-
-    /**
-     * Return the single wrapped object.  Returns null if this node has multiple child nodes.
-     *
-     * @method get
-     *
-     * @return {Ojbect} contained renderable object
-     */
-    RenderNode.prototype.get = function get() {
-        return this._object || (this._hasMultipleChildren ? null : (this._child ? this._child.get() : null));
-    };
-
-    /**
-     * Overwrite the list of children to contain the single provided object
-     *
-     * @method set
-     * @param {Object} child renderable object
-     * @return {RenderNode} this render node, or child if it is a RenderNode
-     */
-    RenderNode.prototype.set = function set(child) {
-        this._childResult = null;
-        this._hasMultipleChildren = false;
-        this._isRenderable = child.render ? true : false;
-        this._isModifier = child.modify ? true : false;
-        this._object = child;
-        this._child = null;
-        if (child instanceof RenderNode) return child;
-        else return this;
-    };
-
-    /**
-     * Get render size of contained object.
-     *
-     * @method getSize
-     * @return {Array.Number} size of this or size of single child.
-     */
-    RenderNode.prototype.getSize = function getSize() {
-        var result = null;
-        var target = this.get();
-        if (target && target.getSize) result = target.getSize();
-        if (!result && this._child && this._child.getSize) result = this._child.getSize();
-        return result;
-    };
-
-    // apply results of rendering this subtree to the document
-    function _applyCommit(spec, context, cacheStorage) {
-        var result = SpecParser.parse(spec, context);
-        var keys = Object.keys(result);
-        for (var i = 0; i < keys.length; i++) {
-            var id = keys[i];
-            var childNode = Entity.get(id);
-            var commitParams = result[id];
-            commitParams.allocator = context.allocator;
-            var commitResult = childNode.commit(commitParams);
-            if (commitResult) _applyCommit(commitResult, context, cacheStorage);
-            else cacheStorage[id] = commitParams;
-        }
-    }
-
-    /**
-     * Commit the content change from this node to the document.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context render context
-     */
-    RenderNode.prototype.commit = function commit(context) {
-        // free up some divs from the last loop
-        var prevKeys = Object.keys(this._prevResults);
-        for (var i = 0; i < prevKeys.length; i++) {
-            var id = prevKeys[i];
-            if (this._resultCache[id] === undefined) {
-                var object = Entity.get(id);
-                if (object.cleanup) object.cleanup(context.allocator);
-            }
-        }
-
-        this._prevResults = this._resultCache;
-        this._resultCache = {};
-        _applyCommit(this.render(), context, this._resultCache);
-    };
-
-    /**
-     * Generate a render spec from the contents of the wrapped component.
-     *
-     * @private
-     * @method render
-     *
-     * @return {Object} render specification for the component subtree
-     *    only under this node.
-     */
-    RenderNode.prototype.render = function render() {
-        if (this._isRenderable) return this._object.render();
-
-        var result = null;
-        if (this._hasMultipleChildren) {
-            result = this._childResult;
-            var children = this._child;
-            for (var i = 0; i < children.length; i++) {
-                result[i] = children[i].render();
-            }
-        }
-        else if (this._child) result = this._child.render();
-
-        return this._isModifier ? this._object.modify(result) : result;
-    };
-
-    module.exports = RenderNode;
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var EventHandler = __webpack_require__(13);
-
-    /**
-     * Combines multiple types of sync classes (e.g. mouse, touch,
-     *  scrolling) into one standardized interface for inclusion in widgets.
-     *
-     *  Sync classes are first registered with a key, and then can be accessed
-     *  globally by key.
-     *
-     *  Emits 'start', 'update' and 'end' events as a union of the sync class
-     *  providers.
-     *
-     * @class GenericSync
-     * @constructor
-     * @param syncs {Object|Array} object with fields {sync key : sync options}
-     *    or an array of registered sync keys
-     * @param [options] {Object|Array} options object to set on all syncs
-     */
-    function GenericSync(syncs, options) {
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._syncs = {};
-        if (syncs) this.addSync(syncs);
-        if (options) this.setOptions(options);
-    }
-
-    GenericSync.DIRECTION_X = 0;
-    GenericSync.DIRECTION_Y = 1;
-    GenericSync.DIRECTION_Z = 2;
-
-    // Global registry of sync classes. Append only.
-    var registry = {};
-
-    /**
-     * Register a global sync class with an identifying key
-     *
-     * @static
-     * @method register
-     *
-     * @param syncObject {Object} an object of {sync key : sync options} fields
-     */
-    GenericSync.register = function register(syncObject) {
-        for (var key in syncObject){
-            if (registry[key]){ // skip redundant registration
-                if (registry[key] !== syncObject[key]) // only if same registered class
-                    throw new Error('Conflicting sync classes for key: ' + key);
-            }
-            else registry[key] = syncObject[key];
-        }
-    };
-
-    /**
-     * Helper to set options on all sync instances
-     *
-     * @method setOptions
-     * @param options {Object} options object
-     */
-    GenericSync.prototype.setOptions = function(options) {
-        for (var key in this._syncs){
-            this._syncs[key].setOptions(options);
-        }
-    };
-
-    /**
-     * Pipe events to a sync class
-     *
-     * @method pipeSync
-     * @param key {String} identifier for sync class
-     */
-    GenericSync.prototype.pipeSync = function pipeToSync(key) {
-        var sync = this._syncs[key];
-        this._eventInput.pipe(sync);
-        sync.pipe(this._eventOutput);
-    };
-
-    /**
-     * Unpipe events from a sync class
-     *
-     * @method unpipeSync
-     * @param key {String} identifier for sync class
-     */
-    GenericSync.prototype.unpipeSync = function unpipeFromSync(key) {
-        var sync = this._syncs[key];
-        this._eventInput.unpipe(sync);
-        sync.unpipe(this._eventOutput);
-    };
-
-    function _addSingleSync(key, options) {
-        if (!registry[key]) return;
-        this._syncs[key] = new (registry[key])(options);
-        this.pipeSync(key);
-    }
-
-    /**
-     * Add a sync class to from the registered classes
-     *
-     * @method addSync
-     * @param syncs {Object|Array.String} an array of registered sync keys
-     *    or an object with fields {sync key : sync options}
-     */
-    GenericSync.prototype.addSync = function addSync(syncs) {
-        if (syncs instanceof Array)
-            for (var i = 0; i < syncs.length; i++)
-                _addSingleSync.call(this, syncs[i]);
-        else if (syncs instanceof Object)
-            for (var key in syncs)
-                _addSingleSync.call(this, key, syncs[key]);
-    };
-
-    module.exports = GenericSync;
-
-
-/***/ }),
-/* 80 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5877,9 +1805,9 @@ Object.defineProperty(exports, "unobserve", {
 });
 exports.version = void 0;
 
-var _splice = _interopRequireDefault(__webpack_require__(218));
+var _splice = _interopRequireDefault(__webpack_require__(100));
 
-var _observe = __webpack_require__(220);
+var _observe = __webpack_require__(102);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5922,418 +1850,25 @@ var version = '0.4.2';
 exports.version = version;
 
 /***/ }),
-/* 81 */
-/***/ (function(module, exports) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    /**
-     * This namespace holds standalone functionality.
-     *  Currently includes name mapping for transition curves,
-     *  name mapping for origin pairs, and the after() function.
-     *
-     * @class Utility
-     * @static
-     */
-    var Utility = {};
-
-    /**
-     * Table of direction array positions
-     *
-     * @property {object} Direction
-     * @final
-     */
-    Utility.Direction = {
-        X: 0,
-        Y: 1,
-        Z: 2
-    };
-
-    /**
-     * Return wrapper around callback function. Once the wrapper is called N
-     *   times, invoke the callback function. Arguments and scope preserved.
-     *
-     * @method after
-     *
-     * @param {number} count number of calls before callback function invoked
-     * @param {Function} callback wrapped callback function
-     *
-     * @return {function} wrapped callback with coundown feature
-     */
-    Utility.after = function after(count, callback) {
-        var counter = count;
-        return function() {
-            counter--;
-            if (counter === 0) callback.apply(this, arguments);
-        };
-    };
-
-    /**
-     * Load a URL and return its contents in a callback
-     *
-     * @method loadURL
-     *
-     * @param {string} url URL of object
-     * @param {function} callback callback to dispatch with content
-     */
-    Utility.loadURL = function loadURL(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function onreadystatechange() {
-            if (this.readyState === 4) {
-                if (callback) callback(this.responseText);
-            }
-        };
-        xhr.open('GET', url);
-        xhr.send();
-    };
-
-    /**
-     * Create a document fragment from a string of HTML
-     *
-     * @method createDocumentFragmentFromHTML
-     *
-     * @param {string} html HTML to convert to DocumentFragment
-     *
-     * @return {DocumentFragment} DocumentFragment representing input HTML
-     */
-    Utility.createDocumentFragmentFromHTML = function createDocumentFragmentFromHTML(html) {
-        var element = document.createElement('div');
-        element.innerHTML = html;
-        var result = document.createDocumentFragment();
-        while (element.hasChildNodes()) result.appendChild(element.firstChild);
-        return result;
-    };
-
-    /*
-     *  Deep clone an object.
-     *  @param b {Object} Object to clone
-     *  @return a {Object} Cloned object.
-     */
-    Utility.clone = function clone(b) {
-        var a;
-        if (typeof b === 'object') {
-            a = (b instanceof Array) ? [] : {};
-            for (var key in b) {
-                if (typeof b[key] === 'object' && b[key] !== null) {
-                    if (b[key] instanceof Array) {
-                        a[key] = new Array(b[key].length);
-                        for (var i = 0; i < b[key].length; i++) {
-                            a[key][i] = Utility.clone(b[key][i]);
-                        }
-                    }
-                    else {
-                      a[key] = Utility.clone(b[key]);
-                    }
-                }
-                else {
-                    a[key] = b[key];
-                }
-            }
-        }
-        else {
-            a = b;
-        }
-        return a;
-    };
-
-    module.exports = Utility;
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    /**
-     * A singleton that maintains a global registry of Surfaces.
-     *   Private.
-     *
-     * @private
-     * @static
-     * @class Entity
-     */
-
-    var entities = [];
-
-    /**
-     * Get entity from global index.
-     *
-     * @private
-     * @method get
-     * @param {Number} id entity registration id
-     * @return {Surface} entity in the global index
-     */
-    function get(id) {
-        return entities[id];
-    }
-
-    /**
-     * Overwrite entity in the global index
-     *
-     * @private
-     * @method set
-     * @param {Number} id entity registration id
-     * @param {Surface} entity to add to the global index
-     */
-    function set(id, entity) {
-        entities[id] = entity;
-    }
-
-    /**
-     * Add entity to global index
-     *
-     * @private
-     * @method register
-     * @param {Surface} entity to add to global index
-     * @return {Number} new id
-     */
-    function register(entity) {
-        var id = entities.length;
-        set(id, entity);
-        return id;
-    }
-
-    /**
-     * Remove entity from global index
-     *
-     * @private
-     * @method unregister
-     * @param {Number} id entity registration id
-     */
-    function unregister(id) {
-        set(id, null);
-    }
-
-    module.exports = {
-        register: register,
-        unregister: unregister,
-        get: get,
-        set: set
-    };
-
-
-/***/ }),
-/* 83 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
+"use strict";
 
-    var EventHandler = __webpack_require__(13);
 
-    /**
-     *  A collection of methods for setting options which can be extended
-     *  onto other classes.
-     *
-     *
-     *  **** WARNING ****
-     *  You can only pass through objects that will compile into valid JSON.
-     *
-     *  Valid options:
-     *      Strings,
-     *      Arrays,
-     *      Objects,
-     *      Numbers,
-     *      Nested Objects,
-     *      Nested Arrays.
-     *
-     *    This excludes:
-     *        Document Fragments,
-     *        Functions
-     * @class OptionsManager
-     * @constructor
-     * @param {Object} value options dictionary
-     */
-    function OptionsManager(value) {
-        this._value = value;
-        this.eventOutput = null;
+// loop for a given length, performing action each loop iteration. action receives the index of the loop.
+exports.forLength = forLength;
+function forLength(length, action) {
+    for (var i = 0; i < length; i += 1) {
+        action(i);
     }
-
-    /**
-     * Create options manager from source dictionary with arguments overriden by patch dictionary.
-     *
-     * @static
-     * @method OptionsManager.patch
-     *
-     * @param {Object} source source arguments
-     * @param {...Object} data argument additions and overwrites
-     * @return {Object} source object
-     */
-    OptionsManager.patch = function patchObject(source, data) {
-        var manager = new OptionsManager(source);
-        for (var i = 1; i < arguments.length; i++) manager.patch(arguments[i]);
-        return source;
-    };
-
-    function _createEventOutput() {
-        this.eventOutput = new EventHandler();
-        this.eventOutput.bindThis(this);
-        EventHandler.setOutputHandler(this, this.eventOutput);
-    }
-
-    /**
-     * Create OptionsManager from source with arguments overriden by patches.
-     *   Triggers 'change' event on this object's event handler if the state of
-     *   the OptionsManager changes as a result.
-     *
-     * @method patch
-     *
-     * @param {...Object} arguments list of patch objects
-     * @return {OptionsManager} this
-     */
-    OptionsManager.prototype.patch = function patch() {
-        var myState = this._value;
-        for (var i = 0; i < arguments.length; i++) {
-            var data = arguments[i];
-            for (var k in data) {
-                if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
-                    if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
-                    this.key(k).patch(data[k]);
-                    if (this.eventOutput) this.eventOutput.emit('change', {id: k, value: this.key(k).value()});
-                }
-                else this.set(k, data[k]);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Alias for patch
-     *
-     * @method setOptions
-     *
-     */
-    OptionsManager.prototype.setOptions = OptionsManager.prototype.patch;
-
-    /**
-     * Return OptionsManager based on sub-object retrieved by key
-     *
-     * @method key
-     *
-     * @param {string} identifier key
-     * @return {OptionsManager} new options manager with the value
-     */
-    OptionsManager.prototype.key = function key(identifier) {
-        var result = new OptionsManager(this._value[identifier]);
-        if (!(result._value instanceof Object) || result._value instanceof Array) result._value = {};
-        return result;
-    };
-
-    /**
-     * Look up value by key or get the full options hash
-     * @method get
-     *
-     * @param {string} key key
-     * @return {Object} associated object or full options hash
-     */
-    OptionsManager.prototype.get = function get(key) {
-        return key ? this._value[key] : this._value;
-    };
-
-    /**
-     * Alias for get
-     * @method getOptions
-     */
-    OptionsManager.prototype.getOptions = OptionsManager.prototype.get;
-
-    /**
-     * Set key to value.  Outputs 'change' event if a value is overwritten.
-     *
-     * @method set
-     *
-     * @param {string} key key string
-     * @param {Object} value value object
-     * @return {OptionsManager} new options manager based on the value object
-     */
-    OptionsManager.prototype.set = function set(key, value) {
-        var originalValue = this.get(key);
-        this._value[key] = value;
-        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {id: key, value: value});
-        return this;
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'change')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    OptionsManager.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'change')
-     * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
-     */
-    OptionsManager.prototype.removeListener = function removeListener() {
-        _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
-    };
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    OptionsManager.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     * Undoes work of "pipe"
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    OptionsManager.prototype.unpipe = function unpipe() {
-        _createEventOutput.call(this);
-        return this.unpipe.apply(this, arguments);
-    };
-
-    module.exports = OptionsManager;
-
+}
+exports["default"] = forLength;
+exports.__esModule = true;
+//# sourceMappingURL=forLength.js.map
 
 /***/ }),
-/* 84 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6347,13 +1882,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
-var _createRule2 = __webpack_require__(85);
+var _createRule2 = __webpack_require__(51);
 
 var _createRule3 = _interopRequireDefault(_createRule2);
 
-var _findRenderer = __webpack_require__(87);
+var _findRenderer = __webpack_require__(53);
 
 var _findRenderer2 = _interopRequireDefault(_findRenderer);
 
@@ -6645,7 +2180,7 @@ var StyleSheet = function () {
 exports.default = StyleSheet;
 
 /***/ }),
-/* 85 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6656,23 +2191,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = createRule;
 
-var _Rule = __webpack_require__(86);
+var _Rule = __webpack_require__(52);
 
 var _Rule2 = _interopRequireDefault(_Rule);
 
-var _SimpleRule = __webpack_require__(131);
+var _SimpleRule = __webpack_require__(87);
 
 var _SimpleRule2 = _interopRequireDefault(_SimpleRule);
 
-var _KeyframeRule = __webpack_require__(132);
+var _KeyframeRule = __webpack_require__(88);
 
 var _KeyframeRule2 = _interopRequireDefault(_KeyframeRule);
 
-var _ConditionalRule = __webpack_require__(133);
+var _ConditionalRule = __webpack_require__(89);
 
 var _ConditionalRule2 = _interopRequireDefault(_ConditionalRule);
 
-var _FontFaceRule = __webpack_require__(134);
+var _FontFaceRule = __webpack_require__(90);
 
 var _FontFaceRule2 = _interopRequireDefault(_FontFaceRule);
 
@@ -6720,7 +2255,7 @@ function createRule(selector) {
 }
 
 /***/ }),
-/* 86 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6734,7 +2269,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6918,7 +2453,7 @@ var Rule = function () {
 exports.default = Rule;
 
 /***/ }),
-/* 87 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6929,11 +2464,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = findRenderer;
 
-var _DomRenderer = __webpack_require__(135);
+var _DomRenderer = __webpack_require__(91);
 
 var _DomRenderer2 = _interopRequireDefault(_DomRenderer);
 
-var _VirtualRenderer = __webpack_require__(136);
+var _VirtualRenderer = __webpack_require__(92);
 
 var _VirtualRenderer2 = _interopRequireDefault(_VirtualRenderer);
 
@@ -6956,26 +2491,42 @@ function findRenderer() {
 }
 
 /***/ }),
-/* 88 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(144);
+var pIE = __webpack_require__(25);
+var createDesc = __webpack_require__(19);
+var toIObject = __webpack_require__(12);
+var toPrimitive = __webpack_require__(35);
+var has = __webpack_require__(9);
+var IE8_DOM_DEFINE = __webpack_require__(55);
+var gOPD = Object.getOwnPropertyDescriptor;
+
+exports.f = __webpack_require__(3) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if (IE8_DOM_DEFINE) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
+};
+
 
 /***/ }),
-/* 89 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(8) && !__webpack_require__(12)(function () {
-  return Object.defineProperty(__webpack_require__(90)('div'), 'a', { get: function () { return 7; } }).a != 7;
+module.exports = !__webpack_require__(3) && !__webpack_require__(13)(function () {
+  return Object.defineProperty(__webpack_require__(56)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
 
 /***/ }),
-/* 90 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(3);
-var document = __webpack_require__(6).document;
+var isObject = __webpack_require__(7);
+var document = __webpack_require__(4).document;
 // typeof document.createElement is 'object' in old IE
 var is = isObject(document) && isObject(document.createElement);
 module.exports = function (it) {
@@ -6984,13 +2535,46 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 91 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(15);
-var toIObject = __webpack_require__(16);
-var arrayIndexOf = __webpack_require__(147)(false);
-var IE_PROTO = __webpack_require__(57)('IE_PROTO');
+// most Object methods by ES6 should accept primitives
+var $export = __webpack_require__(8);
+var core = __webpack_require__(1);
+var fails = __webpack_require__(13);
+module.exports = function (KEY, exec) {
+  var fn = (core.Object || {})[KEY] || Object[KEY];
+  var exp = {};
+  exp[KEY] = exec(fn);
+  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
+};
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
+};
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.f = __webpack_require__(2);
+
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var has = __webpack_require__(9);
+var toIObject = __webpack_require__(12);
+var arrayIndexOf = __webpack_require__(112)(false);
+var IE_PROTO = __webpack_require__(39)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -7007,522 +2591,65 @@ module.exports = function (object, names) {
 
 
 /***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $defineProperty = __webpack_require__(7);
-var createDesc = __webpack_require__(24);
-
-module.exports = function (object, index, value) {
-  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
-  else object[index] = value;
-};
-
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP = __webpack_require__(7);
-var anObject = __webpack_require__(9);
-var getKeys = __webpack_require__(27);
-
-module.exports = __webpack_require__(8) ? Object.defineProperties : function defineProperties(O, Properties) {
-  anObject(O);
-  var keys = getKeys(Properties);
-  var length = keys.length;
-  var i = 0;
-  var P;
-  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
-  return O;
-};
-
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// ECMAScript 6 symbols shim
-var global = __webpack_require__(6);
-var has = __webpack_require__(15);
-var DESCRIPTORS = __webpack_require__(8);
-var $export = __webpack_require__(2);
-var redefine = __webpack_require__(63);
-var META = __webpack_require__(28).KEY;
-var $fails = __webpack_require__(12);
-var shared = __webpack_require__(58);
-var setToStringTag = __webpack_require__(41);
-var uid = __webpack_require__(36);
-var wks = __webpack_require__(4);
-var wksExt = __webpack_require__(42);
-var wksDefine = __webpack_require__(64);
-var enumKeys = __webpack_require__(157);
-var isArray = __webpack_require__(95);
-var anObject = __webpack_require__(9);
-var isObject = __webpack_require__(3);
-var toIObject = __webpack_require__(16);
-var toPrimitive = __webpack_require__(51);
-var createDesc = __webpack_require__(24);
-var _create = __webpack_require__(26);
-var gOPNExt = __webpack_require__(96);
-var $GOPD = __webpack_require__(38);
-var $DP = __webpack_require__(7);
-var $keys = __webpack_require__(27);
-var gOPD = $GOPD.f;
-var dP = $DP.f;
-var gOPN = gOPNExt.f;
-var $Symbol = global.Symbol;
-var $JSON = global.JSON;
-var _stringify = $JSON && $JSON.stringify;
-var PROTOTYPE = 'prototype';
-var HIDDEN = wks('_hidden');
-var TO_PRIMITIVE = wks('toPrimitive');
-var isEnum = {}.propertyIsEnumerable;
-var SymbolRegistry = shared('symbol-registry');
-var AllSymbols = shared('symbols');
-var OPSymbols = shared('op-symbols');
-var ObjectProto = Object[PROTOTYPE];
-var USE_NATIVE = typeof $Symbol == 'function';
-var QObject = global.QObject;
-// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
-var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
-
-// fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
-var setSymbolDesc = DESCRIPTORS && $fails(function () {
-  return _create(dP({}, 'a', {
-    get: function () { return dP(this, 'a', { value: 7 }).a; }
-  })).a != 7;
-}) ? function (it, key, D) {
-  var protoDesc = gOPD(ObjectProto, key);
-  if (protoDesc) delete ObjectProto[key];
-  dP(it, key, D);
-  if (protoDesc && it !== ObjectProto) dP(ObjectProto, key, protoDesc);
-} : dP;
-
-var wrap = function (tag) {
-  var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
-  sym._k = tag;
-  return sym;
-};
-
-var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function (it) {
-  return typeof it == 'symbol';
-} : function (it) {
-  return it instanceof $Symbol;
-};
-
-var $defineProperty = function defineProperty(it, key, D) {
-  if (it === ObjectProto) $defineProperty(OPSymbols, key, D);
-  anObject(it);
-  key = toPrimitive(key, true);
-  anObject(D);
-  if (has(AllSymbols, key)) {
-    if (!D.enumerable) {
-      if (!has(it, HIDDEN)) dP(it, HIDDEN, createDesc(1, {}));
-      it[HIDDEN][key] = true;
-    } else {
-      if (has(it, HIDDEN) && it[HIDDEN][key]) it[HIDDEN][key] = false;
-      D = _create(D, { enumerable: createDesc(0, false) });
-    } return setSymbolDesc(it, key, D);
-  } return dP(it, key, D);
-};
-var $defineProperties = function defineProperties(it, P) {
-  anObject(it);
-  var keys = enumKeys(P = toIObject(P));
-  var i = 0;
-  var l = keys.length;
-  var key;
-  while (l > i) $defineProperty(it, key = keys[i++], P[key]);
-  return it;
-};
-var $create = function create(it, P) {
-  return P === undefined ? _create(it) : $defineProperties(_create(it), P);
-};
-var $propertyIsEnumerable = function propertyIsEnumerable(key) {
-  var E = isEnum.call(this, key = toPrimitive(key, true));
-  if (this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return false;
-  return E || !has(this, key) || !has(AllSymbols, key) || has(this, HIDDEN) && this[HIDDEN][key] ? E : true;
-};
-var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key) {
-  it = toIObject(it);
-  key = toPrimitive(key, true);
-  if (it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return;
-  var D = gOPD(it, key);
-  if (D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key])) D.enumerable = true;
-  return D;
-};
-var $getOwnPropertyNames = function getOwnPropertyNames(it) {
-  var names = gOPN(toIObject(it));
-  var result = [];
-  var i = 0;
-  var key;
-  while (names.length > i) {
-    if (!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META) result.push(key);
-  } return result;
-};
-var $getOwnPropertySymbols = function getOwnPropertySymbols(it) {
-  var IS_OP = it === ObjectProto;
-  var names = gOPN(IS_OP ? OPSymbols : toIObject(it));
-  var result = [];
-  var i = 0;
-  var key;
-  while (names.length > i) {
-    if (has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true)) result.push(AllSymbols[key]);
-  } return result;
-};
-
-// 19.4.1.1 Symbol([description])
-if (!USE_NATIVE) {
-  $Symbol = function Symbol() {
-    if (this instanceof $Symbol) throw TypeError('Symbol is not a constructor!');
-    var tag = uid(arguments.length > 0 ? arguments[0] : undefined);
-    var $set = function (value) {
-      if (this === ObjectProto) $set.call(OPSymbols, value);
-      if (has(this, HIDDEN) && has(this[HIDDEN], tag)) this[HIDDEN][tag] = false;
-      setSymbolDesc(this, tag, createDesc(1, value));
-    };
-    if (DESCRIPTORS && setter) setSymbolDesc(ObjectProto, tag, { configurable: true, set: $set });
-    return wrap(tag);
-  };
-  redefine($Symbol[PROTOTYPE], 'toString', function toString() {
-    return this._k;
-  });
-
-  $GOPD.f = $getOwnPropertyDescriptor;
-  $DP.f = $defineProperty;
-  __webpack_require__(52).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(39).f = $propertyIsEnumerable;
-  __webpack_require__(37).f = $getOwnPropertySymbols;
-
-  if (DESCRIPTORS && !__webpack_require__(35)) {
-    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
-  }
-
-  wksExt.f = function (name) {
-    return wrap(wks(name));
-  };
-}
-
-$export($export.G + $export.W + $export.F * !USE_NATIVE, { Symbol: $Symbol });
-
-for (var es6Symbols = (
-  // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
-  'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
-).split(','), j = 0; es6Symbols.length > j;)wks(es6Symbols[j++]);
-
-for (var wellKnownSymbols = $keys(wks.store), k = 0; wellKnownSymbols.length > k;) wksDefine(wellKnownSymbols[k++]);
-
-$export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
-  // 19.4.2.1 Symbol.for(key)
-  'for': function (key) {
-    return has(SymbolRegistry, key += '')
-      ? SymbolRegistry[key]
-      : SymbolRegistry[key] = $Symbol(key);
-  },
-  // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(sym) {
-    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
-    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
-  },
-  useSetter: function () { setter = true; },
-  useSimple: function () { setter = false; }
-});
-
-$export($export.S + $export.F * !USE_NATIVE, 'Object', {
-  // 19.1.2.2 Object.create(O [, Properties])
-  create: $create,
-  // 19.1.2.4 Object.defineProperty(O, P, Attributes)
-  defineProperty: $defineProperty,
-  // 19.1.2.3 Object.defineProperties(O, Properties)
-  defineProperties: $defineProperties,
-  // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-  getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
-  // 19.1.2.7 Object.getOwnPropertyNames(O)
-  getOwnPropertyNames: $getOwnPropertyNames,
-  // 19.1.2.8 Object.getOwnPropertySymbols(O)
-  getOwnPropertySymbols: $getOwnPropertySymbols
-});
-
-// 24.3.2 JSON.stringify(value [, replacer [, space]])
-$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
-  var S = $Symbol();
-  // MS Edge converts symbol values to JSON as {}
-  // WebKit converts symbol values to JSON as null
-  // V8 throws on boxed symbols
-  return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
-})), 'JSON', {
-  stringify: function stringify(it) {
-    var args = [it];
-    var i = 1;
-    var replacer, $replacer;
-    while (arguments.length > i) args.push(arguments[i++]);
-    $replacer = replacer = args[1];
-    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
-    if (!isArray(replacer)) replacer = function (key, value) {
-      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
-      if (!isSymbol(value)) return value;
-    };
-    args[1] = replacer;
-    return _stringify.apply($JSON, args);
-  }
-});
-
-// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(14)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
-// 19.4.3.5 Symbol.prototype[@@toStringTag]
-setToStringTag($Symbol, 'Symbol');
-// 20.2.1.9 Math[@@toStringTag]
-setToStringTag(Math, 'Math', true);
-// 24.3.3 JSON[@@toStringTag]
-setToStringTag(global.JSON, 'JSON', true);
-
-
-/***/ }),
-/* 95 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.2 IsArray(argument)
-var cof = __webpack_require__(54);
+var cof = __webpack_require__(33);
 module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
 
 
 /***/ }),
-/* 96 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = __webpack_require__(16);
-var gOPN = __webpack_require__(52).f;
-var toString = {}.toString;
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys = __webpack_require__(60);
+var hiddenKeys = __webpack_require__(40).concat('length', 'prototype');
 
-var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
-  ? Object.getOwnPropertyNames(window) : [];
-
-var getWindowNames = function (it) {
-  try {
-    return gOPN(it);
-  } catch (e) {
-    return windowNames.slice();
-  }
-};
-
-module.exports.f = function getOwnPropertyNames(it) {
-  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return $keys(O, hiddenKeys);
 };
 
 
 /***/ }),
-/* 97 */
-/***/ (function(module, exports) {
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-module.exports = _classCallCheck;
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports) {
-
-module.exports = function (done, value) {
-  return { value: value, done: !!done };
-};
-
-
-/***/ }),
-/* 99 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Object$getPrototypeOf = __webpack_require__(68);
-
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = _Object$getPrototypeOf || function _getPrototypeOf(o) {
-    return o.__proto__;
-  };
-
-  return _getPrototypeOf(o);
-}
-
-module.exports = _getPrototypeOf;
+module.exports = __webpack_require__(121);
 
 /***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(177);
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(181);
-
-/***/ }),
-/* 102 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var dP = __webpack_require__(7).f;
-var create = __webpack_require__(26);
-var redefineAll = __webpack_require__(70);
-var ctx = __webpack_require__(19);
-var anInstance = __webpack_require__(71);
-var forOf = __webpack_require__(30);
-var $iterDefine = __webpack_require__(65);
-var step = __webpack_require__(98);
-var setSpecies = __webpack_require__(183);
-var DESCRIPTORS = __webpack_require__(8);
-var fastKey = __webpack_require__(28).fastKey;
-var validate = __webpack_require__(31);
-var SIZE = DESCRIPTORS ? '_s' : 'size';
+var $at = __webpack_require__(125)(true);
 
-var getEntry = function (that, key) {
-  // fast case
-  var index = fastKey(key);
-  var entry;
-  if (index !== 'F') return that._i[index];
-  // frozen object case
-  for (entry = that._f; entry; entry = entry.n) {
-    if (entry.k == key) return entry;
-  }
-};
-
-module.exports = {
-  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, NAME, '_i');
-      that._t = NAME;         // collection type
-      that._i = create(null); // index
-      that._f = undefined;    // first entry
-      that._l = undefined;    // last entry
-      that[SIZE] = 0;         // size
-      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
-    });
-    redefineAll(C.prototype, {
-      // 23.1.3.1 Map.prototype.clear()
-      // 23.2.3.2 Set.prototype.clear()
-      clear: function clear() {
-        for (var that = validate(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
-          entry.r = true;
-          if (entry.p) entry.p = entry.p.n = undefined;
-          delete data[entry.i];
-        }
-        that._f = that._l = undefined;
-        that[SIZE] = 0;
-      },
-      // 23.1.3.3 Map.prototype.delete(key)
-      // 23.2.3.4 Set.prototype.delete(value)
-      'delete': function (key) {
-        var that = validate(this, NAME);
-        var entry = getEntry(that, key);
-        if (entry) {
-          var next = entry.n;
-          var prev = entry.p;
-          delete that._i[entry.i];
-          entry.r = true;
-          if (prev) prev.n = next;
-          if (next) next.p = prev;
-          if (that._f == entry) that._f = next;
-          if (that._l == entry) that._l = prev;
-          that[SIZE]--;
-        } return !!entry;
-      },
-      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
-      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn /* , that = undefined */) {
-        validate(this, NAME);
-        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-        var entry;
-        while (entry = entry ? entry.n : this._f) {
-          f(entry.v, entry.k, this);
-          // revert to the last existing entry
-          while (entry && entry.r) entry = entry.p;
-        }
-      },
-      // 23.1.3.7 Map.prototype.has(key)
-      // 23.2.3.7 Set.prototype.has(value)
-      has: function has(key) {
-        return !!getEntry(validate(this, NAME), key);
-      }
-    });
-    if (DESCRIPTORS) dP(C.prototype, 'size', {
-      get: function () {
-        return validate(this, NAME)[SIZE];
-      }
-    });
-    return C;
-  },
-  def: function (that, key, value) {
-    var entry = getEntry(that, key);
-    var prev, index;
-    // change existing entry
-    if (entry) {
-      entry.v = value;
-    // create new entry
-    } else {
-      that._l = entry = {
-        i: index = fastKey(key, true), // <- index
-        k: key,                        // <- key
-        v: value,                      // <- value
-        p: prev = that._l,             // <- previous entry
-        n: undefined,                  // <- next entry
-        r: false                       // <- removed
-      };
-      if (!that._f) that._f = entry;
-      if (prev) prev.n = entry;
-      that[SIZE]++;
-      // add to index
-      if (index !== 'F') that._i[index] = entry;
-    } return that;
-  },
-  getEntry: getEntry,
-  setStrong: function (C, NAME, IS_MAP) {
-    // add .keys, .values, .entries, [@@iterator]
-    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
-    $iterDefine(C, NAME, function (iterated, kind) {
-      this._t = validate(iterated, NAME); // target
-      this._k = kind;                     // kind
-      this._l = undefined;                // previous
-    }, function () {
-      var that = this;
-      var kind = that._k;
-      var entry = that._l;
-      // revert to the last existing entry
-      while (entry && entry.r) entry = entry.p;
-      // get next entry
-      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
-        // or finish the iteration
-        that._t = undefined;
-        return step(1);
-      }
-      // return step by kind
-      if (kind == 'keys') return step(0, entry.k);
-      if (kind == 'values') return step(0, entry.v);
-      return step(0, [entry.k, entry.v]);
-    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
-
-    // add [@@species], 23.1.2.2, 23.2.2.2
-    setSpecies(NAME);
-  }
-};
+// 21.1.3.27 String.prototype[@@iterator]()
+__webpack_require__(43)(String, 'String', function (iterated) {
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var index = this._i;
+  var point;
+  if (index >= O.length) return { value: undefined, done: true };
+  point = $at(O, index);
+  this._i += point.length;
+  return { value: point, done: false };
+});
 
 
 /***/ }),
-/* 103 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // call something on iterator step with safe closing on error
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(14);
 module.exports = function (iterator, fn, value, entries) {
   try {
     return entries ? fn(anObject(value)[0], value[1]) : fn(value);
@@ -7536,12 +2663,12 @@ module.exports = function (iterator, fn, value, entries) {
 
 
 /***/ }),
-/* 104 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // check on default Array iterator
-var Iterators = __webpack_require__(29);
-var ITERATOR = __webpack_require__(4)('iterator');
+var Iterators = __webpack_require__(22);
+var ITERATOR = __webpack_require__(2)('iterator');
 var ArrayProto = Array.prototype;
 
 module.exports = function (it) {
@@ -7550,12 +2677,12 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 105 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var classof = __webpack_require__(106);
-var ITERATOR = __webpack_require__(4)('iterator');
-var Iterators = __webpack_require__(29);
+var classof = __webpack_require__(68);
+var ITERATOR = __webpack_require__(2)('iterator');
+var Iterators = __webpack_require__(22);
 module.exports = __webpack_require__(1).getIteratorMethod = function (it) {
   if (it != undefined) return it[ITERATOR]
     || it['@@iterator']
@@ -7564,12 +2691,12 @@ module.exports = __webpack_require__(1).getIteratorMethod = function (it) {
 
 
 /***/ }),
-/* 106 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(54);
-var TAG = __webpack_require__(4)('toStringTag');
+var cof = __webpack_require__(33);
+var TAG = __webpack_require__(2)('toStringTag');
 // ES3 wrong here
 var ARG = cof(function () { return arguments; }()) == 'Arguments';
 
@@ -7593,447 +2720,167 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 107 */
+/* 69 */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = __webpack_require__(106);
-var from = __webpack_require__(187);
-module.exports = function (NAME) {
-  return function toJSON() {
-    if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
-    return from(this);
-  };
+__webpack_require__(133);
+var global = __webpack_require__(4);
+var hide = __webpack_require__(10);
+var Iterators = __webpack_require__(22);
+var TO_STRING_TAG = __webpack_require__(2)('toStringTag');
+
+var DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +
+  'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' +
+  'MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,' +
+  'SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,' +
+  'TextTrackList,TouchList').split(',');
+
+for (var i = 0; i < DOMIterables.length; i++) {
+  var NAME = DOMIterables[i];
+  var Collection = global[NAME];
+  var proto = Collection && Collection.prototype;
+  if (proto && !proto[TO_STRING_TAG]) hide(proto, TO_STRING_TAG, NAME);
+  Iterators[NAME] = Iterators.Array;
+}
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports) {
+
+module.exports = function (done, value) {
+  return { value: value, done: !!done };
 };
 
 
 /***/ }),
-/* 108 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(191);
+"use strict";
 
-/***/ }),
-/* 109 */
-/***/ (function(module, exports, __webpack_require__) {
+var global = __webpack_require__(4);
+var $export = __webpack_require__(8);
+var meta = __webpack_require__(20);
+var fails = __webpack_require__(13);
+var hide = __webpack_require__(10);
+var redefineAll = __webpack_require__(44);
+var forOf = __webpack_require__(23);
+var anInstance = __webpack_require__(45);
+var isObject = __webpack_require__(7);
+var setToStringTag = __webpack_require__(28);
+var dP = __webpack_require__(5).f;
+var each = __webpack_require__(46)(0);
+var DESCRIPTORS = __webpack_require__(3);
 
-module.exports = __webpack_require__(209);
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-
-    /**
-     * The singleton object initiated upon process
-     *   startup which manages all active Context instances, runs
-     *   the render dispatch loop, and acts as a listener and dispatcher
-     *   for events.  All methods are therefore static.
-     *
-     *   On static initialization, window.requestAnimationFrame is called with
-     *     the event loop function.
-     *
-     *   Note: Any window in which Engine runs will prevent default
-     *     scrolling behavior on the 'touchmove' event.
-     *
-     * @static
-     * @class Engine
-     */
-    var Context = __webpack_require__(125);
-    var EventHandler = __webpack_require__(13);
-    var OptionsManager = __webpack_require__(83);
-
-    var Engine = {};
-
-    var contexts = [];
-
-    var nextTickQueue = [];
-
-    var currentFrame = 0;
-    var nextTickFrame = 0;
-
-    var deferQueue = [];
-
-    var lastTime = Date.now();
-    var frameTime;
-    var frameTimeLimit;
-    var loopEnabled = true;
-    var eventForwarders = {};
-    var eventHandler = new EventHandler();
-
-    var options = {
-        containerType: 'div',
-        containerClass: 'famous-container',
-        fpsCap: undefined,
-        runLoop: true,
-        appMode: true
-    };
-    var optionsManager = new OptionsManager(options);
-
-    /** @const */
-    var MAX_DEFER_FRAME_TIME = 10;
-
-    /**
-     * Inside requestAnimationFrame loop, step() is called, which:
-     *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
-     *   emits dataless 'prerender' event on start of loop,
-     *   calls in order any one-shot functions registered by nextTick on last loop,
-     *   calls Context.update on all Context objects registered,
-     *   and emits dataless 'postrender' event on end of loop.
-     *
-     * @static
-     * @private
-     * @method step
-     */
-    Engine.step = function step() {
-        currentFrame++;
-        nextTickFrame = currentFrame;
-
-        var currentTime = Date.now();
-
-        // skip frame if we're over our framerate cap
-        if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
-
-        var i = 0;
-
-        frameTime = currentTime - lastTime;
-        lastTime = currentTime;
-
-        eventHandler.emit('prerender');
-
-        // empty the queue
-        var numFunctions = nextTickQueue.length;
-        while (numFunctions--) (nextTickQueue.shift())(currentFrame);
-
-        // limit total execution time for deferrable functions
-        while (deferQueue.length && (Date.now() - currentTime) < MAX_DEFER_FRAME_TIME) {
-            deferQueue.shift().call(this);
-        }
-
-        for (i = 0; i < contexts.length; i++) contexts[i].update();
-
-        eventHandler.emit('postrender');
-    };
-
-    // engage requestAnimationFrame
-    function loop() {
-        if (options.runLoop) {
-            Engine.step();
-            window.requestAnimationFrame(loop);
-        }
-        else loopEnabled = false;
-    }
-    window.requestAnimationFrame(loop);
-
-    //
-    // Upon main document window resize (unless on an "input" HTML element):
-    //   scroll to the top left corner of the window,
-    //   and for each managed Context: emit the 'resize' event and update its size.
-    // @param {Object=} event document event
-    //
-    function handleResize(event) {
-        for (var i = 0; i < contexts.length; i++) {
-            contexts[i].emit('resize');
-        }
-        eventHandler.emit('resize');
-    }
-    window.addEventListener('resize', handleResize, false);
-    handleResize();
-
-    /**
-     * Initialize famous for app mode
-     *
-     * @static
-     * @private
-     * @method initialize
-     */
-    function initialize() {
-        // prevent scrolling via browser
-        window.addEventListener('touchmove', function(event) {
-            event.preventDefault();
-        }, true);
-
-        addRootClasses();
-    }
-    var initialized = false;
-
-    function addRootClasses() {
-        if (!document.body) {
-            Engine.nextTick(addRootClasses);
-            return;
-        }
-
-        document.body.classList.add('famous-root');
-        document.documentElement.classList.add('famous-root');
-    }
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    Engine.pipe = function pipe(target) {
-        if (target.subscribe instanceof Function) return target.subscribe(Engine);
-        else return eventHandler.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    Engine.unpipe = function unpipe(target) {
-        if (target.unsubscribe instanceof Function) return target.unsubscribe(Engine);
-        else return eventHandler.unpipe(target);
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @static
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    Engine.on = function on(type, handler) {
-        if (!(type in eventForwarders)) {
-            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
-
-            addEngineListener(type, eventForwarders[type]);
-        }
-        return eventHandler.on(type, handler);
-    };
-
-    function addEngineListener(type, forwarder) {
-        if (!document.body) {
-            Engine.nextTick(addEventListener.bind(this, type, forwarder));
-            return;
-        }
-
-        document.body.addEventListener(type, forwarder);
-    }
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    Engine.emit = function emit(type, event) {
-        return eventHandler.emit(type, event);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @static
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
-     */
-    Engine.removeListener = function removeListener(type, handler) {
-        return eventHandler.removeListener(type, handler);
-    };
-
-    /**
-     * Return the current calculated frames per second of the Engine.
-     *
-     * @static
-     * @method getFPS
-     *
-     * @return {Number} calculated fps
-     */
-    Engine.getFPS = function getFPS() {
-        return 1000 / frameTime;
-    };
-
-    /**
-     * Set the maximum fps at which the system should run. If internal render
-     *    loop is called at a greater frequency than this FPSCap, Engine will
-     *    throttle render and update until this rate is achieved.
-     *
-     * @static
-     * @method setFPSCap
-     *
-     * @param {Number} fps maximum frames per second
-     */
-    Engine.setFPSCap = function setFPSCap(fps) {
-        frameTimeLimit = Math.floor(1000 / fps);
-    };
-
-    /**
-     * Return engine options.
-     *
-     * @static
-     * @method getOptions
-     * @param {string} key
-     * @return {Object} engine options
-     */
-    Engine.getOptions = function getOptions(key) {
-        return optionsManager.getOptions(key);
-    };
-
-    /**
-     * Set engine options
-     *
-     * @static
-     * @method setOptions
-     *
-     * @param {Object} [options] overrides of default options
-     * @param {Number} [options.fpsCap]  maximum fps at which the system should run
-     * @param {boolean} [options.runLoop=true] whether the run loop should continue
-     * @param {string} [options.containerType="div"] type of container element.  Defaults to 'div'.
-     * @param {string} [options.containerClass="famous-container"] type of container element.  Defaults to 'famous-container'.
-     */
-    Engine.setOptions = function setOptions(options) {
-        return optionsManager.setOptions.apply(optionsManager, arguments);
-    };
-
-    /**
-     * Creates a new Context for rendering and event handling with
-     *    provided document element as top of each tree. This will be tracked by the
-     *    process-wide Engine.
-     *
-     * @static
-     * @method createContext
-     *
-     * @param {Node} el will be top of Famo.us document element tree
-     * @return {Context} new Context within el
-     */
-    Engine.createContext = function createContext(el) {
-        if (!initialized && options.appMode) Engine.nextTick(initialize);
-
-        var needMountContainer = false;
-        if (!el) {
-            el = document.createElement(options.containerType);
-            el.classList.add(options.containerClass);
-            needMountContainer = true;
-        }
-
-        var context = new Context(el);
-        Engine.registerContext(context);
-
-        if (needMountContainer) mount(context, el);
-
-        return context;
-    };
-
-    function mount(context, el) {
-        if (!document.body) {
-            Engine.nextTick(mount.bind(this, context, el));
-            return;
-        }
-
-        document.body.appendChild(el);
-        context.emit('resize');
-    }
-
-    /**
-     * Registers an existing context to be updated within the run loop.
-     *
-     * @static
-     * @method registerContext
-     *
-     * @param {Context} context Context to register
-     * @return {FamousContext} provided context
-     */
-    Engine.registerContext = function registerContext(context) {
-        contexts.push(context);
-        return context;
-    };
-
-    /**
-     * Returns a list of all contexts.
-     *
-     * @static
-     * @method getContexts
-     * @return {Array} contexts that are updated on each tick
-     */
-    Engine.getContexts = function getContexts() {
-        return contexts;
-    };
-
-    /**
-     * Removes a context from the run loop. Note: this does not do any
-     *     cleanup.
-     *
-     * @static
-     * @method deregisterContext
-     *
-     * @param {Context} context Context to deregister
-     */
-    Engine.deregisterContext = function deregisterContext(context) {
-        var i = contexts.indexOf(context);
-        if (i >= 0) contexts.splice(i, 1);
-    };
-
-    /**
-     * Queue a function to be executed on the next tick of the
-     *    Engine.
-     *
-     * @static
-     * @method nextTick
-     *
-     * @param {function(Object)} fn function accepting window object
-     */
-    Engine.nextTick = function nextTick(fn) {
-        nextTickQueue.push(fn);
-    };
-
-    /**
-     * Queue a function to be executed sometime soon, at a time that is
-     *    unlikely to affect frame rate.
-     *
-     * @static
-     * @method defer
-     *
-     * @param {Function} fn
-     */
-    Engine.defer = function defer(fn) {
-        deferQueue.push(fn);
-    };
-
-    optionsManager.on('change', function(data) {
-        if (data.id === 'fpsCap') Engine.setFPSCap(data.value);
-        else if (data.id === 'runLoop') {
-            // kick off the loop only if it was stopped
-            if (!loopEnabled && data.value) {
-                loopEnabled = true;
-                window.requestAnimationFrame(loop);
-            }
-        }
+module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
+  var Base = global[NAME];
+  var C = Base;
+  var ADDER = IS_MAP ? 'set' : 'add';
+  var proto = C && C.prototype;
+  var O = {};
+  if (!DESCRIPTORS || typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function () {
+    new C().entries().next();
+  }))) {
+    // create collection constructor
+    C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
+    redefineAll(C.prototype, methods);
+    meta.NEED = true;
+  } else {
+    C = wrapper(function (target, iterable) {
+      anInstance(target, C, NAME, '_c');
+      target._c = new Base();
+      if (iterable != undefined) forOf(iterable, IS_MAP, target[ADDER], target);
     });
+    each('add,clear,delete,forEach,get,has,set,keys,values,entries,toJSON'.split(','), function (KEY) {
+      var IS_ADDER = KEY == 'add' || KEY == 'set';
+      if (KEY in proto && !(IS_WEAK && KEY == 'clear')) hide(C.prototype, KEY, function (a, b) {
+        anInstance(this, C, KEY);
+        if (!IS_ADDER && IS_WEAK && !isObject(a)) return KEY == 'get' ? undefined : false;
+        var result = this._c[KEY](a === 0 ? 0 : a, b);
+        return IS_ADDER ? this : result;
+      });
+    });
+    IS_WEAK || dP(C.prototype, 'size', {
+      get: function () {
+        return this._c.size;
+      }
+    });
+  }
 
-    module.exports = Engine;
+  setToStringTag(C, NAME);
+
+  O[NAME] = C;
+  $export($export.G + $export.W + $export.F, O);
+
+  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
+
+  return C;
+};
 
 
 /***/ }),
-/* 111 */
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://tc39.github.io/proposal-setmap-offrom/
+var $export = __webpack_require__(8);
+
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { of: function of() {
+    var length = arguments.length;
+    var A = new Array(length);
+    while (length--) A[length] = arguments[length];
+    return new this(A);
+  } });
+};
+
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://tc39.github.io/proposal-setmap-offrom/
+var $export = __webpack_require__(8);
+var aFunction = __webpack_require__(58);
+var ctx = __webpack_require__(16);
+var forOf = __webpack_require__(23);
+
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
+    var mapFn = arguments[1];
+    var mapping, A, n, cb;
+    aFunction(this);
+    mapping = mapFn !== undefined;
+    if (mapping) aFunction(mapFn);
+    if (source == undefined) return new this();
+    A = [];
+    if (mapping) {
+      n = 0;
+      cb = ctx(mapFn, arguments[2], 2);
+      forOf(source, false, function (nextItem) {
+        A.push(cb(nextItem, n++));
+      });
+    } else {
+      forOf(source, false, A.push, A);
+    }
+    return new this(A);
+  } });
+};
+
+
+/***/ }),
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8044,15 +2891,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Rule = exports.StyleSheet = exports.Jss = undefined;
 
-var _Jss = __webpack_require__(129);
+var _Jss = __webpack_require__(85);
 
 var _Jss2 = _interopRequireDefault(_Jss);
 
-var _StyleSheet = __webpack_require__(84);
+var _StyleSheet = __webpack_require__(50);
 
 var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
 
-var _Rule = __webpack_require__(86);
+var _Rule = __webpack_require__(52);
 
 var _Rule2 = _interopRequireDefault(_Rule);
 
@@ -8077,7 +2924,7 @@ exports.Rule = _Rule2.default;
 exports.default = jss;
 
 /***/ }),
-/* 112 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8125,7 +2972,7 @@ function jssNested() {
 }
 
 /***/ }),
-/* 113 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8173,7 +3020,7 @@ function jssExtend() {
 }
 
 /***/ }),
-/* 114 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8227,7 +3074,7 @@ function jssPx() {
 module.exports = exports['default'];
 
 /***/ }),
-/* 115 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8238,7 +3085,7 @@ exports['default'] = jssVendorPrefixer;
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-var _cssVendor = __webpack_require__(139);
+var _cssVendor = __webpack_require__(95);
 
 var vendor = _interopRequireWildcard(_cssVendor);
 
@@ -8280,7 +3127,7 @@ function jssVendorPrefixer() {
 module.exports = exports['default'];
 
 /***/ }),
-/* 116 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8339,7 +3186,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 117 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8375,254 +3222,7 @@ function jssPropsSort() {
 }
 
 /***/ }),
-/* 118 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-    var TouchTracker = __webpack_require__(143);
-    var EventHandler = __webpack_require__(13);
-    var OptionsManager = __webpack_require__(83);
-
-    /**
-     * Handles piped in touch events. Emits 'start', 'update', and 'events'
-     *   events with delta, position, velocity, acceleration, clientX, clientY, count, and touch id.
-     *   Useful for dealing with inputs on touch devices. Designed to be used either as standalone, or
-     *   included in a GenericSync.
-     *
-     * @class TouchSync
-     * @constructor
-     *
-     * @example
-     *   var Surface = require('../core/Surface');
-     *   var TouchSync = require('../inputs/TouchSync');
-     *
-     *   var surface = new Surface({ size: [100, 100] });
-     *   var touchSync = new TouchSync();
-     *   surface.pipe(touchSync);
-     *
-     *   touchSync.on('start', function (e) { // react to start });
-     *   touchSync.on('update', function (e) { // react to update });
-     *   touchSync.on('end', function (e) { // react to end });*
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
-     * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
-     * @param [options.scale] {Number}       constant factor to scale velocity output
-     * @param [options.touchLimit] {Number}  touchLimit upper bound for emitting events based on number of touches
-     */
-    function TouchSync(options) {
-        this.options =  Object.create(TouchSync.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
-
-        this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker({
-            touchLimit: this.options.touchLimit
-        });
-
-        EventHandler.setOutputHandler(this, this._eventOutput);
-        EventHandler.setInputHandler(this, this._touchTracker);
-
-        this._touchTracker.on('trackstart', _handleStart.bind(this));
-        this._touchTracker.on('trackmove', _handleMove.bind(this));
-        this._touchTracker.on('trackend', _handleEnd.bind(this));
-
-        this._payload = {
-            delta    : null,
-            position : null,
-            velocity : null,
-            clientX  : undefined,
-            clientY  : undefined,
-            count    : 0,
-            touch    : undefined
-        };
-
-        this._position = null; // to be deprecated
-    }
-
-    TouchSync.DEFAULT_OPTIONS = {
-        direction: undefined,
-        rails: false,
-        touchLimit: 1,
-        velocitySampleLength: 10,
-        scale: 1
-    };
-
-    TouchSync.DIRECTION_X = 0;
-    TouchSync.DIRECTION_Y = 1;
-
-    var MINIMUM_TICK_TIME = 8;
-
-    /**
-     *  Triggered by trackstart.
-     *  @method _handleStart
-     *  @private
-     */
-    function _handleStart(data) {
-        var velocity;
-        var delta;
-        if (this.options.direction !== undefined){
-            this._position = 0;
-            velocity = 0;
-            delta = 0;
-        }
-        else {
-            this._position = [0, 0];
-            velocity = [0, 0];
-            delta = [0, 0];
-        }
-
-        var payload = this._payload;
-        payload.delta = delta;
-        payload.position = this._position;
-        payload.velocity = velocity;
-        payload.clientX = data.x;
-        payload.clientY = data.y;
-        payload.count = data.count;
-        payload.touch = data.identifier;
-
-        this._eventOutput.emit('start', payload);
-    }
-
-    /**
-     *  Triggered by trackmove.
-     *  @method _handleMove
-     *  @private
-     */
-    function _handleMove(data) {
-        var history = data.history;
-
-        var currHistory = history[history.length - 1];
-        var prevHistory = history[history.length - 2];
-
-        var distantHistory = history[history.length - this.options.velocitySampleLength] ?
-          history[history.length - this.options.velocitySampleLength] :
-          history[history.length - 2];
-
-        var distantTime = distantHistory.timestamp;
-        var currTime = currHistory.timestamp;
-
-        var diffX = currHistory.x - prevHistory.x;
-        var diffY = currHistory.y - prevHistory.y;
-
-        var velDiffX = currHistory.x - distantHistory.x;
-        var velDiffY = currHistory.y - distantHistory.y;
-
-        if (this.options.rails) {
-            if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
-            else diffX = 0;
-
-            if (Math.abs(velDiffX) > Math.abs(velDiffY)) velDiffY = 0;
-            else velDiffX = 0;
-        }
-
-        var diffTime = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
-
-        var velX = velDiffX / diffTime;
-        var velY = velDiffY / diffTime;
-
-        var scale = this.options.scale;
-        var nextVel;
-        var nextDelta;
-
-        if (this.options.direction === TouchSync.DIRECTION_X) {
-            nextDelta = scale * diffX;
-            nextVel = scale * velX;
-            this._position += nextDelta;
-        }
-        else if (this.options.direction === TouchSync.DIRECTION_Y) {
-            nextDelta = scale * diffY;
-            nextVel = scale * velY;
-            this._position += nextDelta;
-        }
-        else {
-            nextDelta = [scale * diffX, scale * diffY];
-            nextVel = [scale * velX, scale * velY];
-            this._position[0] += nextDelta[0];
-            this._position[1] += nextDelta[1];
-        }
-
-        var payload = this._payload;
-        payload.delta    = nextDelta;
-        payload.velocity = nextVel;
-        payload.position = this._position;
-        payload.clientX  = data.x;
-        payload.clientY  = data.y;
-        payload.count    = data.count;
-        payload.touch    = data.identifier;
-
-        this._eventOutput.emit('update', payload);
-    }
-
-    /**
-     *  Triggered by trackend.
-     *  @method _handleEnd
-     *  @private
-     */
-    function _handleEnd(data) {
-        this._payload.count = data.count;
-        this._eventOutput.emit('end', this._payload);
-    }
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
-     * @param [options.scale] {Number}       constant factor to scale velocity output
-     */
-    TouchSync.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
-    };
-
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    TouchSync.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
-
-    module.exports = TouchSync;
-
-
-/***/ }),
-/* 119 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.callAfter = callAfter;
-function callAfter(times, callback) {
-    var count = 0;
-    return function () {
-        if (++count == times) {
-            if (typeof callback == "function") {
-                callback.apply(this, arguments);
-            }
-        }
-    };
-}
-exports["default"] = callAfter;
-exports.__esModule = true;
-//# sourceMappingURL=callAfter.js.map
-
-/***/ }),
-/* 120 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8631,1637 +3231,834 @@ exports.__esModule = true;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Mixin;
-exports.WithDefault = WithDefault;
-exports.Cached = Cached;
-exports.HasInstance = HasInstance;
-exports.ApplyDefault = ApplyDefault;
-exports.Dedupe = Dedupe;
+exports.createClassHelper = createClassHelper;
+exports.staticBlacklist = exports.InvalidAccessError = exports.InvalidSuperAccessError = exports.Class = exports.default = void 0;
 
-var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
+var _utils = __webpack_require__(18);
 
-var _getPrototypeOf = _interopRequireDefault(__webpack_require__(68));
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(20));
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
 
-var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(62));
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
 
-var _hasInstance = _interopRequireDefault(__webpack_require__(221));
-
-var _symbol = _interopRequireDefault(__webpack_require__(67));
-
-var _weakMap = _interopRequireDefault(__webpack_require__(46));
-
-var _ = _interopRequireDefault(__webpack_require__(0));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function Mixin(factory, Default) {
-  factory = Cached(factory);
-  factory = HasInstance(factory);
-  factory = Dedupe(factory);
-  factory = WithDefault(factory, Default || (0, _.default)());
-  factory = ApplyDefault(factory);
-  return factory();
+  return target;
 }
 
-function WithDefault(classFactory, Default) {
-  return function (Base) {
-    Base = Base || Default;
-    return classFactory(Base);
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+} // TODO
+//  [x] remove the now-unnecessary modes (leave just what was 'es5' mode)
+//  [x] link helpers to each other, making it possible to destructure the arguments to definer functions
+//  [x] let access helper prototype objects extend from Object, otherwise common tools are not available.
+//  [x] accept a function as return value of function definer, to be treated as a class to derive the definition from, so that it can have access to Protected and Private helpers
+//  [x] let the returned class define protected and private getters which return the protected and private definitions.
+//  [x] migrate to builder-js-package so tests can run in the browser, and we can test custom elements
+//  [ ] protected and private static members
+//  [ ] other TODOs in the code
+
+
+const staticBlacklist = ['subclass', 'extends', ...Object.getOwnPropertyNames(new Function())];
+exports.staticBlacklist = staticBlacklist;
+const publicProtoToProtectedProto = new WeakMap();
+const publicProtoToPrivateProto = new WeakMap(); // A two-way map to associate public instances with protected instances.
+// There is one protected instance per public instance
+
+const publicToProtected = new _utils.WeakTwoWayMap(); // so we can get the class scope associated with a private instance
+
+const privateInstanceToClassScope = new WeakMap();
+const brandToPublicPrototypes = new WeakMap();
+const brandToProtectedPrototypes = new WeakMap();
+const brandToPrivatePrototypes = new WeakMap();
+const brandToPublicsPrivates = new WeakMap();
+const defaultOptions = {
+  // es5 class inheritance is simple, nice, easy, and robust
+  // There was another mode, but it has been removed
+  mode: 'es5',
+  // false is better for performance, but true will use Function (similar to
+  // eval) to name your class functions in the most accurate way.
+  nativeNaming: false,
+  // similar to ES6 classes:
+  prototypeWritable: false,
+  defaultClassDescriptor: {
+    writable: true,
+    enumerable: false,
+    configurable: true
+  },
+  setClassDescriptors: true
+};
+
+class InvalidSuperAccessError extends Error {}
+
+exports.InvalidSuperAccessError = InvalidSuperAccessError;
+
+class InvalidAccessError extends Error {}
+
+exports.InvalidAccessError = InvalidAccessError;
+const Class = createClassHelper();
+exports.Class = Class;
+
+function createClassHelper(options) {
+  options = options ? _objectSpread({}, defaultOptions, options) : defaultOptions;
+  options.defaultClassDescriptor = _objectSpread({}, defaultOptions.defaultClassDescriptor, options.defaultClassDescriptor);
+  const {
+    mode,
+    prototypeWritable,
+    setClassDescriptors,
+    nativeNaming
+  } = options;
+  /*
+   * this is just the public interface adapter for createClass(). Depending
+   * on how you call this interface, you can do various things like:
+   *
+   * - anonymous empty class
+   *
+   *    Class()
+   *
+   * - named empty class
+   *
+   *    Class('Foo')
+   *
+   * - base class named Foo
+   *
+   *    Class('Foo', (Public, Protected, Private) => {
+   *      someMethod() { ... },
+   *    })
+   *
+   * - anonymous base class
+   *
+   *    Class((Public, Protected, Private) => {
+   *      someMethod() { ... },
+   *    })
+   *
+   *    Class('Foo').extends(OtherClass, (Public, Protected, Private) => ({
+   *      someMethod() { ... },
+   *    }))
+   *
+   *    OtherClass.subclass = Class
+   *    const Bar = OtherClass.subclass((Public, Protected, Private) => {
+   *      ...
+   *    })
+   *
+   * - any class made with lowclass has a static subclass if you prefer using
+   *   that:
+   *
+   *    Bar.subclass('Baz', (Public, Protected, Private) => {...})
+   *
+   * - but you could as well do
+   *
+   *    Class('Baz').extends(Bar, (Public, Protected, Private) => {...})
+   */
+
+  return function Class(...args) {
+    let usingStaticSubclassMethod = false; // if called as SomeConstructor.subclass, or bound to SomeConstructor
+
+    if (typeof this === 'function') usingStaticSubclassMethod = true; // f.e. `Class()`, `Class('Foo')`, `Class('Foo', {...})` , `Class('Foo',
+    // {...}, Brand)`, similar to `class {}`, `class Foo {}`, class Foo
+    // {...}, and class Foo {...} with branding (see comments on classBrand
+    // below regarding positional privacy)
+
+    if (args.length <= 3) {
+      let name = '';
+      let definer = null;
+      let classBrand = null; // f.e. `Class('Foo')`
+
+      if (typeof args[0] === 'string') name = args[0]; // f.e. `Class((pub, prot, priv) => ({ ... }))`
+      else if (typeof args[0] === 'function' || typeof args[0] === 'object') {
+          definer = args[0];
+          classBrand = args[1];
+        } // f.e. `Class('Foo', (pub, prot, priv) => ({ ... }))`
+
+      if (typeof args[1] === 'function' || typeof args[1] === 'object') {
+        definer = args[1];
+        classBrand = args[2];
+      } // Make a class in case we wanted to do just `Class()` or
+      // `Class('Foo')`...
+
+
+      const Ctor = usingStaticSubclassMethod ? createClass.call(this, name, definer, classBrand) : createClass(name, definer, classBrand); // ...but add the extends helper in case we wanted to do like:
+      // Class().extends(OtherClass, (Public, Protected, Private) => ({
+      //   ...
+      // }))
+
+      Ctor.extends = function (ParentClass, def, brand) {
+        def = def || definer;
+        brand = brand || classBrand;
+        return createClass.call(ParentClass, name, def, brand);
+      };
+
+      return Ctor;
+    }
+
+    throw new TypeError('invalid args');
   };
-}
+  /**
+   * @param {string} className The name that the class being defined should
+   * have.
+   * @param {Function} definer A function or object for defining the class.
+   * If definer a function, it is passed the Public, Protected, Private, and
+   * Super helpers. Methods and properties can be defined on the helpers
+   * directly.  An object containing methods and properties can also be
+   * returned from the function. If definer is an object, the object should
+   * be in the same format as the one returned if definer were a function.
+   */
 
-function Cached(classFactory) {
-  var classCache = new _weakMap.default();
-  return function (Base) {
-    var Class = classCache.get(Base);
+  function createClass(className, definer, classBrand) {
+    "use strict"; // f.e. ParentClass.subclass((Public, Protected, Private) => {...})
 
-    if (!Class) {
-      classCache.set(Base, Class = classFactory(Base));
+    let ParentClass = this;
+
+    if (typeof className !== 'string') {
+      throw new TypeError(`
+                You must specify a string for the 'className' argument.
+            `);
     }
 
-    return Class;
-  };
-}
+    let definition = null; // f.e. Class('Foo', { ... })
 
-function HasInstance(classFactory) {
-  var instanceofSymbol;
-  return function (Base) {
-    var Class = classFactory(Base);
+    if (definer && typeof definer === 'object') {
+      definition = definer;
+    } // Return early if there's no definition or parent class, just a simple
+    // extension of Object. f.e. when doing just `Class()` or
+    // `Class('Foo')`
+    else if (!ParentClass && (!definer || typeof definer !== 'function' && typeof definer !== 'object')) {
+        let Ctor;
+        if (nativeNaming && className) Ctor = new Function(`return function ${className}() {}`)();else {
+          // force anonymous even in ES6+
+          Ctor = (() => function () {})();
 
-    if (typeof _symbol.default === 'undefined' || !_hasInstance.default) {
-      return Class;
+          if (className) (0, _utils.setDescriptor)(Ctor, 'name', {
+            value: className
+          });
+        }
+        Ctor.prototype = {
+          __proto__: Object.prototype,
+          constructor: Ctor // no static inheritance here, just like with `class Foo {}`
+
+        };
+        (0, _utils.setDescriptor)(Ctor, 'subclass', {
+          value: Class,
+          writable: true,
+          // TODO maybe let's make this non writable
+          enumerable: false,
+          configurable: false
+        });
+        return Ctor;
+      } // A two-way map to associate public instances with private instances.
+    // Unlike publicToProtected, this is inside here because there is one
+    // private instance per class scope per instance (or to say it another
+    // way, each instance has as many private instances as the number of
+    // classes that the given instance has in its inheritance chain, one
+    // private instance per class)
+
+
+    const scopedPublicsToPrivates = classBrand ? void undefined : new _utils.WeakTwoWayMap();
+
+    if (classBrand) {
+      if (!brandToPublicsPrivates.get(classBrand)) brandToPublicsPrivates.set(classBrand, new _utils.WeakTwoWayMap());
+    } // if no brand provided, then we use the most fine-grained lexical
+    // privacy. Lexical privacy is described at
+    // https://github.com/tc39/proposal-class-fields/issues/60
+    //
+    // TODO make prototypes non-configurable so that the clasds-brand system
+    // can't be tricked. For now, it's good enough, most people aren't going
+    // to go out of their way to mangle with the prototypes in order to
+    // force invalid private access.
+
+
+    classBrand = classBrand || {
+      brand: 'lexical' // the class "scope" that we will bind to the helper functions
+
+    };
+    const scope = {
+      className,
+
+      // convenient for debugging
+      get publicToPrivate() {
+        return scopedPublicsToPrivates ? scopedPublicsToPrivates : brandToPublicsPrivates.get(classBrand);
+      },
+
+      classBrand,
+      // we use these to memoize the Public/Protected/Private access
+      // helper results, to make subsequent accessses faster.
+      cachedPublicAccesses: new WeakMap(),
+      cachedProtectedAccesses: new WeakMap(),
+      cachedPrivateAccesses: new WeakMap() // create the super helper for this class scope
+
+    };
+    const supers = new WeakMap();
+    const Super = superHelper.bind(null, supers, scope); // bind this class' scope to the helper functions
+
+    const Public = getPublicMembers.bind(null, scope);
+    const Protected = getProtectedMembers.bind(null, scope);
+    const Private = getPrivateMembers.bind(null, scope);
+    Public.prototype = {};
+    Protected.prototype = {};
+    Private.prototype = {}; // alows the user to destructure arguments to definer functions
+
+    Public.Public = Public;
+    Public.Protected = Protected;
+    Public.Private = Private;
+    Public.Super = Super;
+    Protected.Public = Public;
+    Protected.Protected = Protected;
+    Protected.Private = Private;
+    Protected.Super = Super; // Private and Super are never passed as first argument
+    // pass the helper functions to the user's class definition function
+
+    definition = definition || definer && definer(Public, Protected, Private, Super); // the user has the option of returning an object that defines which
+    // properties are public/protected/private.
+
+    if (definition && typeof definition !== 'object' && typeof definition !== 'function') {
+      throw new TypeError(`
+                The return value of a class definer function, if any, should be
+                an object, or a class constructor.
+            `);
+    } // if a function was returned, we assume it is a class from which we
+    // get the public definition from.
+
+
+    let customClass = null;
+
+    if (typeof definition === 'function') {
+      customClass = definition;
+      definition = definition.prototype;
+      ParentClass = customClass.prototype.__proto__.constructor;
     }
 
-    if ((0, _getOwnPropertySymbols.default)(Class).indexOf(_hasInstance.default) !== -1) {
-      return Class;
+    let staticMembers; // if functions were provided for the public/protected/private
+    // properties of the definition object, execute them with their
+    // respective access helpers, and use the objects returned from them.
+
+    if (definition) {
+      staticMembers = definition.static;
+      delete definition.static;
+
+      if (typeof definition.public === 'function') {
+        definition.public = definition.public(Protected, Private);
+      }
+
+      if (typeof definition.protected === 'function') {
+        definition.protected = definition.protected(Public, Private);
+      }
+
+      if (typeof definition.private === 'function') {
+        definition.private = definition.private(Public, Protected);
+      }
     }
 
-    if (!instanceofSymbol) {
-      instanceofSymbol = (0, _symbol.default)('instanceofSymbol');
+    ParentClass = ParentClass || Object; // extend the parent class
+
+    const parentPublicPrototype = ParentClass.prototype;
+    const publicPrototype = definition && definition.public || definition || Object.create(parentPublicPrototype);
+    if (publicPrototype.__proto__ !== parentPublicPrototype) publicPrototype.__proto__ = parentPublicPrototype; // extend the parent protected prototype
+
+    const parentProtectedPrototype = getParentProtectedPrototype(parentPublicPrototype);
+    const protectedPrototype = definition && definition.protected || Object.create(parentProtectedPrototype);
+    if (protectedPrototype.__proto__ !== parentProtectedPrototype) protectedPrototype.__proto__ = parentProtectedPrototype;
+    publicProtoToProtectedProto.set(publicPrototype, protectedPrototype); // private prototype inherits from parent, but each private instance is
+    // private only for the class of this scope
+
+    const parentPrivatePrototype = getParentPrivatePrototype(parentPublicPrototype);
+    const privatePrototype = definition && definition.private || Object.create(parentPrivatePrototype);
+    if (privatePrototype.__proto__ !== parentPrivatePrototype) privatePrototype.__proto__ = parentPrivatePrototype;
+    publicProtoToPrivateProto.set(publicPrototype, privatePrototype);
+    if (!brandToPublicPrototypes.get(classBrand)) brandToPublicPrototypes.set(classBrand, new Set());
+    if (!brandToProtectedPrototypes.get(classBrand)) brandToProtectedPrototypes.set(classBrand, new Set());
+    if (!brandToPrivatePrototypes.get(classBrand)) brandToPrivatePrototypes.set(classBrand, new Set());
+    brandToPublicPrototypes.get(classBrand).add(publicPrototype);
+    brandToProtectedPrototypes.get(classBrand).add(protectedPrototype);
+    brandToPrivatePrototypes.get(classBrand).add(privatePrototype);
+    scope.publicPrototype = publicPrototype;
+    scope.privatePrototype = privatePrototype;
+    scope.protectedPrototype = protectedPrototype;
+    scope.parentPublicPrototype = parentPublicPrototype;
+    scope.parentProtectedPrototype = parentProtectedPrototype;
+    scope.parentPrivatePrototype = parentPrivatePrototype; // the user has the option of assigning methods and properties to the
+    // helpers that we passed in, to let us know which methods and
+    // properties are public/protected/private so we can assign them onto
+    // the respective prototypes.
+
+    copyDescriptors(Public.prototype, publicPrototype);
+    copyDescriptors(Protected.prototype, protectedPrototype);
+    copyDescriptors(Private.prototype, privatePrototype);
+
+    if (definition) {
+      // delete these so we don't expose them on the class' public
+      // prototype
+      delete definition.public;
+      delete definition.protected;
+      delete definition.private; // if a `public` object was also supplied, we treat that as the public
+      // prototype instead of the base definition object, so we copy the
+      // definition's props to the `public` object
+      //
+      // TODO For now we copy from the definition object to the 'public'
+      // object (publicPrototype), but this won't work with native `super`.
+      // Maybe later, we can use a Proxy to read props from both the root
+      // object and the public object, so that `super` works from both.
+      // Another option is to not allow a `public` object, only protected
+      // and private
+
+      if (definition !== publicPrototype) {
+        // copy whatever remains
+        copyDescriptors(definition, publicPrototype);
+      }
     }
 
-    Class[instanceofSymbol] = true;
-    (0, _defineProperty.default)(Class, _hasInstance.default, {
-      value: function (obj) {
-        // we do this check because a subclass of `Class` may not have
-        // it's own `[Symbol.hasInstance]()` method, therefore `this`
-        // will be the subclass, not this `Class`, when the prototype
-        // lookup on the subclass finds the `[Symbol.hasInstance]()`
-        // method of this `Class`. In this case, we don't wsnt to run
-        // our logic here, so we delegate to the super class of this
-        // `Class` to take over with the instanceof check. In many
-        // cases, the super class `[Symbol.hasInstance]()` method will
-        // be `Function.prototype[Symbol.hasInstance]` which will
-        // perform the standard check.
-        if (this !== Class) // This is effectively a `super` call.
-          {
-            return (0, _getPrototypeOf.default)(Class)[_hasInstance.default].call(this, obj);
-          }
+    if (customClass) {
+      if (staticMembers) copyDescriptors(staticMembers, customClass);
+      return customClass;
+    }
 
-        var currentProto = obj;
+    const userConstructor = publicPrototype.hasOwnProperty('constructor') ? publicPrototype.constructor : null;
+    let NewClass = null;
+    let newPrototype = null; // ES5 version (which seems to be so much better)
 
-        while (currentProto) {
-          var descriptor = (0, _getOwnPropertyDescriptor.default)(currentProto, "constructor");
+    if (mode === 'es5') {
+      NewClass = (() => function () {
+        let ret = null;
+        let constructor = null;
+        if (userConstructor) constructor = userConstructor;else constructor = ParentClass; // Object is a special case because otherwise
+        // `Object.apply(this)` returns a different object and we don't
+        // want to deal with return value in that case
 
-          if (descriptor && descriptor.value && descriptor.value.hasOwnProperty(instanceofSymbol)) {
-            return true;
-          }
+        if (constructor !== Object) ret = constructor.apply(this, arguments);
 
-          currentProto = (0, _getPrototypeOf.default)(currentProto);
+        if (ret && (typeof ret === 'object' || typeof ret === 'function')) {
+          // XXX should we set ret.__proto__ = constructor.prototype
+          // here? Or let the user deal with that?
+          return ret;
         }
 
-        return false;
-      }
-    });
-    return Class;
-  };
-} // requires WithDefault or a classFactory that can accept no args
+        return this;
+      })();
 
-
-function ApplyDefault(classFactory) {
-  var DefaultClass = classFactory();
-  DefaultClass.mixin = classFactory;
-  return classFactory;
-} // requires Cached
-
-
-function Dedupe(classFactory) {
-  var map = new _weakMap.default();
-  return function (Base) {
-    if (hasMixin(Base, classFactory, map)) {
-      return Base;
+      newPrototype = publicPrototype;
+    } else {
+      throw new TypeError(`
+                The lowclass "mode" option can only be 'es5' for now.
+            `);
     }
 
-    var Class = classFactory(Base);
-    map.set(Class, classFactory);
-    return Class;
-  };
+    if (className) {
+      if (nativeNaming) {
+        const code = (0, _utils.getFunctionBody)(NewClass);
+        const proto = NewClass.prototype;
+        NewClass = new Function(` userConstructor, ParentClass `, `
+                    return function ${className}() { ${code} }
+                `)(userConstructor, ParentClass);
+        NewClass.prototype = proto;
+      } else {
+        (0, _utils.setDescriptor)(NewClass, 'name', {
+          value: className
+        });
+      }
+    }
+
+    if (userConstructor && userConstructor.length) {
+      // length is not writable, only configurable, therefore the value
+      // has to be set with a descriptor update
+      (0, _utils.setDescriptor)(NewClass, 'length', {
+        value: userConstructor.length
+      });
+    } // static stuff {
+    // static inheritance
+
+
+    NewClass.__proto__ = ParentClass;
+    if (staticMembers) copyDescriptors(staticMembers, NewClass); // allow users to make subclasses. When subclass is called on a
+    // constructor, it defines `this` which is assigned to ParentClass
+    // above.
+
+    (0, _utils.setDescriptor)(NewClass, 'subclass', {
+      value: Class,
+      writable: true,
+      enumerable: false,
+      configurable: false
+    }); // }
+    // prototype stuff {
+
+    NewClass.prototype = newPrototype;
+    NewClass.prototype.constructor = NewClass; // }
+
+    if (setClassDescriptors) {
+      setDefaultStaticDescriptors(NewClass, options);
+      (0, _utils.setDescriptor)(NewClass, 'prototype', {
+        writable: prototypeWritable
+      });
+      setDefaultPrototypeDescriptors(NewClass.prototype, options);
+      setDefaultPrototypeDescriptors(protectedPrototype, options);
+      setDefaultPrototypeDescriptors(privatePrototype, options);
+    }
+
+    scope.constructor = NewClass; // convenient for debugging
+
+    return NewClass;
+  }
+} // XXX PERFORMANCE: instead of doing multiple prototype traversals with
+// hasPrototype in the following access helpers, maybe we can do a single
+// traversal and check along the way?
+//
+// Worst case examples:
+//
+//   currently:
+//     If class hierarchy has 20 classes
+//     If we detect which instance we have in order of public, protected, private
+//     If the instance we're checking is the private instance of the middle class (f.e. class 10)
+//     We'll traverse 20 public prototypes with 20 conditional checks
+//     We'll traverse 20 protected prototypes with 20 conditional checks
+//     And finally we'll traverse 10 private prototypes with 10 conditional checks
+//     TOTAL: We traverse over 50 prototypes with 50 conditional checks
+//
+//   proposed:
+//     If class hierarchy has 20 classes
+//     If we detect which instance we have in order of public, protected, private
+//     If the instance we're checking is the private instance of the middle class (f.e. class 10)
+//     We'll traverse 10 public prototypes with 3 conditional checks at each prototype
+//     TOTAL: We traverse over 10 prototypes with 30 conditional checks
+//     BUT: The conditional checking will involve reading WeakMaps instead of
+//     checking just reference equality. If we can optimize how this part
+//     works, it might be worth it.
+//
+// Can the tradeoff (less traversal and conditional checks) outweigh the
+// heavier conditional checks?
+//
+// XXX PERFORMANCE: We can also cache the access-helper results, which requires more memory,
+// but will make use of access helpers much faster, especially important for
+// animations.
+
+
+function getParentProtectedPrototype(parentPublicPrototype) {
+  // look up the prototype chain until we find a parent protected prototype, if any.
+  let parentProtectedProto;
+  let currentPublicProto = parentPublicPrototype;
+
+  while (currentPublicProto && !parentProtectedProto) {
+    parentProtectedProto = publicProtoToProtectedProto.get(currentPublicProto);
+    currentPublicProto = currentPublicProto.__proto__;
+  } // TODO, now that we're finding the nearest parent protected proto,
+  // we might not need to create an empty object for each class if we
+  // don't find one, to avoid prototype lookup depth, as we'll connect
+  // to the nearest one we find, if any.
+
+
+  return parentProtectedProto || {};
 }
 
-function hasMixin(Class, mixin, map) {
-  while (Class) {
-    if (map.get(Class) === mixin) {
-      return true;
-    }
+function getParentPrivatePrototype(parentPublicPrototype) {
+  // look up the prototype chain until we find a parent protected prototype, if any.
+  let parentPrivateProto;
+  let currentPublicProto = parentPublicPrototype;
 
-    Class = Class.__proto__;
+  while (currentPublicProto && !parentPrivateProto) {
+    parentPrivateProto = publicProtoToPrivateProto.get(currentPublicProto);
+    currentPublicProto = currentPublicProto.__proto__;
+  } // TODO, now that we're finding the nearest parent protected proto,
+  // we might not need to create an empty object for each class if we
+  // don't find one, to avoid prototype lookup depth, as we'll connect
+  // to the nearest one we find, if any.
+
+
+  return parentPrivateProto || {};
+}
+
+function getPublicMembers(scope, instance) {
+  let result = scope.cachedPublicAccesses.get(instance);
+  if (result) return result; // check only for the private instance of this class scope
+
+  if (isPrivateInstance(scope, instance)) scope.cachedPublicAccesses.set(instance, result = getSubclassScope(instance).publicToPrivate.get(instance)); // check for an instance of the class (or its subclasses) of this scope
+  else if (isProtectedInstance(scope, instance)) scope.cachedPublicAccesses.set(instance, result = publicToProtected.get(instance)); // otherwise just return whatever was passed in, it's public already!
+    else scope.cachedPublicAccesses.set(instance, result = instance);
+  return result;
+}
+
+function getProtectedMembers(scope, instance) {
+  let result = scope.cachedProtectedAccesses.get(instance);
+  if (result) return result; // check for an instance of the class (or its subclasses) of this scope
+  // This allows for example an instance of an Animal base class to access
+  // protected members of an instance of a Dog child class.
+
+  if (isPublicInstance(scope, instance)) scope.cachedProtectedAccesses.set(instance, result = publicToProtected.get(instance) || createProtectedInstance(instance)); // check for a private instance inheriting from this class scope
+  else if (isPrivateInstance(scope, instance)) {
+      const publicInstance = getSubclassScope(instance).publicToPrivate.get(instance);
+      scope.cachedProtectedAccesses.set(instance, result = publicToProtected.get(publicInstance) || createProtectedInstance(publicInstance));
+    } // return the protected instance if it was passed in
+    else if (isProtectedInstance(scope, instance)) scope.cachedProtectedAccesses.set(instance, result = instance);
+  if (!result) throw new InvalidAccessError('invalid access of protected member');
+  return result;
+}
+
+function getSubclassScope(privateInstance) {
+  return privateInstanceToClassScope.get(privateInstance);
+}
+
+function createProtectedInstance(publicInstance) {
+  // traverse instance proto chain, find first protected prototype
+  const protectedPrototype = findLeafmostProtectedPrototype(publicInstance); // make the protected instance from the found protected prototype
+
+  const protectedInstance = Object.create(protectedPrototype);
+  publicToProtected.set(publicInstance, protectedInstance);
+  return protectedInstance;
+}
+
+function findLeafmostProtectedPrototype(publicInstance) {
+  let result = null;
+  let currentProto = publicInstance.__proto__;
+
+  while (currentProto) {
+    result = publicProtoToProtectedProto.get(currentProto);
+    if (result) return result;
+    currentProto = currentProto.__proto__;
+  }
+
+  return result;
+}
+
+function getPrivateMembers(scope, instance) {
+  let result = scope.cachedPrivateAccesses.get(instance);
+  if (result) return result; // check for a public instance that is or inherits from this class
+
+  if (isPublicInstance(scope, instance)) scope.cachedPrivateAccesses.set(instance, result = scope.publicToPrivate.get(instance) || createPrivateInstance(scope, instance)); // check for a protected instance that is or inherits from this class'
+  // protectedPrototype
+  else if (isProtectedInstance(scope, instance)) {
+      const publicInstance = publicToProtected.get(instance);
+      scope.cachedPrivateAccesses.set(instance, result = scope.publicToPrivate.get(publicInstance) || createPrivateInstance(scope, publicInstance));
+    } // return the private instance if it was passed in
+    else if (isPrivateInstance(scope, instance)) scope.cachedPrivateAccesses.set(instance, result = instance);
+  if (!result) throw new InvalidAccessError('invalid access of private member');
+  return result;
+}
+
+function createPrivateInstance(scope, publicInstance) {
+  const privateInstance = Object.create(scope.privatePrototype);
+  scope.publicToPrivate.set(publicInstance, privateInstance);
+  privateInstanceToClassScope.set(privateInstance, scope); // TODO use WeakTwoWayMap
+
+  return privateInstance;
+}
+
+function isPublicInstance(scope, instance, brandedCheck = true) {
+  if (!brandedCheck) return hasPrototype(instance, scope.publicPrototype);
+
+  for (const proto of Array.from(brandToPublicPrototypes.get(scope.classBrand))) {
+    if (hasPrototype(instance, proto)) return true;
   }
 
   return false;
 }
 
-/***/ }),
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
+function isProtectedInstance(scope, instance, brandedCheck = true) {
+  if (!brandedCheck) return hasPrototype(instance, scope.protectedPrototype);
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-/*eslint-disable new-cap */
-    var Utility = __webpack_require__(81);
+  for (const proto of Array.from(brandToProtectedPrototypes.get(scope.classBrand))) {
+    if (hasPrototype(instance, proto)) return true;
+  }
 
-    /**
-     * Transition meta-method to support transitioning multiple
-     *   values with scalar-only methods.
-     *
-     *
-     * @class MultipleTransition
-     * @constructor
-     *
-     * @param {Object} method Transionable class to multiplex
-     */
-    function MultipleTransition(method) {
-        this.method = method;
-        this._instances = [];
-        this.state = [];
-    }
+  return false;
+}
 
-    MultipleTransition.SUPPORTS_MULTIPLE = true;
+function isPrivateInstance(scope, instance, brandedCheck = true) {
+  if (!brandedCheck) return hasPrototype(instance, scope.privatePrototype);
 
-    /**
-     * Get the state of each transition.
-     *
-     * @method get
-     *
-     * @return state {Number|Array} state array
-     */
-    MultipleTransition.prototype.get = function get() {
-        for (var i = 0; i < this._instances.length; i++) {
-            this.state[i] = this._instances[i].get();
-        }
-        return this.state;
-    };
+  for (const proto of Array.from(brandToPrivatePrototypes.get(scope.classBrand))) {
+    if (hasPrototype(instance, proto)) return true;
+  }
 
-    /**
-     * Set the end states with a shared transition, with optional callback.
-     *
-     * @method set
-     *
-     * @param {Number|Array} endState Final State.  Use a multi-element argument for multiple transitions.
-     * @param {Object} transition Transition definition, shared among all instances
-     * @param {Function} callback called when all endStates have been reached.
-     */
-    MultipleTransition.prototype.set = function set(endState, transition, callback) {
-        var _allCallback = Utility.after(endState.length, callback);
-        for (var i = 0; i < endState.length; i++) {
-            if (!this._instances[i]) this._instances[i] = new (this.method)();
-            this._instances[i].set(endState[i], transition, _allCallback);
-        }
-    };
-
-    /**
-     * Reset all transitions to start state.
-     *
-     * @method reset
-     *
-     * @param  {Number|Array} startState Start state
-     */
-    MultipleTransition.prototype.reset = function reset(startState) {
-        for (var i = 0; i < startState.length; i++) {
-            if (!this._instances[i]) this._instances[i] = new (this.method)();
-            this._instances[i].reset(startState[i]);
-        }
-    };
-
-    module.exports = MultipleTransition;
+  return false;
+} // check if an object has the given prototype in its chain
 
 
-/***/ }),
-/* 122 */
-/***/ (function(module, exports) {
+function hasPrototype(obj, proto) {
+  let currentProto = obj.__proto__;
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
+  do {
+    if (proto === currentProto) return true;
+    currentProto = currentProto.__proto__;
+  } while (currentProto);
+
+  return false;
+} // copy all properties (as descriptors) from source to destination
 
 
-    /**
-     *
-     * A state maintainer for a smooth transition between
-     *    numerically-specified states.  Example numeric states include floats or
-     *    Transfornm objects.
-     *
-     *    An initial state is set with the constructor or set(startValue). A
-     *    corresponding end state and transition are set with set(endValue,
-     *    transition). Subsequent calls to set(endValue, transition) begin at
-     *    the last state. Calls to get(timestamp) provide the _interpolated state
-     *    along the way.
-     *
-     *   Note that there is no event loop here - calls to get() are the only way
-     *    to find out state projected to the current (or provided) time and are
-     *    the only way to trigger callbacks. Usually this kind of object would
-     *    be part of the render() path of a visible component.
-     *
-     * @class TweenTransition
-     * @constructor
-     *
-     * @param {Object} options TODO
-     *    beginning state
-     */
-    function TweenTransition(options) {
-        this.options = Object.create(TweenTransition.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
+function copyDescriptors(source, destination, mod) {
+  const props = Object.getOwnPropertyNames(source);
+  let i = props.length;
 
-        this._startTime = 0;
-        this._startValue = 0;
-        this._updateTime = 0;
-        this._endValue = 0;
-        this._curve = undefined;
-        this._duration = 0;
-        this._active = false;
-        this._callback = undefined;
-        this.state = 0;
-        this.velocity = undefined;
-    }
+  while (i--) {
+    const prop = props[i];
+    const descriptor = Object.getOwnPropertyDescriptor(source, prop);
+    if (mod) mod(descriptor);
+    Object.defineProperty(destination, prop, descriptor);
+  }
+}
 
-    /**
-     * Transition curves mapping independent variable t from domain [0,1] to a
-     *    range within [0,1]. Includes functions 'linear', 'easeIn', 'easeOut',
-     *    'easeInOut', 'easeOutBounce', 'spring'.
-     *
-     * @property {object} Curve
-     * @final
-     */
-    TweenTransition.Curves = {
-        linear: function(t) {
-            return t;
+function superHelper(supers, scope, instance) {
+  const {
+    parentPublicPrototype,
+    parentProtectedPrototype,
+    parentPrivatePrototype
+  } = scope;
+  if (isPublicInstance(scope, instance, false)) return getSuperHelperObject(instance, parentPublicPrototype, supers);
+  if (isProtectedInstance(scope, instance, false)) return getSuperHelperObject(instance, parentProtectedPrototype, supers);
+  if (isPrivateInstance(scope, instance, false)) return getSuperHelperObject(instance, parentPrivatePrototype, supers);
+  throw new InvalidSuperAccessError('invalid super access');
+}
+
+function getSuperHelperObject(instance, parentPrototype, supers) {
+  let _super = supers.get(instance); // XXX PERFORMANCE: there's probably some ways to improve speed here using caching
+
+
+  if (!_super) {
+    supers.set(instance, _super = Object.create(parentPrototype));
+    const keys = (0, _utils.getInheritedPropertyNames)(parentPrototype);
+    let i = keys.length;
+
+    while (i--) {
+      const key = keys[i];
+      (0, _utils.setDescriptor)(_super, key, {
+        get: function () {
+          let value = void undefined;
+          const descriptor = (0, _utils.getInheritedDescriptor)(parentPrototype, key);
+
+          if (descriptor && (0, _utils.propertyIsAccessor)(descriptor)) {
+            const getter = descriptor.get;
+            if (getter) value = getter.call(instance);
+          } else {
+            value = parentPrototype[key];
+          }
+
+          if (value && value.call && typeof value === 'function') {
+            value = value.bind(instance);
+          }
+
+          return value;
         },
-        easeIn: function(t) {
-            return t*t;
-        },
-        easeOut: function(t) {
-            return t*(2-t);
-        },
-        easeInOut: function(t) {
-            if (t <= 0.5) return 2*t*t;
-            else return -2*t*t + 4*t - 1;
-        },
-        easeOutBounce: function(t) {
-            return t*(3 - 2*t);
-        },
-        spring: function(t) {
-            return (1 - t) * Math.sin(6 * Math.PI * t) + t;
+        // like native `super`, setting a super property does nothing.
+        set: function (value) {
+          const descriptor = (0, _utils.getInheritedDescriptor)(parentPrototype, key);
+
+          if (descriptor && (0, _utils.propertyIsAccessor)(descriptor)) {
+            const setter = descriptor.set;
+            if (setter) value = setter.call(instance, value);
+          } else {
+            // just like native `super`
+            instance[key] = value;
+          }
         }
-    };
+      }, true);
+    }
+  }
 
-    TweenTransition.SUPPORTS_MULTIPLE = true;
-    TweenTransition.DEFAULT_OPTIONS = {
-        curve: TweenTransition.Curves.linear,
-        duration: 500,
-        speed: 0 /* considered only if positive */
-    };
+  return _super;
+}
 
-    var registeredCurves = {};
+function setDefaultPrototypeDescriptors(prototype, {
+  defaultClassDescriptor: {
+    writable,
+    enumerable,
+    configurable
+  }
+}) {
+  const descriptors = Object.getOwnPropertyDescriptors(prototype);
+  let descriptor;
 
-    /**
-     * Add "unit" curve to internal dictionary of registered curves.
-     *
-     * @method registerCurve
-     *
-     * @static
-     *
-     * @param {string} curveName dictionary key
-     * @param {unitCurve} curve function of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
-     * @return {boolean} false if key is taken, else true
-     */
-    TweenTransition.registerCurve = function registerCurve(curveName, curve) {
-        if (!registeredCurves[curveName]) {
-            registeredCurves[curveName] = curve;
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
+  for (const key in descriptors) {
+    descriptor = descriptors[key]; // regular value
 
-    /**
-     * Remove object with key "curveName" from internal dictionary of registered
-     *    curves.
-     *
-     * @method unregisterCurve
-     *
-     * @static
-     *
-     * @param {string} curveName dictionary key
-     * @return {boolean} false if key has no dictionary value
-     */
-    TweenTransition.unregisterCurve = function unregisterCurve(curveName) {
-        if (registeredCurves[curveName]) {
-            delete registeredCurves[curveName];
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
+    if ('value' in descriptor || 'writable' in descriptor) {
+      descriptor.writable = writable;
+    } // accessor or regular value
 
-    /**
-     * Retrieve function with key "curveName" from internal dictionary of
-     *    registered curves. Default curves are defined in the
-     *    TweenTransition.Curves array, where the values represent
-     *    unitCurve functions.
-     *
-     * @method getCurve
-     *
-     * @static
-     *
-     * @param {string} curveName dictionary key
-     * @return {unitCurve} curve function of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
-     */
-    TweenTransition.getCurve = function getCurve(curveName) {
-        var curve = registeredCurves[curveName];
-        if (curve !== undefined) return curve;
-        else throw new Error('curve not registered');
-    };
 
-    /**
-     * Retrieve all available curves.
-     *
-     * @method getCurves
-     *
-     * @static
-     *
-     * @return {object} curve functions of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
-     */
-    TweenTransition.getCurves = function getCurves() {
-        return registeredCurves;
-    };
+    descriptor.enumerable = enumerable;
+    descriptor.configurable = configurable;
+  }
 
-     // Interpolate: If a linear function f(0) = a, f(1) = b, then return f(t)
-    function _interpolate(a, b, t) {
-        return ((1 - t) * a) + (t * b);
+  (0, _utils.setDescriptors)(prototype, descriptors);
+}
+
+function setDefaultStaticDescriptors(Ctor, {
+  defaultClassDescriptor: {
+    writable,
+    enumerable,
+    configurable
+  }
+}) {
+  const descriptors = Object.getOwnPropertyDescriptors(Ctor);
+  let descriptor;
+
+  for (const key in descriptors) {
+    if (staticBlacklist.includes(key)) {
+      delete descriptors[key];
+      continue;
     }
 
-    function _clone(obj) {
-        if (obj instanceof Object) {
-            if (obj instanceof Array) return obj.slice(0);
-            else return Object.create(obj);
-        }
-        else return obj;
-    }
+    descriptor = descriptors[key]; // regular value
 
-    // Fill in missing properties in "transition" with those in defaultTransition, and
-    //   convert internal named curve to function object, returning as new
-    //   object.
-    function _normalize(transition, defaultTransition) {
-        var result = {curve: defaultTransition.curve};
-        if (defaultTransition.duration) result.duration = defaultTransition.duration;
-        if (defaultTransition.speed) result.speed = defaultTransition.speed;
-        if (transition instanceof Object) {
-            if (transition.duration !== undefined) result.duration = transition.duration;
-            if (transition.curve) result.curve = transition.curve;
-            if (transition.speed) result.speed = transition.speed;
-        }
-        if (typeof result.curve === 'string') result.curve = TweenTransition.getCurve(result.curve);
-        return result;
-    }
+    if ('value' in descriptor || 'writable' in descriptor) {
+      descriptor.writable = writable;
+    } // accessor or regular value
 
-    /**
-     * Set internal options, overriding any default options.
-     *
-     * @method setOptions
-     *
-     *
-     * @param {Object} options options object
-     * @param {Object} [options.curve] function mapping [0,1] to [0,1] or identifier
-     * @param {Number} [options.duration] duration in ms
-     * @param {Number} [options.speed] speed in pixels per ms
-     */
-    TweenTransition.prototype.setOptions = function setOptions(options) {
-        if (options.curve !== undefined) this.options.curve = options.curve;
-        if (options.duration !== undefined) this.options.duration = options.duration;
-        if (options.speed !== undefined) this.options.speed = options.speed;
-    };
 
-    /**
-     * Add transition to end state to the queue of pending transitions. Special
-     *    Use: calling without a transition resets the object to that state with
-     *    no pending actions
-     *
-     * @method set
-     *
-     *
-     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endValue
-     *    end state to which we _interpolate
-     * @param {transition=} transition object of type {duration: number, curve:
-     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
-     *    instantaneous.
-     * @param {function()=} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    TweenTransition.prototype.set = function set(endValue, transition, callback) {
-        if (!transition) {
-            this.reset(endValue);
-            if (callback) callback();
-            return;
-        }
+    descriptor.enumerable = enumerable;
+    descriptor.configurable = configurable;
+  }
 
-        this._startValue = _clone(this.get());
-        transition = _normalize(transition, this.options);
-        if (transition.speed) {
-            var startValue = this._startValue;
-            if (startValue instanceof Object) {
-                var variance = 0;
-                for (var i in startValue) variance += (endValue[i] - startValue[i]) * (endValue[i] - startValue[i]);
-                transition.duration = Math.sqrt(variance) / transition.speed;
-            }
-            else {
-                transition.duration = Math.abs(endValue - startValue) / transition.speed;
-            }
-        }
+  (0, _utils.setDescriptors)(Ctor, descriptors);
+}
 
-        this._startTime = Date.now();
-        this._endValue = _clone(endValue);
-        this._startVelocity = _clone(transition.velocity);
-        this._duration = transition.duration;
-        this._curve = transition.curve;
-        this._active = true;
-        this._callback = callback;
-    };
-
-    /**
-     * Cancel all transitions and reset to a stable state
-     *
-     * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startValue
-     *    starting state
-     * @param {number} startVelocity
-     *    starting velocity
-     */
-    TweenTransition.prototype.reset = function reset(startValue, startVelocity) {
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
-        }
-        this.state = _clone(startValue);
-        this.velocity = _clone(startVelocity);
-        this._startTime = 0;
-        this._duration = 0;
-        this._updateTime = 0;
-        this._startValue = this.state;
-        this._startVelocity = this.velocity;
-        this._endValue = this.state;
-        this._active = false;
-    };
-
-    /**
-     * Get current velocity
-     *
-     * @method getVelocity
-     *
-     * @returns {Number} velocity
-     */
-    TweenTransition.prototype.getVelocity = function getVelocity() {
-        return this.velocity;
-    };
-
-    /**
-     * Get interpolated state of current action at provided time. If the last
-     *    action has completed, invoke its callback.
-     *
-     * @method get
-     *
-     *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
-     * @return {number|Object.<number|string, number>} beginning state
-     *    _interpolated to this point in time.
-     */
-    TweenTransition.prototype.get = function get(timestamp) {
-        this.update(timestamp);
-        return this.state;
-    };
-
-    function _calculateVelocity(current, start, curve, duration, t) {
-        var velocity;
-        var eps = 1e-7;
-        var speed = (curve(t) - curve(t - eps)) / eps;
-        if (current instanceof Array) {
-            velocity = [];
-            for (var i = 0; i < current.length; i++){
-                if (typeof current[i] === 'number')
-                    velocity[i] = speed * (current[i] - start[i]) / duration;
-                else
-                    velocity[i] = 0;
-            }
-
-        }
-        else velocity = speed * (current - start) / duration;
-        return velocity;
-    }
-
-    function _calculateState(start, end, t) {
-        var state;
-        if (start instanceof Array) {
-            state = [];
-            for (var i = 0; i < start.length; i++) {
-                if (typeof start[i] === 'number')
-                    state[i] = _interpolate(start[i], end[i], t);
-                else
-                    state[i] = start[i];
-            }
-        }
-        else state = _interpolate(start, end, t);
-        return state;
-    }
-
-    /**
-     * Update internal state to the provided timestamp. This may invoke the last
-     *    callback and begin a new action.
-     *
-     * @method update
-     *
-     *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
-     */
-    TweenTransition.prototype.update = function update(timestamp) {
-        if (!this._active) {
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-            return;
-        }
-
-        if (!timestamp) timestamp = Date.now();
-        if (this._updateTime >= timestamp) return;
-        this._updateTime = timestamp;
-
-        var timeSinceStart = timestamp - this._startTime;
-        if (timeSinceStart >= this._duration) {
-            this.state = this._endValue;
-            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
-            this._active = false;
-        }
-        else if (timeSinceStart < 0) {
-            this.state = this._startValue;
-            this.velocity = this._startVelocity;
-        }
-        else {
-            var t = timeSinceStart / this._duration;
-            this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
-            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
-        }
-    };
-
-    /**
-     * Is there at least one action pending completion?
-     *
-     * @method isActive
-     *
-     *
-     * @return {boolean}
-     */
-    TweenTransition.prototype.isActive = function isActive() {
-        return this._active;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     *
-     */
-    TweenTransition.prototype.halt = function halt() {
-        this.reset(this.get());
-    };
-
-    // Register all the default curves
-    TweenTransition.registerCurve('linear', TweenTransition.Curves.linear);
-    TweenTransition.registerCurve('easeIn', TweenTransition.Curves.easeIn);
-    TweenTransition.registerCurve('easeOut', TweenTransition.Curves.easeOut);
-    TweenTransition.registerCurve('easeInOut', TweenTransition.Curves.easeInOut);
-    TweenTransition.registerCurve('easeOutBounce', TweenTransition.Curves.easeOutBounce);
-    TweenTransition.registerCurve('spring', TweenTransition.Curves.spring);
-
-    TweenTransition.customCurve = function customCurve(v1, v2) {
-        v1 = v1 || 0; v2 = v2 || 0;
-        return function(t) {
-            return v1*t + (-2*v1 - v2 + 3)*t*t + (v1 + v2 - 2)*t*t*t;
-        };
-    };
-
-    module.exports = TweenTransition;
-
+var _default = Class;
+exports.default = _default;
 
 /***/ }),
-/* 123 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var Transform = __webpack_require__(5);
-
-    /**
-     *
-     * This object translates the rendering instructions ("render specs")
-     *   that renderable components generate into document update
-     *   instructions ("update specs").  Private.
-     *
-     * @private
-     * @class SpecParser
-     * @constructor
-     */
-    function SpecParser() {
-        this.result = {};
-    }
-    SpecParser._instance = new SpecParser();
-
-    /**
-     * Convert a render spec coming from the context's render chain to an
-     *    update spec for the update chain. This is the only major entry point
-     *    for a consumer of this class.
-     *
-     * @method parse
-     * @static
-     * @private
-     *
-     * @param {renderSpec} spec input render spec
-     * @param {Object} context context to do the parse in
-     * @return {Object} the resulting update spec (if no callback
-     *   specified, else none)
-     */
-    SpecParser.parse = function parse(spec, context) {
-        return SpecParser._instance.parse(spec, context);
-    };
-
-    /**
-     * Convert a renderSpec coming from the context's render chain to an update
-     *    spec for the update chain. This is the only major entrypoint for a
-     *    consumer of this class.
-     *
-     * @method parse
-     *
-     * @private
-     * @param {renderSpec} spec input render spec
-     * @param {Context} context
-     * @return {updateSpec} the resulting update spec
-     */
-    SpecParser.prototype.parse = function parse(spec, context) {
-        this.reset();
-        this._parseSpec(spec, context, Transform.identity);
-        return this.result;
-    };
-
-    /**
-     * Prepare SpecParser for re-use (or first use) by setting internal state
-     *  to blank.
-     *
-     * @private
-     * @method reset
-     */
-    SpecParser.prototype.reset = function reset() {
-        this.result = {};
-    };
-
-    // Multiply matrix M by vector v
-    function _vecInContext(v, m) {
-        return [
-            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
-            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
-            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
-        ];
-    }
-
-    var _zeroZero = [0, 0];
-
-    // From the provided renderSpec tree, recursively compose opacities,
-    //    origins, transforms, and sizes corresponding to each surface id from
-    //    the provided renderSpec tree structure. On completion, those
-    //    properties of 'this' object should be ready to use to build an
-    //    updateSpec.
-    SpecParser.prototype._parseSpec = function _parseSpec(spec, parentContext, sizeContext) {
-        var id;
-        var target;
-        var transform;
-        var opacity;
-        var origin;
-        var align;
-        var size;
-
-        if (typeof spec === 'number') {
-            id = spec;
-            transform = parentContext.transform;
-            align = parentContext.align || _zeroZero;
-            if (parentContext.size && align && (align[0] || align[1])) {
-                var alignAdjust = [align[0] * parentContext.size[0], align[1] * parentContext.size[1], 0];
-                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, sizeContext));
-            }
-            this.result[id] = {
-                transform: transform,
-                opacity: parentContext.opacity,
-                origin: parentContext.origin || _zeroZero,
-                align: parentContext.align || _zeroZero,
-                size: parentContext.size
-            };
-        }
-        else if (!spec) { // placed here so 0 will be cached earlier
-            return;
-        }
-        else if (spec instanceof Array) {
-            for (var i = 0; i < spec.length; i++) {
-                this._parseSpec(spec[i], parentContext, sizeContext);
-            }
-        }
-        else {
-            target = spec.target;
-            transform = parentContext.transform;
-            opacity = parentContext.opacity;
-            origin = parentContext.origin;
-            align = parentContext.align;
-            size = parentContext.size;
-            var nextSizeContext = sizeContext;
-
-            if (spec.opacity !== undefined) opacity = parentContext.opacity * spec.opacity;
-            if (spec.transform) transform = Transform.multiply(parentContext.transform, spec.transform);
-            if (spec.origin) {
-                origin = spec.origin;
-                nextSizeContext = parentContext.transform;
-            }
-            if (spec.align) align = spec.align;
-
-            if (spec.size || spec.proportions) {
-                var parentSize = size;
-                size = [size[0], size[1]];
-
-                if (spec.size) {
-                    if (spec.size[0] !== undefined) size[0] = spec.size[0];
-                    if (spec.size[1] !== undefined) size[1] = spec.size[1];
-                }
-
-                if (spec.proportions) {
-                    if (spec.proportions[0] !== undefined) size[0] = size[0] * spec.proportions[0];
-                    if (spec.proportions[1] !== undefined) size[1] = size[1] * spec.proportions[1];
-                }
-
-                if (parentSize) {
-                    if (align && (align[0] || align[1])) transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], sizeContext));
-                    if (origin && (origin[0] || origin[1])) transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
-                }
-
-                nextSizeContext = parentContext.transform;
-                origin = null;
-                align = null;
-            }
-
-            this._parseSpec(target, {
-                transform: transform,
-                opacity: opacity,
-                origin: origin,
-                align: align,
-                size: size
-            }, nextSizeContext);
-        }
-    };
-
-    module.exports = SpecParser;
-
-
-/***/ }),
-/* 124 */
-/***/ (function(module, exports) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    /**
-     * EventEmitter represents a channel for events.
-     *
-     * @class EventEmitter
-     * @constructor
-     */
-    function EventEmitter() {
-        this.listeners = {};
-        this._owner = this;
-    }
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    EventEmitter.prototype.emit = function emit(type, event) {
-        var handlers = this.listeners[type];
-        if (handlers) {
-            for (var i = 0; i < handlers.length; i++) {
-                handlers[i].call(this._owner, event);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-   EventEmitter.prototype.on = function on(type, handler) {
-        if (!(type in this.listeners)) this.listeners[type] = [];
-        var index = this.listeners[type].indexOf(handler);
-        if (index < 0) this.listeners[type].push(handler);
-        return this;
-    };
-
-    /**
-     * Alias for "on".
-     * @method addListener
-     */
-    EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-   /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
-     * @return {EventEmitter} this
-     */
-    EventEmitter.prototype.removeListener = function removeListener(type, handler) {
-        var listener = this.listeners[type];
-        if (listener !== undefined) {
-            var index = listener.indexOf(handler);
-            if (index >= 0) listener.splice(index, 1);
-        }
-        return this;
-    };
-
-    /**
-     * Call event handlers with this set to owner.
-     *
-     * @method bindThis
-     *
-     * @param {Object} owner object this EventEmitter belongs to
-     */
-    EventEmitter.prototype.bindThis = function bindThis(owner) {
-        this._owner = owner;
-    };
-
-    module.exports = EventEmitter;
-
-
-/***/ }),
-/* 125 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var RenderNode = __webpack_require__(78);
-    var EventHandler = __webpack_require__(13);
-    var ElementAllocator = __webpack_require__(126);
-    var Transform = __webpack_require__(5);
-    var Transitionable = __webpack_require__(17);
-
-    var _zeroZero = [0, 0];
-    var usePrefix = !('perspective' in document.documentElement.style);
-
-    function _getElementSize() {
-        var element = this.container;
-        return [element.clientWidth, element.clientHeight];
-    }
-
-    var _setPerspective = usePrefix ? function(element, perspective) {
-        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
-    } : function(element, perspective) {
-        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
-    };
-
-    /**
-     * The top-level container for a Famous-renderable piece of the document.
-     *   It is directly updated by the process-wide Engine object, and manages one
-     *   render tree root, which can contain other renderables.
-     *
-     * @class Context
-     * @constructor
-     * @private
-     * @param {Node} container Element in which content will be inserted
-     */
-    function Context(container) {
-        this.container = container;
-        this._allocator = new ElementAllocator(container);
-
-        this._node = new RenderNode();
-        this._eventOutput = new EventHandler();
-        this._size = _getElementSize.call(this);
-
-        this._perspectiveState = new Transitionable(0);
-        this._perspective = undefined;
-
-        this._nodeContext = {
-            allocator: this._allocator,
-            transform: Transform.identity,
-            opacity: 1,
-            origin: _zeroZero,
-            align: _zeroZero,
-            size: this._size
-        };
-
-        this._eventOutput.on('resize', function() {
-            this.setSize(_getElementSize.call(this));
-        }.bind(this));
-
-    }
-
-    // Note: Unused
-    Context.prototype.getAllocator = function getAllocator() {
-        return this._allocator;
-    };
-
-    /**
-     * Add renderables to this Context's render tree.
-     *
-     * @method add
-     *
-     * @param {Object} obj renderable object
-     * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
-     */
-    Context.prototype.add = function add(obj) {
-        return this._node.add(obj);
-    };
-
-    /**
-     * Move this Context to another containing document element.
-     *
-     * @method migrate
-     *
-     * @param {Node} container Element to which content will be migrated
-     */
-    Context.prototype.migrate = function migrate(container) {
-        if (container === this.container) return;
-        this.container = container;
-        this._allocator.migrate(container);
-    };
-
-    /**
-     * Gets viewport size for Context.
-     *
-     * @method getSize
-     *
-     * @return {Array.Number} viewport size as [width, height]
-     */
-    Context.prototype.getSize = function getSize() {
-        return this._size;
-    };
-
-    /**
-     * Sets viewport size for Context.
-     *
-     * @method setSize
-     *
-     * @param {Array.Number} size [width, height].  If unspecified, use size of root document element.
-     */
-    Context.prototype.setSize = function setSize(size) {
-        if (!size) size = _getElementSize.call(this);
-        this._size[0] = size[0];
-        this._size[1] = size[1];
-    };
-
-    /**
-     * Commit this Context's content changes to the document.
-     *
-     * @private
-     * @method update
-     * @param {Object} contextParameters engine commit specification
-     */
-    Context.prototype.update = function update(contextParameters) {
-        if (contextParameters) {
-            if (contextParameters.transform) this._nodeContext.transform = contextParameters.transform;
-            if (contextParameters.opacity) this._nodeContext.opacity = contextParameters.opacity;
-            if (contextParameters.origin) this._nodeContext.origin = contextParameters.origin;
-            if (contextParameters.align) this._nodeContext.align = contextParameters.align;
-            if (contextParameters.size) this._nodeContext.size = contextParameters.size;
-        }
-        var perspective = this._perspectiveState.get();
-        if (perspective !== this._perspective) {
-            _setPerspective(this.container, perspective);
-            this._perspective = perspective;
-        }
-
-        this._node.commit(this._nodeContext);
-    };
-
-    /**
-     * Get current perspective of this context in pixels.
-     *
-     * @method getPerspective
-     * @return {Number} depth perspective in pixels
-     */
-    Context.prototype.getPerspective = function getPerspective() {
-        return this._perspectiveState.get();
-    };
-
-    /**
-     * Set current perspective of this context in pixels.
-     *
-     * @method setPerspective
-     * @param {Number} perspective in pixels
-     * @param {Object} [transition] Transitionable object for applying the change
-     * @param {function(Object)} callback function called on completion of transition
-     */
-    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        return this._perspectiveState.set(perspective, transition, callback);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    Context.prototype.emit = function emit(type, event) {
-        return this._eventOutput.emit(type, event);
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    Context.prototype.on = function on(type, handler) {
-        return this._eventOutput.on(type, handler);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
-     */
-    Context.prototype.removeListener = function removeListener(type, handler) {
-        return this._eventOutput.removeListener(type, handler);
-    };
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    Context.prototype.pipe = function pipe(target) {
-        return this._eventOutput.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    Context.prototype.unpipe = function unpipe(target) {
-        return this._eventOutput.unpipe(target);
-    };
-
-    module.exports = Context;
-
-
-/***/ }),
-/* 126 */
-/***/ (function(module, exports) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-
-    /**
-     * Internal helper object to Context that handles the process of
-     *   creating and allocating DOM elements within a managed div.
-     *   Private.
-     *
-     * @class ElementAllocator
-     * @constructor
-     * @private
-     * @param {Node} container document element in which Famo.us content will be inserted
-     */
-    function ElementAllocator(container) {
-        if (!container) container = document.createDocumentFragment();
-        this.container = container;
-        this.detachedNodes = {};
-        this.nodeCount = 0;
-    }
-
-    /**
-     * Move the document elements from their original container to a new one.
-     *
-     * @private
-     * @method migrate
-     *
-     * @param {Node} container document element to which Famo.us content will be migrated
-     */
-    ElementAllocator.prototype.migrate = function migrate(container) {
-        var oldContainer = this.container;
-        if (container === oldContainer) return;
-
-        if (oldContainer instanceof DocumentFragment) {
-            container.appendChild(oldContainer);
-        }
-        else {
-            while (oldContainer.hasChildNodes()) {
-                container.appendChild(oldContainer.firstChild);
-            }
-        }
-
-        this.container = container;
-    };
-
-    /**
-     * Allocate an element of specified type from the pool.
-     *
-     * @private
-     * @method allocate
-     *
-     * @param {string} type type of element, e.g. 'div'
-     * @return {Node} allocated document element
-     */
-    ElementAllocator.prototype.allocate = function allocate(type) {
-        type = type.toLowerCase();
-        if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
-        var nodeStore = this.detachedNodes[type];
-        var result;
-        if (nodeStore.length > 0) {
-            result = nodeStore.pop();
-        }
-        else {
-            result = document.createElement(type);
-            this.container.appendChild(result);
-        }
-        this.nodeCount++;
-        return result;
-    };
-
-    /**
-     * De-allocate an element of specified type to the pool.
-     *
-     * @private
-     * @method deallocate
-     *
-     * @param {Node} element document element to deallocate
-     */
-    ElementAllocator.prototype.deallocate = function deallocate(element) {
-        var nodeType = element.nodeName.toLowerCase();
-        var nodeStore = this.detachedNodes[nodeType];
-        nodeStore.push(element);
-        this.nodeCount--;
-    };
-
-    /**
-     * Get count of total allocated nodes in the document.
-     *
-     * @private
-     * @method getNodeCount
-     *
-     * @return {Number} total node count
-     */
-    ElementAllocator.prototype.getNodeCount = function getNodeCount() {
-        return this.nodeCount;
-    };
-
-    module.exports = ElementAllocator;
-
-
-/***/ }),
-/* 127 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-// Polyfill for Function.name on browsers that do not support it (IE):
-// See: http://stackoverflow.com/questions/6903762/function-name-not-supported-in-ie
-if (!(function f() {}).name) {
-    Object.defineProperty(Function.prototype, "name", {
-        get: function () {
-            var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = instanceOf;
 
-            // For better performance only parse once, and then cache the
-            // result through a new accessor for repeated access.
-            Object.defineProperty(this, "name", { value: name });
-
-            return name;
-        }
-    });
+// helper function to use instead of instanceof for classes that implement the
+// static Symbol.hasInstance method, because the behavior of instanceof isn't
+// polyfillable.
+function instanceOf(instance, Constructor) {
+  if (typeof Constructor == 'function' && Constructor[Symbol.hasInstance]) return Constructor[Symbol.hasInstance](instance);else return instance instanceof Constructor;
 }
-//# sourceMappingURL=polyfill.Function.name.js.map
 
 /***/ }),
-/* 128 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var Entity = __webpack_require__(82);
-    var EventHandler = __webpack_require__(13);
-    var Transform = __webpack_require__(5);
-
-    var usePrefix = !('transform' in document.documentElement.style);
-    var devicePixelRatio = window.devicePixelRatio || 1;
-
-    /**
-     * A base class for viewable content and event
-     *   targets inside a Famo.us application, containing a renderable document
-     *   fragment. Like an HTML div, it can accept internal markup,
-     *   properties, classes, and handle events.
-     *
-     * @class ElementOutput
-     * @constructor
-     *
-     * @param {Node} element document parent of this container
-     */
-    function ElementOutput(element) {
-        this._matrix = null;
-        this._opacity = 1;
-        this._origin = null;
-        this._size = null;
-
-        this._eventOutput = new EventHandler();
-        this._eventOutput.bindThis(this);
-
-        /** @ignore */
-        this.eventForwarder = function eventForwarder(event) {
-            this._eventOutput.emit(event.type, event);
-        }.bind(this);
-
-        this.id = Entity.register(this);
-        this._element = null;
-        this._sizeDirty = false;
-        this._originDirty = false;
-        this._transformDirty = false;
-
-        this._invisible = false;
-        if (element) this.attach(element);
-    }
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler callback
-     * @return {EventHandler} this
-     */
-    ElementOutput.prototype.on = function on(type, fn) {
-        if (this._element) this._element.addEventListener(type, this.eventForwarder);
-        this._eventOutput.on(type, fn);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on"
-     *
-     * @method removeListener
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler
-     */
-    ElementOutput.prototype.removeListener = function removeListener(type, fn) {
-        this._eventOutput.removeListener(type, fn);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} [event] event data
-     * @return {EventHandler} this
-     */
-    ElementOutput.prototype.emit = function emit(type, event) {
-        if (event && !event.origin) event.origin = this;
-        var handled = this._eventOutput.emit(type, event);
-        if (handled && event && event.stopPropagation) event.stopPropagation();
-        return handled;
-    };
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    ElementOutput.prototype.pipe = function pipe(target) {
-        return this._eventOutput.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe"
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    ElementOutput.prototype.unpipe = function unpipe(target) {
-        return this._eventOutput.unpipe(target);
-    };
-
-    /**
-     * Return spec for this surface. Note that for a base surface, this is
-     *    simply an id.
-     *
-     * @method render
-     * @private
-     * @return {Object} render spec for this surface (spec id)
-     */
-    ElementOutput.prototype.render = function render() {
-        return this.id;
-    };
-
-    //  Attach Famous event handling to document events emanating from target
-    //    document element.  This occurs just after attachment to the document.
-    //    Calling this enables methods like #on and #pipe.
-    function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners) {
-            target.addEventListener(i, this.eventForwarder);
-        }
-    }
-
-    //  Detach Famous event handling from document events emanating from target
-    //  document element.  This occurs just before detach from the document.
-    function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners) {
-            target.removeEventListener(i, this.eventForwarder);
-        }
-    }
-
-    /**
-     * Return a Matrix's webkit css representation to be used with the
-     *    CSS3 -webkit-transform style.
-     *    Example: -webkit-transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,716,243,0,1)
-     *
-     * @method _formatCSSTransform
-     * @private
-     * @param {FamousMatrix} m matrix
-     * @return {string} matrix3d CSS style representation of the transform
-     */
-    function _formatCSSTransform(m) {
-        m[12] = Math.round(m[12] * devicePixelRatio) / devicePixelRatio;
-        m[13] = Math.round(m[13] * devicePixelRatio) / devicePixelRatio;
-
-        var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) {
-            result += (m[i] < 0.000001 && m[i] > -0.000001) ? '0,' : m[i] + ',';
-        }
-        result += m[15] + ')';
-        return result;
-    }
-
-    /**
-     * Directly apply given FamousMatrix to the document element as the
-     *   appropriate webkit CSS style.
-     *
-     * @method setMatrix
-     *
-     * @static
-     * @private
-     * @param {Element} element document element
-     * @param {FamousMatrix} matrix
-     */
-
-    var _setMatrix;
-    if (usePrefix) {
-        _setMatrix = function(element, matrix) {
-            element.style.webkitTransform = _formatCSSTransform(matrix);
-        };
-    }
-    else {
-        _setMatrix = function(element, matrix) {
-            element.style.transform = _formatCSSTransform(matrix);
-        };
-    }
-
-    // format origin as CSS percentage string
-    function _formatCSSOrigin(origin) {
-        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
-    }
-
-    // Directly apply given origin coordinates to the document element as the
-    // appropriate webkit CSS style.
-    var _setOrigin = usePrefix ? function(element, origin) {
-        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-    } : function(element, origin) {
-        element.style.transformOrigin = _formatCSSOrigin(origin);
-    };
-
-    // Shrink given document element until it is effectively invisible.
-    var _setInvisible = usePrefix ? function(element) {
-        element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = 0;
-    } : function(element) {
-        element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = 0;
-    };
-
-    function _xyNotEquals(a, b) {
-        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
-    }
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    ElementOutput.prototype.commit = function commit(context) {
-        var target = this._element;
-        if (!target) return;
-
-        var matrix = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
-        var size = context.size;
-
-        if (!matrix && this._matrix) {
-            this._matrix = null;
-            this._opacity = 0;
-            _setInvisible(target);
-            return;
-        }
-
-        if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
-        if (Transform.notEquals(this._matrix, matrix)) this._transformDirty = true;
-
-        if (this._invisible) {
-            this._invisible = false;
-            this._element.style.display = '';
-        }
-
-        if (this._opacity !== opacity) {
-            this._opacity = opacity;
-            target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
-        }
-
-        if (this._transformDirty || this._originDirty || this._sizeDirty) {
-            if (this._sizeDirty) this._sizeDirty = false;
-
-            if (this._originDirty) {
-                if (origin) {
-                    if (!this._origin) this._origin = [0, 0];
-                    this._origin[0] = origin[0];
-                    this._origin[1] = origin[1];
-                }
-                else this._origin = null;
-                _setOrigin(target, this._origin);
-                this._originDirty = false;
-            }
-
-            if (!matrix) matrix = Transform.identity;
-            this._matrix = matrix;
-            var aaMatrix = this._size ? Transform.thenMove(matrix, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : matrix;
-            _setMatrix(target, aaMatrix);
-            this._transformDirty = false;
-        }
-    };
-
-    ElementOutput.prototype.cleanup = function cleanup() {
-        if (this._element) {
-            this._invisible = true;
-            this._element.style.display = 'none';
-        }
-    };
-
-    /**
-     * Place the document element that this component manages into the document.
-     *
-     * @private
-     * @method attach
-     * @param {Node} target document parent of this container
-     */
-    ElementOutput.prototype.attach = function attach(target) {
-        this._element = target;
-        _addEventListeners.call(this, target);
-    };
-
-    /**
-     * Remove any contained document content associated with this surface
-     *   from the actual document.
-     *
-     * @private
-     * @method detach
-     */
-    ElementOutput.prototype.detach = function detach() {
-        var target = this._element;
-        if (target) {
-            _removeEventListeners.call(this, target);
-            if (this._invisible) {
-                this._invisible = false;
-                this._element.style.display = '';
-            }
-        }
-        this._element = null;
-        return target;
-    };
-
-    module.exports = ElementOutput;
-
+(function(a,b){ true?module.exports=b():undefined})(this,function(){return function(a){function b(d){if(c[d])return c[d].exports;var e=c[d]={i:d,l:!1,exports:{}};return a[d].call(e.exports,e,e.exports,b),e.l=!0,e.exports}var c={};return b.m=a,b.c=c,b.d=function(a,c,d){b.o(a,c)||Object.defineProperty(a,c,{configurable:!1,enumerable:!0,get:d})},b.n=function(a){var c=a&&a.__esModule?function(){return a['default']}:function(){return a};return b.d(c,'a',c),c},b.o=function(a,b){return Object.prototype.hasOwnProperty.call(a,b)},b.p='',b(b.s=3)}([function(a,b,c){'use strict';var d=c(1),e=c(2);Object(d.b)();var f=function(a){function b(c){const d=arguments.length;if(0===d)a.call(this,[1,0,0,1,0,0]);else if(1!==d)throw new Error('Wrong number of arguments to DOMMatrix constructor.');else if('string'==typeof c)throw new Error('CSS transformList arg not yet implemented.');else c instanceof b?a.call(this,c._matrix):(c instanceof Float32Array||c instanceof Float64Array||c instanceof Array)&&a.call(this,c)}a&&(b.__proto__=a),b.prototype=Object.create(a&&a.prototype),b.prototype.constructor=b;var c={a:{},b:{},c:{},d:{},e:{},f:{},m11:{},m12:{},m13:{},m14:{},m21:{},m22:{},m23:{},m24:{},m31:{},m32:{},m33:{},m34:{},m41:{},m42:{},m43:{},m44:{}};return b.prototype.multiplySelf=function(a){if(!(a instanceof b))throw new Error('The argument to multiplySelf must be an instance of DOMMatrix');return Object(e.b)(this,a,this),a.is2D||(this._is2D=!1),this},b.prototype.preMultiplySelf=function(a){if(!(a instanceof b))throw new Error('The argument to multiplySelf must be an instance of DOMMatrix');return Object(e.b)(a,this,this),a.is2D||(this._is2D=!1),this},b.prototype.translateSelf=function(a,c,d){if(void 0===d&&(d=0),1===arguments.length)throw new Error('The first two arguments (X and Y translation values) are required (the third, Z translation, is optional).');const e=new b([1,0,0,0,0,1,0,0,0,0,1,0,a,c,d,1]);return this.multiplySelf(e),0!=d&&(this._is2D=!1),this},b.prototype.scaleSelf=function(a,c,d){return void 0===c&&(c=0),void 0===d&&(d=0),this.translateSelf(c,d),this.multiplySelf(new b([a,0,0,a,0,0])),this.translateSelf(-c,-d),this},b.prototype.scale3dSelf=function(a,c,d,e){return void 0===c&&(c=0),void 0===d&&(d=0),void 0===e&&(e=0),this.translateSelf(c,d,e),this.multiplySelf(new b([a,0,0,0,0,a,0,0,0,0,a,0,0,0,0,1])),this.translateSelf(-c,-d,-e),this},b.prototype.scaleNonUniformSelf=function(a,c,d,e,f,g){return void 0===c&&(c=1),void 0===d&&(d=1),void 0===e&&(e=0),void 0===f&&(f=0),void 0===g&&(g=0),this.translateSelf(e,f,g),this.multiplySelf(new b([a,0,0,0,0,c,0,0,0,0,d,0,0,0,0,1])),this.translateSelf(-e,-f,-g),(1!==d||0!==g)&&(this._is2D=!1),this},b.prototype.rotateSelf=function(a,b,c){void 0===b&&(b=0),void 0===c&&(c=0),this.translateSelf(b,c);var d=[0,0,1],e=d[0],f=d[1],g=d[2];return this.rotateAxisAngleSelf(e,f,g,a),this.translateSelf(-b,-c),this},b.prototype.rotateFromVectorSelf=function(){throw new Error('rotateFromVectorSelf is not implemented yet.')},b.prototype.rotateAxisAngleSelf=function(a,c,d,f){const g=new b(Object(e.c)(a,c,d,f));return this.multiplySelf(g),this},b.prototype.skewXSelf=function(){throw new Error('skewXSelf is not implemented yet.')},b.prototype.skewYSelf=function(){throw new Error('skewYSelf is not implemented yet.')},b.prototype.invertSelf=function(){throw new Error('invertSelf is not implemented yet.')},b.prototype.setMatrixValue=function(){throw new Error('setMatrixValue is not implemented yet.')},c.a.get=function(){return this.m11},c.b.get=function(){return this.m12},c.c.get=function(){return this.m21},c.d.get=function(){return this.m22},c.e.get=function(){return this.m41},c.f.get=function(){return this.m42},c.m11.get=function(){return this._matrix[0]},c.m12.get=function(){return this._matrix[4]},c.m13.get=function(){return this._matrix[8]},c.m14.get=function(){return this._matrix[12]},c.m21.get=function(){return this._matrix[1]},c.m22.get=function(){return this._matrix[5]},c.m23.get=function(){return this._matrix[9]},c.m24.get=function(){return this._matrix[13]},c.m31.get=function(){return this._matrix[2]},c.m32.get=function(){return this._matrix[6]},c.m33.get=function(){return this._matrix[10]},c.m34.get=function(){return this._matrix[14]},c.m41.get=function(){return this._matrix[3]},c.m42.get=function(){return this._matrix[7]},c.m43.get=function(){return this._matrix[11]},c.m44.get=function(){return this._matrix[15]},c.a.set=function(a){this.m11=a},c.b.set=function(a){this.m12=a},c.c.set=function(a){this.m21=a},c.d.set=function(a){this.m22=a},c.e.set=function(a){this.m41=a},c.f.set=function(a){this.m42=a},c.m11.set=function(a){this._matrix[0]=a},c.m12.set=function(a){this._matrix[4]=a},c.m13.set=function(a){this._matrix[8]=a},c.m14.set=function(a){this._matrix[12]=a},c.m21.set=function(a){this._matrix[1]=a},c.m22.set=function(a){this._matrix[5]=a},c.m23.set=function(a){this._matrix[9]=a},c.m24.set=function(a){this._matrix[13]=a},c.m31.set=function(a){this._matrix[2]=a},c.m32.set=function(a){this._matrix[6]=a},c.m33.set=function(a){this._matrix[10]=a},c.m34.set=function(a){this._matrix[14]=a},c.m41.set=function(a){this._matrix[3]=a},c.m42.set=function(a){this._matrix[7]=a},c.m43.set=function(a){this._matrix[11]=a},c.m44.set=function(a){this._matrix[15]=a},Object.defineProperties(b.prototype,c),b}(d.a);b.a=f},function(a,b,c){'use strict';function d(){h||(h=function(){function a(a){if(void 0===a&&(a=[]),!(this instanceof e.a))throw new TypeError('DOMMatrixReadOnly can\'t be instantiated directly. Use DOMMatrix instead.');var b=a.length;if(void 0===b||6!==b&&16!==b)throw new TypeError('DOMMatrix constructor argument "numberSequence" must be an array-like with 6 or 16 numbers.');this._matrix=new Float64Array(g),this._isIdentity=!0,this._is2D=6===b,Object(f.a)(a,this)}var b={is2D:{},isIdentity:{},a:{},b:{},c:{},d:{},e:{},f:{},m11:{},m12:{},m13:{},m14:{},m21:{},m22:{},m23:{},m24:{},m31:{},m32:{},m33:{},m34:{},m41:{},m42:{},m43:{},m44:{}};return a.prototype.translate=function(a,b,c){return void 0===c&&(c=0),new e.a(this).translateSelf(a,b,c)},a.prototype.scale=function(a,b,c){return void 0===b&&(b=0),void 0===c&&(c=0),new e.a(this).scaleSelf(a,b,c)},a.prototype.scale3d=function(a,b,c,d){return void 0===b&&(b=0),void 0===c&&(c=0),void 0===d&&(d=0),new e.a(this).scale3dSelf(a,b,c,d)},a.prototype.scaleNonUniform=function(a,b,c,d,f,g){return void 0===b&&(b=1),void 0===c&&(c=1),void 0===d&&(d=0),void 0===f&&(f=0),void 0===g&&(g=0),new e.a(this).scaleNonUniformSelf(a,b,c,d,f,g)},a.prototype.rotate=function(a,b,c){return void 0===b&&(b=0),void 0===c&&(c=0),new e.a(this).rotateSelf(a,b,c)},a.prototype.rotateFromVector=function(){throw new Error('rotateFromVector is not implemented yet.')},a.prototype.rotateAxisAngle=function(a,b,c,d){return new e.a(this).rotateAxisAngleSelf(a,b,c,d)},a.prototype.skewX=function(){throw new Error('skewX is not implemented yet.')},a.prototype.skewY=function(){throw new Error('skewY is not implemented yet.')},a.prototype.multiply=function(a){return new e.a(this).multiplySelf(a)},a.prototype.flipX=function(){throw new Error('flipX is not implemented yet.')},a.prototype.flipY=function(){throw new Error('flipY is not implemented yet.')},a.prototype.inverse=function(){throw new Error('inverse is not implemented yet.')},a.prototype.transformPoint=function(){throw new Error('transformPoint is not implemented yet.')},a.prototype.toFloat32Array=function(){return Float32Array.from(this._matrix)},a.prototype.toFloat64Array=function(){return Float64Array.from(this._matrix)},b.is2D.get=function(){return this._is2D},b.isIdentity.get=function(){for(var a=this,b=0,c=this._matrix.length;b<c;b+=1)if(a._matrix[b]!=g[b])return a._isIdentity=!1;return this._isIdentity=!0},b.a.get=function(){return this.m11},b.b.get=function(){return this.m12},b.c.get=function(){return this.m21},b.d.get=function(){return this.m22},b.e.get=function(){return this.m41},b.f.get=function(){return this.m42},b.m11.get=function(){return this._matrix[0]},b.m12.get=function(){return this._matrix[4]},b.m13.get=function(){return this._matrix[8]},b.m14.get=function(){return this._matrix[12]},b.m21.get=function(){return this._matrix[1]},b.m22.get=function(){return this._matrix[5]},b.m23.get=function(){return this._matrix[9]},b.m24.get=function(){return this._matrix[13]},b.m31.get=function(){return this._matrix[2]},b.m32.get=function(){return this._matrix[6]},b.m33.get=function(){return this._matrix[10]},b.m34.get=function(){return this._matrix[14]},b.m41.get=function(){return this._matrix[3]},b.m42.get=function(){return this._matrix[7]},b.m43.get=function(){return this._matrix[11]},b.m44.get=function(){return this._matrix[15]},Object.defineProperties(a.prototype,b),a}())}b.b=d,c.d(b,'a',function(){return h});var e=c(0),f=c(2);const g=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];var h=null;d()},function(a,b){'use strict';function c(a,b){const c=a.length;6===c?(b.m11=a[0],b.m12=a[1],b.m21=a[2],b.m22=a[3],b.m41=a[4],b.m42=a[5]):16===c&&(b.m11=a[0],b.m12=a[1],b.m13=a[2],b.m14=a[3],b.m21=a[4],b.m22=a[5],b.m23=a[6],b.m24=a[7],b.m31=a[8],b.m32=a[9],b.m33=a[10],b.m34=a[11],b.m41=a[12],b.m42=a[13],b.m43=a[14],b.m44=a[15])}function d(a){return Math.PI/180*a}b.b=function(a,b,d){e[0]=a.m11*b.m11+a.m21*b.m12+a.m31*b.m13+a.m41*b.m14,e[4]=a.m11*b.m21+a.m21*b.m22+a.m31*b.m23+a.m41*b.m24,e[8]=a.m11*b.m31+a.m21*b.m32+a.m31*b.m33+a.m41*b.m34,e[12]=a.m11*b.m41+a.m21*b.m42+a.m31*b.m43+a.m41*b.m44,e[1]=a.m12*b.m11+a.m22*b.m12+a.m32*b.m13+a.m42*b.m14,e[5]=a.m12*b.m21+a.m22*b.m22+a.m32*b.m23+a.m42*b.m24,e[9]=a.m12*b.m31+a.m22*b.m32+a.m32*b.m33+a.m42*b.m34,e[13]=a.m12*b.m41+a.m22*b.m42+a.m32*b.m43+a.m42*b.m44,e[2]=a.m13*b.m11+a.m23*b.m12+a.m33*b.m13+a.m43*b.m14,e[6]=a.m13*b.m21+a.m23*b.m22+a.m33*b.m23+a.m43*b.m24,e[10]=a.m13*b.m31+a.m23*b.m32+a.m33*b.m33+a.m43*b.m34,e[14]=a.m13*b.m41+a.m23*b.m42+a.m33*b.m43+a.m43*b.m44,e[3]=a.m14*b.m11+a.m24*b.m12+a.m34*b.m13+a.m44*b.m14,e[7]=a.m14*b.m21+a.m24*b.m22+a.m34*b.m23+a.m44*b.m24,e[11]=a.m14*b.m31+a.m24*b.m32+a.m34*b.m33+a.m44*b.m34,e[15]=a.m14*b.m41+a.m24*b.m42+a.m34*b.m43+a.m44*b.m44,c(e,d)},b.a=c,b.c=function(a,b,c,e){var f=Math.sin,g=Math.cos,h=Math.pow;const i=d(e/2);return[1-2*(b*b+c*c)*h(f(i),2),2*(a*b*h(f(i),2)+c*f(i)*g(i)),2*(a*c*h(f(i),2)-b*f(i)*g(i)),0,2*(a*b*h(f(i),2)-c*f(i)*g(i)),1-2*(a*a+c*c)*h(f(i),2),2*(b*c*h(f(i),2)+a*f(i)*g(i)),0,2*(a*c*h(f(i),2)+b*f(i)*g(i)),2*(b*c*h(f(i),2)-a*f(i)*g(i)),1-2*(a*a+b*b)*h(f(i),2),0,0,0,0,1]};const e=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},function(a,b,c){a.exports=c(4)},function(a,b,c){'use strict';Object.defineProperty(b,'__esModule',{value:!0}),function(a){var d=c(0),e=c(1),f=c(6);c.d(b,'DOMMatrix',function(){return d.a}),c.d(b,'DOMMatrixReadOnly',function(){return e.a}),c.d(b,'DOMPoint',function(){return f.a}),c.d(b,'DOMPointReadOnly',function(){return f.b});let g=null;'undefined'==typeof window?'undefined'!=typeof a&&(g=a):g=window,g&&(g.DOMMatrix=d.a,g.DOMMatrixReadOnly=e.a,g.DOMPoint=f.a,g.DOMPointReadOnly=f.b)}.call(b,c(5))},function(a){var b=function(){return this}();try{b=b||Function('return this')()||(1,eval)('this')}catch(a){'object'==typeof window&&(b=window)}a.exports=b},function(a,b,c){'use strict';function d(a){return!('object'!=typeof a)&&'x'in a&&'y'in a&&'z'in a&&'w'in a}c.d(b,'b',function(){return g}),c.d(b,'a',function(){return i});let e;const f=function(a){if(!e){e=new WeakMap;let b={};return e.set(a,b),b}let b=e.get(a);return void 0===b&&(b={},e.set(a,b)),b};var g=function(a,b,c,e){if(1===arguments.length){if(!d(a))throw new TypeError('Expected an object with x, y, z, and w properties');f(this).x=a.x,f(this).y=a.y,f(this).z=a.z,f(this).w=a.w}else if(4===arguments.length)f(this).x=a||0,f(this).y=b||0,f(this).z=c||0,f(this).w=e||0;else throw new TypeError('Expected 1 or 4 arguments')},h={x:{},y:{},z:{},w:{}};h.x.get=function(){return f(this).x},h.y.get=function(){return f(this).y},h.z.get=function(){return f(this).z},h.w.get=function(){return f(this).w},g.prototype.matrixTransform=function(){let a=new this.constructor(this);return a},g.fromPoint=function(a){return new this(a)},Object.defineProperties(g.prototype,h);var i=function(a){function b(){a.apply(this,arguments)}a&&(b.__proto__=a),b.prototype=Object.create(a&&a.prototype),b.prototype.constructor=b;var c={x:{},y:{},z:{},w:{}};return c.x.set=function(a){f(this).x=a},c.y.set=function(a){f(this).y=a},c.z.set=function(a){f(this).z=a},c.w.set=function(a){f(this).w=a},Object.defineProperties(b.prototype,c),b}(g)}])});
+//# sourceMappingURL=global.js.map
 
 /***/ }),
-/* 129 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10277,25 +4074,25 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _StyleSheet = __webpack_require__(84);
+var _StyleSheet = __webpack_require__(50);
 
 var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
 
-var _PluginsRegistry = __webpack_require__(137);
+var _PluginsRegistry = __webpack_require__(93);
 
 var _PluginsRegistry2 = _interopRequireDefault(_PluginsRegistry);
 
-var _SheetsRegistry = __webpack_require__(138);
+var _SheetsRegistry = __webpack_require__(94);
 
 var _SheetsRegistry2 = _interopRequireDefault(_SheetsRegistry);
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
-var _createRule2 = __webpack_require__(85);
+var _createRule2 = __webpack_require__(51);
 
 var _createRule3 = _interopRequireDefault(_createRule2);
 
-var _findRenderer = __webpack_require__(87);
+var _findRenderer = __webpack_require__(53);
 
 var _findRenderer2 = _interopRequireDefault(_findRenderer);
 
@@ -10401,7 +4198,7 @@ var Jss = function () {
 exports.default = Jss;
 
 /***/ }),
-/* 130 */
+/* 86 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10413,7 +4210,7 @@ g = (function() {
 
 try {
 	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
+	g = g || new Function("return this")();
 } catch (e) {
 	// This works if the window reference is available
 	if (typeof window === "object") g = window;
@@ -10427,7 +4224,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 131 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10439,7 +4236,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10490,7 +4287,7 @@ var SimpleRule = function () {
 exports.default = SimpleRule;
 
 /***/ }),
-/* 132 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10504,7 +4301,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10569,7 +4366,7 @@ var KeyframeRule = function () {
 exports.default = KeyframeRule;
 
 /***/ }),
-/* 133 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10583,7 +4380,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10667,7 +4464,7 @@ var ConditionalRule = function () {
 exports.default = ConditionalRule;
 
 /***/ }),
-/* 134 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10679,7 +4476,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(18);
+var _utils = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10730,7 +4527,7 @@ var Rule = function () {
 exports.default = Rule;
 
 /***/ }),
-/* 135 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10880,7 +4677,7 @@ var DomRenderer = function () {
 exports.default = DomRenderer;
 
 /***/ }),
-/* 136 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10937,7 +4734,7 @@ var VirtualRenderer = function () {
 exports.default = VirtualRenderer;
 
 /***/ }),
-/* 137 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11000,7 +4797,7 @@ var PluginsRegistry = function () {
 exports.default = PluginsRegistry;
 
 /***/ }),
-/* 138 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11063,7 +4860,7 @@ var SheetsRegistry = function () {
 exports.default = SheetsRegistry;
 
 /***/ }),
-/* 139 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11074,15 +4871,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.supportedValue = exports.supportedProperty = exports.prefix = undefined;
 
-var _prefix = __webpack_require__(49);
+var _prefix = __webpack_require__(30);
 
 var _prefix2 = _interopRequireDefault(_prefix);
 
-var _supportedProperty = __webpack_require__(140);
+var _supportedProperty = __webpack_require__(96);
 
 var _supportedProperty2 = _interopRequireDefault(_supportedProperty);
 
-var _supportedValue = __webpack_require__(142);
+var _supportedValue = __webpack_require__(98);
 
 var _supportedValue2 = _interopRequireDefault(_supportedValue);
 
@@ -11105,7 +4902,7 @@ exports.supportedProperty = _supportedProperty2['default'];
 exports.supportedValue = _supportedValue2['default'];
 
 /***/ }),
-/* 140 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11116,15 +4913,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports['default'] = supportedProperty;
 
-var _isInBrowser = __webpack_require__(50);
+var _isInBrowser = __webpack_require__(31);
 
 var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 
-var _prefix = __webpack_require__(49);
+var _prefix = __webpack_require__(30);
 
 var _prefix2 = _interopRequireDefault(_prefix);
 
-var _camelize = __webpack_require__(141);
+var _camelize = __webpack_require__(97);
 
 var _camelize2 = _interopRequireDefault(_camelize);
 
@@ -11183,7 +4980,7 @@ function supportedProperty(prop) {
 }
 
 /***/ }),
-/* 141 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11210,7 +5007,7 @@ function toUpper(match, c) {
 }
 
 /***/ }),
-/* 142 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11221,11 +5018,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports['default'] = supportedValue;
 
-var _isInBrowser = __webpack_require__(50);
+var _isInBrowser = __webpack_require__(31);
 
 var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 
-var _prefix = __webpack_require__(49);
+var _prefix = __webpack_require__(30);
 
 var _prefix2 = _interopRequireDefault(_prefix);
 
@@ -11290,1439 +5087,7 @@ function supportedValue(property, value) {
 }
 
 /***/ }),
-/* 143 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-    var EventHandler = __webpack_require__(13);
-
-    var _now = Date.now;
-
-    function _timestampTouch(touch, event, history) {
-        return {
-            x: touch.clientX,
-            y: touch.clientY,
-            identifier : touch.identifier,
-            origin: event.origin,
-            timestamp: _now(),
-            count: event.touches.length,
-            history: history
-        };
-    }
-
-    function _handleStart(event) {
-        if (event.touches.length > this.touchLimit) return;
-        this.isTouched = true;
-
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            var data = _timestampTouch(touch, event, null);
-            this.eventOutput.emit('trackstart', data);
-            if (!this.selective && !this.touchHistory[touch.identifier]) this.track(data);
-        }
-    }
-
-    function _handleMove(event) {
-        if (event.touches.length > this.touchLimit) return;
-
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            var history = this.touchHistory[touch.identifier];
-            if (history) {
-                var data = _timestampTouch(touch, event, history);
-                this.touchHistory[touch.identifier].push(data);
-                this.eventOutput.emit('trackmove', data);
-            }
-        }
-    }
-
-    function _handleEnd(event) {
-        if (!this.isTouched) return;
-
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            var history = this.touchHistory[touch.identifier];
-            if (history) {
-                var data = _timestampTouch(touch, event, history);
-                this.eventOutput.emit('trackend', data);
-                delete this.touchHistory[touch.identifier];
-            }
-        }
-
-        this.isTouched = false;
-    }
-
-    function _handleUnpipe() {
-        for (var i in this.touchHistory) {
-            var history = this.touchHistory[i];
-            this.eventOutput.emit('trackend', {
-                touch: history[history.length - 1].touch,
-                timestamp: Date.now(),
-                count: 0,
-                history: history
-            });
-            delete this.touchHistory[i];
-        }
-    }
-
-    /**
-     * Helper to TouchSync – tracks piped in touch events, organizes touch
-     *   events by ID, and emits track events back to TouchSync.
-     *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
-     *
-     * @class TouchTracker
-     * @constructor
-     * @param {Object} options default options overrides
-     * @param [options.selective] {Boolean} selective if false, saves state for each touch
-     * @param [options.touchLimit] {Number} touchLimit upper bound for emitting events based on number of touches
-     */
-    function TouchTracker(options) {
-        this.selective = options.selective;
-        this.touchLimit = options.touchLimit || 1;
-
-        this.touchHistory = {};
-
-        this.eventInput = new EventHandler();
-        this.eventOutput = new EventHandler();
-
-        EventHandler.setInputHandler(this, this.eventInput);
-        EventHandler.setOutputHandler(this, this.eventOutput);
-
-        this.eventInput.on('touchstart', _handleStart.bind(this));
-        this.eventInput.on('touchmove', _handleMove.bind(this));
-        this.eventInput.on('touchend', _handleEnd.bind(this));
-        this.eventInput.on('touchcancel', _handleEnd.bind(this));
-        this.eventInput.on('unpipe', _handleUnpipe.bind(this));
-
-        this.isTouched = false;
-    }
-
-    /**
-     * Record touch data, if selective is false.
-     * @private
-     * @method track
-     * @param {Object} data touch data
-     */
-    TouchTracker.prototype.track = function track(data) {
-        this.touchHistory[data.identifier] = [data];
-    };
-
-    module.exports = TouchTracker;
-
-
-/***/ }),
-/* 144 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(145);
-module.exports = __webpack_require__(1).Object.getOwnPropertyDescriptors;
-
-
-/***/ }),
-/* 145 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://github.com/tc39/proposal-object-getownpropertydescriptors
-var $export = __webpack_require__(2);
-var ownKeys = __webpack_require__(146);
-var toIObject = __webpack_require__(16);
-var gOPD = __webpack_require__(38);
-var createProperty = __webpack_require__(92);
-
-$export($export.S, 'Object', {
-  getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object) {
-    var O = toIObject(object);
-    var getDesc = gOPD.f;
-    var keys = ownKeys(O);
-    var result = {};
-    var i = 0;
-    var key, desc;
-    while (keys.length > i) {
-      desc = getDesc(O, key = keys[i++]);
-      if (desc !== undefined) createProperty(result, key, desc);
-    }
-    return result;
-  }
-});
-
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// all object keys, includes non-enumerable and symbols
-var gOPN = __webpack_require__(52);
-var gOPS = __webpack_require__(37);
-var anObject = __webpack_require__(9);
-var Reflect = __webpack_require__(6).Reflect;
-module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
-  var keys = gOPN.f(anObject(it));
-  var getSymbols = gOPS.f;
-  return getSymbols ? keys.concat(getSymbols(it)) : keys;
-};
-
-
-/***/ }),
-/* 147 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// false -> Array#indexOf
-// true  -> Array#includes
-var toIObject = __webpack_require__(16);
-var toLength = __webpack_require__(34);
-var toAbsoluteIndex = __webpack_require__(148);
-module.exports = function (IS_INCLUDES) {
-  return function ($this, el, fromIndex) {
-    var O = toIObject($this);
-    var length = toLength(O.length);
-    var index = toAbsoluteIndex(fromIndex, length);
-    var value;
-    // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare
-    if (IS_INCLUDES && el != el) while (length > index) {
-      value = O[index++];
-      // eslint-disable-next-line no-self-compare
-      if (value != value) return true;
-    // Array#indexOf ignores holes, Array#includes - not
-    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
-      if (O[index] === el) return IS_INCLUDES || index || 0;
-    } return !IS_INCLUDES && -1;
-  };
-};
-
-
-/***/ }),
-/* 148 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(56);
-var max = Math.max;
-var min = Math.min;
-module.exports = function (index, length) {
-  index = toInteger(index);
-  return index < 0 ? max(index + length, 0) : min(index, length);
-};
-
-
-/***/ }),
-/* 149 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(150);
-var $Object = __webpack_require__(1).Object;
-module.exports = function defineProperty(it, key, desc) {
-  return $Object.defineProperty(it, key, desc);
-};
-
-
-/***/ }),
-/* 150 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $export = __webpack_require__(2);
-// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !__webpack_require__(8), 'Object', { defineProperty: __webpack_require__(7).f });
-
-
-/***/ }),
-/* 151 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(152);
-var $Object = __webpack_require__(1).Object;
-module.exports = function getOwnPropertyDescriptor(it, key) {
-  return $Object.getOwnPropertyDescriptor(it, key);
-};
-
-
-/***/ }),
-/* 152 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-var toIObject = __webpack_require__(16);
-var $getOwnPropertyDescriptor = __webpack_require__(38).f;
-
-__webpack_require__(40)('getOwnPropertyDescriptor', function () {
-  return function getOwnPropertyDescriptor(it, key) {
-    return $getOwnPropertyDescriptor(toIObject(it), key);
-  };
-});
-
-
-/***/ }),
-/* 153 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(154);
-var $Object = __webpack_require__(1).Object;
-module.exports = function create(P, D) {
-  return $Object.create(P, D);
-};
-
-
-/***/ }),
-/* 154 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $export = __webpack_require__(2);
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-$export($export.S, 'Object', { create: __webpack_require__(26) });
-
-
-/***/ }),
-/* 155 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var document = __webpack_require__(6).document;
-module.exports = document && document.documentElement;
-
-
-/***/ }),
-/* 156 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(94);
-module.exports = __webpack_require__(1).Object.getOwnPropertySymbols;
-
-
-/***/ }),
-/* 157 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(27);
-var gOPS = __webpack_require__(37);
-var pIE = __webpack_require__(39);
-module.exports = function (it) {
-  var result = getKeys(it);
-  var getSymbols = gOPS.f;
-  if (getSymbols) {
-    var symbols = getSymbols(it);
-    var isEnum = pIE.f;
-    var i = 0;
-    var key;
-    while (symbols.length > i) if (isEnum.call(it, key = symbols[i++])) result.push(key);
-  } return result;
-};
-
-
-/***/ }),
-/* 158 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(159);
-
-/***/ }),
-/* 159 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(160);
-module.exports = __webpack_require__(1).Object.keys;
-
-
-/***/ }),
-/* 160 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(22);
-var $keys = __webpack_require__(27);
-
-__webpack_require__(40)('keys', function () {
-  return function keys(it) {
-    return $keys(toObject(it));
-  };
-});
-
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$defineProperty = __webpack_require__(20);
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    _Object$defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-module.exports = _defineProperty;
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _typeof = __webpack_require__(163);
-
-var assertThisInitialized = __webpack_require__(173);
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  }
-
-  return assertThisInitialized(self);
-}
-
-module.exports = _possibleConstructorReturn;
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Symbol$iterator = __webpack_require__(164);
-
-var _Symbol = __webpack_require__(67);
-
-function _typeof2(obj) { if (typeof _Symbol === "function" && typeof _Symbol$iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof _Symbol === "function" && obj.constructor === _Symbol && obj !== _Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
-
-function _typeof(obj) {
-  if (typeof _Symbol === "function" && _typeof2(_Symbol$iterator) === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return _typeof2(obj);
-    };
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof _Symbol === "function" && obj.constructor === _Symbol && obj !== _Symbol.prototype ? "symbol" : _typeof2(obj);
-    };
-  }
-
-  return _typeof(obj);
-}
-
-module.exports = _typeof;
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(165);
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(43);
-__webpack_require__(44);
-module.exports = __webpack_require__(42).f('iterator');
-
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(56);
-var defined = __webpack_require__(55);
-// true  -> String#at
-// false -> String#codePointAt
-module.exports = function (TO_STRING) {
-  return function (that, pos) {
-    var s = String(defined(that));
-    var i = toInteger(pos);
-    var l = s.length;
-    var a, b;
-    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
-    a = s.charCodeAt(i);
-    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
-      ? TO_STRING ? s.charAt(i) : a
-      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
-  };
-};
-
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var create = __webpack_require__(26);
-var descriptor = __webpack_require__(24);
-var setToStringTag = __webpack_require__(41);
-var IteratorPrototype = {};
-
-// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(14)(IteratorPrototype, __webpack_require__(4)('iterator'), function () { return this; });
-
-module.exports = function (Constructor, NAME, next) {
-  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
-  setToStringTag(Constructor, NAME + ' Iterator');
-};
-
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var addToUnscopables = __webpack_require__(169);
-var step = __webpack_require__(98);
-var Iterators = __webpack_require__(29);
-var toIObject = __webpack_require__(16);
-
-// 22.1.3.4 Array.prototype.entries()
-// 22.1.3.13 Array.prototype.keys()
-// 22.1.3.29 Array.prototype.values()
-// 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = __webpack_require__(65)(Array, 'Array', function (iterated, kind) {
-  this._t = toIObject(iterated); // target
-  this._i = 0;                   // next index
-  this._k = kind;                // kind
-// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
-}, function () {
-  var O = this._t;
-  var kind = this._k;
-  var index = this._i++;
-  if (!O || index >= O.length) {
-    this._t = undefined;
-    return step(1);
-  }
-  if (kind == 'keys') return step(0, index);
-  if (kind == 'values') return step(0, O[index]);
-  return step(0, [index, O[index]]);
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
-Iterators.Arguments = Iterators.Array;
-
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-
-
-/***/ }),
-/* 169 */
-/***/ (function(module, exports) {
-
-module.exports = function () { /* empty */ };
-
-
-/***/ }),
-/* 170 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(94);
-__webpack_require__(45);
-__webpack_require__(171);
-__webpack_require__(172);
-module.exports = __webpack_require__(1).Symbol;
-
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(64)('asyncIterator');
-
-
-/***/ }),
-/* 172 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(64)('observable');
-
-
-/***/ }),
-/* 173 */
-/***/ (function(module, exports) {
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-module.exports = _assertThisInitialized;
-
-/***/ }),
-/* 174 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(175);
-module.exports = __webpack_require__(1).Object.getPrototypeOf;
-
-
-/***/ }),
-/* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(22);
-var $getPrototypeOf = __webpack_require__(66);
-
-__webpack_require__(40)('getPrototypeOf', function () {
-  return function getPrototypeOf(it) {
-    return $getPrototypeOf(toObject(it));
-  };
-});
-
-
-/***/ }),
-/* 176 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var setPrototypeOf = __webpack_require__(69);
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  setPrototypeOf(subClass.prototype, superClass && superClass.prototype);
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-
-module.exports = _inherits;
-
-/***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(178);
-module.exports = __webpack_require__(1).Object.setPrototypeOf;
-
-
-/***/ }),
-/* 178 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.3.19 Object.setPrototypeOf(O, proto)
-var $export = __webpack_require__(2);
-$export($export.S, 'Object', { setPrototypeOf: __webpack_require__(179).set });
-
-
-/***/ }),
-/* 179 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-var isObject = __webpack_require__(3);
-var anObject = __webpack_require__(9);
-var check = function (O, proto) {
-  anObject(O);
-  if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
-};
-module.exports = {
-  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
-    function (test, buggy, set) {
-      try {
-        set = __webpack_require__(19)(Function.call, __webpack_require__(38).f(Object.prototype, '__proto__').set, 2);
-        set(test, []);
-        buggy = !(test instanceof Array);
-      } catch (e) { buggy = true; }
-      return function setPrototypeOf(O, proto) {
-        check(O, proto);
-        if (buggy) O.__proto__ = proto;
-        else set(O, proto);
-        return O;
-      };
-    }({}, false) : undefined),
-  check: check
-};
-
-
-/***/ }),
-/* 180 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$create = __webpack_require__(60);
-
-var _Map = __webpack_require__(101);
-
-var getPrototypeOf = __webpack_require__(99);
-
-var setPrototypeOf = __webpack_require__(69);
-
-var construct = __webpack_require__(190);
-
-function _wrapNativeSuper(Class) {
-  var _cache = typeof _Map === "function" ? new _Map() : undefined;
-
-  module.exports = _wrapNativeSuper = function _wrapNativeSuper(Class) {
-    if (typeof Class !== "function") {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    if (typeof _cache !== "undefined") {
-      if (_cache.has(Class)) return _cache.get(Class);
-
-      _cache.set(Class, Wrapper);
-    }
-
-    function Wrapper() {}
-
-    Wrapper.prototype = _Object$create(Class.prototype, {
-      constructor: {
-        value: Wrapper,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    return setPrototypeOf(Wrapper, setPrototypeOf(function Super() {
-      return construct(Class, arguments, getPrototypeOf(this).constructor);
-    }, Class));
-  };
-
-  return _wrapNativeSuper(Class);
-}
-
-module.exports = _wrapNativeSuper;
-
-/***/ }),
-/* 181 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(45);
-__webpack_require__(43);
-__webpack_require__(44);
-__webpack_require__(182);
-__webpack_require__(186);
-__webpack_require__(188);
-__webpack_require__(189);
-module.exports = __webpack_require__(1).Map;
-
-
-/***/ }),
-/* 182 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var strong = __webpack_require__(102);
-var validate = __webpack_require__(31);
-var MAP = 'Map';
-
-// 23.1 Map Objects
-module.exports = __webpack_require__(72)(MAP, function (get) {
-  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
-}, {
-  // 23.1.3.6 Map.prototype.get(key)
-  get: function get(key) {
-    var entry = strong.getEntry(validate(this, MAP), key);
-    return entry && entry.v;
-  },
-  // 23.1.3.9 Map.prototype.set(key, value)
-  set: function set(key, value) {
-    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
-  }
-}, strong, true);
-
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global = __webpack_require__(6);
-var core = __webpack_require__(1);
-var dP = __webpack_require__(7);
-var DESCRIPTORS = __webpack_require__(8);
-var SPECIES = __webpack_require__(4)('species');
-
-module.exports = function (KEY) {
-  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
-  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
-    configurable: true,
-    get: function () { return this; }
-  });
-};
-
-
-/***/ }),
-/* 184 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(185);
-
-module.exports = function (original, length) {
-  return new (speciesConstructor(original))(length);
-};
-
-
-/***/ }),
-/* 185 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(3);
-var isArray = __webpack_require__(95);
-var SPECIES = __webpack_require__(4)('species');
-
-module.exports = function (original) {
-  var C;
-  if (isArray(original)) {
-    C = original.constructor;
-    // cross-realm fallback
-    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
-    if (isObject(C)) {
-      C = C[SPECIES];
-      if (C === null) C = undefined;
-    }
-  } return C === undefined ? Array : C;
-};
-
-
-/***/ }),
-/* 186 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var $export = __webpack_require__(2);
-
-$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(107)('Map') });
-
-
-/***/ }),
-/* 187 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var forOf = __webpack_require__(30);
-
-module.exports = function (iter, ITERATOR) {
-  var result = [];
-  forOf(iter, false, result.push, result, ITERATOR);
-  return result;
-};
-
-
-/***/ }),
-/* 188 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
-__webpack_require__(74)('Map');
-
-
-/***/ }),
-/* 189 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
-__webpack_require__(75)('Map');
-
-
-/***/ }),
-/* 190 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Reflect$construct = __webpack_require__(108);
-
-var setPrototypeOf = __webpack_require__(69);
-
-function _construct(Parent, args, Class) {
-  if (typeof Reflect !== "undefined" && _Reflect$construct) {
-    module.exports = _construct = _Reflect$construct;
-  } else {
-    module.exports = _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Parent.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-module.exports = _construct;
-
-/***/ }),
-/* 191 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(192);
-module.exports = __webpack_require__(1).Reflect.construct;
-
-
-/***/ }),
-/* 192 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
-var $export = __webpack_require__(2);
-var create = __webpack_require__(26);
-var aFunction = __webpack_require__(33);
-var anObject = __webpack_require__(9);
-var isObject = __webpack_require__(3);
-var fails = __webpack_require__(12);
-var bind = __webpack_require__(193);
-var rConstruct = (__webpack_require__(6).Reflect || {}).construct;
-
-// MS Edge supports only 2 arguments and argumentsList argument is optional
-// FF Nightly sets third argument as `new.target`, but does not create `this` from it
-var NEW_TARGET_BUG = fails(function () {
-  function F() { /* empty */ }
-  return !(rConstruct(function () { /* empty */ }, [], F) instanceof F);
-});
-var ARGS_BUG = !fails(function () {
-  rConstruct(function () { /* empty */ });
-});
-
-$export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
-  construct: function construct(Target, args /* , newTarget */) {
-    aFunction(Target);
-    anObject(args);
-    var newTarget = arguments.length < 3 ? Target : aFunction(arguments[2]);
-    if (ARGS_BUG && !NEW_TARGET_BUG) return rConstruct(Target, args, newTarget);
-    if (Target == newTarget) {
-      // w/o altered newTarget, optimization for 0-4 arguments
-      switch (args.length) {
-        case 0: return new Target();
-        case 1: return new Target(args[0]);
-        case 2: return new Target(args[0], args[1]);
-        case 3: return new Target(args[0], args[1], args[2]);
-        case 4: return new Target(args[0], args[1], args[2], args[3]);
-      }
-      // w/o altered newTarget, lot of arguments case
-      var $args = [null];
-      $args.push.apply($args, args);
-      return new (bind.apply(Target, $args))();
-    }
-    // with altered newTarget, not support built-in constructors
-    var proto = newTarget.prototype;
-    var instance = create(isObject(proto) ? proto : Object.prototype);
-    var result = Function.apply.call(Target, instance, args);
-    return isObject(result) ? result : instance;
-  }
-});
-
-
-/***/ }),
-/* 193 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var aFunction = __webpack_require__(33);
-var isObject = __webpack_require__(3);
-var invoke = __webpack_require__(194);
-var arraySlice = [].slice;
-var factories = {};
-
-var construct = function (F, len, args) {
-  if (!(len in factories)) {
-    for (var n = [], i = 0; i < len; i++) n[i] = 'a[' + i + ']';
-    // eslint-disable-next-line no-new-func
-    factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
-  } return factories[len](F, args);
-};
-
-module.exports = Function.bind || function bind(that /* , ...args */) {
-  var fn = aFunction(this);
-  var partArgs = arraySlice.call(arguments, 1);
-  var bound = function (/* args... */) {
-    var args = partArgs.concat(arraySlice.call(arguments));
-    return this instanceof bound ? construct(fn, args.length, args) : invoke(fn, args, that);
-  };
-  if (isObject(fn.prototype)) bound.prototype = fn.prototype;
-  return bound;
-};
-
-
-/***/ }),
-/* 194 */
-/***/ (function(module, exports) {
-
-// fast apply, http://jsperf.lnkit.com/fast-apply/5
-module.exports = function (fn, args, that) {
-  var un = that === undefined;
-  switch (args.length) {
-    case 0: return un ? fn()
-                      : fn.call(that);
-    case 1: return un ? fn(args[0])
-                      : fn.call(that, args[0]);
-    case 2: return un ? fn(args[0], args[1])
-                      : fn.call(that, args[0], args[1]);
-    case 3: return un ? fn(args[0], args[1], args[2])
-                      : fn.call(that, args[0], args[1], args[2]);
-    case 4: return un ? fn(args[0], args[1], args[2], args[3])
-                      : fn.call(that, args[0], args[1], args[2], args[3]);
-  } return fn.apply(that, args);
-};
-
-
-/***/ }),
-/* 195 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(45);
-__webpack_require__(44);
-__webpack_require__(196);
-__webpack_require__(199);
-__webpack_require__(200);
-module.exports = __webpack_require__(1).WeakMap;
-
-
-/***/ }),
-/* 196 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var each = __webpack_require__(73)(0);
-var redefine = __webpack_require__(63);
-var meta = __webpack_require__(28);
-var assign = __webpack_require__(197);
-var weak = __webpack_require__(198);
-var isObject = __webpack_require__(3);
-var fails = __webpack_require__(12);
-var validate = __webpack_require__(31);
-var WEAK_MAP = 'WeakMap';
-var getWeak = meta.getWeak;
-var isExtensible = Object.isExtensible;
-var uncaughtFrozenStore = weak.ufstore;
-var tmp = {};
-var InternalMap;
-
-var wrapper = function (get) {
-  return function WeakMap() {
-    return get(this, arguments.length > 0 ? arguments[0] : undefined);
-  };
-};
-
-var methods = {
-  // 23.3.3.3 WeakMap.prototype.get(key)
-  get: function get(key) {
-    if (isObject(key)) {
-      var data = getWeak(key);
-      if (data === true) return uncaughtFrozenStore(validate(this, WEAK_MAP)).get(key);
-      return data ? data[this._i] : undefined;
-    }
-  },
-  // 23.3.3.5 WeakMap.prototype.set(key, value)
-  set: function set(key, value) {
-    return weak.def(validate(this, WEAK_MAP), key, value);
-  }
-};
-
-// 23.3 WeakMap Objects
-var $WeakMap = module.exports = __webpack_require__(72)(WEAK_MAP, wrapper, methods, weak, true, true);
-
-// IE11 WeakMap frozen keys fix
-if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7; })) {
-  InternalMap = weak.getConstructor(wrapper, WEAK_MAP);
-  assign(InternalMap.prototype, methods);
-  meta.NEED = true;
-  each(['delete', 'has', 'get', 'set'], function (key) {
-    var proto = $WeakMap.prototype;
-    var method = proto[key];
-    redefine(proto, key, function (a, b) {
-      // store frozen objects on internal weakmap shim
-      if (isObject(a) && !isExtensible(a)) {
-        if (!this._f) this._f = new InternalMap();
-        var result = this._f[key](a, b);
-        return key == 'set' ? this : result;
-      // store all the rest on native weakmap
-      } return method.call(this, a, b);
-    });
-  });
-}
-
-
-/***/ }),
-/* 197 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// 19.1.2.1 Object.assign(target, source, ...)
-var getKeys = __webpack_require__(27);
-var gOPS = __webpack_require__(37);
-var pIE = __webpack_require__(39);
-var toObject = __webpack_require__(22);
-var IObject = __webpack_require__(53);
-var $assign = Object.assign;
-
-// should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !$assign || __webpack_require__(12)(function () {
-  var A = {};
-  var B = {};
-  // eslint-disable-next-line no-undef
-  var S = Symbol();
-  var K = 'abcdefghijklmnopqrst';
-  A[S] = 7;
-  K.split('').forEach(function (k) { B[k] = k; });
-  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
-}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
-  var T = toObject(target);
-  var aLen = arguments.length;
-  var index = 1;
-  var getSymbols = gOPS.f;
-  var isEnum = pIE.f;
-  while (aLen > index) {
-    var S = IObject(arguments[index++]);
-    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
-    var length = keys.length;
-    var j = 0;
-    var key;
-    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
-  } return T;
-} : $assign;
-
-
-/***/ }),
-/* 198 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var redefineAll = __webpack_require__(70);
-var getWeak = __webpack_require__(28).getWeak;
-var anObject = __webpack_require__(9);
-var isObject = __webpack_require__(3);
-var anInstance = __webpack_require__(71);
-var forOf = __webpack_require__(30);
-var createArrayMethod = __webpack_require__(73);
-var $has = __webpack_require__(15);
-var validate = __webpack_require__(31);
-var arrayFind = createArrayMethod(5);
-var arrayFindIndex = createArrayMethod(6);
-var id = 0;
-
-// fallback for uncaught frozen keys
-var uncaughtFrozenStore = function (that) {
-  return that._l || (that._l = new UncaughtFrozenStore());
-};
-var UncaughtFrozenStore = function () {
-  this.a = [];
-};
-var findUncaughtFrozen = function (store, key) {
-  return arrayFind(store.a, function (it) {
-    return it[0] === key;
-  });
-};
-UncaughtFrozenStore.prototype = {
-  get: function (key) {
-    var entry = findUncaughtFrozen(this, key);
-    if (entry) return entry[1];
-  },
-  has: function (key) {
-    return !!findUncaughtFrozen(this, key);
-  },
-  set: function (key, value) {
-    var entry = findUncaughtFrozen(this, key);
-    if (entry) entry[1] = value;
-    else this.a.push([key, value]);
-  },
-  'delete': function (key) {
-    var index = arrayFindIndex(this.a, function (it) {
-      return it[0] === key;
-    });
-    if (~index) this.a.splice(index, 1);
-    return !!~index;
-  }
-};
-
-module.exports = {
-  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, NAME, '_i');
-      that._t = NAME;      // collection type
-      that._i = id++;      // collection id
-      that._l = undefined; // leak store for uncaught frozen objects
-      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
-    });
-    redefineAll(C.prototype, {
-      // 23.3.3.2 WeakMap.prototype.delete(key)
-      // 23.4.3.3 WeakSet.prototype.delete(value)
-      'delete': function (key) {
-        if (!isObject(key)) return false;
-        var data = getWeak(key);
-        if (data === true) return uncaughtFrozenStore(validate(this, NAME))['delete'](key);
-        return data && $has(data, this._i) && delete data[this._i];
-      },
-      // 23.3.3.4 WeakMap.prototype.has(key)
-      // 23.4.3.4 WeakSet.prototype.has(value)
-      has: function has(key) {
-        if (!isObject(key)) return false;
-        var data = getWeak(key);
-        if (data === true) return uncaughtFrozenStore(validate(this, NAME)).has(key);
-        return data && $has(data, this._i);
-      }
-    });
-    return C;
-  },
-  def: function (that, key, value) {
-    var data = getWeak(anObject(key), true);
-    if (data === true) uncaughtFrozenStore(that).set(key, value);
-    else data[that._i] = value;
-    return that;
-  },
-  ufstore: uncaughtFrozenStore
-};
-
-
-/***/ }),
-/* 199 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.of
-__webpack_require__(74)('WeakMap');
-
-
-/***/ }),
-/* 200 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.from
-__webpack_require__(75)('WeakMap');
-
-
-/***/ }),
-/* 201 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(202);
-var $Object = __webpack_require__(1).Object;
-module.exports = function getOwnPropertyNames(it) {
-  return $Object.getOwnPropertyNames(it);
-};
-
-
-/***/ }),
-/* 202 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.7 Object.getOwnPropertyNames(O)
-__webpack_require__(40)('getOwnPropertyNames', function () {
-  return __webpack_require__(96).f;
-});
-
-
-/***/ }),
-/* 203 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(204);
-
-/***/ }),
-/* 204 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(45);
-__webpack_require__(43);
-__webpack_require__(44);
-__webpack_require__(205);
-__webpack_require__(206);
-__webpack_require__(207);
-__webpack_require__(208);
-module.exports = __webpack_require__(1).Set;
-
-
-/***/ }),
-/* 205 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var strong = __webpack_require__(102);
-var validate = __webpack_require__(31);
-var SET = 'Set';
-
-// 23.2 Set Objects
-module.exports = __webpack_require__(72)(SET, function (get) {
-  return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
-}, {
-  // 23.2.3.1 Set.prototype.add(value)
-  add: function add(value) {
-    return strong.def(validate(this, SET), value = value === 0 ? 0 : value, value);
-  }
-}, strong);
-
-
-/***/ }),
-/* 206 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var $export = __webpack_require__(2);
-
-$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(107)('Set') });
-
-
-/***/ }),
-/* 207 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
-__webpack_require__(74)('Set');
-
-
-/***/ }),
-/* 208 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
-__webpack_require__(75)('Set');
-
-
-/***/ }),
-/* 209 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(43);
-__webpack_require__(210);
-module.exports = __webpack_require__(1).Array.from;
-
-
-/***/ }),
-/* 210 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var ctx = __webpack_require__(19);
-var $export = __webpack_require__(2);
-var toObject = __webpack_require__(22);
-var call = __webpack_require__(103);
-var isArrayIter = __webpack_require__(104);
-var toLength = __webpack_require__(34);
-var createProperty = __webpack_require__(92);
-var getIterFn = __webpack_require__(105);
-
-$export($export.S + $export.F * !__webpack_require__(211)(function (iter) { Array.from(iter); }), 'Array', {
-  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
-  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
-    var O = toObject(arrayLike);
-    var C = typeof this == 'function' ? this : Array;
-    var aLen = arguments.length;
-    var mapfn = aLen > 1 ? arguments[1] : undefined;
-    var mapping = mapfn !== undefined;
-    var index = 0;
-    var iterFn = getIterFn(O);
-    var length, result, step, iterator;
-    if (mapping) mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
-    // if object isn't iterable or it's array with default iterator - use simple case
-    if (iterFn != undefined && !(C == Array && isArrayIter(iterFn))) {
-      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
-        createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
-      }
-    } else {
-      length = toLength(O.length);
-      for (result = new C(length); length > index; index++) {
-        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
-      }
-    }
-    result.length = index;
-    return result;
-  }
-});
-
-
-/***/ }),
-/* 211 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var ITERATOR = __webpack_require__(4)('iterator');
-var SAFE_CLOSING = false;
-
-try {
-  var riter = [7][ITERATOR]();
-  riter['return'] = function () { SAFE_CLOSING = true; };
-  // eslint-disable-next-line no-throw-literal
-  Array.from(riter, function () { throw 2; });
-} catch (e) { /* empty */ }
-
-module.exports = function (exec, skipClosing) {
-  if (!skipClosing && !SAFE_CLOSING) return false;
-  var safe = false;
-  try {
-    var arr = [7];
-    var iter = arr[ITERATOR]();
-    iter.next = function () { return { done: safe = true }; };
-    arr[ITERATOR] = function () { return iter; };
-    exec(arr);
-  } catch (e) { /* empty */ }
-  return safe;
-};
-
-
-/***/ }),
-/* 212 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(213);
-
-/***/ }),
-/* 213 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(214);
-var $Object = __webpack_require__(1).Object;
-module.exports = function defineProperties(T, D) {
-  return $Object.defineProperties(T, D);
-};
-
-
-/***/ }),
-/* 214 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $export = __webpack_require__(2);
-// 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !__webpack_require__(8), 'Object', { defineProperties: __webpack_require__(93) });
-
-
-/***/ }),
-/* 215 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _Object$defineProperty = __webpack_require__(20);
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-
-    _Object$defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-module.exports = _createClass;
-
-/***/ }),
-/* 216 */
-/***/ (function(module, exports, __webpack_require__) {
-
-(function(a,b){ true?module.exports=b():undefined})(this,function(){return function(a){function b(d){if(c[d])return c[d].exports;var e=c[d]={i:d,l:!1,exports:{}};return a[d].call(e.exports,e,e.exports,b),e.l=!0,e.exports}var c={};return b.m=a,b.c=c,b.d=function(a,c,d){b.o(a,c)||Object.defineProperty(a,c,{configurable:!1,enumerable:!0,get:d})},b.n=function(a){var c=a&&a.__esModule?function(){return a['default']}:function(){return a};return b.d(c,'a',c),c},b.o=function(a,b){return Object.prototype.hasOwnProperty.call(a,b)},b.p='',b(b.s=3)}([function(a,b,c){'use strict';var d=c(1),e=c(2);Object(d.b)();var f=function(a){function b(c){const d=arguments.length;if(0===d)a.call(this,[1,0,0,1,0,0]);else if(1!==d)throw new Error('Wrong number of arguments to DOMMatrix constructor.');else if('string'==typeof c)throw new Error('CSS transformList arg not yet implemented.');else c instanceof b?a.call(this,c._matrix):(c instanceof Float32Array||c instanceof Float64Array||c instanceof Array)&&a.call(this,c)}a&&(b.__proto__=a),b.prototype=Object.create(a&&a.prototype),b.prototype.constructor=b;var c={a:{},b:{},c:{},d:{},e:{},f:{},m11:{},m12:{},m13:{},m14:{},m21:{},m22:{},m23:{},m24:{},m31:{},m32:{},m33:{},m34:{},m41:{},m42:{},m43:{},m44:{}};return b.prototype.multiplySelf=function(a){if(!(a instanceof b))throw new Error('The argument to multiplySelf must be an instance of DOMMatrix');return Object(e.b)(this,a,this),a.is2D||(this._is2D=!1),this},b.prototype.preMultiplySelf=function(a){if(!(a instanceof b))throw new Error('The argument to multiplySelf must be an instance of DOMMatrix');return Object(e.b)(a,this,this),a.is2D||(this._is2D=!1),this},b.prototype.translateSelf=function(a,c,d){if(void 0===d&&(d=0),1===arguments.length)throw new Error('The first two arguments (X and Y translation values) are required (the third, Z translation, is optional).');const e=new b([1,0,0,0,0,1,0,0,0,0,1,0,a,c,d,1]);return this.multiplySelf(e),0!=d&&(this._is2D=!1),this},b.prototype.scaleSelf=function(a,c,d){return void 0===c&&(c=0),void 0===d&&(d=0),this.translateSelf(c,d),this.multiplySelf(new b([a,0,0,a,0,0])),this.translateSelf(-c,-d),this},b.prototype.scale3dSelf=function(a,c,d,e){return void 0===c&&(c=0),void 0===d&&(d=0),void 0===e&&(e=0),this.translateSelf(c,d,e),this.multiplySelf(new b([a,0,0,0,0,a,0,0,0,0,a,0,0,0,0,1])),this.translateSelf(-c,-d,-e),this},b.prototype.scaleNonUniformSelf=function(a,c,d,e,f,g){return void 0===c&&(c=1),void 0===d&&(d=1),void 0===e&&(e=0),void 0===f&&(f=0),void 0===g&&(g=0),this.translateSelf(e,f,g),this.multiplySelf(new b([a,0,0,0,0,c,0,0,0,0,d,0,0,0,0,1])),this.translateSelf(-e,-f,-g),(1!==d||0!==g)&&(this._is2D=!1),this},b.prototype.rotateSelf=function(a,b,c){void 0===b&&(b=0),void 0===c&&(c=0),this.translateSelf(b,c);var d=[0,0,1],e=d[0],f=d[1],g=d[2];return this.rotateAxisAngleSelf(e,f,g,a),this.translateSelf(-b,-c),this},b.prototype.rotateFromVectorSelf=function(){throw new Error('rotateFromVectorSelf is not implemented yet.')},b.prototype.rotateAxisAngleSelf=function(a,c,d,f){const g=new b(Object(e.c)(a,c,d,f));return this.multiplySelf(g),this},b.prototype.skewXSelf=function(){throw new Error('skewXSelf is not implemented yet.')},b.prototype.skewYSelf=function(){throw new Error('skewYSelf is not implemented yet.')},b.prototype.invertSelf=function(){throw new Error('invertSelf is not implemented yet.')},b.prototype.setMatrixValue=function(){throw new Error('setMatrixValue is not implemented yet.')},c.a.get=function(){return this.m11},c.b.get=function(){return this.m12},c.c.get=function(){return this.m21},c.d.get=function(){return this.m22},c.e.get=function(){return this.m41},c.f.get=function(){return this.m42},c.m11.get=function(){return this._matrix[0]},c.m12.get=function(){return this._matrix[4]},c.m13.get=function(){return this._matrix[8]},c.m14.get=function(){return this._matrix[12]},c.m21.get=function(){return this._matrix[1]},c.m22.get=function(){return this._matrix[5]},c.m23.get=function(){return this._matrix[9]},c.m24.get=function(){return this._matrix[13]},c.m31.get=function(){return this._matrix[2]},c.m32.get=function(){return this._matrix[6]},c.m33.get=function(){return this._matrix[10]},c.m34.get=function(){return this._matrix[14]},c.m41.get=function(){return this._matrix[3]},c.m42.get=function(){return this._matrix[7]},c.m43.get=function(){return this._matrix[11]},c.m44.get=function(){return this._matrix[15]},c.a.set=function(a){this.m11=a},c.b.set=function(a){this.m12=a},c.c.set=function(a){this.m21=a},c.d.set=function(a){this.m22=a},c.e.set=function(a){this.m41=a},c.f.set=function(a){this.m42=a},c.m11.set=function(a){this._matrix[0]=a},c.m12.set=function(a){this._matrix[4]=a},c.m13.set=function(a){this._matrix[8]=a},c.m14.set=function(a){this._matrix[12]=a},c.m21.set=function(a){this._matrix[1]=a},c.m22.set=function(a){this._matrix[5]=a},c.m23.set=function(a){this._matrix[9]=a},c.m24.set=function(a){this._matrix[13]=a},c.m31.set=function(a){this._matrix[2]=a},c.m32.set=function(a){this._matrix[6]=a},c.m33.set=function(a){this._matrix[10]=a},c.m34.set=function(a){this._matrix[14]=a},c.m41.set=function(a){this._matrix[3]=a},c.m42.set=function(a){this._matrix[7]=a},c.m43.set=function(a){this._matrix[11]=a},c.m44.set=function(a){this._matrix[15]=a},Object.defineProperties(b.prototype,c),b}(d.a);b.a=f},function(a,b,c){'use strict';function d(){h||(h=function(){function a(a){if(void 0===a&&(a=[]),!(this instanceof e.a))throw new TypeError('DOMMatrixReadOnly can\'t be instantiated directly. Use DOMMatrix instead.');var b=a.length;if(void 0===b||6!==b&&16!==b)throw new TypeError('DOMMatrix constructor argument "numberSequence" must be an array-like with 6 or 16 numbers.');this._matrix=new Float64Array(g),this._isIdentity=!0,this._is2D=6===b,Object(f.a)(a,this)}var b={is2D:{},isIdentity:{},a:{},b:{},c:{},d:{},e:{},f:{},m11:{},m12:{},m13:{},m14:{},m21:{},m22:{},m23:{},m24:{},m31:{},m32:{},m33:{},m34:{},m41:{},m42:{},m43:{},m44:{}};return a.prototype.translate=function(a,b,c){return void 0===c&&(c=0),new e.a(this).translateSelf(a,b,c)},a.prototype.scale=function(a,b,c){return void 0===b&&(b=0),void 0===c&&(c=0),new e.a(this).scaleSelf(a,b,c)},a.prototype.scale3d=function(a,b,c,d){return void 0===b&&(b=0),void 0===c&&(c=0),void 0===d&&(d=0),new e.a(this).scale3dSelf(a,b,c,d)},a.prototype.scaleNonUniform=function(a,b,c,d,f,g){return void 0===b&&(b=1),void 0===c&&(c=1),void 0===d&&(d=0),void 0===f&&(f=0),void 0===g&&(g=0),new e.a(this).scaleNonUniformSelf(a,b,c,d,f,g)},a.prototype.rotate=function(a,b,c){return void 0===b&&(b=0),void 0===c&&(c=0),new e.a(this).rotateSelf(a,b,c)},a.prototype.rotateFromVector=function(){throw new Error('rotateFromVector is not implemented yet.')},a.prototype.rotateAxisAngle=function(a,b,c,d){return new e.a(this).rotateAxisAngleSelf(a,b,c,d)},a.prototype.skewX=function(){throw new Error('skewX is not implemented yet.')},a.prototype.skewY=function(){throw new Error('skewY is not implemented yet.')},a.prototype.multiply=function(a){return new e.a(this).multiplySelf(a)},a.prototype.flipX=function(){throw new Error('flipX is not implemented yet.')},a.prototype.flipY=function(){throw new Error('flipY is not implemented yet.')},a.prototype.inverse=function(){throw new Error('inverse is not implemented yet.')},a.prototype.transformPoint=function(){throw new Error('transformPoint is not implemented yet.')},a.prototype.toFloat32Array=function(){return Float32Array.from(this._matrix)},a.prototype.toFloat64Array=function(){return Float64Array.from(this._matrix)},b.is2D.get=function(){return this._is2D},b.isIdentity.get=function(){for(var a=this,b=0,c=this._matrix.length;b<c;b+=1)if(a._matrix[b]!=g[b])return a._isIdentity=!1;return this._isIdentity=!0},b.a.get=function(){return this.m11},b.b.get=function(){return this.m12},b.c.get=function(){return this.m21},b.d.get=function(){return this.m22},b.e.get=function(){return this.m41},b.f.get=function(){return this.m42},b.m11.get=function(){return this._matrix[0]},b.m12.get=function(){return this._matrix[4]},b.m13.get=function(){return this._matrix[8]},b.m14.get=function(){return this._matrix[12]},b.m21.get=function(){return this._matrix[1]},b.m22.get=function(){return this._matrix[5]},b.m23.get=function(){return this._matrix[9]},b.m24.get=function(){return this._matrix[13]},b.m31.get=function(){return this._matrix[2]},b.m32.get=function(){return this._matrix[6]},b.m33.get=function(){return this._matrix[10]},b.m34.get=function(){return this._matrix[14]},b.m41.get=function(){return this._matrix[3]},b.m42.get=function(){return this._matrix[7]},b.m43.get=function(){return this._matrix[11]},b.m44.get=function(){return this._matrix[15]},Object.defineProperties(a.prototype,b),a}())}b.b=d,c.d(b,'a',function(){return h});var e=c(0),f=c(2);const g=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];var h=null;d()},function(a,b){'use strict';function c(a,b){const c=a.length;6===c?(b.m11=a[0],b.m12=a[1],b.m21=a[2],b.m22=a[3],b.m41=a[4],b.m42=a[5]):16===c&&(b.m11=a[0],b.m12=a[1],b.m13=a[2],b.m14=a[3],b.m21=a[4],b.m22=a[5],b.m23=a[6],b.m24=a[7],b.m31=a[8],b.m32=a[9],b.m33=a[10],b.m34=a[11],b.m41=a[12],b.m42=a[13],b.m43=a[14],b.m44=a[15])}function d(a){return Math.PI/180*a}b.b=function(a,b,d){e[0]=a.m11*b.m11+a.m21*b.m12+a.m31*b.m13+a.m41*b.m14,e[4]=a.m11*b.m21+a.m21*b.m22+a.m31*b.m23+a.m41*b.m24,e[8]=a.m11*b.m31+a.m21*b.m32+a.m31*b.m33+a.m41*b.m34,e[12]=a.m11*b.m41+a.m21*b.m42+a.m31*b.m43+a.m41*b.m44,e[1]=a.m12*b.m11+a.m22*b.m12+a.m32*b.m13+a.m42*b.m14,e[5]=a.m12*b.m21+a.m22*b.m22+a.m32*b.m23+a.m42*b.m24,e[9]=a.m12*b.m31+a.m22*b.m32+a.m32*b.m33+a.m42*b.m34,e[13]=a.m12*b.m41+a.m22*b.m42+a.m32*b.m43+a.m42*b.m44,e[2]=a.m13*b.m11+a.m23*b.m12+a.m33*b.m13+a.m43*b.m14,e[6]=a.m13*b.m21+a.m23*b.m22+a.m33*b.m23+a.m43*b.m24,e[10]=a.m13*b.m31+a.m23*b.m32+a.m33*b.m33+a.m43*b.m34,e[14]=a.m13*b.m41+a.m23*b.m42+a.m33*b.m43+a.m43*b.m44,e[3]=a.m14*b.m11+a.m24*b.m12+a.m34*b.m13+a.m44*b.m14,e[7]=a.m14*b.m21+a.m24*b.m22+a.m34*b.m23+a.m44*b.m24,e[11]=a.m14*b.m31+a.m24*b.m32+a.m34*b.m33+a.m44*b.m34,e[15]=a.m14*b.m41+a.m24*b.m42+a.m34*b.m43+a.m44*b.m44,c(e,d)},b.a=c,b.c=function(a,b,c,e){var f=Math.sin,g=Math.cos,h=Math.pow;const i=d(e/2);return[1-2*(b*b+c*c)*h(f(i),2),2*(a*b*h(f(i),2)+c*f(i)*g(i)),2*(a*c*h(f(i),2)-b*f(i)*g(i)),0,2*(a*b*h(f(i),2)-c*f(i)*g(i)),1-2*(a*a+c*c)*h(f(i),2),2*(b*c*h(f(i),2)+a*f(i)*g(i)),0,2*(a*c*h(f(i),2)+b*f(i)*g(i)),2*(b*c*h(f(i),2)-a*f(i)*g(i)),1-2*(a*a+b*b)*h(f(i),2),0,0,0,0,1]};const e=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},function(a,b,c){a.exports=c(4)},function(a,b,c){'use strict';Object.defineProperty(b,'__esModule',{value:!0}),function(a){var d=c(0),e=c(1),f=c(6);c.d(b,'DOMMatrix',function(){return d.a}),c.d(b,'DOMMatrixReadOnly',function(){return e.a}),c.d(b,'DOMPoint',function(){return f.a}),c.d(b,'DOMPointReadOnly',function(){return f.b});let g=null;'undefined'==typeof window?'undefined'!=typeof a&&(g=a):g=window,g&&(g.DOMMatrix=d.a,g.DOMMatrixReadOnly=e.a,g.DOMPoint=f.a,g.DOMPointReadOnly=f.b)}.call(b,c(5))},function(a){var b=function(){return this}();try{b=b||Function('return this')()||(1,eval)('this')}catch(a){'object'==typeof window&&(b=window)}a.exports=b},function(a,b,c){'use strict';function d(a){return!('object'!=typeof a)&&'x'in a&&'y'in a&&'z'in a&&'w'in a}c.d(b,'b',function(){return g}),c.d(b,'a',function(){return i});let e;const f=function(a){if(!e){e=new WeakMap;let b={};return e.set(a,b),b}let b=e.get(a);return void 0===b&&(b={},e.set(a,b)),b};var g=function(a,b,c,e){if(1===arguments.length){if(!d(a))throw new TypeError('Expected an object with x, y, z, and w properties');f(this).x=a.x,f(this).y=a.y,f(this).z=a.z,f(this).w=a.w}else if(4===arguments.length)f(this).x=a||0,f(this).y=b||0,f(this).z=c||0,f(this).w=e||0;else throw new TypeError('Expected 1 or 4 arguments')},h={x:{},y:{},z:{},w:{}};h.x.get=function(){return f(this).x},h.y.get=function(){return f(this).y},h.z.get=function(){return f(this).z},h.w.get=function(){return f(this).w},g.prototype.matrixTransform=function(){let a=new this.constructor(this);return a},g.fromPoint=function(a){return new this(a)},Object.defineProperties(g.prototype,h);var i=function(a){function b(){a.apply(this,arguments)}a&&(b.__proto__=a),b.prototype=Object.create(a&&a.prototype),b.prototype.constructor=b;var c={x:{},y:{},z:{},w:{}};return c.x.set=function(a){f(this).x=a},c.y.set=function(a){f(this).y=a},c.z.set=function(a){f(this).z=a},c.w.set=function(a){f(this).w=a},Object.defineProperties(b.prototype,c),b}(g)}])});
-//# sourceMappingURL=global.js.map
-
-/***/ }),
-/* 217 */
+/* 99 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -12874,13 +5239,13 @@ window.CustomAttributeRegistry = CustomAttributeRegistry;
 
 
 /***/ }),
-/* 218 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(219);
+module.exports = __webpack_require__(101);
 
 /***/ }),
-/* 219 */
+/* 101 */
 /***/ (function(module, exports) {
 
 // for a legacy code and future fixes
@@ -12890,7 +5255,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 220 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12902,17 +5267,17 @@ Object.defineProperty(exports, "__esModule", {
 exports.observe = observe;
 exports.unobserve = unobserve;
 
-var _objectSpread2 = _interopRequireDefault(__webpack_require__(61));
+var _objectSpread2 = _interopRequireDefault(__webpack_require__(103));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(20));
+var _defineProperty = _interopRequireDefault(__webpack_require__(63));
 
-var _from = _interopRequireDefault(__webpack_require__(109));
+var _from = _interopRequireDefault(__webpack_require__(123));
 
-var _map = _interopRequireDefault(__webpack_require__(101));
+var _map = _interopRequireDefault(__webpack_require__(131));
 
-var _weakMap = _interopRequireDefault(__webpack_require__(46));
+var _weakMap = _interopRequireDefault(__webpack_require__(145));
 
-var _utils = __webpack_require__(47);
+var _utils = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13024,49 +5389,1302 @@ function runCallbacks(object, propName, value) {
 }
 
 /***/ }),
-/* 221 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(222);
+var _Object$getOwnPropertyDescriptor = __webpack_require__(104);
+
+var _Object$getOwnPropertySymbols = __webpack_require__(107);
+
+var _Object$keys = __webpack_require__(117);
+
+var defineProperty = __webpack_require__(120);
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    var ownKeys = _Object$keys(source);
+
+    if (typeof _Object$getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(_Object$getOwnPropertySymbols(source).filter(function (sym) {
+        return _Object$getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+module.exports = _objectSpread;
 
 /***/ }),
-/* 222 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(223);
-module.exports = __webpack_require__(42).f('hasInstance');
+module.exports = __webpack_require__(105);
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(106);
+var $Object = __webpack_require__(1).Object;
+module.exports = function getOwnPropertyDescriptor(it, key) {
+  return $Object.getOwnPropertyDescriptor(it, key);
+};
 
 
 /***/ }),
-/* 223 */
+/* 106 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+var toIObject = __webpack_require__(12);
+var $getOwnPropertyDescriptor = __webpack_require__(54).f;
+
+__webpack_require__(57)('getOwnPropertyDescriptor', function () {
+  return function getOwnPropertyDescriptor(it, key) {
+    return $getOwnPropertyDescriptor(toIObject(it), key);
+  };
+});
+
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(108);
+
+/***/ }),
+/* 108 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(109);
+module.exports = __webpack_require__(1).Object.getOwnPropertySymbols;
+
+
+/***/ }),
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var isObject = __webpack_require__(3);
-var getPrototypeOf = __webpack_require__(66);
-var HAS_INSTANCE = __webpack_require__(4)('hasInstance');
-var FunctionProto = Function.prototype;
-// 19.2.3.6 Function.prototype[@@hasInstance](V)
-if (!(HAS_INSTANCE in FunctionProto)) __webpack_require__(7).f(FunctionProto, HAS_INSTANCE, { value: function (O) {
-  if (typeof this != 'function' || !isObject(O)) return false;
-  if (!isObject(this.prototype)) return O instanceof this;
-  // for environment w/o native `@@hasInstance` logic enough `instanceof`, but add this:
-  while (O = getPrototypeOf(O)) if (this.prototype === O) return true;
-  return false;
-} });
+// ECMAScript 6 symbols shim
+var global = __webpack_require__(4);
+var has = __webpack_require__(9);
+var DESCRIPTORS = __webpack_require__(3);
+var $export = __webpack_require__(8);
+var redefine = __webpack_require__(36);
+var META = __webpack_require__(20).KEY;
+var $fails = __webpack_require__(13);
+var shared = __webpack_require__(37);
+var setToStringTag = __webpack_require__(28);
+var uid = __webpack_require__(26);
+var wks = __webpack_require__(2);
+var wksExt = __webpack_require__(59);
+var wksDefine = __webpack_require__(110);
+var enumKeys = __webpack_require__(111);
+var isArray = __webpack_require__(61);
+var anObject = __webpack_require__(14);
+var isObject = __webpack_require__(7);
+var toObject = __webpack_require__(17);
+var toIObject = __webpack_require__(12);
+var toPrimitive = __webpack_require__(35);
+var createDesc = __webpack_require__(19);
+var _create = __webpack_require__(42);
+var gOPNExt = __webpack_require__(116);
+var $GOPD = __webpack_require__(54);
+var $GOPS = __webpack_require__(41);
+var $DP = __webpack_require__(5);
+var $keys = __webpack_require__(21);
+var gOPD = $GOPD.f;
+var dP = $DP.f;
+var gOPN = gOPNExt.f;
+var $Symbol = global.Symbol;
+var $JSON = global.JSON;
+var _stringify = $JSON && $JSON.stringify;
+var PROTOTYPE = 'prototype';
+var HIDDEN = wks('_hidden');
+var TO_PRIMITIVE = wks('toPrimitive');
+var isEnum = {}.propertyIsEnumerable;
+var SymbolRegistry = shared('symbol-registry');
+var AllSymbols = shared('symbols');
+var OPSymbols = shared('op-symbols');
+var ObjectProto = Object[PROTOTYPE];
+var USE_NATIVE = typeof $Symbol == 'function' && !!$GOPS.f;
+var QObject = global.QObject;
+// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
+var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
+
+// fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
+var setSymbolDesc = DESCRIPTORS && $fails(function () {
+  return _create(dP({}, 'a', {
+    get: function () { return dP(this, 'a', { value: 7 }).a; }
+  })).a != 7;
+}) ? function (it, key, D) {
+  var protoDesc = gOPD(ObjectProto, key);
+  if (protoDesc) delete ObjectProto[key];
+  dP(it, key, D);
+  if (protoDesc && it !== ObjectProto) dP(ObjectProto, key, protoDesc);
+} : dP;
+
+var wrap = function (tag) {
+  var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
+  sym._k = tag;
+  return sym;
+};
+
+var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function (it) {
+  return typeof it == 'symbol';
+} : function (it) {
+  return it instanceof $Symbol;
+};
+
+var $defineProperty = function defineProperty(it, key, D) {
+  if (it === ObjectProto) $defineProperty(OPSymbols, key, D);
+  anObject(it);
+  key = toPrimitive(key, true);
+  anObject(D);
+  if (has(AllSymbols, key)) {
+    if (!D.enumerable) {
+      if (!has(it, HIDDEN)) dP(it, HIDDEN, createDesc(1, {}));
+      it[HIDDEN][key] = true;
+    } else {
+      if (has(it, HIDDEN) && it[HIDDEN][key]) it[HIDDEN][key] = false;
+      D = _create(D, { enumerable: createDesc(0, false) });
+    } return setSymbolDesc(it, key, D);
+  } return dP(it, key, D);
+};
+var $defineProperties = function defineProperties(it, P) {
+  anObject(it);
+  var keys = enumKeys(P = toIObject(P));
+  var i = 0;
+  var l = keys.length;
+  var key;
+  while (l > i) $defineProperty(it, key = keys[i++], P[key]);
+  return it;
+};
+var $create = function create(it, P) {
+  return P === undefined ? _create(it) : $defineProperties(_create(it), P);
+};
+var $propertyIsEnumerable = function propertyIsEnumerable(key) {
+  var E = isEnum.call(this, key = toPrimitive(key, true));
+  if (this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return false;
+  return E || !has(this, key) || !has(AllSymbols, key) || has(this, HIDDEN) && this[HIDDEN][key] ? E : true;
+};
+var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key) {
+  it = toIObject(it);
+  key = toPrimitive(key, true);
+  if (it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return;
+  var D = gOPD(it, key);
+  if (D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key])) D.enumerable = true;
+  return D;
+};
+var $getOwnPropertyNames = function getOwnPropertyNames(it) {
+  var names = gOPN(toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META) result.push(key);
+  } return result;
+};
+var $getOwnPropertySymbols = function getOwnPropertySymbols(it) {
+  var IS_OP = it === ObjectProto;
+  var names = gOPN(IS_OP ? OPSymbols : toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true)) result.push(AllSymbols[key]);
+  } return result;
+};
+
+// 19.4.1.1 Symbol([description])
+if (!USE_NATIVE) {
+  $Symbol = function Symbol() {
+    if (this instanceof $Symbol) throw TypeError('Symbol is not a constructor!');
+    var tag = uid(arguments.length > 0 ? arguments[0] : undefined);
+    var $set = function (value) {
+      if (this === ObjectProto) $set.call(OPSymbols, value);
+      if (has(this, HIDDEN) && has(this[HIDDEN], tag)) this[HIDDEN][tag] = false;
+      setSymbolDesc(this, tag, createDesc(1, value));
+    };
+    if (DESCRIPTORS && setter) setSymbolDesc(ObjectProto, tag, { configurable: true, set: $set });
+    return wrap(tag);
+  };
+  redefine($Symbol[PROTOTYPE], 'toString', function toString() {
+    return this._k;
+  });
+
+  $GOPD.f = $getOwnPropertyDescriptor;
+  $DP.f = $defineProperty;
+  __webpack_require__(62).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(25).f = $propertyIsEnumerable;
+  $GOPS.f = $getOwnPropertySymbols;
+
+  if (DESCRIPTORS && !__webpack_require__(27)) {
+    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
+  }
+
+  wksExt.f = function (name) {
+    return wrap(wks(name));
+  };
+}
+
+$export($export.G + $export.W + $export.F * !USE_NATIVE, { Symbol: $Symbol });
+
+for (var es6Symbols = (
+  // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
+  'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
+).split(','), j = 0; es6Symbols.length > j;)wks(es6Symbols[j++]);
+
+for (var wellKnownSymbols = $keys(wks.store), k = 0; wellKnownSymbols.length > k;) wksDefine(wellKnownSymbols[k++]);
+
+$export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
+  // 19.4.2.1 Symbol.for(key)
+  'for': function (key) {
+    return has(SymbolRegistry, key += '')
+      ? SymbolRegistry[key]
+      : SymbolRegistry[key] = $Symbol(key);
+  },
+  // 19.4.2.5 Symbol.keyFor(sym)
+  keyFor: function keyFor(sym) {
+    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
+    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
+  },
+  useSetter: function () { setter = true; },
+  useSimple: function () { setter = false; }
+});
+
+$export($export.S + $export.F * !USE_NATIVE, 'Object', {
+  // 19.1.2.2 Object.create(O [, Properties])
+  create: $create,
+  // 19.1.2.4 Object.defineProperty(O, P, Attributes)
+  defineProperty: $defineProperty,
+  // 19.1.2.3 Object.defineProperties(O, Properties)
+  defineProperties: $defineProperties,
+  // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+  getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
+  // 19.1.2.7 Object.getOwnPropertyNames(O)
+  getOwnPropertyNames: $getOwnPropertyNames,
+  // 19.1.2.8 Object.getOwnPropertySymbols(O)
+  getOwnPropertySymbols: $getOwnPropertySymbols
+});
+
+// Chrome 38 and 39 `Object.getOwnPropertySymbols` fails on primitives
+// https://bugs.chromium.org/p/v8/issues/detail?id=3443
+var FAILS_ON_PRIMITIVES = $fails(function () { $GOPS.f(1); });
+
+$export($export.S + $export.F * FAILS_ON_PRIMITIVES, 'Object', {
+  getOwnPropertySymbols: function getOwnPropertySymbols(it) {
+    return $GOPS.f(toObject(it));
+  }
+});
+
+// 24.3.2 JSON.stringify(value [, replacer [, space]])
+$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
+  var S = $Symbol();
+  // MS Edge converts symbol values to JSON as {}
+  // WebKit converts symbol values to JSON as null
+  // V8 throws on boxed symbols
+  return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
+})), 'JSON', {
+  stringify: function stringify(it) {
+    var args = [it];
+    var i = 1;
+    var replacer, $replacer;
+    while (arguments.length > i) args.push(arguments[i++]);
+    $replacer = replacer = args[1];
+    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
+    if (!isArray(replacer)) replacer = function (key, value) {
+      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
+      if (!isSymbol(value)) return value;
+    };
+    args[1] = replacer;
+    return _stringify.apply($JSON, args);
+  }
+});
+
+// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(10)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+// 19.4.3.5 Symbol.prototype[@@toStringTag]
+setToStringTag($Symbol, 'Symbol');
+// 20.2.1.9 Math[@@toStringTag]
+setToStringTag(Math, 'Math', true);
+// 24.3.3 JSON[@@toStringTag]
+setToStringTag(global.JSON, 'JSON', true);
 
 
 /***/ }),
-/* 224 */
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(4);
+var core = __webpack_require__(1);
+var LIBRARY = __webpack_require__(27);
+var wksExt = __webpack_require__(59);
+var defineProperty = __webpack_require__(5).f;
+module.exports = function (name) {
+  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
+  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
+};
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// all enumerable object keys, includes symbols
+var getKeys = __webpack_require__(21);
+var gOPS = __webpack_require__(41);
+var pIE = __webpack_require__(25);
+module.exports = function (it) {
+  var result = getKeys(it);
+  var getSymbols = gOPS.f;
+  if (getSymbols) {
+    var symbols = getSymbols(it);
+    var isEnum = pIE.f;
+    var i = 0;
+    var key;
+    while (symbols.length > i) if (isEnum.call(it, key = symbols[i++])) result.push(key);
+  } return result;
+};
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = __webpack_require__(12);
+var toLength = __webpack_require__(29);
+var toAbsoluteIndex = __webpack_require__(113);
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(38);
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var dP = __webpack_require__(5);
+var anObject = __webpack_require__(14);
+var getKeys = __webpack_require__(21);
+
+module.exports = __webpack_require__(3) ? Object.defineProperties : function defineProperties(O, Properties) {
+  anObject(O);
+  var keys = getKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var document = __webpack_require__(4).document;
+module.exports = document && document.documentElement;
+
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
+var toIObject = __webpack_require__(12);
+var gOPN = __webpack_require__(62).f;
+var toString = {}.toString;
+
+var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
+  ? Object.getOwnPropertyNames(window) : [];
+
+var getWindowNames = function (it) {
+  try {
+    return gOPN(it);
+  } catch (e) {
+    return windowNames.slice();
+  }
+};
+
+module.exports.f = function getOwnPropertyNames(it) {
+  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
+};
+
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(118);
+
+/***/ }),
+/* 118 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(119);
+module.exports = __webpack_require__(1).Object.keys;
+
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 Object.keys(O)
+var toObject = __webpack_require__(17);
+var $keys = __webpack_require__(21);
+
+__webpack_require__(57)('keys', function () {
+  return function keys(it) {
+    return $keys(toObject(it));
+  };
+});
+
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _Object$defineProperty = __webpack_require__(63);
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    _Object$defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty;
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(122);
+var $Object = __webpack_require__(1).Object;
+module.exports = function defineProperty(it, key, desc) {
+  return $Object.defineProperty(it, key, desc);
+};
+
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $export = __webpack_require__(8);
+// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+$export($export.S + $export.F * !__webpack_require__(3), 'Object', { defineProperty: __webpack_require__(5).f });
+
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(124);
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(64);
+__webpack_require__(128);
+module.exports = __webpack_require__(1).Array.from;
+
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(38);
+var defined = __webpack_require__(34);
+// true  -> String#at
+// false -> String#codePointAt
+module.exports = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(defined(that));
+    var i = toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+
+
+/***/ }),
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var create = __webpack_require__(42);
+var descriptor = __webpack_require__(19);
+var setToStringTag = __webpack_require__(28);
+var IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+__webpack_require__(10)(IteratorPrototype, __webpack_require__(2)('iterator'), function () { return this; });
+
+module.exports = function (Constructor, NAME, next) {
+  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
+  setToStringTag(Constructor, NAME + ' Iterator');
+};
+
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has = __webpack_require__(9);
+var toObject = __webpack_require__(17);
+var IE_PROTO = __webpack_require__(39)('IE_PROTO');
+var ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function (O) {
+  O = toObject(O);
+  if (has(O, IE_PROTO)) return O[IE_PROTO];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var ctx = __webpack_require__(16);
+var $export = __webpack_require__(8);
+var toObject = __webpack_require__(17);
+var call = __webpack_require__(65);
+var isArrayIter = __webpack_require__(66);
+var toLength = __webpack_require__(29);
+var createProperty = __webpack_require__(129);
+var getIterFn = __webpack_require__(67);
+
+$export($export.S + $export.F * !__webpack_require__(130)(function (iter) { Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iterFn = getIterFn(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+    // if object isn't iterable or it's array with default iterator - use simple case
+    if (iterFn != undefined && !(C == Array && isArrayIter(iterFn))) {
+      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
+        createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
+      }
+    } else {
+      length = toLength(O.length);
+      for (result = new C(length); length > index; index++) {
+        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  }
+});
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $defineProperty = __webpack_require__(5);
+var createDesc = __webpack_require__(19);
+
+module.exports = function (object, index, value) {
+  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
+  else object[index] = value;
+};
+
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ITERATOR = __webpack_require__(2)('iterator');
+var SAFE_CLOSING = false;
+
+try {
+  var riter = [7][ITERATOR]();
+  riter['return'] = function () { SAFE_CLOSING = true; };
+  // eslint-disable-next-line no-throw-literal
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
+
+module.exports = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
+  var safe = false;
+  try {
+    var arr = [7];
+    var iter = arr[ITERATOR]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR] = function () { return iter; };
+    exec(arr);
+  } catch (e) { /* empty */ }
+  return safe;
+};
+
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(132);
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(69);
+__webpack_require__(64);
+__webpack_require__(70);
+__webpack_require__(135);
+__webpack_require__(140);
+__webpack_require__(143);
+__webpack_require__(144);
+module.exports = __webpack_require__(1).Map;
+
+
+/***/ }),
+/* 133 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var addToUnscopables = __webpack_require__(134);
+var step = __webpack_require__(71);
+var Iterators = __webpack_require__(22);
+var toIObject = __webpack_require__(12);
+
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+module.exports = __webpack_require__(43)(Array, 'Array', function (iterated, kind) {
+  this._t = toIObject(iterated); // target
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var kind = this._k;
+  var index = this._i++;
+  if (!O || index >= O.length) {
+    this._t = undefined;
+    return step(1);
+  }
+  if (kind == 'keys') return step(0, index);
+  if (kind == 'values') return step(0, O[index]);
+  return step(0, [index, O[index]]);
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+Iterators.Arguments = Iterators.Array;
+
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
+
+
+/***/ }),
+/* 134 */
+/***/ (function(module, exports) {
+
+module.exports = function () { /* empty */ };
+
+
+/***/ }),
+/* 135 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var strong = __webpack_require__(136);
+var validate = __webpack_require__(24);
+var MAP = 'Map';
+
+// 23.1 Map Objects
+module.exports = __webpack_require__(72)(MAP, function (get) {
+  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+}, {
+  // 23.1.3.6 Map.prototype.get(key)
+  get: function get(key) {
+    var entry = strong.getEntry(validate(this, MAP), key);
+    return entry && entry.v;
+  },
+  // 23.1.3.9 Map.prototype.set(key, value)
+  set: function set(key, value) {
+    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
+  }
+}, strong, true);
+
+
+/***/ }),
+/* 136 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var dP = __webpack_require__(5).f;
+var create = __webpack_require__(42);
+var redefineAll = __webpack_require__(44);
+var ctx = __webpack_require__(16);
+var anInstance = __webpack_require__(45);
+var forOf = __webpack_require__(23);
+var $iterDefine = __webpack_require__(43);
+var step = __webpack_require__(71);
+var setSpecies = __webpack_require__(137);
+var DESCRIPTORS = __webpack_require__(3);
+var fastKey = __webpack_require__(20).fastKey;
+var validate = __webpack_require__(24);
+var SIZE = DESCRIPTORS ? '_s' : 'size';
+
+var getEntry = function (that, key) {
+  // fast case
+  var index = fastKey(key);
+  var entry;
+  if (index !== 'F') return that._i[index];
+  // frozen object case
+  for (entry = that._f; entry; entry = entry.n) {
+    if (entry.k == key) return entry;
+  }
+};
+
+module.exports = {
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, NAME, '_i');
+      that._t = NAME;         // collection type
+      that._i = create(null); // index
+      that._f = undefined;    // first entry
+      that._l = undefined;    // last entry
+      that[SIZE] = 0;         // size
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
+    });
+    redefineAll(C.prototype, {
+      // 23.1.3.1 Map.prototype.clear()
+      // 23.2.3.2 Set.prototype.clear()
+      clear: function clear() {
+        for (var that = validate(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
+          entry.r = true;
+          if (entry.p) entry.p = entry.p.n = undefined;
+          delete data[entry.i];
+        }
+        that._f = that._l = undefined;
+        that[SIZE] = 0;
+      },
+      // 23.1.3.3 Map.prototype.delete(key)
+      // 23.2.3.4 Set.prototype.delete(value)
+      'delete': function (key) {
+        var that = validate(this, NAME);
+        var entry = getEntry(that, key);
+        if (entry) {
+          var next = entry.n;
+          var prev = entry.p;
+          delete that._i[entry.i];
+          entry.r = true;
+          if (prev) prev.n = next;
+          if (next) next.p = prev;
+          if (that._f == entry) that._f = next;
+          if (that._l == entry) that._l = prev;
+          that[SIZE]--;
+        } return !!entry;
+      },
+      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
+      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
+      forEach: function forEach(callbackfn /* , that = undefined */) {
+        validate(this, NAME);
+        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+        var entry;
+        while (entry = entry ? entry.n : this._f) {
+          f(entry.v, entry.k, this);
+          // revert to the last existing entry
+          while (entry && entry.r) entry = entry.p;
+        }
+      },
+      // 23.1.3.7 Map.prototype.has(key)
+      // 23.2.3.7 Set.prototype.has(value)
+      has: function has(key) {
+        return !!getEntry(validate(this, NAME), key);
+      }
+    });
+    if (DESCRIPTORS) dP(C.prototype, 'size', {
+      get: function () {
+        return validate(this, NAME)[SIZE];
+      }
+    });
+    return C;
+  },
+  def: function (that, key, value) {
+    var entry = getEntry(that, key);
+    var prev, index;
+    // change existing entry
+    if (entry) {
+      entry.v = value;
+    // create new entry
+    } else {
+      that._l = entry = {
+        i: index = fastKey(key, true), // <- index
+        k: key,                        // <- key
+        v: value,                      // <- value
+        p: prev = that._l,             // <- previous entry
+        n: undefined,                  // <- next entry
+        r: false                       // <- removed
+      };
+      if (!that._f) that._f = entry;
+      if (prev) prev.n = entry;
+      that[SIZE]++;
+      // add to index
+      if (index !== 'F') that._i[index] = entry;
+    } return that;
+  },
+  getEntry: getEntry,
+  setStrong: function (C, NAME, IS_MAP) {
+    // add .keys, .values, .entries, [@@iterator]
+    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
+    $iterDefine(C, NAME, function (iterated, kind) {
+      this._t = validate(iterated, NAME); // target
+      this._k = kind;                     // kind
+      this._l = undefined;                // previous
+    }, function () {
+      var that = this;
+      var kind = that._k;
+      var entry = that._l;
+      // revert to the last existing entry
+      while (entry && entry.r) entry = entry.p;
+      // get next entry
+      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
+        // or finish the iteration
+        that._t = undefined;
+        return step(1);
+      }
+      // return step by kind
+      if (kind == 'keys') return step(0, entry.k);
+      if (kind == 'values') return step(0, entry.v);
+      return step(0, [entry.k, entry.v]);
+    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
+
+    // add [@@species], 23.1.2.2, 23.2.2.2
+    setSpecies(NAME);
+  }
+};
+
+
+/***/ }),
+/* 137 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var global = __webpack_require__(4);
+var core = __webpack_require__(1);
+var dP = __webpack_require__(5);
+var DESCRIPTORS = __webpack_require__(3);
+var SPECIES = __webpack_require__(2)('species');
+
+module.exports = function (KEY) {
+  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
+  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
+    configurable: true,
+    get: function () { return this; }
+  });
+};
+
+
+/***/ }),
+/* 138 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+var speciesConstructor = __webpack_require__(139);
+
+module.exports = function (original, length) {
+  return new (speciesConstructor(original))(length);
+};
+
+
+/***/ }),
+/* 139 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(7);
+var isArray = __webpack_require__(61);
+var SPECIES = __webpack_require__(2)('species');
+
+module.exports = function (original) {
+  var C;
+  if (isArray(original)) {
+    C = original.constructor;
+    // cross-realm fallback
+    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
+    if (isObject(C)) {
+      C = C[SPECIES];
+      if (C === null) C = undefined;
+    }
+  } return C === undefined ? Array : C;
+};
+
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/DavidBruant/Map-Set.prototype.toJSON
+var $export = __webpack_require__(8);
+
+$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(141)('Map') });
+
+
+/***/ }),
+/* 141 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/DavidBruant/Map-Set.prototype.toJSON
+var classof = __webpack_require__(68);
+var from = __webpack_require__(142);
+module.exports = function (NAME) {
+  return function toJSON() {
+    if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
+    return from(this);
+  };
+};
+
+
+/***/ }),
+/* 142 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var forOf = __webpack_require__(23);
+
+module.exports = function (iter, ITERATOR) {
+  var result = [];
+  forOf(iter, false, result.push, result, ITERATOR);
+  return result;
+};
+
+
+/***/ }),
+/* 143 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
+__webpack_require__(73)('Map');
+
+
+/***/ }),
+/* 144 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
+__webpack_require__(74)('Map');
+
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(146);
+
+/***/ }),
+/* 146 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(69);
+__webpack_require__(70);
+__webpack_require__(147);
+__webpack_require__(150);
+__webpack_require__(151);
+module.exports = __webpack_require__(1).WeakMap;
+
+
+/***/ }),
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var global = __webpack_require__(4);
+var each = __webpack_require__(46)(0);
+var redefine = __webpack_require__(36);
+var meta = __webpack_require__(20);
+var assign = __webpack_require__(148);
+var weak = __webpack_require__(149);
+var isObject = __webpack_require__(7);
+var validate = __webpack_require__(24);
+var NATIVE_WEAK_MAP = __webpack_require__(24);
+var IS_IE11 = !global.ActiveXObject && 'ActiveXObject' in global;
+var WEAK_MAP = 'WeakMap';
+var getWeak = meta.getWeak;
+var isExtensible = Object.isExtensible;
+var uncaughtFrozenStore = weak.ufstore;
+var InternalMap;
+
+var wrapper = function (get) {
+  return function WeakMap() {
+    return get(this, arguments.length > 0 ? arguments[0] : undefined);
+  };
+};
+
+var methods = {
+  // 23.3.3.3 WeakMap.prototype.get(key)
+  get: function get(key) {
+    if (isObject(key)) {
+      var data = getWeak(key);
+      if (data === true) return uncaughtFrozenStore(validate(this, WEAK_MAP)).get(key);
+      return data ? data[this._i] : undefined;
+    }
+  },
+  // 23.3.3.5 WeakMap.prototype.set(key, value)
+  set: function set(key, value) {
+    return weak.def(validate(this, WEAK_MAP), key, value);
+  }
+};
+
+// 23.3 WeakMap Objects
+var $WeakMap = module.exports = __webpack_require__(72)(WEAK_MAP, wrapper, methods, weak, true, true);
+
+// IE11 WeakMap frozen keys fix
+if (NATIVE_WEAK_MAP && IS_IE11) {
+  InternalMap = weak.getConstructor(wrapper, WEAK_MAP);
+  assign(InternalMap.prototype, methods);
+  meta.NEED = true;
+  each(['delete', 'has', 'get', 'set'], function (key) {
+    var proto = $WeakMap.prototype;
+    var method = proto[key];
+    redefine(proto, key, function (a, b) {
+      // store frozen objects on internal weakmap shim
+      if (isObject(a) && !isExtensible(a)) {
+        if (!this._f) this._f = new InternalMap();
+        var result = this._f[key](a, b);
+        return key == 'set' ? this : result;
+      // store all the rest on native weakmap
+      } return method.call(this, a, b);
+    });
+  });
+}
+
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var DESCRIPTORS = __webpack_require__(3);
+var getKeys = __webpack_require__(21);
+var gOPS = __webpack_require__(41);
+var pIE = __webpack_require__(25);
+var toObject = __webpack_require__(17);
+var IObject = __webpack_require__(32);
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(13)(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) {
+      key = keys[j++];
+      if (!DESCRIPTORS || isEnum.call(S, key)) T[key] = S[key];
+    }
+  } return T;
+} : $assign;
+
+
+/***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var redefineAll = __webpack_require__(44);
+var getWeak = __webpack_require__(20).getWeak;
+var anObject = __webpack_require__(14);
+var isObject = __webpack_require__(7);
+var anInstance = __webpack_require__(45);
+var forOf = __webpack_require__(23);
+var createArrayMethod = __webpack_require__(46);
+var $has = __webpack_require__(9);
+var validate = __webpack_require__(24);
+var arrayFind = createArrayMethod(5);
+var arrayFindIndex = createArrayMethod(6);
+var id = 0;
+
+// fallback for uncaught frozen keys
+var uncaughtFrozenStore = function (that) {
+  return that._l || (that._l = new UncaughtFrozenStore());
+};
+var UncaughtFrozenStore = function () {
+  this.a = [];
+};
+var findUncaughtFrozen = function (store, key) {
+  return arrayFind(store.a, function (it) {
+    return it[0] === key;
+  });
+};
+UncaughtFrozenStore.prototype = {
+  get: function (key) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) return entry[1];
+  },
+  has: function (key) {
+    return !!findUncaughtFrozen(this, key);
+  },
+  set: function (key, value) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) entry[1] = value;
+    else this.a.push([key, value]);
+  },
+  'delete': function (key) {
+    var index = arrayFindIndex(this.a, function (it) {
+      return it[0] === key;
+    });
+    if (~index) this.a.splice(index, 1);
+    return !!~index;
+  }
+};
+
+module.exports = {
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, NAME, '_i');
+      that._t = NAME;      // collection type
+      that._i = id++;      // collection id
+      that._l = undefined; // leak store for uncaught frozen objects
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
+    });
+    redefineAll(C.prototype, {
+      // 23.3.3.2 WeakMap.prototype.delete(key)
+      // 23.4.3.3 WeakSet.prototype.delete(value)
+      'delete': function (key) {
+        if (!isObject(key)) return false;
+        var data = getWeak(key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME))['delete'](key);
+        return data && $has(data, this._i) && delete data[this._i];
+      },
+      // 23.3.3.4 WeakMap.prototype.has(key)
+      // 23.4.3.4 WeakSet.prototype.has(value)
+      has: function has(key) {
+        if (!isObject(key)) return false;
+        var data = getWeak(key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME)).has(key);
+        return data && $has(data, this._i);
+      }
+    });
+    return C;
+  },
+  def: function (that, key, value) {
+    var data = getWeak(anObject(key), true);
+    if (data === true) uncaughtFrozenStore(that).set(key, value);
+    else data[that._i] = value;
+    return that;
+  },
+  ufstore: uncaughtFrozenStore
+};
+
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.of
+__webpack_require__(73)('WeakMap');
+
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.from
+__webpack_require__(74)('WeakMap');
+
+
+/***/ }),
+/* 152 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var utils_namespaceObject = {};
-__webpack_require__.r(utils_namespaceObject);
-__webpack_require__.d(utils_namespaceObject, "contextWithPerspective", function() { return contextWithPerspective; });
-__webpack_require__.d(utils_namespaceObject, "simpleExtend", function() { return simpleExtend; });
 var three_module_namespaceObject = {};
 __webpack_require__.r(three_module_namespaceObject);
 __webpack_require__.d(three_module_namespaceObject, "WebGLRenderTargetCube", function() { return WebGLRenderTargetCube; });
@@ -13171,7 +6789,7 @@ __webpack_require__.d(three_module_namespaceObject, "Triangle", function() { ret
 __webpack_require__.d(three_module_namespaceObject, "Math", function() { return _Math; });
 __webpack_require__.d(three_module_namespaceObject, "Spherical", function() { return Spherical; });
 __webpack_require__.d(three_module_namespaceObject, "Cylindrical", function() { return Cylindrical; });
-__webpack_require__.d(three_module_namespaceObject, "Plane", function() { return three_module_Plane; });
+__webpack_require__.d(three_module_namespaceObject, "Plane", function() { return Plane; });
 __webpack_require__.d(three_module_namespaceObject, "Frustum", function() { return Frustum; });
 __webpack_require__.d(three_module_namespaceObject, "Sphere", function() { return Sphere; });
 __webpack_require__.d(three_module_namespaceObject, "Ray", function() { return Ray; });
@@ -13490,1481 +7108,111 @@ __webpack_require__.r(components_namespaceObject);
 __webpack_require__.d(components_namespaceObject, "Cube", function() { return Cube; });
 __webpack_require__.d(components_namespaceObject, "PushPaneLayout", function() { return PushPaneLayout; });
 
-// EXTERNAL MODULE: ./node_modules/famous/src/core/Transform.js
-var Transform = __webpack_require__(5);
-var Transform_default = /*#__PURE__*/__webpack_require__.n(Transform);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/transitions/Transitionable.js
-var Transitionable = __webpack_require__(17);
-var Transitionable_default = /*#__PURE__*/__webpack_require__.n(Transitionable);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/transitions/Easing.js
-var Easing = __webpack_require__(32);
-var Easing_default = /*#__PURE__*/__webpack_require__.n(Easing);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/core/Modifier.js
-var Modifier = __webpack_require__(23);
-var Modifier_default = /*#__PURE__*/__webpack_require__.n(Modifier);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/core/RenderNode.js
-var RenderNode = __webpack_require__(78);
-var RenderNode_default = /*#__PURE__*/__webpack_require__.n(RenderNode);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/transitions/TransitionableTransform.js
-var TransitionableTransform = __webpack_require__(77);
-var TransitionableTransform_default = /*#__PURE__*/__webpack_require__.n(TransitionableTransform);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/core/EventHandler.js
-var EventHandler = __webpack_require__(13);
-var EventHandler_default = /*#__PURE__*/__webpack_require__.n(EventHandler);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/core/Engine.js
-var Engine = __webpack_require__(110);
-var Engine_default = /*#__PURE__*/__webpack_require__.n(Engine);
-
-// CONCATENATED MODULE: ./src/utils.js
-/*
- * @overview Utility functions used by infamous.
- *
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-/**
- * Creates a [famous/src/core/Context](#famous/src/core/Context) having the specified 3D perspective.
- *
- * @param {Number} perspective The integer amount of perspective to apply to the `Context`.
- * @returns {module: famous/src/core/Context} The `Context` with the applied perspective.
- */
-function contextWithPerspective(perspective) {
-    const context = Engine_default.a.createContext();
-    context.setPerspective(perspective);
-    return context;
-}
-
-function simpleExtend(object, ...others) {
-    others.forEach(function(other) {
-        for (const prop in other) {
-            object[prop] = other[prop]
-        }
-    })
-}
-
-// EXTERNAL MODULE: ./node_modules/army-knife/polyfill.Function.name.js
-var polyfill_Function_name = __webpack_require__(127);
-
-// CONCATENATED MODULE: ./src/Molecule.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-
-
-
-
-
-/**
- * Molecules are the basic building blocks of all UI components. Molecules
- * extend [famous/src/core/RenderNode](#famous/src/core/RenderNode), so they can be
- * added to any `RenderNode` of a famo.us render tree, and by default they will
- * also accept anything that a normal Famo.us `RenderNode` can accept via the
- * `add` method.  Classes that extend from `Molecule` might override
- * `RenderNode.add` in order to accept things like arrays of renderables in
- * stead of a single renderable.
- *
- * Molecules encapsulate the basic things you need for a component -- a
- * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform)
- * for positioning things in space, and a [famous/src/core/EventHandler](#famous/src/core/EventHandler)
- * for capturing user interaction -- exposing a unified API for working with these
- * things. For now, [famous/src/core/Modifier](#famous/src/core/Modifier) is used as the interface
- * for applying transforms and sizing, but this will change in Mixed Mode
- * Famo.us.
- *
- * All components extend Molecule, but at the same time they can also use any
- * number of Molecules internally to do nice things like create layouts and
- * position multiple things in space.
- *
- * @class Molecule
- * @extends {module: famous/src/core/RenderNode}
- */
-class Molecule_Molecule extends RenderNode_default.a {
-
-    /**
-     * Creates a new `Molecule` and applies `initialOptions` to it's internal
-     * `famous/src/core/Modifier`. See [famous/src/core/Modifier](#famous/src/core/Modifier)
-     * for details on what options you can pass.
-     *
-     * Note: Mixed Mode Famo.us does away with Modifiers, so this API will
-     * change slightly, but the change will be in such a way that APIs of
-     * higher level classes won't change because of this. One of the biggest
-     * changes in Mixed Mode will be that `size` will be set only on a
-     * per-Surface basis as far as a render tree is concerned. So if you
-     * normally put multiple `Surface` instances into a `Modifier` that has a
-     * size, then instead you'll have to explicitly assign a `size` to each
-     * `Surface`. This is a good thing, and makes for a cleaner and easier to
-     * use render tree with a separation of concerns from classes that can
-     * handle boundaries and group sizing. `Molecule` might then be an example
-     * of such a class with it's own size API.
-     *
-     * @constructor
-     * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
-     */
-    constructor(initialOptions) {
-        super()
-
-        // "private" stuff. Not really, but regard it like so. For example, if
-        // you see something like obj._.someVariable then you're accessing
-        // internal stuff that wasn't designed to be accessed directly, and any
-        // problem you enounter with that is your own problem. :)
-        //
-        // TODO: Use a WeakMap to store these at some point.
-        this._ = {
-            options: {}, // set and get with this.options
-            defaultOptions: {}
-        }
-
-        // Add default values for this Molecule
-        // TODO: Make default options static for the class.
-        simpleExtend(this._.defaultOptions, {
-            align: [0.5,0.5],
-            origin: [0.5,0.5],
-            transform: new TransitionableTransform_default.a,
-            handler: new EventHandler_default.a
-        })
-
-        // set the user's initial options. This automatically creates
-        // this.modifier, and adds it to this (don't forget, *this* is a
-        // RenderNode, so a Molecule can add things to itself).
-        //
-        // NOTE: this.options is a setter property. This statement applies all
-        // relevant properties to this.modifier.
-        this.options = initialOptions;
-    }
-
-    /**
-     * @property {Object} options The Molecule's options, which get applied to
-     * `this.modifier`. This may change with Mixed Mode. Setting this property
-     * overrides existing options. To extend existing options with new options,
-     * use `setOptions` instead.  Unspecified options will be set to their default
-     * values.
-     *
-     * Note: Anytime `this.options` is assigned a new value, `this.modifier` is set
-     * to a new [famous/src/core/Modifier](#famous/src/core/Modifier).
-     */
-    set options(newOptions) {
-        this.resetOptions();
-        this.setOptions(newOptions);
-    }
-    get options() {
-        return this._.options;
-    }
-
-    /**
-     * @property {module: famous/src/transitions/TransitionableTransform} transform
-     * The transform of this `Molecule`. The default is a
-     * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform).
-     * Setting this property automatically puts the new transform into effect.
-     * See [famous/src/core/Modifier.transformFrom](#famous/src/core/Modifier.transformFrom).
-     */
-    set transform(newTransform) {
-        this.setOptions({transform: newTransform});
-    }
-    get transform() {
-        return this.options.transform;
-    }
-
-    /**
-     * Compounds `newOptions` into the existing options, similar to extending an
-     * object and overriding only the desired properties. To override all
-     * options with a set of new options, set `this.options` directly.
-     *
-     * An example of setting just a single option without erasing other options:
-     *
-     * ```js
-     * const myMolecule = new Molecule()
-     * myMolecule.setOptions({
-     *   align: [0.2, 0.8]
-     * })
-     * ```
-     *
-     * @param {Object} newOptions An object containing the new options to apply to this `Molecule`.
-     */
-    setOptions(newOptions) {
-        if (typeof newOptions == 'undefined' || newOptions.constructor.name != "Object")
-            newOptions = {}
-
-        for (const prop in newOptions) {
-            // Subject to change when Famo.us API changes.
-            if (Modifier_default.a.prototype[''+prop+'From']) {
-                this.modifier[''+prop+'From'](newOptions[prop]);
-            }
-
-            this._.options[prop] = newOptions[prop];
-        }
-    }
-
-    /**
-     * Sets all options back to their defaults.
-     *
-     * Note: Anytime this is called, `this.modifier` is set to a new
-     * [famous/src/core/Modifier](#famous/src/core/Modifier) having the default
-     * options.
-     */
-    resetOptions() {
-        this.modifier = new Modifier_default.a();
-        this.set(this.modifier);
-        this.setOptions(this._.defaultOptions);
-    }
-
-    /**
-     * Forwards events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler) to the given
-     * target, which can be another `EventHandler` or `Molecule`.
-     *
-     * This method is equivalent to [famous/src/core/EventHandler.pipe](#famous/src/core/EventHandler.pipe),
-     * acting upon `this.handler`.
-     *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
-     */
-    pipe() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.pipe.apply(this.options.handler, args);
-    }
-
-    /**
-     * Stops events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler)
-     * from being sent to the given target.
-     *
-     * This method is equivalent to [famous/src/core/EventHandler.unpipe](#famous/src/core/EventHandler.unpipe),
-     * acting upon `this.handler`.
-     *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
-     */
-    unpipe() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.unpipe.apply(this.options.handler, args);
-    }
-
-    /**
-     * Register an event handler for the specified event.
-     * See [famous/src/core/EventHandler.on](#famous/src/core/EventHandler.on).
-     */
-    on() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.on.apply(this.options.handler, args);
-    }
-
-    /**
-     * Unregister an event handler for the specified event.
-     * See [famous/src/core/EventHandler.off](#famous/src/core/EventHandler.off).
-     */
-    off() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.options.handler.on.apply(this.options.handler, args);
-    }
-}
-/* harmony default export */ var src_Molecule = (Molecule_Molecule);
-
-// EXTERNAL MODULE: ./node_modules/army-knife/forLength.js
-var forLength = __webpack_require__(11);
-var forLength_default = /*#__PURE__*/__webpack_require__.n(forLength);
-
-// CONCATENATED MODULE: ./src/Grid.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-
-
-
-/**
- * A scenegraph tree with a variable number of leaf node Modifiers (the grid
- * cells) that are arranged in a grid. Add any [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible
- * item to each leafnode of the grid.
- *
- * TODO: Use Molecule instead of Modifier for the grid cells.
- * TODO: Add an options parameter, that the Molecule constructor will handle.
- *
- * @class Grid
- * @extends Molecule
- */
-class Grid_Grid extends src_Molecule {
-
-    /**
-     * Creates a new Grid having the specified number of columns, number of rows,
-     * and famo.us-style size.
-     *
-     * @constructor
-     * @param {Number} columns The integer number of columns.
-     * @param {Number} rows The integer number of rows.
-     * @param {Array} size A famo.us-style width/height size array.
-     */
-    constructor(columns, rows, size) {
-        super({size: size});
-
-        this.columns = columns;
-        this.rows = rows;
-        this.cellNodes = [];
-
-        if (typeof this.options.size === 'undefined') { this.setOptions({size: [undefined, undefined]}); }
-
-        forLength_default()(this.columns*this.rows, this._createGridCell.bind(this));
-    }
-
-    /**
-     * Creates a grid cell at the given index.
-     *
-     * @private
-     * @param {Number} index The integer index of the grid cell.
-     */
-    _createGridCell(index) {
-        const column = index % this.columns;
-        const row = Math.floor(index / this.columns);
-
-        let cellSize = null;
-        if (typeof this.options.size[0] != 'undefined' && typeof this.options.size[1] != 'undefined') {
-            cellSize = [];
-            cellSize[0] = this.options.size[0]/this.columns;
-            cellSize[1] = this.options.size[1]/this.rows;
-        }
-
-        const mod = new Modifier_default.a({
-            align: [0,0],
-            origin: [0,0],
-            size: cellSize? [cellSize[0], cellSize[1]]: [undefined, undefined],
-            transform: Transform_default.a.translate(column*cellSize[0],row*cellSize[1],0)
-        });
-        const mod2 = new Modifier_default.a({
-            //transform: Transform.rotateY(Math.PI/10),
-            align: [0.5,0.5],
-            origin: [0.5,0.5]
-        });
-        // FIXME: ^^^ Why do I need an extra Modifier to align stuff in the middle of the grid cells?????
-        this.cellNodes.push(this.add(mod).add(mod2));
-    }
-
-    /**
-     * Sets the items to be layed out in the grid.
-     *
-     * @param {Array} children An array of [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible items.
-     */
-    setChildren(children) {
-        forLength_default()(this.columns*this.rows, function(index) {
-            //this.cellNodes[index].set(null); // TODO: how do we erase previous children?
-            this.cellNodes[index].add(children[index]);
-        }.bind(this));
-        return this;
-    }
-}
-/* harmony default export */ var src_Grid = (Grid_Grid);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/core/Surface.js
-var Surface = __webpack_require__(48);
-var Surface_default = /*#__PURE__*/__webpack_require__.n(Surface);
-
-// CONCATENATED MODULE: ./src/Plane.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-/**
- * Planes have the properties of [Molecules](#Molecule), plus they contain a
- * [famous/src/core/Surface](#famous/src/core/Surface) so that they ultimately render
- * onto the screen. A Surface's events are automatically piped to it's
- * [famous/src/core/EventHandler](#famous/src/core/EventHandler), inherited from
- * `Molecule`.
- *
- * @class Plane
- * @extends Molecule
- */
-class Plane_Plane extends src_Molecule {
-
-    /**
-     * Creates a new `Plane`. Properties from the `initialOptions` parameter
-     * are applied to this Plane's [famous/src/core/Surface](#famous/src/core/Surface) as well as to
-     * to this Plane's [famous/src/core/Modifier](#famous/src/core/Modifier), hence the API of a Plane
-     * is currently the combination of the Famo.us `Modifier` and `Surface` APIs.
-     *
-     * @constructor
-     * @param {Object} initialOptions Options for the new Plane.
-     */
-    constructor(initialOptions) {
-        super(initialOptions);
-
-        this.surface = new Surface_default.a(this.options);
-        this.add(this.surface);
-        this.surface.pipe(this.options.handler);
-    }
-
-    /**
-     * Get the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
-     * See [famous/src/core/Surface.getContent](#famous/src/core/Surface.getContent).
-     */
-    getContent() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.surface.getContent.apply(this.surface, args);
-    }
-
-    /**
-     * Set the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
-     * See [famous/src/core/Surface.setContent](#famous/src/core/Surface.setContent).
-     */
-    setContent() {
-        const args = Array.prototype.splice.call(arguments, 0);
-        return this.surface.setContent.apply(this.surface, args);
-    }
-}
-/* harmony default export */ var src_Plane = (Plane_Plane);
-
-// CONCATENATED MODULE: ./src/DoubleSidedPlane.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-
-/**
- * A scenegraph tree who's two leaf nodes are [Plane](#Plane) instances facing
- * opposite directions. For the purposes of these docs, in a brand new app with
- * only a single `DoubleSidedPlane` added to the context, and having no
- * rotation, "plane1" faces you and "plane2" faces away.
- *
- * @class DoubleSidedPlane
- * @extends Molecule
- */
-class DoubleSidedPlane_DoubleSidedPlane extends src_Molecule {
-
-    /**
-     * Creates a new `DoubleSidedPlane` who's `initialOptions` get passed to
-     * both [Plane](#Plane) instances, as well as this DoubleSidedPlane's parent
-     * [Molecule](#Molecule) constructor.
-     *
-     * @constructor
-     * @param {Object} initialOptions The options to initiate the `DoubleSidedPlane` with.
-     */
-    constructor(initialOptions) {
-        super(initialOptions);
-
-        this.children = [];
-        this.plane1 = new src_Plane(this.options);
-        this.plane1.transform.set(Transform_default.a.rotate(0,0,0));
-        this.setOptions({properties: {background: 'orange'}});
-        this.plane2 = new src_Plane(this.options);
-        this.plane2.transform.set(Transform_default.a.rotate(0,Math.PI,0));
-
-        this.children.push(this.plane1);
-        this.children.push(this.plane2);
-        this.add(this.plane2)
-        this.add(this.plane1);
-        this.plane1.pipe(this.options.handler);
-        this.plane2.pipe(this.options.handler);
-
-    }
-
-    /**
-     * Get the content of the [famous/src/core/Surface](#famous/src/core/Surface) of each [Plane](#Plane).
-     *
-     * @returns {Array} An array containing two items, the content of each
-     * `Plane`. The first item is from "plane1".
-     */
-    getContent() {
-        return [this.plane1.getContent(), this.plane2.getContent()];
-    }
-
-    /**
-     * Set the content of both [Plane](#Plane) instances.
-     *
-     * @param {Array} content An array of content, one item per `Plane`. The
-     * first item is for "plane1".
-     */
-    setContent(content) {
-        this.plane1.setContent(content[0]);
-        this.plane2.setContent(content[1]);
-    }
-}
-/* harmony default export */ var src_DoubleSidedPlane = (DoubleSidedPlane_DoubleSidedPlane);
-
-// CONCATENATED MODULE: ./src/Calendar.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-
-
-
-
-
-
-/**
- * A calendar widget for selecting a date (WIP).
- *
- * @class Calendar
- * @extends Molecule
- */
-class Calendar_Calendar extends src_Molecule {
-
-    /**
-     * Create a new `Calendar` with the given Famo.us-style size array and
-     * transition. The transition is the type of animation used when switching
-     * between months.
-     *
-     * @constructor
-     * @param {Array} calendarSize A Famo.us-style width/height size array.
-     * @param {String} transition The name of the animation transition to use when switching months.
-     */
-    constructor(calendarSize, transition) {
-        super({size: calendarSize});
-
-        this.transition = transition;
-        this.flipSide = 0; // 0 means the initial front faces are showing, 1 means the initial back faces are showing.
-        this.columnsRows = [7,6];
-        this.planes = [];
-
-        this._initializeTransitions();
-        this._createGrid();
-
-        setTimeout( function() {
-            this.transitions[this.transition]();
-            setInterval(this.transitions[this.transition], 2000);
-        }.bind(this) , 800);
-    }
-
-    /**
-     * Creates the grid used for the layout of the day cells.
-     *
-     * @private
-     */
-    _createGrid() {
-        const grid = new src_Grid(this.columnsRows[0], this.columnsRows[1], this.options.size);
-
-        forLength_default()(this.columnsRows[0]*this.columnsRows[1], function(i) {
-            const plane = new src_DoubleSidedPlane({
-                properties: {
-                    background: 'teal',
-                }
-            });
-            this.planes.push(plane);
-        }.bind(this));
-
-        grid.setChildren(this.planes);
-        this.add(grid);
-    }
-
-    /**
-     * Set up `this.transitions`, containing the available month-to-month
-     * transitions.
-     *
-     * @private
-     */
-    _initializeTransitions() {
-        this.transitions = {
-            flipDiagonal: function() {
-                this.flipSide = +!this.flipSide;
-                // determine which dimension of the grid is shorter and which is longer.
-                let shortest = 0;
-                let longest;
-                this.columnsRows.forEach(function(item, index) {
-                    if (item < this.columnsRows[shortest])
-                        shortest = index;
-                }.bind(this));
-                longest = +!shortest;
-
-                // for each diagonal of the grid, flip those cells.
-                forLength_default()(this.columnsRows[0]+this.columnsRows[1]-1, function(column) {
-                    forLength_default()(this.columnsRows[shortest], function(row) {
-                        if (column-row >= 0 && column-row < this.columnsRows[longest]) {
-                            const plane = this.planes[column-row + this.columnsRows[longest]*row];
-                            flipOne(plane, column);
-                        }
-                    }.bind(this));
-                }.bind(this));
-
-                function flipOne(item, column) {
-                    if (typeof item.__targetRotation == 'undefined') {
-                        item.__targetRotation = new Transitionable_default.a(0);
-                    }
-                    const rotation = new Transitionable_default.a(item.__targetRotation.get());
-                    item.__targetRotation.set(item.__targetRotation.get()+Math.PI);
-
-                    //item.get().transformFrom(function() {
-                        //return Transform.rotateY(rotation.get());
-                    //});
-                    item.children[0].get().transformFrom(function() {
-                        return Transform_default.a.rotateY(rotation.get());
-                    });
-                    item.children[1].get().transformFrom(function() {
-                        return Transform_default.a.rotateY(rotation.get()+Math.PI);
-                    });
-
-                    setTimeout(function() {
-                        rotation.set(item.__targetRotation.get(), { duration: 2000, curve: Easing_default.a.outExpo });
-                    }, 0+50*column);
-                }
-            }.bind(this)
-        };
-    }
-}
-/* harmony default export */ var src_Calendar = (Calendar_Calendar);
-
-// EXTERNAL MODULE: ./node_modules/jss/lib/index.js
-var lib = __webpack_require__(111);
-var lib_default = /*#__PURE__*/__webpack_require__.n(lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-nested/lib/index.js
-var jss_nested_lib = __webpack_require__(112);
-var jss_nested_lib_default = /*#__PURE__*/__webpack_require__.n(jss_nested_lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-extend/lib/index.js
-var jss_extend_lib = __webpack_require__(113);
-var jss_extend_lib_default = /*#__PURE__*/__webpack_require__.n(jss_extend_lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-px/lib/index.js
-var jss_px_lib = __webpack_require__(114);
-var jss_px_lib_default = /*#__PURE__*/__webpack_require__.n(jss_px_lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-vendor-prefixer/lib/index.js
-var jss_vendor_prefixer_lib = __webpack_require__(115);
-var jss_vendor_prefixer_lib_default = /*#__PURE__*/__webpack_require__.n(jss_vendor_prefixer_lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-camel-case/lib/index.js
-var jss_camel_case_lib = __webpack_require__(116);
-var jss_camel_case_lib_default = /*#__PURE__*/__webpack_require__.n(jss_camel_case_lib);
-
-// EXTERNAL MODULE: ./node_modules/jss-props-sort/lib/index.js
-var jss_props_sort_lib = __webpack_require__(117);
-var jss_props_sort_lib_default = /*#__PURE__*/__webpack_require__.n(jss_props_sort_lib);
-
-// CONCATENATED MODULE: ./src/lib/jss/index.js
-
-
-
-
-
-
-
-
-
-const jss = lib_default.a.create()
-
-jss.use(jss_nested_lib_default()())
-jss.use(jss_extend_lib_default()())
-jss.use(jss_px_lib_default()())
-jss.use(jss_vendor_prefixer_lib_default()())
-jss.use(jss_camel_case_lib_default()())
-jss.use(jss_props_sort_lib_default()())
-
-/* harmony default export */ var lib_jss = (jss);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/inputs/TouchSync.js
-var TouchSync = __webpack_require__(118);
-var TouchSync_default = /*#__PURE__*/__webpack_require__.n(TouchSync);
-
-// EXTERNAL MODULE: ./node_modules/famous/src/inputs/GenericSync.js
-var GenericSync = __webpack_require__(79);
-var GenericSync_default = /*#__PURE__*/__webpack_require__.n(GenericSync);
-
-// EXTERNAL MODULE: ./node_modules/army-knife/callAfter.js
-var callAfter = __webpack_require__(119);
-var callAfter_default = /*#__PURE__*/__webpack_require__.n(callAfter);
-
-// CONCATENATED MODULE: ./src/PushMenuLayout.js
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * A scenegraph with two Molecule leafnodes: the menu area and the content
- * area. The menu area is hidden beyond the edge of the screen while the
- * content area is visible. Swiping in from the edge of the screen reveals the
- * menu, putting the content area out of focus. A mouse can also be used, and
- * hovering near the edge of the screen also reveals the menu.
- *
- * Note: This layout is mostly useful if it exists at the root of a context so
- * that the menu is clipped when it is closed (off to the side), otherwise the
- * menu will be visible beyond the boundary of the container that contains the
- * PushMenuLayout.
- *
- * Note: If you've called `openMenu` or `closeMenu` with a callback, the callback
- * will be canceled if a drag or hover on the menu happens before the animation
- * has completed. Please open an issue on GitHub if you have any opinion
- * against this. :) Maybe we can add a boolean option for this behavior.
- *
- * TODO: Embed working example here.
- *
- * @class PushMenuLayout
- * @extends Molecule
- */
-class PushMenuLayout_PushMenuLayout extends src_Molecule {
-
-    /**
-     * Creates a new PushMenuLayout.
-     *
-     * @constructor
-     * @param {Object} options The options to instantiate a `PushMenuLayout` with.
-     *
-     * TODO v0.1.0: Handle `PushMenuLayout`-specific user options. Currently they
-     * just get passed into super() for the Molecule constructor to handle.
-     */
-    constructor(initialOptions) {
-        super(initialOptions);
-
-        // Add default values for this PushMenuLayout
-        // TODO: Make default options static for the class.
-        simpleExtend(this._.defaultOptions, {
-            menuSide: 'left', // left or right
-            menuWidth: 200,
-            menuHintSize: 10, // the amount of the menu that is visible before opening the menu.
-            pushAreaWidth: 40, // the area on the screen edge that the user can touch and drag to push out the menu.
-            animationDuration: 1000,
-            animationType: 'foldDown', // options: foldDown moveBack
-
-            // TODO: Background color for the whole layout should be the color that the fade fades to.
-            // TODO: Replace fade star/end colors with a fog color value and intensity.
-            fade: true, // when content recedes, it fades into the fog.
-            fadeStartColor: 'rgba(255,255,255,0)',
-            fadeEndColor: 'rgba(255,255,255,1)',
-
-            blur: false, // XXX: WIP, so false by default.
-            blurRadius: 5
-        })
-
-        // TODO: performance hit, this setter is invoked in the Molecule constructor, then here again.
-        this.options = initialOptions
-
-        // TODO v0.1.0: Mark these as private.
-            // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
-            // the layout, but we're just using it as a whole-page app for now. Get
-            // size from a commit? UPDATE: See the new famous/src/views/SizeAwareView
-            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
-
-            // Changing these values outside of an instance of PushMenuLayout might
-            // cause the layout to break. They are designed to be modified
-            // internally only.
-            this.isOpen = false;
-            this.isOpening = false;
-            this.isClosing = false;
-            this.isAnimating = false; // keep track of whether the menu is opening or closing.
-            this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
-            this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
-
-        // Set the touch sync for pulling/pushing the menu open/closed.
-        GenericSync_default.a.register({
-            touch: TouchSync_default.a
-        });
-
-        this._createComponents();
-        this._initializeEvents();
-    }
-
-    /**
-     * See Molecule.setOptions
-     *
-     * @override
-     */
-    setOptions(newOptions) {
-        super.setOptions(newOptions)
-    }
-
-    /**
-     * See Molecule.resetOptions
-     *
-     * @override
-     */
-    resetOptions() {
-        super.resetOptions()
-    }
-
-    /**
-     * Creates the menu area, content area, `Plane` for the fade effect, etc.
-     *
-     * @private
-     */
-    _createComponents() {
-        var layout = this;
-
-        this.touchSync = new GenericSync_default.a(['touch']);
-
-        this.alignment = (this.options.menuSide == "left"? 0: 1);
-        this.animationTransition = new Transitionable_default.a(0);
-
-        this.mainMol = new src_Molecule();
-
-        this.menuMol = new src_Molecule({
-            size: [this.options.menuWidth,undefined]
-        });
-        this.menuMol.oldTransform = this.menuMol.transform;
-        this.menuMol.transform = function() { // override
-            var currentPosition = layout.animationTransition.get();
-            switch(layout.options.animationType) {
-                case "foldDown":
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
-                    );
-                    break;
-                case "moveBack":
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
-                    );
-                    break;
-            }
-            return this.oldTransform.get();
-        }.bind(this.menuMol);
-
-        // contains the user's menu content.
-        this.menuContentMol = new src_Molecule();
-
-        this.contentMol = new src_Molecule({
-            size: [this.contentWidth,undefined]
-        });
-        this.contentMol.oldTransform = this.contentMol.transform;
-        this.contentMol.transform = function() { // override
-            var currentPosition = layout.animationTransition.get();
-            switch(layout.options.animationType) {
-                case "foldDown":
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  (layout.options.menuWidth - layout.options.menuHintSize)/*range*/ + layout.options.menuHintSize/*offset*/:
-                            currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize)/*range*/ - layout.options.menuHintSize/*offset*/
-                    );
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.oldTransform.setRotateY(
-                        layout.options.menuSide == 'left'?
-                            currentPosition *  Math.PI/8:
-                            currentPosition * -Math.PI/8
-                    );
-                    break;
-                case "moveBack":
-                    var depth = 100;
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.oldTransform.setTranslateX(
-                        layout.options.menuSide == 'left'?
-                            layout.options.menuHintSize:
-                            -layout.options.menuHintSize
-                    );
-                    this.oldTransform.setTranslateZ(
-                        currentPosition * -depth
-                    );
-                    break;
-            }
-            return this.oldTransform.get();
-        }.bind(this.contentMol);
-
-        this.menuTouchPlane = new src_Plane({
-            size: [this.options.menuWidth + this.options.pushAreaWidth - this.options.menuHintSize, undefined],
-            properties: {
-                zIndex: '-1000' // below everything
-            }
-        });
-
-        this.mainMol.setOptions({
-            origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
-        this.menuMol.setOptions({
-            origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
-        this.contentMol.setOptions({
-            origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
-
-        // FIXME: WHY THE EFF must I also set align and origin on menuTouchPlane
-        // when I've already set it on it's parent (this.menuMol)?????
-        this.menuTouchPlane.setOptions({
-            origin: [this.alignment, 0.5],
-            align: [this.alignment, 0.5]
-        });
-
-        // Bring the menu content molecule and touch plane forward just
-        // slightly so they're just above the content and content's fade plane,
-        // so touch and mouse interaction works. HTML, the bad parts. ;)
-        this.menuContentMol.transform.setTranslateZ(2);
-        this.menuTouchPlane.transform.setTranslateZ(2);
-
-        /*
-         * Styles for the fadePlane
-         */
-        // TODO: move this somewhere else . it's specific for each animation
-        this.updateStyles = function() {
-            var startColor
-            var endColor
-
-            switch(this.options.animationType) {
-                case "foldDown":
-                    startColor = this.options.fadeStartColor
-                    endColor = this.options.fadeEndColor
-                    break;
-                case "moveBack":
-                    startColor = endColor = this.options.fadeEndColor
-                    break;
-            }
-
-            var styles = {
-                '.infamous-fadeLeft': {
-                    background: [
-                        endColor,
-                        '-moz-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+endColor+'), color-stop(100%, '+startColor+'))',
-                        '-webkit-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-o-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        '-ms-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
-                        'linear-gradient(to right, '+endColor+' 0%, '+startColor+' 100%)'
-                    ],
-                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
-                },
-                '.infamous-fadeRight': {
-                    background: [
-                        startColor,
-                        '-moz-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+startColor+'), color-stop(100%, '+endColor+'))',
-                        '-webkit-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-o-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        '-ms-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
-                        'linear-gradient(to right, '+startColor+' 0%, '+endColor+' 100%)'
-                    ],
-                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
-                }
-            };
-
-            if (this.fadeStylesheet) { this.fadeStylesheet.detach(); }
-            this.fadeStylesheet = lib_jss.createStyleSheet(styles);
-            this.fadeStylesheet.attach();
-        };
-
-        if (this.options.fade) {
-            this.updateStyles();
-
-            this.fadePlane = new src_Plane({
-                size: [undefined,undefined],
-                classes: [
-                    // TODO: switch to jss namespace.
-                    (this.options.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
-                ],
-                properties: {
-                    zIndex: '1000',
-                    pointerEvents: 'none'
-                }
-            });
-
-            // FIXME: Why the EFF must I also set align and origin on fadePlane when
-            // I've already set it on it's parent (this.contentMol)?????
-            this.fadePlane.setOptions({
-                origin: [this.alignment, 0.5],
-                align: [this.alignment, 0.5]
-            });
-
-            // move the fadePlane forward by 1px so it doesn't glitch out.
-            // Chrome will make the fadePlane and the surface in the content
-            // area (if any) blink randomly when the two surfaces are in the
-            // same exact position together.
-            this.fadePlane.transform.setTranslateZ(1);
-
-            this.fadePlane.setOptions({
-                opacity: this.animationTransition
-            });
-
-            // TODO: Make fadePlane a sibling to menuMol and contentMol so that
-            // contentMol contains only the user;s content. This will affect
-            // the code in this.render().
-            this.contentMol.add(this.fadePlane);
-        }
-
-        this.add(this.mainMol);
-        this.mainMol.add(this.contentMol);
-        this.menuMol.add(this.menuTouchPlane);
-        this.menuMol.add(this.menuContentMol);
-        this.mainMol.add(this.menuMol);
-        // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
-    }
-
-    /**
-     * Sets up the events for the touch and mouse interaction that opens and
-     * closes the menu.
-     *
-     * @private
-     */
-    _initializeEvents() {
-
-        // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
-        this.options.handler.on('update', function(event) { // update == drag
-            this.isBeingDragged = true;
-
-            // stop the current transitions if any, along with the current callback if any.
-            this._haltAnimation(true);
-
-            var currentPosition = this.animationTransition.get();
-
-            // TODO: handle the right-side menu.
-            switch(this.options.animationType) {
-                case "foldDown":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
-                    break;
-                case "moveBack":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
-                    break;
-            }
-
-            currentPosition = this.animationTransition.get();
-
-            if (currentPosition > 1) {
-                this.animationTransition.set(1);
-            }
-            else if (currentPosition < 0) {
-                this.animationTransition.set(0);
-            }
-        }.bind(this));
-
-        this.options.handler.on('end', function(event) {
-            this.isBeingDragged = false;
-
-            var currentPosition = this.animationTransition.get();
-
-            if (currentPosition < 0.5) {
-                this.closeMenu();
-            }
-            else {
-                this.openMenu();
-            }
-        }.bind(this));
-
-        // TODO v0.1.0: Use a SizeAwareView instead of relying on the body, since we
-        // might not be directly in the body.
-        window.addEventListener('resize', function(event) {
-            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
-            this.contentMol.setOptions({size: [this.contentWidth, undefined]});
-        }.bind(this));
-
-        /*
-         * Wire up events
-         * TODO: consolidate dup code here and in setMenu
-         */
-        this.menuTouchPlane.pipe(this.touchSync);
-        this.menuTouchPlane.on('mouseenter', function() {
-            if (!this.isOpening) {
-                this.openMenu();
-            }
-        }.bind(this))
-        this.menuTouchPlane.on('mouseleave', function() {
-            if (!this.isClosing) {
-                this.closeMenu();
-            }
-        }.bind(this))
-        this.touchSync.pipe(this.options.handler);
-    }
-
-    /**
-     * Add a scenegraph to the content area of the PushMenuLayout. You can put
-     * anything you want into the content area (magical 3D things for example),
-     * just be careful not to let them cover the menu or you'll block the user
-     * from interacting with the menu.
-     *
-     * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
-     * RenderNode with stuff in it.
-     *
-     * TODO: Accept plain renderables, f.e. Surfaces, etc. This change requires
-     * also modifying the code in this.render() to account for renderables.
-     *
-     * TODO: Make a sibling method to reset the content area.
-     */
-    setContent(node) {
-        this.contentMol.add(node)
-    }
-
-    /**
-     * Add a scenegraph to the menu area of the PushMenuLayout. If the object
-     * that you pass into setMenu is an infamous component, or a famo.us
-     * Surface, then it's events will be piped to this PushMenuLayout's input
-     * sync so that the user can open and close the menu with touch or mouse.
-     * General advice here would be to keep whatever you put into the menu
-     * contained within the boundaries of the menu or you might have touch and
-     * mouse interaction outside of the menu.
-     *
-     * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
-     * RenderNode with stuff in it.
-     *
-     * TODO: Accept plain renderables, f.e. Surfaces, etc.
-     *
-     * TODO: Remove old content before adding new content.
-     */
-    setMenu(node) {
-        this.menuContentMol.add(node)
-        if (node instanceof src_Molecule) {
-            node.pipe(this.touchSync)
-            node.on('mouseenter', function() {
-                if (!this.isOpening) {
-                    this.openMenu();
-                }
-            }.bind(this))
-            node.on('mouseleave', function() {
-                if (!this.isClosing) {
-                    this.closeMenu();
-                }
-            }.bind(this))
-        }
-    }
-
-    // TODO: replace menu easing with physics so the user can throw the menu,
-    // using initial velocity and drag to slow it down, and stop immediately
-    // when it hits the fully-open or fully-closed positions.
-
-    /**
-     * Opens the menu.
-     *
-     * @param {Function} callback The function to be called when the animation finishes.
-     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
-     * true, then the callback of a previous open or close animation will be
-     * canceled if that animation was still inprogress when this method is
-     * called, otherwise the callback of the previous open or close animation
-     * will be fired immediately before the animation for this animation begins.
-     */
-    openMenu(callback, cancelPreviousCallback) {
-        this._haltAnimation(cancelPreviousCallback);
-
-        this.isClosing = false;
-        this.isOpening = true;
-
-        this._animate('open', callback);
-    }
-
-    /**
-     * Closes the menu.
-     *
-     * @param {Function} callback The function to be called when the animation finishes.
-     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
-     * true, then the callback of a previous open or close animation will be
-     * canceled if that animation was still inprogress when this method is
-     * called, otherwise the callback of the previous open or close animation
-     * will be fired immediately before the animation for this animation begins.
-     */
-    closeMenu(callback, cancelPreviousCallback) {
-        this._haltAnimation(cancelPreviousCallback);
-
-        this.isClosing = true;
-        this.isOpening = false;
-
-        this._animate('close', callback);
-    }
-
-    /**
-     * Toggles the menu open or closed. If the menu is open or is opening, then it will now start
-     * closing, and vice versa.
-     *
-     * @param {Function} callback The function to be called when the animation finishes.
-     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
-     * true, then the callback of a previous open or close animation will be
-     * canceled if that animation was still inprogress when this method is
-     * called, otherwise the callback of the previous open or close animation
-     * will be fired immediately before the animation for this animation begins.
-     */
-    toggleMenu(callback, cancelPreviousCallback) {
-        if (this.isOpen || this.isOpening) {
-            this.closeMenu(callback, cancelPreviousCallback);
-        }
-        else if (!this.isOpen || this.isClosing) {
-            this.openMenu(callback, cancelPreviousCallback);
-        }
-    }
-
-    /**
-     * Animates the menu to it's target state.
-     *
-     * @private
-     * @param {String} targetState The name of the state to animate to.
-     * @param {Function} callback The function to call after the animation completes.
-     */
-    _animate(targetState, callback) {
-        this.isAnimating = true;
-        this.transitionCallback = callback;
-        var _callback;
-
-        var self = this;
-        function setupCallback(numberOfTransitions) {
-            // Fire callback after numberOfTransitions calls, when the 4 transitions are complete.
-            _callback = callAfter_default()(numberOfTransitions, function() {
-                self.isAnimating = self.isOpening = self.isClosing = false;
-                self.isOpen = targetState == 'open'? true: false;
-                if (typeof self.transitionCallback == 'function') {
-                    self.transitionCallback();
-                }
-                self.transitionCallback = undefined;
-            }.bind(self));
-        }
-
-        setupCallback(1);
-        if (targetState == 'open') {
-            this.animationTransition.set(1, {duration: this.options.animationDuration, curve: Easing_default.a.outExpo}, _callback);
-        }
-        else if (targetState == 'close') {
-            this.animationTransition.set(0, {duration: this.options.animationDuration, curve: Easing_default.a.outExpo}, _callback);
-        }
-    }
-
-    /**
-     * Halts the current animation, if any.
-     *
-     * @private
-     * @param {boolean} [cancelCallback=false] Defaults to false. If true, the
-     * halted animation's callback won't fire, otherwise it will be fired.
-     */
-    _haltAnimation(cancelCallback) {
-        if (this.isAnimating) {
-            if (!cancelCallback && typeof this.transitionCallback == 'function') {
-                this.transitionCallback();
-            }
-            this.transitionCallback = undefined;
-            this.animationTransition.halt();
-        }
-    }
-
-    /**
-     * @override
-     */
-    render() {
-
-        // Blur the content if this.options.blur is true, and the animation is moveBack.
-        //
-        // TODO: Make the item to to be blur specifiable, perhaps with a method on
-        // this.
-        if (this.options.blur && this.options.fade && this.options.animationType == 'moveBack') {
-            let momentaryBlur = (this.animationTransition.get() * this.options.blurRadius)
-            let filter = {
-                "-webkit-filter": 'blur('+momentaryBlur+'px)',
-                "-moz-filter":    'blur('+momentaryBlur+'px)',
-                "-ms-filter":     'blur('+momentaryBlur+'px)',
-                "-o-filter":      'blur('+momentaryBlur+'px)',
-                filter:           'blur('+momentaryBlur+'px)'
-            }
-
-            // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
-            // content molecules or the following breaks if fade is false.
-            // Then remove the check for this.options.fade in the previous if
-            // statement above.
-            if (this.contentMol._child[1].get() instanceof Surface_default.a) {
-                this.contentMol.get().setProperties(filter)
-            }
-            else if (this.contentMol._child[1] instanceof src_Plane) {
-                this.contentMol._child[1].surface.setProperties(filter)
-            }
-        }
-
-        return super.render()
-    }
-}
-/* harmony default export */ var src_PushMenuLayout = (PushMenuLayout_PushMenuLayout);
-
 // EXTERNAL MODULE: ./node_modules/lowclass/index.js
 var lowclass = __webpack_require__(0);
 var lowclass_default = /*#__PURE__*/__webpack_require__.n(lowclass);
 
 // EXTERNAL MODULE: ./node_modules/lowclass/native.js
-var lowclass_native = __webpack_require__(10);
+var lowclass_native = __webpack_require__(6);
 var native_default = /*#__PURE__*/__webpack_require__.n(lowclass_native);
 
 // CONCATENATED MODULE: ./src/core/Mixin.js
 
-
-function Mixin( factory, Default ) {
-
-    factory = Cached( factory )
-    factory = HasInstance( factory )
-    factory = Dedupe( factory )
-    factory = WithDefault( factory, Default || lowclass_default()() )
-    factory = ApplyDefault( factory )
-
-    return factory()
+function Mixin(factory, Default) {
+  factory = Cached(factory);
+  factory = HasInstance(factory);
+  factory = Dedupe(factory);
+  factory = WithDefault(factory, Default || lowclass_default()());
+  factory = ApplyDefault(factory);
+  return factory();
 }
 
 
+function WithDefault(classFactory, Default) {
+  return Base => {
+    Base = Base || Default;
+    return classFactory(Base);
+  };
+}
 
-function WithDefault( classFactory, Default ) {
-    return Base => {
-        Base = Base || Default
-        return classFactory( Base )
+function Cached(classFactory) {
+  const classCache = new WeakMap();
+  return Base => {
+    let Class = classCache.get(Base);
+
+    if (!Class) {
+      classCache.set(Base, Class = classFactory(Base));
     }
+
+    return Class;
+  };
 }
 
-function Cached( classFactory ) {
-    const classCache = new WeakMap
+function HasInstance(classFactory) {
+  let instanceofSymbol;
+  return Base => {
+    const Class = classFactory(Base);
+    if (typeof Symbol === 'undefined' || !Symbol.hasInstance) return Class;
+    if (Object.getOwnPropertySymbols(Class).includes(Symbol.hasInstance)) return Class;
+    if (!instanceofSymbol) instanceofSymbol = Symbol('instanceofSymbol');
+    Class[instanceofSymbol] = true;
+    Object.defineProperty(Class, Symbol.hasInstance, {
+      value: function (obj) {
+        // we do this check because a subclass of `Class` may not have
+        // it's own `[Symbol.hasInstance]()` method, therefore `this`
+        // will be the subclass, not this `Class`, when the prototype
+        // lookup on the subclass finds the `[Symbol.hasInstance]()`
+        // method of this `Class`. In this case, we don't wsnt to run
+        // our logic here, so we delegate to the super class of this
+        // `Class` to take over with the instanceof check. In many
+        // cases, the super class `[Symbol.hasInstance]()` method will
+        // be `Function.prototype[Symbol.hasInstance]` which will
+        // perform the standard check.
+        if (this !== Class) // This is effectively a `super` call.
+          return Object.getPrototypeOf(Class)[Symbol.hasInstance].call(this, obj);
+        let currentProto = obj;
 
-    return Base => {
-        let Class = classCache.get( Base )
-
-        if ( !Class ) {
-            classCache.set( Base, Class = classFactory( Base ) )
+        while (currentProto) {
+          const descriptor = Object.getOwnPropertyDescriptor(currentProto, "constructor");
+          if (descriptor && descriptor.value && descriptor.value.hasOwnProperty(instanceofSymbol)) return true;
+          currentProto = Object.getPrototypeOf(currentProto);
         }
 
-        return Class
-    }
+        return false;
+      }
+    });
+    return Class;
+  };
+} // requires WithDefault or a classFactory that can accept no args
+
+
+function ApplyDefault(classFactory) {
+  const DefaultClass = classFactory();
+  DefaultClass.mixin = classFactory;
+  return classFactory;
+} // requires ApplyDefault
+
+
+function Dedupe(classFactory) {
+  const map = new WeakMap();
+  return Base => {
+    if (hasMixin(Base, classFactory, map)) return Base;
+    const Class = classFactory(Base);
+    map.set(Class, classFactory);
+    return Class;
+  };
 }
 
-function HasInstance( classFactory ) {
-    let instanceofSymbol
+function hasMixin(Class, mixin, map) {
+  while (Class) {
+    if (map.get(Class) === mixin) return true;
+    Class = Class.__proto__;
+  }
 
-    return Base => {
-        const Class = classFactory( Base )
-
-        if ( typeof Symbol === 'undefined' || !Symbol.hasInstance )
-            return Class
-
-        if ( Object.getOwnPropertySymbols( Class ).includes( Symbol.hasInstance ) )
-            return Class
-
-        if ( !instanceofSymbol )
-            instanceofSymbol = Symbol('instanceofSymbol')
-
-        Class[instanceofSymbol] = true
-
-        Object.defineProperty(Class, Symbol.hasInstance, {
-
-            value: function(obj) {
-
-                // we do this check because a subclass of `Class` may not have
-                // it's own `[Symbol.hasInstance]()` method, therefore `this`
-                // will be the subclass, not this `Class`, when the prototype
-                // lookup on the subclass finds the `[Symbol.hasInstance]()`
-                // method of this `Class`. In this case, we don't wsnt to run
-                // our logic here, so we delegate to the super class of this
-                // `Class` to take over with the instanceof check. In many
-                // cases, the super class `[Symbol.hasInstance]()` method will
-                // be `Function.prototype[Symbol.hasInstance]` which will
-                // perform the standard check.
-                if (this !== Class)
-                    // This is effectively a `super` call.
-                    return Object.getPrototypeOf(Class)[Symbol.hasInstance].call(this, obj)
-
-                let currentProto = obj
-
-                while(currentProto) {
-                    const descriptor = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                    if (
-                        descriptor &&
-                        descriptor.value &&
-                        descriptor.value.hasOwnProperty(instanceofSymbol)
-                    ) return true
-
-                    currentProto = Object.getPrototypeOf(currentProto)
-                }
-
-                return false
-
-            }
-
-        })
-
-        return Class
-    }
+  return false;
 }
-
-// requires WithDefault or a classFactory that can accept no args
-function ApplyDefault( classFactory ) {
-    const DefaultClass = classFactory()
-    DefaultClass.mixin = classFactory
-    return classFactory
-}
-
-// requires ApplyDefault
-function Dedupe( classFactory ) {
-    const map = new WeakMap
-
-    return Base => {
-
-        if ( hasMixin( Base, classFactory, map ) )
-            return Base
-
-        const Class = classFactory( Base )
-        map.set( Class, classFactory )
-        return Class
-    }
-}
-
-function hasMixin( Class, mixin, map ) {
-    while (Class) {
-        if ( map.get(Class) === mixin ) return true
-        Class = Class.__proto__
-    }
-
-    return false
-}
-
 // EXTERNAL MODULE: ./node_modules/geometry-interfaces/global.js
-var global = __webpack_require__(216);
+var global = __webpack_require__(84);
 
 // CONCATENATED MODULE: ./node_modules/three/build/three.module.js
 // Polyfills
@@ -23764,7 +16012,7 @@ Object.assign( Sphere.prototype, {
  * @author bhouston / http://clara.io
  */
 
-function three_module_Plane( normal, constant ) {
+function Plane( normal, constant ) {
 
 	// normal is assumed to be normalized
 
@@ -23773,7 +16021,7 @@ function three_module_Plane( normal, constant ) {
 
 }
 
-Object.assign( three_module_Plane.prototype, {
+Object.assign( Plane.prototype, {
 
 	set: function ( normal, constant ) {
 
@@ -23995,12 +16243,12 @@ function Frustum( p0, p1, p2, p3, p4, p5 ) {
 
 	this.planes = [
 
-		( p0 !== undefined ) ? p0 : new three_module_Plane(),
-		( p1 !== undefined ) ? p1 : new three_module_Plane(),
-		( p2 !== undefined ) ? p2 : new three_module_Plane(),
-		( p3 !== undefined ) ? p3 : new three_module_Plane(),
-		( p4 !== undefined ) ? p4 : new three_module_Plane(),
-		( p5 !== undefined ) ? p5 : new three_module_Plane()
+		( p0 !== undefined ) ? p0 : new Plane(),
+		( p1 !== undefined ) ? p1 : new Plane(),
+		( p2 !== undefined ) ? p2 : new Plane(),
+		( p3 !== undefined ) ? p3 : new Plane(),
+		( p4 !== undefined ) ? p4 : new Plane(),
+		( p5 !== undefined ) ? p5 : new Plane()
 
 	];
 
@@ -30837,7 +23085,7 @@ Object.assign( Triangle.prototype, {
 
 	plane: function ( optionalTarget ) {
 
-		var result = optionalTarget || new three_module_Plane();
+		var result = optionalTarget || new Plane();
 
 		return result.setFromCoplanarPoints( this.a, this.b, this.c );
 
@@ -30857,7 +23105,7 @@ Object.assign( Triangle.prototype, {
 
 	closestPointToPoint: function () {
 
-		var plane = new three_module_Plane();
+		var plane = new Plane();
 		var edgeList = [ new Line3(), new Line3(), new Line3() ];
 		var projectedPoint = new Vector3();
 		var closestPoint = new Vector3();
@@ -35859,7 +28107,7 @@ function WebGLClipping() {
 		localClippingEnabled = false,
 		renderingShadows = false,
 
-		plane = new three_module_Plane(),
+		plane = new Plane(),
 		viewNormalMatrix = new Matrix3(),
 
 		uniform = { value: null, needsUpdate: false };
@@ -51891,25 +44139,25 @@ Object.assign( FontLoader.prototype, {
 
 } );
 
-var three_module_context;
+var context;
 
 var AudioContext = {
 
 	getContext: function () {
 
-		if ( three_module_context === undefined ) {
+		if ( context === undefined ) {
 
-			three_module_context = new ( window.AudioContext || window.webkitAudioContext )();
+			context = new ( window.AudioContext || window.webkitAudioContext )();
 
 		}
 
-		return three_module_context;
+		return context;
 
 	},
 
 	setContext: function ( value ) {
 
-		three_module_context = value;
+		context = value;
 
 	}
 
@@ -58611,7 +50859,7 @@ Object.assign( Matrix4.prototype, {
 
 } );
 
-three_module_Plane.prototype.isIntersectionLine = function ( line ) {
+Plane.prototype.isIntersectionLine = function ( line ) {
 
 	console.warn( 'THREE.Plane: .isIntersectionLine() has been renamed to .intersectsLine().' );
 	return this.intersectsLine( line );
@@ -59642,68 +51890,55 @@ function CanvasRenderer() {
 // CONCATENATED MODULE: ./src/core/Observable.js
 
 
+/* harmony default export */ var Observable = (Mixin(Base => lowclass_default()('Observable').extends(Base, ({
+  Super
+}) => ({
+  on(eventName, callback, context) {
+    if (!this._eventMap) this._eventMap = new Map();
 
-/* harmony default export */ var Observable = (Mixin(Base =>
+    let callbacks = this._eventMap.get(eventName);
 
-    lowclass_default()('Observable').extends( Base, ({ Super }) => ({
-        on(eventName, callback, context) {
-            if (!this._eventMap)
-                this._eventMap = new Map
+    if (!callbacks) this._eventMap.set(eventName, callbacks = []);
+    if (typeof callback == 'function') callbacks.push([callback, context]); // save callback associated with context
+    else throw new Error('Expected a function in callback argument of Observable#on.');
+  },
 
-            let callbacks = this._eventMap.get(eventName)
+  off(eventName, callback) {
+    if (!this._eventMap || !this._eventMap.has(eventName)) return;
 
-            if (!callbacks)
-                this._eventMap.set(eventName, callbacks = [])
+    const callbacks = this._eventMap.get(eventName);
 
-            if (typeof callback == 'function')
-                callbacks.push([callback, context]) // save callback associated with context
-            else
-                throw new Error('Expected a function in callback argument of Observable#on.')
-        },
+    const index = callbacks.findIndex(tuple => tuple[0] === callback);
+    if (index == -1) return;
+    callbacks.splice(index, 1);
+    if (callbacks.length === 0) this._eventMap.delete(eventName);
+    if (this._eventMap.size === 0) this._eventMap = null;
+  },
 
-        off(eventName, callback) {
-            if (!this._eventMap || !this._eventMap.has(eventName)) return
+  trigger(eventName, data) {
+    if (!this._eventMap || !this._eventMap.has(eventName)) return;
 
-            const callbacks = this._eventMap.get(eventName)
+    const callbacks = this._eventMap.get(eventName);
 
-            const index = callbacks.findIndex(tuple => tuple[0] === callback)
+    let tuple = undefined;
+    let callback = undefined;
+    let context = undefined;
 
-            if (index == -1) return
+    for (let i = 0, len = callbacks.length; i < len; i += 1) {
+      tuple = callbacks[i];
+      callback = tuple[0];
+      context = tuple[1];
+      callback.call(context, data);
+    }
+  },
 
-            callbacks.splice(index, 1)
+  // alias for trigger
+  triggerEvent(...args) {
+    return this.trigger(...args);
+  }
 
-            if (callbacks.length === 0) this._eventMap.delete(eventName)
-
-            if (this._eventMap.size === 0) this._eventMap = null
-        },
-
-        trigger(eventName, data) {
-            if (!this._eventMap || !this._eventMap.has(eventName)) return
-
-            const callbacks = this._eventMap.get(eventName)
-
-            let tuple = undefined
-            let callback = undefined
-            let context = undefined
-
-            for (let i=0, len=callbacks.length; i<len; i+=1) {
-                tuple = callbacks[i]
-                callback = tuple[0]
-                context = tuple[1]
-                callback.call(context, data)
-            }
-        },
-
-        // alias for trigger
-        triggerEvent(...args) {
-            return this.trigger(...args)
-        },
-    }))
-
-));
-
+}))));
 // CONCATENATED MODULE: ./src/core/XYZValues.js
-
 
 
 
@@ -59715,141 +51950,144 @@ function CanvasRenderer() {
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
- /*TODO remove native*/
-/* harmony default export */ var XYZValues = (lowclass_default()( 'XYZValues' ).extends( Object(lowclass_native["native"])(Observable), ({ Private, Super }) => ({
-    constructor(x, y, z) {
-        Super(this).constructor()
-        this.from(x, y, z)
-    },
 
-    default: { x: undefined, y: undefined, z: undefined },
+/*TODO remove native*/
 
-    from(x, y, z) {
-        if (
-            x !== undefined &&
-            y !== undefined &&
-            z !== undefined
-        ) {
-            this.set(x, y, z)
-        }
+/* harmony default export */ var XYZValues = (lowclass_default()('XYZValues').extends(Object(lowclass_native["native"])(Observable), ({
+  Private,
+  Super
+}) => ({
+  constructor(x, y, z) {
+    Super(this).constructor();
+    this.from(x, y, z);
+  },
 
-        else if (Array.isArray(x)) {
-            this.fromArray(x)
-        }
+  default: {
+    x: undefined,
+    y: undefined,
+    z: undefined
+  },
 
-        else if (typeof x === 'object' && x !== null && x !== this ) {
-            this.fromObject(x)
-        }
+  from(x, y, z) {
+    if (x !== undefined && y !== undefined && z !== undefined) {
+      this.set(x, y, z);
+    } else if (Array.isArray(x)) {
+      this.fromArray(x);
+    } else if (typeof x === 'object' && x !== null && x !== this) {
+      this.fromObject(x);
+    } else if (typeof x === 'string') {
+      this.fromString(x);
+    } else {
+      this.fromDefault();
+    }
 
-        else if (typeof x === 'string') {
-            this.fromString(x)
-        }
+    return this;
+  },
 
-        else {
-            this.fromDefault()
-        }
+  set(x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    return this;
+  },
 
-        return this
-    },
+  fromArray(array) {
+    this.set(array[0], array[1], array[2]);
+    return this;
+  },
 
-    set(x, y, z) {
-        this.x = x
-        this.y = y
-        this.z = z
+  fromObject(object) {
+    this.set(object.x, object.y, object.z);
+    return this;
+  },
 
-        return this
-    },
+  fromString(string) {
+    this.fromArray(this.stringToArray(string));
+    return this;
+  },
 
-    fromArray(array) {
-        this.set(array[0], array[1], array[2])
-        return this
-    },
+  deserializeValue(prop, string) {
+    return string; // subclasses override
+  },
 
-    fromObject(object) {
-        this.set(object.x, object.y, object.z)
-        return this
-    },
+  stringToArray(string) {
+    const values = string.trim().split(/(?:\s*,\s*)|(?:\s+)/g);
+    const length = values.length;
+    if (length > 0) values[0] = this.deserializeValue('x', values[0]);
+    if (length > 1) values[1] = this.deserializeValue('y', values[1]);
+    if (length > 2) values[2] = this.deserializeValue('z', values[2]);
+    return values;
+  },
 
-    fromString(string) {
-        this.fromArray(this.stringToArray(string))
-        return this
-    },
+  toString() {
+    return `${this.x} ${this.y} ${this.z}`;
+  },
 
-    deserializeValue(prop, string) {
-        return string
-        // subclasses override
-    },
+  fromDefault() {
+    this.set(this.default.x, this.default.y, this.default.z);
+    return this;
+  },
 
-    stringToArray(string) {
-        const values = string.trim().split(/(?:\s*,\s*)|(?:\s+)/g)
-        const length = values.length
-        if (length > 0) values[0] = this.deserializeValue('x', values[0])
-        if (length > 1) values[1] = this.deserializeValue('y', values[1])
-        if (length > 2) values[2] = this.deserializeValue('z', values[2])
-        return values
-    },
+  checkValue(prop, value) {
+    if (value === undefined) return false;
+    return true; // Subclasses extend this to implement type checks.
+    // Return true if the value should be assigned, false otherwise.
+  },
 
-    toString() {
-        return `${this.x} ${this.y} ${this.z}`
-    },
+  set x(value) {
+    if (!this.checkValue('x', value)) return;
+    Private(this)._x = value;
+    this.trigger('valuechanged', 'x');
+  },
 
-    fromDefault() {
-        this.set(this.default.x, this.default.y, this.default.z)
-        return this
-    },
+  get x() {
+    return Private(this)._x;
+  },
 
-    checkValue(prop, value) {
-        if (value === undefined) return false
-        return true
+  set y(value) {
+    if (!this.checkValue('y', value)) return;
+    Private(this)._y = value;
+    this.trigger('valuechanged', 'y');
+  },
 
-        // Subclasses extend this to implement type checks.
-        // Return true if the value should be assigned, false otherwise.
-    },
+  get y() {
+    return Private(this)._y;
+  },
 
-    set x(value) {
-        if (!this.checkValue('x', value)) return
-        Private(this)._x = value
-        this.trigger('valuechanged', 'x')
-    },
+  set z(value) {
+    if (!this.checkValue('z', value)) return;
+    Private(this)._z = value;
+    this.trigger('valuechanged', 'z');
+  },
 
-    get x() { return Private(this)._x },
+  get z() {
+    return Private(this)._z;
+  }
 
-    set y(value) {
-        if (!this.checkValue('y', value)) return
-        Private(this)._y = value
-        this.trigger('valuechanged', 'y')
-    },
-
-    get y() { return Private(this)._y },
-
-    set z(value) {
-        if (!this.checkValue('z', value)) return
-        Private(this)._z = value
-        this.trigger('valuechanged', 'z')
-    },
-
-    get z() { return Private(this)._z },
 })));
-
 // CONCATENATED MODULE: ./src/core/XYZNumberValues.js
 
 
+/* harmony default export */ var XYZNumberValues = (lowclass_default()('XYZNumberValues').extends(XYZValues, ({
+  Super
+}) => ({
+  default: {
+    x: 0,
+    y: 0,
+    z: 0
+  },
 
-/* harmony default export */ var XYZNumberValues = (lowclass_default()('XYZNumberValues').extends(XYZValues, ({ Super }) => ({
-    default: { x: 0, y: 0, z: 0 },
+  deserializeValue(prop, string) {
+    return Number(string);
+  },
 
-    deserializeValue(prop, string) {
-        return Number(string)
-    },
+  checkValue(prop, value) {
+    if (!Super(this).checkValue(prop, value)) return false;
+    if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) throw new TypeError(`Expected ${prop} to be a finite number. Received: ${value}`);
+    return true;
+  }
 
-    checkValue(prop, value) {
-        if (!Super(this).checkValue(prop, value)) return false
-        if ( typeof value !== 'number' || isNaN(value) || !isFinite(value) )
-            throw new TypeError(`Expected ${prop} to be a finite number. Received: ${value}`)
-        return true
-    },
 })));
-
 // CONCATENATED MODULE: ./node_modules/@trusktr/skatejs/dist/es/util.js
 function dashCase(str) {
   return typeof str === 'string' ? str.split(/([_A-Z])/).reduce(function (one, two, idx) {
@@ -60422,7 +52660,7 @@ var with_update_withUpdate = function withUpdate() {
       value: function triggerUpdate() {
         var _this2 = this;
 
-        if (this._updating) {
+        if (this._updating || !this.parentNode) {
           return;
         }
         this._updating = true;
@@ -60675,129 +52913,112 @@ var with_component_withComponent = function withComponent() {
 
 // CONCATENATED MODULE: ./src/core/Utility.js
 function epsilon(value) {
-    return Math.abs(value) < 0.000001 ? 0 : value;
+  return Math.abs(value) < 0.000001 ? 0 : value;
 }
 
 function applyCSSLabel(value, label) {
-    if (value === 0) {
-        return '0px'
-    } else if (label === '%') {
-        return value * 100 + '%';
-    } else if (label === 'px') {
-        return value + 'px'
-    }
+  if (value === 0) {
+    return '0px';
+  } else if (label === '%') {
+    return value * 100 + '%';
+  } else if (label === 'px') {
+    return value + 'px';
+  }
 }
 
 function observeChildren(target, onConnect, onDisconnect) {
-    // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
-    const childObserver = createChildObserver(onConnect, onDisconnect)
-    childObserver.observe(target, { childList: true })
-    return childObserver
-}
-
-// NOTE: If a child is disconnected then connected to the same parent in the
+  // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
+  const childObserver = createChildObserver(onConnect, onDisconnect);
+  childObserver.observe(target, {
+    childList: true
+  });
+  return childObserver;
+} // NOTE: If a child is disconnected then connected to the same parent in the
 // same turn, then the onConnect and onDisconnect callbacks won't be called
 // because the DOM tree will be back in the exact state as before (this is
 // possible thanks to the logic associated with weightsPerTarget).
+
+
 function createChildObserver(onConnect, onDisconnect) {
-    return new MutationObserver(changes => {
-        const weightsPerTarget = new Map
+  return new MutationObserver(changes => {
+    const weightsPerTarget = new Map(); // We're just counting how many times each child node was added and
+    // removed from the parent we're observing.
 
-        // We're just counting how many times each child node was added and
-        // removed from the parent we're observing.
-        for (let i=0, l=changes.length; i<l; i+=1) {
-            const change = changes[i]
+    for (let i = 0, l = changes.length; i < l; i += 1) {
+      const change = changes[i];
+      if (change.type != 'childList') continue;
+      if (!weightsPerTarget.has(change.target)) weightsPerTarget.set(change.target, new Map());
+      const weights = weightsPerTarget.get(change.target);
+      const {
+        addedNodes
+      } = change;
 
-            if (change.type != 'childList') continue
+      for (let l = addedNodes.length, i = 0; i < l; i += 1) weights.set(addedNodes[i], (weights.get(addedNodes[i]) || 0) + 1);
 
-            if (!weightsPerTarget.has(change.target))
-                weightsPerTarget.set(change.target, new Map)
+      const {
+        removedNodes
+      } = change;
 
-            const weights = weightsPerTarget.get(change.target)
+      for (let l = removedNodes.length, i = 0; i < l; i += 1) weights.set(removedNodes[i], (weights.get(removedNodes[i]) || 0) - 1);
+    }
 
-            const {addedNodes} = change
-            for (let l=addedNodes.length, i=0; i<l; i+=1)
-                weights.set(addedNodes[i], (weights.get(addedNodes[i]) || 0) + 1)
-
-            const {removedNodes} = change
-            for (let l=removedNodes.length, i=0; i<l; i+=1)
-                weights.set(removedNodes[i], (weights.get(removedNodes[i]) || 0) - 1)
-        }
-
-        for (const [target, weights] of Array.from(weightsPerTarget)) {
-
-            for (const [node, weight] of Array.from(weights)) {
-                // If the number of times a child was added is greater than the
-                // number of times it was removed, then the net result is that
-                // it was added, so we call onConnect just once.
-                if (weight > 0 && typeof onConnect == 'function')
-                    onConnect.call(target, node)
-
-                // If the number of times a child was added is less than the
-                // number of times it was removed, then the net result is that
-                // it was removed, so we call onConnect just once.
-                else if (weight < 0 && typeof onDisconnect == 'function')
-                    onDisconnect.call(target, node)
-
-                // If the number of times a child was added is equal to the
-                // number of times it was removed, then it was essentially left
-                // in place, so we don't call anything.
-            }
-        }
-    })
+    for (const [target, weights] of Array.from(weightsPerTarget)) {
+      for (const [node, weight] of Array.from(weights)) {
+        // If the number of times a child was added is greater than the
+        // number of times it was removed, then the net result is that
+        // it was added, so we call onConnect just once.
+        if (weight > 0 && typeof onConnect == 'function') onConnect.call(target, node); // If the number of times a child was added is less than the
+        // number of times it was removed, then the net result is that
+        // it was removed, so we call onConnect just once.
+        else if (weight < 0 && typeof onDisconnect == 'function') onDisconnect.call(target, node); // If the number of times a child was added is equal to the
+        // number of times it was removed, then it was essentially left
+        // in place, so we don't call anything.
+      }
+    }
+  });
 }
 
-const hasShadowDomV0 =
-    typeof Element.prototype.createShadowRoot == 'function'
-    && typeof HTMLContentElement == 'function'
-    ? true : false
-
-const hasShadowDomV1 =
-    typeof Element.prototype.attachShadow == 'function'
-    && typeof HTMLSlotElement == 'function'
-    ? true : false
+const hasShadowDomV0 = typeof Element.prototype.createShadowRoot == 'function' && typeof HTMLContentElement == 'function' ? true : false;
+const hasShadowDomV1 = typeof Element.prototype.attachShadow == 'function' && typeof HTMLSlotElement == 'function' ? true : false;
 
 function getShadowRootVersion(shadowRoot) {
-    console.log('getShadowRootVersion')
-    if (!shadowRoot) return null
-    const slot = document.createElement('slot')
-    shadowRoot.appendChild(slot)
-    slot.appendChild(document.createElement('div'))
-    const assignedNodes = slot.assignedNodes({ flatten: true })
-    slot.remove()
-    console.log('hmm', assignedNodes.length, assignedNodes.length > 0 ? 'v1' : 'v0')
-    return assignedNodes.length > 0 ? 'v1' : 'v0'
+  console.log('getShadowRootVersion');
+  if (!shadowRoot) return null;
+  const slot = document.createElement('slot');
+  shadowRoot.appendChild(slot);
+  slot.appendChild(document.createElement('div'));
+  const assignedNodes = slot.assignedNodes({
+    flatten: true
+  });
+  slot.remove();
+  console.log('hmm', assignedNodes.length, assignedNodes.length > 0 ? 'v1' : 'v0');
+  return assignedNodes.length > 0 ? 'v1' : 'v0';
 }
 
 function getAncestorShadowRoot(node) {
-    let current = node
+  let current = node;
 
-    while (current && !(current instanceof ShadowRoot)) {
-        current = current.parentNode
-    }
+  while (current && !(current instanceof ShadowRoot)) {
+    current = current.parentNode;
+  }
 
-    return current
-}
-
-// helper function to use instead of instanceof for classes that implement the
+  return current;
+} // helper function to use instead of instanceof for classes that implement the
 // static Symbol.hasInstance method, because the behavior of instanceof isn't
 // polyfillable.
+
+
 function isInstanceof(lhs, rhs) {
-    if (typeof rhs == 'function' && rhs[Symbol.hasInstance])
-        return rhs[Symbol.hasInstance](lhs)
-    else return lhs instanceof rhs
+  if (typeof rhs == 'function' && rhs[Symbol.hasInstance]) return rhs[Symbol.hasInstance](lhs);else return lhs instanceof rhs;
 }
 
 function checkIsNumberArrayString(str) {
-    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g))
-        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`)
+  if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g)) throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`);
 }
 
 function checkIsSizeArrayString(str) {
-    if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g))
-        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "literal proportional". Yours was "${str}".`)
+  if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g)) throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "literal proportional". Yours was "${str}".`);
 }
-
 
 
 // CONCATENATED MODULE: ./src/core/TreeNode.js
@@ -60807,189 +53028,187 @@ function checkIsSizeArrayString(str) {
 
 
 
+/* harmony default export */ var TreeNode = (Mixin(Base => lowclass_default()('TreeNode').extends(native_default()(with_update_withUpdate(Base)), ({
+  Super,
+  Public: Private
+}) => ({
+  // TODO, make Private work with Mixin+lowclass. The problem is when
+  // using `Private` on instance of the same class created by a different
+  // mixin application. We may have to do something similar to the
+  // hasInstance Mixin helper.
+  //private: {
+  _parent: null,
+  _children: null,
 
-/* harmony default export */ var TreeNode = (Mixin(Base =>
+  //},
+  constructor(...args) {
+    const self = Super(this).constructor(...args);
+    Private(self)._children = [];
+    return self;
+  },
 
-    lowclass_default()('TreeNode').extends( native_default()( with_update_withUpdate( Base ) ), ({ Super, Public: Private }) => ({
+  /**
+   * @readonly
+   */
+  get parent() {
+    return Private(this)._parent;
+  },
 
-        // TODO, make Private work with Mixin+lowclass. The problem is when
-        // using `Private` on instance of the same class created by a different
-        // mixin application. We may have to do something similar to the
-        // hasInstance Mixin helper.
-        //private: {
-            _parent: null,
-            _children: null,
-        //},
+  /**
+   * This is named "subnodes" to avoid conflict with HTML's Element.children
+   * @readonly
+   */
+  get subnodes() {
+    // return a new array, so that the user modifying it doesn't affect
+    // this node's actual children.
+    return [...Private(this)._children];
+  },
 
-        constructor(...args) {
-            const self = Super(this).constructor(...args)
-            Private(self)._children = []
-            return self
-        },
+  /**
+   * Add a child node to this TreeNode.
+   *
+   * @param {TreeNode} childNode The child node to add.
+   */
+  add(childNode) {
+    if (!isInstanceof(childNode, TreeNode)) throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.');
+    if (Private(childNode)._parent === this) throw new ReferenceError('childNode is already a child of this parent.');
+    if (Private(childNode)._parent) Private(childNode)._parent.remove(childNode);
+    Private(childNode)._parent = this;
 
-        /**
-         * @readonly
-         */
-        get parent() {
-            return Private(this)._parent
-        },
+    Private(this)._children.push(childNode);
 
-        /**
-         * This is named "subnodes" to avoid conflict with HTML's Element.children
-         * @readonly
-         */
-        get subnodes() {
-            // return a new array, so that the user modifying it doesn't affect
-            // this node's actual children.
-            return [...Private(this)._children]
-        },
+    Promise.resolve().then(() => {
+      childNode.connected();
+      this.childConnected(childNode);
+    });
+    return this;
+  },
 
-        /**
-         * Add a child node to this TreeNode.
-         *
-         * @param {TreeNode} childNode The child node to add.
-         */
-        add(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
-                throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
+  /**
+   * Add all the child nodes in the given array to this node.
+   *
+   * @param {Array.TreeNode} nodes The nodes to add.
+   */
+  addChildren(nodes) {
+    nodes.forEach(node => this.add()(node));
+    return this;
+  },
 
-            if (Private(childNode)._parent === this)
-                throw new ReferenceError('childNode is already a child of this parent.')
-
-            if (Private(childNode)._parent)
-                Private(childNode)._parent.remove(childNode)
-
-            Private(childNode)._parent = this;
-
-            Private(this)._children.push(childNode);
-
-            Promise.resolve().then(() => {
-                childNode.connected()
-                this.childConnected(childNode)
-            })
-
-            return this
-        },
-
-        /**
-         * Add all the child nodes in the given array to this node.
-         *
-         * @param {Array.TreeNode} nodes The nodes to add.
-         */
-        addChildren(nodes) {
-            nodes.forEach(node => this.add()(node))
-            return this
-        },
-
-        /**
-         * Remove a child node from this node.
-         *
-         * @param {TreeNode} childNode The node to remove.
-         */
-        remove(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
-                throw new Error(`
+  /**
+   * Remove a child node from this node.
+   *
+   * @param {TreeNode} childNode The node to remove.
+   */
+  remove(childNode) {
+    if (!isInstanceof(childNode, TreeNode)) throw new Error(`
                     TreeNode.remove expects the childNode argument to be an
                     instance of TreeNode. There should only be TreeNodes in the
                     tree.
-                `)
+                `);
+    if (Private(childNode)._parent !== this) throw new ReferenceError('childNode is not a child of this parent.');
+    Private(childNode)._parent = null;
 
-            if (Private(childNode)._parent !== this)
-                throw new ReferenceError('childNode is not a child of this parent.')
+    Private(this)._children.splice(Private(this)._children.indexOf(childNode), 1);
 
-            Private(childNode)._parent = null
-            Private(this)._children.splice(Private(this)._children.indexOf(childNode), 1);
+    Promise.resolve().then(() => {
+      childNode.disconnected();
+      this.childDisconnected(childNode);
+    });
+    return this;
+  },
 
-            Promise.resolve().then(() => {
-                childNode.disconnected()
-                this.childDisconnected(childNode)
-            })
+  /**
+   * Remove all the child nodes in the given array from this node.
+   *
+   * @param {Array.TreeNode} nodes The nodes to remove.
+   */
+  removeChildren(nodes) {
+    nodes.forEach(node => this.remove(node));
+    return this;
+  },
 
-            return this
-        },
+  /**
+   * Shortcut to remove all children.
+   */
+  removeAllChildren() {
+    this.removeChildren(Private(this)._children);
+    return this;
+  },
 
-        /**
-         * Remove all the child nodes in the given array from this node.
-         *
-         * @param {Array.TreeNode} nodes The nodes to remove.
-         */
-        removeChildren(nodes) {
-            nodes.forEach(node => this.remove(node))
-            return this
-        },
+  /**
+   * @readonly
+   * @return {number} How many children this TreeNode has.
+   */
+  get childCount() {
+    return Private(this)._children.length;
+  },
 
-        /**
-         * Shortcut to remove all children.
-         */
-        removeAllChildren() {
-            this.removeChildren(Private(this)._children)
-            return this
-        },
+  // generic life cycle methods
+  connected() {},
 
-        /**
-         * @readonly
-         * @return {number} How many children this TreeNode has.
-         */
-        get childCount() {
-            return Private(this)._children.length
-        },
+  disconnected() {},
 
-        // generic life cycle methods
-        connected() {},
-        disconnected() {},
-        childConnected(child) {},
-        childDisconnected(child) {},
-        propertyChanged() {},
-    }))
+  childConnected(child) {},
 
-));
+  childDisconnected(child) {},
 
+  propertyChanged() {}
+
+}))));
 // CONCATENATED MODULE: ./src/core/XYZStringValues.js
 
 
+/* harmony default export */ var XYZStringValues = (lowclass_default()('XYZStringValues').extends(XYZValues, ({
+  Super
+}) => ({
+  default: {
+    x: '',
+    y: '',
+    z: ''
+  },
 
-/* harmony default export */ var XYZStringValues = (lowclass_default()('XYZStringValues').extends(XYZValues, ({ Super }) => ({
-    default: { x: '', y: '', z: '' },
+  checkValue(prop, value) {
+    if (!Super(this).checkValue(prop, value)) return false;
+    if (typeof value !== 'string') throw new TypeError(`Expected ${prop} to be a string. Received: ${value}`);
+    return true;
+  }
 
-    checkValue(prop, value) {
-        if (!Super(this).checkValue(prop, value)) return false
-        if ( typeof value !== 'string' )
-            throw new TypeError(`Expected ${prop} to be a string. Received: ${value}`)
-        return true
-    },
 })));
-
 // CONCATENATED MODULE: ./src/core/XYZSizeModeValues.js
 
 
+/* harmony default export */ var XYZSizeModeValues = (lowclass_default()('XYZSizeModeValues').extends(XYZStringValues, ({
+  Super
+}) => ({
+  default: {
+    x: 'literal',
+    y: 'literal',
+    z: 'literal'
+  },
+  allowedValues: ['literal', 'proportional'],
 
-/* harmony default export */ var XYZSizeModeValues = (lowclass_default()('XYZSizeModeValues').extends(XYZStringValues, ({ Super }) => ({
-    default: { x: 'literal', y: 'literal', z: 'literal' },
-    allowedValues: [ 'literal', 'proportional' ],
+  checkValue(prop, value) {
+    if (!Super(this).checkValue(prop, value)) return false;
+    if (!this.allowedValues.includes(value)) throw new TypeError(`Expected ${prop} to be one of 'literal' or 'proportional'. Received: '${value}'`);
+    return true;
+  }
 
-    checkValue(prop, value) {
-        if (!Super(this).checkValue(prop, value)) return false
-        if ( !this.allowedValues.includes( value ) )
-            throw new TypeError(`Expected ${prop} to be one of 'literal' or 'proportional'. Received: '${value}'`)
-        return true
-    },
 })));
-
 // CONCATENATED MODULE: ./src/core/XYZNonNegativeValues.js
 
 
+/* harmony default export */ var XYZNonNegativeValues = (lowclass_default()('XYZNonNegativeValues').extends(XYZNumberValues, ({
+  Super
+}) => ({
+  checkValue(prop, value) {
+    if (!Super(this).checkValue(prop, value)) return false;
+    if (value < 0) throw new Error(`Expected ${prop} not to be negative. Received: ${value}`);
+    return true;
+  }
 
-/* harmony default export */ var XYZNonNegativeValues = (lowclass_default()( 'XYZNonNegativeValues' ).extends( XYZNumberValues, ({ Super }) => ({
-    checkValue(prop, value) {
-        if (!Super(this).checkValue(prop, value)) return false
-        if (value < 0)
-            throw new Error(`Expected ${prop} not to be negative. Received: ${value}`)
-        return true
-    },
 })));
-
 // EXTERNAL MODULE: ./node_modules/@awaitbox/document-ready/src/index.js
-var src = __webpack_require__(21);
+var src = __webpack_require__(15);
 var src_default = /*#__PURE__*/__webpack_require__.n(src);
 
 // CONCATENATED MODULE: ./src/core/WebVR.js
@@ -61001,563 +53220,466 @@ var src_default = /*#__PURE__*/__webpack_require__.n(src);
  *
  * Based on @tojiro's vr-samples-utils.js
  */
-
 var WEBVR = {
+  createButton: function (renderer) {
+    function showEnterVR(display) {
+      button.style.display = '';
+      button.style.cursor = 'pointer';
+      button.style.left = 'calc(50% - 50px)';
+      button.style.width = '100px';
+      button.textContent = 'ENTER VR';
 
-	createButton: function ( renderer ) {
+      button.onmouseenter = function () {
+        button.style.opacity = '1.0';
+      };
 
-		function showEnterVR( display ) {
+      button.onmouseleave = function () {
+        button.style.opacity = '0.5';
+      };
 
-			button.style.display = '';
+      button.onclick = function () {
+        display.isPresenting ? display.exitPresent() : display.requestPresent([{
+          source: renderer.domElement
+        }]);
+      };
 
-			button.style.cursor = 'pointer';
-			button.style.left = 'calc(50% - 50px)';
-			button.style.width = '100px';
+      renderer.vr.setDevice(display);
+    }
 
-			button.textContent = 'ENTER VR';
+    function showVRNotFound() {
+      button.style.display = '';
+      button.style.cursor = 'auto';
+      button.style.left = 'calc(50% - 75px)';
+      button.style.width = '150px';
+      button.textContent = 'VR NOT FOUND';
+      button.onmouseenter = null;
+      button.onmouseleave = null;
+      button.onclick = null;
+      renderer.vr.setDevice(null);
+    }
 
-			button.onmouseenter = function () { button.style.opacity = '1.0'; };
-			button.onmouseleave = function () { button.style.opacity = '0.5'; };
+    function stylizeElement(element) {
+      element.style.position = 'absolute';
+      element.style.bottom = '20px';
+      element.style.padding = '12px 6px';
+      element.style.border = '1px solid #fff';
+      element.style.borderRadius = '4px';
+      element.style.background = 'transparent';
+      element.style.color = '#fff';
+      element.style.font = 'normal 13px sans-serif';
+      element.style.textAlign = 'center';
+      element.style.opacity = '0.5';
+      element.style.outline = 'none';
+      element.style.zIndex = '999';
+    }
 
-			button.onclick = function () {
-
-				display.isPresenting ? display.exitPresent() : display.requestPresent( [ { source: renderer.domElement } ] );
-
-			};
-
-			renderer.vr.setDevice( display );
-
-		}
-
-		function showVRNotFound() {
-
-			button.style.display = '';
-
-			button.style.cursor = 'auto';
-			button.style.left = 'calc(50% - 75px)';
-			button.style.width = '150px';
-
-			button.textContent = 'VR NOT FOUND';
-
-			button.onmouseenter = null;
-			button.onmouseleave = null;
-
-			button.onclick = null;
-
-			renderer.vr.setDevice( null );
-
-		}
-
-		function stylizeElement( element ) {
-
-			element.style.position = 'absolute';
-			element.style.bottom = '20px';
-			element.style.padding = '12px 6px';
-			element.style.border = '1px solid #fff';
-			element.style.borderRadius = '4px';
-			element.style.background = 'transparent';
-			element.style.color = '#fff';
-			element.style.font = 'normal 13px sans-serif';
-			element.style.textAlign = 'center';
-			element.style.opacity = '0.5';
-			element.style.outline = 'none';
-			element.style.zIndex = '999';
-
-		}
-
-		if ( 'getVRDisplays' in navigator ) {
-
-			var button = document.createElement( 'button' );
-			button.style.display = 'none';
-
-			stylizeElement( button );
-
-			window.addEventListener( 'vrdisplayconnect', function ( event ) {
-
-				showEnterVR( event.display );
-
-			}, false );
-
-			window.addEventListener( 'vrdisplaydisconnect', function ( event ) {
-
-				showVRNotFound();
-
-			}, false );
-
-			window.addEventListener( 'vrdisplaypresentchange', function ( event ) {
-
-				button.textContent = event.display.isPresenting ? 'EXIT VR' : 'ENTER VR';
-
-			}, false );
-
-			navigator.getVRDisplays()
-				.then( function ( displays ) {
-
-					if ( displays.length > 0 ) {
-
-						showEnterVR( displays[ 0 ] );
-
-					} else {
-
-						showVRNotFound();
-
-					}
-
-				} );
-
-			return button;
-
-		} else {
-
-			var message = document.createElement( 'a' );
-			message.href = 'https://webvr.info';
-			message.innerHTML = 'WEBVR NOT SUPPORTED';
-
-			message.style.left = 'calc(50% - 90px)';
-			message.style.width = '180px';
-			message.style.textDecoration = 'none';
-
-			stylizeElement( message );
-
-			return message;
-
-		}
-
-	},
-
-	// DEPRECATED
-
-	checkAvailability: function () {
-		console.warn( 'WEBVR.checkAvailability has been deprecated.' );
-		return new Promise( function () {} );
-	},
-
-	getMessageContainer: function () {
-		console.warn( 'WEBVR.getMessageContainer has been deprecated.' );
-		return document.createElement( 'div' );
-	},
-
-	getButton: function () {
-		console.warn( 'WEBVR.getButton has been deprecated.' );
-		return document.createElement( 'div' );
-	},
-
-	getVRDisplay: function () {
-		console.warn( 'WEBVR.getVRDisplay has been deprecated.' );
-	}
-
+    if ('getVRDisplays' in navigator) {
+      var button = document.createElement('button');
+      button.style.display = 'none';
+      stylizeElement(button);
+      window.addEventListener('vrdisplayconnect', function (event) {
+        showEnterVR(event.display);
+      }, false);
+      window.addEventListener('vrdisplaydisconnect', function (event) {
+        showVRNotFound();
+      }, false);
+      window.addEventListener('vrdisplaypresentchange', function (event) {
+        button.textContent = event.display.isPresenting ? 'EXIT VR' : 'ENTER VR';
+      }, false);
+      navigator.getVRDisplays().then(function (displays) {
+        if (displays.length > 0) {
+          showEnterVR(displays[0]);
+        } else {
+          showVRNotFound();
+        }
+      });
+      return button;
+    } else {
+      var message = document.createElement('a');
+      message.href = 'https://webvr.info';
+      message.innerHTML = 'WEBVR NOT SUPPORTED';
+      message.style.left = 'calc(50% - 90px)';
+      message.style.width = '180px';
+      message.style.textDecoration = 'none';
+      stylizeElement(message);
+      return message;
+    }
+  },
+  // DEPRECATED
+  checkAvailability: function () {
+    console.warn('WEBVR.checkAvailability has been deprecated.');
+    return new Promise(function () {});
+  },
+  getMessageContainer: function () {
+    console.warn('WEBVR.getMessageContainer has been deprecated.');
+    return document.createElement('div');
+  },
+  getButton: function () {
+    console.warn('WEBVR.getButton has been deprecated.');
+    return document.createElement('div');
+  },
+  getVRDisplay: function () {
+    console.warn('WEBVR.getVRDisplay has been deprecated.');
+  }
 };
-
 /* harmony default export */ var WebVR = (WEBVR);
-
 // CONCATENATED MODULE: ./src/core/WebGLRendererThree.js
 
 
 
-
-
-
-const sceneStates = new WeakMap
-
-// A singleton responsible for setting up and drawing a WebGL scene for a given
+const sceneStates = new WeakMap(); // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
+
 const WebGLRendererThree = lowclass_default()('WebGLRendererThree', {
-    initGl(scene) {
-        let sceneState = sceneStates.has(scene)
+  initGl(scene) {
+    let sceneState = sceneStates.has(scene);
+    if (sceneState) sceneState = sceneStates.get(scene);else sceneStates.set(scene, sceneState = {
+      // TODO: get the active camera from the scene
+      //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
+      // TODO: options controlled by HTML attributes on scene elements.
+      renderer: new WebGLRenderer({
+        // TODO: how do we change alpha:true to alpha:false after the
+        // fact?
+        alpha: true,
+        antialias: true
+      })
+    });
+    const {
+      renderer
+    } = sceneState; // TODO: make configurable by property/attribute
 
-        if (sceneState) sceneState = sceneStates.get(scene)
-        else sceneStates.set(scene, sceneState = {
-            // TODO: get the active camera from the scene
-            //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
 
-            // TODO: options controlled by HTML attributes on scene elements.
-            renderer: new WebGLRenderer( {
-                // TODO: how do we change alpha:true to alpha:false after the
-                // fact?
-                alpha: true,
+    this.updateResolution(scene);
+    scene.on('sizechange', () => this.updateResolution(scene)); // TODO? Maybe the html/scene.js element should be responsible for
+    // making this, so that DOM logic is encapsulated there?
 
-                antialias: true,
-            } ),
-        })
+    scene._canvasContainer.appendChild(renderer.domElement);
+  },
 
-        const { renderer } = sceneState
+  drawScene(scene) {
+    const {
+      renderer
+      /* , scene: threeScene, camera */
 
-        // TODO: make configurable by property/attribute
-        renderer.setPixelRatio(window.devicePixelRatio)
-        renderer.shadowMap.enabled = true
-        renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
+    } = sceneStates.get(scene);
+    renderer.render(scene.threeObject3d, scene.threeCamera);
+  },
 
-        this.updateResolution(scene)
-        scene.on('sizechange', () => this.updateResolution(scene))
+  // TODO FIXME This is tied to the `sizechange` event of Scene, which means
+  // camera and renderer resize happens outside of the animation loop, but as
+  // with _calcSize, we want to see if we can put this in the nimation loop
+  // as well. Putting this logic in the loop depends on putting _calcSize in
+  // the loop. #66
+  updateResolution(scene) {
+    const state = sceneStates.get(scene);
 
-        // TODO? Maybe the html/scene.js element should be responsible for
-        // making this, so that DOM logic is encapsulated there?
-        scene._canvasContainer.appendChild( renderer.domElement )
-    },
+    scene._updateCameraAspect();
 
-    drawScene(scene) {
-        const {renderer /* , scene: threeScene, camera */} = sceneStates.get(scene)
-        renderer.render(scene.threeObject3d, scene.threeCamera)
-    },
+    scene._updateCameraPerspective();
 
-    // TODO FIXME This is tied to the `sizechange` event of Scene, which means
-    // camera and renderer resize happens outside of the animation loop, but as
-    // with _calcSize, we want to see if we can put this in the nimation loop
-    // as well. Putting this logic in the loop depends on putting _calcSize in
-    // the loop. #66
-    updateResolution(scene) {
-        const state = sceneStates.get(scene)
+    scene._updateCameraProjection();
 
-        scene._updateCameraAspect()
-        scene._updateCameraPerspective()
-        scene._updateCameraProjection()
+    state.renderer.setSize(scene._calculatedSize.x, scene._calculatedSize.y); // Indirectly causes Motor to call this.drawScene(). It's important to
+    // call this rather than just this.drawScene() directly because Motor
+    // will make sure it runs in an animation frame.
 
-        state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
+    scene._needsToBeRendered();
+  },
 
-        // Indirectly causes Motor to call this.drawScene(). It's important to
-        // call this rather than just this.drawScene() directly because Motor
-        // will make sure it runs in an animation frame.
-        scene._needsToBeRendered()
-    },
+  setClearColor(scene, color, opacity) {
+    sceneStates.get(scene).renderer.setClearColor(color, opacity);
+  },
 
-    setClearColor( scene, color, opacity ) {
-        sceneStates.get( scene ).renderer.setClearColor( color, opacity )
-    },
+  setClearAlpha(scene, opacity) {
+    sceneStates.get(scene).renderer.setClearAlpha(opacity);
+  },
 
-    setClearAlpha( scene, opacity ) {
-        sceneStates.get( scene ).renderer.setClearAlpha( opacity )
-    },
+  setShadowMapType(scene, type) {
+    type = type.toLowerCase();
 
-    setShadowMapType(scene, type) {
-        type = type.toLowerCase()
+    if (type == 'pcf') {
+      sceneStates.get(scene).renderer.shadowMap.type = PCFShadowMap;
+    } else if (type == 'pcfsoft') {
+      sceneStates.get(scene).renderer.shadowMap.type = PCFSoftShadowMap;
+    } else if (type == 'basic') {
+      sceneStates.get(scene).renderer.shadowMap.type = BasicShadowMap;
+    } else {
+      // default
+      sceneStates.get(scene).renderer.shadowMap.type = PCFShadowMap;
+    }
+  },
 
-        if ( type == 'pcf' ) {
-            sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
-        }
-        else if ( type == 'pcfsoft' ) {
-            sceneStates.get( scene ).renderer.shadowMap.type = PCFSoftShadowMap
-        }
-        else if ( type == 'basic' ) {
-            sceneStates.get( scene ).renderer.shadowMap.type = BasicShadowMap
-        }
-        else { // default
-            sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
-        }
-    },
+  requestFrame(scene, fn) {
+    const renderer = sceneStates.get(scene).renderer;
+    if (renderer.animate) // < r94
+      renderer.animate(fn);else if (renderer.setAnimationLoop) // >= r94
+      renderer.setAnimationLoop(fn);
+  },
 
-    requestFrame( scene, fn ) {
-        const renderer = sceneStates.get( scene ).renderer
+  // This needs work: at the moment it has only been tested toggling it on
+  // once and nothing more.
+  enableVR(scene, enable) {
+    const renderer = sceneStates.get(scene).renderer;
+    renderer.vr.enabled = enable;
+  },
 
-        if ( renderer.animate ) // < r94
-            renderer.animate( fn )
-        else if ( renderer.setAnimationLoop ) // >= r94
-            renderer.setAnimationLoop( fn )
-    },
+  createDefaultWebVREntryUI(scene) {
+    const renderer = sceneStates.get(scene).renderer;
+    window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false);
+    window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false);
 
-    // This needs work: at the moment it has only been tested toggling it on
-    // once and nothing more.
-    enableVR( scene, enable ) {
-        const renderer = sceneStates.get( scene ).renderer
-        renderer.vr.enabled = enable
-    },
+    function onPointerRestricted() {
+      var pointerLockElement = renderer.domElement;
 
-    createDefaultWebVREntryUI( scene ) {
+      if (pointerLockElement && typeof pointerLockElement.requestPointerLock === 'function') {
+        pointerLockElement.requestPointerLock();
+      }
+    }
 
-        const renderer = sceneStates.get( scene ).renderer
+    function onPointerUnrestricted() {
+      var currentPointerLockElement = document.pointerLockElement;
+      var expectedPointerLockElement = renderer.domElement;
 
-        window.addEventListener( 'vrdisplaypointerrestricted', onPointerRestricted, false );
-        window.addEventListener( 'vrdisplaypointerunrestricted', onPointerUnrestricted, false );
+      if (currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof document.exitPointerLock === 'function') {
+        document.exitPointerLock();
+      }
+    }
 
-        function onPointerRestricted() {
-            var pointerLockElement = renderer.domElement;
-            if ( pointerLockElement && typeof(pointerLockElement.requestPointerLock) === 'function' ) {
-                pointerLockElement.requestPointerLock();
-            }
-        }
+    const button = WebVR.createButton(renderer);
+    button.setAttribute('id', 'vrButton');
+    button.style.color = 'black';
+    button.style['border-color'] = 'black';
+    button.setAttribute('slot', 'misc');
+    scene.appendChild(button);
+    return button;
+  }
 
-        function onPointerUnrestricted() {
-            var currentPointerLockElement = document.pointerLockElement;
-            var expectedPointerLockElement = renderer.domElement;
-            if ( currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof(document.exitPointerLock) === 'function' ) {
-                document.exitPointerLock();
-            }
-        }
-
-        const button = WebVR.createButton( renderer )
-
-        button.setAttribute( 'id', 'vrButton' )
-        button.style.color = 'black'
-        button.style['border-color'] = 'black'
-
-        button.setAttribute( 'slot', 'misc' )
-        scene.appendChild( button )
-
-        return button
-    },
-
-})
-
-let instance = null
-
+});
+let instance = null;
 function getWebGLRendererThree(scene) {
-    if (instance) return instance
-    else return instance = new WebGLRendererThree
+  if (instance) return instance;else return instance = new WebGLRendererThree();
 }
-
 function destroyWebGLRendererThree() {
-    instance = null
+  instance = null;
 }
-
 // CONCATENATED MODULE: ./src/core/Motor.js
 
 
 
 
 
+let documentIsReady = false; // TODO use Array if IE11 doesn't have Map.
 
-let documentIsReady = false
+const webGLRenderers = new Map();
+const Motor = lowclass_default()('Motor', ({
+  Public,
+  Private
+}) => ({
+  constructor() {
+    Private(this).allRenderTasks = [];
+    Private(this).nodesToBeRendered = [];
+    Private(this).modifiedScenes = [];
+    Private(this).treesToUpdate = [];
+  },
 
-// TODO use Array if IE11 doesn't have Map.
-const webGLRenderers = new Map
+  /**
+   * When a render tasks is added a new requestAnimationFrame loop will be started if there
+   * isn't one currently.
+   *
+   * A render task is simply a function that will be called over and over
+   * again, in the Motor's animation loop. That's all, nothing special.
+   * However, if a Node setter is used inside of a render task, then the Node
+   * will tell Motor that it needs to be re-rendered, which will happen at
+   * the end of the current frame. If a Node setter is used outside of a
+   * render task (i.e. outside of the Motor's animation loop), then the Node
+   * tells Motor to re-render the Node on the next animation loop tick.
+   * Basically, regardless of where the Node's setters are used (inside or
+   * outside of the Motor's animation loop), rendering always happens inside
+   * the loop.
+   *
+   * @param {Function} fn The render task to add.
+   * @return {Function} A reference to the render task. Useful for saving to
+   * a variable so that it can later be passed to Motor.removeRenderTask().
+   */
+  addRenderTask(fn) {
+    if (typeof fn != 'function') throw new Error('Render task must be a function.');
+    const self = Private(this);
+    if (self.allRenderTasks.includes(fn)) return;
+    self.allRenderTasks.push(fn);
+    self.numberOfTasks += 1; // If the render loop isn't started, start it.
 
-const Motor = lowclass_default()('Motor', ({ Public, Private }) => ({
+    if (!self.animationLoopStarted) self.startAnimationLoop();
+    return fn;
+  },
 
-    constructor() {
-        Private(this).allRenderTasks = []
-        Private(this).nodesToBeRendered = []
-        Private(this).modifiedScenes = []
-        Private(this).treesToUpdate = []
-    },
+  removeRenderTask(fn) {
+    const self = Private(this);
+    const taskIndex = self.allRenderTasks.indexOf(fn);
+    if (taskIndex == -1) return;
+    self.allRenderTasks.splice(taskIndex, 1);
+    self.numberOfTasks -= 1;
+    if (taskIndex <= self.taskIterationIndex) self.taskIterationIndex -= 1;
+  },
+
+  // in the future we might have "babylon", "playcanvas", etc, on a
+  // per scene basis.
+  getWebGLRenderer(scene, type) {
+    if (webGLRenderers.has(scene)) return webGLRenderers.get(scene);
+    let rendererGetter = null;
+    if (type === "three") rendererGetter = getWebGLRendererThree;else throw new Error('invalid WebGL renderer');
+    const renderer = rendererGetter(scene);
+    webGLRenderers.set(scene, renderer);
+    renderer.initGl(scene);
+    return renderer;
+  },
+
+  // A Node calls this any time its properties have been modified (f.e. by the end user).
+  setNodeToBeRendered(node) {
+    const self = Private(this);
+    if (self.nodesToBeRendered.includes(node)) return;
+    self.nodesToBeRendered.push(node); // noop if the loop's already started
+
+    self.startAnimationLoop();
+  },
+
+  setFrameRequester(requester) {
+    Private(this).requestFrame = requester;
+  },
+
+  private: {
+    animationLoopStarted: false,
+    taskIterationIndex: null,
+    numberOfTasks: 0,
+    allRenderTasks: [],
+    nodesToBeRendered: [],
+    modifiedScenes: [],
+    // A set of nodes that are the root nodes of subtrees where all nodes
+    // in each subtree need to have their world matrices updated.
+    treesToUpdate: [],
+    // default to requestAnimationFrame for regular non-VR/AR scenes.
+    requestFrame: window.requestAnimationFrame.bind(window),
 
     /**
-     * When a render tasks is added a new requestAnimationFrame loop will be started if there
-     * isn't one currently.
-     *
-     * A render task is simply a function that will be called over and over
-     * again, in the Motor's animation loop. That's all, nothing special.
-     * However, if a Node setter is used inside of a render task, then the Node
-     * will tell Motor that it needs to be re-rendered, which will happen at
-     * the end of the current frame. If a Node setter is used outside of a
-     * render task (i.e. outside of the Motor's animation loop), then the Node
-     * tells Motor to re-render the Node on the next animation loop tick.
-     * Basically, regardless of where the Node's setters are used (inside or
-     * outside of the Motor's animation loop), rendering always happens inside
-     * the loop.
-     *
-     * @param {Function} fn The render task to add.
-     * @return {Function} A reference to the render task. Useful for saving to
-     * a variable so that it can later be passed to Motor.removeRenderTask().
+     * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
+     * As long as there are tasks in the stack, the loop continues. When the
+     * stack becomes empty due to removal of tasks, the
+     * requestAnimationFrame loop stops and the app sits there doing nothing
+     * -- silence, crickets.
      */
-    addRenderTask(fn) {
-        if (typeof fn != 'function')
-            throw new Error('Render task must be a function.')
+    async startAnimationLoop() {
+      if (this.animationLoopStarted) return;
+      this.animationLoopStarted = true;
 
-        const self = Private(this)
+      if (!documentIsReady) {
+        await src_default()();
+        documentIsReady = true;
+      }
 
-        if (self.allRenderTasks.includes(fn)) return
+      let timestamp = null;
 
-        self.allRenderTasks.push(fn)
-        self.numberOfTasks += 1
+      while (this.animationLoopStarted) {
+        timestamp = await this.animationFrame();
+        this.runRenderTasks(timestamp); // wait for the next microtask before continuing so that SkateJS
+        // updated methods (or any other microtask handlers) have a
+        // chance to handle changes before the next renderNodes call.
+        //
+        // TODO add test to make sure behavior size change doesn't
+        // happen after render
 
-        // If the render loop isn't started, start it.
-        if (!self.animationLoopStarted)
-            self.startAnimationLoop()
+        await Promise.resolve();
+        this.renderNodes(timestamp); // If no tasks are left, stop the animation loop.
 
-        return fn
+        if (!this.allRenderTasks.length) this.animationLoopStarted = false;
+      }
     },
 
-    removeRenderTask(fn) {
-        const self = Private(this)
-
-        const taskIndex = self.allRenderTasks.indexOf(fn)
-
-        if (taskIndex == -1) return
-
-        self.allRenderTasks.splice(taskIndex, 1)
-        self.numberOfTasks -= 1
-
-        if ( taskIndex <= self.taskIterationIndex )
-            self.taskIterationIndex -= 1
+    animationFrame() {
+      return new Promise(r => this.requestFrame(r));
     },
 
-
-    // in the future we might have "babylon", "playcanvas", etc, on a
-    // per scene basis.
-    getWebGLRenderer(scene, type) {
-        if ( webGLRenderers.has(scene) ) return webGLRenderers.get(scene)
-
-        let rendererGetter = null
-
-        if (type === "three")
-            rendererGetter = getWebGLRendererThree
-        else throw new Error('invalid WebGL renderer')
-
-        const renderer = rendererGetter(scene)
-        webGLRenderers.set(scene, renderer)
-        renderer.initGl(scene)
-
-        return renderer
+    runRenderTasks(timestamp) {
+      for (this.taskIterationIndex = 0; this.taskIterationIndex < this.numberOfTasks; this.taskIterationIndex += 1) {
+        const task = this.allRenderTasks[this.taskIterationIndex];
+        if (task(timestamp) === false) Public(this).removeRenderTask(task);
+      }
     },
 
-    // A Node calls this any time its properties have been modified (f.e. by the end user).
-    setNodeToBeRendered(node) {
-        const self = Private(this)
-        if (self.nodesToBeRendered.includes(node)) return
-        self.nodesToBeRendered.push(node)
+    renderNodes(timestamp) {
+      if (!this.nodesToBeRendered.length) return;
 
-        // noop if the loop's already started
-        self.startAnimationLoop()
-    },
+      for (let i = 0, l = this.nodesToBeRendered.length; i < l; i += 1) {
+        const node = this.nodesToBeRendered[i];
 
-    setFrameRequester( requester ) {
-        Private( this ).requestFrame = requester
-    },
+        node._render(timestamp); // If the node is root of a subtree containing updated nodes and
+        // has no ancestors that were modified, then add it to the
+        // treesToUpdate set so we can update the world matrices of
+        // all the nodes in the subtree.
 
-    private: {
 
-        animationLoopStarted: false,
-        taskIterationIndex: null,
-        numberOfTasks: 0,
+        if ( // a node could be a Scene, which is not Transformable
+        isInstanceof(node, core_Transformable) && // and if ancestor is not instanceof Transformable, f.e.
+        // `false` if there is no ancestor that should be rendered or
+        // no Transformable parent which means the current node is the
+        // root node
+        !isInstanceof(node._getAncestorThatShouldBeRendered(), core_Transformable) && // and the node isn't already added.
+        !this.treesToUpdate.includes(node)) {
+          this.treesToUpdate.push(node);
+        } // keep track of which scenes are modified so we can render webgl
+        // only for those scenes.
+        // TODO FIXME: at this point, a node should always have a scene,
+        // otherwise it should not ever be rendered here, but turns out
+        // some nodes are getting into this queue without a scene. We
+        // shouldn't need the conditional check for node._scene, and it
+        // will save CPU by not allowing the code to get here in that case.
+        // UPDATE: it may be because we're using `node._scene` which is
+        // null unless `node.scene` was first used. Maybe we just need to
+        // use `node.scene`.
 
-        allRenderTasks: [],
-        nodesToBeRendered: [],
-        modifiedScenes: [],
 
-        // A set of nodes that are the root nodes of subtrees where all nodes
-        // in each subtree need to have their world matrices updated.
-        treesToUpdate: [],
+        if (node._scene && !this.modifiedScenes.includes(node._scene)) this.modifiedScenes.push(node._scene);
+      } // Update world matrices of the subtrees.
 
-        // default to requestAnimationFrame for regular non-VR/AR scenes.
-        requestFrame: window.requestAnimationFrame.bind( window ),
 
-        /**
-         * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
-         * As long as there are tasks in the stack, the loop continues. When the
-         * stack becomes empty due to removal of tasks, the
-         * requestAnimationFrame loop stops and the app sits there doing nothing
-         * -- silence, crickets.
-         */
-        async startAnimationLoop() {
-            if (this.animationLoopStarted) return
+      const treesToUpdate = this.treesToUpdate;
 
-            this.animationLoopStarted = true
+      for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
+        treesToUpdate[i]._calculateWorldMatricesInSubtree();
+      }
 
-            if (!documentIsReady) {
-                await src_default()()
-                documentIsReady = true
-            }
+      treesToUpdate.length = 0; // render webgl of modified scenes.
+      // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
+      // iterate only through those so we don't iterate over non-webgl
+      // scenes.
 
-            let timestamp = null
+      const modifiedScenes = this.modifiedScenes;
 
-            while (this.animationLoopStarted) {
-                timestamp = await this.animationFrame()
+      for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
+        const scene = modifiedScenes[i];
+        if (scene.experimentalWebgl) webGLRenderers.get(scene).drawScene(scene);
+      }
 
-                this.runRenderTasks(timestamp)
+      modifiedScenes.length = 0;
+      const nodesToBeRendered = this.nodesToBeRendered;
 
-                // wait for the next microtask before continuing so that SkateJS
-                // updated methods (or any other microtask handlers) have a
-                // chance to handle changes before the next renderNodes call.
-                //
-                // TODO add test to make sure behavior size change doesn't
-                // happen after render
-                await Promise.resolve()
+      for (let i = 0, l = nodesToBeRendered.length; i < l; i += 1) {
+        nodesToBeRendered[i]._willBeRendered = false;
+      }
 
-                this.renderNodes(timestamp)
+      nodesToBeRendered.length = 0;
+    }
 
-                // If no tasks are left, stop the animation loop.
-                if (!this.allRenderTasks.length)
-                    this.animationLoopStarted = false
-            }
-        },
+  }
+})); // export a singleton instance rather than the class directly.
 
-        animationFrame() {
-            return new Promise(r => this.requestFrame(r))
-        },
-
-        runRenderTasks(timestamp) {
-            for (this.taskIterationIndex = 0; this.taskIterationIndex < this.numberOfTasks; this.taskIterationIndex += 1) {
-                const task = this.allRenderTasks[this.taskIterationIndex]
-
-                if (task(timestamp) === false)
-                    Public(this).removeRenderTask(task)
-            }
-        },
-
-        renderNodes(timestamp) {
-            if (!this.nodesToBeRendered.length) return
-
-            for (let i=0, l=this.nodesToBeRendered.length; i<l; i+=1) {
-                const node = this.nodesToBeRendered[i]
-
-                node._render(timestamp)
-
-                // If the node is root of a subtree containing updated nodes and
-                // has no ancestors that were modified, then add it to the
-                // treesToUpdate set so we can update the world matrices of
-                // all the nodes in the subtree.
-                if (
-                    // a node could be a Scene, which is not Transformable
-                    isInstanceof(node, core_Transformable) &&
-
-                    // and if ancestor is not instanceof Transformable, f.e.
-                    // `false` if there is no ancestor that should be rendered or
-                    // no Transformable parent which means the current node is the
-                    // root node
-                    !isInstanceof(node._getAncestorThatShouldBeRendered(), core_Transformable) &&
-
-                    // and the node isn't already added.
-                    !this.treesToUpdate.includes(node)
-                ) {
-                    this.treesToUpdate.push(node)
-                }
-
-                // keep track of which scenes are modified so we can render webgl
-                // only for those scenes.
-                // TODO FIXME: at this point, a node should always have a scene,
-                // otherwise it should not ever be rendered here, but turns out
-                // some nodes are getting into this queue without a scene. We
-                // shouldn't need the conditional check for node._scene, and it
-                // will save CPU by not allowing the code to get here in that case.
-                // UPDATE: it may be because we're using `node._scene` which is
-                // null unless `node.scene` was first used. Maybe we just need to
-                // use `node.scene`.
-                if (node._scene && !this.modifiedScenes.includes(node._scene))
-                    this.modifiedScenes.push(node._scene)
-            }
-
-            // Update world matrices of the subtrees.
-            const treesToUpdate = this.treesToUpdate
-            for (let i=0, l=treesToUpdate.length; i<l; i+=1) {
-                treesToUpdate[i]._calculateWorldMatricesInSubtree()
-            }
-            treesToUpdate.length = 0
-
-            // render webgl of modified scenes.
-            // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
-            // iterate only through those so we don't iterate over non-webgl
-            // scenes.
-            const modifiedScenes = this.modifiedScenes
-            for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
-                const scene = modifiedScenes[i]
-                if (scene.experimentalWebgl)
-                    webGLRenderers.get(scene).drawScene(scene)
-            }
-            modifiedScenes.length = 0
-
-            const nodesToBeRendered = this.nodesToBeRendered
-            for (let i=0, l=nodesToBeRendered.length; i<l; i+=1) {
-                nodesToBeRendered[i]._willBeRendered = false
-            }
-            nodesToBeRendered.length = 0
-        },
-    },
-
-}))
-
-// export a singleton instance rather than the class directly.
-/* harmony default export */ var core_Motor = (new Motor);
-
+/* harmony default export */ var core_Motor = (new Motor());
 // CONCATENATED MODULE: ./src/core/props.js
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -61567,55 +53689,80 @@ const Motor = lowclass_default()('Motor', ({ Public, Private }) => ({
 
 
 function createXYZPropType(Type, override = {}) {
-    return {
-        attribute: { source: true, target: false }, // get the value from an attribute (but don't mirror it back)
-        coerce(val, propName) { return val === this.element[propName] ? val : this.element[propName].from(val) },
-        default(propName) { return this.element[propName] },
-        deserialize(val, propName) { return this.element[propName].fromString(val) },
-        serialize(val, propName) { this.element[propName].toString() },
-        ...override,
+  return _objectSpread({
+    attribute: {
+      source: true,
+      target: false
+    },
+
+    // get the value from an attribute (but don't mirror it back)
+    coerce(val, propName) {
+      return val === this.element[propName] ? val : this.element[propName].from(val);
+    },
+
+    default(propName) {
+      return this.element[propName];
+    },
+
+    deserialize(val, propName) {
+      return this.element[propName].fromString(val);
+    },
+
+    serialize(val, propName) {
+      this.element[propName].toString();
     }
+
+  }, override);
 }
 
 function createGenericPropType(Type, override = {}) {
-    return {
-        attribute: { source: true, target: false }, // get the value from an attribute (but don't mirror it back)
-        coerce: val => val instanceof Type ? val : new Type(val),
-        default: new Type,
-        deserialize: val => new Type(val),
-        serialize: val => val.toString(),
-        ...override,
-    }
+  return _objectSpread({
+    attribute: {
+      source: true,
+      target: false
+    },
+    // get the value from an attribute (but don't mirror it back)
+    coerce: val => val instanceof Type ? val : new Type(val),
+    default: new Type(),
+    deserialize: val => new Type(val),
+    serialize: val => val.toString()
+  }, override);
 }
 
 const props_props = Object.assign({}, with_update_props, {
-    boolean: {
-        ...with_update_props.boolean,
-        deserialize: val => val != null && val !== 'false'
-    },
-    THREE: {
-        // TODO replace THREE.Color with a persistent object that can be
-        // dynamically updated, like with XYZValues
-        Color: createGenericPropType(Color, {
-            default: () => new Color( Math.random(), Math.random(), Math.random() ),
-            serialize: val => new Color( val ).getStyle(), // returns a CSS "rbg()" string
-        }),
-    },
-    XYZValues: createXYZPropType(XYZValues),
-    XYZNumberValues: createXYZPropType(XYZNumberValues),
-    XYZNonNegativeValues: createXYZPropType(XYZNonNegativeValues),
-    XYZStringValues: createXYZPropType(XYZStringValues),
-    XYZSizeModeValues: createXYZPropType(XYZSizeModeValues),
-})
+  boolean: _objectSpread({}, with_update_props.boolean, {
+    deserialize: val => val != null && val !== 'false'
+  }),
+  THREE: {
+    // TODO replace THREE.Color with a persistent object that can be
+    // dynamically updated, like with XYZValues
+    Color: createGenericPropType(Color, {
+      default: () => new Color(Math.random(), Math.random(), Math.random()),
+      serialize: val => new Color(val).getStyle() // returns a CSS "rbg()" string
 
-// map a SkateJS prop value to a sub-object on the instance
-const mapPropTo = (prop, subObj) => ({
-    ...prop,
-    coerce(val, key) { return this[subObj][key] = prop.coerce(val) },
-    deserialize(val, key) { return this[subObj][key] = prop.deserialize(val) },
-})
+    })
+  },
+  XYZValues: createXYZPropType(XYZValues),
+  XYZNumberValues: createXYZPropType(XYZNumberValues),
+  XYZNonNegativeValues: createXYZPropType(XYZNonNegativeValues),
+  XYZStringValues: createXYZPropType(XYZStringValues),
+  XYZSizeModeValues: createXYZPropType(XYZSizeModeValues)
+}); // map a SkateJS prop value to a sub-object on the instance
 
+const mapPropTo = (prop, subObj) => _objectSpread({}, prop, {
+  coerce(val, key) {
+    return this[subObj][key] = prop.coerce(val);
+  },
+
+  deserialize(val, key) {
+    return this[subObj][key] = prop.deserialize(val);
+  }
+
+});
 // CONCATENATED MODULE: ./src/core/Sizeable.js
+function Sizeable_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Sizeable_defineProperty(target, key, source[key]); }); } return target; }
+
+function Sizeable_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
@@ -61624,297 +53771,298 @@ const mapPropTo = (prop, subObj) => ({
 
 
 
-
-// working variables (used synchronously only, to avoid making new variables in
+ // working variables (used synchronously only, to avoid making new variables in
 // repeatedly-called methods)
-let propFunction = null
 
+let propFunction = null;
 /* harmony default export */ var core_Sizeable = (Mixin(Base => {
+  const Parent = Observable.mixin(TreeNode.mixin(Base)); // Sizeable extends TreeNode because Sizeable knows about its `parent` when
+  // calculating proportional sizes. Also Transformable knows about it's parent
+  // in order to calculate it's world matrix based on it's parent's.
 
-    const Parent = Observable.mixin(TreeNode.mixin(Base))
+  const Sizeable = lowclass_default()('Sizeable').extends(Parent, ({
+    Super
+  }) => ({
+    static: {
+      props: Sizeable_objectSpread({}, Parent.props ? Parent.props : {}, {
+        size: props_props.XYZNonNegativeValues,
+        // FIXME the whole app breaks on a negative value. Handle the error.
+        sizeMode: props_props.XYZSizeModeValues
+      })
+    },
 
-    // Sizeable extends TreeNode because Sizeable knows about its `parent` when
-    // calculating proportional sizes. Also Transformable knows about it's parent
-    // in order to calculate it's world matrix based on it's parent's.
-    const Sizeable = lowclass_default()('Sizeable').extends( Parent, ({ Super }) => ({
+    constructor(options = {}) {
+      const self = Super(this).constructor(options);
+      self._propertyFunctions = null;
+      self._calculatedSize = {
+        x: 0,
+        y: 0,
+        z: 0 // self._props = {} // SkateJS now creates this (because TreeNode extends from SkateJS withUpdate).
 
-        static: {
-            props: {
-                ...(Parent.props ? Parent.props : {}),
-                size: props_props.XYZNonNegativeValues, // FIXME the whole app breaks on a negative value. Handle the error.
-                sizeMode: props_props.XYZSizeModeValues,
-            },
-        },
+      };
+      self._properties = self._props; // alias to the SkateJS _props cache, so that other code referring to this._properties is unchanged
 
-        constructor(options = {}) {
-            const self = Super(this).constructor(options)
+      self._setDefaultProperties();
 
-            self._propertyFunctions = null
-            self._calculatedSize = { x:0, y:0, z:0 }
-            // self._props = {} // SkateJS now creates this (because TreeNode extends from SkateJS withUpdate).
-            self._properties = self._props // alias to the SkateJS _props cache, so that other code referring to this._properties is unchanged
-            self._setDefaultProperties()
-            self._setPropertyObservers()
-            self.properties = options
+      self._setPropertyObservers();
 
-            return self
-        },
+      self.properties = options;
+      return self;
+    },
 
-        _setDefaultProperties() {
-            Object.assign(this._properties, {
-                sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-                size:     new XYZNonNegativeValues(100, 100, 100),
-            })
-        },
+    _setDefaultProperties() {
+      Object.assign(this._properties, {
+        sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
+        size: new XYZNonNegativeValues(100, 100, 100)
+      });
+    },
 
-        // TODO change all event values to objects. See here for reasoning:
-        // https://github.com/airbnb/javascript#events
-        _setPropertyObservers() {
-            this._properties.sizeMode.on('valuechanged',
-                () => this.trigger('propertychange', 'sizeMode'))
-            this._properties.size.on('valuechanged',
-                () => this.trigger('propertychange', 'size'))
-        },
+    // TODO change all event values to objects. See here for reasoning:
+    // https://github.com/airbnb/javascript#events
+    _setPropertyObservers() {
+      this._properties.sizeMode.on('valuechanged', () => this.trigger('propertychange', 'sizeMode'));
 
-        updated(oldProps, oldState, modifiedProps) {
-            if (!this.isConnected) return
+      this._properties.size.on('valuechanged', () => this.trigger('propertychange', 'size'));
+    },
 
-            // this covers single-valued properties like opacity, but has the
-            // sideeffect of trigger propertychange more than needed for
-            // XYZValues (here, and in the above valuechanged handlers).
-            //
-            // TODO FIXME we want to batch Observable updates so that this doesn't
-            // happen. Maybe we'll do it by batching events that have the same
-            // name. We should make it possible to choose to have sync or async
-            // events, and whether they should batch or not.
-            for (const [prop, modified] of Object.entries(modifiedProps))
-                if (modified) this.trigger('propertychange', prop)
-        },
+    updated(oldProps, oldState, modifiedProps) {
+      if (!this.isConnected) return; // this covers single-valued properties like opacity, but has the
+      // sideeffect of trigger propertychange more than needed for
+      // XYZValues (here, and in the above valuechanged handlers).
+      //
+      // TODO FIXME we want to batch Observable updates so that this doesn't
+      // happen. Maybe we'll do it by batching events that have the same
+      // name. We should make it possible to choose to have sync or async
+      // events, and whether they should batch or not.
 
-        _calcSize() {
-            const calculatedSize = this._calculatedSize
-            const previousSize = {...calculatedSize}
-            const props = this._properties
-            const parentSize = this._getParentSize()
+      for (const [prop, modified] of Object.entries(modifiedProps)) if (modified) this.trigger('propertychange', prop);
+    },
 
-            if (props.sizeMode.x == 'literal') {
-                calculatedSize.x = props.size.x
-            }
-            else { // proportional
-                calculatedSize.x = parentSize.x * props.size.x
-            }
+    _calcSize() {
+      const calculatedSize = this._calculatedSize;
 
-            if (props.sizeMode.y == 'literal') {
-                calculatedSize.y = props.size.y
-            }
-            else { // proportional
-                calculatedSize.y = parentSize.y * props.size.y
-            }
+      const previousSize = Sizeable_objectSpread({}, calculatedSize);
 
-            if (props.sizeMode.z == 'literal') {
-                calculatedSize.z = props.size.z
-            }
-            else { // proportional
-                calculatedSize.z = parentSize.z * props.size.z
-            }
+      const props = this._properties;
 
-            if (
-                previousSize.x !== calculatedSize.x
-                || previousSize.y !== calculatedSize.y
-                || previousSize.z !== calculatedSize.z
-            ) {
-                this.trigger('sizechange', {...calculatedSize})
-            }
-        },
+      const parentSize = this._getParentSize();
 
-        _getParentSize() {
-            return this.parent ? this.parent._calculatedSize : {x:0,y:0,z:0}
-        },
+      if (props.sizeMode.x == 'literal') {
+        calculatedSize.x = props.size.x;
+      } else {
+        // proportional
+        calculatedSize.x = parentSize.x * props.size.x;
+      }
 
-        _handleXYZPropertyFunction(fn, name) {
-            if (!this._propertyFunctions) this._propertyFunctions = new Map
+      if (props.sizeMode.y == 'literal') {
+        calculatedSize.y = props.size.y;
+      } else {
+        // proportional
+        calculatedSize.y = parentSize.y * props.size.y;
+      }
 
-            if (propFunction = this._propertyFunctions.get(name)) {
-                core_Motor.removeRenderTask(propFunction)
-                propFunction = null
-            }
+      if (props.sizeMode.z == 'literal') {
+        calculatedSize.z = props.size.z;
+      } else {
+        // proportional
+        calculatedSize.z = parentSize.z * props.size.z;
+      }
 
-            this._propertyFunctions.set(name,
-                core_Motor.addRenderTask(time => {
-                    const result = fn(
-                        this._properties[name].x,
-                        this._properties[name].y,
-                        this._properties[name].z,
-                        time
-                    )
+      if (previousSize.x !== calculatedSize.x || previousSize.y !== calculatedSize.y || previousSize.z !== calculatedSize.z) {
+        this.trigger('sizechange', Sizeable_objectSpread({}, calculatedSize));
+      }
+    },
 
-                    if (result === false) {
-                        this._propertyFunctions.delete(name)
-                        return false
-                    }
+    _getParentSize() {
+      return this.parent ? this.parent._calculatedSize : {
+        x: 0,
+        y: 0,
+        z: 0
+      };
+    },
 
-                    // mark this true, so that the following set of this[name]
-                    // doesn't override the prop function (normally a
-                    // user can set this[name] to a value that isn't a function
-                    // to disable the prop function).
-                    this._settingValueFromPropFunction = true
+    _handleXYZPropertyFunction(fn, name) {
+      if (!this._propertyFunctions) this._propertyFunctions = new Map();
 
-                    this[name] = result
-                })
-            )
-        },
+      if (propFunction = this._propertyFunctions.get(name)) {
+        core_Motor.removeRenderTask(propFunction);
+        propFunction = null;
+      }
 
-        _handleSinglePropertyFunction(fn, name) {
-            if (!this._propertyFunctions) this._propertyFunctions = new Map
+      this._propertyFunctions.set(name, core_Motor.addRenderTask(time => {
+        const result = fn(this._properties[name].x, this._properties[name].y, this._properties[name].z, time);
 
-            if (propFunction = this._propertyFunctions.get(name)) {
-                core_Motor.removeRenderTask(propFunction)
-                propFunction = null
-            }
+        if (result === false) {
+          this._propertyFunctions.delete(name);
 
-            this._propertyFunctions.set(name,
-                core_Motor.addRenderTask(time => {
-                    const result = fn(
-                        this._properties[name],
-                        time
-                    )
+          return false;
+        } // mark this true, so that the following set of this[name]
+        // doesn't override the prop function (normally a
+        // user can set this[name] to a value that isn't a function
+        // to disable the prop function).
 
-                    if (result === false) {
-                        this._propertyFunctions.delete(name)
-                        return false
-                    }
 
-                    this._settingValueFromPropFunction = true
-                    this[name] = result
-                })
-            )
-        },
+        this._settingValueFromPropFunction = true;
+        this[name] = result;
+      }));
+    },
 
-        // remove property function (render task) if any.
-        _removePropertyFunction(name) {
-            if (this._propertyFunctions && (propFunction = this._propertyFunctions.get(name))) {
-                core_Motor.removeRenderTask(propFunction)
-                this._propertyFunctions.delete(name)
-                propFunction = null
-            }
-        },
+    _handleSinglePropertyFunction(fn, name) {
+      if (!this._propertyFunctions) this._propertyFunctions = new Map();
 
-        _setPropertyXYZ(Class, name, newValue) {
-            if (typeof newValue === 'function') {
-                this._handleXYZPropertyFunction(newValue, name)
-            }
-            else {
-                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
-                else this._settingValueFromPropFunction = false
+      if (propFunction = this._propertyFunctions.get(name)) {
+        core_Motor.removeRenderTask(propFunction);
+        propFunction = null;
+      }
 
-                Super(this)[name] = newValue
-            }
-        },
+      this._propertyFunctions.set(name, core_Motor.addRenderTask(time => {
+        const result = fn(this._properties[name], time);
 
-        _setPropertySingle(name, newValue) {
-            if (typeof newValue === 'function') {
-                this._handleSinglePropertyFunction(newValue, name)
-            }
-            else {
-                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
-                else this._settingValueFromPropFunction = false
+        if (result === false) {
+          this._propertyFunctions.delete(name);
 
-                Super(this)[name] = newValue
-            }
-        },
+          return false;
+        }
 
-        /**
-         * Set the size mode for each axis. Possible size modes are "literal"
-         * and "proportional". The default values are "literal" for all axes.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis sizeMode to apply. Default: `"literal"`
-         * @param {number} [newValue.y] The y-axis sizeMode to apply. Default: `"literal"`
-         * @param {number} [newValue.z] The z-axis sizeMode to apply. Default: `"literal"`
-         */
-        set sizeMode(newValue) {
-            if (typeof newValue === 'function')
-                throw new TypeError('property functions are not allowed for sizeMode')
-            this._setPropertyXYZ(null, 'sizeMode', newValue)
-        },
-        get sizeMode() {
-            return Super(this).sizeMode
-        },
+        this._settingValueFromPropFunction = true;
+        this[name] = result;
+      }));
+    },
 
-        // TODO: A "differential" size would be cool. Good for padding,
-        // borders, etc. Inspired from Famous' differential sizing.
-        //
-        // TODO: A "target" size where sizing can be relative to another node.
-        // This would be tricky though, because there could be circular size
-        // dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
+    // remove property function (render task) if any.
+    _removePropertyFunction(name) {
+      if (this._propertyFunctions && (propFunction = this._propertyFunctions.get(name))) {
+        core_Motor.removeRenderTask(propFunction);
 
-        /**
-         * Set the size of each axis. The size for each axis depends on the
-         * sizeMode for each axis. For example, if node.sizeMode is set to
-         * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
-         * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
-         * Y size is 0.5 of it's parent Y size, and Z size is a literal value
-         * of 30. It is easy this way to mix literal and proportional sizes for
-         * the different axes.
-         *
-         * Literal sizes can be any value (the literal size that you want) and
-         * proportional sizes are a number between 0 and 1 representing a
-         * proportion of the parent node size. 0 means 0% of the parent size,
-         * and 1.0 means 100% of the parent size.
-         *
-         * All size values must be positive numbers.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis size to apply.
-         * @param {number} [newValue.y] The y-axis size to apply.
-         * @param {number} [newValue.z] The z-axis size to apply.
-         */
-        set size(newValue) {
-            this._setPropertyXYZ(Sizeable, 'size', newValue)
-        },
-        get size() {
-            return Super(this).size
-        },
+        this._propertyFunctions.delete(name);
 
-        /**
-         * Get the actual size of the Node. This can be useful when size is
-         * proportional, as the actual size of the Node depends on the size of
-         * it's parent.
-         *
-         * @readonly
-         *
-         * @return {Array.number} An Oject with x, y, and z properties, each
-         * property representing the computed size of the x, y, and z axes
-         * respectively.
-         */
-        get calculatedSize() {
-            const {x,y,z} = this._calculatedSize
-            return {x,y,z}
-        },
+        propFunction = null;
+      }
+    },
 
-        /**
-         * Set all properties of a Sizeable in one method.
-         *
-         * @param {Object} properties Properties object - see example
-         *
-         * @example
-         * node.properties = {
-         *   sizeMode: {x:'literal', y:'proportional', z:'literal'},
-         *   size: {x:300, y:0.2, z:200},
-         * }
-         */
-        set properties(properties) {
-            this.props = properties
-        },
-        get properties() {
-            return this.props
-        },
-    }))
+    _setPropertyXYZ(Class, name, newValue) {
+      if (typeof newValue === 'function') {
+        this._handleXYZPropertyFunction(newValue, name);
+      } else {
+        if (!this._settingValueFromPropFunction) this._removePropertyFunction(name);else this._settingValueFromPropFunction = false;
+        Super(this)[name] = newValue;
+      }
+    },
 
-    return Sizeable
+    _setPropertySingle(name, newValue) {
+      if (typeof newValue === 'function') {
+        this._handleSinglePropertyFunction(newValue, name);
+      } else {
+        if (!this._settingValueFromPropFunction) this._removePropertyFunction(name);else this._settingValueFromPropFunction = false;
+        Super(this)[name] = newValue;
+      }
+    },
+
+    /**
+     * Set the size mode for each axis. Possible size modes are "literal"
+     * and "proportional". The default values are "literal" for all axes.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis sizeMode to apply. Default: `"literal"`
+     * @param {number} [newValue.y] The y-axis sizeMode to apply. Default: `"literal"`
+     * @param {number} [newValue.z] The z-axis sizeMode to apply. Default: `"literal"`
+     */
+    set sizeMode(newValue) {
+      if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode');
+
+      this._setPropertyXYZ(null, 'sizeMode', newValue);
+    },
+
+    get sizeMode() {
+      return Super(this).sizeMode;
+    },
+
+    // TODO: A "differential" size would be cool. Good for padding,
+    // borders, etc. Inspired from Famous' differential sizing.
+    //
+    // TODO: A "target" size where sizing can be relative to another node.
+    // This would be tricky though, because there could be circular size
+    // dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
+
+    /**
+     * Set the size of each axis. The size for each axis depends on the
+     * sizeMode for each axis. For example, if node.sizeMode is set to
+     * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
+     * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
+     * Y size is 0.5 of it's parent Y size, and Z size is a literal value
+     * of 30. It is easy this way to mix literal and proportional sizes for
+     * the different axes.
+     *
+     * Literal sizes can be any value (the literal size that you want) and
+     * proportional sizes are a number between 0 and 1 representing a
+     * proportion of the parent node size. 0 means 0% of the parent size,
+     * and 1.0 means 100% of the parent size.
+     *
+     * All size values must be positive numbers.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis size to apply.
+     * @param {number} [newValue.y] The y-axis size to apply.
+     * @param {number} [newValue.z] The z-axis size to apply.
+     */
+    set size(newValue) {
+      this._setPropertyXYZ(Sizeable, 'size', newValue);
+    },
+
+    get size() {
+      return Super(this).size;
+    },
+
+    /**
+     * Get the actual size of the Node. This can be useful when size is
+     * proportional, as the actual size of the Node depends on the size of
+     * it's parent.
+     *
+     * @readonly
+     *
+     * @return {Array.number} An Oject with x, y, and z properties, each
+     * property representing the computed size of the x, y, and z axes
+     * respectively.
+     */
+    get calculatedSize() {
+      const {
+        x,
+        y,
+        z
+      } = this._calculatedSize;
+      return {
+        x,
+        y,
+        z
+      };
+    },
+
+    /**
+     * Set all properties of a Sizeable in one method.
+     *
+     * @param {Object} properties Properties object - see example
+     *
+     * @example
+     * node.properties = {
+     *   sizeMode: {x:'literal', y:'proportional', z:'literal'},
+     *   size: {x:300, y:0.2, z:200},
+     * }
+     */
+    set properties(properties) {
+      this.props = properties;
+    },
+
+    get properties() {
+      return this.props;
+    }
+
+  }));
+  return Sizeable;
 }));
-
 // CONCATENATED MODULE: ./src/core/Transformable.js
+function Transformable_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Transformable_defineProperty(target, key, source[key]); }); } return target; }
+
+function Transformable_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
@@ -61923,444 +54071,440 @@ let propFunction = null
 
 
 /* harmony default export */ var core_Transformable = (Mixin(Base => {
+  const Parent = core_Sizeable.mixin(Base); // Transformable extends TreeNode (indirectly through Sizeable) because it
+  // needs to be aware of its `parent` when calculating align adjustments.
 
-    const Parent = core_Sizeable.mixin(Base)
+  const Transformable = lowclass_default()('Transformable').extends(Parent, ({
+    Super
+  }) => ({
+    static: {
+      props: Transformable_objectSpread({}, Parent.props, {
+        position: props_props.XYZNumberValues,
+        rotation: props_props.XYZNumberValues,
+        scale: props_props.XYZNumberValues,
+        origin: props_props.XYZNumberValues,
+        align: props_props.XYZNumberValues,
+        mountPoint: props_props.XYZNumberValues,
+        opacity: props_props.number
+      })
+    },
 
-    // Transformable extends TreeNode (indirectly through Sizeable) because it
-    // needs to be aware of its `parent` when calculating align adjustments.
-    const Transformable = lowclass_default()('Transformable').extends( Parent, ({ Super }) => ({
+    constructor(options = {}) {
+      const self = Super(this).constructor(options);
+      self._worldMatrix = null;
+      return self;
+    },
 
-        static: {
-            props: {
-                ...Parent.props,
-                position:   props_props.XYZNumberValues,
-                rotation:   props_props.XYZNumberValues,
-                scale:      props_props.XYZNumberValues,
-                origin:     props_props.XYZNumberValues,
-                align:      props_props.XYZNumberValues,
-                mountPoint: props_props.XYZNumberValues,
-                opacity:    props_props.number,
-            },
-        },
+    _setDefaultProperties() {
+      Super(this)._setDefaultProperties();
 
-        constructor(options = {}) {
-            const self = Super(this).constructor(options)
-            self._worldMatrix = null
-            return self
-        },
+      Object.assign(this._properties, {
+        position: new XYZNumberValues(0, 0, 0),
+        rotation: new XYZNumberValues(0, 0, 0),
+        scale: new XYZNumberValues(1, 1, 1),
+        origin: new XYZNumberValues(0.5, 0.5, 0.5),
+        align: new XYZNumberValues(0, 0, 0),
+        mountPoint: new XYZNumberValues(0, 0, 0),
+        opacity: 1,
+        transform: new window.DOMMatrix() // untracked by SkateJS
 
-        _setDefaultProperties() {
-            Super(this)._setDefaultProperties()
+      });
+    },
 
-            Object.assign(this._properties, {
-                position:   new XYZNumberValues(0, 0, 0),
-                rotation:   new XYZNumberValues(0, 0, 0),
-                scale:      new XYZNumberValues(1, 1, 1),
-                origin:     new XYZNumberValues(0.5, 0.5, 0.5),
-                align:      new XYZNumberValues(0, 0, 0),
-                mountPoint: new XYZNumberValues(0, 0, 0),
-                opacity:    1,
-                transform:  new window.DOMMatrix, // untracked by SkateJS
-            })
-        },
+    _setPropertyObservers() {
+      Super(this)._setPropertyObservers();
 
-        _setPropertyObservers() {
-            Super(this)._setPropertyObservers()
+      this._properties.position.on('valuechanged', () => this.trigger('propertychange', 'position'));
 
-            this._properties.position.on('valuechanged',
-                () => this.trigger('propertychange', 'position'))
-            this._properties.rotation.on('valuechanged',
-                () => this.trigger('propertychange', 'rotation'))
-            this._properties.scale.on('valuechanged',
-                () => this.trigger('propertychange', 'scale'))
-            this._properties.origin.on('valuechanged',
-                () => this.trigger('propertychange', 'origin'))
-            this._properties.align.on('valuechanged',
-                () => this.trigger('propertychange', 'align'))
-            this._properties.mountPoint.on('valuechanged',
-                () => this.trigger('propertychange', 'mountPoint'))
-        },
+      this._properties.rotation.on('valuechanged', () => this.trigger('propertychange', 'rotation'));
 
-        /**
-         * Takes all the current component values (position, rotation, etc) and
-         * calculates a transformation DOMMatrix from them. See "W3C Geometry
-         * Interfaces" to learn about DOMMatrix.
-         *
-         * @method
-         * @private
-         * @memberOf Node
-         *
-         * TODO #66: make sure this is called after size calculations when we
-         * move _calcSize to a render task.
-         */
-        _calculateMatrix () {
-            // NOTE The only way to get an identity matrix with DOMMatrix API
-            // in the current spec is to make a new DOMMatrix. This is wasteful
-            // because it creates new memory. It'd be nice to have an
-            // identity() method or similar.
-            const matrix = new window.DOMMatrix
+      this._properties.scale.on('valuechanged', () => this.trigger('propertychange', 'scale'));
 
-            // TODO FIXME For some reason, the root node (i.e. the Scene)
-            // should not be translated or else the WebGL rendering glitches
-            // out (this happened with my vanilla WebGL implementation as well
-            // as with Three.js), so we return Identity if there's no parent.
-            if (!this.parent) return matrix
+      this._properties.origin.on('valuechanged', () => this.trigger('propertychange', 'origin'));
 
-            const properties = this._properties
-            const thisSize = this._calculatedSize
+      this._properties.align.on('valuechanged', () => this.trigger('propertychange', 'align'));
 
-            // THREE-COORDS-TO-DOM-COORDS
-            // translate the "mount point" back to the top/left of the element.
-            // We offset this in ElementOperations#applyTransform. The Y value
-            // is inverted because we invert it below.
-            const threeJsPostAdjustment = [ thisSize.x/2, thisSize.y/2, 0 ]
+      this._properties.mountPoint.on('valuechanged', () => this.trigger('propertychange', 'mountPoint'));
+    },
 
-            const alignAdjustment = [0,0,0]
+    /**
+     * Takes all the current component values (position, rotation, etc) and
+     * calculates a transformation DOMMatrix from them. See "W3C Geometry
+     * Interfaces" to learn about DOMMatrix.
+     *
+     * @method
+     * @private
+     * @memberOf Node
+     *
+     * TODO #66: make sure this is called after size calculations when we
+     * move _calcSize to a render task.
+     */
+    _calculateMatrix() {
+      // NOTE The only way to get an identity matrix with DOMMatrix API
+      // in the current spec is to make a new DOMMatrix. This is wasteful
+      // because it creates new memory. It'd be nice to have an
+      // identity() method or similar.
+      const matrix = new window.DOMMatrix(); // TODO FIXME For some reason, the root node (i.e. the Scene)
+      // should not be translated or else the WebGL rendering glitches
+      // out (this happened with my vanilla WebGL implementation as well
+      // as with Three.js), so we return Identity if there's no parent.
 
-            // TODO If a Scene has a `parent`, it is not mounted directly into a
-            // regular DOM element but rather it is child of a Node. In this
-            // case we don't want the scene size to be based on observed size
-            // of a regular DOM element, but relative to a parent Node just
-            // like for all other Nodes.
-            const parentSize = this._getParentSize()
+      if (!this.parent) return matrix;
+      const properties = this._properties;
+      const thisSize = this._calculatedSize; // THREE-COORDS-TO-DOM-COORDS
+      // translate the "mount point" back to the top/left of the element.
+      // We offset this in ElementOperations#applyTransform. The Y value
+      // is inverted because we invert it below.
 
-            // THREE-COORDS-TO-DOM-COORDS
-            // translate the "align" back to the top/left of the parent element.
-            // We offset this in ElementOperations#applyTransform. The Y
-            // value is inverted because we invert it below.
-            threeJsPostAdjustment[0] += -parentSize.x/2
-            threeJsPostAdjustment[1] += -parentSize.y/2
+      const threeJsPostAdjustment = [thisSize.x / 2, thisSize.y / 2, 0];
+      const alignAdjustment = [0, 0, 0]; // TODO If a Scene has a `parent`, it is not mounted directly into a
+      // regular DOM element but rather it is child of a Node. In this
+      // case we don't want the scene size to be based on observed size
+      // of a regular DOM element, but relative to a parent Node just
+      // like for all other Nodes.
 
-            const {align} = properties
-            alignAdjustment[0] = parentSize.x * align.x
-            alignAdjustment[1] = parentSize.y * align.y
-            alignAdjustment[2] = parentSize.z * align.z
+      const parentSize = this._getParentSize(); // THREE-COORDS-TO-DOM-COORDS
+      // translate the "align" back to the top/left of the parent element.
+      // We offset this in ElementOperations#applyTransform. The Y
+      // value is inverted because we invert it below.
 
-            const mountPointAdjustment = [0,0,0]
-            const {mountPoint} = properties
-            mountPointAdjustment[0] = thisSize.x * mountPoint.x
-            mountPointAdjustment[1] = thisSize.y * mountPoint.y
-            mountPointAdjustment[2] = thisSize.z * mountPoint.z
 
-            const appliedPosition = []
-            const {position} = properties
-            appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
-            appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
-            appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
+      threeJsPostAdjustment[0] += -parentSize.x / 2;
+      threeJsPostAdjustment[1] += -parentSize.y / 2;
+      const {
+        align
+      } = properties;
+      alignAdjustment[0] = parentSize.x * align.x;
+      alignAdjustment[1] = parentSize.y * align.y;
+      alignAdjustment[2] = parentSize.z * align.z;
+      const mountPointAdjustment = [0, 0, 0];
+      const {
+        mountPoint
+      } = properties;
+      mountPointAdjustment[0] = thisSize.x * mountPoint.x;
+      mountPointAdjustment[1] = thisSize.y * mountPoint.y;
+      mountPointAdjustment[2] = thisSize.z * mountPoint.z;
+      const appliedPosition = [];
+      const {
+        position
+      } = properties;
+      appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0];
+      appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1];
+      appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2];
+      matrix.translateSelf(appliedPosition[0] + threeJsPostAdjustment[0], // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+      // Three.js' positive Y is downward.
+      -(appliedPosition[1] + threeJsPostAdjustment[1]), appliedPosition[2] + threeJsPostAdjustment[2]); // origin calculation will go here:
+      // - move by negative origin before rotating.
+      // apply each axis rotation, in the x,y,z order.
+      // THREE-COORDS-TO-DOM-COORDS: X rotation is negated here so that
+      // Three rotates on X in the same direction as CSS 3D. It is
+      // negated again when applied to DOM elements so they rotate as
+      // expected in CSS 3D.
+      // TODO #151: make rotation order configurable
 
-            matrix.translateSelf(
-                appliedPosition[0] + threeJsPostAdjustment[0],
-                // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                // Three.js' positive Y is downward.
-                -(appliedPosition[1] + threeJsPostAdjustment[1]),
-                appliedPosition[2] + threeJsPostAdjustment[2]
-            )
+      const {
+        rotation
+      } = properties;
+      matrix.rotateAxisAngleSelf(1, 0, 0, rotation.x);
+      matrix.rotateAxisAngleSelf(0, 1, 0, rotation.y);
+      matrix.rotateAxisAngleSelf(0, 0, 1, rotation.z); // origin calculation will go here:
+      // - move by positive origin after rotating.
 
-            // origin calculation will go here:
-            // - move by negative origin before rotating.
+      return matrix;
+    },
 
-            // apply each axis rotation, in the x,y,z order.
-            // THREE-COORDS-TO-DOM-COORDS: X rotation is negated here so that
-            // Three rotates on X in the same direction as CSS 3D. It is
-            // negated again when applied to DOM elements so they rotate as
-            // expected in CSS 3D.
-            // TODO #151: make rotation order configurable
-            const {rotation} = properties
-            matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
-            matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
-            matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
+    // TODO: fix _isIdentity in DOMMatrix, it is returning true even if false.
+    _calculateWorldMatricesInSubtree() {
+      this._calculateWorldMatrixFromParent();
 
-            // origin calculation will go here:
-            // - move by positive origin after rotating.
+      const children = this.subnodes;
 
-            return matrix
-        },
+      for (let i = 0, l = children.length; i < l; i += 1) {
+        children[i]._calculateWorldMatricesInSubtree();
+      }
+    },
 
-        // TODO: fix _isIdentity in DOMMatrix, it is returning true even if false.
-        _calculateWorldMatricesInSubtree() {
-            this._calculateWorldMatrixFromParent()
+    _calculateWorldMatrixFromParent() {
+      const parent = this.parent;
+      if (parent) //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
+        this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix);else this._worldMatrix = this._properties.transform;
+      this.trigger('worldMatrixUpdate');
+    },
 
-            const children = this.subnodes
-            for (let i=0, l=children.length; i<l; i+=1) {
-                children[i]._calculateWorldMatricesInSubtree()
-            }
-        },
+    // TODO rename "render" to "update".
+    _render() {
+      if (Super(this)._render) Super(this)._render(); // TODO: only run this when necessary (f.e. not if only opacity
+      // changed)
 
-        _calculateWorldMatrixFromParent() {
-            const parent = this.parent
+      this._properties.transform = this._calculateMatrix();
+    },
 
-            if (parent)
-                //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
-                this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix)
-            else
-                this._worldMatrix = this._properties.transform
+    /**
+     * Set the position of the Transformable.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis position to apply.
+     * @param {number} [newValue.y] The y-axis position to apply.
+     * @param {number} [newValue.z] The z-axis position to apply.
+     */
+    set position(newValue) {
+      this._setPropertyXYZ(Transformable, 'position', newValue);
+    },
 
-            this.trigger('worldMatrixUpdate')
-        },
+    get position() {
+      return Super(this).position;
+    },
 
-        // TODO rename "render" to "update".
-        _render() {
-            if ( Super(this)._render ) Super(this)._render()
+    /**
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis rotation to apply.
+     * @param {number} [newValue.y] The y-axis rotation to apply.
+     * @param {number} [newValue.z] The z-axis rotation to apply.
+     */
+    set rotation(newValue) {
+      this._setPropertyXYZ(Transformable, 'rotation', newValue);
+    },
 
-            // TODO: only run this when necessary (f.e. not if only opacity
-            // changed)
-            this._properties.transform = this._calculateMatrix()
-        },
+    get rotation() {
+      return Super(this).rotation;
+    },
 
-        /**
-         * Set the position of the Transformable.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis position to apply.
-         * @param {number} [newValue.y] The y-axis position to apply.
-         * @param {number} [newValue.z] The z-axis position to apply.
-         */
-        set position(newValue) {
-            this._setPropertyXYZ(Transformable, 'position', newValue)
-        },
-        get position() {
-            return Super(this).position
-        },
+    /**
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis scale to apply.
+     * @param {number} [newValue.y] The y-axis scale to apply.
+     * @param {number} [newValue.z] The z-axis scale to apply.
+     */
+    set scale(newValue) {
+      this._setPropertyXYZ(Transformable, 'scale', newValue);
+    },
 
-        /**
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis rotation to apply.
-         * @param {number} [newValue.y] The y-axis rotation to apply.
-         * @param {number} [newValue.z] The z-axis rotation to apply.
-         */
-        set rotation(newValue) {
-            this._setPropertyXYZ(Transformable, 'rotation', newValue)
-        },
-        get rotation() {
-            return Super(this).rotation
-        },
+    get scale() {
+      return Super(this).scale;
+    },
 
-        /**
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis scale to apply.
-         * @param {number} [newValue.y] The y-axis scale to apply.
-         * @param {number} [newValue.z] The z-axis scale to apply.
-         */
-        set scale(newValue) {
-            this._setPropertyXYZ(Transformable, 'scale', newValue)
-        },
-        get scale() {
-            return Super(this).scale
-        },
+    /**
+     * Set this Node's opacity.
+     *
+     * @param {number} opacity A floating point number between 0 and 1
+     * (inclusive). 0 is fully transparent, 1 is fully opaque.
+     */
+    set opacity(newValue) {
+      this._setPropertySingle('opacity', newValue);
+    },
 
-        /**
-         * Set this Node's opacity.
-         *
-         * @param {number} opacity A floating point number between 0 and 1
-         * (inclusive). 0 is fully transparent, 1 is fully opaque.
-         */
-        set opacity(newValue) {
-            this._setPropertySingle('opacity', newValue)
-        },
-        get opacity() {
-            return Super(this).opacity
-        },
+    get opacity() {
+      return Super(this).opacity;
+    },
 
-        /**
-         * Set the alignment of the Node. This determines at which point in this
-         * Node's parent that this Node is mounted.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis align to apply.
-         * @param {number} [newValue.y] The y-axis align to apply.
-         * @param {number} [newValue.z] The z-axis align to apply.
-         */
-        set align(newValue) {
-            this._setPropertyXYZ(Transformable, 'align', newValue)
-        },
-        get align() {
-            return Super(this).align
-        },
+    /**
+     * Set the alignment of the Node. This determines at which point in this
+     * Node's parent that this Node is mounted.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis align to apply.
+     * @param {number} [newValue.y] The y-axis align to apply.
+     * @param {number} [newValue.z] The z-axis align to apply.
+     */
+    set align(newValue) {
+      this._setPropertyXYZ(Transformable, 'align', newValue);
+    },
 
-        /**
-         * Set the mount point of the Node.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis mountPoint to apply.
-         * @param {number} [newValue.y] The y-axis mountPoint to apply.
-         * @param {number} [newValue.z] The z-axis mountPoint to apply.
-         */
-        set mountPoint(newValue) {
-            this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
-        },
-        get mountPoint() {
-            return Super(this).mountPoint
-        },
-    }))
+    get align() {
+      return Super(this).align;
+    },
 
-    return Transformable
+    /**
+     * Set the mount point of the Node.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis mountPoint to apply.
+     * @param {number} [newValue.y] The y-axis mountPoint to apply.
+     * @param {number} [newValue.z] The z-axis mountPoint to apply.
+     */
+    set mountPoint(newValue) {
+      this._setPropertyXYZ(Transformable, 'mountPoint', newValue);
+    },
+
+    get mountPoint() {
+      return Super(this).mountPoint;
+    }
+
+  }));
+  return Transformable;
 }));
-
 // CONCATENATED MODULE: ./src/html/HTMLNode.style.js
-
 /* harmony default export */ var HTMLNode_style = ({
-
-    // all items of the scene graph are hidden until they are mounted in a
-    // scene (this changes to `display:block`).
-    display:         'block',
-
-    boxSizing:       'border-box',
-    position:        'absolute',
-    top:             0,
-    left:            0,
-
-    // Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
-    // but will for 3D objects in WebGL.)
-    transformOrigin: '50% 50% 0', // default
-
-    transformStyle:  'preserve-3d',
+  // all items of the scene graph are hidden until they are mounted in a
+  // scene (this changes to `display:block`).
+  display: 'block',
+  boxSizing: 'border-box',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  // Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
+  // but will for 3D objects in WebGL.)
+  transformOrigin: '50% 50% 0',
+  // default
+  transformStyle: 'preserve-3d'
 });
-
 // CONCATENATED MODULE: ./src/html/HTMLScene.style.js
+function HTMLScene_style_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { HTMLScene_style_defineProperty(target, key, source[key]); }); } return target; }
+
+function HTMLScene_style_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
-/* harmony default export */ var HTMLScene_style = ({
-    ...HTMLNode_style,
+/* harmony default export */ var HTMLScene_style = (HTMLScene_style_objectSpread({}, HTMLNode_style, {
+  position: 'static',
+  overflow: 'hidden',
+  // Constant perspective for now.
+  perspective: 1000 //perspectiveOrigin: '25%',
 
-    position: 'static',
-    overflow: 'hidden',
+}));
+// EXTERNAL MODULE: ./node_modules/jss/lib/index.js
+var lib = __webpack_require__(75);
+var lib_default = /*#__PURE__*/__webpack_require__.n(lib);
 
-    // Constant perspective for now.
-    perspective: 1000,
-    //perspectiveOrigin: '25%',
-});
+// EXTERNAL MODULE: ./node_modules/jss-nested/lib/index.js
+var jss_nested_lib = __webpack_require__(76);
+var jss_nested_lib_default = /*#__PURE__*/__webpack_require__.n(jss_nested_lib);
 
+// EXTERNAL MODULE: ./node_modules/jss-extend/lib/index.js
+var jss_extend_lib = __webpack_require__(77);
+var jss_extend_lib_default = /*#__PURE__*/__webpack_require__.n(jss_extend_lib);
+
+// EXTERNAL MODULE: ./node_modules/jss-px/lib/index.js
+var jss_px_lib = __webpack_require__(78);
+var jss_px_lib_default = /*#__PURE__*/__webpack_require__.n(jss_px_lib);
+
+// EXTERNAL MODULE: ./node_modules/jss-vendor-prefixer/lib/index.js
+var jss_vendor_prefixer_lib = __webpack_require__(79);
+var jss_vendor_prefixer_lib_default = /*#__PURE__*/__webpack_require__.n(jss_vendor_prefixer_lib);
+
+// EXTERNAL MODULE: ./node_modules/jss-camel-case/lib/index.js
+var jss_camel_case_lib = __webpack_require__(80);
+var jss_camel_case_lib_default = /*#__PURE__*/__webpack_require__.n(jss_camel_case_lib);
+
+// EXTERNAL MODULE: ./node_modules/jss-props-sort/lib/index.js
+var jss_props_sort_lib = __webpack_require__(81);
+var jss_props_sort_lib_default = /*#__PURE__*/__webpack_require__.n(jss_props_sort_lib);
+
+// CONCATENATED MODULE: ./src/lib/jss/index.js
+
+
+
+
+
+
+
+const jss = lib_default.a.create();
+jss.use(jss_nested_lib_default()());
+jss.use(jss_extend_lib_default()());
+jss.use(jss_px_lib_default()());
+jss.use(jss_vendor_prefixer_lib_default()());
+jss.use(jss_camel_case_lib_default()());
+jss.use(jss_props_sort_lib_default()());
+/* harmony default export */ var lib_jss = (jss);
 // CONCATENATED MODULE: ./src/html/behaviors/DefaultBehaviors.js
 
 
+/* harmony default export */ var DefaultBehaviors = (Mixin(Base => // TODO This is here for now. Make it an extension to
+// element-behaviors so that it can be applied to any element
+// generically.
+lowclass_default()('DefaultBehaviors').extends(Base, ({
+  Super
+}) => ({
+  static: {
+    // override in subclasses
+    defaultBehaviors: []
+  },
 
-/* harmony default export */ var DefaultBehaviors = (Mixin(Base =>
+  constructor(...args) {
+    // Use the constructor return value, because we assume Base must be
+    // a HTML element class, in which case this is currently unavoidable
+    // because lowclass currently uses ES5-style constructors. This may
+    // change when lowclass has `class` syntax option.
+    const self = Super(this).constructor(...args); // If no geometry or material behavior is detected, add default ones.
+    //
+    // Deferring to a microtask doesn't work here, we must defer to a
+    // macrotask with setTimeout, so we can detect if the element has
+    // initial behaviors, otherwise the element's initial attributes
+    // haven't been added yet (this is how HTML engines work, see
+    // https://github.com/whatwg/dom/issues/522).
+    //
+    // TODO: If we use setTimeout (macrotask) deferral anywhere (like we do
+    // here), and maybe even with microtask deferral (f.e. Promise), maybe
+    // we should have a single place that initiate this deferral so that
+    // everything in the engine can hook into it. Otherwise if different
+    // call sites use setTimeout, logic will be firing at random and in
+    // different order.
 
-    // TODO This is here for now. Make it an extension to
-    // element-behaviors so that it can be applied to any element
-    // generically.
-    lowclass_default()('DefaultBehaviors').extends( Base, ({ Super }) => ({
+    setTimeout(() => self._setDefaultBehaviorsIfNeeded(), 0);
+    return self;
+  },
 
-        static: {
-            // override in subclasses
-            defaultBehaviors: [],
-        },
+  _setDefaultBehaviorsIfNeeded() {
+    let defaultBehaviors = this.constructor.defaultBehaviors; // do nothing if there's no defaults
 
-        constructor(...args) {
-            // Use the constructor return value, because we assume Base must be
-            // a HTML element class, in which case this is currently unavoidable
-            // because lowclass currently uses ES5-style constructors. This may
-            // change when lowclass has `class` syntax option.
-            const self = Super(this).constructor(...args)
+    if (!defaultBehaviors) return;
+    if (Object.keys(defaultBehaviors).length == 0) return;
+    const initialBehaviorNames = Array.from(this.behaviors.keys()); // small optimization: if there are no initial behaviors and we
+    // have default behaviors, just set the default behaviors.
 
-            // If no geometry or material behavior is detected, add default ones.
-            //
-            // Deferring to a microtask doesn't work here, we must defer to a
-            // macrotask with setTimeout, so we can detect if the element has
-            // initial behaviors, otherwise the element's initial attributes
-            // haven't been added yet (this is how HTML engines work, see
-            // https://github.com/whatwg/dom/issues/522).
-            //
-            // TODO: If we use setTimeout (macrotask) deferral anywhere (like we do
-            // here), and maybe even with microtask deferral (f.e. Promise), maybe
-            // we should have a single place that initiate this deferral so that
-            // everything in the engine can hook into it. Otherwise if different
-            // call sites use setTimeout, logic will be firing at random and in
-            // different order.
-            setTimeout( () => self._setDefaultBehaviorsIfNeeded(), 0 )
+    if (initialBehaviorNames.length == 0) {
+      // if not an array, then it's an object.
+      if (!(defaultBehaviors instanceof Array)) defaultBehaviors = Object.keys(defaultBehaviors);
+      this.setAttribute('has', this.getAttribute('has') + ` ${defaultBehaviors.join(' ')}`);
+    } // otherwise detect which default behavior(s) to add
+    else {
+        let behaviorNamesToAdd = ''; // if defaultBehaviors is an array, use default logic to add
+        // behaviors that aren't already added.
 
-            return self
-        },
+        if (defaultBehaviors instanceof Array) {
+          for (const defaultBehaviorName of defaultBehaviors) {
+            let hasBehavior = false;
 
-        _setDefaultBehaviorsIfNeeded() {
-            let defaultBehaviors = this.constructor.defaultBehaviors
-
-            // do nothing if there's no defaults
-            if (!defaultBehaviors) return
-            if (Object.keys(defaultBehaviors).length == 0) return
-
-            const initialBehaviorNames = Array.from( this.behaviors.keys() )
-
-            // small optimization: if there are no initial behaviors and we
-            // have default behaviors, just set the default behaviors.
-            if ( initialBehaviorNames.length == 0 ) {
-
-                // if not an array, then it's an object.
-                if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
-
-                this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviors.join(' ')}`)
+            for (const initialBehaviorName of initialBehaviorNames) {
+              if (defaultBehaviorName == initialBehaviorName) {
+                hasBehavior = true;
+                break;
+              }
             }
 
-            // otherwise detect which default behavior(s) to add
-            else {
-
-                let behaviorNamesToAdd = ''
-
-                // if defaultBehaviors is an array, use default logic to add
-                // behaviors that aren't already added.
-                if (defaultBehaviors instanceof Array) {
-                    for (const defaultBehaviorName of defaultBehaviors) {
-
-                        let hasBehavior = false
-
-                        for ( const initialBehaviorName of initialBehaviorNames ) {
-                            if ( defaultBehaviorName == initialBehaviorName ) {
-                                hasBehavior = true
-                                break
-                            }
-                        }
-
-                        if (hasBehavior) continue
-                        else {
-                            // TODO programmatic API:
-                            //this.behaviors.add('box-geometry')
-
-                            // add a space in front of each name except the first
-                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
-
-                            behaviorNamesToAdd += defaultBehaviorName
-                        }
-                    }
-                }
-
-                // if defaultBehaviors is an object, then behaviors are added
-                // based on conditions.
-                else if (typeof defaultBehaviors == 'object') {
-                    const defaultBehaviorNames = Object.keys(defaultBehaviors)
-
-                    for (const defaultBehaviorName of defaultBehaviorNames) {
-                        const condition = defaultBehaviors[defaultBehaviorName]
-
-                        if (
-                            (typeof condition == 'function' && condition( initialBehaviorNames ) ) ||
-                            (typeof condition != 'function' && condition )
-                        ) {
-
-                            // add a space in front of each name except the first
-                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
-
-                            behaviorNamesToAdd += defaultBehaviorName
-
-                        }
-
-                    }
-                }
-
-                // add the needed behaviors all at once.
-                if (behaviorNamesToAdd) {
-                    let currentHasValue = this.getAttribute('has')
-
-                    if (currentHasValue) currentHasValue += ' '
-
-                    this.setAttribute( 'has', currentHasValue + behaviorNamesToAdd )
-                }
+            if (hasBehavior) continue;else {
+              // TODO programmatic API:
+              //this.behaviors.add('box-geometry')
+              // add a space in front of each name except the first
+              if (behaviorNamesToAdd) behaviorNamesToAdd += ' ';
+              behaviorNamesToAdd += defaultBehaviorName;
             }
+          }
+        } // if defaultBehaviors is an object, then behaviors are added
+        // based on conditions.
+        else if (typeof defaultBehaviors == 'object') {
+            const defaultBehaviorNames = Object.keys(defaultBehaviors);
 
-        },
+            for (const defaultBehaviorName of defaultBehaviorNames) {
+              const condition = defaultBehaviors[defaultBehaviorName];
 
-    }))
-));
+              if (typeof condition == 'function' && condition(initialBehaviorNames) || typeof condition != 'function' && condition) {
+                // add a space in front of each name except the first
+                if (behaviorNamesToAdd) behaviorNamesToAdd += ' ';
+                behaviorNamesToAdd += defaultBehaviorName;
+              }
+            }
+          } // add the needed behaviors all at once.
 
+
+        if (behaviorNamesToAdd) {
+          let currentHasValue = this.getAttribute('has');
+          if (currentHasValue) currentHasValue += ' ';
+          this.setAttribute('has', currentHasValue + behaviorNamesToAdd);
+        }
+      }
+  }
+
+}))));
 // CONCATENATED MODULE: ./src/html/WebComponent.js
 /* global customElements */
 
@@ -62369,24 +54513,21 @@ let propFunction = null
 
 
 
-
-
-
-// Very very stupid hack needed for Safari in order for us to be able to extend
+ // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
 // https://github.com/google/traceur-compiler/issues/1709
+
 if (typeof window.HTMLElement != 'function') {
-    const _HTMLElement = function HTMLElement(){}
-    _HTMLElement.prototype = window.HTMLElement.prototype
-    window.HTMLElement = _HTMLElement
+  const _HTMLElement = function HTMLElement() {};
+
+  _HTMLElement.prototype = window.HTMLElement.prototype;
+  window.HTMLElement = _HTMLElement;
 }
 
 function classExtendsHTMLElement(constructor) {
-    if (!constructor) return false
-    if (constructor === HTMLElement) return true
-    else return classExtendsHTMLElement( constructor.__proto__ )
+  if (!constructor) return false;
+  if (constructor === HTMLElement) return true;else return classExtendsHTMLElement(constructor.__proto__);
 }
-
 /**
  * Creates a WebComponent base class dynamically, depending on which
  * HTMLElement class you want it to extend from. Extend from WebComponent when
@@ -62399,209 +54540,202 @@ function classExtendsHTMLElement(constructor) {
  * @param {Function} Base The class that the generated WebComponent
  * base class will extend from.
  */
+
+
 /* harmony default export */ var html_WebComponent = (Mixin(Base => {
+  // the extra `class extends` is necessary here so that
+  // babel-plugin-transform-builtin-classes can work properly.
+  Base = Base || Object(lowclass_native["native"])(HTMLElement); // XXX: In the future, possibly check for Element if other things besides
+  // HTML are supported (f.e. SVGElements)
 
-    // the extra `class extends` is necessary here so that
-    // babel-plugin-transform-builtin-classes can work properly.
-    Base = Base || Object(lowclass_native["native"])( HTMLElement )
+  if (!classExtendsHTMLElement(Base)) {
+    throw new TypeError('The argument to WebComponent.mixin must be a constructor that extends from or is HTMLElement.');
+  } // otherwise, create it.
 
-    // XXX: In the future, possibly check for Element if other things besides
-    // HTML are supported (f.e. SVGElements)
-    if (!classExtendsHTMLElement(Base)) {
-        throw new TypeError(
-            'The argument to WebComponent.mixin must be a constructor that extends from or is HTMLElement.'
-        )
-    }
 
-    // otherwise, create it.
-    const WebComponent = lowclass_default()('WebComponent').extends( DefaultBehaviors.mixin( Base ), ({ Super, Public, Private }) => ({
+  const WebComponent = lowclass_default()('WebComponent').extends(DefaultBehaviors.mixin(Base), ({
+    Super,
+    Public,
+    Private
+  }) => ({
+    isConnected: false,
 
-        isConnected: false,
-
-        constructor(...args) {
-            // Throw an error if no Custom Elements v1 API exists.
-            if (!('customElements' in window)) {
-
-                // TODO: provide a link to the Docs.
-                throw new Error(`
+    constructor(...args) {
+      // Throw an error if no Custom Elements v1 API exists.
+      if (!('customElements' in window)) {
+        // TODO: provide a link to the Docs.
+        throw new Error(`
                     Your browser does not support the Custom Elements API. You'll
                     need to install a polyfill. See how at http://....
-                `)
+                `);
+      }
 
-            }
+      const self = Super(this).constructor(...args);
+      return self;
+    },
 
-            const self = Super(this).constructor(...args)
-            return self
-        },
+    // Subclasses can implement these.
+    childConnectedCallback(child) {},
 
-        // Subclasses can implement these.
-        childConnectedCallback(child) { },
-        childDisconnectedCallback(child) { },
+    childDisconnectedCallback(child) {},
 
-        connectedCallback() {
-            if (Super(this).connectedCallback) Super(this).connectedCallback()
-            this.isConnected = true
+    connectedCallback() {
+      if (Super(this).connectedCallback) Super(this).connectedCallback();
+      this.isConnected = true;
 
-            if (!Private(this).initialized) {
-                this.init()
-                Private(this).initialized = true
-            }
-        },
+      if (!Private(this).initialized) {
+        this.init();
+        Private(this).initialized = true;
+      }
+    },
 
-        async disconnectedCallback() {
-            if (Super(this).disconnectedCallback) Super(this).disconnectedCallback()
-            this.isConnected = false
+    async disconnectedCallback() {
+      if (Super(this).disconnectedCallback) Super(this).disconnectedCallback();
+      this.isConnected = false; // Deferr to the next tick before cleaning up in case the
+      // element is actually being re-attached somewhere else within this
+      // same tick (detaching and attaching is synchronous, so by
+      // deferring to the next tick we'll be able to know if the element
+      // was re-attached or not in order to clean up or not). Note that
+      // appendChild can be used to move an element to another parent
+      // element, in which case connectedCallback and disconnectedCallback
+      // both get called, and in which case we don't necessarily want to
+      // clean up. If the element gets re-attached before the next tick
+      // (for example, gets moved), then we want to preserve the
+      // stuff that would be cleaned up by an extending class' deinit
+      // method by not running the following this.deinit() call.
 
-            // Deferr to the next tick before cleaning up in case the
-            // element is actually being re-attached somewhere else within this
-            // same tick (detaching and attaching is synchronous, so by
-            // deferring to the next tick we'll be able to know if the element
-            // was re-attached or not in order to clean up or not). Note that
-            // appendChild can be used to move an element to another parent
-            // element, in which case connectedCallback and disconnectedCallback
-            // both get called, and in which case we don't necessarily want to
-            // clean up. If the element gets re-attached before the next tick
-            // (for example, gets moved), then we want to preserve the
-            // stuff that would be cleaned up by an extending class' deinit
-            // method by not running the following this.deinit() call.
-            await Promise.resolve() // deferr to the next tick.
+      await Promise.resolve(); // deferr to the next tick.
+      // As mentioned in the previous comment, if the element was not
+      // re-attached in the last tick (for example, it was moved to
+      // another element), then clean up.
 
-            // As mentioned in the previous comment, if the element was not
-            // re-attached in the last tick (for example, it was moved to
-            // another element), then clean up.
-            if (!this.isConnected && Private(this).initialized) {
-                this.deinit()
-                Private(this).initialized = false
-            }
-        },
+      if (!this.isConnected && Private(this).initialized) {
+        this.deinit();
+        Private(this).initialized = false;
+      }
+    },
 
-        /**
-         * This method can be overridden by extending classes, it should return
-         * JSS-compatible styling. See http://github.com/cssinjs/jss for
-         * documentation.
-         * @abstract
-         */
-        getStyles() {
-            return {}
-        },
+    /**
+     * This method can be overridden by extending classes, it should return
+     * JSS-compatible styling. See http://github.com/cssinjs/jss for
+     * documentation.
+     * @abstract
+     */
+    getStyles() {
+      return {};
+    },
 
+    /**
+     * Init is called exactly once, the first time this element is
+     * connected into the DOM. When an element is disconnected then
+     * connected right away within the same synchronous tick, init() is not
+     * fired again. However, if an element is disconnected and the current
+     * tick completes before the element is connected again, then deinit()
+     * will be called (i.e. the element was not simply moved to a new
+     * location, it was actually removed), then the next time that the
+     * element is connected back into DOM init() will be called again.
+     *
+     * This is in contrast to connectedCallback and disconnectedCallback:
+     * connectedCallback is guaranteed to always fire even if the elemet
+     * was previously disconnected in the same synchronous tick.
+     *
+     * For example, ...
+     *
+     * Subclasses should extend this to add such logic.
+     */
+    init() {
+      if (!Private(this).style) Private(this).style = Private(this).createStyles(); // Deferral needed in case the Custom Element classes are
+      // registered after the elements are already defined in the
+      // DOM (they're not yet upgraded). This means that children of this node
+      // might be a `<motor-node>` but if they aren't upgraded yet then
+      // their API won't be available to the logic inside the following
+      // call to childConnectedCallback. The reason this happens is
+      // because parents are upgraded first and their
+      // connectedCallbacks fired before their children are
+      // upgraded.
+      //
 
-        /**
-         * Init is called exactly once, the first time this element is
-         * connected into the DOM. When an element is disconnected then
-         * connected right away within the same synchronous tick, init() is not
-         * fired again. However, if an element is disconnected and the current
-         * tick completes before the element is connected again, then deinit()
-         * will be called (i.e. the element was not simply moved to a new
-         * location, it was actually removed), then the next time that the
-         * element is connected back into DOM init() will be called again.
-         *
-         * This is in contrast to connectedCallback and disconnectedCallback:
-         * connectedCallback is guaranteed to always fire even if the elemet
-         * was previously disconnected in the same synchronous tick.
-         *
-         * For example, ...
-         *
-         * Subclasses should extend this to add such logic.
-         */
-        init() {
-            if (!Private(this).style) Private(this).style = Private(this).createStyles()
+      src_default()().then(() => {
+        // implies a Promise.resolve() behavior if the DOM is already ready
+        // Handle any nodes that may have been connected before `this` node
+        // was created (f.e. child nodes that were connected before the
+        // custom elements were registered and which would therefore not be
+        // detected by the following MutationObserver).
+        if (!Private(this).childObserver) {
+          const children = this.childNodes;
 
-            // Deferral needed in case the Custom Element classes are
-            // registered after the elements are already defined in the
-            // DOM (they're not yet upgraded). This means that children of this node
-            // might be a `<motor-node>` but if they aren't upgraded yet then
-            // their API won't be available to the logic inside the following
-            // call to childConnectedCallback. The reason this happens is
-            // because parents are upgraded first and their
-            // connectedCallbacks fired before their children are
-            // upgraded.
-            //
-            src_default()().then(() => { // implies a Promise.resolve() behavior if the DOM is already ready
+          for (let l = children.length, i = 0; i < l; i += 1) {
+            this.childConnectedCallback(children[i]);
+          }
 
-                // Handle any nodes that may have been connected before `this` node
-                // was created (f.e. child nodes that were connected before the
-                // custom elements were registered and which would therefore not be
-                // detected by the following MutationObserver).
-                if (!Private(this).childObserver) {
+          Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback);
+        }
+      }); // fire this.attributeChangedCallback in case some attributes have
+      // existed before the custom element was upgraded.
 
-                    const children = this.childNodes
-                    for (let l=children.length, i=0; i<l; i+=1) {
-                        this.childConnectedCallback(children[i])
-                    }
+      if (!Private(this).initialAttributeChange && this.hasAttributes()) {
+        const {
+          attributes
+        } = this;
 
-                    Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
-                }
-            })
+        for (let l = attributes.length, i = 0; i < l; i += 1) this.attributeChangedCallback(attributes[i].name, null, attributes[i].value);
+      }
+    },
 
-            // fire this.attributeChangedCallback in case some attributes have
-            // existed before the custom element was upgraded.
-            if (!Private(this).initialAttributeChange && this.hasAttributes()) {
+    // TODO: when we make setAttribute accept non-strings, we need to move
+    // logic from attributeChangedCallback
+    attributeChangedCallback(...args) {
+      if (Super(this).attributeChangedCallback) Super(this).attributeChangedCallback(...args);
+      Private(this).initialAttributeChange = true;
+    },
 
-                const {attributes} = this
-                for (let l=attributes.length, i=0; i<l; i+=1)
-                    this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
-            }
-        },
+    /**
+     * This is the reciprocal of init(). It will be called when an element
+     * has been disconnected but not re-connected within the same tick.
+     *
+     * The reason that init() and deinit() exist is so that if an element is
+     * moved from one place to another within the same synchronous tick,
+     * that deinit and init logic will not fire unnecessarily. If logic is
+     * needed in that case, then connectedCallback and disconnectedCallback
+     * can be used directly instead.
+     */
+    deinit() {
+      // Nothing much at the moment, but extending classes can extend
+      // this to add deintialization logic.
+      Private(this).childObserver.disconnect();
+    },
 
-        // TODO: when we make setAttribute accept non-strings, we need to move
-        // logic from attributeChangedCallback
-        attributeChangedCallback(...args) {
-            if (Super(this).attributeChangedCallback) Super(this).attributeChangedCallback(...args)
-            Private(this).initialAttributeChange = true
-        },
+    private: {
+      style: null,
+      initialized: false,
+      initialAttributeChange: false,
+      childObserver: null,
 
-        /**
-         * This is the reciprocal of init(). It will be called when an element
-         * has been disconnected but not re-connected within the same tick.
-         *
-         * The reason that init() and deinit() exist is so that if an element is
-         * moved from one place to another within the same synchronous tick,
-         * that deinit and init logic will not fire unnecessarily. If logic is
-         * needed in that case, then connectedCallback and disconnectedCallback
-         * can be used directly instead.
-         */
-        deinit() {
-            // Nothing much at the moment, but extending classes can extend
-            // this to add deintialization logic.
-            Private(this).childObserver.disconnect()
+      createStyles() {
+        const rule = lib_jss.createRule(Public(this).getStyles());
+        rule.applyTo(Public(this));
+        return rule;
+      }
 
-        },
-
-        private: {
-            style: null,
-            initialized: false,
-            initialAttributeChange: false,
-            childObserver: null,
-
-            createStyles() {
-                const rule = lib_jss.createRule(Public(this).getStyles())
-
-                rule.applyTo(Public(this))
-
-                return rule
-            },
-        },
-    }))
-
-    return WebComponent
-}, Object(lowclass_native["native"])( HTMLElement )));
-
+    }
+  }));
+  return WebComponent;
+}, Object(lowclass_native["native"])(HTMLElement)));
 // CONCATENATED MODULE: ./src/html/HTMLNode.js
 
 
 
+initDeclarativeBase();
+const HTMLNode = lowclass_default()('HTMLNode').extends(DeclarativeBase, ({
+  Public,
+  Private,
+  Super
+}) => ({
+  getStyles() {
+    return HTMLNode_style;
+  }
 
-
-initDeclarativeBase()
-
-const HTMLNode = lowclass_default()('HTMLNode').extends( DeclarativeBase, ({ Public, Private, Super }) => ({
-    getStyles() {
-        return HTMLNode_style
-    },
-}))
-
-
+}));
 
 // CONCATENATED MODULE: ./src/html/DeclarativeBase.js
 /* global HTMLSlotElement */
@@ -62609,486 +54743,422 @@ const HTMLNode = lowclass_default()('HTMLNode').extends( DeclarativeBase, ({ Pub
 
 
 
-
-
-var DeclarativeBase
-
-const observers = new WeakMap
-
-initDeclarativeBase()
-
+var DeclarativeBase;
+const observers = new WeakMap();
+initDeclarativeBase();
 function initDeclarativeBase() {
-    if (DeclarativeBase) return
+  if (DeclarativeBase) return;
+  /**
+   * @implements {EventListener}
+   */
 
-    /**
-     * @implements {EventListener}
-     */
-    DeclarativeBase = html_WebComponent.subclass('DeclarativeBase', ({ Super, Public, Private }) => ({
+  DeclarativeBase = html_WebComponent.subclass('DeclarativeBase', ({
+    Super,
+    Public,
+    Private
+  }) => ({
+    static: {
+      define(name) {
+        name = name || this.defaultElementName;
+        customElements.define(name, this);
+        this._definedElementName = name;
+      },
 
-        static: {
-            define(name) {
-                name = name || this.defaultElementName
-                customElements.define(name, this)
-                this._definedElementName = name
-            },
+      get definedElementName() {
+        return this._definedElementName || null;
+      }
 
-            get definedElementName() {
-                return this._definedElementName || null
-            },
-        },
+    },
 
-        // We use this to Override HTMLElement.prototype.attachShadow in v1, and
-        // HTMLElement.prototype.createShadowRoot in v0, so that we can make the
-        // connection between parent and child on the imperative side when the HTML side
-        // is using shadow roots.
-        //
-        // TODO finish ShadowDOM compatibility!
-        attachShadow(options, _method) {
-            _method = _method || 'attachShadow'
+    // We use this to Override HTMLElement.prototype.attachShadow in v1, and
+    // HTMLElement.prototype.createShadowRoot in v0, so that we can make the
+    // connection between parent and child on the imperative side when the HTML side
+    // is using shadow roots.
+    //
+    // TODO finish ShadowDOM compatibility!
+    attachShadow(options, _method) {
+      _method = _method || 'attachShadow';
+      if (!(this instanceof DeclarativeBase)) return Super(this)[_method](options); // In v0, shadow roots can be replaced, but in v1 calling attachShadow
+      // on an element that already has a root throws. So, we can set this to
+      // true, and if the try-catch passes then we know we have a v0 root and
+      // that the root was just replaced.
 
-            if ( !( this instanceof DeclarativeBase ) )
-                return Super( this )[ _method ]( options )
+      const oldRoot = this.shadowRoot;
+      let root = null;
 
-            // In v0, shadow roots can be replaced, but in v1 calling attachShadow
-            // on an element that already has a root throws. So, we can set this to
-            // true, and if the try-catch passes then we know we have a v0 root and
-            // that the root was just replaced.
-            const oldRoot = this.shadowRoot
-            let root = null
-            try {
-                root = Super( this )[ _method ]( options )
+      try {
+        root = Super(this)[_method](options);
+      } catch (e) {
+        throw e;
+      }
+
+      const privateThis = Private(this);
+      privateThis._hasShadowRoot = true;
+
+      if (oldRoot) {
+        Private(this)._onV0ShadowRootReplaced(oldRoot);
+      }
+
+      const observer = observeChildren(root, privateThis._shadowRootChildAdded.bind(privateThis), privateThis._shadowRootChildRemoved.bind(privateThis));
+      observers.set(root, observer);
+      const {
+        children
+      } = this;
+
+      for (let l = children.length, i = 0; i < l; i += 1) {
+        if (!(children[i] instanceof DeclarativeBase)) continue;
+        Private(children[i])._isPossiblyDistributed = true;
+      }
+
+      return root;
+    },
+
+    createShadowRoot() {
+      this.attachShadow(undefined, 'createShadowRoot');
+    },
+
+    childConnectedCallback(child) {
+      // mirror the DOM connections in the imperative API's virtual scene graph.
+      if (child instanceof HTMLNode) {
+        if (Private(this)._hasShadowRoot) Private(child)._isPossiblyDistributed = true; // If ImperativeBase#add was called first, child's
+        // `parent` will already be set, so prevent recursion.
+
+        if (child.parent) return;
+        this.add(child);
+      } else if (hasShadowDomV0 && child instanceof HTMLContentElement && //getShadowRootVersion(
+      getAncestorShadowRoot(this) //) == 'v0'
+      ) {// observe <content> elements.
+        } else if (hasShadowDomV1 && child instanceof HTMLSlotElement && //getShadowRootVersion(
+      getAncestorShadowRoot(this) //) == 'v1'
+      ) {
+          child.addEventListener('slotchange', this);
+
+          Private(this)._handleDistributedChildren(child);
+        } else {
+        // if non-library content was added (div, img, etc).
+        // TODO: replace this check with a more general one that
+        // detects if anything is visible including from styling, not
+        // just content. Perhaps make a specific API for defining that
+        // a node should have DOM content, to make it clear.
+        if (this instanceof HTMLNode && !this.isDOMNode && (!(child instanceof Text) && !(child instanceof Comment) || child instanceof Text && child.textContent.trim().length > 0)) {
+          Private(this)._possiblyCreateDOMPlane();
+        }
+      }
+    },
+
+    childDisconnectedCallback(child) {
+      // mirror the connection in the imperative API's virtual scene graph.
+      if (child instanceof HTMLNode) {
+        Private(child)._isPossiblyDistributed = false; // If ImperativeBase#remove was called first, child's
+        // `parent` will already be null, so prevent recursion.
+
+        if (!child.parent) return;
+        this.remove(child);
+      } else if (hasShadowDomV0 && child instanceof HTMLContentElement && //getShadowRootVersion(
+      getAncestorShadowRoot(this) //) == 'v0'
+      ) {// unobserve <content> element
+        } else if (hasShadowDomV1 && child instanceof HTMLSlotElement && //getShadowRootVersion(
+      getAncestorShadowRoot(this) //) == 'v1'
+      ) {
+          child.removeEventListener('slotchange', this);
+
+          Private(this)._handleDistributedChildren(child);
+
+          Private(this)._slotElementsAssignedNodes.delete(child);
+        } else {
+        // if non-library content was removed (div, img, etc).
+        if (this instanceof HTMLNode && !this.isDOMNode && (!(child instanceof Text) && !(child instanceof Comment) || child instanceof Text && child.textContent.trim().length > 0)) {
+          Private(this)._possiblyDestroyDOMPlane();
+        }
+      }
+    },
+
+    // Traverses a tree while considering ShadowDOM disribution.
+    traverse(isShadowChild) {
+      console.log(isShadowChild ? 'distributedNode:' : 'node:', this); // in the future, the user will be use a pure-JS API with no HTML
+      // DOM API.
+
+      const hasHtmlApi = true;
+      const {
+        children
+      } = this;
+
+      for (let l = children.length, i = 0; i < l; i += 1) {
+        // skip nodes that are possiblyDistributed, i.e. they have a parent
+        // that has a ShadowRoot.
+        if (!hasHtmlApi || !Private(children[i])._isPossiblyDistributed) children[i].traverse();
+      }
+
+      const shadowChildren = Private(this)._shadowChildren;
+
+      if (hasHtmlApi && shadowChildren) {
+        for (let l = shadowChildren.length, i = 0; i < l; i += 1) shadowChildren[i].traverse(true);
+      }
+    },
+
+    // TODO: make setAttribute accept non-string values.
+    setAttribute(attr, value) {
+      //if (this.tagName.toLowerCase() == 'motor-scene')
+      //console.log('setting attribute', arguments[1])
+      Super(this).setAttribute(attr, value);
+    },
+
+    get threeDOMPlane() {
+      return Private(this)._threeDOMPlane;
+    },
+
+    private: {
+      // true if this node has a shadow root (even if it is "closed", see
+      // attachShadow method above). Once true always true because shadow
+      // roots cannot be removed.
+      _hasShadowRoot: false,
+      // True when this node has a parent that has a shadow root. When
+      // using the HTML API, Imperative API can look at this to determine
+      // whether to render this node or not, in the case of WebGL.
+      _isPossiblyDistributed: false,
+      // A map of the slot elements that are children of this node and
+      // their last-known assigned nodes. When a slotchange happens while
+      // this node is in a shadow root and has a slot child, we can
+      // detect what the difference is between the last known and the new
+      // assignments, and notate the new distribution of child nodes. See
+      // issue #40 for background on why we do this.
+      _slotElementsAssignedNodes: new WeakMap(),
+      // If this node is distributed into a shadow tree, this will
+      // reference the parent of the <slot> or <content> element.
+      // Basically, this node will render as a child of that parent node
+      // in the flat tree.
+      _shadowParent: null,
+      // If this element has a child <slot> or <content> element while in
+      // a shadow root, then this will be a Set of the nodes distributed
+      // into the <slot> or <content>, and those nodes render relatively
+      // to this node in the flat tree. We instantiate this later, only
+      // when/if needed.
+      _shadowChildren: null,
+      // If this HTMLNode needs to be visible (f.e. it has non-library
+      // HTML children like div, span, img, etc), then we store here a
+      // reference to a WebGL plane that is aligned with the DOM element
+      // in order to achieve "mixed mode" features like the DOM element
+      // intersecting with WebGL meshes.
+      _threeDOMPlane: null,
+      _nonLibraryElementCount: 0,
+
+      _shadowRootChildAdded(child) {
+        // NOTE Logic here is similar to childConnectedCallback
+        if (child instanceof DeclarativeBase) {
+          Public(this).add(child);
+        } else if (hasShadowDomV0 && child instanceof HTMLContentElement) {// observe <content> elements.
+        } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
+          child.addEventListener('slotchange', this);
+
+          this._handleDistributedChildren(child);
+        }
+      },
+
+      _shadowRootChildRemoved(child) {
+        // NOTE Logic here is similar to childDisconnectedCallback
+        if (child instanceof DeclarativeBase) {
+          Public(this).remove(child);
+        } else if (hasShadowDomV0 && child instanceof HTMLContentElement) {// unobserve <content> element
+        } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
+          child.removeEventListener('slotchange', this);
+
+          this._handleDistributedChildren(child);
+
+          this._slotElementsAssignedNodes.delete(child);
+        }
+      },
+
+      // This method is part of the EventListener interface.
+      handleEvent(event) {
+        if (event.type == 'slotchange') {
+          const slot = event.target;
+
+          this._handleDistributedChildren(slot);
+        }
+      },
+
+      _handleDistributedChildren(slot) {
+        const diff = this._getDistributedChildDifference(slot);
+
+        const {
+          added
+        } = diff;
+
+        for (let l = added.length, i = 0; i < l; i += 1) {
+          const addedNode = added[i];
+          if (!(addedNode instanceof DeclarativeBase)) continue; // Keep track of the final distribution of a node.
+          //
+          // If the given slot is assigned to another
+          // slot, then this logic will run again for the next slot on
+          // that next slot's slotchange, so we remove the distributed
+          // node from the previous shadowParent and add it to the next
+          // one. If we don't do this, then the distributed node will
+          // exist in multiple shadowChildren lists when there is a
+          // chain of assigned slots. For more info, see
+          // https://github.com/w3c/webcomponents/issues/611
+
+          const shadowParent = addedNode._shadowParent;
+
+          if (shadowParent && shadowParent._shadowChildren) {
+            const shadowChildren = shadowParent._shadowChildren;
+            shadowChildren.splice(shadowChildren.indexOf(addedNode), 1);
+            if (!shadowChildren.length) shadowParent._shadowChildren = null;
+          } // The node is now distributed to `this` element.
+
+
+          addedNode._shadowParent = this;
+          if (!this._shadowChildren) this._shadowChildren = [];
+
+          this._shadowChildren.add(addedNode);
+        }
+
+        const {
+          removed
+        } = diff;
+
+        for (let l = removed.length, i = 0; i < l; i += 1) {
+          const removedNode = removed[i];
+          if (!(removedNode instanceof DeclarativeBase)) continue;
+          removedNode._shadowParent = null;
+
+          this._shadowChildren.delete(removedNode);
+
+          if (!this._shadowChildren.size) this._shadowChildren = null;
+        }
+      },
+
+      _getDistributedChildDifference(slot) {
+        let previousNodes;
+        if (this._slotElementsAssignedNodes.has(slot)) previousNodes = this._slotElementsAssignedNodes.get(slot);else previousNodes = [];
+        const newNodes = slot.assignedNodes({
+          flatten: true
+        }); // save the newNodes to be used as the previousNodes for next time.
+
+        this._slotElementsAssignedNodes.set(slot, newNodes);
+
+        const diff = {
+          removed: []
+        };
+
+        for (let i = 0, l = previousNodes.length; i < l; i += 1) {
+          const oldNode = previousNodes[i];
+          const newIndex = newNodes.indexOf(oldNode); // if it exists in the previousNodes but not the newNodes, then
+          // the node was removed.
+
+          if (!(newIndex >= 0)) {
+            diff.removed.push(oldNode);
+          } // otherwise the node wasn't added or removed.
+          else {
+              newNodes.splice(i, 1);
             }
-            catch (e) { throw e }
-
-            const privateThis = Private(this)
-
-            privateThis._hasShadowRoot = true
-            if (oldRoot) {
-                Private(this)._onV0ShadowRootReplaced( oldRoot )
-            }
-            const observer = observeChildren(
-                root,
-                privateThis._shadowRootChildAdded.bind(privateThis),
-                privateThis._shadowRootChildRemoved.bind(privateThis)
-            )
-            observers.set(root, observer)
-
-            const {children} = this
-            for (let l=children.length, i=0; i<l; i+=1) {
-                if (!(children[i] instanceof DeclarativeBase)) continue
-                Private(children[i])._isPossiblyDistributed = true
-            }
-
-            return root
-        },
-
-        createShadowRoot() {
-            this.attachShadow( undefined, 'createShadowRoot' )
-        },
-
-        childConnectedCallback(child) {
-
-            // mirror the DOM connections in the imperative API's virtual scene graph.
-            if (child instanceof HTMLNode) {
-                if (Private(this)._hasShadowRoot) Private(child)._isPossiblyDistributed = true
-
-                // If ImperativeBase#add was called first, child's
-                // `parent` will already be set, so prevent recursion.
-                if (child.parent) return
-
-                this.add(child)
-            }
-            else if (
-                hasShadowDomV0
-                && child instanceof HTMLContentElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v0'
-            ) {
-                // observe <content> elements.
-            }
-            else if (
-                hasShadowDomV1
-                && child instanceof HTMLSlotElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v1'
-            ) {
-                child.addEventListener('slotchange', this)
-                Private(this)._handleDistributedChildren(child)
-            }
-            else { // if non-library content was added (div, img, etc).
-
-                // TODO: replace this check with a more general one that
-                // detects if anything is visible including from styling, not
-                // just content. Perhaps make a specific API for defining that
-                // a node should have DOM content, to make it clear.
-                if ( this instanceof HTMLNode && !this.isDOMNode && (
-                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
-                    ( child instanceof Text && child.textContent.trim().length > 0 )
-                ) ) {
-                    Private(this)._possiblyCreateDOMPlane()
-                }
-            }
-        },
-
-        childDisconnectedCallback(child) {
-            // mirror the connection in the imperative API's virtual scene graph.
-            if (child instanceof HTMLNode) {
-                Private(child)._isPossiblyDistributed = false
-
-                // If ImperativeBase#remove was called first, child's
-                // `parent` will already be null, so prevent recursion.
-                if (!child.parent) return
-
-                this.remove(child)
-            }
-            else if (
-                hasShadowDomV0
-                && child instanceof HTMLContentElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v0'
-            ) {
-                // unobserve <content> element
-            }
-            else if (
-                hasShadowDomV1
-                && child instanceof HTMLSlotElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v1'
-            ) {
-                child.removeEventListener('slotchange', this)
-                Private(this)._handleDistributedChildren(child)
-                Private(this)._slotElementsAssignedNodes.delete(child)
-            }
-            else { // if non-library content was removed (div, img, etc).
-                if ( this instanceof HTMLNode && !this.isDOMNode && (
-                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
-                    ( child instanceof Text && child.textContent.trim().length > 0 )
-                ) ) {
-                    Private(this)._possiblyDestroyDOMPlane()
-                }
-            }
-        },
-
-        // Traverses a tree while considering ShadowDOM disribution.
-        traverse(isShadowChild) {
-            console.log(isShadowChild ? 'distributedNode:' : 'node:', this)
-
-            // in the future, the user will be use a pure-JS API with no HTML
-            // DOM API.
-            const hasHtmlApi = true
-
-            const {children} = this
-            for (let l=children.length, i=0; i<l; i+=1) {
-                // skip nodes that are possiblyDistributed, i.e. they have a parent
-                // that has a ShadowRoot.
-                if (!hasHtmlApi || !Private(children[i])._isPossiblyDistributed)
-                    children[i].traverse()
-            }
-
-            const shadowChildren = Private(this)._shadowChildren
-            if (hasHtmlApi && shadowChildren) {
-                for (let l=shadowChildren.length, i=0; i<l; i+=1)
-                    shadowChildren[i].traverse(true)
-            }
-        },
-
-        // TODO: make setAttribute accept non-string values.
-        setAttribute(attr, value) {
-            //if (this.tagName.toLowerCase() == 'motor-scene')
-                //console.log('setting attribute', arguments[1])
-            Super(this).setAttribute(attr, value)
-        },
-
-        get threeDOMPlane() {
-            return Private(this)._threeDOMPlane
-        },
-
-        private: {
-
-            // true if this node has a shadow root (even if it is "closed", see
-            // attachShadow method above). Once true always true because shadow
-            // roots cannot be removed.
-            _hasShadowRoot: false,
-
-            // True when this node has a parent that has a shadow root. When
-            // using the HTML API, Imperative API can look at this to determine
-            // whether to render this node or not, in the case of WebGL.
-            _isPossiblyDistributed: false,
-
-            // A map of the slot elements that are children of this node and
-            // their last-known assigned nodes. When a slotchange happens while
-            // this node is in a shadow root and has a slot child, we can
-            // detect what the difference is between the last known and the new
-            // assignments, and notate the new distribution of child nodes. See
-            // issue #40 for background on why we do this.
-            _slotElementsAssignedNodes: new WeakMap,
-
-            // If this node is distributed into a shadow tree, this will
-            // reference the parent of the <slot> or <content> element.
-            // Basically, this node will render as a child of that parent node
-            // in the flat tree.
-            _shadowParent: null,
-
-            // If this element has a child <slot> or <content> element while in
-            // a shadow root, then this will be a Set of the nodes distributed
-            // into the <slot> or <content>, and those nodes render relatively
-            // to this node in the flat tree. We instantiate this later, only
-            // when/if needed.
-            _shadowChildren: null,
-
-            // If this HTMLNode needs to be visible (f.e. it has non-library
-            // HTML children like div, span, img, etc), then we store here a
-            // reference to a WebGL plane that is aligned with the DOM element
-            // in order to achieve "mixed mode" features like the DOM element
-            // intersecting with WebGL meshes.
-            _threeDOMPlane: null,
-
-            _nonLibraryElementCount: 0,
-
-            _shadowRootChildAdded(child) {
-
-                // NOTE Logic here is similar to childConnectedCallback
-
-                if (child instanceof DeclarativeBase) {
-                    Public(this).add(child)
-                }
-                else if (
-                    hasShadowDomV0
-                    && child instanceof HTMLContentElement
-                ) {
-                    // observe <content> elements.
-                }
-                else if (
-                    hasShadowDomV1
-                    && child instanceof HTMLSlotElement
-                ) {
-                    child.addEventListener('slotchange', this)
-                    this._handleDistributedChildren(child)
-                }
-            },
-
-            _shadowRootChildRemoved(child) {
-
-                // NOTE Logic here is similar to childDisconnectedCallback
-
-                if (child instanceof DeclarativeBase) {
-                    Public(this).remove(child)
-                }
-                else if (
-                    hasShadowDomV0
-                    && child instanceof HTMLContentElement
-                ) {
-                    // unobserve <content> element
-                }
-                else if (
-                    hasShadowDomV1
-                    && child instanceof HTMLSlotElement
-                ) {
-                    child.removeEventListener('slotchange', this)
-                    this._handleDistributedChildren(child)
-                    this._slotElementsAssignedNodes.delete(child)
-                }
-            },
-
-            // This method is part of the EventListener interface.
-            handleEvent(event) {
-                if (event.type == 'slotchange') {
-                    const slot = event.target
-                    this._handleDistributedChildren(slot)
-                }
-            },
-
-            _handleDistributedChildren(slot) {
-                const diff = this._getDistributedChildDifference(slot)
-
-                const {added} = diff
-                for (let l=added.length, i=0; i<l; i+=1) {
-                    const addedNode = added[i]
-
-                    if (!(addedNode instanceof DeclarativeBase)) continue
-
-                    // Keep track of the final distribution of a node.
-                    //
-                    // If the given slot is assigned to another
-                    // slot, then this logic will run again for the next slot on
-                    // that next slot's slotchange, so we remove the distributed
-                    // node from the previous shadowParent and add it to the next
-                    // one. If we don't do this, then the distributed node will
-                    // exist in multiple shadowChildren lists when there is a
-                    // chain of assigned slots. For more info, see
-                    // https://github.com/w3c/webcomponents/issues/611
-                    const shadowParent = addedNode._shadowParent
-                    if (shadowParent && shadowParent._shadowChildren) {
-                        const shadowChildren = shadowParent._shadowChildren
-                        shadowChildren.splice(shadowChildren.indexOf(addedNode), 1)
-                        if (!shadowChildren.length)
-                            shadowParent._shadowChildren = null
-                    }
-
-                    // The node is now distributed to `this` element.
-                    addedNode._shadowParent = this
-                    if (!this._shadowChildren) this._shadowChildren = []
-                    this._shadowChildren.add(addedNode)
-                }
-
-                const {removed} = diff
-                for (let l=removed.length, i=0; i<l; i+=1) {
-                    const removedNode = removed[i]
-
-                    if (!(removedNode instanceof DeclarativeBase)) continue
-
-                    removedNode._shadowParent = null
-                    this._shadowChildren.delete(removedNode)
-                    if (!this._shadowChildren.size) this._shadowChildren = null
-                }
-            },
-
-            _getDistributedChildDifference(slot) {
-                let previousNodes
-
-                if (this._slotElementsAssignedNodes.has(slot))
-                    previousNodes = this._slotElementsAssignedNodes.get(slot)
-                else
-                    previousNodes = []
-
-                const newNodes = slot.assignedNodes({flatten: true})
-
-                // save the newNodes to be used as the previousNodes for next time.
-                this._slotElementsAssignedNodes.set(slot, newNodes)
-
-                const diff = {
-                    removed: [],
-                }
-
-                for (let i=0, l=previousNodes.length; i<l; i+=1) {
-                    const oldNode = previousNodes[i]
-                    const newIndex = newNodes.indexOf(oldNode)
-
-                    // if it exists in the previousNodes but not the newNodes, then
-                    // the node was removed.
-                    if (!(newIndex >= 0)) {
-                        diff.removed.push(oldNode)
-                    }
-
-                    // otherwise the node wasn't added or removed.
-                    else {
-                        newNodes.splice(i, 1)
-                    }
-                }
-
-                // Remaining nodes in newNodes must have been added.
-                diff.added = newNodes
-
-                return diff
-            },
-
-            _possiblyCreateDOMPlane() {
-                if ( !this._nonLibraryElementCount ) this._createDOMPlane()
-                this._nonLibraryElementCount++
-            },
-
-            _possiblyDestroyDOMPlane() {
-                this._nonLibraryElementCount--
-                if ( !this._nonLibraryElementCount ) this._destroyDOMPlane()
-            },
-
-            _createDOMPlane() {
-
-                // We have to use a BoxGeometry instead of a
-                // PlaneGeometry because Three.js is not capable of
-                // casting shadows from Planes, at least until we find
-                // another way. Unfortunately, this increases polygon
-                // count by a factor of 6. See issue
-                // https://github.com/mrdoob/three.js/issues/9315
-                const geometry = this._createDOMPlaneGeometry()
-
-                // TODO PERFORMANCE we can re-use a single material for
-                // all the DOM planes rather than a new material per
-                // plane.
-                const material = new MeshPhongMaterial({
-                    opacity	: 0.5,
-                    color	: new Color( 0x111111 ),
-                    blending: NoBlending,
-                    //side	: DoubleSide,
-                })
-
-                const mesh = this._threeDOMPlane = new Mesh( geometry, material )
-                mesh.castShadow = true
-                mesh.receiveShadow = true
-
-                Public(this).threeObject3d.add(mesh)
-                Public(this).on('sizechange', this._updateDOMPlaneOnSizeChange, this)
-            },
-
-            _updateDOMPlaneOnSizeChange({ x, y, z }) {
-                // TODO PERFORMANCE, destroying and creating a whole new geometry is
-                // wasteful, but it works for now. Improve this.
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.geometry = this._createDOMPlaneGeometry()
-            },
-
-            _destroyDOMPlane() {
-                const publicThis = Public(this)
-
-                publicThis.threeObject3d.remove(this._threeDOMPlane)
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.material.dispose()
-                this._threeDOMPlane = null
-
-                publicThis.off('sizechange', this._updateDOMPlaneOnSizeChange)
-            },
-
-            _createDOMPlaneGeometry() {
-                const publicThis = Public(this)
-                return new BoxGeometry( publicThis._calculatedSize.x, publicThis._calculatedSize.y, 1 )
-            },
-
-            _onV0ShadowRootReplaced( oldRoot ) {
-                observers.get(oldRoot).disconnect()
-                observers.delete(oldRoot)
-                const {childNodes} = oldRoot
-                for (let l=childNodes.length, i=0; i<l; i+=1) {
-                    const child = childNodes[i]
-
-                    if (!(child instanceof DeclarativeBase)) continue
-
-                    // We should disconnect the imperative connection (f.e. so it is not
-                    // rendered in WebGL)
-                    Public(this).remove(child, true)
-                }
-            },
-
-        },
-
-    }))
+        } // Remaining nodes in newNodes must have been added.
+
+
+        diff.added = newNodes;
+        return diff;
+      },
+
+      _possiblyCreateDOMPlane() {
+        if (!this._nonLibraryElementCount) this._createDOMPlane();
+        this._nonLibraryElementCount++;
+      },
+
+      _possiblyDestroyDOMPlane() {
+        this._nonLibraryElementCount--;
+        if (!this._nonLibraryElementCount) this._destroyDOMPlane();
+      },
+
+      _createDOMPlane() {
+        // We have to use a BoxGeometry instead of a
+        // PlaneGeometry because Three.js is not capable of
+        // casting shadows from Planes, at least until we find
+        // another way. Unfortunately, this increases polygon
+        // count by a factor of 6. See issue
+        // https://github.com/mrdoob/three.js/issues/9315
+        const geometry = this._createDOMPlaneGeometry(); // TODO PERFORMANCE we can re-use a single material for
+        // all the DOM planes rather than a new material per
+        // plane.
+
+
+        const material = new MeshPhongMaterial({
+          opacity: 0.5,
+          color: new Color(0x111111),
+          blending: NoBlending //side	: DoubleSide,
+
+        });
+        const mesh = this._threeDOMPlane = new Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        Public(this).threeObject3d.add(mesh);
+        Public(this).on('sizechange', this._updateDOMPlaneOnSizeChange, this);
+      },
+
+      _updateDOMPlaneOnSizeChange({
+        x,
+        y,
+        z
+      }) {
+        // TODO PERFORMANCE, destroying and creating a whole new geometry is
+        // wasteful, but it works for now. Improve this.
+        this._threeDOMPlane.geometry.dispose();
+
+        this._threeDOMPlane.geometry = this._createDOMPlaneGeometry();
+      },
+
+      _destroyDOMPlane() {
+        const publicThis = Public(this);
+        publicThis.threeObject3d.remove(this._threeDOMPlane);
+
+        this._threeDOMPlane.geometry.dispose();
+
+        this._threeDOMPlane.material.dispose();
+
+        this._threeDOMPlane = null;
+        publicThis.off('sizechange', this._updateDOMPlaneOnSizeChange);
+      },
+
+      _createDOMPlaneGeometry() {
+        const publicThis = Public(this);
+        return new BoxGeometry(publicThis._calculatedSize.x, publicThis._calculatedSize.y, 1);
+      },
+
+      _onV0ShadowRootReplaced(oldRoot) {
+        observers.get(oldRoot).disconnect();
+        observers.delete(oldRoot);
+        const {
+          childNodes
+        } = oldRoot;
+
+        for (let l = childNodes.length, i = 0; i < l; i += 1) {
+          const child = childNodes[i];
+          if (!(child instanceof DeclarativeBase)) continue; // We should disconnect the imperative connection (f.e. so it is not
+          // rendered in WebGL)
+
+          Public(this).remove(child, true);
+        }
+      }
+
+    }
+  }));
 }
-
-
 
 // CONCATENATED MODULE: ./src/html/HTMLScene.js
 
 
 
-
-
-initDeclarativeBase()
-
-const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Super }) => ({
-
-    constructor() {
-        const self = Super(this).constructor()
-        const privateThis = Private(self)
-
-        privateThis._root = self.attachShadow({ mode: 'open' })
-        privateThis._root.innerHTML = `
+initDeclarativeBase();
+const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({
+  Public,
+  Private,
+  Super
+}) => ({
+  constructor() {
+    const self = Super(this).constructor();
+    const privateThis = Private(self);
+    privateThis._root = self.attachShadow({
+      mode: 'open'
+    });
+    privateThis._root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
                 .i-scene-MiscellaneousLayer,
@@ -63118,113 +55188,99 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
             <div class="i-scene-MiscellaneousLayer">
                 <slot name="misc"></slot>
             </div>
-        `
+        `; // TODO make this similar to "package protected". It is public for now
+    // because WebGLRendererThree accesses it.
 
-        // TODO make this similar to "package protected". It is public for now
-        // because WebGLRendererThree accesses it.
-        self._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+    self._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer');
+    return self;
+  },
 
-        return self
+  /** @override */
+  getStyles() {
+    return HTMLScene_style;
+  },
+
+  deinit() {
+    Super(this).deinit();
+    this.unmount();
+  },
+
+  init() {
+    Super(this).init(); // When the HTMLScene gets addded to the DOM, make it be "mounted".
+
+    if (!this._mounted) this.mount(this.parentNode);
+  },
+
+  // TODO make these next two size-polling at least protected once we convert
+  // the Scene class, or perhaps move the size polling stuff from Scene to
+  // here where it can be colocated with this code.
+  _startOrStopSizePolling() {
+    const publicThis = Public(this);
+
+    if (publicThis._mounted && (publicThis._properties.sizeMode.x == 'proportional' || publicThis._properties.sizeMode.y == 'proportional' || publicThis._properties.sizeMode.z == 'proportional')) {
+      Private(this)._startSizePolling();
+    } else {
+      publicThis._stopSizePolling();
+    }
+  },
+
+  // Don't observe size changes on the scene element.
+  // HTML
+  //
+  // TODO make this at least protected once we convert the Scene class
+  _stopSizePolling() {
+    const publicThis = Public(this);
+    const privateThis = Private(this);
+    publicThis.off('parentsizechange', publicThis._onElementParentSizeChange);
+    core_Motor.removeRenderTask(privateThis._sizePollTask);
+    privateThis._sizePollTask = null;
+  },
+
+  private: {
+    _sizePollTask: null,
+    _parentSize: {
+      x: 0,
+      y: 0,
+      z: 0
     },
+    _root: null,
 
-    /** @override */
-    getStyles() {
-        return HTMLScene_style
-    },
-
-    deinit() {
-        Super(this).deinit()
-
-        this.unmount()
-    },
-
-    init() {
-        Super(this).init()
-
-        // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!this._mounted)
-            this.mount(this.parentNode)
-    },
-
-    // TODO make these next two size-polling at least protected once we convert
-    // the Scene class, or perhaps move the size polling stuff from Scene to
-    // here where it can be colocated with this code.
-    _startOrStopSizePolling() {
-        const publicThis = Public(this)
-
-        if (
-            publicThis._mounted &&
-            (publicThis._properties.sizeMode.x == 'proportional'
-            || publicThis._properties.sizeMode.y == 'proportional'
-            || publicThis._properties.sizeMode.z == 'proportional')
-        ) {
-            Private(this)._startSizePolling()
-        }
-        else {
-            publicThis._stopSizePolling()
-        }
-    },
-
-    // Don't observe size changes on the scene element.
+    // observe size changes on the scene element.
     // HTML
-    //
-    // TODO make this at least protected once we convert the Scene class
-    _stopSizePolling() {
-        const publicThis = Public(this)
-        const privateThis = Private(this)
+    _startSizePolling() {
+      const publicThis = Public(this); // NOTE Polling is currently required because there's no other way to do this
+      // reliably, not even with MutationObserver. ResizeObserver hasn't
+      // landed in browsers yet.
 
-        publicThis.off('parentsizechange', publicThis._onElementParentSizeChange)
-        core_Motor.removeRenderTask(privateThis._sizePollTask)
-        privateThis._sizePollTask = null
+      if (!this._sizePollTask) this._sizePollTask = core_Motor.addRenderTask(this._checkSize.bind(this));
+      publicThis.on('parentsizechange', publicThis._onElementParentSizeChange, publicThis);
     },
 
-    private: {
+    // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
+    // we haven't taken that into consideration here.
+    // HTML
+    _checkSize() {
+      const publicThis = Public(this);
+      const parent = publicThis.parentNode;
+      const parentSize = this._parentSize;
+      const style = getComputedStyle(parent);
+      const width = parseFloat(style.width);
+      const height = parseFloat(style.height); // if we have a size change, trigger parentsizechange
 
-        _sizePollTask: null,
-        _parentSize: {x:0, y:0, z:0},
-        _root: null,
+      if (parentSize.x != width || parentSize.y != height) {
+        parentSize.x = width;
+        parentSize.y = height;
+        publicThis.trigger('parentsizechange', Object.assign({}, parentSize));
+      }
+    }
 
-        // observe size changes on the scene element.
-        // HTML
-        _startSizePolling() {
-            const publicThis = Public(this)
-
-            // NOTE Polling is currently required because there's no other way to do this
-            // reliably, not even with MutationObserver. ResizeObserver hasn't
-            // landed in browsers yet.
-            if (!this._sizePollTask)
-                this._sizePollTask = core_Motor.addRenderTask(this._checkSize.bind(this))
-            publicThis.on('parentsizechange', publicThis._onElementParentSizeChange, publicThis)
-        },
-
-        // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
-        // we haven't taken that into consideration here.
-        // HTML
-        _checkSize() {
-            const publicThis = Public(this)
-
-            const parent = publicThis.parentNode
-            const parentSize = this._parentSize
-            const style = getComputedStyle(parent)
-            const width = parseFloat(style.width)
-            const height = parseFloat(style.height)
-
-            // if we have a size change, trigger parentsizechange
-            if (parentSize.x != width || parentSize.y != height) {
-                parentSize.x = width
-                parentSize.y = height
-
-                publicThis.trigger('parentsizechange', Object.assign({}, parentSize))
-            }
-        },
-
-    },
-
-}))
-
-
+  }
+}));
 
 // CONCATENATED MODULE: ./src/core/Scene.js
+function Scene_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Scene_defineProperty(target, key, source[key]); }); } return target; }
+
+function Scene_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 // TODO: write a test that imports public interfaces in every possible
 // permutation to detect circular dependency errors.
@@ -63239,320 +55295,307 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
 
 
-
-
-
-
-initImperativeBase()
-
+initImperativeBase();
 let Scene_Scene = Mixin(Base => {
+  const Parent = ImperativeBase.mixin(Base);
+  return lowclass_default()('Scene').extends(Parent, ({
+    Super
+  }) => ({
+    static: {
+      defaultElementName: 'i-scene',
+      props: Scene_objectSpread({}, Parent.props, {
+        backgroundColor: props_props.THREE.Color,
+        backgroundOpacity: props_props.number,
+        shadowmapType: props_props.string,
+        vr: props_props.boolean,
+        experimentalWebgl: props_props.boolean
+      })
+    },
 
-    const Parent = ImperativeBase.mixin( Base )
+    constructor(options = {}) {
+      const self = Super(this).constructor(options); // Used by the `scene` getter in ImperativeBase
+      // Motor's loop checks _scene on Nodes and Scenes when determining
+      // modified scenes.
 
-    return lowclass_default()('Scene').extends( Parent, ({ Super }) => ({
+      self._scene = self;
+      self._mounted = false; // TODO get default camera values from somewhere.
 
-        static: {
-            defaultElementName: 'i-scene',
+      self._perspective = 1000; // size of the element where the Scene is mounted
+      // NOTE: z size is always 0, since native DOM elements are always flat.
 
-            props: {
-                ...Parent.props,
-                backgroundColor: props_props.THREE.Color,
-                backgroundOpacity: props_props.number,
-                shadowmapType: props_props.string,
-                vr: props_props.boolean,
-                experimentalWebgl: props_props.boolean,
-            },
-        },
+      self._elementParentSize = {
+        x: 0,
+        y: 0,
+        z: 0
+      };
 
-        constructor(options = {}) {
-            const self = Super(this).constructor(options)
+      self._calcSize();
 
-            // Used by the `scene` getter in ImperativeBase
-            // Motor's loop checks _scene on Nodes and Scenes when determining
-            // modified scenes.
-            self._scene = self
+      self._needsToBeRendered();
 
-            self._mounted = false
+      return self;
+    },
 
-            // TODO get default camera values from somewhere.
-            self._perspective = 1000
+    _onElementParentSizeChange(newSize) {
+      this._elementParentSize = newSize;
 
-            // size of the element where the Scene is mounted
-            // NOTE: z size is always 0, since native DOM elements are always flat.
-            self._elementParentSize = {x:0, y:0, z:0}
+      this._calcSize();
 
-            self._calcSize()
-            self._needsToBeRendered()
+      this._needsToBeRendered();
+    },
 
-            return self
-        },
+    // For now, use the same program (with shaders) for all objects.
+    // Basically it has position, frag colors, point light, directional
+    // light, and ambient light.
+    // TODO: maybe call this in `init()`, and destroy webgl stuff in
+    // `deinit()`.
+    // TODO: The user might enable this by setting the attribute later, so
+    // we can't simply rely on having it in constructor, we need a
+    // getter/setter like node properties.
+    // TODO: we need to deinit webgl too.
+    initWebGl() {
+      // THREE
+      // maybe keep this in sceneState in WebGLRendererThree
+      Super(this).initWebGl(); // We don't let Three update any matrices, we supply our own world
+      // matrices.
 
-        _onElementParentSizeChange(newSize) {
-            this._elementParentSize = newSize
-            this._calcSize()
-            this._needsToBeRendered()
-        },
+      this.threeObject3d.autoUpdate = false; // this.threeCamera holds the active camera. There can be many
+      // cameras in the scene tree, but the last one with active="true"
+      // will be the one referenced here.
+      // If there are no cameras in the tree, a virtual default camera is
+      // referenced here, who's perspective is that of the scene's
+      // perspective attribute.
 
-        // For now, use the same program (with shaders) for all objects.
-        // Basically it has position, frag colors, point light, directional
-        // light, and ambient light.
-        // TODO: maybe call this in `init()`, and destroy webgl stuff in
-        // `deinit()`.
-        // TODO: The user might enable this by setting the attribute later, so
-        // we can't simply rely on having it in constructor, we need a
-        // getter/setter like node properties.
-        // TODO: we need to deinit webgl too.
-        initWebGl() {
-            // THREE
-            // maybe keep this in sceneState in WebGLRendererThree
-            Super(this).initWebGl()
+      this.threeCamera = null;
 
-            // We don't let Three update any matrices, we supply our own world
-            // matrices.
-            this.threeObject3d.autoUpdate = false
+      this._createDefaultCamera(); // TODO: default ambient light when no AmbientLight elements are
+      // present in the Scene.
+      //const ambientLight = new AmbientLight( 0x353535 )
+      //this.threeObject3d.add( ambientLight )
+      // holds the renderer for this scene, renderers have scene-specific
+      // settings so having this reference is okay.
 
-            // this.threeCamera holds the active camera. There can be many
-            // cameras in the scene tree, but the last one with active="true"
-            // will be the one referenced here.
-            // If there are no cameras in the tree, a virtual default camera is
-            // referenced here, who's perspective is that of the scene's
-            // perspective attribute.
-            this.threeCamera = null
-            this._createDefaultCamera()
 
-            // TODO: default ambient light when no AmbientLight elements are
-            // present in the Scene.
-            //const ambientLight = new AmbientLight( 0x353535 )
-            //this.threeObject3d.add( ambientLight )
+      this._renderer = null; // a default orange background color. Use the backgroundColor and
+      // backgroundOpacity attributes to customize.
 
-            // holds the renderer for this scene, renderers have scene-specific
-            // settings so having this reference is okay.
-            this._renderer = null
+      this._glBackgroundColor = new Color(0xff6600);
+      this._glBackgroundOpacity = 0; // holds active cameras found in the DOM tree (if this is empty, it
+      // means no camera elements are in the DOM, but this.threeCamera
+      // will still have a reference to the default camera that scenes
+      // are rendered with when no camera elements exist).
 
-            // a default orange background color. Use the backgroundColor and
-            // backgroundOpacity attributes to customize.
-            this._glBackgroundColor = new Color( 0xff6600 )
-            this._glBackgroundOpacity = 0
+      this._activeCameras = new Set();
+      this._renderer = core_Motor.getWebGLRenderer(this, 'three'); // set default colors
 
-            // holds active cameras found in the DOM tree (if this is empty, it
-            // means no camera elements are in the DOM, but this.threeCamera
-            // will still have a reference to the default camera that scenes
-            // are rendered with when no camera elements exist).
-            this._activeCameras = new Set
+      this._renderer.setClearColor(this, this._glBackgroundColor, this._glBackgroundOpacity);
+    },
 
-            this._renderer = core_Motor.getWebGLRenderer(this, 'three')
+    makeThreeObject3d() {
+      return new Scene();
+    },
 
-            // set default colors
-            this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
-        },
+    // TODO ability to init and destroy webgl for the whole scene.
+    destroyWebGl() {},
 
-        makeThreeObject3d() {
-            return new Scene
-        },
+    // TODO PERFORMANCE: make this static for better performance.
+    _setDefaultProperties() {
+      Super(this)._setDefaultProperties();
 
-        // TODO ability to init and destroy webgl for the whole scene.
-        destroyWebGl() {
-        },
+      Object.assign(this._properties, {
+        sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'proportional'),
+        size: new XYZNonNegativeValues(1, 1, 1)
+      });
+    },
 
-        // TODO PERFORMANCE: make this static for better performance.
-        _setDefaultProperties() {
-            Super(this)._setDefaultProperties()
+    // TODO FIXME: manual camera doesn't work after we've added the
+    // default-camera feature.
+    _setCamera(camera) {
+      if (!camera) {
+        this._createDefaultCamera();
+      } else {
+        // TODO?: implement an changecamera event/method and emit/call
+        // that here, then move this logic to the renderer
+        // handler/method?
+        this.threeCamera = camera.threeObject3d;
 
-            Object.assign(this._properties, {
-                sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'proportional'),
-                size: new XYZNonNegativeValues(1, 1, 1),
-            })
-        },
+        this._updateCameraAspect();
 
-        // TODO FIXME: manual camera doesn't work after we've added the
-        // default-camera feature.
-        _setCamera( camera ) {
-            if ( !camera ) {
-                this._createDefaultCamera()
-            }
-            else {
-                // TODO?: implement an changecamera event/method and emit/call
-                // that here, then move this logic to the renderer
-                // handler/method?
-                this.threeCamera = camera.threeObject3d
-                this._updateCameraAspect()
-                this._updateCameraProjection()
-                this._needsToBeRendered()
-            }
-        },
+        this._updateCameraProjection();
 
-        _createDefaultCamera() {
-            const size = this._calculatedSize
-            // THREE-COORDS-TO-DOM-COORDS
-            // We apply Three perspective the same way as CSS3D perspective here.
-            // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-            // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-            this.threeCamera = new PerspectiveCamera( 45, size.x / size.y || 1, 0.1, 10000 )
-            this.perspective = 1000
-        },
+        this._needsToBeRendered();
+      }
+    },
 
-        // TODO can this be moved to a render task like _calcSize? It depends
-        // on size values.
-        _updateCameraPerspective() {
-            const perspective = this._perspective
-            this.threeCamera.fov = 180 * ( 2 * Math.atan( this._calculatedSize.y / 2 / perspective ) ) / Math.PI
-            this.threeCamera.position.z = perspective
-        },
+    _createDefaultCamera() {
+      const size = this._calculatedSize; // THREE-COORDS-TO-DOM-COORDS
+      // We apply Three perspective the same way as CSS3D perspective here.
+      // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
+      // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
 
-        // TODO perspective SkateJS prop
-        set perspective(value) {
-            this._perspective = value
-            this._updateCameraPerspective()
-            this._updateCameraProjection()
-            this._needsToBeRendered()
-        },
-        get perspective() {
-            return this._perspective
-        },
+      this.threeCamera = new PerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000);
+      this.perspective = 1000;
+    },
 
-        _updateCameraAspect() {
-            this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y || 1
-        },
+    // TODO can this be moved to a render task like _calcSize? It depends
+    // on size values.
+    _updateCameraPerspective() {
+      const perspective = this._perspective;
+      this.threeCamera.fov = 180 * (2 * Math.atan(this._calculatedSize.y / 2 / perspective)) / Math.PI;
+      this.threeCamera.position.z = perspective;
+    },
 
-        _updateCameraProjection() {
-            this.threeCamera.updateProjectionMatrix()
-        },
+    // TODO perspective SkateJS prop
+    set perspective(value) {
+      this._perspective = value;
 
-        _addCamera( camera ) {
-            this._activeCameras.add( camera )
-            this._setCamera( camera )
-        },
+      this._updateCameraPerspective();
 
-        _removeCamera( camera ) {
-            this._activeCameras.delete( camera )
+      this._updateCameraProjection();
 
-            if ( this._activeCameras.size ) {
-                // get the last camera in the Set
-                this._activeCameras.forEach(c => camera = c)
-            }
-            else camera = null
+      this._needsToBeRendered();
+    },
 
-            this._setCamera( camera )
-        },
+    get perspective() {
+      return this._perspective;
+    },
 
-        /** @override */
-        _getParentSize() {
-            return this.parent ? this.parent._calculatedSize : this._elementParentSize
-        },
+    _updateCameraAspect() {
+      this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y || 1;
+    },
 
-        /**
-         * Mount the scene into the given target.
-         * Resolves the Scene's mountPromise, which can be use to do something once
-         * the scene is mounted.
-         *
-         * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
-         * the mount point will be selected from the DOM. If an HTMLElement is
-         * provided, that will be the mount point. If no mount point is provided,
-         * the scene will be mounted into document.body.
-         */
-        async mount(mountPoint) {
-            // if no mountPoint was provided, just mount onto the <body> element.
-            if (mountPoint === undefined) {
-                if (!document.body) await src_default()()
-                mountPoint = document.body
-            }
+    _updateCameraProjection() {
+      this.threeCamera.updateProjectionMatrix();
+    },
 
-            // if the user supplied a selector, mount there.
-            else if (typeof mountPoint === 'string') {
-                mountPoint = document.querySelector(mountPoint)
-                if (!mountPoint && document.readyState === 'loading') {
-                    // maybe the element wasn't parsed yet, check again when the
-                    // document is ready.
-                    await src_default()()
-                    mountPoint = document.querySelector(mountPoint)
-                }
-            }
+    _addCamera(camera) {
+      this._activeCameras.add(camera);
 
-            // if we have an actual mount point (the user may have supplied one)
-            if (!(mountPoint instanceof HTMLElement)) {
-                throw new Error(`
+      this._setCamera(camera);
+    },
+
+    _removeCamera(camera) {
+      this._activeCameras.delete(camera);
+
+      if (this._activeCameras.size) {
+        // get the last camera in the Set
+        this._activeCameras.forEach(c => camera = c);
+      } else camera = null;
+
+      this._setCamera(camera);
+    },
+
+    /** @override */
+    _getParentSize() {
+      return this.parent ? this.parent._calculatedSize : this._elementParentSize;
+    },
+
+    /**
+     * Mount the scene into the given target.
+     * Resolves the Scene's mountPromise, which can be use to do something once
+     * the scene is mounted.
+     *
+     * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
+     * the mount point will be selected from the DOM. If an HTMLElement is
+     * provided, that will be the mount point. If no mount point is provided,
+     * the scene will be mounted into document.body.
+     */
+    async mount(mountPoint) {
+      // if no mountPoint was provided, just mount onto the <body> element.
+      if (mountPoint === undefined) {
+        if (!document.body) await src_default()();
+        mountPoint = document.body;
+      } // if the user supplied a selector, mount there.
+      else if (typeof mountPoint === 'string') {
+          mountPoint = document.querySelector(mountPoint);
+
+          if (!mountPoint && document.readyState === 'loading') {
+            // maybe the element wasn't parsed yet, check again when the
+            // document is ready.
+            await src_default()();
+            mountPoint = document.querySelector(mountPoint);
+          }
+        } // if we have an actual mount point (the user may have supplied one)
+
+
+      if (!(mountPoint instanceof HTMLElement)) {
+        throw new Error(`
                     Invalid mount point specified in Scene.mount() call. Pass a
                     selector, an actual HTMLElement, or don\'t pass anything to
                     mount to <body>.
-                `)
-            }
-
-            // The user can mount to a new location without calling unmount
-            // first. Call it automatically in that case.
-            if (this._mounted) this.unmount()
-
-            if (mountPoint !== this.parentNode)
-                mountPoint.appendChild(this)
-
-            this._mounted = true
-
-            this._startOrStopSizePolling()
-        },
-
-        /**
-         * Unmount the scene from it's mount point. Resets the Scene's
-         * mountPromise.
-         */
-        unmount() {
-            if (!this._mounted) return
-
-            this._stopSizePolling()
-
-            if (this.parentNode)
-                this.parentNode.removeChild(this)
-
-            this._mounted = false
-        },
-
-        updated(oldProps, oldState, moddedProps) {
-            Super(this).updated(oldProps, oldState, moddedProps)
-
-            if (!this.isConnected) return
-
-            if (moddedProps.experimentalWebgl) {
-                if (this.experimentalWebgl) this.initWebGl()
-                else this.disposeWebGL()
-            }
-
-            if (this.experimentalWebgl) {
-                if (moddedProps.backgroundColor) {
-                    this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
-                    this._needsToBeRendered()
-                }
-                if (moddedProps.backgroundOpacity) {
-                    this._renderer.setClearAlpha( this, this.backgroundOpacity )
-                    this._needsToBeRendered()
-                }
-                if (moddedProps.shadowmapType) {
-                    this._renderer.setShadowMapType(this, this.shadowmapType)
-                    this._needsToBeRendered()
-                }
-                if (moddedProps.vr) {
-                    this._renderer.enableVR( this, this.vr)
-
-                    if ( this.vr ) {
-                        core_Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
-                        this._renderer.createDefaultWebVREntryUI( this )
-                    }
-                    else {
-                        // TODO else return back to normal requestAnimationFrame
-                    }
-                }
-            }
-
-            if (moddedProps.sizeMode) {
-                this._startOrStopSizePolling()
-            }
-        },
-
-    }))
-
-})
-
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-Scene_Scene = Scene_Scene.mixin(HTMLScene)
+                `);
+      } // The user can mount to a new location without calling unmount
+      // first. Call it automatically in that case.
 
 
+      if (this._mounted) this.unmount();
+      if (mountPoint !== this.parentNode) mountPoint.appendChild(this);
+      this._mounted = true;
+
+      this._startOrStopSizePolling();
+    },
+
+    /**
+     * Unmount the scene from it's mount point. Resets the Scene's
+     * mountPromise.
+     */
+    unmount() {
+      if (!this._mounted) return;
+
+      this._stopSizePolling();
+
+      if (this.parentNode) this.parentNode.removeChild(this);
+      this._mounted = false;
+    },
+
+    updated(oldProps, oldState, moddedProps) {
+      Super(this).updated(oldProps, oldState, moddedProps);
+      if (!this.isConnected) return;
+
+      if (moddedProps.experimentalWebgl) {
+        if (this.experimentalWebgl) this.initWebGl();else this.disposeWebGL();
+      }
+
+      if (this.experimentalWebgl) {
+        if (moddedProps.backgroundColor) {
+          this._renderer.setClearColor(this, this.backgroundColor, this.backgroundOpacity);
+
+          this._needsToBeRendered();
+        }
+
+        if (moddedProps.backgroundOpacity) {
+          this._renderer.setClearAlpha(this, this.backgroundOpacity);
+
+          this._needsToBeRendered();
+        }
+
+        if (moddedProps.shadowmapType) {
+          this._renderer.setShadowMapType(this, this.shadowmapType);
+
+          this._needsToBeRendered();
+        }
+
+        if (moddedProps.vr) {
+          this._renderer.enableVR(this, this.vr);
+
+          if (this.vr) {
+            core_Motor.setFrameRequester(fn => this._renderer.requestFrame(this, fn));
+
+            this._renderer.createDefaultWebVREntryUI(this);
+          } else {// TODO else return back to normal requestAnimationFrame
+          }
+        }
+      }
+
+      if (moddedProps.sizeMode) {
+        this._startOrStopSizePolling();
+      }
+    }
+
+  }));
+}); // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
+
+Scene_Scene = Scene_Scene.mixin(HTMLScene);
 
 // CONCATENATED MODULE: ./src/core/ImperativeBase.js
 
@@ -63564,286 +55607,260 @@ Scene_Scene = Scene_Scene.mixin(HTMLScene)
 
 
 
-
-let threeObject3d = null
-let domPlane = null
-
-// We explicitly use `var` instead of `let` here because it is hoisted for the
+let threeObject3d = null;
+let domPlane = null; // We explicitly use `var` instead of `let` here because it is hoisted for the
 // Node and Scene modules. This, along with the following initImperativeBase
 // function, allows the circular dependency between this module and the Node and
 // Scene modules to work. For details on why, see
 // https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem.
-var ImperativeBase
 
-// Here we wrap the definition of the ImperativeBase class with this function in
+var ImperativeBase; // Here we wrap the definition of the ImperativeBase class with this function in
 // order to solve the circular depdendency problem caused by the
 // Node<->ImperativeBase and Scene<->ImperativeBase circles. The Node and Scene
 // modules call initImperativeBase to ensure that the ImperativeBase declaration
 // happens first, and then those modules can use the live binding in their
 // declarations.
-initImperativeBase()
+
+initImperativeBase();
 function initImperativeBase() {
-    if (ImperativeBase) return
+  if (ImperativeBase) return;
+  /**
+   * The ImperativeBase class is the base class for the Imperative version of the
+   * API, for people who chose to take the all-JavaScript approach and who will
+   * not use the HTML-based API (infamous/motor-html).
+   *
+   * In the future when there is an option to disable the HTML-DOM rendering (and
+   * render only WebGL, for example) then the imperative API will be the only API
+   * available since the HTML API will be turned off as a result of disabling
+   * HTML rendering. Disabling both WebGL and HTML won't make sense, as we'll need
+   * at least one of those to render with.
+   */
+
+  ImperativeBase = Mixin(Base => lowclass_default()('ImperativeBase').extends(core_Transformable.mixin(Base), ({
+    Super
+  }) => ({
+    constructor(options = {}) {
+      const self = Super(this).constructor(options);
+      self._lastKnownParent = null; // we don't need this, keep for backward compatibility (mainly
+      // all my demos at trusktr.io).
+
+      self.imperativeCounterpart = self;
+      self._willBeRendered = false; // Here we create the DOM HTMLElement associated with this
+      // Imperative-API Node.
+
+      self._elementOperations = new ElementOperations(self); // stores a ref to this Node's root Scene when/if this Node is
+      // in a scene.
+
+      self._scene = null; // See Transformable/Sizeable propertychange event.
+      // TODO: defer size calculation to render task
+
+      self.on('propertychange', self._onPropertyChange, self);
+      if (!(self instanceof Scene_Scene)) self.initWebGl();
+      return self;
+    },
+
+    connectedCallback() {
+      Super(this).connectedCallback(); // If a subclass needs to initialize values in its Three.js
+      // object, it will have the passInitialValuesToThree method for
+      // that.
+      //
+      // TODO we shouldn't need to define passInitialValuesToThree in
+      // sub classes, the default values of the props should
+      // automatically be in place.
+
+      this.passInitialValuesToThree && this.passInitialValuesToThree();
+    },
+
+    _onPropertyChange(prop) {
+      if (prop == 'sizeMode' || prop == 'size') {
+        this._calcSize();
+      }
+
+      this._needsToBeRendered();
+    },
+
+    initWebGl() {
+      this.threeObject3d = this.makeThreeObject3d(); // we don't let Three update local matrices, we provide world
+      // matrices ourselves.
+
+      this.threeObject3d.matrixAutoUpdate = false;
+    },
+
+    disposeWebGL() {
+      console.log('TODO: dispose WebGL when it is no longer needed');
+    },
+
+    makeThreeObject3d() {
+      throw new Error('The makeThreeObject3d method should be defined by sub classes.');
+    },
+
+    // TODO use one of init/deinit, or connected/connected, or
+    // connectedCallback/disconnectedCallback, instead of being
+    // inconsistent across classes, so we can better understand order of
+    // operations more easily.
+    connected() {
+      this._lastKnownParent = this.parent;
+      this.parent.threeObject3d.add(this.threeObject3d);
+      this.on('worldMatrixUpdate', this._onWorldMatrixUpdate, this);
+    },
+
+    disconnected() {
+      this._lastKnownParent.threeObject3d.remove(this.threeObject3d);
+
+      this.off('worldMatrixUpdate', this._onWorldMatrixUpdate);
+    },
+
+    _onWorldMatrixUpdate() {
+      threeObject3d = this.threeObject3d;
+      domPlane = this.threeDOMPlane; // Three Matrix4#elements is in the same major order as our
+      // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
+      // to swap the order when passing in our DOMMatrix#_matrix.
+      // Three.js r88, Issue #12602
+
+      for (let i = 0; i < 16; i += 1) {
+        threeObject3d.matrixWorld.elements[i] = this._worldMatrix._matrix[i];
+        if (domPlane) domPlane.matrixWorld.elements[i] = this._worldMatrix._matrix[i];
+      } // Since we're not letting Three auto update matrices, we also need
+      // to update the inverse matrix for cameras.
+
+
+      if (threeObject3d instanceof Camera) threeObject3d.matrixWorldInverse.getInverse(threeObject3d.matrixWorld);
+    },
 
     /**
-     * The ImperativeBase class is the base class for the Imperative version of the
-     * API, for people who chose to take the all-JavaScript approach and who will
-     * not use the HTML-based API (infamous/motor-html).
+     * Subclasses are required to override this. It should return the HTML-API
+     * counterpart for this Imperative-API instance. See Node or Scene classes
+     * for example.
      *
-     * In the future when there is an option to disable the HTML-DOM rendering (and
-     * render only WebGL, for example) then the imperative API will be the only API
-     * available since the HTML API will be turned off as a result of disabling
-     * HTML rendering. Disabling both WebGL and HTML won't make sense, as we'll need
-     * at least one of those to render with.
+     * @private
      */
-    ImperativeBase = Mixin(Base =>
+    _makeElement() {
+      throw new Error('Subclasses need to override ImperativeBase#_makeElement.');
+    },
 
-        lowclass_default()('ImperativeBase').extends( core_Transformable.mixin( Base ), ({ Super }) => ({
-            constructor(options = {}) {
-                const self = Super(this).constructor(options)
+    /**
+     * @readonly
+     */
+    get element() {
+      return this._elementOperations.element;
+    },
 
-                self._lastKnownParent = null
+    /**
+     * Get the Scene that this Node is in, null if no Scene. This is recursive
+     * at first, then cached.
+     *
+     * This traverses up the scene graph tree starting at this Node and finds
+     * the root Scene, if any. It caches the value for performance. If this
+     * Node is removed from a parent node with parent.removeChild(), then the
+     * cache is invalidated so the traversal can happen again when this Node is
+     * eventually added to a new tree. This way, if the scene is cached on a
+     * parent Node that we're adding this Node to then we can get that cached
+     * value instead of traversing the tree.
+     *
+     * @readonly
+     */
+    get scene() {
+      // NOTE: this._scene is initally null, created in the constructor.
+      // if already cached, return it. Or if no parent, return it (it'll be null).
+      // Additionally, Scenes have this._scene already set to themselves.
+      if (this._scene || !this.parent) return this._scene; // if the parent node already has a ref to the scene, use that.
 
-                // we don't need this, keep for backward compatibility (mainly
-                // all my demos at trusktr.io).
-                self.imperativeCounterpart = self
+      if (this.parent._scene) {
+        this._scene = this.parent._scene;
+      } else if (this.parent instanceof Scene_Scene) {
+        this._scene = this.parent;
+      } // otherwise call the scene getter on the parent, which triggers
+      // traversal up the scene graph in order to find the root scene (null
+      // if none).
+      else {
+          this._scene = this.parent.scene;
+        }
 
-                self._willBeRendered = false
+      return this._scene;
+    },
 
-                // Here we create the DOM HTMLElement associated with this
-                // Imperative-API Node.
-                self._elementOperations = new ElementOperations(self)
+    /**
+     * @override
+     */
+    add(childNode) {
+      if (!isInstanceof(childNode, ImperativeBase)) return; // We cannot add Scenes to Nodes, for now.
 
-                // stores a ref to this Node's root Scene when/if this Node is
-                // in a scene.
-                self._scene = null
-
-                // See Transformable/Sizeable propertychange event.
-                // TODO: defer size calculation to render task
-                self.on('propertychange', self._onPropertyChange, self)
-
-                if (!(self instanceof Scene_Scene)) self.initWebGl()
-
-                return self
-            },
-
-            connectedCallback() {
-                Super(this).connectedCallback()
-
-                // If a subclass needs to initialize values in its Three.js
-                // object, it will have the passInitialValuesToThree method for
-                // that.
-                //
-                // TODO we shouldn't need to define passInitialValuesToThree in
-                // sub classes, the default values of the props should
-                // automatically be in place.
-                this.passInitialValuesToThree && this.passInitialValuesToThree()
-            },
-
-            _onPropertyChange(prop) {
-                if ( prop == 'sizeMode' || prop == 'size' ) {
-                    this._calcSize()
-                }
-
-                this._needsToBeRendered()
-            },
-
-            initWebGl() {
-                this.threeObject3d = this.makeThreeObject3d()
-
-                // we don't let Three update local matrices, we provide world
-                // matrices ourselves.
-                this.threeObject3d.matrixAutoUpdate = false
-            },
-
-            disposeWebGL() {
-                console.log( 'TODO: dispose WebGL when it is no longer needed' )
-            },
-
-            makeThreeObject3d() {
-                throw new Error('The makeThreeObject3d method should be defined by sub classes.')
-            },
-
-            // TODO use one of init/deinit, or connected/connected, or
-            // connectedCallback/disconnectedCallback, instead of being
-            // inconsistent across classes, so we can better understand order of
-            // operations more easily.
-            connected() {
-                this._lastKnownParent = this.parent
-                this.parent.threeObject3d.add(this.threeObject3d)
-                this.on('worldMatrixUpdate', this._onWorldMatrixUpdate, this)
-            },
-            disconnected() {
-                this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
-                this.off('worldMatrixUpdate', this._onWorldMatrixUpdate)
-            },
-
-            _onWorldMatrixUpdate() {
-                threeObject3d = this.threeObject3d
-                domPlane = this.threeDOMPlane
-
-                // Three Matrix4#elements is in the same major order as our
-                // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
-                // to swap the order when passing in our DOMMatrix#_matrix.
-                // Three.js r88, Issue #12602
-                for (let i=0; i<16; i+=1) {
-                    threeObject3d.matrixWorld.elements[i] = this._worldMatrix._matrix[i]
-                    if ( domPlane )
-                        domPlane.matrixWorld.elements[i] = this._worldMatrix._matrix[i]
-                }
-
-                // Since we're not letting Three auto update matrices, we also need
-                // to update the inverse matrix for cameras.
-                if ( threeObject3d instanceof Camera )
-                    threeObject3d.matrixWorldInverse.getInverse( threeObject3d.matrixWorld );
-            },
-
-            /**
-             * Subclasses are required to override this. It should return the HTML-API
-             * counterpart for this Imperative-API instance. See Node or Scene classes
-             * for example.
-             *
-             * @private
-             */
-            _makeElement() {
-                throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
-            },
-
-            /**
-             * @readonly
-             */
-            get element() {
-                return this._elementOperations.element
-            },
-
-            /**
-             * Get the Scene that this Node is in, null if no Scene. This is recursive
-             * at first, then cached.
-             *
-             * This traverses up the scene graph tree starting at this Node and finds
-             * the root Scene, if any. It caches the value for performance. If this
-             * Node is removed from a parent node with parent.removeChild(), then the
-             * cache is invalidated so the traversal can happen again when this Node is
-             * eventually added to a new tree. This way, if the scene is cached on a
-             * parent Node that we're adding this Node to then we can get that cached
-             * value instead of traversing the tree.
-             *
-             * @readonly
-             */
-            get scene() {
-                // NOTE: this._scene is initally null, created in the constructor.
-
-                // if already cached, return it. Or if no parent, return it (it'll be null).
-                // Additionally, Scenes have this._scene already set to themselves.
-                if (this._scene || !this.parent) return this._scene
-
-                // if the parent node already has a ref to the scene, use that.
-                if (this.parent._scene) {
-                    this._scene = this.parent._scene
-                }
-                else if (this.parent instanceof Scene_Scene) {
-                    this._scene = this.parent
-                }
-                // otherwise call the scene getter on the parent, which triggers
-                // traversal up the scene graph in order to find the root scene (null
-                // if none).
-                else {
-                    this._scene = this.parent.scene
-                }
-
-                return this._scene
-            },
-
-            /**
-             * @override
-             */
-            add(childNode) {
-                if (!isInstanceof(childNode, ImperativeBase)) return
-
-                // We cannot add Scenes to Nodes, for now.
-                if (childNode instanceof Scene_Scene) {
-                    throw new Error(`
+      if (childNode instanceof Scene_Scene) {
+        throw new Error(`
                         A Scene cannot be added to another Node or Scene (at
                         least for now). To place a Scene in a Node, just mount
                         a new Scene onto a MotorHTMLNode with Scene.mount().
-                    `)
-                }
+                    `);
+      }
 
-                Super(this).add(childNode)
+      Super(this).add(childNode); // Pass this parent node's Scene reference (if any, checking this cache
+      // first) to the new child and the child's children.
 
-                // Pass this parent node's Scene reference (if any, checking this cache
-                // first) to the new child and the child's children.
-                if (childNode._scene || childNode.scene) {
-                    childNode._giveSceneRefToChildren()
-                }
+      if (childNode._scene || childNode.scene) {
+        childNode._giveSceneRefToChildren();
+      } // Calculate sizing because proportional size might depend on
+      // the new parent.
 
-                // Calculate sizing because proportional size might depend on
-                // the new parent.
-                childNode._calcSize()
-                childNode._needsToBeRendered()
 
-                // child should watch the parent for size changes.
-                this.on('sizechange', childNode._onParentSizeChange)
+      childNode._calcSize();
 
-                this._elementOperations.connectChildElement(childNode)
+      childNode._needsToBeRendered(); // child should watch the parent for size changes.
 
-                return this
-            },
 
-            remove(childNode, /*private use*/leaveInDom) {
-                if (!(childNode instanceof Node)) return
+      this.on('sizechange', childNode._onParentSizeChange);
 
-                Super(this).remove(childNode)
+      this._elementOperations.connectChildElement(childNode);
 
-                this.off('sizechange', childNode._onParentSizeChange)
+      return this;
+    },
 
-                childNode._resetSceneRef()
+    remove(childNode,
+    /*private use*/
+    leaveInDom) {
+      if (!(childNode instanceof Node)) return;
+      Super(this).remove(childNode);
+      this.off('sizechange', childNode._onParentSizeChange);
 
-                if (!leaveInDom)
-                    this._elementOperations.disconnectChildElement(childNode)
-            },
+      childNode._resetSceneRef();
 
-            _needsToBeRendered() {
-                // we don't need to render until we're connected into a tree with a scene.
-                if (!this.scene || !this.isConnected) return
-                // TODO make sure we render when connected into a tree with a scene
+      if (!leaveInDom) this._elementOperations.disconnectChildElement(childNode);
+    },
 
-                this._willBeRendered = true
-                core_Motor.setNodeToBeRendered(this)
-            },
+    _needsToBeRendered() {
+      // we don't need to render until we're connected into a tree with a scene.
+      if (!this.scene || !this.isConnected) return; // TODO make sure we render when connected into a tree with a scene
 
-            // This method is used by Motor._renderNodes().
-            _getAncestorThatShouldBeRendered() {
-                let parent = this.parent
+      this._willBeRendered = true;
+      core_Motor.setNodeToBeRendered(this);
+    },
 
-                while (parent) {
-                    if (parent._willBeRendered) return parent
-                    parent = parent.parent
-                }
+    // This method is used by Motor._renderNodes().
+    _getAncestorThatShouldBeRendered() {
+      let parent = this.parent;
 
-                return false
-            },
+      while (parent) {
+        if (parent._willBeRendered) return parent;
+        parent = parent.parent;
+      }
 
-            _render(timestamp) {
-                if ( Super(this)._render ) Super(this)._render()
-                // applies the transform matrix to the element's style property.
-                this._elementOperations.applyImperativeNodeProperties(this)
-            },
+      return false;
+    },
 
-            // TODO make a classes prop?
-            // set properties(properties = {}) {
-            //     Super(this).properties = properties
-            //
-            //     if (properties.classes)
-            //         this._elementOperations.setClasses(...properties.classes);
-            // },
-        }))
+    _render(timestamp) {
+      if (Super(this)._render) Super(this)._render(); // applies the transform matrix to the element's style property.
 
-    )
+      this._elementOperations.applyImperativeNodeProperties(this);
+    }
 
+  }) // TODO make a classes prop?
+  // set properties(properties = {}) {
+  //     Super(this).properties = properties
+  //
+  //     if (properties.classes)
+  //         this._elementOperations.setClasses(...properties.classes);
+  // },
+  ));
 }
-
-
 
 // CONCATENATED MODULE: ./src/core/Node.js
 
@@ -63853,332 +55870,300 @@ function initImperativeBase() {
 
 
 
+const radiansPerDegree = 1 / 360 * 2 * Math.PI;
+initImperativeBase();
+let Node = Mixin(Base => lowclass_default()('Node').extends(ImperativeBase.mixin(Base), ({
+  Super
+}) => ({
+  static: {
+    defaultElementName: 'i-node'
+  },
 
-const radiansPerDegree = 1 / 360 * 2*Math.PI
+  /**
+   * @constructor
+   *
+   * @param {Object} options Initial properties that the node will
+   * have. This can be used when creating a node, alternatively to using the
+   * setters/getters for position, rotation, etc.
+   *
+   * @example
+   * var node = new Node({
+   *   size: {x:100, y:100, z:100},
+   *   rotation: {x:30, y:20, z:25}
+   * })
+   */
+  constructor(options = {}) {
+    const self = Super(this).constructor(options); // This was when using my `multiple()` implementation, we could call
+    // specific constructors using specific arguments. But, we're using
+    // class-factory style mixins for now, so we don't have control over the
+    // specific arguments we can pass to the constructors, so we're just
+    // using a single `options` parameter in all the constructors.
+    //self.callSuperConstructor(Transformable, options)
+    //self.callSuperConstructor(TreeNode)
+    //self.callSuperConstructor(ImperativeBase)
 
-initImperativeBase()
+    self._scene = null; // stores a ref to this Node's root Scene.
 
-let Node = Mixin(Base =>
+    /**
+     * @private
+     * This method is defined here in the consructor as an arrow function
+     * because parent Nodes pass it to Observable#on and Observable#off. If
+     * it were a prototype method, then it would need to be bound when
+     * passed to Observable#on, which would require keeping track of the
+     * bound function reference in order to be able to pass it to
+     * Observable#off later. See ImperativeBase#add and
+     * ImperativeBase#remove.
+     */
 
-    lowclass_default()('Node').extends( ImperativeBase.mixin( Base ), ({ Super }) => ({
-        static: {
-            defaultElementName: 'i-node',
-        },
+    self._onParentSizeChange = () => {
+      // We only need to recalculate sizing and matrices if this node has
+      // properties that depend on parent sizing (proportional size,
+      // align, and mountPoint). mountPoint isn't obvious: if this node
+      // is proportionally sized, then the mountPoint will depend on the
+      // size of this element which depends on the size of this element's
+      // parent. Align also depends on parent sizing.
+      if (self._properties.sizeMode.x === "proportional" || self._properties.sizeMode.y === "proportional" || self._properties.sizeMode.z === "proportional" || self._properties.align.x !== 0 || self._properties.align.y !== 0 || self._properties.align.z !== 0) {
+        self._calcSize();
 
-        /**
-         * @constructor
-         *
-         * @param {Object} options Initial properties that the node will
-         * have. This can be used when creating a node, alternatively to using the
-         * setters/getters for position, rotation, etc.
-         *
-         * @example
-         * var node = new Node({
-         *   size: {x:100, y:100, z:100},
-         *   rotation: {x:30, y:20, z:25}
-         * })
-         */
-        constructor(options = {}) {
-            const self = Super(this).constructor(options)
+        self._needsToBeRendered();
+      }
+    };
 
-            // This was when using my `multiple()` implementation, we could call
-            // specific constructors using specific arguments. But, we're using
-            // class-factory style mixins for now, so we don't have control over the
-            // specific arguments we can pass to the constructors, so we're just
-            // using a single `options` parameter in all the constructors.
-            //self.callSuperConstructor(Transformable, options)
-            //self.callSuperConstructor(TreeNode)
-            //self.callSuperConstructor(ImperativeBase)
+    self._calcSize();
 
-            self._scene = null // stores a ref to this Node's root Scene.
+    self._needsToBeRendered();
 
-            /**
-             * @private
-             * This method is defined here in the consructor as an arrow function
-             * because parent Nodes pass it to Observable#on and Observable#off. If
-             * it were a prototype method, then it would need to be bound when
-             * passed to Observable#on, which would require keeping track of the
-             * bound function reference in order to be able to pass it to
-             * Observable#off later. See ImperativeBase#add and
-             * ImperativeBase#remove.
-             */
-            self._onParentSizeChange = () => {
+    return self;
+  },
 
-                // We only need to recalculate sizing and matrices if this node has
-                // properties that depend on parent sizing (proportional size,
-                // align, and mountPoint). mountPoint isn't obvious: if this node
-                // is proportionally sized, then the mountPoint will depend on the
-                // size of this element which depends on the size of this element's
-                // parent. Align also depends on parent sizing.
-                if (
-                    self._properties.sizeMode.x === "proportional"
-                    || self._properties.sizeMode.y === "proportional"
-                    || self._properties.sizeMode.z === "proportional"
+  makeThreeObject3d() {
+    return new Object3D();
+  },
 
-                    || self._properties.align.x !== 0
-                    || self._properties.align.y !== 0
-                    || self._properties.align.z !== 0
-                ) {
-                    self._calcSize()
-                    self._needsToBeRendered()
-                }
-            }
+  /**
+   * Get the Scene that this Node is in, null if no Scene. This is recursive
+   * at first, then cached.
+   *
+   * This traverses up the scene graph tree starting at this Node and finds
+   * the root Scene, if any. It caches the value for performance. If this
+   * Node is removed from a parent node with parent.remove(), then the
+   * cache is invalidated so the traversal can happen again when this Node is
+   * eventually added to a new tree. This way, if the scene is cached on a
+   * parent Node that we're adding this Node to then we can get that cached
+   * value instead of traversing the tree.
+   *
+   * @readonly
+   */
+  get scene() {
+    // NOTE: this._scene is initally null, created in the constructor.
+    // if already cached, return it. Or if no parent, return it (it'll be null).
+    if (this._scene || !this.parent) return this._scene; // if the parent node already has a ref to the scene, use that.
 
-            self._calcSize()
-            self._needsToBeRendered()
+    if (this.parent._scene) {
+      this._scene = this.parent._scene;
+    } else if (this.parent instanceof Scene_Scene) {
+      this._scene = this.parent;
+    } // otherwise call the scene getter on the parent, which triggers
+    // traversal up the scene graph in order to find the root scene (null
+    // if none).
+    else {
+        this._scene = this.parent.scene;
+      }
 
-            return self
-        },
+    return this._scene;
+  },
 
-        makeThreeObject3d() {
-            return new Object3D
-        },
+  /**
+   * @private
+   * This method to be called only when this Node has this.scene.
+   * Resolves the _scenePromise for all children of the tree of this Node.
+   */
+  _giveSceneRefToChildren() {
+    const children = this.subnodes;
 
-        /**
-         * Get the Scene that this Node is in, null if no Scene. This is recursive
-         * at first, then cached.
-         *
-         * This traverses up the scene graph tree starting at this Node and finds
-         * the root Scene, if any. It caches the value for performance. If this
-         * Node is removed from a parent node with parent.remove(), then the
-         * cache is invalidated so the traversal can happen again when this Node is
-         * eventually added to a new tree. This way, if the scene is cached on a
-         * parent Node that we're adding this Node to then we can get that cached
-         * value instead of traversing the tree.
-         *
-         * @readonly
-         */
-        get scene() {
-            // NOTE: this._scene is initally null, created in the constructor.
+    for (let i = 0, l = children.length; i < l; i += 1) {
+      const childNode = children[i];
+      childNode._scene = this._scene;
 
-            // if already cached, return it. Or if no parent, return it (it'll be null).
-            if (this._scene || !this.parent) return this._scene
+      childNode._giveSceneRefToChildren();
+    }
+  },
 
-            // if the parent node already has a ref to the scene, use that.
-            if (this.parent._scene) {
-                this._scene = this.parent._scene
-            }
-            else if (this.parent instanceof Scene_Scene) {
-                this._scene = this.parent
-            }
-            // otherwise call the scene getter on the parent, which triggers
-            // traversal up the scene graph in order to find the root scene (null
-            // if none).
-            else {
-                this._scene = this.parent.scene
-            }
+  _resetSceneRef() {
+    this._scene = null;
+    const children = this.subnodes;
 
-            return this._scene
-        },
+    for (let i = 0, l = children.length; i < l; i += 1) {
+      children[i]._resetSceneRef();
+    }
+  }
 
-        /**
-         * @private
-         * This method to be called only when this Node has this.scene.
-         * Resolves the _scenePromise for all children of the tree of this Node.
-         */
-        _giveSceneRefToChildren() {
-            const children = this.subnodes;
-            for (let i=0, l=children.length; i<l; i+=1) {
-                const childNode = children[i]
-                childNode._scene = this._scene
-                childNode._giveSceneRefToChildren();
-            }
-        },
+}))); // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 
-        _resetSceneRef() {
-            this._scene = null
-
-            const children = this.subnodes;
-            for (let i=0, l=children.length; i<l; i+=1) {
-                children[i]._resetSceneRef();
-            }
-        },
-    }))
-
-)
-
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-Node = Node.mixin(HTMLNode)
-
-
+Node = Node.mixin(HTMLNode);
 
 // CONCATENATED MODULE: ./src/core/ElementOperations.js
 
 
 
+ // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 
-
-// fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
-    if ( typeof CSSStyleDeclaration !== 'undefined' ) { // doesn't exist in Jest+@skatejs/ssr environment
-        Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
-            set(value) {
-                this.webkitTransform = value
-            },
-            get() {
-                return this.webkitTransform
-            },
-            enumerable: true,
-        })
-    }
-}
+  if (typeof CSSStyleDeclaration !== 'undefined') {
+    // doesn't exist in Jest+@skatejs/ssr environment
+    Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
+      set(value) {
+        this.webkitTransform = value;
+      },
 
+      get() {
+        return this.webkitTransform;
+      },
+
+      enumerable: true
+    });
+  }
+}
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
+
+
 /* harmony default export */ var ElementOperations = (lowclass_default()('ElementOperations', {
-    element: null,
+  element: null,
 
-    constructor(element) {
-        this.element = element
-    },
+  constructor(element) {
+    this.element = element;
+  },
 
-    /**
-     * @param {Array.string} classes An array of class names to add to the
-     * managed element.
-     *
-     * Note: updating class names with `el.classList.add()` won't thrash the
-     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
-     */
-    setClasses (...classes) {
-        if (classes.length) this.element.classList.add(...classes)
-        return this
-    },
+  /**
+   * @param {Array.string} classes An array of class names to add to the
+   * managed element.
+   *
+   * Note: updating class names with `el.classList.add()` won't thrash the
+   * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
+   */
+  setClasses(...classes) {
+    if (classes.length) this.element.classList.add(...classes);
+    return this;
+  },
 
-    /**
-     * Apply a style property to the element.
-     *
-     * @private
-     * @param  {string} property The CSS property we will a apply.
-     * @param  {string} value    The value the CSS property wil have.
-     */
-    applyStyle(property, value) {
-        this.element.style[property] = value
-    },
+  /**
+   * Apply a style property to the element.
+   *
+   * @private
+   * @param  {string} property The CSS property we will a apply.
+   * @param  {string} value    The value the CSS property wil have.
+   */
+  applyStyle(property, value) {
+    this.element.style[property] = value;
+  },
 
-    add(child) {
-        this.element.appendChild(child)
-    },
+  add(child) {
+    this.element.appendChild(child);
+  },
 
-    remove(child) {
-        // This conditional check is needed incase the element was already
-        // removed from the HTML-API side.
-        if (child.parentNode === this.element)
-            this.element.removeChild(child)
-    },
+  remove(child) {
+    // This conditional check is needed incase the element was already
+    // removed from the HTML-API side.
+    if (child.parentNode === this.element) this.element.removeChild(child);
+  },
 
-    connectChildElement(child) {
-        if (
+  connectChildElement(child) {
+    if ( // When using the imperative API, this statement is
+    // true, so the DOM elements need to be connected.
+    !child.parentNode // This condition is irrelevant when strictly using the
+    // imperative API. However, it is possible that when
+    // using the HTML API that the HTML-API node can be placed
+    // somewhere that isn't another HTML-API node, and the
+    // imperative Node can be gotten and used to add the
+    // node to another imperative Node. In this case, the
+    // HTML-API node will be added to the proper HTMLparent.
+    || child.parentElement && child.parentElement !== this.element // When an HTML-API node is already child of the
+    // relevant parent, or it is child of a shadow root of
+    // the relevant parent, there there's nothing to do,
+    // everything is already as expected, so the following
+    // conditional body is skipped.
+    ) {
+        this.add(child);
+      }
+  },
 
-            // When using the imperative API, this statement is
-            // true, so the DOM elements need to be connected.
-            !child.parentNode
+  disconnectChildElement(child) {
+    // If DeclarativeBase#remove was called first, we don't need to
+    // call this again.
+    if (!child.parentNode) return;
+    this.remove(child);
+  },
 
-            // This condition is irrelevant when strictly using the
-            // imperative API. However, it is possible that when
-            // using the HTML API that the HTML-API node can be placed
-            // somewhere that isn't another HTML-API node, and the
-            // imperative Node can be gotten and used to add the
-            // node to another imperative Node. In this case, the
-            // HTML-API node will be added to the proper HTMLparent.
-            || (child.parentElement &&
-                child.parentElement !== this.element)
+  /**
+   * Apply the DOMMatrix value to the style of this Node's element.
+   */
+  applyTransform(domMatrix) {
+    // for now, template strings need to be on one line, otherwise Meteor
+    // users will have bugs from Meteor's injected line numbers. See:
+    // https://github.com/meteor/meteor/issues/9160
+    //
+    // THREE-COORDS-TO-DOM-COORDS
+    // -- We negate the 13th matrix value to make the DOM's positive Y
+    // direction downward again because we first negated the value in
+    // Transformable when calculating world transforms so that
+    // Three.js positive Y would go downward like DOM.
+    // -- We also translate the DOM element into the middle of the view
+    // (similar to align and mountPoint values of 0.5) so that the DOM
+    // element is aligned with the Three mesh in the middle of the view,
+    // then in Transformable#_calculateMatrix we adjust the world matrix
+    // back into DOM coordinates at the top/left.
+    // -- We apply opposite X rotation to counter the negated X rotation in
+    // Transformable for the Three.js objects.
+    //
+    // TODO #66: moving _calcSize to a render task affets this code
+    const el = this.element;
+    const elSize = el._calculatedSize;
+    const parentSize = el.parent._calculatedSize; // THREE-COORDS-TO-DOM-COORDS: moves DOM elements to the Three.js
+    // coordinate space (align and mountPoint are in the middle of the
+    // view). The threeJsPostAdjustment in Transformable moves both the
+    // pre-adjusted DOM element and the Three objects into the top/left
+    // coordinate space.
 
-            // When an HTML-API node is already child of the
-            // relevant parent, or it is child of a shadow root of
-            // the relevant parent, there there's nothing to do,
-            // everything is already as expected, so the following
-            // conditional body is skipped.
-        ) {
-            this.add(child)
-        }
-    },
+    const threeJsPreAdjustment = `translate3d(calc(${parentSize.x / 2}px - ${elSize.x / 2}px), calc(${parentSize.y / 2}px - ${elSize.y / 2}px), 0px)`;
+    const cssMatrixString = `${threeJsPreAdjustment} matrix3d( ${domMatrix.m11}, ${domMatrix.m12}, ${domMatrix.m13}, ${domMatrix.m14}, ${domMatrix.m21}, ${domMatrix.m22}, ${domMatrix.m23}, ${domMatrix.m24}, ${domMatrix.m31}, ${domMatrix.m32}, ${domMatrix.m33}, ${domMatrix.m34}, ${domMatrix.m41}, ${-domMatrix.m42}, ${domMatrix.m43}, ${domMatrix.m44})`; // THREE-COORDS-TO-DOM-COORDS: rotate X and Z the opposite direction for Three.js
 
-    disconnectChildElement(child) {
-        // If DeclarativeBase#remove was called first, we don't need to
-        // call this again.
-        if (!child.parentNode) return
+    domMatrix.rotateAxisAngleSelf(0, 0, 1, -2 * el.rotation.z);
+    domMatrix.rotateAxisAngleSelf(1, 0, 0, -2 * el.rotation.x);
+    this.applyStyle('transform', cssMatrixString);
+  },
 
-        this.remove(child)
-    },
+  /**
+   * [applySize description]
+   */
+  applySize(size) {
+    const {
+      x,
+      y
+    } = size;
+    this.applyStyle('width', `${x}px`);
+    this.applyStyle('height', `${y}px`); // NOTE: we ignore the Z axis on elements, since they are flat.
+  },
 
-    /**
-     * Apply the DOMMatrix value to the style of this Node's element.
-     */
-    applyTransform (domMatrix) {
+  applyOpacity(opacity) {
+    this.applyStyle('opacity', opacity);
+  },
 
-        // for now, template strings need to be on one line, otherwise Meteor
-        // users will have bugs from Meteor's injected line numbers. See:
-        // https://github.com/meteor/meteor/issues/9160
-        //
-        // THREE-COORDS-TO-DOM-COORDS
-        // -- We negate the 13th matrix value to make the DOM's positive Y
-        // direction downward again because we first negated the value in
-        // Transformable when calculating world transforms so that
-        // Three.js positive Y would go downward like DOM.
-        // -- We also translate the DOM element into the middle of the view
-        // (similar to align and mountPoint values of 0.5) so that the DOM
-        // element is aligned with the Three mesh in the middle of the view,
-        // then in Transformable#_calculateMatrix we adjust the world matrix
-        // back into DOM coordinates at the top/left.
-        // -- We apply opposite X rotation to counter the negated X rotation in
-        // Transformable for the Three.js objects.
-        //
-        // TODO #66: moving _calcSize to a render task affets this code
-        const el = this.element
-        const elSize = el._calculatedSize
-        const parentSize = el.parent._calculatedSize
+  applyImperativeNodeProperties(node) {
+    // Only Node is Transformable
+    if (node instanceof Node) {
+      this.applyOpacity(node._properties.opacity);
+      this.applyTransform(node._properties.transform);
+    } // But both Node and Scene are Sizeable
 
-        // THREE-COORDS-TO-DOM-COORDS: moves DOM elements to the Three.js
-        // coordinate space (align and mountPoint are in the middle of the
-        // view). The threeJsPostAdjustment in Transformable moves both the
-        // pre-adjusted DOM element and the Three objects into the top/left
-        // coordinate space.
-        const threeJsPreAdjustment = `translate3d(calc(${parentSize.x/2}px - ${elSize.x/2}px), calc(${parentSize.y/2}px - ${elSize.y/2}px), 0px)`
 
-        const cssMatrixString = `${threeJsPreAdjustment} matrix3d( ${ domMatrix.m11 }, ${ domMatrix.m12 }, ${ domMatrix.m13 }, ${ domMatrix.m14 }, ${ domMatrix.m21 }, ${ domMatrix.m22 }, ${ domMatrix.m23 }, ${ domMatrix.m24 }, ${ domMatrix.m31 }, ${ domMatrix.m32 }, ${ domMatrix.m33 }, ${ domMatrix.m34 }, ${ domMatrix.m41 }, ${ -domMatrix.m42 }, ${ domMatrix.m43 }, ${ domMatrix.m44 })`;
+    this.applySize(node._calculatedSize);
+  }
 
-        // THREE-COORDS-TO-DOM-COORDS: rotate X and Z the opposite direction for Three.js
-        domMatrix.rotateAxisAngleSelf( 0, 0, 1, -2 * el.rotation.z )
-        domMatrix.rotateAxisAngleSelf( 1, 0, 0, -2 * el.rotation.x )
-
-        this.applyStyle('transform', cssMatrixString)
-    },
-
-    /**
-     * [applySize description]
-     */
-    applySize (size) {
-        const {x,y} = size
-
-        this.applyStyle('width', `${x}px`)
-        this.applyStyle('height', `${y}px`)
-
-        // NOTE: we ignore the Z axis on elements, since they are flat.
-    },
-
-    applyOpacity(opacity) {
-        this.applyStyle('opacity', opacity)
-    },
-
-    applyImperativeNodeProperties(node) {
-
-        // Only Node is Transformable
-        if (node instanceof Node) {
-            this.applyOpacity(node._properties.opacity)
-            this.applyTransform(node._properties.transform)
-        }
-
-        // But both Node and Scene are Sizeable
-        this.applySize(node._calculatedSize)
-    },
 }));
-
 // CONCATENATED MODULE: ./src/core/index.js
-
-
-
 
 
 
@@ -64196,34 +56181,35 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 // CONCATENATED MODULE: ./src/components/PushPaneLayout.js
 
 
+/* harmony default export */ var PushPaneLayout = (lowclass_default()('PushPaneLayout').extends(Node, ({
+  Super
+}) => ({
+  constructor(...args) {
+    console.log(' -- PushPaneLayout created');
+    const self = Super(this).constructor(...args);
+    return self;
+  }
 
-/* harmony default export */ var PushPaneLayout = (lowclass_default()('PushPaneLayout').extends( Node, ({ Super }) => ({
-    constructor(...args) {
-        console.log(' -- PushPaneLayout created')
-        const self = Super(this).constructor(...args)
-        return self
-    }
 })));
-
 // CONCATENATED MODULE: ./src/html/HTMLPushPaneLayout.js
 
 
+/* harmony default export */ var html_HTMLPushPaneLayout = (HTMLNode.subclass('HTMLPushPaneLayout', {
+  static: {
+    define(name) {
+      customElements.define(name || 'i-push-pane-layout', HTMLPushPaneLayout);
+    }
 
-/* harmony default export */ var html_HTMLPushPaneLayout = (HTMLNode.subclass( 'HTMLPushPaneLayout', {
-    static: {
-        define(name) {
-            customElements.define(name || 'i-push-pane-layout', HTMLPushPaneLayout)
-        }
-    },
+  },
 
-    // @override
-    _makeImperativeCounterpart() {
-        return new PushPaneLayout({}, this)
-    },
+  // @override
+  _makeImperativeCounterpart() {
+    return new PushPaneLayout({}, this);
+  }
+
 }));
-
 // EXTERNAL MODULE: ./node_modules/custom-attributes/attr.js
-var attr = __webpack_require__(217);
+var attr = __webpack_require__(99);
 
 // CONCATENATED MODULE: ./node_modules/element-behaviors/src/index.js
 
@@ -64432,487 +56418,438 @@ class HasAttribute {
 
 customAttributes.define( 'has', HasAttribute )
 
+if (Element.prototype.attachShadow) {
+    const _attachShadow = Element.prototype.attachShadow
+    
+    Element.prototype.attachShadow = function(...args) {
+        const root = _attachShadow.call(this, ...args)
+        const attributes = new CustomAttributeRegistry(root)
+        
+        attributes.define( 'has', HasAttribute )
+        
+        return root
+    }
+}
+
 // EXTERNAL MODULE: ./node_modules/james-bond/index.js
-var james_bond = __webpack_require__(80);
+var james_bond = __webpack_require__(48);
 
 // EXTERNAL MODULE: ./node_modules/lowclass/Mixin.js
-var lowclass_Mixin = __webpack_require__(120);
+var lowclass_Mixin = __webpack_require__(47);
 var Mixin_default = /*#__PURE__*/__webpack_require__.n(lowclass_Mixin);
 
 // EXTERNAL MODULE: ./node_modules/lowclass/utils.js
-var utils = __webpack_require__(47);
+var utils = __webpack_require__(18);
 
 // CONCATENATED MODULE: ./src/html/behaviors/forwardProps.js
 
 
 
 
+/* harmony default export */ var forwardProps = (Mixin_default()(Base => lowclass_default()('forwardProps').extends(Base, ({
+  Super,
+  Public,
+  Protected,
+  Private
+}) => ({
+  connectedCallback() {
+    Super(this).connectedCallback && Super(this).connectedCallback();
+    Private(this).receivePropsFromObject();
+  },
 
+  disconnectedCallback() {
+    Super(this).disconnectedCallback && Super(this).disconnectedCallback();
+    Private(this).unreceivePropsFromObject();
+  },
 
-/* harmony default export */ var forwardProps = (Mixin_default()(Base => lowclass_default()( 'forwardProps' ).extends( Base, ({ Super, Public, Protected, Private }) => ({
+  private: {
+    propChangedCallback: (propName, value) => undefined,
 
-    connectedCallback() {
-        Super( this ).connectedCallback && Super( this ).connectedCallback()
-        Private( this ).receivePropsFromObject()
+    receivePropsFromObject() {
+      const publicThis = Public(this);
+
+      this.propChangedCallback = (propName, value) => publicThis[propName] = value;
+
+      Object(james_bond["observe"])(Protected(this).observedObject, this.getProps(), this.propChangedCallback, {// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
+      });
     },
 
-    disconnectedCallback() {
-        Super( this ).disconnectedCallback && Super( this ).disconnectedCallback()
-        Private( this ).unreceivePropsFromObject()
+    unreceivePropsFromObject() {
+      Object(james_bond["unobserve"])(Protected(this).observedObject, this.getProps(), this.propChangedCallback);
     },
 
-    private: {
-        propChangedCallback: ( propName, value ) => undefined,
+    getProps() {
+      let result;
+      const props = Public(this).constructor.props;
+      if (Array.isArray(props)) result = props;else {
+        result = [];
+        if (typeof props === 'object') for (const prop in props) result.push(prop);
+      }
+      return result;
+    }
 
-        receivePropsFromObject() {
-            const publicThis = Public( this )
-            this.propChangedCallback = ( propName, value ) => publicThis[ propName ] = value
-            Object(james_bond["observe"])( Protected( this ).observedObject, this.getProps(), this.propChangedCallback, {
-                // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
-            } )
-        },
-
-        unreceivePropsFromObject() {
-            Object(james_bond["unobserve"])(Protected( this ).observedObject, this.getProps(), this.propChangedCallback )
-        },
-
-        getProps() {
-            let result
-            const props = Public( this ).constructor.props
-
-            if ( Array.isArray( props ) ) result = props
-            else {
-                result = []
-                if ( typeof props === 'object' )
-                    for ( const prop in props )
-                        result.push( prop )
-            }
-
-            return result
-        },
-    },
-
-    protected: {
-        get observedObject() {
-            throw new TypeError(`
+  },
+  protected: {
+    get observedObject() {
+      throw new TypeError(`
                 The subclass using forwardProps must define a protected
                 observedObject property defining the object from which props
                 are forwarded.
-            `)
-        },
+            `);
     }
 
+  }
 }))));
-
 // CONCATENATED MODULE: ./src/html/behaviors/BaseMeshBehavior.js
 
 
 
 
 
+ // base class for Geometry and Material behaviors, not to be used directly
 
+/* harmony default export */ var BaseMeshBehavior = (lowclass_default()('BaseMeshBehavior').extends(native_default()(with_update_withUpdate(forwardProps)), ({
+  Public,
+  Protected,
+  Private,
+  Super
+}) => ({
+  constructor(element) {
+    let _this = Super(this).constructor();
 
-// base class for Geometry and Material behaviors, not to be used directly
-/* harmony default export */ var BaseMeshBehavior = (lowclass_default()( 'BaseMeshBehavior' ).extends( native_default()( with_update_withUpdate( forwardProps ) ), ({ Public, Protected, Private, Super }) => ({
+    _this.element = element;
 
-    constructor(element) {
-        let _this = Super(this).constructor()
+    Private(this)._checkElementIsLibraryElement(element);
 
-        _this.element = element
+    return _this;
+  },
 
-        Private(this)._checkElementIsLibraryElement(element)
+  // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
+  setAttribute(name, value) {
+    this.element.setAttribute(name, value);
+  },
 
-        return _this
-    },
+  connectedCallback() {
+    Super(this).connectedCallback(); // TODO might have to defer so that calculatedSize is already calculated
+    //console.log('hmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
 
-    // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
-    setAttribute(name, value) {
-        this.element.setAttribute(name, value)
-    },
+    Protected(this).setMeshComponent(this.element, this.constructor.type, Protected(this).createComponent(this.element));
 
-    connectedCallback() {
-        Super( this ).connectedCallback()
+    this.element._needsToBeRendered();
+  },
 
-        // TODO might have to defer so that calculatedSize is already calculated
-        //console.log('hmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
-        Protected(this).setMeshComponent(
-            this.element,
-            this.constructor.type,
-            Protected(this).createComponent(this.element)
-        )
-        this.element._needsToBeRendered()
-    },
+  disconnectedCallback() {
+    Super(this).disconnectedCallback();
+    Protected(this).setDefaultComponent(this.element, this.constructor.type);
 
-    disconnectedCallback() {
-        Super( this ).disconnectedCallback()
+    this.element._needsToBeRendered();
+  },
 
-        Protected(this).setDefaultComponent( this.element, this.constructor.type )
-        this.element._needsToBeRendered()
-    },
+  private: {
+    // records the initial size of the geometry, so that we have a
+    // reference for how much scale to apply when accepting new sizes from
+    // the user.
+    initialSize: null,
 
-    private: {
-        // records the initial size of the geometry, so that we have a
-        // reference for how much scale to apply when accepting new sizes from
-        // the user.
-        initialSize: null,
-
-        // TODO add a test to make sure this check works
-        async _checkElementIsLibraryElement(element) {
-            if ( element.nodeName.includes('-') ) {
-                const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
-                    .then(() => {
-                        if (element instanceof core_Mesh) return true
-                        else return false
-                    })
-                const timeout = new Promise(r => setTimeout(r, 10000))
-
-                const isMesh = await Promise.race([whenDefined, timeout])
-
-                if (!isMesh) throw new Error(`
+    // TODO add a test to make sure this check works
+    async _checkElementIsLibraryElement(element) {
+      if (element.nodeName.includes('-')) {
+        const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase()).then(() => {
+          if (element instanceof core_Mesh) return true;else return false;
+        });
+        const timeout = new Promise(r => setTimeout(r, 10000));
+        const isMesh = await Promise.race([whenDefined, timeout]);
+        if (!isMesh) throw new Error(`
                     Either the element you're using the mesh behavior on is not
                     a Mesh element, or there was a 10-second timeout waiting for
                     the Mesh element to be defined.
-                `)
-            }
-            else {
-                throw new Error(`
+                `);
+      } else {
+        throw new Error(`
                     The element you're using the mesh behavior on is not a Mesh
                     element.
-                `)
-            }
-        },
+                `);
+      }
+    }
+
+  },
+  protected: {
+    // used by forwardProps. See forwardProps.js
+    get observedObject() {
+      return Public(this).element;
     },
 
-    protected: {
-        // used by forwardProps. See forwardProps.js
-        get observedObject() {
-            return Public( this ).element
-        },
-
-        createComponent() {
-            throw new Error('`createComponent()` is not implemented by subclass.')
-        },
-
-        setMeshComponent(element, name, newComponent) {
-            if ( element.threeObject3d[ name ] )
-                element.threeObject3d[ name ].dispose()
-
-            element.threeObject3d[name] = newComponent
-        },
-
-        setDefaultComponent( element, name ) {
-            this.setMeshComponent( element, name, this.makeDefaultComponent( element, name ) )
-        },
-
-        makeDefaultComponent( element, name ) {
-            if (name == 'geometry') {
-                return new BoxGeometry(
-                    element.calculatedSize.x,
-                    element.calculatedSize.y,
-                    element.calculatedSize.z,
-                )
-            }
-            else if (name == 'material') {
-                return new MeshPhongMaterial( { color: 0xff6600 } )
-            }
-        },
+    createComponent() {
+      throw new Error('`createComponent()` is not implemented by subclass.');
     },
+
+    setMeshComponent(element, name, newComponent) {
+      if (element.threeObject3d[name]) element.threeObject3d[name].dispose();
+      element.threeObject3d[name] = newComponent;
+    },
+
+    setDefaultComponent(element, name) {
+      this.setMeshComponent(element, name, this.makeDefaultComponent(element, name));
+    },
+
+    makeDefaultComponent(element, name) {
+      if (name == 'geometry') {
+        return new BoxGeometry(element.calculatedSize.x, element.calculatedSize.y, element.calculatedSize.z);
+      } else if (name == 'material') {
+        return new MeshPhongMaterial({
+          color: 0xff6600
+        });
+      }
+    }
+
+  }
 })));
-
 // CONCATENATED MODULE: ./src/html/behaviors/BaseMaterialBehavior.js
+function BaseMaterialBehavior_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { BaseMaterialBehavior_defineProperty(target, key, source[key]); }); } return target; }
+
+function BaseMaterialBehavior_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
-window.THREE = three_module_namespaceObject
+window.THREE = three_module_namespaceObject; // base class for geometry behaviors
 
-// base class for geometry behaviors
-/* harmony default export */ var BaseMaterialBehavior = (lowclass_default()( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
+/* harmony default export */ var BaseMaterialBehavior = (lowclass_default()('BaseMaterialBehavior').extends(BaseMeshBehavior, ({
+  Super
+}) => ({
+  static: {
+    type: 'material',
+    props: {
+      color: props_props.THREE.Color,
+      opacity: BaseMaterialBehavior_objectSpread({}, props_props.number, {
+        default: 1
+      })
+    }
+  },
 
-    static: {
-        type: 'material',
-        props: {
-            color: props_props.THREE.Color,
-            opacity: { ...props_props.number, default: 1 },
-        },
-    },
+  updated(oldProps, oldState, modifiedProps) {
+    const {
+      color,
+      opacity
+    } = modifiedProps;
+    if (color) this.updateMaterial('color');
 
-    updated( oldProps, oldState, modifiedProps ) {
-        const {color, opacity} = modifiedProps
+    if (opacity) {
+      this.updateMaterial('opacity');
+      this.updateMaterial('transparent');
+    }
+  },
 
-        if (color) this.updateMaterial('color')
+  get transparent() {
+    if (this.opacity < 1) return true;else return false;
+  },
 
-        if (opacity) {
-            this.updateMaterial('opacity')
-            this.updateMaterial('transparent')
-        }
-    },
+  updateMaterial(propName) {
+    // if (this.element.tagName === 'I-SPHERE') debugger
+    this.element.threeObject3d.material[propName] = this[propName];
 
-    get transparent() {
-        if ( this.opacity < 1 ) return true
-        else return false
-    },
-
-    updateMaterial(propName) {
-        // if (this.element.tagName === 'I-SPHERE') debugger
-        this.element.threeObject3d.material[propName] = this[propName]
-        this.element._needsToBeRendered()
-    },
+    this.element._needsToBeRendered();
+  }
 
 })));
-
 // CONCATENATED MODULE: ./src/html/behaviors/BasicMaterialBehavior.js
 
 
 
-
 const BasicMaterialBehavior = BaseMaterialBehavior.subclass('BasicMaterialBehavior', {
+  protected: {
+    createComponent() {
+      return new MeshBasicMaterial({
+        color: 0x00ff00
+      });
+    }
 
-    protected: {
-
-        createComponent() {
-            return new MeshBasicMaterial({ color: 0x00ff00 })
-        },
-
-    },
-
-})
-
-elementBehaviors.define('basic-material', BasicMaterialBehavior)
-
+  }
+});
+elementBehaviors.define('basic-material', BasicMaterialBehavior);
 /* harmony default export */ var behaviors_BasicMaterialBehavior = (BasicMaterialBehavior);
-
 // CONCATENATED MODULE: ./src/html/behaviors/PhongMaterialBehavior.js
 
 
 
-
 const PhongMaterialBehavior = BaseMaterialBehavior.subclass('PhongMaterialBehavior', {
+  protected: {
+    createComponent() {
+      return new MeshPhongMaterial({
+        color: 0x00ff00
+      });
+    }
 
-    protected: {
-
-        createComponent() {
-            return new MeshPhongMaterial({ color: 0x00ff00 })
-        },
-
-    },
-
-})
-
-elementBehaviors.define('phong-material', PhongMaterialBehavior)
-
+  }
+});
+elementBehaviors.define('phong-material', PhongMaterialBehavior);
 /* harmony default export */ var behaviors_PhongMaterialBehavior = (PhongMaterialBehavior);
-
 // CONCATENATED MODULE: ./src/html/behaviors/DOMNodeMaterialBehavior.js
 
 
 
-
 const DOMNodeMaterialBehavior = BaseMaterialBehavior.subclass('DOMNodeMaterialBehavior', {
+  protected: {
+    createComponent() {
+      // TODO PERFORMANCE we can re-use a single material for
+      // all the DOM planes rather than a new material per
+      // plane.
+      return new MeshPhongMaterial({
+        opacity: 0.5,
+        color: new Color(0x111111),
+        blending: NoBlending //side	: DoubleSide,
 
-    protected: {
+      });
+    }
 
-        createComponent() {
-            // TODO PERFORMANCE we can re-use a single material for
-            // all the DOM planes rather than a new material per
-            // plane.
-            return new MeshPhongMaterial({
-                opacity	: 0.5,
-                color	: new Color( 0x111111 ),
-                blending: NoBlending,
-                //side	: DoubleSide,
-            })
-        },
-
-    },
-
-})
-
+  }
+});
 /* harmony default export */ var behaviors_DOMNodeMaterialBehavior = (DOMNodeMaterialBehavior);
-
-elementBehaviors.define('domnode-material', DOMNodeMaterialBehavior)
-
+elementBehaviors.define('domnode-material', DOMNodeMaterialBehavior);
 // CONCATENATED MODULE: ./src/html/behaviors/BaseGeometryBehavior.js
 
 
+ // base class for geometry behaviors
 
+/* harmony default export */ var BaseGeometryBehavior = (lowclass_default()('BaseGeometryBehavior').extends(BaseMeshBehavior, ({
+  Public,
+  Protected,
+  Private,
+  Super
+}) => ({
+  static: {
+    type: 'geometry',
+    props: {
+      // if we have no props defined here, SkateJS breaks
+      // https://github.com/skatejs/skatejs/issues/1482
+      size: props_props.XYZNonNegativeValues,
+      sizeMode: props_props.XYZSizeModeValues
+    }
+  },
 
-// base class for geometry behaviors
-/* harmony default export */ var BaseGeometryBehavior = (lowclass_default()( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected, Private, Super }) => ({
+  updated(oldProps, oldState, modifiedProps) {
+    const {
+      size,
+      sizeMode
+    } = modifiedProps;
 
-    static: {
-        type: 'geometry',
+    if (size || sizeMode) {
+      this._updateGeometryOnSizeChange(this.size);
+    }
+  },
 
-        props: {
-            // if we have no props defined here, SkateJS breaks
-            // https://github.com/skatejs/skatejs/issues/1482
-            size: props_props.XYZNonNegativeValues,
-            sizeMode: props_props.XYZSizeModeValues,
-        },
-    },
+  connectedCallback() {
+    Super(this).connectedCallback(); // TODO the following three events can be replaced with a single propchange:size event
 
-    updated( oldProps, oldState, modifiedProps ) {
-        const { size, sizeMode } = modifiedProps
+    this.element.on('sizechange', Private(this).onSizeValueChanged, Private(this));
+    this.element.size.on('valuechanged', Private(this).onSizeValueChanged, Private(this));
+    this.element.sizeMode.on('valuechanged', Private(this).onSizeValueChanged, Private(this));
+  },
 
-        if ( size || sizeMode ) {
-            this._updateGeometryOnSizeChange(this.size)
-        }
-    },
+  disconnectedCallback() {
+    Super(this).disconnectedCallback();
+    this.element.on('sizechange', Private(this).onSizeValueChanged);
+    this.element.size.off('valuechanged', Private(this).onSizeValueChanged);
+    this.element.sizeMode.off('valuechanged', Private(this).onSizeValueChanged);
+  },
 
-    connectedCallback() {
-        Super(this).connectedCallback()
+  private: {
+    onSizeValueChanged() {
+      // tells SkateJS' withUpdate (from BaseMeshBehavior) which prop
+      // changed and makes it finally trigger our updated method
+      // Public(this).size = Public(this).size
+      // tells withUpdate (from BaseMeshBehavior) which prop
+      // changed and makes it finally trigger our updated method
+      Public(this)._modifiedProps.size = true;
+      Public(this).triggerUpdate();
+    }
 
-        // TODO the following three events can be replaced with a single propchange:size event
-        this.element.on('sizechange', Private(this).onSizeValueChanged, Private(this))
-        this.element.size.on('valuechanged', Private(this).onSizeValueChanged, Private(this))
-        this.element.sizeMode.on('valuechanged', Private(this).onSizeValueChanged, Private(this))
-    },
+  },
 
-    disconnectedCallback() {
-        Super(this).disconnectedCallback()
-
-        this.element.on('sizechange', Private(this).onSizeValueChanged)
-        this.element.size.off('valuechanged', Private(this).onSizeValueChanged)
-        this.element.sizeMode.off('valuechanged', Private(this).onSizeValueChanged)
-    },
-
-    private: {
-        onSizeValueChanged() {
-            // tells SkateJS' withUpdate (from BaseMeshBehavior) which prop
-            // changed and makes it finally trigger our updated method
-            // Public(this).size = Public(this).size
-
-            // tells withUpdate (from BaseMeshBehavior) which prop
-            // changed and makes it finally trigger our updated method
-            Public(this)._modifiedProps.size = true
-            Public(this).triggerUpdate()
-        },
-    },
-
-    _updateGeometryOnSizeChange({ x, y, z }) {
-        // TODO PERFORMANCE, re-creating geometries is wasteful, re-use them
-        // when possible, and add instancing
-        Protected(this).setMeshComponent( this.element, 'geometry', Protected(this).createComponent(this.element) )
-    },
+  _updateGeometryOnSizeChange({
+    x,
+    y,
+    z
+  }) {
+    // TODO PERFORMANCE, re-creating geometries is wasteful, re-use them
+    // when possible, and add instancing
+    Protected(this).setMeshComponent(this.element, 'geometry', Protected(this).createComponent(this.element));
+  }
 
 })));
-
 // CONCATENATED MODULE: ./src/html/behaviors/BoxGeometryBehavior.js
 
 
 
+const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior', Public => ({
+  protected: {
+    createComponent() {
+      return new BoxGeometry(Public(this).element.calculatedSize.x, Public(this).element.calculatedSize.y, Public(this).element.calculatedSize.z);
+    }
 
-const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior', (Public) => ({
-
-    protected: {
-
-        createComponent() {
-            return new BoxGeometry(
-                Public(this).element.calculatedSize.x,
-                Public(this).element.calculatedSize.y,
-                Public(this).element.calculatedSize.z
-            )
-        },
-
-    },
-
-}))
-
-elementBehaviors.define('box-geometry', BoxGeometryBehavior)
-
+  }
+}));
+elementBehaviors.define('box-geometry', BoxGeometryBehavior);
 /* harmony default export */ var behaviors_BoxGeometryBehavior = (BoxGeometryBehavior);
-
 // CONCATENATED MODULE: ./src/html/behaviors/SphereGeometryBehavior.js
 
 
 
+const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBehavior', Public => ({
+  protected: {
+    createComponent() {
+      return new SphereGeometry(Public(this).element.calculatedSize.x / 2, 32, 32);
+    }
 
-const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBehavior', (Public) => ({
-
-    protected: {
-
-        createComponent() {
-            return new SphereGeometry(
-                Public(this).element.calculatedSize.x / 2,
-                32,
-                32
-            )
-        },
-
-    },
-
-}))
-
-elementBehaviors.define('sphere-geometry', SphereGeometryBehavior)
-
+  }
+}));
+elementBehaviors.define('sphere-geometry', SphereGeometryBehavior);
 /* harmony default export */ var behaviors_SphereGeometryBehavior = (SphereGeometryBehavior);
-
 // CONCATENATED MODULE: ./src/html/behaviors/PlaneGeometryBehavior.js
 
 
 
+const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavior', Public => ({
+  protected: {
+    createComponent() {
+      return new PlaneGeometry(Public(this).element.calculatedSize.x, Public(this).element.calculatedSize.y);
+    }
 
-const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavior', (Public) => ({
-
-    protected: {
-
-        createComponent() {
-            return new PlaneGeometry(
-                Public(this).element.calculatedSize.x,
-                Public(this).element.calculatedSize.y,
-            )
-        },
-
-    },
-
-}))
-
-elementBehaviors.define('plane-geometry', PlaneGeometryBehavior)
-
+  }
+}));
+elementBehaviors.define('plane-geometry', PlaneGeometryBehavior);
 /* harmony default export */ var behaviors_PlaneGeometryBehavior = (PlaneGeometryBehavior);
-
 // CONCATENATED MODULE: ./src/html/behaviors/DOMNodeGeometryBehavior.js
 
 
 
+const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBehavior', Public => ({
+  protected: {
+    createComponent() {
+      // We have to use a BoxGeometry instead of a
+      // PlaneGeometry because Three.js is not capable of
+      // casting shadows from Planes, at least until we find
+      // another way. Unfortunately, this increases polygon
+      // count by a factor of 6. See issue
+      // https://github.com/mrdoob/three.js/issues/9315
+      return new BoxGeometry(Public(this).element.calculatedSize.x, Public(this).element.calculatedSize.y, 1);
+    }
 
-const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBehavior', (Public) => ({
-
-    protected: {
-
-        createComponent() {
-
-            // We have to use a BoxGeometry instead of a
-            // PlaneGeometry because Three.js is not capable of
-            // casting shadows from Planes, at least until we find
-            // another way. Unfortunately, this increases polygon
-            // count by a factor of 6. See issue
-            // https://github.com/mrdoob/three.js/issues/9315
-            return new BoxGeometry(
-                Public(this).element.calculatedSize.x,
-                Public(this).element.calculatedSize.y,
-                1
-            )
-
-        },
-
-    },
-
-}))
-
-elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
-
+  }
+}));
+elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior);
 /* harmony default export */ var behaviors_DOMNodeGeometryBehavior = (DOMNodeGeometryBehavior);
-
 // CONCATENATED MODULE: ./src/core/Mesh.js
+function Mesh_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Mesh_defineProperty(target, key, source[key]); }); } return target; }
+
+function Mesh_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
-
-// register behaviors that can be used with this class.
+ // register behaviors that can be used with this class.
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
 // choose names for better flexibility. See TODO NAMING below.
 
@@ -64922,8 +56859,7 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 
 
 
-
-// TODO:
+ // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
 //   of element-behaviors.
 // - [x] Ability specify default initial behaviors. Make this generic, or on top of
@@ -64931,466 +56867,477 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 // - [x] generic ability to specify custom element attribute types, as an addon to
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too?
 
-/* harmony default export */ var core_Mesh = (lowclass_default()('Mesh').extends( Node, ({ Super }) => ({
-    static: {
-        defaultElementName: 'i-mesh',
-
-        // TODO NAMING: It would be neat to be able to return an array of classes
-        // as well, so that it can be agnostic of the naming. Either way should
-        // work.
-        defaultBehaviors: {
-            'box-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'phong-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        },
-
-        props: {
-            ...Node.props,
-            castShadow: { ...mapPropTo(props_props.boolean, 'threeObject3d'), default: true },
-            receiveShadow: { ...mapPropTo(props_props.boolean, 'threeObject3d'), default: true },
-        },
-
+/* harmony default export */ var core_Mesh = (lowclass_default()('Mesh').extends(Node, ({
+  Super
+}) => ({
+  static: {
+    defaultElementName: 'i-mesh',
+    // TODO NAMING: It would be neat to be able to return an array of classes
+    // as well, so that it can be agnostic of the naming. Either way should
+    // work.
+    defaultBehaviors: {
+      'box-geometry': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-geometry'));
+      },
+      'phong-material': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-material'));
+      }
     },
+    props: Mesh_objectSpread({}, Node.props, {
+      castShadow: Mesh_objectSpread({}, mapPropTo(props_props.boolean, 'threeObject3d'), {
+        default: true
+      }),
+      receiveShadow: Mesh_objectSpread({}, mapPropTo(props_props.boolean, 'threeObject3d'), {
+        default: true
+      })
+    })
+  },
 
-    passInitialValuesToThree() {
-        this.threeObject3d.castShadow = this.castShadow
-        this.threeObject3d.receiveShadow = this.receiveShadow
-    },
+  passInitialValuesToThree() {
+    this.threeObject3d.castShadow = this.castShadow;
+    this.threeObject3d.receiveShadow = this.receiveShadow;
+  },
 
-    makeThreeObject3d() {
-        return new Mesh
-    },
+  makeThreeObject3d() {
+    return new Mesh();
+  },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+  updated(oldProps, oldState, modifiedProps) {
+    Super(this).updated(oldProps, oldState, modifiedProps);
+    if (!this.isConnected) return;
 
-        if (!this.isConnected) return
+    if (modifiedProps.castShadow) {
+      this._needsToBeRendered();
+    }
 
-        if ( modifiedProps.castShadow ) {
-            this._needsToBeRendered()
-        }
+    if (modifiedProps.receiveShadow) {
+      this.threeObject3d.material.needsUpdate = true;
 
-        if ( modifiedProps.receiveShadow ) {
-            this.threeObject3d.material.needsUpdate = true
-            this._needsToBeRendered()
-        }
-    },
+      this._needsToBeRendered();
+    }
+  }
+
 })));
-
 // CONCATENATED MODULE: ./src/core/Box.js
 
 
-
-/* harmony default export */ var Box = (lowclass_default()('Box').extends( core_Mesh, {
-    static: {
-        defaultElementName: 'i-box',
-
-        defaultBehaviors: {
-            'box-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'phong-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        },
-    },
+/* harmony default export */ var Box = (lowclass_default()('Box').extends(core_Mesh, {
+  static: {
+    defaultElementName: 'i-box',
+    defaultBehaviors: {
+      'box-geometry': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-geometry'));
+      },
+      'phong-material': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-material'));
+      }
+    }
+  }
 }));
-
 // CONCATENATED MODULE: ./src/core/Sphere.js
 
 
-
-/* harmony default export */ var core_Sphere = (lowclass_default()('Sphere').extends( core_Mesh, () => ({
-
-    static: {
-        defaultElementName: 'i-sphere',
-
-        defaultBehaviors: {
-            'sphere-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'phong-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        },
-    },
-
+/* harmony default export */ var core_Sphere = (lowclass_default()('Sphere').extends(core_Mesh, () => ({
+  static: {
+    defaultElementName: 'i-sphere',
+    defaultBehaviors: {
+      'sphere-geometry': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-geometry'));
+      },
+      'phong-material': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-material'));
+      }
+    }
+  }
 })));
-
 // CONCATENATED MODULE: ./src/core/Plane.js
 
 
-
-/* harmony default export */ var core_Plane = (lowclass_default()('Plane').extends( core_Mesh, {
-
-    static: {
-        defaultElementName: 'i-plane',
-
-        defaultBehaviors: {
-            'plane-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'phong-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        },
-    },
+/* harmony default export */ var core_Plane = (lowclass_default()('Plane').extends(core_Mesh, {
+  static: {
+    defaultElementName: 'i-plane',
+    defaultBehaviors: {
+      'plane-geometry': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-geometry'));
+      },
+      'phong-material': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-material'));
+      }
+    }
+  }
 }));
-
 // CONCATENATED MODULE: ./src/core/LightBase.js
+function LightBase_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { LightBase_defineProperty(target, key, source[key]); }); } return target; }
+
+function LightBase_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
+ // base class for light elements.
 
-// base class for light elements.
-/* harmony default export */ var LightBase = (lowclass_default()('LightBase').extends( Node, ({ Super }) => ({
+/* harmony default export */ var LightBase = (lowclass_default()('LightBase').extends(Node, ({
+  Super
+}) => ({
+  static: {
+    props: LightBase_objectSpread({}, Node.props, {
+      color: mapPropTo(LightBase_objectSpread({}, props_props.THREE.Color, {
+        default: new Color('white')
+      }), 'threeObject3d'),
+      intensity: mapPropTo(LightBase_objectSpread({}, props_props.number, {
+        default: 1
+      }), 'threeObject3d')
+    })
+  },
 
-    static: {
-        props: {
-            ...Node.props,
-            color: mapPropTo({ ...props_props.THREE.Color, default: new Color('white') }, 'threeObject3d'),
-            intensity: mapPropTo({ ...props_props.number, default: 1 }, 'threeObject3d'),
-        },
-    },
+  // TODO we shouldn't need to define passInitialValuesToThree, the default
+  // value of the props should automatically be in place.
+  passInitialValuesToThree() {
+    this.threeObject3d.color = this.color;
+    this.threeObject3d.intensity = this.intensity;
+  },
 
-    // TODO we shouldn't need to define passInitialValuesToThree, the default
-    // value of the props should automatically be in place.
-    passInitialValuesToThree() {
-        this.threeObject3d.color = this.color
-        this.threeObject3d.intensity = this.intensity
-    },
+  updated(oldProps, oldState, modifiedProps) {
+    Super(this).updated(oldProps, oldState, modifiedProps);
+    if (!this.isConnected) return;
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
-
-        if (!this.isConnected) return
-
-        this._needsToBeRendered()
-    },
+    this._needsToBeRendered();
+  }
 
 })));
-
 // CONCATENATED MODULE: ./src/core/PointLight.js
+function PointLight_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { PointLight_defineProperty(target, key, source[key]); }); } return target; }
+
+function PointLight_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
 
+/* harmony default export */ var core_PointLight = (lowclass_default()('PointLight').extends(LightBase, ({
+  Super
+}) => ({
+  static: {
+    defaultElementName: 'i-point-light',
+    props: PointLight_objectSpread({}, LightBase.props, {
+      distance: mapPropTo(PointLight_objectSpread({}, props_props.number, {
+        default: 0
+      }), 'threeObject3d'),
+      decay: mapPropTo(PointLight_objectSpread({}, props_props.number, {
+        default: 1
+      }), 'threeObject3d'),
+      castShadow: mapPropTo(PointLight_objectSpread({}, props_props.boolean, {
+        default: true
+      }), 'threeObject3d'),
+      shadowMapWidth: PointLight_objectSpread({}, props_props.number, {
+        default: 512
+      }),
+      shadowMapHeight: PointLight_objectSpread({}, props_props.number, {
+        default: 512
+      }),
+      shadowRadius: PointLight_objectSpread({}, props_props.number, {
+        default: 3
+      }),
+      shadowBias: PointLight_objectSpread({}, props_props.number, {
+        default: 0
+      }),
+      shadowCameraNear: PointLight_objectSpread({}, props_props.number, {
+        default: 1
+      }),
+      shadowCameraFar: PointLight_objectSpread({}, props_props.number, {
+        default: 2000
+      })
+    })
+  },
 
-/* harmony default export */ var core_PointLight = (lowclass_default()('PointLight').extends( LightBase, ({ Super }) => ({
-    static: {
-        defaultElementName: 'i-point-light',
+  passInitialValuesToThree() {
+    Super(this).passInitialValuesToThree();
+    const light = this.threeObject3d;
+    light.distance = this.distance;
+    light.decay = this.decay;
+    light.castShadow = this.castShadow;
+    const shadow = light.shadow;
+    shadow.mapSize.width = this.shadowMapWidth;
+    shadow.mapSize.height = this.shadowMapHeight;
+    shadow.radius = this.shadowRadius;
+    shadow.bias = this.shadowBias; // TODO: auto-adjust near and far planes like we will with Camera,
+    // unless the user supplies a manual value.
 
-        props: {
-            ...LightBase.props,
-            distance: mapPropTo({ ...props_props.number, default: 0 }, 'threeObject3d'),
-            decay: mapPropTo({ ...props_props.number, default: 1 }, 'threeObject3d'),
-            castShadow: mapPropTo({ ...props_props.boolean, default: true }, 'threeObject3d'),
-            shadowMapWidth: { ...props_props.number, default: 512 },
-            shadowMapHeight: { ...props_props.number, default: 512 },
-            shadowRadius: { ...props_props.number, default: 3 },
-            shadowBias: { ...props_props.number, default: 0 },
-            shadowCameraNear: { ...props_props.number, default: 1 },
-            shadowCameraFar: { ...props_props.number, default: 2000 },
-        },
-    },
+    shadow.camera.near = this.shadowCameraNear;
+    shadow.camera.far = this.shadowCameraFar;
+  },
 
-    passInitialValuesToThree() {
-        Super(this).passInitialValuesToThree()
+  makeThreeObject3d() {
+    return new PointLight();
+  },
 
-        const light = this.threeObject3d
+  updated(oldProps, oldState, modifiedProps) {
+    Super(this).updated(oldProps, oldState, modifiedProps);
+    if (!this.isConnected) return;
+    const shadow = this.threeObject3d.shadow;
+    if (modifiedProps.shadowMapWidth) shadow.mapSize.width = this.shadowMapWidth;
+    if (modifiedProps.shadowMapHeight) shadow.mapSize.height = this.shadowMapHeight;
+    if (modifiedProps.shadowRadius) shadow.radius = this.shadowRadius;
+    if (modifiedProps.shadowBias) shadow.bias = this.shadowBias;
+    if (modifiedProps.shadowCameraNear) shadow.camera.near = this.shadowCameraNear;
+    if (modifiedProps.shadowCameraFar) shadow.camera.far = this.shadowCameraFar;
+  }
 
-        light.distance = this.distance
-        light.decay = this.decay
-        light.castShadow = this.castShadow
-
-        const shadow = light.shadow
-
-        shadow.mapSize.width = this.shadowMapWidth
-        shadow.mapSize.height = this.shadowMapHeight
-        shadow.radius = this.shadowRadius
-        shadow.bias = this.shadowBias
-
-        // TODO: auto-adjust near and far planes like we will with Camera,
-        // unless the user supplies a manual value.
-        shadow.camera.near = this.shadowCameraNear
-        shadow.camera.far = this.shadowCameraFar
-    },
-
-    makeThreeObject3d() {
-        return new PointLight
-    },
-
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
-
-        if (!this.isConnected) return
-
-        const shadow = this.threeObject3d.shadow
-
-        if (modifiedProps.shadowMapWidth) shadow.mapSize.width = this.shadowMapWidth
-        if (modifiedProps.shadowMapHeight) shadow.mapSize.height = this.shadowMapHeight
-        if (modifiedProps.shadowRadius) shadow.radius = this.shadowRadius
-        if (modifiedProps.shadowBias) shadow.bias = this.shadowBias
-        if (modifiedProps.shadowCameraNear) shadow.camera.near = this.shadowCameraNear
-        if (modifiedProps.shadowCameraFar) shadow.camera.far = this.shadowCameraFar
-    },
 })));
-
 // CONCATENATED MODULE: ./src/core/DOMNode.js
 
 
+/* harmony default export */ var DOMNode = (lowclass_default()('DOMNode').extends(core_Mesh, {
+  static: {
+    defaultElementName: 'i-dom-node',
+    defaultBehaviors: {
+      'domnode-geometry': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-geometry'));
+      },
+      'domnode-material': initialBehaviors => {
+        return !initialBehaviors.some(b => b.endsWith('-material'));
+      }
+    }
+  },
 
-/* harmony default export */ var DOMNode = (lowclass_default()('DOMNode').extends( core_Mesh, {
-    static: {
-        defaultElementName: 'i-dom-node',
+  get isDOMNode() {
+    return true;
+  }
 
-        defaultBehaviors: {
-            'domnode-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'domnode-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        },
-    },
-
-    get isDOMNode() { return true },
 }));
-
 // CONCATENATED MODULE: ./src/core/DOMPlane.js
 
+ // This class is an alias for DOMNode/i-dom-node
 
-
-// This class is an alias for DOMNode/i-dom-node
-/* harmony default export */ var DOMPlane = (lowclass_default()('DOMPlane').extends( DOMNode, {
-    static: {
-        defaultElementName: 'i-dom-plane',
-    },
+/* harmony default export */ var DOMPlane = (lowclass_default()('DOMPlane').extends(DOMNode, {
+  static: {
+    defaultElementName: 'i-dom-plane'
+  }
 }));
-
 // CONCATENATED MODULE: ./src/core/AmbientLight.js
 
 
 
+/* harmony default export */ var core_AmbientLight = (lowclass_default()('AmbientLight').extends(LightBase, ({
+  Super
+}) => ({
+  static: {
+    defaultElementName: 'i-ambient-light'
+  },
 
-/* harmony default export */ var core_AmbientLight = (lowclass_default()('AmbientLight').extends( LightBase, ({ Super }) => ({
-    static: {
-        defaultElementName: 'i-ambient-light',
-    },
+  makeThreeObject3d() {
+    const light = new AmbientLight();
+    light.intensity = 1; // default
 
-    makeThreeObject3d() {
-        const light = new AmbientLight
-        light.intensity = 1 // default
-        return light
-    },
+    return light;
+  }
+
 })));
-
 // CONCATENATED MODULE: ./src/core/Camera.js
+function Camera_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Camera_defineProperty(target, key, source[key]); }); } return target; }
+
+function Camera_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
-
-// TODO: update this to have a CSS3D-perspective-like API like with the Scene's
+ // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
-/* harmony default export */ var core_Camera = (lowclass_default()('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
 
-    static: {
-        defaultElementName: 'i-perspective-camera',
-
-        // TODO remove attributeChangedCallback, replace with updated based on these props
-        props: {
-            ...Node.props,
-            fov: { ...props_props.number, default: 75 },
-            aspect: {
-                ...props_props.number,
-                default() { return Private(this)._getDefaultAspect() },
-                deserialize(val) { val == null ? this.constructor.props.aspect.default.call(this) : props_props.number.deserialize(val) },
-            },
-            near: { ...props_props.number, default: 0.1 },
-            far: { ...props_props.number, default: 1000 },
-            zoom: { ...props_props.number, default: 1 },
-            active: { ...props_props.boolean, default: false },
+/* harmony default export */ var core_Camera = (lowclass_default()('PerspectiveCamera').extends(Node, ({
+  Super,
+  Public,
+  Private
+}) => ({
+  static: {
+    defaultElementName: 'i-perspective-camera',
+    // TODO remove attributeChangedCallback, replace with updated based on these props
+    props: Camera_objectSpread({}, Node.props, {
+      fov: Camera_objectSpread({}, props_props.number, {
+        default: 75
+      }),
+      aspect: Camera_objectSpread({}, props_props.number, {
+        default() {
+          return Private(this)._getDefaultAspect();
         },
-    },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
-
-        if (!this.isConnected) return
-
-        if (modifiedProps.active) {
-            this._setSceneCamera( this.active ? undefined : 'unset' )
+        deserialize(val) {
+          val == null ? this.constructor.props.aspect.default.call(this) : props_props.number.deserialize(val);
         }
-        if (modifiedProps.aspect) {
-            if (!this.aspect)
-                // default aspect value based on the scene size.
-                privateThis._startAutoAspect()
-            else
-                privateThis._stopAutoAspect()
-        }
-        // TODO handle the other props here, remove attributeChangedCallback
+
+      }),
+      near: Camera_objectSpread({}, props_props.number, {
+        default: 0.1
+      }),
+      far: Camera_objectSpread({}, props_props.number, {
+        default: 1000
+      }),
+      zoom: Camera_objectSpread({}, props_props.number, {
+        default: 1
+      }),
+      active: Camera_objectSpread({}, props_props.boolean, {
+        default: false
+      })
+    })
+  },
+
+  updated(oldProps, oldState, modifiedProps) {
+    Super(this).updated(oldProps, oldState, modifiedProps);
+    if (!this.isConnected) return;
+
+    if (modifiedProps.active) {
+      this._setSceneCamera(this.active ? undefined : 'unset');
+    }
+
+    if (modifiedProps.aspect) {
+      if (!this.aspect) // default aspect value based on the scene size.
+        privateThis._startAutoAspect();else privateThis._stopAutoAspect();
+    } // TODO handle the other props here, remove attributeChangedCallback
+
+  },
+
+  makeThreeObject3d() {
+    return new PerspectiveCamera(75, 16 / 9, 1, 1000);
+  },
+
+  connectedCallback() {
+    Super(this).connectedCallback();
+    const privateThis = Private(this);
+    privateThis._lastKnownScene = this.scene;
+  },
+
+  // TODO replace with unmountedCallback #150
+  deinit() {
+    Super(this).deinit(); // TODO we want to call this in the upcoming
+    // unmountedCallback, but for now it's harmless but
+    // will run unnecessary logic. #150
+
+    Private(this)._setSceneCamera('unset');
+
+    Private(this)._lastKnownScene = null;
+  },
+
+  // TODO, unmountedCallback functionality. issue #150
+  unmountedCallback() {},
+
+  attributeChangedCallback(attr, oldVal, newVal) {
+    Super(this).attributeChangedCallback(attr, oldVal, newVal);
+
+    if (typeof newVal == 'string') {
+      Private(this)._attributeAddedOrChanged(attr, newVal);
+    } else {
+      Private(this)._attributeRemoved(attr);
+    }
+  },
+
+  private: {
+    _lastKnownScene: null,
+
+    // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
+    _attributeRemoved(attr, newVal) {
+      const publicThis = Public(this);
+
+      if (attr == 'fov') {
+        publicThis.threeObject3d.fov = 75;
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'aspect') {
+        this._startAutoAspect();
+
+        publicThis.threeObject3d.aspect = this._getDefaultAspect();
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'near') {
+        publicThis.threeObject3d.near = 0.1;
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'far') {
+        publicThis.threeObject3d.far = 1000;
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'zoom') {
+        publicThis.threeObject3d.zoom = 1;
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'active') {
+        this._setSceneCamera('unset');
+      }
     },
 
-    makeThreeObject3d() {
-        return new PerspectiveCamera(75, 16/9, 1, 1000)
+    _attributeAddedOrChanged(attr, newVal) {
+      const publicThis = Public(this);
+
+      if (attr == 'fov') {
+        publicThis.threeObject3d.fov = parseFloat(newVal);
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'aspect') {
+        this._stopAutoAspect();
+
+        publicThis.threeObject3d.aspect = parseFloat(newVal);
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'near') {
+        publicThis.threeObject3d.near = parseFloat(newVal);
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'far') {
+        publicThis.threeObject3d.far = parseFloat(newVal);
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'zoom') {
+        publicThis.threeObject3d.zoom = parseFloat(newVal);
+        publicThis.threeObject3d.updateProjectionMatrix();
+      } else if (attr == 'active') {
+        this._setSceneCamera();
+      }
     },
 
-    connectedCallback() {
-        Super(this).connectedCallback()
-
-        const privateThis = Private(this)
-        privateThis._lastKnownScene = this.scene
+    _startAutoAspect() {
+      if (!this._startedAutoAspect) {
+        this._startedAutoAspect = true;
+        Public(this).scene.on('sizechange', this._updateAspectOnSceneResize, this);
+      }
     },
 
-    // TODO replace with unmountedCallback #150
-    deinit() {
-        Super(this).deinit()
-
-        // TODO we want to call this in the upcoming
-        // unmountedCallback, but for now it's harmless but
-        // will run unnecessary logic. #150
-        Private(this)._setSceneCamera( 'unset' )
-        Private(this)._lastKnownScene = null
+    _stopAutoAspect() {
+      if (this._startedAutoAspect) {
+        this._startedAutoAspect = false;
+        Public(this).scene.off('sizechange', this._updateAspectOnSceneResize);
+      }
     },
 
-    // TODO, unmountedCallback functionality. issue #150
-    unmountedCallback() {},
-
-    attributeChangedCallback( attr, oldVal, newVal ) {
-        Super(this).attributeChangedCallback( attr, oldVal, newVal )
-
-        if ( typeof newVal == 'string' ) {
-            Private(this)._attributeAddedOrChanged( attr, newVal )
-        }
-        else {
-            Private(this)._attributeRemoved( attr )
-        }
+    _updateAspectOnSceneResize({
+      x,
+      y
+    }) {
+      Public(this).threeObject3d.aspect = x / y;
     },
 
-    private: {
-        _lastKnownScene: null,
+    _getDefaultAspect() {
+      let result = 0;
+      const publicThis = Public(this);
 
-        // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-        _attributeRemoved(attr, newVal) {
-            const publicThis = Public(this)
+      if (publicThis.scene) {
+        result = publicThis.scene.calculatedSize.x / publicThis.scene.calculatedSize.y;
+      } // in case of a 0 or NaN (0 / 0 == NaN)
 
-            if ( attr == 'fov' ) {
-                publicThis.threeObject3d.fov = 75
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'aspect' ) {
-                this._startAutoAspect()
-                publicThis.threeObject3d.aspect = this._getDefaultAspect()
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'near' ) {
-                publicThis.threeObject3d.near = 0.1
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'far' ) {
-                publicThis.threeObject3d.far = 1000
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'zoom' ) {
-                publicThis.threeObject3d.zoom = 1
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'active' ) {
-                this._setSceneCamera( 'unset' )
-            }
-        },
 
-        _attributeAddedOrChanged(attr, newVal) {
-            const publicThis = Public(this)
-
-            if ( attr == 'fov' ) {
-                publicThis.threeObject3d.fov = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'aspect' ) {
-                this._stopAutoAspect()
-                publicThis.threeObject3d.aspect = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'near' ) {
-                publicThis.threeObject3d.near = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'far' ) {
-                publicThis.threeObject3d.far = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'zoom' ) {
-                publicThis.threeObject3d.zoom = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
-            }
-            else if ( attr == 'active' ) {
-                this._setSceneCamera()
-            }
-        },
-
-        _startAutoAspect() {
-            if (!this._startedAutoAspect) {
-                this._startedAutoAspect = true
-                Public(this).scene.on('sizechange', this._updateAspectOnSceneResize, this)
-            }
-        },
-        _stopAutoAspect() {
-            if (this._startedAutoAspect) {
-                this._startedAutoAspect = false
-                Public(this).scene.off('sizechange', this._updateAspectOnSceneResize)
-            }
-        },
-
-        _updateAspectOnSceneResize({x, y}) {
-            Public(this).threeObject3d.aspect = x / y
-        },
-
-        _getDefaultAspect() {
-            let result = 0
-
-            const publicThis = Public(this)
-
-            if ( publicThis.scene ) {
-                result = publicThis.scene.calculatedSize.x / publicThis.scene.calculatedSize.y
-            }
-
-            // in case of a 0 or NaN (0 / 0 == NaN)
-            if (!result) result = 16 / 9
-
-            return result
-        },
-
-        _setSceneCamera( unset ) {
-
-            const publicThis = Public(this)
-
-            if ( unset ) {
-
-                // TODO: unset might be triggered before the scene was mounted, so
-                // there might not be a last known scene. We won't need this check
-                // when we add unmountedCallback. #150
-                if ( this._lastKnownScene )
-                    this._lastKnownScene._removeCamera( publicThis )
-            }
-            else {
-                if (!publicThis.scene || !publicThis.isConnected) return
-
-                publicThis.scene._addCamera( publicThis )
-            }
-        },
+      if (!result) result = 16 / 9;
+      return result;
     },
+
+    _setSceneCamera(unset) {
+      const publicThis = Public(this);
+
+      if (unset) {
+        // TODO: unset might be triggered before the scene was mounted, so
+        // there might not be a last known scene. We won't need this check
+        // when we add unmountedCallback. #150
+        if (this._lastKnownScene) this._lastKnownScene._removeCamera(publicThis);
+      } else {
+        if (!publicThis.scene || !publicThis.isConnected) return;
+
+        publicThis.scene._addCamera(publicThis);
+      }
+    }
+
+  }
 })));
-
 // CONCATENATED MODULE: ./src/html/index.js
 
 
@@ -65410,26 +57357,30 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 
 
 
-
 function useDefaultNames() {
-    // TODO replace with a loop
-    if (!customElements.get(Scene_Scene.defaultElementName)) Scene_Scene.define()
-    if (!customElements.get(Node.defaultElementName)) Node.define()
-    if (!customElements.get(core_Mesh.defaultElementName)) core_Mesh.define()
-    if (!customElements.get(Box.defaultElementName)) Box.define()
-    if (!customElements.get(core_Sphere.defaultElementName)) core_Sphere.define()
-    if (!customElements.get(core_Plane.defaultElementName)) core_Plane.define()
-    if (!customElements.get(core_PointLight.defaultElementName)) core_PointLight.define()
-    if (!customElements.get(DOMNode.defaultElementName)) DOMNode.define()
-    if (!customElements.get(DOMPlane.defaultElementName)) DOMPlane.define()
-    if (!customElements.get(core_AmbientLight.defaultElementName)) core_AmbientLight.define()
-    if (!customElements.get(core_Camera.defaultElementName)) core_Camera.define()
-    //PushPaneLayout.define()
+  // TODO replace with a loop
+  if (!customElements.get(Scene_Scene.defaultElementName)) Scene_Scene.define();
+  if (!customElements.get(Node.defaultElementName)) Node.define();
+  if (!customElements.get(core_Mesh.defaultElementName)) core_Mesh.define();
+  if (!customElements.get(Box.defaultElementName)) Box.define();
+  if (!customElements.get(core_Sphere.defaultElementName)) core_Sphere.define();
+  if (!customElements.get(core_Plane.defaultElementName)) core_Plane.define();
+  if (!customElements.get(core_PointLight.defaultElementName)) core_PointLight.define();
+  if (!customElements.get(DOMNode.defaultElementName)) DOMNode.define();
+  if (!customElements.get(DOMPlane.defaultElementName)) DOMPlane.define();
+  if (!customElements.get(core_AmbientLight.defaultElementName)) core_AmbientLight.define();
+  if (!customElements.get(core_Camera.defaultElementName)) core_Camera.define(); //PushPaneLayout.define()
 }
 
 
+// EXTERNAL MODULE: ./node_modules/army-knife/forLength.js
+var forLength = __webpack_require__(49);
+var forLength_default = /*#__PURE__*/__webpack_require__.n(forLength);
 
 // CONCATENATED MODULE: ./src/components/Cube.js
+function Cube_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { Cube_defineProperty(target, key, source[key]); }); } return target; }
+
+function Cube_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
@@ -65445,101 +57396,83 @@ function useDefaultNames() {
  * @class Cube
  * @extends Node
  */
-/* harmony default export */ var Cube = (lowclass_default()('Cube').extends( Node, ({ Super }) => ({
 
-    /**
-     * Create a new Cube.
-     *
-     * @constructor
-     * @param {Number} size The integer width of the cube.
-     */
-    constructor(size, options) {
+/* harmony default export */ var Cube = (lowclass_default()('Cube').extends(Node, ({
+  Super
+}) => ({
+  /**
+   * Create a new Cube.
+   *
+   * @constructor
+   * @param {Number} size The integer width of the cube.
+   */
+  constructor(size, options) {
+    // cubes, the same size on all sides
+    const self = Super(this).constructor(Cube_objectSpread({
+      size: [size, size, size]
+    }, options)); //GenericSync.register({
+    //mouse: MouseSync,
+    //touch: TouchSync
+    //});
 
-        // cubes, the same size on all sides
-        const self = Super(this).constructor({size: [size, size, size], ...options});
+    self.size = size;
+    self.sides = [];
+    forLength_default()(6, n => self._createCubeSide(n));
+    return self;
+  },
 
-        //GenericSync.register({
-            //mouse: MouseSync,
-            //touch: TouchSync
-        //});
+  /**
+   * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
+   *
+   * @private
+   * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
+   */
+  _createCubeSide(index) {
+    const rotator = new Node({
+      align: [0.5, 0.5],
+      mountPoint: [0.5, 0.5]
+    });
+    const side = new Node({
+      align: [0.5, 0.5],
+      mountPoint: [0.5, 0.5],
+      size: [this.size, this.size]
+    });
+    this.sides.push(side);
+    rotator.add(side); // TODO: make a new GenericSync-like thing based on Famous?
+    //const sync = new GenericSync(['mouse','touch']);
+    //side.pipe(sync);
+    //sync.pipe(this.options.handler);
+    // rotate and place each side.
 
-        self.size = size;
-        self.sides = [];
+    if (index < 4) // 4 sides
+      rotator.rotation.y = 90 * index;else // top/bottom
+      rotator.rotation.x = 90 * (index % 2 ? -1 : 1);
+    side.position.z = this.size / 2;
+    this.add(rotator);
+  },
 
-        forLength_default()(6, n => self._createCubeSide(n));
+  /**
+   * Set the content for the sides of the cube.
+   *
+   * @param {Array} content An array containing [Node](#infamous/motor/Node)
+   * instances to place in the cube sides. Only the first 6 items are used,
+   * the rest are ignored.
+   */
+  setContent(content) {
+    forLength_default()(6, index => {
+      //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
+      this.sides[index].add(content[index]);
+    });
+    return this;
+  }
 
-        return self
-    },
-
-    /**
-     * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
-     *
-     * @private
-     * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
-     */
-    _createCubeSide(index) {
-        const rotator = new Node({
-            align: [0.5, 0.5],
-            mountPoint: [0.5, 0.5],
-        })
-
-        const side = new Node({
-            align: [0.5, 0.5],
-            mountPoint: [0.5, 0.5],
-            size: [this.size, this.size],
-        })
-
-        this.sides.push(side)
-
-        rotator.add(side)
-
-        // TODO: make a new GenericSync-like thing based on Famous?
-        //const sync = new GenericSync(['mouse','touch']);
-        //side.pipe(sync);
-        //sync.pipe(this.options.handler);
-
-        // rotate and place each side.
-        if (index < 4) // 4 sides
-            rotator.rotation.y = 90 * index
-        else // top/bottom
-            rotator.rotation.x = 90 * ( index % 2 ? -1 : 1 )
-
-        side.position.z = this.size / 2
-
-        this.add(rotator)
-    },
-
-    /**
-     * Set the content for the sides of the cube.
-     *
-     * @param {Array} content An array containing [Node](#infamous/motor/Node)
-     * instances to place in the cube sides. Only the first 6 items are used,
-     * the rest are ignored.
-     */
-    setContent(content) {
-        forLength_default()(6, index => {
-            //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
-            this.sides[index].add(content[index])
-        })
-        return this;
-    },
 })));
-
 // CONCATENATED MODULE: ./src/components/index.js
-
-
 
 
 
 // CONCATENATED MODULE: ./src/index.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "version", function() { return version; });
-/* concated harmony reexport Calendar */__webpack_require__.d(__webpack_exports__, "Calendar", function() { return src_Calendar; });
-/* concated harmony reexport DoubleSidedPlane */__webpack_require__.d(__webpack_exports__, "DoubleSidedPlane", function() { return src_DoubleSidedPlane; });
-/* concated harmony reexport Grid */__webpack_require__.d(__webpack_exports__, "Grid", function() { return src_Grid; });
-/* concated harmony reexport Molecule */__webpack_require__.d(__webpack_exports__, "Molecule", function() { return src_Molecule; });
-/* concated harmony reexport Plane */__webpack_require__.d(__webpack_exports__, "Plane", function() { return src_Plane; });
-/* concated harmony reexport PushMenuLayout */__webpack_require__.d(__webpack_exports__, "PushMenuLayout", function() { return src_PushMenuLayout; });
-/* concated harmony reexport utils */__webpack_require__.d(__webpack_exports__, "utils", function() { return utils_namespaceObject; });
 /* concated harmony reexport core */__webpack_require__.d(__webpack_exports__, "core", function() { return core_namespaceObject; });
 /* concated harmony reexport html */__webpack_require__.d(__webpack_exports__, "html", function() { return html_namespaceObject; });
 /* concated harmony reexport components */__webpack_require__.d(__webpack_exports__, "components", function() { return components_namespaceObject; });
@@ -65547,18 +57480,7 @@ function useDefaultNames() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-const version = '21.0.6'
-
+const version = '21.2.0';
 
 /***/ })
 /******/ ]);
