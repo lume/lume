@@ -1,0 +1,96 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HTMLScene = exports.default = void 0;
+
+var _HTMLScene = _interopRequireDefault(require("./HTMLScene.style"));
+
+var _DeclarativeBase = _interopRequireWildcard(require("./DeclarativeBase"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(0, _DeclarativeBase.initDeclarativeBase)();
+
+class HTMLScene extends _DeclarativeBase.default {
+  constructor() {
+    super();
+    this._glLayer = null;
+    this._cssLayer = null;
+    this.__root = this.attachShadow({
+      mode: 'open'
+    });
+    this.__root.innerHTML = `
+            <style>
+                .i-scene-CSS3DLayer,
+                .i-scene-MiscellaneousLayer,
+                .i-scene-WebGLLayer,
+                .i-scene-WebGLLayer > canvas  {
+                    margin: 0; padding: 0;
+                    width: 100%; height: 100%;
+                    display: block;
+                }
+                .i-scene-CSS3DLayer,
+                .i-scene-MiscellaneousLayer,
+                .i-scene-WebGLLayer {
+                    position: absolute; top: 0; left: 0;
+                }
+                .i-scene-CSS3DLayer {
+                    transform-style: preserve-3d;
+                }
+                .i-scene-WebGLLayer,
+                .i-scene-MiscellaneousLayer {
+                    pointer-events: none;
+                }
+            </style>
+            <div class="i-scene-CSS3DLayer">
+                ${
+    /* WebGLRendererThree places the CSS3DRendererNested
+    domElement here, which contains a <slot> element that child
+    elements of a Scene are distributed into (rendered relative to).
+    */
+    ''}
+            </div>
+            <div class="i-scene-WebGLLayer">
+                ${
+    /* WebGLRendererThree places the Three.js <canvas> element here. */
+    ''}
+            </div>
+            <div class="i-scene-MiscellaneousLayer">
+                <slot name="misc"></slot>
+            </div>
+        `; // TODO make this similar to "package protected". It is public for now
+    // because WebGLRendererThree accesses it.
+    // TODO move these things (and others) out of the HTML interfaces, and
+    // enable them when the HTML interfaces are present, so that we can
+    // decouple HTML interfaces being present from functionality. We can
+    // make these things private if they are in the Scene class, and expose
+    // the private helper from there to friend modules.
+
+    this._glLayer = this.__root.querySelector('.i-scene-WebGLLayer');
+    this._cssLayer = this.__root.querySelector('.i-scene-CSS3DLayer');
+  }
+  /** @override */
+
+
+  getStyles() {
+    return _HTMLScene.default;
+  }
+
+  connectedCallback() {
+    super.connectedCallback(); // When the HTMLScene gets addded to the DOM, make it be "mounted".
+
+    if (!this._mounted) this.mount(this.parentNode);
+  }
+
+  async disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unmount();
+  }
+
+}
+
+exports.HTMLScene = exports.default = HTMLScene;
