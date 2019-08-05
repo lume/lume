@@ -57,7 +57,7 @@
         "@trusktr/skatejs": "5.2.40002",
         "army-knife": "^0.2.1",
         "autolayout": "^0.7.0",
-        "element-behaviors": "^2.1.1",
+        "element-behaviors": "^2.1.2",
         "famous": "0.3.5",
         "famousify": "^0.1.5",
         "geometry-interfaces": "^1.1.3",
