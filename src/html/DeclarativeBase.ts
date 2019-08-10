@@ -204,8 +204,6 @@ function makeDeclarativeBase() {
 
         // TODO: make setAttribute accept non-string values.
         setAttribute(attr: string, value: any) {
-            //if (this.tagName.toLowerCase() == 'motor-scene')
-            //console.log('setting attribute', arguments[1])
             super.setAttribute(attr, value)
         }
 

@@ -648,7 +648,7 @@ export function initImperativeBase() {
     /**
      * The ImperativeBase class is the base class for the Imperative version of the
      * API, for people who chose to take the all-JavaScript approach and who will
-     * not use the HTML-based API (infamous/motor-html).
+     * not use the HTML-based API (infamous/html).
      *
      * In the future when there is an option to disable the HTML-DOM rendering (and
      * render only WebGL, for example) then the imperative API will be the only API
