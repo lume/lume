@@ -1,11 +1,8 @@
 import Node from './Node'
 import Scene from './Scene'
-import XYZValues from './XYZValues'
 import {useDefaultNames} from '../html'
 
 useDefaultNames()
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('Node', () => {
     let scene = new Scene()
@@ -65,7 +62,8 @@ describe('Node', () => {
     })
 
     it('element is an instance of Node, created with `document.createElement`', async () => {
-        const n = document.createElement('i-node')
+        // TODO: is there a better way than casting the result of createElement?
+        const n = document.createElement('i-node') as Node
 
         scene.add(n)
 

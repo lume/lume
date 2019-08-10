@@ -1,5 +1,7 @@
 // adapted from Three.js, r88, https://github.com/mrdoob/three.js/blob/r88/examples/js/vr/WebVR.js
 
+import {WebGLRenderer} from 'three'
+
 /**
  * @author mrdoob / http://mrdoob.com
  * @author Mugen87 / https://github.com/Mugen87
@@ -8,8 +10,8 @@
  */
 
 var WEBVR = {
-    createButton: function(renderer) {
-        function showEnterVR(display) {
+    createButton: function(renderer: WebGLRenderer) {
+        function showEnterVR(display: VRDisplay) {
             button.style.display = ''
 
             button.style.cursor = 'pointer'
@@ -49,7 +51,7 @@ var WEBVR = {
             renderer.vr.setDevice(null)
         }
 
-        function stylizeElement(element) {
+        function stylizeElement(element: HTMLElement) {
             element.style.position = 'absolute'
             element.style.bottom = '20px'
             element.style.padding = '12px 6px'
@@ -72,7 +74,7 @@ var WEBVR = {
 
             window.addEventListener(
                 'vrdisplayconnect',
-                function(event) {
+                function(event: any) {
                     showEnterVR(event.display)
                 },
                 false
@@ -80,7 +82,7 @@ var WEBVR = {
 
             window.addEventListener(
                 'vrdisplaydisconnect',
-                function(event) {
+                function(_event) {
                     showVRNotFound()
                 },
                 false
@@ -88,7 +90,7 @@ var WEBVR = {
 
             window.addEventListener(
                 'vrdisplaypresentchange',
-                function(event) {
+                function(event: any) {
                     button.textContent = event.display.isPresenting ? 'EXIT VR' : 'ENTER VR'
                 },
                 false
