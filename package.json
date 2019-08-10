@@ -78,7 +78,7 @@
         "all-contributors-cli": "^4.4.0",
         "babel-eslint": "8.2.6",
         "builder": "4.0.0",
-        "builder-js-package": "trusktr/builder-js-package#743d6007e3fa96a0cb0d2910f53537f6f1890fad",
+        "builder-js-package": "trusktr/builder-js-package#095447b596415b82bf9c4fe229cef9bdbe20bbf0",
         "docpress": "0.7.1",
         "eslint": "5.2.0",
         "eslint-config-prettier": "^3.1.0",
