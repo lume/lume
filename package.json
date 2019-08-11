@@ -21,7 +21,7 @@
         "prepare": "echo 'TODO: prepare script, for install from GitHub.'",
         "docs": "docsify serve ./docs",
         "website-dev": "cd website && meteor",
-        "build-website": "npm i && npm run docs-build && cd website && npm i",
+        "build-website": "npm i && cd website && npm i",
         "setup-website-service": "cd website && ./setup-service.sh",
         "add-contributor": "all-contributors add",
         "generate-contributors": "all-contributors generate",
