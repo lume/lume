@@ -19,8 +19,7 @@
         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "above are builder scripts, below are project-specific scripts",
         "prepare-COMMENT": "TODO make prepare detect when being installed from git, so we can build it in that case?",
         "prepare": "echo 'TODO: prepare script, for install from GitHub.'",
-        "docs-serve": "docpress serve",
-        "docs-build": "docpress build",
+        "docs": "docsify serve ./docs",
         "website-dev": "cd website && meteor",
         "build-website": "npm i && npm run docs-build && cd website && npm i",
         "setup-website-service": "cd website && ./setup-service.sh",
@@ -77,7 +76,7 @@
         "babel-eslint": "8.2.6",
         "builder": "4.0.0",
         "builder-js-package": "trusktr/builder-js-package#095447b596415b82bf9c4fe229cef9bdbe20bbf0",
-        "docpress": "0.7.1",
+        "docsify-cli": "^4.3.0",
         "eslint": "5.2.0",
         "eslint-config-prettier": "^3.1.0",
         "eslint-friendly-formatter": "4.0.1",
@@ -92,12 +91,6 @@
         "typescript": "^3.5.2",
         "typescript-eslint-parser": "20.1.1",
         "vue": "^2.6.10"
-    },
-    "docpress": {
-        "docs": "docs",
-        "dist": "website/public/docs",
-        "github": "trusktr/infamous",
-        "markdown": {}
     },
     "repository": {
         "type": "git",

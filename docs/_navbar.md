@@ -1,0 +1,3 @@
+-   [GitHub](https://github.com/infamous/infamous)
+-   [Forums](https://forums.infamous.io)
+-   [Chat](https://gitter.im/infamous/motor)
