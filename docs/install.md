@@ -1,6 +1,6 @@
 # Install
 
-## 1 - Get the lib
+## Get the lib
 
 Use the "global" version of infamous via script tag in your HTML page:
 
@@ -22,7 +22,7 @@ import infamous from 'infamous'
 infamous.html.useDefaultNames()
 ```
 
-## 2 - Define the HTML elements
+## Define the HTML elements
 
 You _must_ register the infamous HTML elements with your browser, using default
 names (easier), or custom names.
