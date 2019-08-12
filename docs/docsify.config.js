@@ -2,7 +2,7 @@ window.$docsify = {
     name: 'infamous',
     loadSidebar: true,
     loadNavbar: true,
-    coverpage: true,
+    // coverpage: true,
     subMaxLevel: 2,
     // repo: 'git@github.com:trusktr/infamous', // shows GitHub corner banner at the top of all pages.
     // logo: '/_media/logoipsum.png', // replaces site `name` in sidebar with an image.
