@@ -1,8 +1,8 @@
 -   Getting Started
 
-    -   [Install](./install.md)
-    -   [Workflows](./workflows.md)
-    -   [Examples](./examples.md)
+    -   [Install](install.md)
+    -   [Workflows](workflows.md)
+    -   [Examples](examples.md)
 
 -   Guide
 
@@ -12,4 +12,4 @@
 
     -   coming soon...
 
--   [Miscellaneous Notes](./notes.md)
+-   [Miscellaneous Notes](notes.md)
