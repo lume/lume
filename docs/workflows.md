@@ -1,6 +1,4 @@
-
-Workflows
-=========
+# Workflows
 
 The following sample workflows show possible ways to install and start using
 infamous without any build steps or special tools, as well as using various
@@ -8,7 +6,7 @@ build tools that are popular today.
 
 If you're a total beginner to web development and don't know [how to use a
 command line](https://www.davidbaumgold.com/tutorials/command-line/), then the
-[Global Workflow](#global-workflow-(easiest)) will be the easiest way for you
+[Global Workflow](<#global-workflow-(easiest)>) will be the easiest way for you
 to get started. The other workflows require basic understanding of the command
 line.
 
@@ -38,31 +36,34 @@ Make a file named `index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-  html, body {
-    width: 100%; height: 100%;
-    margin: 0; padding: 0; background: #333;
-  }
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #333;
+    }
 
-  i-node { background: pink; }
+    i-node {
+        background: pink;
+    }
 
-  div {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
+    div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
 </style>
 
 <script src="https://cdn.rawgit.com/trusktr/infamous/v18.0.3/global.js"></script>
 
 <i-scene>
-  <i-node
-    sizeMode="proportional proportional"
-    size="0.75 0.75"
-    align="0.5 0.5"
-    mountPoint="0.5 0.5"
-  >
-    <div> Hello 3D </div>
-  </i-node>
+    <i-node sizeMode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mountPoint="0.5 0.5">
+        <div>Hello 3D</div>
+    </i-node>
 </i-scene>
 
 <script>
@@ -73,7 +74,7 @@ Make a file named `index.html` containing the following:
     const node = document.querySelector('i-node')
 
     // Define "property function" to increment only the Y rotation:
-    node.rotation = ( x, y, z ) => [ x, ++y, z ]
+    node.rotation = (x, y, z) => [x, ++y, z]
 </script>
 ```
 
@@ -108,19 +109,19 @@ npm install infamous --save
 Make a file named `app.js` containing the following:
 
 ```js
-const { useDefaultNames } = require('infamous/html')
-const { Scene, Node } = require('infamous/core')
+const {useDefaultNames} = require('infamous/html')
+const {Scene, Node} = require('infamous/core')
 
 // tell infamous to
 useDefaultNames()
 
-const scene = new Scene
+const scene = new Scene()
 
 const node = new Node({
-  sizeMode: ['proportional', 'proportional'],
-  size: [0.75, 0.75],
-  align: [0.5, 0.5],
-  mountPoint: [0.5, 0.5],
+    sizeMode: ['proportional', 'proportional'],
+    size: [0.75, 0.75],
+    align: [0.5, 0.5],
+    mountPoint: [0.5, 0.5],
 })
 
 node.innerHTML = '<div>Hello 3D</div>'
@@ -128,7 +129,7 @@ node.innerHTML = '<div>Hello 3D</div>'
 scene.add(node)
 scene.mount(document.body)
 
-node.rotation = ( x, y, z ) => [ x, ++y, z ]
+node.rotation = (x, y, z) => [x, ++y, z]
 ```
 
 Make a file `public/index.html` containing the following:
@@ -136,18 +137,26 @@ Make a file `public/index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-  html, body {
-    width: 100%; height: 100%;
-    margin: 0; padding: 0; background: #333;
-  }
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #333;
+    }
 
-  i-node { background: pink; }
+    i-node {
+        background: pink;
+    }
 
-  div {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
+    div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
 </style>
 <script src="./app.js"></script>
 ```
@@ -192,10 +201,10 @@ Create a file named `webpack.config.js` to configure webpack:
 
 ```js
 module.exports = {
-    entry: "./app.js",
+    entry: './app.js',
     output: {
         path: './public',
-        filename: "app.js"
+        filename: 'app.js',
     },
 }
 ```
@@ -203,19 +212,19 @@ module.exports = {
 Make a file named `app.js` containing the following:
 
 ```js
-import { useDefaultNames } from 'infamous/html'
-import { Scene, Node } from 'infamous/core'
+import {useDefaultNames} from 'infamous/html'
+import {Scene, Node} from 'infamous/core'
 
 // tell infamous to
 useDefaultNames()
 
-const scene = new Scene
+const scene = new Scene()
 
 const node = new Node({
-  sizeMode: ['proportional', 'proportional'],
-  size: [0.75, 0.75],
-  align: [0.5, 0.5],
-  mountPoint: [0.5, 0.5],
+    sizeMode: ['proportional', 'proportional'],
+    size: [0.75, 0.75],
+    align: [0.5, 0.5],
+    mountPoint: [0.5, 0.5],
 })
 
 node.innerHTML = '<div>Hello 3D</div>'
@@ -223,7 +232,7 @@ node.innerHTML = '<div>Hello 3D</div>'
 scene.add(node)
 scene.mount(document.body)
 
-node.rotation = ( x, y, z ) => [ x, ++y, z ]
+node.rotation = (x, y, z) => [x, ++y, z]
 ```
 
 Make a file named `public/index.html` containing the following:
@@ -231,18 +240,26 @@ Make a file named `public/index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-  html, body {
-    width: 100%; height: 100%;
-    margin: 0; padding: 0; background: #333;
-  }
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #333;
+    }
 
-  i-node { background: pink; }
+    i-node {
+        background: pink;
+    }
 
-  div {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
+    div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
 </style>
 <script src="./app.js"></script>
 ```
@@ -259,8 +276,7 @@ code as well as the infamous code that you imported with the `import` syntax.
 Now use `File > Open` in your browser to open the `public/index.html` file and
 see the result.
 
-What's next?
-============
+# What's next?
 
 Now that you're up and running, learn more in the [guide](#) (coming soon...)
 and [API reference](#) (coming soon...).

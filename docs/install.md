@@ -1,15 +1,14 @@
+# Install
 
-Install
-=======
-
-1 - Get the lib
----------------
+## 1 - Get the lib
 
 Use the "global" version of infamous via script tag in your HTML page:
 
 ```html
 <script src="https://unpkg.com/infamous@17.0.5/global.js"></script>
-<script> infamous.html.useDefaultNames() </script>
+<script>
+    infamous.html.useDefaultNames()
+</script>
 ```
 
 Or install from NPM:
@@ -17,15 +16,15 @@ Or install from NPM:
 ```sh
 npm install infamous --save
 ```
+
 ```js
 import infamous from 'infamous'
 infamous.html.useDefaultNames()
 ```
 
-2 - Define the HTML elements
-----------------------------
+## 2 - Define the HTML elements
 
-You *must* register the infamous HTML elements with your browser, using default
+You _must_ register the infamous HTML elements with your browser, using default
 names (easier), or custom names.
 
 <h3> with default names </h3>
@@ -34,7 +33,7 @@ The fastest way to get up and running is to tell infamous to use default naming
 for all of its HTML elements:
 
 ```js
-import { useDefaultNames } from 'infamous/html'
+import {useDefaultNames} from 'infamous/html'
 
 // tell infamous to
 useDefaultNames()
@@ -49,7 +48,7 @@ import Node from 'infamous/core/Node'
 const scene = new Scene()
 
 const node = new Node({
-  position: [100, 100, 0]
+    position: [100, 100, 0],
 })
 
 scene.add(node)
@@ -68,10 +67,9 @@ scene.mount(document.body)
 
 ```html
 <body>
-  <i-scene>
-    <i-node position="100 100">
-    </i-node>
-  </i-scene>
+    <i-scene>
+        <i-node position="100 100"> </i-node>
+    </i-scene>
 </body>
 ```
 
@@ -98,7 +96,7 @@ Then either write the scene with JavaScript,
 const scene = new Scene()
 
 const node = new Node({
-  position: [100, 100, 0]
+    position: [100, 100, 0],
 })
 
 scene.add(node)
@@ -117,9 +115,8 @@ scene.mount(document.body)
 
 ```html
 <body>
-  <nfms-scene>
-    <nfms-node position="100 100">
-    </nfms-node>
-  </nfms-scene>
+    <nfms-scene>
+        <nfms-node position="100 100"> </nfms-node>
+    </nfms-scene>
 </body>
 ```

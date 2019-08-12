@@ -1,6 +1,4 @@
-
-Getting Started
-===============
+# Getting Started
 
 See [Install](./install.md) to learn how to get Infamous into your project.
 
