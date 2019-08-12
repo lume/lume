@@ -1,3 +1,5 @@
--   [GitHub](https://github.com/infamous/infamous)
+-   [Docs](/)
+-   [Examples](examples.md)
 -   [Forums](https://forums.infamous.io)
 -   [Chat](https://gitter.im/infamous/motor)
+-   [GitHub](https://github.com/infamous/infamous)
