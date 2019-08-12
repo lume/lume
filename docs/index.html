@@ -9,22 +9,21 @@
             name="viewport"
             content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
         />
-        <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css" />
+        <link rel="stylesheet" href="//unpkg.com/docsify@4.9.4/lib/themes/vue.css" />
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css" />
     </head>
     <body>
         <div id="app">
-            Please wait...
+            Loading...
         </div>
-        <script>
-            window.$docsify = {
-                name: 'infamous',
-                // repo: 'git@github.com:trusktr/infamous',
-                loadSidebar: true,
-                loadNavbar: true,
-                coverpage: true,
-                subMaxLevel: 2,
-            }
-        </script>
-        <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+
+        <!-- <script src="//unpkg.com/docsify-edit-on-github@1.0.2/index.js"></script> -->
+        <script src="/docsify.config.js"></script>
+        <script src="//unpkg.com/docsify@4.9.4/lib/docsify.min.js"></script>
+        <script src="//unpkg.com/docsify@4.9.4/lib/plugins/search.min.js"></script>
+        <script src="//unpkg.com/docsify-copy-code@2.1.0"></script>
+        <script src="//unpkg.com/docsify-pagination@2.4.0/dist/docsify-pagination.min.js"></script>
+        <script src="//unpkg.com/docsify-plugin-flexible-alerts@1.0.3"></script>
+        <script src="//unpkg.com/mermaid@8.2.3/dist/mermaid.min.js"></script>
     </body>
 </html>
