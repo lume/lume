@@ -154,7 +154,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
         makeDefaultProps() {
             return Object.assign(super.makeDefaultProps(), {
                 sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-                size: new XYZNonNegativeValues(100, 100, 100),
+                size: new XYZNonNegativeValues(0, 0, 0),
             })
         }
 
