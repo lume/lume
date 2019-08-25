@@ -14,6 +14,7 @@ export default class HTMLScene extends DeclarativeBase {
                     position: relative
                 }
 
+                .i-scene-inner,
                 .i-scene-CSS3DLayer,
                 .i-scene-MiscellaneousLayer,
                 .i-scene-WebGLLayer,
