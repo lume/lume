@@ -1,0 +1,25 @@
+:root {
+    --sidebar-width: 300px;
+}
+
+.vuep {
+    height: calc(100vh - 345px);
+}
+
+.vuep-preview {
+    padding: 0 !important;
+
+    /*
+     * TODO for some reason, without this, scroll bars appear, though nothing
+     * appears to go beyond the boundaries of the container.
+     */
+    overflow: hidden;
+}
+
+/*
+ * make the content full width, so it is especially easier to see the code
+ * examples
+ */
+.markdown-section {
+    max-width: unset;
+}

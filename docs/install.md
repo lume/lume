@@ -35,7 +35,7 @@ for all of its HTML elements:
 ```js
 import {useDefaultNames} from 'infamous/html'
 
-// tell infamous to
+// tell infamous to define all the default custom element names.
 useDefaultNames()
 ```
 

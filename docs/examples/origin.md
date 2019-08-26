@@ -1,15 +1,19 @@
-<title>origin</title>
+# Origin
 
-<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
-<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+<div id="example"></div>
+<script type="application/javascript">
+  new Vue({
+    el: '#example',
+    template: '<code-vue :template="code" mode="html>iframe" :debounce="200" />',
+    data: {
+      code:
+`
+<script src="http://localhost:3000/infamous.js"><\/script>
 
 <style>
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
+    html, body {
+        width: 100%; height: 100%;
+        margin: 0; padding: 0;
         background: #333;
     }
 </style>
@@ -20,7 +24,6 @@
     <i-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></i-point-light>
 </i-scene>
 
-<script src="../global.js"></script>
 <script>
     infamous.useDefaultNames()
 
@@ -37,11 +40,11 @@
         '1 1 1', // right/bottom/front
     ]
 
-    const box = (origin, i) => `
-        <i-box origin="${origin}" align="${0.15+i} 0.5 0" size="100 100 100" mount-point="0.5 0.5 0.5" color="skyblue">
-            <i-sphere align="${origin}" size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></i-sphere>
+    const box = (origin, i) => \`
+        <i-box origin="\${origin}" align="\${0.15+i} 0.5 0" size="100 100 100" mount-point="0.5 0.5 0.5" color="skyblue">
+            <i-sphere align="\${origin}" size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></i-sphere>
         </i-box>
-    `
+    \`
 
     const scene = document.querySelector('i-scene')
 
@@ -52,4 +55,9 @@
         scene.lastElementChild.rotation = ( x, y, z ) => [ x -= 0.8, y -= 0.8, z ]
         i += 0.1
     }
+<\/script>
+
+`
+    },
+  })
 </script>

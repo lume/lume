@@ -2,15 +2,33 @@ window.$docsify = {
     name: 'infamous',
     loadSidebar: true,
     loadNavbar: true,
-    // coverpage: true,
     subMaxLevel: 2,
-    // repo: 'git@github.com:trusktr/infamous', // shows GitHub corner banner at the top of all pages.
+    executeScript: true, // defaults to false unless Vue is present in which case defaults to true.
+    auto2top: true,
+    // coverpage: true,
+    repo: 'https://github.com/infamous/infamous', // shows GitHub corner banner at the top of all pages.
     // logo: '/_media/logoipsum.png', // replaces site `name` in sidebar with an image.
 
-    plugins: [
-        // re-enable when we figure out link placement, https://github.com/njleonzhang/docsify-edit-on-github/issues/7
-        // EditOnGithubPlugin.create('https://github.com/infamous/infamous/tree/master/docs'),
-    ],
+    plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
+        function(hook, vm) {
+            hook.beforeEach(function(html) {
+                const url = vm.config.repo + '/blob/master/docs/' + vm.route.file
+                const editTop = `
+<a href="${url}" style="position: absolute; right: 45px; top: 120px;" target="__blank">
+📝 Edit document.
+</a>
+
+`
+                const editBottom = `
+<a href="${url}" style="position: absolute; right: 45px;" target="__blank">
+📝 Edit document.
+</a>
+
+`
+                return editTop + html + editBottom
+            })
+        },
+    ]),
 
     markdown: {
         renderer: {
@@ -23,5 +41,9 @@ window.$docsify = {
                 return this.origin.code.apply(this, arguments)
             },
         },
+    },
+
+    tabs: {
+        theme: 'material',
     },
 }
