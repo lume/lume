@@ -56,6 +56,12 @@ class PossiblyWebComponent {
     protected _deinit?(): void
 }
 
+/**
+ * @abstract
+ * @class ImperativeBase - An abstract base class that makes up the foundation
+ * for the APIs and functionalities provided by the non-abstract Scene and Node
+ * base classes.
+ */
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
     const Parent = Transformable.mixin(Constructor<PossiblyWebComponent>(Base))
 

@@ -9,6 +9,67 @@ import '../html/behaviors/ObjModelBehavior'
 
 initImperativeBase()
 
+const _Node = Mixin(NodeMixin)
+
+/**
+ * @extends ImperativeBase
+ * @extends HTMLNode
+ * @class Node - All objects in a 3D scene are an instance of Node. In other
+ * words, the classes for anything that will be in a 3D scene are subclasses of
+ * this class. Node contains the basics that all objects in a 3D scene need,
+ * for example a transform (position, rotation, scale, etc) and a size.
+ *
+ * Instances of Node can be used for simple CSS
+ * rendering by placing HTML content inside of them, for example:
+ *
+ * <div id="example1"></div>
+ * <script type="application/javascript">
+ *   new Vue({
+ *     el: '#example1',
+ *     template: '<code-vue :template="code" mode="html>iframe" :debounce="200" />',
+ *     data: {
+ *       code:
+ * `<script src="http://localhost:3000/infamous.js"><\/script>
+ *
+ * <i-scene>
+ *   <i-node
+ *     id="container"
+ *     size="100 100"
+ *     position="100 100"
+ *   >
+ *     Hello 3D World!
+ *   </i-node>
+ * </i-scene>
+ *
+ * <style>
+ *   html, body {
+ *     margin: 0; padding: 0;
+ *     height: 100%; width: 100%;
+ *   }
+ *   i-scene { background: #333 }
+ *   i-node { background: royalblue }
+ * </style>
+ *
+ * <script>
+ *   infamous.useDefaultNames()
+ *   container.rotation = (x, y, z) => [x, ++y, z]
+ * <\/script>
+ * `
+ *     },
+ *   })
+ * </script>
+ *
+ * Nodes can also be used as non-rendered parents that apply transforms to
+ * their children. Here's an [example](/examples/hello3d-parent-transforms).
+ *
+ * Other classes that extend from Node may create [layouts](/examples/autolayout-declarative), or
+ * may render [WebGL content](/examples/material-texture), etc.
+ */
+// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
+export const Node = _Node.mixin(HTMLInterface)
+export interface Node extends InstanceType<typeof Node> {}
+export default Node
+
 function NodeMixin<T extends Constructor>(Base: T) {
     // NOTE for now, we assume Node is mixed with its HTMLInterface.
     const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
@@ -26,17 +87,42 @@ function NodeMixin<T extends Constructor>(Base: T) {
         isNode = true
 
         /**
-         * @constructor
+         * @constructor - Create a Node instance with the given `props`.
          *
-         * @param {Object} options Initial properties that the node will
-         * have. This can be used when creating a node, alternatively to using the
-         * setters/getters for position, rotation, etc.
+         * Each option maps to a property on the instance. For example, writing
          *
-         * @example
+         * ```js
          * var node = new Node({
          *   size: {x:100, y:100, z:100},
          *   rotation: {x:30, y:20, z:25}
          * })
+         * ```
+         *
+         * is the same as writing
+         *
+         * ```js
+         * var node = new Node()
+         * node.size = {x:100, y:100, z:100}
+         * node.rotation = {x:30, y:20, z:25}
+         * ```
+         *
+         * The `props` property inherited from
+         * [`WithUpdate`](../html/WithUpdate) also works for setting multiple
+         * properties at once:
+         *
+         * ```js
+         * var node = new Node()
+         * node.props = {
+         *   size: {x:100, y:100, z:100},
+         *   rotation: {x:30, y:20, z:25}
+         * }
+         * ```
+         *
+         * @param {Object} props - An object with initial property values for the Node instance.@
+         * TODO describe the overall format and reactivity of the properties.
+         *
+         * @example
+         * // TODO handle @example blocks
          */
         constructor(...args: any[]) {
             super(...args)
@@ -59,6 +145,8 @@ function NodeMixin<T extends Constructor>(Base: T) {
             }
         }
 
+        // @method foo(v: number): boolean
+        // a cool method to do cool stuff
         updated(oldProps: any, modifiedProps: any) {
             super.updated(oldProps, modifiedProps)
 
@@ -120,12 +208,6 @@ function NodeMixin<T extends Constructor>(Base: T) {
 
     return Node as MixinResult<typeof Node, T>
 }
-
-const _Node = Mixin(NodeMixin)
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-export const Node = _Node.mixin(HTMLInterface)
-export interface Node extends InstanceType<typeof Node> {}
-export default Node
 
 // const n: Node = new Node(1, 2, 3)
 // n.asdfasdf
