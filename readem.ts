@@ -1,4 +1,3 @@
-import r from 'regexr'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as walker from 'at-at'
