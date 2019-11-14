@@ -1,5 +1,5 @@
 
-# <code>class <b>Node</b> extends [ImperativeBase](/ImperativeBase.md), [HTMLNode](../html/HTMLNode.md)</code> :id=Node
+# <code>class <b>Node</b> extends [ImperativeBase](ImperativeBase.md), HTMLNode</code> :id=Node
 
 All objects in a 3D scene are an instance of Node. In other
 words, the classes for anything that will be in a 3D scene are subclasses of
@@ -54,13 +54,13 @@ may render [WebGL content](/examples/material-texture), etc.
 
 
 
-Inherits properties from [ImperativeBase](/ImperativeBase.md), [HTMLNode](../html/HTMLNode.md).
+Inherits properties from [ImperativeBase](ImperativeBase.md), HTMLNode.
 
 
 
 ## Methods
 
-Inherits methods from [ImperativeBase](/ImperativeBase.md), [HTMLNode](../html/HTMLNode.md).
+Inherits methods from [ImperativeBase](ImperativeBase.md), HTMLNode.
 
 
 ### <code>.<b>constructor</b>(): void</code> :id=constructor

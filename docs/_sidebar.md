@@ -1,6 +1,6 @@
 -   Guide
 
-    -   [Install](./install.md)
+    -   [Install](/install.md)
     -   [Workflows](/workflows.md)
 
 -   Examples
