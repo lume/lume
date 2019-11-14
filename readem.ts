@@ -250,14 +250,14 @@ class CommentAnalyzer {
         const result = await this.scanner.scanFolder(folder)
 
         for (const file of result) {
-            let currentClass = ''
+            let currentClass: string | undefined = undefined
 
             for (const comment of file.comments) {
                 let primaryTags: string[] = []
 
                 // vars for tracking an @class comment
-                let Class = ''
-                let description = ''
+                let Class: string | undefined = undefined
+                let description: string | undefined = undefined
                 let parentClasses: string[] = []
                 let abstract = false
 
@@ -266,14 +266,14 @@ class CommentAnalyzer {
                 let foundAccess = false
 
                 // vars for tracking an @method comment
-                let method = ''
+                let method: string | undefined = undefined
                 let params: Param[] = []
-                let returns: JSDocTypeAST = undefined
+                let returns: JSDocTypeAST | undefined = undefined
 
                 let constructor = false
 
                 // vars for tracking an @property comment
-                let property = ''
+                let property: string | undefined = undefined
                 let type: JSDocTypeAST | undefined = undefined
 
                 for (const part of comment.content) {
@@ -300,7 +300,7 @@ class CommentAnalyzer {
 
                             case 'inherits': // @inherits is alias of @extends
                             case 'extends': {
-                                if (!parentClasses.includes(part.name)) parentClasses.push(part.name)
+                                if (part.name && !parentClasses.includes(part.name)) parentClasses.push(part.name)
                                 break
                             }
 
@@ -363,6 +363,8 @@ class CommentAnalyzer {
                                     )
                                     break
                                 }
+
+                                if (!part.name) break
 
                                 params.push({
                                     name: part.name,
@@ -683,9 +685,9 @@ type ClassMeta = PrimaryItemMeta & {
  */
 type PropertyMeta = {
     name: string
-    description: string
+    description?: string
     access: 'public' | 'protected' | 'private'
-    type: JSDocTypeAST | undefined
+    type?: JSDocTypeAST
 }
 
 /**
@@ -693,10 +695,10 @@ type PropertyMeta = {
  */
 type MethodMeta = {
     name: string
-    description: string
+    description?: string
     access: 'public' | 'protected' | 'private'
     params: Param[]
-    returns: JSDocTypeAST | undefined
+    returns?: JSDocTypeAST
 }
 
 /**
@@ -704,8 +706,8 @@ type MethodMeta = {
  */
 type Param = {
     name: string
-    description: string
-    type: JSDocTypeAST | undefined
+    description?: string
+    type?: JSDocTypeAST
 }
 
 /**
@@ -773,14 +775,14 @@ async function promise(func: Func, ...args: any[]) {
 }
 
 class MarkdownRenderer {
-    async render(meta: DocsMeta, destination: string) {
+    async render(docsMeta: DocsMeta, destination: string) {
         destination = this.resolveDestination(destination)
         const promises: Promise<any>[] = []
 
         await promise(mkdirp, destination)
 
-        for (const [className, classMeta] of meta.classes) {
-            const relativeSourceDirectory = path.dirname(classMeta.file).replace(meta.sourceFolder, '')
+        for (const [className, classMeta] of docsMeta.classes) {
+            const relativeSourceDirectory = path.dirname(classMeta.file).replace(docsMeta.sourceFolder, '')
             const outputDir = path.join(destination, relativeSourceDirectory)
             const outputFile = path.join(outputDir, className + '.md')
 
@@ -789,7 +791,7 @@ class MarkdownRenderer {
             // this runs synchronously now in the same tick, while the directory
             // is being made in the previous expression, thus always finishes
             // first.
-            const output = this.renderClass(className, classMeta, meta)
+            const output = this.renderClass(className, classMeta, docsMeta)
         }
 
         await Promise.all(promises)
@@ -846,7 +848,7 @@ ${methods.map(([name, meta]) => this.renderMethod(name, meta, docsMeta)).join('\
         `
     }
 
-    renderProperty(propertyName: string, propertyMeta: PropertyMeta, docsMeta: DocsMeta) {
+    renderProperty(propertyName: string, propertyMeta: PropertyMeta, _docsMeta: DocsMeta) {
         const type = propertyMeta.type ? propertyMeta.type.source : ''
 
         return `
@@ -856,7 +858,7 @@ ${propertyMeta.description}
         `
     }
 
-    renderMethod(methodName: string, methodMeta: MethodMeta, docsMeta: DocsMeta) {
+    renderMethod(methodName: string, methodMeta: MethodMeta, _docsMeta: DocsMeta) {
         const ret = methodMeta.returns ? methodMeta.returns.source : 'void'
 
         return `

@@ -72,6 +72,7 @@
         "three": "^0.103.0"
     },
     "devDependencies": {
+        "@types/mkdirp": "^0.5.2",
         "all-contributors-cli": "^4.4.0",
         "at-at": "^1.1.0",
         "babel-eslint": "8.2.6",
