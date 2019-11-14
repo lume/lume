@@ -19,7 +19,7 @@
         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "above are builder scripts, below are project-specific scripts",
         "prepare-COMMENT": "TODO make prepare detect when being installed from git, so we can build it in that case?",
         "prepare": "echo 'TODO: prepare script, for install from GitHub.'",
-        "docs:serve": "live-server --host=localhost --port=3000 --watch=global.js,docs --cors ./docs",
+        "docs:serve": "live-server --host=localhost --port=54321 --watch=global.js,docs --cors ./docs",
         "website-dev": "cd website && meteor",
         "build-website": "npm i && cd website && npm i",
         "setup-website-service": "cd website && ./setup-service.sh",

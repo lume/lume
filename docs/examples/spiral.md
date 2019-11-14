@@ -7,8 +7,8 @@
     template: '<code-vue :template="code" mode="html>iframe" :debounce="1000" />',
     data: {
       code: `
-<script src="http://localhost:3000/infamous.js"><\/script>
-<script src="http://localhost:3000/node_modules/vue/dist/vue.js"><\/script>
+<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/node_modules/vue/dist/vue.js"><\/script>
 
 <body>
 

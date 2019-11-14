@@ -38,7 +38,7 @@
     data: {
       code:
 `
-<script src="http://localhost:3000/infamous.js"><\/script>
+<script src="${location.origin}/infamous.js"><\/script>
 
 <i-scene>
   <i-node

@@ -29,7 +29,7 @@ const _Node = Mixin(NodeMixin)
  *     template: '<code-vue :template="code" mode="html>iframe" :debounce="200" />',
  *     data: {
  *       code:
- * `<script src="http://localhost:3000/infamous.js"><\/script>
+ * `<script src="${location.origin}/infamous.js"><\/script>
  *
  * <i-scene>
  *   <i-node

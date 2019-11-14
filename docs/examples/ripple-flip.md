@@ -8,9 +8,9 @@
     data: {
       code:
 `
-<script src="http://localhost:3000/infamous.js"><\/script>
-<script src="http://localhost:3000/node_modules/tinycolor2/tinycolor.js"><\/script>
-<script src="http://localhost:3000/node_modules/tween.js/src/Tween.js"><\/script>
+<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/node_modules/tinycolor2/tinycolor.js"><\/script>
+<script src="${location.origin}/node_modules/tween.js/src/Tween.js"><\/script>
 
 <style>
   html, body {
