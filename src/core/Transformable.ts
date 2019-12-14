@@ -165,7 +165,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
         }
 
         makeDefaultProps() {
-            return Object.assign((super.makeDefaultProps && super.makeDefaultProps()) || {}, {
+            return Object.assign(super.makeDefaultProps(), {
                 position: new XYZNumberValues(0, 0, 0),
                 rotation: new XYZNumberValues(0, 0, 0),
                 scale: new XYZNumberValues(1, 1, 1),
