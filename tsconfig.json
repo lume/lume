@@ -1,4 +1,7 @@
 {
+    "compilerOptions": {
+        "skipLibCheck": true
+    },
     "extends": "./node_modules/builder-js-package/config/tsconfig.json",
     "include": ["./src/**/*", "./tests/**/*", "./readem.ts"]
 }
