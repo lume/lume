@@ -49,7 +49,8 @@ const appliedPosition = [0, 0, 0]
 type TransformProp = SizeProp | 'position' | 'rotation' | 'scale' | 'origin' | 'align' | 'mountPoint' | 'opacity'
 
 function TransformableMixin<T extends Constructor>(Base: T) {
-    const Parent = Sizeable.mixin(Constructor(Base))
+    const _Base = Constructor(Base)
+    const Parent = Sizeable.mixin(_Base)
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
