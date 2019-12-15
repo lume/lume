@@ -31,7 +31,7 @@ export function disposeObject(
     if (!obj) return
 
     if (isRenderItem(obj)) {
-        if (destroyGeometry) obj.geometry.dispose()
+        if (obj.geometry && destroyGeometry) obj.geometry.dispose()
         if (destroyMaterial) disposeMaterial(obj)
     }
 

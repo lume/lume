@@ -74,7 +74,7 @@
         "live-server": "^1.2.1",
         "lowclass": "^4.7.0",
         "regexr": "^1.5.1",
-        "three": "^0.103.0"
+        "three": "^0.111.0"
     },
     "devDependencies": {
         "@types/mkdirp": "^0.5.2",
