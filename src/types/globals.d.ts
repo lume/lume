@@ -18,3 +18,5 @@ declare module 'jss-px'
 declare module 'jss-vendor-prefixer'
 declare module 'jss-camel-case'
 declare module 'jss-props-sort'
+declare module 'at-at' // TODO
+declare module 'jsdoctypeparser'
