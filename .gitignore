@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.vscode/
 
 docs/api/
 docs/src
