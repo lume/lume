@@ -7,7 +7,7 @@
     template: '<code-vue class="full" :template="code" mode="html>iframe" :debounce="200" />',
     data: {
       code:
-`<script src="${location.origin}/infamous.js"><\/script>
+`<script src="${location.origin}/global.js"><\/script>
 
 <i-scene>
   <i-node position="50 50">

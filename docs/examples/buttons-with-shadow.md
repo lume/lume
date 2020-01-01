@@ -10,7 +10,7 @@
 `
 <body>
 
-<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/global.js"><\/script>
 <script src="${location.origin}/node_modules/vue/dist/vue.js"><\/script>
 <script src="${location.origin}/node_modules/tween.js/src/Tween.js"><\/script>
 
@@ -116,7 +116,9 @@
 
             var scene = document.querySelector('#scene')
 
-            scene.on(Events.GL_LOAD, () => {
+            scene.on(Events.GL_LOAD, async () => {
+                // TODO fix order of events. Why is Promise.resolve() needed for it to work?
+                await Promise.resolve()
 
                 var light = document.querySelector('#light')
                 light.three.shadow.radius = 2

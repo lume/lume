@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/global.js"><\/script>
 
 <style>
     body, html {
@@ -53,8 +53,8 @@
         size="0 0 0"
         scale="200 200 200"
         has="obj-model"
-        obj="http://localhost:3000/models/spaceship/ship.obj"
-        mtl="http://localhost:3000/models/spaceship/ship.mtl"
+        obj="${location.origin}/models/spaceship/ship.obj"
+        mtl="${location.origin}/models/spaceship/ship.mtl"
     >
     </i-node>
     <!-- alternatively, the i-obj-model is an node element that
@@ -66,7 +66,7 @@
         align="0.5 0.5 0"
         size="0 0 0"
         scale="200 200 200"
-        obj="http://localhost:3000/models/spaceship/ship.obj"
+        obj="${location.origin}/models/spaceship/ship.obj"
     >
     </i-obj-model>
 </i-scene>

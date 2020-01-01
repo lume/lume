@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/global.js"><\/script>
 
 <style>
     body, html {

@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/global.js"><\/script>
 
 <script> infamous.useDefaultNames() <\/script>
 
@@ -156,7 +156,11 @@
     // because we have just created the elements and placed them into
     // the DOM, we have to wait for their GL objects to be loaded before
     // we can work with those underlying objects.
-    scene.on('GL_LOAD', () => {
+    scene.on('GL_LOAD', async () => {
+      // TODO fix order of events. Why is Promise.resolve() needed for it to work?
+      await Promise.resolve()
+
+      console.log('DO IT')
         Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
             // FIXME, props/attributes should work instead of this
             plane.three.material.opacity = 0.3
@@ -166,6 +170,7 @@
         pointLight.three.shadow.radius = 2
         pointLight.three.distance = 800
         pointLight.three.shadow.bias = -0.01
+        pointLight.needsUpdate()
     })
 <\/script>
 

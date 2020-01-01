@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin}/infamous.js"><\/script>
+<script src="${location.origin}/global.js"><\/script>
 
 <style>
     body, html {
@@ -38,7 +38,7 @@
         align="0.5 0.5 0"
         size="100 100 100"
         color="white" COMMENT-otherwise-the-material-will-be-tinted-random-color
-        texture="http://localhost:3000/textures/cement.jpg"
+        texture="${location.origin}/textures/cement.jpg"
     >
     </i-box>
 </i-scene>
