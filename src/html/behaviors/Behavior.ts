@@ -8,10 +8,21 @@ import Node from '../../core/Node'
  *
  */
 export default abstract class Behavior extends WithUpdate.mixin(ForwardProps) {
-    constructor(public element: Node) {
+    // If true, elementBehaviors will wait for a custom element to be defined
+    // before running "connectedCallback" or "disconnectedCallback" on the
+    // behavior. This guarantees that the host element is already upgraded
+    // before the life cycle hooks run.
+    awaitElementDefined = true
+
+    element: Node
+
+    constructor(element: Element) {
         super()
 
+        // ensure element is type src/core/Node (which extends from Element)
         this.__checkElementIsLibraryElement(element)
+
+        this.element = element as any
     }
 
     // use a getter because Mesh is undefined at module evaluation time due
@@ -51,33 +62,9 @@ export default abstract class Behavior extends WithUpdate.mixin(ForwardProps) {
         super.attributeChangedCallback(name, oldValue, newValue)
     }
 
-    async connectedCallback() {
-        if (!this.__elementDefined) await this.__whenDefined
-
-        super.connectedCallback()
-
-        this._listenToElement()
-    }
-
-    async disconnectedCallback() {
-        if (!this.__elementDefined) await this.__whenDefined
-
-        super.disconnectedCallback()
-
-        this._unlistenToElement()
-    }
-
     // used by ForwardProps. See ForwardProps.js
     protected get _observedObject() {
         return this.element
-    }
-
-    protected _listenToElement() {
-        // subclasses: add event listeners
-    }
-
-    protected _unlistenToElement() {
-        // subclasses: remove event listeners
     }
 
     // a promise resolved when an element is upgraded

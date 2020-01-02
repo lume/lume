@@ -3,6 +3,7 @@
 
 import {Mixin, getInheritedDescriptor, MixinResult, Constructor} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
+import {defer} from '../core/Utility'
 
 // TODO This class is currently unused. We'll see about refactoring to make
 // _props private instead of protected, in which case this will be a protected
@@ -190,7 +191,7 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
                 return
             }
             this.__updating = true
-            delay(() => {
+            defer(() => {
                 const {__prevProps, __modifiedProps} = this
                 if (this.updating) {
                     this.updating(__prevProps, __modifiedProps)
@@ -275,10 +276,6 @@ function defineProps(constructor: any) {
         func({constructor}, name)
         constructor._propNames.push(name)
     })
-}
-
-function delay(fn: any) {
-    Promise.resolve().then(fn)
 }
 
 export function prop(definition: any) {

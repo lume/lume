@@ -1,5 +1,5 @@
 import {BoxGeometry, MeshPhongMaterial, Material, Geometry} from 'three'
-import Behavior from './Behavior'
+import {RenderableBehavior} from './RenderableBehavior'
 import {Events} from '../../core/Events'
 import Mesh from '../../core/Mesh'
 
@@ -11,7 +11,7 @@ export type MeshComponentType = 'geometry' | 'material'
  * Subclasses should implement:
  * _createComponent() - return a geometry or material instance.
  */
-export default abstract class BaseMeshBehavior extends Behavior {
+export default abstract class BaseMeshBehavior extends RenderableBehavior {
     abstract type: MeshComponentType
 
     // use a getter because Mesh is undefined at module evaluation time due
@@ -30,31 +30,19 @@ export default abstract class BaseMeshBehavior extends Behavior {
         return this._cssLoaded
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
-        this.loadGL()
-    }
-
-    async disconnectedCallback() {
-        super.disconnectedCallback()
-        this.unloadGL()
-    }
-
     loadGL() {
-        if (!this.element.three) return
-
-        if (this._glLoaded) return
-        this._glLoaded = true
+        if (!super.loadGL) return false
 
         this.resetMeshComponent()
 
         this.triggerUpdateForAllProps()
         this.element.needsUpdate()
+
+        return true
     }
 
     unloadGL() {
-        if (!this._glLoaded) return
-        this._glLoaded = false
+        if (!super.unloadGL) return false
 
         // if the behavior is being disconnected, but the element still has GL
         // mode (.three), then leave the element with a default mesh GL
@@ -62,6 +50,8 @@ export default abstract class BaseMeshBehavior extends Behavior {
         if (this.element.three) this.__setDefaultComponent(this.element, this.type)
         else this.__disposeMeshComponent(this.element, this.type)
         this.element.needsUpdate()
+
+        return true
     }
 
     resetMeshComponent() {
@@ -76,21 +66,20 @@ export default abstract class BaseMeshBehavior extends Behavior {
         return (this.element.three[name] as unknown) as T
     }
 
-    protected _glLoaded = false
-    protected _cssLoaded = false
-
     protected _createComponent(): Geometry | Material {
         throw new Error('`_createComponent()` is not implemented by subclass.')
     }
 
-    protected _listenToElement() {
-        super._listenToElement()
+    connectedCallback() {
+        super.connectedCallback()
+
         this.element.on(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)
         this.element.on(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
     }
 
-    protected _unlistenToElement() {
-        super._unlistenToElement()
+    disconnectedCallback() {
+        super.disconnectedCallback()
+
         this.element.off(Events.BEHAVIOR_GL_LOAD, this.loadGL)
         this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL)
     }

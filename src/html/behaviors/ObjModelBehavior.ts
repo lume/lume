@@ -2,11 +2,11 @@ import 'element-behaviors'
 import {OBJLoader} from '../../lib/three/OBJLoader'
 import {MTLLoader} from '../../lib/three/MTLLoader'
 import {Events} from '../../core/Events'
-import Behavior from './Behavior'
+import {RenderableBehavior} from './RenderableBehavior'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three'
 import {Object3D} from 'three'
-// import * as THREE from 'three' // this import needed for OBJLoader and MTLLoader
 import BaseMaterialBehavior from './BaseMaterialBehavior'
+import {reactive, attribute, autorun} from '../../core/Component'
 
 declare global {
     interface Element {
@@ -14,34 +14,31 @@ declare global {
     }
 }
 
-export default class ObjModelBehavior extends Behavior {
-    static props = {
-        obj: String, // path to obj file
-        mtl: String, // path to mtl file
-    }
+export default class ObjModelBehavior extends RenderableBehavior {
+    // static props = {
+    //     obj: String, // path to obj file
+    //     mtl: String, // path to mtl file
+    // }
+    // obj!: string
+    // mtl!: string
 
-    obj!: string
-    mtl!: string
-
-    // TODO no any
-    model: any
-    objLoader: any
-    mtlLoader: any
-
-    updated(_oldProps: any, modifiedProps: any) {
-        if (modifiedProps.obj || modifiedProps.mtl) {
-            // TODO if only mtl changes, maybe we can update only the material
-            // instead of reloading the whole object?
-            if (!this.obj) return
-            this.__cleanup()
-            this.__loadObj()
+    @reactive
+    @attribute
+    obj = ''
+    @reactive
+    @attribute
+    mtl = ''
+    static tmp_props = {obj: true, mtl: true, ...(RenderableBehavior as any).tmp_props}
+    async attributeChangedCallback(attr: string, oldVal: string | null, newVal: string | null) {
+        super.attributeChangedCallback(attr, oldVal, newVal)
+        if (attr === 'obj' || attr === 'mtl') {
+            this[attr] = newVal as any
         }
     }
+    loadGL() {
+        if (!super.loadGL()) return false
 
-    async connectedCallback() {
-        super.connectedCallback()
         this.model = null
-        // TODO TS augment the THREE module so 'as any' is not needed
         this.objLoader = new OBJLoader() // TODO types for loaders
         this.mtlLoader = new MTLLoader(this.objLoader.manager)
         // Allow cross-origin images to be loaded.
@@ -50,12 +47,47 @@ export default class ObjModelBehavior extends Behavior {
         this.objLoader.manager.onLoad = () => {
             this.element.needsUpdate()
         }
+
+        autorun(() => {
+            // TODO if only mtl changes, maybe we can update only the material
+            // instead of reloading the whole object?
+            this.mtl
+            this.__cleanup()
+            this.__loadObj()
+        })
+
+        return true
+    }
+    unloadGL() {
+        if (!super.unloadGL()) return false
+        this.__cleanup()
+        return true
     }
 
-    async disconnectedCallback() {
-        super.disconnectedCallback()
-        this.__cleanup()
-    }
+    // TODO no any
+    model: any
+    objLoader: any
+    mtlLoader: any
+
+    // updated(_oldProps: any, modifiedProps: any) {
+    //     if (modifiedProps.obj || modifiedProps.mtl) {
+    //         // TODO if only mtl changes, maybe we can update only the material
+    //         // instead of reloading the whole object?
+    //         if (!this.obj) return
+    //         this.__cleanup()
+    //         this.__loadObj()
+    //     }
+    // }
+
+    // connectedCallback() {
+    //     super.connectedCallback()
+    //     MOVED TO loadGL
+    // }
+
+    // disconnectedCallback() {
+    //     super.disconnectedCallback()
+    //     MOVED TO unloadGL
+    // }
 
     private __materialIsFromMaterialBehavior = false
 
@@ -64,14 +96,18 @@ export default class ObjModelBehavior extends Behavior {
         disposeObjectTree(this.model, {
             destroyMaterial: !this.__materialIsFromMaterialBehavior,
         })
+        this.model = null
         this.__materialIsFromMaterialBehavior = false
     }
 
     private __loadObj() {
         const {obj, mtl, mtlLoader, objLoader} = this
 
+        if (!obj) return
+
         if (mtl) {
             mtlLoader.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
+            // TODO if unloadGL was called before this loads, we need to cancel the callback logic
             mtlLoader.load(mtl, (materials: any) => {
                 materials.preload()
                 objLoader.setMaterials(materials)
@@ -96,7 +132,6 @@ export default class ObjModelBehavior extends Behavior {
                     // material features.
                     model.traverse((child: Object3D) => {
                         if (isRenderItem(child)) {
-                            console.log(materialBehavior.getMeshComponent('material'))
                             child.material = materialBehavior.getMeshComponent('material')
                         }
                     })

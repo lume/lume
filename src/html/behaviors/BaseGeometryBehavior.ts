@@ -24,8 +24,8 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
         }
     }
 
-    protected _listenToElement() {
-        super._listenToElement()
+    connectedCallback() {
+        super.connectedCallback()
 
         // TODO the following three events can be replaced with a single propchange:size event
         this.element.on('sizechange', this.__onSizeValueChanged, this)
@@ -33,8 +33,8 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
         this.element.sizeMode.on('valuechanged', this.__onSizeValueChanged, this)
     }
 
-    protected _unlistenToElement() {
-        super._unlistenToElement()
+    disconnectedCallback() {
+        super.disconnectedCallback()
 
         this.element.off('sizechange', this.__onSizeValueChanged)
         this.element.size.off('valuechanged', this.__onSizeValueChanged)

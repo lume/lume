@@ -44,7 +44,8 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
         private __getProps() {
             let result
-            const props = (this.constructor as any).props
+            // const props = (this.constructor as any).props
+            const props = {...(this.constructor as any).props, ...(this.constructor as any).tmp_props}
 
             if (Array.isArray(props)) result = props
             else {

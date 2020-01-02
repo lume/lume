@@ -100,6 +100,14 @@ function toRadians(degrees: number): number {
     return (degrees / 180) * Math.PI
 }
 
+/**
+ * Execute the given `func`tion on the next micro "tick" of the JS engine.
+ */
+export function defer(func: () => unknown): Promise<unknown> {
+    // "defer" is used as a semantic label for Promise.resolve().then
+    return Promise.resolve().then(func)
+}
+
 export {
     epsilon,
     applyCSSLabel,
