@@ -1,5 +1,4 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {Nothing} from '../html/utils'
 
 // TODO strongly typed events. Combine with stuff in Events.ts
 
@@ -19,7 +18,7 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
             else throw new Error('Expected a function in callback argument of Observable#on.')
         }
 
-        off(eventName: string, callback: Function | Nothing) {
+        off(eventName: string, callback?: Function) {
             const eventMap = this.__eventMap
 
             if (!eventMap) return

@@ -8,9 +8,7 @@ export function dashCase(str: string) {
         : str
 }
 
-export type Nothing = undefined | null
-
-export function empty(val: any): val is Nothing {
+export function empty(val: any): val is undefined | null {
     return val == null
 }
 

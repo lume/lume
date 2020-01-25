@@ -1,5 +1,4 @@
 import {MeshPhongMaterial, Color, Camera, PerspectiveCamera, OrthographicCamera} from 'three'
-import {Nothing} from '../html/utils'
 
 type Object3D = import('three').Object3D
 type TColor = import('three').Color | string | number
@@ -22,12 +21,7 @@ export function disposeMaterial(obj: Object3D) {
     }
 }
 
-export function disposeObject(
-    obj: Object3D | Nothing,
-    removeFromParent = true,
-    destroyGeometry = true,
-    destroyMaterial = true
-) {
+export function disposeObject(obj: Object3D, removeFromParent = true, destroyGeometry = true, destroyMaterial = true) {
     if (!obj) return
 
     if (isRenderItem(obj)) {
