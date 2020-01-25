@@ -13,5 +13,5 @@ export function getGlobal() {
     else if (typeof global !== 'undefined') globalObject = global
     else throw new Error('No global detected!')
 
-    return globalObject as Window
+    return (globalObject as any) as Window
 }

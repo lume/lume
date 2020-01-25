@@ -71,7 +71,7 @@ export default class ObjModelBehavior extends Behavior {
         const {obj, mtl, mtlLoader, objLoader} = this
 
         if (mtl) {
-            mtlLoader.setTexturePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
+            mtlLoader.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
             mtlLoader.load(mtl, (materials: any) => {
                 materials.preload()
                 objLoader.setMaterials(materials)

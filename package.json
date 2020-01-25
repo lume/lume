@@ -61,7 +61,7 @@
         "@types/rimraf": "^2.0.3",
         "army-knife": "^0.2.1",
         "autolayout": "^0.7.0",
-        "element-behaviors": "^2.1.3",
+        "element-behaviors": "^2.2.0",
         "geometry-interfaces": "^1.1.3",
         "james-bond": "^0.4.2",
         "jss": "^3.0.0",
@@ -74,7 +74,7 @@
         "live-server": "^1.2.1",
         "lowclass": "^4.7.0",
         "regexr": "^1.5.1",
-        "three": "^0.103.0"
+        "three": "^0.111.0"
     },
     "devDependencies": {
         "@types/mkdirp": "^0.5.2",
