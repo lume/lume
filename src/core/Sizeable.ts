@@ -26,7 +26,8 @@ let propFunctionTask: RenderTask | undefined | null
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
 function SizeableMixin<T extends Constructor>(Base: T) {
-    const Parent = Observable.mixin(TreeNode.mixin(Constructor(Base)))
+    const _Base = Constructor(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
+    const Parent = Observable.mixin(TreeNode.mixin(_Base))
 
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
     // calculating proportional sizes. Also Transformable knows about it's parent
@@ -154,7 +155,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
         makeDefaultProps() {
             return Object.assign(super.makeDefaultProps(), {
                 sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-                size: new XYZNonNegativeValues(100, 100, 100),
+                size: new XYZNonNegativeValues(0, 0, 0),
             })
         }
 

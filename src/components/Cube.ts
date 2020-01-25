@@ -2,24 +2,21 @@ import forLength from 'army-knife/forLength'
 import Node from '../core/Node'
 
 /**
- * A scenegraph tree that lays things out in a cube form.
- *
- * TODO: extend from i-mesh, using a Cube geometry? Or perhaps this is a
- * CubeLayout, not necessarily a Cube mesh.
- *
- * TODO: this is written imperatively. How would it be declaratively?
- *
- * @class Cube
  * @extends Node
+ * @class Cube - A scenegraph tree that lays things out in a cube form.@
+ *
+ * TODO: extend from i-mesh, using a Cube geometry? Or perhaps this is a CubeLayout, not necessarily a Cube mesh.
+ * TODO: this is written imperatively. How would it be declaratively?
  */
 export default class Cube extends Node {
+    /**
+     * @property {Node[]} sides - An array of the cube's side nodes. Each side is a node in the scene graph tree.
+     */
     sides: Node[] = []
 
     /**
-     * Create a new Cube.
-     *
-     * @constructor
-     * @param {Number} size The integer width of the cube.
+     * @constructor - Create a new Cube with the given `size` applied to all sides.
+     * @param {Number} size The size width of the sides of the cube.
      */
     constructor(public size: number, options: object) {
         // cubes, the same size on all sides
@@ -34,10 +31,9 @@ export default class Cube extends Node {
     }
 
     /**
-     * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
-     *
-     * @private
-     * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
+     * @method createCubeSide - Creates one side of the cube.
+     * @param {number} index - A number between 0 and 5 specifying which side to create.
+     * @param {string} name - The name of the side.
      */
     _createCubeSide(index: number) {
         const rotator = new Node({
@@ -73,11 +69,11 @@ export default class Cube extends Node {
     }
 
     /**
-     * Set the content for the sides of the cube.
-     *
-     * @param {Array} content An array containing [Node](#infamous/core/Node)
+     * @method setContent - Set the content for the sides of the cube.
+     * @param {Array<Node>} content - An array containing [Node](#infamous/core/Node)
      * instances to place in the cube sides. Only the first 6 items are used,
      * the rest are ignored.
+     * @returns {this}
      */
     setContent(content: Node[]) {
         forLength(6, index => {

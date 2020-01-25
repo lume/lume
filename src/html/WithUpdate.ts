@@ -34,6 +34,14 @@ export interface PossibleCustomElementConstructor extends Constructor<HTMLElemen
     observedAttributes?: string[]
 }
 
+/**
+ * @abstract
+ * @class WithUpdate - Provides the reactivity system for the properties of subclasses.
+ */
+export const WithUpdate = Mixin(WithUpdateMixin)
+export interface WithUpdate extends InstanceType<typeof WithUpdate> {}
+export default WithUpdate
+
 export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
     const Parent = Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base)
 
@@ -93,6 +101,34 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
             this.__modifiedProps = {}
         }
 
+        /**
+         * @property {any} props - This is a convenience property for getting
+         * the values of all reactive props at once, or for setting all or a
+         * subset of all reactive props at once.
+         *
+         * For example, to set `prop1` and `prop2` props at the same time, you can write:
+         *
+         * ```js
+         * instance.props = {
+         *   prop1: 'foo',
+         *   prop2: 'bar',
+         * }
+         * ```
+         *
+         * To get all reactive prop values at once, without including non-reactive props, use
+         *
+         * ```js
+         * instance.props
+         * ```
+         *
+         * Otherwise, you can get or set each reactive prop on the instance directly, individually:
+         *
+         * ```js
+         * instance.prop1 = 'foo'
+         * instance.prop2 = 'bar'
+         * console.log(instance.prop1, instance.prop2)
+         * ```
+         */
         get props(this: any): any {
             return pick(this, Object.keys(this.constructor.props))
         }
@@ -194,10 +230,6 @@ export function WithUpdateMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
     return WithUpdate as MixinResult<typeof WithUpdate, T>
 }
-
-export const WithUpdate = Mixin(WithUpdateMixin)
-export interface WithUpdate extends InstanceType<typeof WithUpdate> {}
-export default WithUpdate
 
 // const w: WithUpdate = new WithUpdate()
 // w.innerHTML = 123

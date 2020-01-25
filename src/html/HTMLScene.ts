@@ -10,6 +10,11 @@ export default class HTMLScene extends DeclarativeBase {
         this.__root = this.attachShadow({mode: 'open'})
         this.__root.innerHTML = `
             <style>
+                .i-scene-inner {
+                    position: relative
+                }
+
+                .i-scene-inner,
                 .i-scene-CSS3DLayer,
                 .i-scene-MiscellaneousLayer,
                 .i-scene-WebGLLayer,
@@ -18,32 +23,39 @@ export default class HTMLScene extends DeclarativeBase {
                     width: 100%; height: 100%;
                     display: block;
                 }
+
                 .i-scene-CSS3DLayer,
                 .i-scene-MiscellaneousLayer,
                 .i-scene-WebGLLayer {
+                    /* make sure all layers are stacked on top of each other */
                     position: absolute; top: 0; left: 0;
                 }
+
                 .i-scene-CSS3DLayer {
                     transform-style: preserve-3d;
                 }
+
                 .i-scene-WebGLLayer,
                 .i-scene-MiscellaneousLayer {
                     pointer-events: none;
                 }
             </style>
-            <div class="i-scene-CSS3DLayer">
-                ${
-                    /* WebGLRendererThree places the CSS3DRendererNested
-                domElement here, which contains a <slot> element that child
-                elements of a Scene are distributed into (rendered relative to).
-                */ ''
-                }
-            </div>
-            <div class="i-scene-WebGLLayer">
-                ${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
-            </div>
-            <div class="i-scene-MiscellaneousLayer">
-                <slot name="misc"></slot>
+
+            <div class="i-scene-inner">
+                <div class="i-scene-CSS3DLayer">
+                    ${
+                        /* WebGLRendererThree places the CSS3DRendererNested
+                        domElement here, which contains a <slot> element that child
+                        elements of a Scene are distributed into (rendered relative to).
+                        */ ''
+                    }
+                </div>
+                <div class="i-scene-WebGLLayer">
+                    ${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+                </div>
+                <div class="i-scene-MiscellaneousLayer">
+                    <slot name="misc"></slot>
+                </div>
             </div>
         `
 
@@ -56,6 +68,21 @@ export default class HTMLScene extends DeclarativeBase {
         // the private helper from there to friend modules.
         this._glLayer = this.__root.querySelector('.i-scene-WebGLLayer')
         this._cssLayer = this.__root.querySelector('.i-scene-CSS3DLayer')
+
+        const root = this._cssLayer!.attachShadow({mode: 'open'})
+        root.innerHTML = `
+            <style>
+                .i-scene-CSS3DLayer-inner {
+                    /* make sure CSS3D rendering is contained inside of the CSS3DLayer
+                        (all 3D elements have position:absolute, which will be relative
+                        to this container) */
+                    position: relative;
+                }
+            </style>
+            <div class="i-scene-CSS3DLayer-inner">
+                <slot></slot>
+            </div>
+        `
     }
 
     /** @override */

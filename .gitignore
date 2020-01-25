@@ -1,38 +1,10 @@
-### ignore everything
-/*
+node_modules/
+dist/
+.vscode/
 
-# including hidden files, those have to be manually added to the repo.
-/**/.*
-
-### except for the following top-level whitelist:
-
-# folders
-!/src
-!/tests
-!/docs
-!/examples
-!/website
-
-# global build, to be published
-!/global.js
-!/global.js.map
-
-# config files
-!/.all-contributorsrc
-!/.builderrc
-!/.editorconfig
-!/.eslintignore
-!/.eslintrc.js
-!/.gitignore
-!/.npmignore
-!/.npmrc
-!/.prettierignore
-!/.prettierrc.js
-!/bower.json
-!/builder.config.js
-!/tsconfig.json
-!/package.json
-
-# the basics!
-!/README.md
-!/LICENSE
+docs/api/
+docs/src
+docs/node_modules
+docs/global.js
+docs/global.js.map
+docs/README.md

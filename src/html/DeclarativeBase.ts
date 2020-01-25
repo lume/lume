@@ -121,7 +121,7 @@ function makeDeclarativeBase() {
                     // @ts-ignore: allow handleEvent to be protected (upstream
                     // type needs update, the addEventListener method expects it
                     // to be public)
-                    this
+                    this.onChildSlotChange
                 )
                 // TODO do we need __handleDistributedChildren for initial
                 // slotted nodes? Or does `slotchange` conver that? Also, does
@@ -154,7 +154,7 @@ function makeDeclarativeBase() {
                     // @ts-ignore: allow handleEvent to be protected (upstream
                     // type needs update, the addEventListener method expects it
                     // to be public)
-                    this
+                    this.onChildSlotChange
                 )
 
                 this.__slots!.splice(this.__slots!.indexOf(child), 1)
@@ -314,7 +314,7 @@ function makeDeclarativeBase() {
                     // @ts-ignore: allow handleEvent to be protected (upstream
                     // type needs update, the addEventListener method expects it
                     // to be public)
-                    this
+                    this.onChildSlotChange
                 )
                 this.__handleDistributedChildren(child /*, true*/)
             }
@@ -340,23 +340,17 @@ function makeDeclarativeBase() {
                     // @ts-ignore: allow handleEvent to be protected (upstream
                     // type needs update, the addEventListener method expects it
                     // to be public)
-                    this
+                    this.onChildSlotChange
                 )
                 this.__handleDistributedChildren(child)
                 this.__previousSlotAssignedNodes.delete(child)
             }
         }
 
-        // This method is called by EventTarget.addEventListener. It cannot
-        // be prefixed with double underscores like the other private
-        // methods, because EventTarget explicitly looks for and calls the
-        // "handleEvent" method.
-        protected handleEvent(event: Event) {
-            if (event.type == 'slotchange') {
-                const slot = event.target as HTMLSlotElement // must be a slot, if the event is slotchange
-                console.log('######################### SLOT CHANGE')
-                this.__handleDistributedChildren(slot)
-            }
+        private onChildSlotChange = (event: Event) => {
+            const slot = event.target as HTMLSlotElement // must be a <slot> element, if the event is slotchange
+            console.log('######################### SLOT CHANGE')
+            this.__handleDistributedChildren(slot)
         }
 
         childComposedCallback?(child: Element, connectionType: ConnectionType): void
