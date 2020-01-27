@@ -83,7 +83,7 @@
         "babel-eslint": "8.2.6",
         "babel-standalone": "^6.26.0",
         "builder": "4.0.0",
-        "builder-js-package": "trusktr/builder-js-package#c87381af6e5e4319ddddca4134cfcd75669adddb",
+        "builder-js-package": "trusktr/builder-js-package#6d075896771ca5a71a39081aeb07c1d986df46ef",
         "code-vue": "trusktr/live-code",
         "docsify": "trusktr/docsify#fixes",
         "docsify-cli": "trusktr/docsify-cli#add-cors",
