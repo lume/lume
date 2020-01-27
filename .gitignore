@@ -8,3 +8,6 @@ docs/node_modules
 docs/global.js
 docs/global.js.map
 docs/README.md
+
+*.log
+**/.rush/
