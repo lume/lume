@@ -80,7 +80,7 @@
         "jss-vendor-prefixer": "^1.0.0",
         "live-server": "^1.2.1",
         "lowclass": "^4.7.0",
-        "readem": "infamous/readem#a44aeb1fda8c3dcfc4e1473f9bef191da81a902b",
+        "readem": "infamous/readem#44968e9847eee29497555a5a4a6d4895e732af17",
         "regexr": "^1.5.1",
         "three": "^0.111.0"
     },
