@@ -5,12 +5,19 @@ import Node from '../../core/Node'
 
 /**
  * Base class for all behaviors
- *
  */
 export default abstract class Behavior extends WithUpdate.mixin(ForwardProps) {
-    constructor(public element: Node) {
+    element: Node
+
+    constructor(element: Element) {
         super()
 
+        // Unsafe cast here because the __checkElementIsLibraryElement method
+        // does a runtime check to ensure that element is of type Node. We have
+        // to do it this way because it it an asynchronous process that needs to
+        // wait for element to be upgraded in some cases. An error is thrown to
+        // console if element is not a Node.
+        this.element = element as Node
         this.__checkElementIsLibraryElement(element)
     }
 
