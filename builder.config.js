@@ -1,5 +1,6 @@
 module.exports = {
     nodeModulesToCompile: [
-        'element-behaviors'
+        'element-behaviors',
+        'lowclass',
     ],
 }
