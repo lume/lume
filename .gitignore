@@ -2,9 +2,3 @@ node_modules/
 dist/
 .vscode/
 
-docs/api/
-docs/src
-docs/node_modules
-docs/global.js
-docs/global.js.map
-docs/README.md
