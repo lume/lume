@@ -514,7 +514,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             if (!this._glLoaded) return
             this._glLoaded = false
 
-            disposeObject(this.__three)
+            this.__three && disposeObject(this.__three)
             this.__three = null
 
             this.needsUpdate()
@@ -550,7 +550,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
             this._cssLoaded = false
             this.triggerUpdateForProp('visible')
 
-            disposeObject(this.__threeCSS)
+            this.__threeCSS && disposeObject(this.__threeCSS)
             this.__threeCSS = null
 
             this.needsUpdate()
