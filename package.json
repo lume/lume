@@ -2,9 +2,15 @@
     "name": "infamous",
     "version": "21.0.6",
     "description": "A CSS3D/WebGL UI library.",
-    "main": "index.js",
     "license": "MIT",
     "homepage": "http://infamous.io",
+    "type": "module",
+    "types": "./src/index.ts",
+    "exports COMMENT:": "This removes 'dist' from import statements, as well as replaces the 'main' field. See https://github.com/nodejs/node/issues/14970#issuecomment-571887546",
+    "exports": {
+        ".": "./dist/index.js",
+        "./": "./dist/"
+    },
     "scripts": {
         "clean": "builder run clean",
         "build": "builder run build:prod",
@@ -23,7 +29,8 @@
         "docs:prepare": "npm run docs:clean && npm run docs:link && node ./readem.js",
         "docs:link": "ln -s ../node_modules docs/node_modules && ln -s ../dist/global.js docs/global.js && ln -s ../dist/global.js.map docs/global.js.map && ln -s ../README.md docs/README.md",
         "docs:clean": "rm -f docs/src && rm -f docs/node_modules && rm -f docs/global.js && rm -f docs/global.js.map && rm -f docs/README.md && rm -rf docs/api/",
-        "docs": "npm run build && npm run docs:prepare && live-server --host=localhost --port=54321 --watch=global.js,docs --cors ./docs",
+        "docs:serve": "live-server --host=localhost --port=54321 --watch=global.js,docs --cors ./docs",
+        "docs": "npm run build && npm run docs:prepare && npm run docs:serve",
         "website-dev": "cd website && meteor",
         "build-website": "npm i && cd website && npm i",
         "setup-website-service": "cd website && ./setup-service.sh",
@@ -73,6 +80,7 @@
         "jss-vendor-prefixer": "^1.0.0",
         "live-server": "^1.2.1",
         "lowclass": "^4.7.0",
+        "readem": "infamous/readem#a44aeb1fda8c3dcfc4e1473f9bef191da81a902b",
         "regexr": "^1.5.1",
         "three": "^0.111.0"
     },
@@ -83,8 +91,8 @@
         "babel-eslint": "8.2.6",
         "babel-standalone": "^6.26.0",
         "builder": "4.0.0",
-        "builder-js-package": "trusktr/builder-js-package#6d075896771ca5a71a39081aeb07c1d986df46ef",
-        "code-vue": "trusktr/live-code",
+        "builder-js-package": "trusktr/builder-js-package#20f5aff4d104b058b0dc6dd755f3a712ca771959",
+        "code-vue": "trusktr/live-code#6085bf5ca1a7faa5ea021a0fc61f6ba08e08030d",
         "docsify": "trusktr/docsify#fixes",
         "docsify-cli": "trusktr/docsify-cli#add-cors",
         "docsify-copy-code": "^2.1.0",
@@ -108,6 +116,7 @@
         "rimraf": "^3.0.0",
         "tinycolor2": "^1.4.1",
         "tween.js": "^16.6.0",
+        "typescript": "^3.7.4",
         "typescript-eslint-parser": "20.1.1",
         "vue": "^2.6.10",
         "vuep": "^0.8.1"
