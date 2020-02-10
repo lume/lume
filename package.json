@@ -4,8 +4,9 @@
     "description": "A CSS3D/WebGL UI library.",
     "license": "MIT",
     "homepage": "http://infamous.io",
-    "type": "module",
+    "main": "./dist/index.js",
     "types": "./src/index.ts",
+    "type": "module",
     "exports COMMENT:": "This removes 'dist' from import statements, as well as replaces the 'main' field. See https://github.com/nodejs/node/issues/14970#issuecomment-571887546",
     "exports": {
         ".": "./dist/index.js",
