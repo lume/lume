@@ -22,56 +22,56 @@ import '../html/behaviors/DOMNodeGeometryBehavior'
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too? DONE, with WithUpdate class.
 
 export default class Mesh extends Node {
-    static defaultElementName = 'i-mesh'
+	static defaultElementName = 'i-mesh'
 
-    // TODO NAMING: It would be neat to be able to return an array of classes
-    // as well, so that it can be agnostic of the naming. Either way should
-    // work.
-    static defaultBehaviors: {[k: string]: any} = {
-        'box-geometry': (initialBehaviors: any) => {
-            return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-        },
-        'phong-material': (initialBehaviors: any) => {
-            return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-        },
-    }
+	// TODO NAMING: It would be neat to be able to return an array of classes
+	// as well, so that it can be agnostic of the naming. Either way should
+	// work.
+	static defaultBehaviors: {[k: string]: any} = {
+		'box-geometry': (initialBehaviors: any) => {
+			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
+		},
+		'phong-material': (initialBehaviors: any) => {
+			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
+		},
+	}
 
-    static props = {
-        ...(Node.props || {}),
-        castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-        receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-    }
+	static props = {
+		...(Node.props || {}),
+		castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
+		receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
+	}
 
-    castShadow!: boolean
-    receiveShadow!: boolean
+	castShadow!: boolean
+	receiveShadow!: boolean
 
-    three!: ThreeMesh
+	three!: ThreeMesh
 
-    passInitialValuesToThree() {
-        this.three.castShadow = this.castShadow
-        console.log(' ?????????????????? Mesh, pass initial values to three', this.three.castShadow)
-        this.three.receiveShadow = this.receiveShadow
-    }
+	passInitialValuesToThree() {
+		this.three.castShadow = this.castShadow
+		console.log(' ?????????????????? Mesh, pass initial values to three', this.three.castShadow)
+		this.three.receiveShadow = this.receiveShadow
+	}
 
-    updated(oldProps: any, modifiedProps: any) {
-        super.updated(oldProps, modifiedProps)
+	updated(oldProps: any, modifiedProps: any) {
+		super.updated(oldProps, modifiedProps)
 
-        if (!this.isConnected) return
+		if (!this.isConnected) return
 
-        if (modifiedProps.castShadow) {
-            this.needsUpdate()
-        }
+		if (modifiedProps.castShadow) {
+			this.needsUpdate()
+		}
 
-        if (modifiedProps.receiveShadow) {
-            // TODO handle material arrays
-            ;(this.three.material as Material).needsUpdate = true
-            this.needsUpdate()
-        }
-    }
+		if (modifiedProps.receiveShadow) {
+			// TODO handle material arrays
+			;(this.three.material as Material).needsUpdate = true
+			this.needsUpdate()
+		}
+	}
 
-    protected _makeThreeObject3d() {
-        return new ThreeMesh()
-    }
+	protected _makeThreeObject3d() {
+		return new ThreeMesh()
+	}
 }
 
 export {Mesh}

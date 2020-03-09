@@ -1,16 +1,16 @@
 import Mesh from './Mesh'
 
 export default class Plane extends Mesh {
-    static defaultElementName = 'i-plane'
+	static defaultElementName = 'i-plane'
 
-    static defaultBehaviors = {
-        'plane-geometry': (initialBehaviors: string[]) => {
-            return !initialBehaviors.some(b => b.endsWith('-geometry'))
-        },
-        'phong-material': (initialBehaviors: string[]) => {
-            return !initialBehaviors.some(b => b.endsWith('-material'))
-        },
-    }
+	static defaultBehaviors = {
+		'plane-geometry': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-geometry'))
+		},
+		'phong-material': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-material'))
+		},
+	}
 }
 
 export {Plane}

@@ -1,4 +1,4 @@
-const htmlStrings = new WeakSet
+const htmlStrings = new WeakSet()
 
 // This is mostly just an identity template tag function, that for the most part
 // returns the same string as if you hadn't applied this tag. The only
@@ -16,23 +16,23 @@ const htmlStrings = new WeakSet
 //
 // to map arrays to elements).
 function html(parts, ...expressions) {
-    let string = ''
-    let i
+	let string = ''
+	let i
 
-    for (i = 0, l = expressions.length; i < l; i++) {
-        string += parts[i]
+	for (i = 0, l = expressions.length; i < l; i++) {
+		string += parts[i]
 
-        // if we have an array of html`` strings
-        if (Array.isArray(expressions[i]) && htmlStrings.has(expressions[i][0]))
-            expressions[i] = expressions[i].join('')
+		// if we have an array of html`` strings
+		if (Array.isArray(expressions[i]) && htmlStrings.has(expressions[i][0]))
+			expressions[i] = expressions[i].join('')
 
-        string += expressions[i]
-    }
+		string += expressions[i]
+	}
 
-    string += parts[i]
-    string = new String(string)
+	string += parts[i]
+	string = new String(string)
 
-    htmlStrings.add(string)
+	htmlStrings.add(string)
 
-    return string
+	return string
 }

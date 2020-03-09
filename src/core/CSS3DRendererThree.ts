@@ -2,8 +2,8 @@ import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
 import {Scene} from './Scene'
 
 interface SceneState {
-    renderer: CSS3DRendererNested
-    sizeChangeHandler: () => void
+	renderer: CSS3DRendererNested
+	sizeChangeHandler: () => void
 }
 
 const sceneStates = new WeakMap<Scene, SceneState>()
@@ -12,99 +12,99 @@ let instance: CSS3DRendererThree | null = null
 let isCreatingSingleton = false
 
 export class CSS3DRendererThree {
-    static singleton() {
-        if (instance) return instance
-        else {
-            try {
-                isCreatingSingleton = true
-                return (instance = new CSS3DRendererThree())
-            } catch (e) {
-                throw e
-            } finally {
-                isCreatingSingleton = false
-            }
-        }
-    }
+	static singleton() {
+		if (instance) return instance
+		else {
+			try {
+				isCreatingSingleton = true
+				return (instance = new CSS3DRendererThree())
+			} catch (e) {
+				throw e
+			} finally {
+				isCreatingSingleton = false
+			}
+		}
+	}
 
-    private constructor() {
-        if (!isCreatingSingleton)
-            throw new Error('class is a singleton, use the static .singleton() method to get an instance')
-    }
+	private constructor() {
+		if (!isCreatingSingleton)
+			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
+	}
 
-    // TODO rename
-    initialize(scene: Scene) {
-        let sceneState = sceneStates.get(scene)
+	// TODO rename
+	initialize(scene: Scene) {
+		let sceneState = sceneStates.get(scene)
 
-        if (sceneState) return
+		if (sceneState) return
 
-        sceneStates.set(
-            scene,
-            (sceneState = {
-                renderer: new CSS3DRendererNested(),
-                sizeChangeHandler: () => this.updateResolution(scene),
-            })
-        )
+		sceneStates.set(
+			scene,
+			(sceneState = {
+				renderer: new CSS3DRendererNested(),
+				sizeChangeHandler: () => this.updateResolution(scene),
+			}),
+		)
 
-        const {renderer} = sceneState
+		const {renderer} = sceneState
 
-        this.updateResolution(scene)
+		this.updateResolution(scene)
 
-        scene.on('sizechange', sceneState.sizeChangeHandler)
+		scene.on('sizechange', sceneState.sizeChangeHandler)
 
-        // @ts-ignore: access protected property
-        scene._cssLayer
-            //
-            .appendChild(renderer.domElement)
-    }
+		// @ts-ignore: access protected property
+		scene._cssLayer
+			//
+			.appendChild(renderer.domElement)
+	}
 
-    uninitialize(scene: Scene) {
-        const sceneState = sceneStates.get(scene)
+	uninitialize(scene: Scene) {
+		const sceneState = sceneStates.get(scene)
 
-        if (!sceneState) return
+		if (!sceneState) return
 
-        scene.off('sizechange', sceneState.sizeChangeHandler)
+		scene.off('sizechange', sceneState.sizeChangeHandler)
 
-        // @ts-ignore: access protected property
-        scene._cssLayer
-            //
-            .removeChild(sceneState.renderer.domElement)
+		// @ts-ignore: access protected property
+		scene._cssLayer
+			//
+			.removeChild(sceneState.renderer.domElement)
 
-        sceneStates.delete(scene)
-    }
+		sceneStates.delete(scene)
+	}
 
-    drawScene(scene: Scene) {
-        const sceneState = sceneStates.get(scene)
+	drawScene(scene: Scene) {
+		const sceneState = sceneStates.get(scene)
 
-        if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
+		if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
 
-        const {renderer} = sceneState
+		const {renderer} = sceneState
 
-        renderer.render(scene.threeCSS, scene.threeCamera)
-    }
+		renderer.render(scene.threeCSS, scene.threeCamera)
+	}
 
-    updateResolution(scene: Scene) {
-        const state = sceneStates.get(scene)
+	updateResolution(scene: Scene) {
+		const state = sceneStates.get(scene)
 
-        if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
+		if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
-        // @ts-ignore: call protected method
-        scene._updateCameraAspect()
-        // @ts-ignore: call protected method
-        scene._updateCameraPerspective()
-        // @ts-ignore: call protected method
-        scene._updateCameraProjection()
+		// @ts-ignore: call protected method
+		scene._updateCameraAspect()
+		// @ts-ignore: call protected method
+		scene._updateCameraPerspective()
+		// @ts-ignore: call protected method
+		scene._updateCameraProjection()
 
-        const {x, y} = scene.calculatedSize
-        state.renderer.setSize(x, y)
+		const {x, y} = scene.calculatedSize
+		state.renderer.setSize(x, y)
 
-        scene.needsUpdate()
-    }
+		scene.needsUpdate()
+	}
 
-    requestFrame(_scene: Scene, fn: FrameRequestCallback) {
-        requestAnimationFrame(fn)
-    }
+	requestFrame(_scene: Scene, fn: FrameRequestCallback) {
+		requestAnimationFrame(fn)
+	}
 }
 
 export function releaseCSS3DRendererThree() {
-    instance = null
+	instance = null
 }

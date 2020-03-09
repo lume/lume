@@ -1,8 +1,8 @@
 import nodeStyles from './HTMLNode.style'
 
 export default {
-    ...nodeStyles,
+	...nodeStyles,
 
-    position: 'static',
-    overflow: 'hidden',
+	position: 'static',
+	overflow: 'hidden',
 }

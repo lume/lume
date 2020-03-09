@@ -22,24 +22,24 @@ import ObjModel from '../core/ObjModel'
 export * from './behaviors'
 
 export function useDefaultNames() {
-    const classes = [
-        Scene,
-        Node,
-        Mesh,
-        Box,
-        Sphere,
-        Plane,
-        PointLight,
-        DOMNode,
-        DOMPlane,
-        AmbientLight,
-        Camera,
-        AutoLayoutNode,
-        ObjModel,
-        // PushPaneLayout,
-    ]
+	const classes = [
+		Scene,
+		Node,
+		Mesh,
+		Box,
+		Sphere,
+		Plane,
+		PointLight,
+		DOMNode,
+		DOMPlane,
+		AmbientLight,
+		Camera,
+		AutoLayoutNode,
+		ObjModel,
+		// PushPaneLayout,
+	]
 
-    for (const constructor of classes) {
-        if (!customElements.get(constructor.defaultElementName)) constructor.define()
-    }
+	for (const constructor of classes) {
+		if (!customElements.get(constructor.defaultElementName)) constructor.define()
+	}
 }

@@ -1,16 +1,16 @@
 import Mesh from './Mesh'
 
 export default class Sphere extends Mesh {
-    static defaultElementName = 'i-sphere'
+	static defaultElementName = 'i-sphere'
 
-    static defaultBehaviors = {
-        'sphere-geometry': (initialBehaviors: string[]) => {
-            return !initialBehaviors.some(b => b.endsWith('-geometry'))
-        },
-        'phong-material': (initialBehaviors: string[]) => {
-            return !initialBehaviors.some(b => b.endsWith('-material'))
-        },
-    }
+	static defaultBehaviors = {
+		'sphere-geometry': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-geometry'))
+		},
+		'phong-material': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-material'))
+		},
+	}
 }
 
 export {Sphere}

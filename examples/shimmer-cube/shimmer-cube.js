@@ -3,8 +3,8 @@ const {Class} = infamous
 const BasicHTMLRendererBrand = {}
 
 function BasicHTMLRenderer(Base = {}) {
-    // prettier-ignore
-    return Class('BasicHTMLRenderer').extends(Base, ({Super, Public, Protected, Private}) => ({
+	// prettier-ignore
+	return Class('BasicHTMLRenderer').extends(Base, ({Super, Public, Protected, Private}) => ({
         static: {
             // "shadow" means it renders to a shadow root, "replace" means it
             // uses innerHTML, and "append" means it appends with
@@ -65,32 +65,32 @@ function BasicHTMLRenderer(Base = {}) {
 const NodeWithRenderer = BasicHTMLRenderer(infamous.Node)
 
 const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super, Public}) => ({
-    static: {
-        props: {
-            // TODO log a warning if Node or Scene props are missing (most
-            // likely someone extended props wrong)
-            ...infamous.Node.props,
-            color: infamous.props.props.THREE.Color,
-        },
-        // htmlRenderMode: 'replace',
-        htmlRenderMode: 'shadow',
-    },
+	static: {
+		props: {
+			// TODO log a warning if Node or Scene props are missing (most
+			// likely someone extended props wrong)
+			...infamous.Node.props,
+			color: infamous.props.props.THREE.Color,
+		},
+		// htmlRenderMode: 'replace',
+		htmlRenderMode: 'shadow',
+	},
 
-    updated(oldProps, modifiedProps) {
-        super.updated(oldProps, modifiedProps)
+	updated(oldProps, modifiedProps) {
+		super.updated(oldProps, modifiedProps)
 
-        if (modifiedProps.color) {
-            this.shouldRender()
-        }
-    },
+		if (modifiedProps.color) {
+			this.shouldRender()
+		}
+	},
 
-    protected: {
-        _render() {
-            // const {r, g, b} = { r: 244/255, g: 196/255, b: 48/255 }
-            const {r, g, b} = this.color
+	protected: {
+		_render() {
+			// const {r, g, b} = { r: 244/255, g: 196/255, b: 48/255 }
+			const {r, g, b} = this.color
 
-            // prettier-ignore
-            return html`
+			// prettier-ignore
+			return html`
                 <style>
                     @keyframes ShimmerEffect {
                         0% { transform: translate3d(-15%, -15%, 30px) }
@@ -118,36 +118,36 @@ const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super
 
                 <div class="shimmerSurfaceContent"></div>
             `
-        },
-    },
+		},
+	},
 }))
 
 customElements.define('shimmer-surface', ShimmerSurface)
 
 const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Public}) => ({
-    static: {
-        props: {
-            ...infamous.Node.props,
-            color: infamous.props.props.THREE.Color,
-        },
-        // htmlRenderMode: 'replace',
-        htmlRenderMode: 'shadow',
-    },
+	static: {
+		props: {
+			...infamous.Node.props,
+			color: infamous.props.props.THREE.Color,
+		},
+		// htmlRenderMode: 'replace',
+		htmlRenderMode: 'shadow',
+	},
 
-    updated(oldProps, modifiedProps) {
-        super.updated(oldProps, modifiedProps)
+	updated(oldProps, modifiedProps) {
+		super.updated(oldProps, modifiedProps)
 
-        if (modifiedProps.color) {
-            this.shouldRender()
-        }
-    },
+		if (modifiedProps.color) {
+			this.shouldRender()
+		}
+	},
 
-    protected: {
-        _render() {
-            const {r, g, b} = this.color
+	protected: {
+		_render() {
+			const {r, g, b} = this.color
 
-            // prettier-ignore
-            const cubeFaceOrientations = [
+			// prettier-ignore
+			const cubeFaceOrientations = [
                 [0, 180, 0],
                 [0, 0, 0],
                 [0, 90, 0],
@@ -156,8 +156,8 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
                 [270, 0, 0],
             ]
 
-            // prettier-ignore
-            return html`
+			// prettier-ignore
+			return html`
                 <i-box
                     ${this.id ? `id="${this.id}-box"` : ``}
                     color="#364659"
@@ -182,9 +182,9 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
                 `)}
             `
 
-            // root.querySelector('i-box').three.material.opacity = 0.2
-        },
-    },
+			// root.querySelector('i-box').three.material.opacity = 0.2
+		},
+	},
 }))
 
 customElements.define('shimmer-cube', ShimmerCube)

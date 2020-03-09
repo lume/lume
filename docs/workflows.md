@@ -36,45 +36,45 @@ Make a file named `index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: #333;
-    }
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #333;
+	}
 
-    i-node {
-        background: pink;
-    }
+	i-node {
+		background: pink;
+	}
 
-    div {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
+	div {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		text-align: center;
+	}
 </style>
 
 <script src="https://cdn.rawgit.com/trusktr/infamous/v18.0.3/global.js"></script>
 
 <i-scene>
-    <i-node sizeMode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mountPoint="0.5 0.5">
-        <div>Hello 3D</div>
-    </i-node>
+	<i-node sizeMode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mountPoint="0.5 0.5">
+		<div>Hello 3D</div>
+	</i-node>
 </i-scene>
 
 <script>
-    // use the default names for the custom elements (f.e. i-node and i-scene).
-    infamous.html.useDefaultNames()
+	// use the default names for the custom elements (f.e. i-node and i-scene).
+	infamous.html.useDefaultNames()
 
-    const {Motor} = infamous.core
-    const node = document.querySelector('i-node')
+	const {Motor} = infamous.core
+	const node = document.querySelector('i-node')
 
-    // Define "property function" to increment only the Y rotation:
-    node.rotation = (x, y, z) => [x, ++y, z]
+	// Define "property function" to increment only the Y rotation:
+	node.rotation = (x, y, z) => [x, ++y, z]
 </script>
 ```
 
@@ -118,10 +118,10 @@ useDefaultNames()
 const scene = new Scene()
 
 const node = new Node({
-    sizeMode: ['proportional', 'proportional'],
-    size: [0.75, 0.75],
-    align: [0.5, 0.5],
-    mountPoint: [0.5, 0.5],
+	sizeMode: ['proportional', 'proportional'],
+	size: [0.75, 0.75],
+	align: [0.5, 0.5],
+	mountPoint: [0.5, 0.5],
 })
 
 node.innerHTML = '<div>Hello 3D</div>'
@@ -137,26 +137,26 @@ Make a file `public/index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: #333;
-    }
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #333;
+	}
 
-    i-node {
-        background: pink;
-    }
+	i-node {
+		background: pink;
+	}
 
-    div {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
+	div {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		text-align: center;
+	}
 </style>
 <script src="./app.js"></script>
 ```
@@ -201,11 +201,11 @@ Create a file named `webpack.config.js` to configure webpack:
 
 ```js
 module.exports = {
-    entry: './app.js',
-    output: {
-        path: './public',
-        filename: 'app.js',
-    },
+	entry: './app.js',
+	output: {
+		path: './public',
+		filename: 'app.js',
+	},
 }
 ```
 
@@ -221,10 +221,10 @@ useDefaultNames()
 const scene = new Scene()
 
 const node = new Node({
-    sizeMode: ['proportional', 'proportional'],
-    size: [0.75, 0.75],
-    align: [0.5, 0.5],
-    mountPoint: [0.5, 0.5],
+	sizeMode: ['proportional', 'proportional'],
+	size: [0.75, 0.75],
+	align: [0.5, 0.5],
+	mountPoint: [0.5, 0.5],
 })
 
 node.innerHTML = '<div>Hello 3D</div>'
@@ -240,26 +240,26 @@ Make a file named `public/index.html` containing the following:
 ```html
 <!DOCTYPE html>
 <style>
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: #333;
-    }
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #333;
+	}
 
-    i-node {
-        background: pink;
-    }
+	i-node {
+		background: pink;
+	}
 
-    div {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
+	div {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		text-align: center;
+	}
 </style>
 <script src="./app.js"></script>
 ```

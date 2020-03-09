@@ -7,7 +7,7 @@ Use the "global" version of infamous via script tag in your HTML page:
 ```html
 <script src="https://unpkg.com/infamous@17.0.5/global.js"></script>
 <script>
-    infamous.html.useDefaultNames()
+	infamous.html.useDefaultNames()
 </script>
 ```
 
@@ -48,7 +48,7 @@ import Node from 'infamous/core/Node'
 const scene = new Scene()
 
 const node = new Node({
-    position: [100, 100, 0],
+	position: [100, 100, 0],
 })
 
 scene.add(node)
@@ -67,9 +67,9 @@ scene.mount(document.body)
 
 ```html
 <body>
-    <i-scene>
-        <i-node position="100 100"> </i-node>
-    </i-scene>
+	<i-scene>
+		<i-node position="100 100"> </i-node>
+	</i-scene>
 </body>
 ```
 
@@ -96,7 +96,7 @@ Then either write the scene with JavaScript,
 const scene = new Scene()
 
 const node = new Node({
-    position: [100, 100, 0],
+	position: [100, 100, 0],
 })
 
 scene.add(node)
@@ -115,8 +115,8 @@ scene.mount(document.body)
 
 ```html
 <body>
-    <nfms-scene>
-        <nfms-node position="100 100"> </nfms-node>
-    </nfms-scene>
+	<nfms-scene>
+		<nfms-node position="100 100"> </nfms-node>
+	</nfms-scene>
 </body>
 ```

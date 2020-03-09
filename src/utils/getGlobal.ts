@@ -6,12 +6,12 @@
  * Node.js global at that point.
  */
 export function getGlobal() {
-    let globalObject
+	let globalObject
 
-    if (typeof globalThis !== 'undefined') globalObject = globalThis
-    else if (typeof window !== 'undefined') globalObject = window
-    else if (typeof global !== 'undefined') globalObject = global
-    else throw new Error('No global detected!')
+	if (typeof globalThis !== 'undefined') globalObject = globalThis
+	else if (typeof window !== 'undefined') globalObject = window
+	else if (typeof global !== 'undefined') globalObject = global
+	else throw new Error('No global detected!')
 
-    return (globalObject as any) as Window
+	return (globalObject as any) as Window
 }
