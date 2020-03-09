@@ -53,4 +53,11 @@ ${endMarker}`
     await fs.promises.writeFile(sidebarFile, content, {encoding: 'utf8'})
 }
 
-main()
+main().catch(e => {
+	// Make sure the process exits with a non-zero exit code on unhandle promise
+	// rejections. This won't be necessary in an upcoming release of Node.js, in
+	// which case it'll exit non-zero automatically. Time of writing this comment:
+	// Node 13.8.
+	console.error(e)
+	process.exit(1)
+})
