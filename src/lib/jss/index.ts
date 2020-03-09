@@ -1,4 +1,4 @@
-import Jss from 'jss'
+import * as Jss from 'jss'
 
 import jssNested from 'jss-nested'
 import jssExtend from 'jss-extend'

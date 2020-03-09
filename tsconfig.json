@@ -1,8 +1,6 @@
 {
-    "extends": "./node_modules/builder-js-package/config/tsconfig.json",
-    "compilerOptions": {
-        // TODO update this comment to document exactly why we need this option.
-        "allowSyntheticDefaultImports": true,
-        "declaration": false // TODO, set back to true after removing class-factory mixins
-    }
+	"extends": "./node_modules/builder-js-package/config/tsconfig.json",
+	"compilerOptions": {
+		"declaration": false // TODO, set back to true after removing class-factory mixins
+	}
 }
