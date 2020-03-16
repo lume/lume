@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin}/global.js"><\/script>
+<script src="${location.origin+location.pathname}/global.js"><\/script>
 
 <script> infamous.useDefaultNames() <\/script>
 

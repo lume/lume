@@ -10,9 +10,9 @@
 `
 <body>
 
-<script src="${location.origin}/global.js"><\/script>
-<script src="${location.origin}/node_modules/vue/dist/vue.js"><\/script>
-<script src="${location.origin}/node_modules/tween.js/src/Tween.js"><\/script>
+<script src="${location.origin+location.pathname}/global.js"><\/script>
+<script src="${location.origin+location.pathname}/node_modules/vue/dist/vue.js"><\/script>
+<script src="${location.origin+location.pathname}/node_modules/tween.js/src/Tween.js"><\/script>
 
 <style>
     body, html {
