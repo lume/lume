@@ -1,19 +1,8 @@
-import * as Jss from 'jss'
+import {create} from 'jss'
+import presetDefault from 'jss-preset-default'
 
-import jssNested from 'jss-nested'
-import jssExtend from 'jss-extend'
-import jssPx from 'jss-px'
-import jssVendorPrefixer from 'jss-vendor-prefixer'
-import jssCamelCase from 'jss-camel-case'
-import jssPropsSort from 'jss-props-sort'
+const jss = create()
 
-const jss = Jss.create()
-
-jss.use(jssNested())
-jss.use(jssExtend())
-jss.use(jssPx())
-jss.use(jssVendorPrefixer())
-jss.use(jssCamelCase())
-jss.use(jssPropsSort())
+jss.setup(presetDefault())
 
 export default jss

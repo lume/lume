@@ -168,6 +168,7 @@ function WebComponentMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		private __createStyles(): object {
 			const rule = jss.createRule(this.getStyles())
 
+			// @ts-ignore TODO update JSS types, it is missing the applyTo method.
 			rule.applyTo(this)
 
 			return rule
