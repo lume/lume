@@ -5,6 +5,15 @@
 
 		<meta charset="UTF-8" />
 
+		<script>
+			// If we're not already at an HTML file like
+			// foo.com/path/to/index.html, then ensure the folder path has a
+			// trailing slash (redirect).
+			if (!location.pathname.endsWith('.html') && !location.pathname.endsWith('/')) {
+				location.replace(location.href + '/')
+			}
+		</script>
+
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta name="description" content="A CSS3D/WebGL UI library." />
 		<meta
