@@ -1,6 +1,6 @@
 # Hello 3D
 
-<!-- <code-vue :options="{theme: 'base16-light'}" template="#rotating-square" :autorun="true" />
+<!-- <live-code :options="{theme: 'base16-light'}" template="#rotating-square" :autorun="true" />
 <script type="text/x-template" id="rotating-square"><template>
   <i-scene>
     <i-node ref="node"
@@ -34,7 +34,7 @@
 <script type="application/javascript">
   new Vue({
     el: '#example',
-    template: '<code-vue :template="code" mode="html>iframe" :debounce="200" />',
+    template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
     data: {
       code:
 `
