@@ -21,6 +21,6 @@ jobs:
       run: |
         npm i
         npm test
-        npm run docs:prepare
+        npm run docs:build
       env:
         CI: true
