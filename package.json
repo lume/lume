@@ -19,7 +19,7 @@
 		"dev": "lume dev",
 		"typecheck": "lume typecheck",
 		"typecheck:watch": "lume typecheckWatch",
-		"test": "lume test",
+		"test": "lume test && docs:build",
 		"test:debug": "lume testDebug",
 		"prettier": "lume prettier",
 		"prettier:check": "lume prettierCheck",
