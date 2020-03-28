@@ -54,7 +54,7 @@
 		"@trusktr/skatejs": "5.2.40002",
 		"army-knife": "^0.2.1",
 		"autolayout": "^0.7.0",
-		"element-behaviors": "^2.2.0",
+		"element-behaviors": "^2.2.2",
 		"geometry-interfaces": "^1.1.3",
 		"james-bond": "^0.4.2",
 		"jss": "^10.1.1",
