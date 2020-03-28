@@ -74,7 +74,7 @@
 		"babel-eslint": "8.2.6",
 		"babel-standalone": "^6.26.0",
 		"@lume/cli": "^1.0.2",
-		"@lume/live-code": "^0.0.1",
+		"@lume/live-code": "^0.0.2",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
 		"docsify-cli": "trusktr/docsify-cli#add-cors",
 		"docsify-copy-code": "^2.1.0",
