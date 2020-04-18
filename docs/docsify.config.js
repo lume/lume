@@ -11,6 +11,7 @@
 			loadSidebar: true,
 			loadNavbar: true,
 			subMaxLevel: 3,
+			externalLinkTarget: '_self',
 			executeScript: true, // defaults to false unless Vue is present in which case defaults to true.
 			auto2top: true,
 			relativePath: true,
@@ -24,13 +25,13 @@
 						const url = vm.config.repo + '/blob/master/docs/' + vm.route.file
 						const editTop = `
 <a href="${url}" style="position: absolute; right: 45px; top: 120px;" target="__blank">
-📝 Edit document.
+	Edit document.
 </a>
 
 `
 						const editBottom = `
 <a href="${url}" style="position: absolute; right: 45px;" target="__blank">
-📝 Edit document.
+	Edit document.
 </a>
 
 `
