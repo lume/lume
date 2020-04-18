@@ -1,26 +1,26 @@
 :root {
-    --sidebar-width: 300px;
-    --code-font-size: unset; /* fall back to Docsify's code sizing which varies across page headings */
+	--sidebar-width: 300px;
+	--code-font-size: unset; /* fall back to Docsify's code sizing which varies across page headings */
 
-    /* original value from docsify-themeable */
-    --code-inline-padding: 0.125em 0.4em;
+	/* original value from docsify-themeable */
+	--code-inline-padding: 0.125em 0.4em;
 
-    /* new version: */
-    --code-inline-padding-sides: 0.4em;
-    --code-inline-padding-top-bottom: 0.125em;
-    --code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
+	/* new version: */
+	--code-inline-padding-sides: 0.4em;
+	--code-inline-padding-top-bottom: 0.125em;
+	--code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
 }
 
 .markdown-section h1 code,
 .markdown-section h2 code,
 .markdown-section h3 code {
-    --code-inline-margin: 0;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    border-radius: 0 !important;
+	--code-inline-margin: 0;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	border-radius: 0 !important;
 
-    /* Remove bold styling from heading code, so we can bold only some parts with <b> tags */
-    /* font-weight: unset; */
+	/* Remove bold styling from heading code, so we can bold only some parts with <b> tags */
+	/* font-weight: unset; */
 }
 
 .markdown-section h1 > :first-child code,
@@ -29,9 +29,9 @@
 .markdown-section h2 > code:first-child,
 .markdown-section h3 > :first-child code,
 .markdown-section h3 > code:first-child {
-    padding-left: var(--code-inline-padding-sides) !important;
-    border-top-left-radius: var(--code-inline-border-radius) !important;
-    border-bottom-left-radius: var(--code-inline-border-radius) !important;
+	padding-left: var(--code-inline-padding-sides) !important;
+	border-top-left-radius: var(--code-inline-border-radius) !important;
+	border-bottom-left-radius: var(--code-inline-border-radius) !important;
 }
 
 .markdown-section h1 > :last-child code,
@@ -40,38 +40,38 @@
 .markdown-section h2 > code:last-child,
 .markdown-section h3 > :last-child code,
 .markdown-section h3 > code:last-child {
-    padding-right: var(--code-inline-padding-sides) !important;
-    border-top-right-radius: var(--code-inline-border-radius) !important;
-    border-bottom-right-radius: var(--code-inline-border-radius) !important;
+	padding-right: var(--code-inline-padding-sides) !important;
+	border-top-right-radius: var(--code-inline-border-radius) !important;
+	border-bottom-right-radius: var(--code-inline-border-radius) !important;
 }
 
 .vuep {
-    /* TODO height:auto; doesn't work well, because it makes content below it appear higher than the bottom edge of the box. How can we make that work? */
-    height: auto;
-    max-height: 400px;
-    /* height: 400px; */
+	/* TODO height:auto; doesn't work well, because it makes content below it appear higher than the bottom edge of the box. How can we make that work? */
+	height: auto;
+	max-height: 400px;
+	/* height: 400px; */
 }
 
 .vuep.full {
-    height: calc(100vh - 345px);
-    max-height: unset;
+	height: calc(100vh - 345px);
+	max-height: unset;
 }
 
 .vuep-preview {
-    padding: 0 !important;
+	padding: 0 !important;
 
-    /*
+	/*
      * TODO for some reason, without this, scroll bars appear, though nothing
      * appears to go beyond the boundaries of the container.
      */
-    overflow: hidden;
+	overflow: hidden;
 }
 
 .vuep-editor,
 .vuep-preview {
-    /* TODO move this into the editor component */
-    /* height: 100%; */
-    height: auto;
+	/* TODO move this into the editor component */
+	/* height: 100%; */
+	height: auto;
 }
 
 /*
@@ -79,5 +79,5 @@
  * examples
  */
 .markdown-section {
-    max-width: unset;
+	max-width: unset;
 }
