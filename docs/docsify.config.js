@@ -7,7 +7,8 @@
 
 	window.$docsify = vm => {
 		return {
-			name: 'infamous',
+			name: 'LUME',
+			nameLink: '//lume.io',
 			loadSidebar: true,
 			loadNavbar: true,
 			subMaxLevel: 3,
