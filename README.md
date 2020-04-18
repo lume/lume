@@ -4,7 +4,7 @@ infamous
 
 Create 3D CSS+WebGL apps declaratively with HTML.
 
-[Site](//lume.io) — [Forums](//lume.community) — [Examples](//lume.io/docs/#/examples/hello3d) — [Docs](//lume.io/docs/)
+[Site](//lume.io) — [Discuss](//lume.community) — [Examples](//lume.io/docs/#/examples/hello3d) — [Docs](//lume.io/docs/)
 
 <h2> About </h2>
 
@@ -49,7 +49,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 
 | [<img src="https://avatars0.githubusercontent.com/u/2830402?v=4" width="100px;"/><br /><sub>corruptedzulu</sub>](https://github.com/corruptedzulu)<br />[💻](https://github.com/trusktr/infamous/commits?author=corruptedzulu 'Code') [📖](https://github.com/trusktr/infamous/commits?author=corruptedzulu 'Documentation') | [<img src="https://avatars3.githubusercontent.com/u/297678?v=4" width="100px;"/><br /><sub>Joseph Orbegoso Pea</sub>](http://trusktr.io)<br />[💻](https://github.com/trusktr/infamous/commits?author=trusktr 'Code') [🐛](https://github.com/trusktr/infamous/issues?q=author%3Atrusktr 'Bug reports') [📖](https://github.com/trusktr/infamous/commits?author=trusktr 'Documentation') [💡](#example-trusktr 'Examples') |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
