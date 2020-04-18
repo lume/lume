@@ -5,6 +5,8 @@
 	// href = anything-with-no-space
 	const reAnchorWithHref = /<\s*a\b[^><]*\bhref\b\s*=\s*(?:(?:'([^']*)')|(?:"([^"]*)")|(\S+))/g
 
+	const repo = 'https://github.com/lume/lume'
+
 	window.$docsify = vm => {
 		return {
 			name: 'LUME',
@@ -17,13 +19,14 @@
 			auto2top: true,
 			relativePath: true,
 			// coverpage: true,
-			// repo: 'https://github.com/infamous/infamous', // shows GitHub corner banner at the top of all pages.
-			// logo: '/_media/logoipsum.png', // replaces site `name` in sidebar with an image.
+			// repo, // shows GitHub corner banner at the top of all pages.
+			// replaces site `name` in sidebar with an image.
+			logo: '//lume.community/uploads/default/original/1X/8c0497c2d7fea620d475d79fc26333de3391f9af.png',
 
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
 				function(hook, vm) {
 					hook.beforeEach(content => {
-						const url = vm.config.repo + '/blob/master/docs/' + vm.route.file
+						const url = repo + '/edit/develop/docs/' + vm.route.file
 						const editTop = `
 <a href="${url}" style="position: absolute; right: 45px; top: 120px;" target="__blank">
 	Edit document.
