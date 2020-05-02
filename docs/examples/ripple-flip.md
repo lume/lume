@@ -21,9 +21,9 @@
 <body>
 
 <script>
-  infamous.useDefaultNames()
+  LUME.useDefaultNames()
 
-  const {Motor, Scene, Node} = infamous
+  const {Motor, Scene, Node} = LUME
   const {Tween, Easing} = TWEEN
   const color = tinycolor
 

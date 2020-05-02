@@ -1,12 +1,11 @@
 # Workflows
 
 The following sample workflows show possible ways to install and start using
-infamous without any build steps or special tools, as well as using various
-build tools that are popular today.
+Lume with or without build tools
 
-If you're a total beginner to web development and don't know [how to use a
-command line](https://www.davidbaumgold.com/tutorials/command-line/), then the
-[Global Workflow](<#global-workflow-(easiest)>) will be the easiest way for you
+If you're a total beginner to development and don't know [how to use a
+terminal command line](https://www.davidbaumgold.com/tutorials/command-line/), then the
+[Global Workflow](#global-workflow-easiest) will be the easiest way for you
 to get started. The other workflows require basic understanding of the command
 line.
 
@@ -23,187 +22,106 @@ is responsive.)
 ## Global Workflow (easiest)
 
 This workflow involves simply placing a `<script>` tag into an HTML page in
-order to load `infamous` as a global variable, and requires no build steps or
-tooling. Many of the [examples](./examples.md) use this workflow, which you can
+order to load `LUME` as a global variable, and requires no build steps or
+tooling. Many of the [examples](./examples.old.md) use this workflow, which you can
 learn from.
 
-In this workflow we'll write HTML (a "declarative language") to define the 3D
-scene, and only a small sprinkle of JavaScript (an "imperative language") to
-animate the rectangle.
+In this workflow we'll write HTML (a "declarative programming language") to
+define the 3D scene, and only a small sprinkle of JavaScript (an "imperative
+programming language") to animate the rectangle.
 
 Make a file named `index.html` containing the following:
 
 ```html
-<!DOCTYPE html>
 <style>
 	html,
 	body {
+		/* Make the app full width/height of the viewport. */
 		width: 100%;
 		height: 100%;
 		margin: 0;
-		padding: 0;
+
+		/* Give the app a background color. */
 		background: #333;
 	}
 
 	i-node {
+		/* Give the rotating rectangle (the i-node below) a pink color. */
 		background: pink;
-	}
-
-	div {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		text-align: center;
 	}
 </style>
 
-<script src="https://cdn.rawgit.com/trusktr/infamous/v18.0.3/global.js"></script>
-
+<!-- Define a 3D scene. -->
 <i-scene>
-	<i-node sizeMode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mountPoint="0.5 0.5">
-		<div>Hello 3D</div>
+	<!--
+		The <i-node> is a basic element that is rendered with CSS.
+
+		Here we give it "proportional" sizing along the X nd Y axes, which
+		means it will be sized relative to the size of its parent (in this
+		case the parent is the <i-scene> element). The <i-node> will have 75%
+		or the width and height of the scene width and height.
+
+		The align and mount-point properties have values that center the
+		<i-node> rectangle in the center of the view.
+	-->
+	<i-node size-mode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mount-point="0.5 0.5">
+		<!-- Put some italicized text inside of it. -->
+		<i>Hello 3D</i>
 	</i-node>
 </i-scene>
 
-<script>
-	// use the default names for the custom elements (f.e. i-node and i-scene).
-	infamous.html.useDefaultNames()
+<!-- Include the global version of Lume in the app. -->
+<script src="https://unpkg.com/lume/dist/global.js"></script>
 
-	const {Motor} = infamous.core
+<script>
+	// Tell Lume to use default names for the elements (f.e. i-node and i-scene).
+	LUME.useDefaultNames()
+
+	// Get a reference to the i-node element.
 	const node = document.querySelector('i-node')
 
-	// Define "property function" to increment only the Y rotation:
+	// Define a "property function" to increment only the Y rotation. This
+	// increments rotation around the Y axis by 1 degree every time the scene
+	// re-renders (which is usually 60fps unless the framerate decreases for
+	// graphically intensive scenes).
 	node.rotation = (x, y, z) => [x, ++y, z]
 </script>
 ```
 
-Now use `File > Open` in your browser to open the `index.html` file and see the
+Now use `File > Open` in your web browser to open the `index.html` file and see the
 result.
-
-## Browserify Workflow
-
-In this workflow, you'll be able to write CommonJS modules (the same sort of
-module format used by Node.js, [see the
-guide](https://nodejs.org/docs/latest/api/modules.html#modules_modules)) which
-is useful for sharing reusable code across files in your project, and then use
-[Browserify](http://browserify.org) to bundle the code into a single file that
-can be loaded into a web app via `<script>` tag.
-
-In this workflow we'll write only JavaScript (an "imperative language") to define
-the 3D scene as well as to animate it.
-
-Install [Node.js](http://nodejs.org), then install
-[`browserify`](http://browserify.org) globally:
-
-```sh
-npm install -g "browserify@^14"
-```
-
-Install `infamous` into your project:
-
-```sh
-npm install infamous --save
-```
-
-Make a file named `app.js` containing the following:
-
-```js
-const {useDefaultNames} = require('infamous/html')
-const {Scene, Node} = require('infamous/core')
-
-// tell infamous to
-useDefaultNames()
-
-const scene = new Scene()
-
-const node = new Node({
-	sizeMode: ['proportional', 'proportional'],
-	size: [0.75, 0.75],
-	align: [0.5, 0.5],
-	mountPoint: [0.5, 0.5],
-})
-
-node.innerHTML = '<div>Hello 3D</div>'
-
-scene.add(node)
-scene.mount(document.body)
-
-node.rotation = (x, y, z) => [x, ++y, z]
-```
-
-Make a file `public/index.html` containing the following:
-
-```html
-<!DOCTYPE html>
-<style>
-	html,
-	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		background: #333;
-	}
-
-	i-node {
-		background: pink;
-	}
-
-	div {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		text-align: center;
-	}
-</style>
-<script src="./app.js"></script>
-```
-
-then compile a bundle that we'll run in the browser:
-
-```sh
-browserify app.js -o public/app.js
-```
-
-This `browserify` command will output a bundle to `public/app.js`, which
-contains your code plus the infamous code that you imported using the
-`require()` syntax.
-
-Now use `File > Open` in your browser to open the `public/index.html` file and
-see the result.
 
 ## Webpack Workflow
 
-In this workflow, you'll be able to write [ES
-Modules](http://2ality.com/2014/09/es6-modules-final.html) (also known as ES6
-Modules) which is useful for sharing reusable code across files in your project
-(a similar purpose to the CommonJS module format used with the previous
-[Browserify workflow](#browserify-workflow)), and then use
-[Webpack](https://webpack.js.org) to bundle the code into a single file that
-can be loaded into a web app via `<script>` tag.
+In this workflow we'll use a build tool called
+[Webpack](https://webpack.js.org) to bundle our application code into a
+single file that can be loaded into a web app via `<script>` tag.
+
+Make a folder somewhere on your computer, then open it in your terminal. (What is a Terminal?)
 
 Install [Node.js](http://nodejs.org), then install
-[`webpack`](https://webpack.js.org) globally:
+[`webpack`](https://webpack.js.org) in your project:
 
 ```sh
-npm install -g "webpack@^3"
+npm install "webpack@^3" --save-dev
 ```
 
-Install `infamous` into your project:
+The `--save-dev` option saves webpack as a ["dev
+dependency"](https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file).
+
+Install Lume into your project:
 
 ```sh
-npm install infamous --save
+npm install lume --save
 ```
 
-Create a file named `webpack.config.js` to configure webpack:
+Create a file named `webpack.config.js` to configure Webpack:
 
 ```js
 module.exports = {
 	entry: './app.js',
 	output: {
-		path: './public',
+		path: './output',
 		filename: 'app.js',
 	},
 }
@@ -212,17 +130,21 @@ module.exports = {
 Make a file named `app.js` containing the following:
 
 ```js
-import {useDefaultNames} from 'infamous/html'
-import {Scene, Node} from 'infamous/core'
+import {Scene, Node, useDefaultNames} from 'lume'
 
-// tell infamous to
+// Tell Lume to use default names for the elements.
 useDefaultNames()
 
+// Create a new 3D scene:
 const scene = new Scene()
 
+// Add a 3D node into the scene tree.
 const node = new Node({
+	// Make the node take up 75% of the width and height of the scene viewport.
 	sizeMode: ['proportional', 'proportional'],
 	size: [0.75, 0.75],
+
+	// Position the node in the center of the view.
 	align: [0.5, 0.5],
 	mountPoint: [0.5, 0.5],
 })
@@ -235,7 +157,7 @@ scene.mount(document.body)
 node.rotation = (x, y, z) => [x, ++y, z]
 ```
 
-Make a file named `public/index.html` containing the following:
+Make a file named `output/index.html` in your poject containing the following:
 
 ```html
 <!DOCTYPE html>
@@ -264,19 +186,20 @@ Make a file named `public/index.html` containing the following:
 <script src="./app.js"></script>
 ```
 
-then compile a bundle that we'll run in the browser:
+then compile a bundle that we'll run in the browser by running the following in your command line:
 
 ```sh
-webpack
+npx webpack
 ```
 
-The `webpack` command outputs a bundle to `public/app.js`, which includes your
-code as well as the infamous code that you imported with the `import` syntax.
+The `npx webpack` command runs the Webpack build tool and outputs a bundle to
+the file `output/app.js` within your project, which includes your code as
+well as the Lume code that you imported with the `import` statements.
 
-Now use `File > Open` in your browser to open the `public/index.html` file and
+Now use `File > Open` in your browser to open the `output/index.html` file and
 see the result.
 
 # What's next?
 
-Now that you're up and running, learn more in the [guide](#) (coming soon...)
-and [API reference](#) (coming soon...).
+Now that you're up and running, learn more in the [Guide](#) (coming soon...) and [API
+reference](./api/core/Node).

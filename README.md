@@ -1,4 +1,4 @@
-infamous
+LUME
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 ========
 
@@ -8,7 +8,7 @@ Create 3D CSS+WebGL apps declaratively with HTML.
 
 <h2> About </h2>
 
-Infamous gives you general-purpose [Custom HTML
+Lume gives you general-purpose [Custom HTML
 Elements](https://developers.google.com/web/fundamentals/architecture/building-components/customelements)
 that the browser understands, for defining 2D or 3D scenes rendered with CSS3D,
 WebGL, or both mixed together.
@@ -16,17 +16,17 @@ WebGL, or both mixed together.
 If you prefer imperative JavaScript, you can also use the imperative JavaScript
 API.
 
-Infamous' "mixed mode" let's us combine traditional HTML elements with new ones
+Lume's "mixed mode" let's us combine traditional HTML elements with new ones
 that render to WebGL (powered by Three.js), which means we can render
 traditional elements and 3D objects like spheres and cubes (and soon any 3D
 model) together in the same 3D space (with lighting and shadow not just on the
 WebGL objects, but on the DOM elements too!).
 
-Unlike traditional CSS `box-shadow` which is flat and boring, with Infamous we
+Unlike traditional CSS `box-shadow` which is flat and boring, with Lume we
 can give UIs **_real_** shadows! [See for
 yourself!](https://codepen.io/trusktr/pen/rpegZR)
 
-Infamous is built on the [Web Component
+Lume is built on the [Web Component
 standards](https://www.w3.org/standards/techs/components#w3c_all), making it
 possible to write 3D scenes declaratively using custom HTML elements,
 regardless of which view layer you prefer. This makes it possible for you write
@@ -48,8 +48,8 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 
-| [<img src="https://avatars0.githubusercontent.com/u/2830402?v=4" width="100px;"/><br /><sub>corruptedzulu</sub>](https://github.com/corruptedzulu)<br />[💻](https://github.com/trusktr/infamous/commits?author=corruptedzulu 'Code') [📖](https://github.com/trusktr/infamous/commits?author=corruptedzulu 'Documentation') | [<img src="https://avatars3.githubusercontent.com/u/297678?v=4" width="100px;"/><br /><sub>Joseph Orbegoso Pea</sub>](http://trusktr.io)<br />[💻](https://github.com/trusktr/infamous/commits?author=trusktr 'Code') [🐛](https://github.com/trusktr/infamous/issues?q=author%3Atrusktr 'Bug reports') [📖](https://github.com/trusktr/infamous/commits?author=trusktr 'Documentation') [💡](#example-trusktr 'Examples') |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [<img src="https://avatars0.githubusercontent.com/u/2830402?v=4" width="100px;"/><br /><sub>corruptedzulu</sub>](https://github.com/corruptedzulu)<br />[💻](https://github.com/lume/lume/commits?author=corruptedzulu 'Code') [📖](https://github.com/lume/lume/commits?author=corruptedzulu 'Documentation') | [<img src="https://avatars3.githubusercontent.com/u/297678?v=4" width="100px;"/><br /><sub>Joseph Orbegoso Pea</sub>](http://trusktr.io)<br />[💻](https://github.com/lume/lume/commits?author=trusktr 'Code') [🐛](https://github.com/lume/lume/issues?q=author%3Atrusktr 'Bug reports') [📖](https://github.com/lume/lume/commits?author=trusktr 'Documentation') [💡](#example-trusktr 'Examples') |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->

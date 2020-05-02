@@ -48,7 +48,7 @@
 
         <!-- works here -->
         <script>
-            infamous.useDefaultNames()
+            LUME.useDefaultNames()
         </script>
 
         <i-scene
@@ -169,7 +169,7 @@
         </i-scene>
 
         <script>
-            const { Motor, Events } = infamous
+            const { Motor, Events } = LUME
 
             // TODO expose as props/attributes
             light.three.shadow.radius = 5
@@ -234,7 +234,7 @@
         TODO do we need this test?
         <!~~ works here ~~>
         <script>
-            infamous.useDefaultNames()
+            LUME.useDefaultNames()
         </script>
 
         <style>
@@ -269,7 +269,7 @@
         </i-scene>
 
         <!~~ <script>
-            infamous.useDefaultNames()
+            LUME.useDefaultNames()
         </script> ~~>
 
         <script>
@@ -294,10 +294,10 @@
             </i-node>
         </i-scene>
         <script>
-            infamous.useDefaultNames()
+            LUME.useDefaultNames()
             const n = document.querySelector('#n')
             <!~~ n.rotation = (x, y, z) => [x, y++, z] ~~>
-            infamous.Motor.addRenderTask(() => {
+            LUME.Motor.addRenderTask(() => {
                 n.rotation.y++
             })
         </script>
@@ -305,7 +305,7 @@
         <!-- WORKS ======================================================== -->
 <!--
         <script>
-            infamous.useDefaultNames()
+            LUME.useDefaultNames()
         </script>
 
         <style>
@@ -352,7 +352,7 @@
                -    ></i-perspective-camera>
                -</i-scene>
                -<script>
-               -    infamous.useDefaultNames()
+               -    LUME.useDefaultNames()
                -    const scene = document.querySelector('i-scene')
                -    const cam = document.querySelector('i-perspective-camera')
                -</script>
@@ -362,7 +362,7 @@
         <!--
            -<script>
            -    console.log('  ---- define elements ---- ')
-           -    infamous.useDefaultNames()
+           -    LUME.useDefaultNames()
            -</script>
            -<i-scene>
            -    <i-node size="100 100 100" rotation="30 30 30">
@@ -382,13 +382,13 @@
         <!--</i-scene>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.useDefaultNames()-->
+        <!--    LUME.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.useDefaultNames()-->
+        <!--    LUME.useDefaultNames()-->
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
@@ -412,14 +412,14 @@
         <!--</script>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.useDefaultNames()-->
+        <!--    LUME.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<i-scene>-->
@@ -432,7 +432,7 @@
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<script>-->
@@ -449,7 +449,7 @@
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<script>-->
@@ -465,7 +465,7 @@
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.useDefaultNames()-->
+        <!--    LUME.useDefaultNames()-->
         <!--</script>-->
         <!--<script>-->
         <!--document.write(`-->
@@ -489,14 +489,14 @@
         <!--</script>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.useDefaultNames()-->
+        <!--    LUME.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -522,7 +522,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -530,7 +530,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<i-scene>-->
@@ -548,7 +548,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -556,7 +556,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -582,7 +582,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -590,7 +590,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -616,7 +616,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.useDefaultNames()-->
+        <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 

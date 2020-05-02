@@ -20,7 +20,7 @@
 </style>
 
 <script>
-  infamous.useDefaultNames()
+  LUME.useDefaultNames()
 
   export default {
     mounted() {
@@ -65,7 +65,7 @@
 </style>
 
 <script>
-  infamous.useDefaultNames()
+  LUME.useDefaultNames()
   node.rotation = (x, y, z) => [x, ++y, z]
 <\/script>
 

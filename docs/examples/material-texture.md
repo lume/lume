@@ -45,7 +45,7 @@
 
 <script>
     // defines the default names for the HTML elements
-    infamous.useDefaultNames()
+    LUME.useDefaultNames()
 
     const light = document.querySelector('#light')
 
@@ -56,7 +56,7 @@
     })
 
     const el = document.querySelector('#model')
-    const Motor = infamous.Motor
+    const Motor = LUME.Motor
 
     const rotate = (t) => 180 * Math.sin(0.001 * t)
     el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]

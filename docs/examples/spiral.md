@@ -56,7 +56,7 @@
   </style>
 
   <script>
-    infamous.useDefaultNames()
+    LUME.useDefaultNames()
     var template = document.querySelector('template')
 
     new Vue({

@@ -70,7 +70,7 @@ export default class Cube extends Node {
 
 	/**
 	 * @method setContent - Set the content for the sides of the cube.
-	 * @param {Array<Node>} content - An array containing [Node](#infamous/core/Node)
+	 * @param {Array<Node>} content - An array containing [Node](../core/Node)
 	 * instances to place in the cube sides. Only the first 6 items are used,
 	 * the rest are ignored.
 	 * @returns {this}

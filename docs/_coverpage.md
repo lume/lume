@@ -1,6 +1,6 @@
 <!-- ![](_media/logoipsum.png) -->
 
-# infamous <small>3.5</small>
+# LUME
 
 > Make beautiful interactive applications
 

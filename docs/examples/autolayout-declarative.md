@@ -18,7 +18,7 @@
     }
 </style>
 
-<script> infamous.useDefaultNames() <\/script>
+<script> LUME.useDefaultNames() <\/script>
 
 <i-scene id="scene" experimental-webgl>
     <i-ambient-light intensity="0.1"></i-ambient-light>

@@ -1,9 +1,9 @@
 {
-	"name": "infamous",
+	"name": "lume",
 	"version": "21.0.6",
-	"description": "A CSS3D/WebGL UI library.",
+	"description": "A CSS3D/WebGL UI toolkit.",
 	"license": "MIT",
-	"homepage": "http://infamous.io",
+	"homepage": "http://lume.io",
 	"main": "./dist/index.js",
 	"types": "./src/index.ts",
 	"type": "module",
@@ -105,13 +105,13 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:trusktr/infamous.git"
+		"url": "git@github.com:lume/lume.git"
 	},
 	"bugs": {
-		"url": "https://github.com/trusktr/infamous/issues"
+		"url": "https://github.com/lume/lume/issues"
 	},
 	"keywords": [
-		"infamous",
+		"lume",
 		"gui",
 		"graphical user interface",
 		"graphical-user-interface",

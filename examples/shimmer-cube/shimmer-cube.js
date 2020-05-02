@@ -1,4 +1,4 @@
-const {Class} = infamous
+const {Class} = LUME
 
 const BasicHTMLRendererBrand = {}
 
@@ -62,15 +62,15 @@ function BasicHTMLRenderer(Base = {}) {
     }), BasicHTMLRendererBrand)
 }
 
-const NodeWithRenderer = BasicHTMLRenderer(infamous.Node)
+const NodeWithRenderer = BasicHTMLRenderer(LUME.Node)
 
 const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super, Public}) => ({
 	static: {
 		props: {
 			// TODO log a warning if Node or Scene props are missing (most
 			// likely someone extended props wrong)
-			...infamous.Node.props,
-			color: infamous.props.props.THREE.Color,
+			...LUME.Node.props,
+			color: LUME.props.props.THREE.Color,
 		},
 		// htmlRenderMode: 'replace',
 		htmlRenderMode: 'shadow',
@@ -127,8 +127,8 @@ customElements.define('shimmer-surface', ShimmerSurface)
 const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Public}) => ({
 	static: {
 		props: {
-			...infamous.Node.props,
-			color: infamous.props.props.THREE.Color,
+			...LUME.Node.props,
+			color: LUME.props.props.THREE.Color,
 		},
 		// htmlRenderMode: 'replace',
 		htmlRenderMode: 'shadow',

@@ -51,7 +51,7 @@ const _Node = Mixin(NodeMixin)
  * </style>
  *
  * <script>
- *   infamous.useDefaultNames()
+ *   LUME.useDefaultNames()
  *   container.rotation = (x, y, z) => [x, ++y, z]
  * <\/script>
  * `

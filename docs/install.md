@@ -2,48 +2,48 @@
 
 ## Get the lib
 
-Use the "global" version of infamous via script tag in your HTML page:
+Use the "global" version of Lume via script tag in your HTML page:
 
 ```html
-<script src="https://unpkg.com/infamous@17.0.5/global.js"></script>
+<script src="https://unpkg.com/lume/dist/global.js"></script>
 <script>
-	infamous.html.useDefaultNames()
+	LUME.useDefaultNames()
 </script>
 ```
 
 Or install from NPM:
 
 ```sh
-npm install infamous --save
+npm install lume
 ```
 
 ```js
-import infamous from 'infamous'
-infamous.html.useDefaultNames()
+import * as LUME from 'lume'
+LUME.useDefaultNames()
 ```
 
 ## Define the HTML elements
 
-You _must_ register the infamous HTML elements with your browser, using default
-names (easier), or custom names.
+You must register the Lume HTML elements with your browser, using either the
+default element names (which is easier), or custom element names. Using
+custom names for the elements may be useful for solving a naming collision if
+one arrises.
 
 <h3> with default names </h3>
 
-The fastest way to get up and running is to tell infamous to use default naming
+The fastest way to get up and running is to tell Lume to use default naming
 for all of its HTML elements:
 
 ```js
-import {useDefaultNames} from 'infamous/html'
+import {useDefaultNames} from 'lume'
 
-// tell infamous to define all the default custom element names.
 useDefaultNames()
 ```
 
-Then either write the scene with JavaScript,
+Then either write the scene with JavaScript without thinking about the names,
 
 ```js
-import Scene from 'infamous/core/Scene'
-import Node from 'infamous/core/Node'
+import {Scene, Node} from 'lume'
 
 const scene = new Scene()
 
@@ -57,7 +57,7 @@ scene.mount(document.body)
 // outputs to the DOM:
 // <body>
 //   <i-scene>
-//     <i-node style="matrix3d(...)">
+//     <i-node ...>
 //     </i-node>
 //   </i-scene>
 // </body>
@@ -73,24 +73,23 @@ scene.mount(document.body)
 </body>
 ```
 
-The documentation will refer to all the elements by their default names.
+Note, the documentation will refer to all the elements by their default names.
 
 <h3> with custom names </h3>
 
-But sometimes you might like to use different element names (f.e. to avoid a
+Sometimes you might like to use different element names (f.e. to avoid a
 naming conflict, or just because you feel like it). You can do this using the
 `.define()` method on any of the classes, for example:
 
 ```js
-import Scene from 'infamous/core/Scene'
-import Node from 'infamous/core/Node'
+import {Scene, Node} from 'lume'
 
 // define custom names:
-Scene.define('nfms-scene')
-Node.define('nfms-node')
+Scene.define('x-scene')
+Node.define('x-node')
 ```
 
-Then either write the scene with JavaScript,
+Then either write the scene with JavaScript without thinking about the names,
 
 ```js
 const scene = new Scene()
@@ -104,10 +103,9 @@ scene.mount(document.body)
 
 // outputs to the DOM:
 // <body>
-//   <nfms-scene>
-//     <nfms-node style="matrix3d(...)">
-//     </nfms-node>
-//   </nfms-scene>
+//   <x-scene>
+//     <x-node ...></x-node>
+//   </x-scene>
 // </body>
 ```
 
@@ -115,8 +113,8 @@ scene.mount(document.body)
 
 ```html
 <body>
-	<nfms-scene>
-		<nfms-node position="100 100"> </nfms-node>
-	</nfms-scene>
+	<x-scene>
+		<x-node position="100 100"></x-node>
+	</x-scene>
 </body>
 ```

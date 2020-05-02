@@ -105,13 +105,13 @@
 <div id="root"></div>
 
 <script>
-    infamous.useDefaultNames()
+    LUME.useDefaultNames()
 
     new Vue({
         el: '#root',
         template: document.querySelector('[vue]').innerHTML,
         mounted: function() {
-            var {Motor, Events} = infamous
+            var {Motor, Events} = LUME
             var downTween, upTween, pressedButton
 
             var scene = document.querySelector('#scene')
@@ -149,7 +149,7 @@
                 light.position.y = e.clientY
             })
 
-            var Motor = infamous.Motor
+            var Motor = LUME.Motor
             var downTween, upTween, pressedButton
 
             // On mouse down animate the button downward

@@ -73,7 +73,7 @@
 
 <script>
     // defines the default names for the HTML elements
-    infamous.useDefaultNames()
+    LUME.useDefaultNames()
 
     document.addEventListener('pointermove', function(e) {
         e.preventDefault()
@@ -84,14 +84,14 @@
     smooth(ship1)
     smooth(ship2)
 
-    const { Motor } = infamous
+    const { Motor } = LUME
     Motor.addRenderTask(() => {
         ship1.rotation.y -= 0.1
         ship2.rotation.y -= 0.4
     })
 
     function smooth(objModelElement) {
-        const {Events} = infamous
+        const {Events} = LUME
 
         // use the 'MODEL_LOAD' event to work with the 'model' once loaded, if needed.
         // 'model' is an instance of THREE.Group containing THREE.Mesh objects

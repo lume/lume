@@ -21,7 +21,7 @@ let isCreatingSingleton = false
 export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
 
 // A singleton responsible for setting up and drawing a WebGL scene for a given
-// infamous/core/Scene using Three.js
+// core/Scene using Three.js
 export class WebGLRendererThree {
 	static singleton() {
 		if (instance) return instance

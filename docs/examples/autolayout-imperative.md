@@ -10,7 +10,7 @@
 `
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 
-<script> infamous.useDefaultNames() <\/script>
+<script> LUME.useDefaultNames() <\/script>
 
 <style>
     body, html {
@@ -28,7 +28,7 @@
         PointLight,
         DOMPlane,
         Sphere
-    } = infamous
+    } = LUME
 
     const scene = new Scene({
         experimentalWebgl: true,

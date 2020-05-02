@@ -25,7 +25,7 @@
 </i-scene>
 
 <script>
-    infamous.useDefaultNames()
+    LUME.useDefaultNames()
 
     // the following values of origin allow the boxes to rotate around one of
     // their corners.
