@@ -32,11 +32,24 @@ define(function(require, exports, module) {
      */
     function EventMapper(map) {
         EventHandler.call(this);
-        this._mappingFunction = map;
+        this.set(map);
     }
 
     EventMapper.prototype = Object.create(EventHandler.prototype);
     EventMapper.prototype.constructor = EventMapper;
+
+    var FORBIDDEN_TYPES = {
+        lock : true,
+        unlock : true,
+        subscribe : true,
+        unsubscribe : true,
+        dep : true,
+        undep : true,
+        mount : true,
+        unmount : true,
+        deploy : true,
+        recall : true
+    };
 
     /**
      * Emit mapped event.
@@ -46,7 +59,11 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.emit = function emit(type, data) {
-        var mappedData = this._mappingFunction(data);
+        if (FORBIDDEN_TYPES[type]) {
+            EventHandler.prototype.emit.call(this, type, data);
+            return;
+        }
+        var mappedData = this._map(data);
         EventHandler.prototype.emit.call(this, type, mappedData);
     };
 
@@ -58,6 +75,16 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
+
+    /**
+     * Set a mapping function.
+     *
+     * @method set
+     * @param map {Function} Mapping function
+     */
+    EventMapper.prototype.set = function(map){
+        this._map = map;
+    };
 
     module.exports = EventMapper;
 });

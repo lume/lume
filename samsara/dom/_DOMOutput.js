@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
     var MIN_OPACITY = 0.0001;
-    var MAX_OPACITY = 0.9999;
+    var MAX_OPACITY = 1;
     var EPSILON = 1e-5;
     var zeroArray = [0, 0];
 
@@ -26,8 +26,6 @@ define(function(require, exports, module) {
      * @class DOMOutput
      * @constructor
      * @namespace Core
-     * @uses Core.LayoutNode
-     * @uses Core.SizeNode
      * @private
      * @param [options] {Object}                Options
      * @param [options.roundToPixel] {Boolean}  Prevents text-blurring if set to true, at the cost to jittery animation
@@ -39,12 +37,12 @@ define(function(require, exports, module) {
         this._transformDirty = true;
         this._isVisible = true;
         this._roundToPixel = options.roundToPixel || false;
+        this._pointerEventStyle = '';
     }
 
     function _round(value, unit){
-        return (unit === 1)
-            ? Math.round(value)
-            : Math.round(value * unit) / unit
+        if (unit === 1) return Math.round(value);
+        else return Math.round(value * unit) / unit
     }
 
     function _formatCSSTransform(transform, unit) {
@@ -109,7 +107,7 @@ define(function(require, exports, module) {
     // pointerEvents logic allows for DOM events to pass through the element when invisible
     function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
-            element.style.pointerEvents = 'auto';
+            element.style.pointerEvents = this._pointerEventStyle || '';
             this._isVisible = true;
         }
 
@@ -117,6 +115,7 @@ define(function(require, exports, module) {
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
+                this._pointerEventStyle = element.style.pointerEvents;
                 element.style.pointerEvents = 'none';
                 this._isVisible = false;
             }

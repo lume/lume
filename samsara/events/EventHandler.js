@@ -72,16 +72,23 @@ define(function(require, exports, module) {
      *  Extends EventEmitter's `on` method.
      *
      * @method on
-     * @param type {String}             Event channel name
-     * @param handler {Function}        Handler
+     * @param type {String|Array}       Event channel name or array of names
+     * @param handler {Function}        Callback handler
      */
     EventHandler.prototype.on = function on(type, handler) {
-        EventEmitter.prototype.on.apply(this, arguments);
-        if (!(type in this.upstreamListeners)) {
-            var upstreamListener = this.trigger.bind(this, type);
-            this.upstreamListeners[type] = upstreamListener;
-            for (var i = 0; i < this.upstream.length; i++) {
-                this.upstream[i].on(type, upstreamListener);
+        var i;
+        if (type instanceof Array) {
+            for (i = 0; i < type.length; i++)
+                on.call(this, type[i], handler);
+        }
+        else {
+            EventEmitter.prototype.on.apply(this, arguments);
+            if (!this.upstreamListeners[type]) {
+                var upstreamListener = this.trigger.bind(this, type);
+                this.upstreamListeners[type] = upstreamListener;
+                for (i = 0; i < this.upstream.length; i++) {
+                    this.upstream[i].on(type, upstreamListener);
+                }
             }
         }
     };
@@ -92,25 +99,48 @@ define(function(require, exports, module) {
      *  the EventHandler removes itself from the upstream sources.
      *
      * @method off
-     * @param type {String}           Event channel name
+     * @param type {String|Array}     Event channel name
      * @param [handler] {Function}    Handler
+     * @return {Boolean}              True if no more listeners remain. False otherwise.
      */
     EventHandler.prototype.off = function off(type, handler) {
-        var empty = EventEmitter.prototype.off.apply(this, arguments);
-        if (empty && this.upstreamListeners[type]) {
-            var oldUpstreamListener = this.upstreamListeners[type];
-            delete this.upstreamListeners[type];
-            for (var i = 0; i < this.upstream.length; i++) {
-                this.upstream[i].off(type, oldUpstreamListener);
+        var i, empty;
+        if (type instanceof Array){
+            empty = false;
+            for (i = 0; i < type.length; i++)
+                empty |= off.call(this, type[i], handler);
+            return empty;
+        }
+        else {
+            empty = EventEmitter.prototype.off.apply(this, arguments);
+            if (empty && this.upstreamListeners[type]) {
+                var oldUpstreamListener = this.upstreamListeners[type];
+                delete this.upstreamListeners[type];
+                for (i = 0; i < this.upstream.length; i++) {
+                    this.upstream[i].off(type, oldUpstreamListener);
+                }
             }
+            return empty;
         }
     };
+
+    /**
+     * Determine if an event source is currently subscribed.
+     *
+     * @method has
+     * @param  source {EventEmitter}  Event source.
+     * @return {Boolean}              True if source is subscribed. False otherwise.
+     */
+    EventHandler.prototype.has = function has(source){
+        return (this.upstream.indexOf(source) >= 0);
+    }
 
     /**
      * Listen for events from an an upstream source.
      *
      * @method subscribe
-     * @param source {EventEmitter} Event source
+     * @param source {EventEmitter}         Event source
+     * @return {EventHandler|Boolean}       Returns passed in argument for chaining. False if already subscribed.
      */
     EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
@@ -119,8 +149,14 @@ define(function(require, exports, module) {
             for (var type in this.upstreamListeners) {
                 source.on(type, this.upstreamListeners[type]);
             }
+            if (source.onSubscribe && source.trigger){
+                window.Promise.resolve().then(function(){
+                    source.trigger('subscribe');
+                }.bind(this));
+            }
+            return source;
         }
-        return source;
+        return false;
     };
 
     /**
@@ -130,12 +166,14 @@ define(function(require, exports, module) {
      *  If no source is provided, all subscribed sources are unsubscribed from.
      *
      * @method unsubscribe
-     * @param [source] {EventEmitter} Event source
+     * @param [source] {EventEmitter} Event source. If omitted, all sources will be unsubscribed from.
+     * @return {Boolean}              True if no source was unsubscribed. False if none found.
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
         if (!source) {
             for (var i = 0; i < this.upstream.length; i++)
                 this.unsubscribe(this.upstream[i]);
+            return true;
         }
         else {
             var index = this.upstream.indexOf(source);
@@ -144,7 +182,14 @@ define(function(require, exports, module) {
                 for (var type in this.upstreamListeners) {
                     source.off(type, this.upstreamListeners[type]);
                 }
+                if (source.onSubscribe && source.trigger){
+                    window.Promise.resolve().then(function(){
+                        source.trigger('unsubscribe');
+                    }.bind(this));
+                }
+                return true;
             }
+            else return false;
         }
     };
 

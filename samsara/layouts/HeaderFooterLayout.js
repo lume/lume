@@ -10,7 +10,7 @@ define(function(require, exports, module){
      * A 3-part layout that arranges content in a header section, content section and footer section.
      *  The header and footer sections are each optional (though one of the two must be specified).
      *  If the header's or footer's size changes, the content will size appropriately to fit.
-     * 
+     *
      * @class HeaderFooterLayout
      * @constructor
      * @namespace Layouts
@@ -32,17 +32,14 @@ define(function(require, exports, module){
 
             if (options.header) {
                 transform = options.header.size.map(function(size){
-                    if (!size) return false;
                     return Transform.translateY(size[1]);
                 });
 
                 size = (options.footer)
                     ? Stream.lift(function(headerSize, footerSize, parentSize){
-                        if (!headerSize || !footerSize) return false;
                         return [parentSize[0], parentSize[1] - headerSize[1] - footerSize[1]];
                     }, [options.header.size, options.footer.size, this.size])
                     : Stream.lift(function(headerSize, parentSize){
-                        if (!headerSize || !parentSize) return false;
                         return [parentSize[0], parentSize[1] - headerSize[1]];
                     }, [options.header.size, this.size]);
 
@@ -51,7 +48,6 @@ define(function(require, exports, module){
             }
             else if (options.footer){
                 size = Stream.lift(function(footerSize, parentSize){
-                    if (!footerSize) return false;
                     return [parentSize[0], parentSize[1] - footerSize[1]];
                 }, [options.footer.size, this.size]);
 

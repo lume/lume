@@ -64,9 +64,7 @@ define(function(require, exports, module){
                 this.center[1] = pos[1] + 0.5 * size[1];
             }.bind(this), [this.camera._node._size, this.camera._node.layout]);
 
-            centerStream.on('start', function(center){});
-            centerStream.on('update', function(center){});
-            centerStream.on('end', function(center){});
+            centerStream.on(['set', 'start', 'update', 'end'], function(center){});
 
             var rotationInertia = options.inertia ? new Transitionable(0) : false;
             var zoomInertia = options.inertia ? new Transitionable(0) : false;
@@ -81,6 +79,15 @@ define(function(require, exports, module){
             zoomInput.subscribe(this.input);
 
             // update rotation based on mouse and touch dragging
+            rotationInput.on('set', function(data){
+                if (rotationInertia && rotationInertia.isActive()) rotationInertia.halt();
+
+                this.emit('set', {
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
+                });
+            }.bind(this));
+
             var hasMoved = false;
             rotationInput.on('start', function(data){
                 hasMoved = false;
@@ -142,6 +149,24 @@ define(function(require, exports, module){
             }
 
             // update zoom based on mousewheel and pinch events
+            zoomInput.on('set', function(data){
+                if (zoomInertia && zoomInertia.isActive()) zoomInertia.halt();
+
+                this.emit('set', {
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
+                });
+            }.bind(this));
+
+            zoomInput.on('start', function(data){
+                if (zoomInertia && zoomInertia.isActive()) zoomInertia.halt();
+
+                this.emit('start', {
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
+                });
+            }.bind(this));
+
             zoomInput.on('update', function(data){
                 var zoom = data.delta;
                 this.zoomBy(zoom);

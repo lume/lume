@@ -44,11 +44,6 @@ define(function(require, exports, module) {
             if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
         }
 
-        if (spec.aspectRatio) {
-            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
-            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
-        }
-
         if (size[0] === undefined) size[0] = parentSize[0];
         if (size[1] === undefined) size[1] = parentSize[1];
 

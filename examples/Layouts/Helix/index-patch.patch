@@ -1,0 +1,16 @@
+12c12
+<         <link rel="stylesheet" type="text/css" href="../../samsara/samsara.css"/>
+---
+>         <link rel="stylesheet" type="text/css" href="css/samsara.css"/>
+14,22c14
+<         <script type="text/javascript" src="js/lib/require.js"></script>
+<         <script>
+<             require.config({
+<                 paths: {
+<                     samsara: '../../samsara'
+<                 }
+<             });
+<             require(['js/main']);
+<         </script>
+---
+>         <script type="text/javascript" src="js/app.js"></script>

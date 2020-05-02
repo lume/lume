@@ -2,7 +2,6 @@
 
 define(function (require, exports, module) {
     var Transition = require('./_Transition');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var now = Date.now;
     var tolerance = 1e-6; // energy minimum
@@ -66,18 +65,12 @@ define(function (require, exports, module) {
 
         var energy = 0.5 * this.value * this.value;
 
-        if (energy >= tolerance) {
-            this.emit('update', this.value);
+        if (energy < tolerance) {
+            this.reset(this.value);
+            this._active = false;
+            this.emit('end', this.value);
         }
-        else {
-            this.emit('update', this.value);
-
-            dirtyQueue.push(function(){
-                this.reset(this.value);
-                this._active = false;
-                this.emit('end', this.value);
-            }.bind(this));
-        }
+        else this.emit('update', this.value);
     };
 
     module.exports = Damp;

@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset='utf8'>
+    <title>SamsaraJS Test Example</title>
+    <script type="text/javascript" src="../vendor/require.js"></script>
+    <script>
+        require.config({
+            paths : {
+                samsara : '../../samsara'
+            }
+        });
+    </script>
+    <script>
+        require(
+            [
+                'samsara/dom/Surface',
+                'samsara/dom/Context',
+                'samsara/inputs/MouseInput',
+                'samsara/streams/Accumulator',
+                'samsara/streams/Differential',
+                'samsara/streams/Observable',
+                'samsara/core/Transform',
+                'samsara/core/Transitionable'
+            ],
+            function(Surface, Context, MouseInput, Accumulator, Differential, Observable, Transform, Transitionable){
+                var context = new Context();
+                var surface = new Surface({
+                    size : [100, 100],
+                    properties : {background : 'red'}
+                });
+
+                var input = new MouseInput({direction : 0});
+                input.subscribe(surface);
+
+                input.on('start', function(){
+                    bounce.halt();
+                    // console.log('mouse start', position.get())
+                });
+
+                input.on('update', function(){
+                    // console.log('mouse update')
+                });
+
+                input.on('end', function(){
+                    // console.log('mouse end', position.get())
+                });
+
+                var bounce = new Transitionable(0);
+                var position = new Accumulator(0);
+
+                var bounceDelta = new Differential();
+                bounceDelta.subscribe(bounce);
+
+                position.subscribe(input.pluck('delta'));
+                position.subscribe(bounceDelta);
+
+
+                position.on('update', function(data){
+                    // if (data > 200) position.set(0);
+                });
+
+                position.on('start', function(value){
+                    console.log('position start', value);
+                });
+
+                position.on('update', function(value){
+                    console.log('position update', value);
+                });
+
+                position.on('end', function(value){
+                    console.log('position end', value);
+                });
+
+                input.on('end', function(data){
+                    bounce.reset(position.get());
+                    bounce.set(0, {duration : 800});
+                });
+
+                var transform = position.map(function(value){
+                    return Transform.translateX(value);
+                });
+
+                context.add({transform : transform}).add(surface);
+                context.mount(document.body);
+            }
+        );
+    </script>
+</head>
+    <body>
+    </body>
+</html>

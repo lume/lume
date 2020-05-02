@@ -1,14 +1,17 @@
-/* Copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2017 David Valdman */
 
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
-    var ReduceStream = require('../streams/ReduceStream');
+    var LinkedStream = require('../streams/LinkedStream');
+    var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
+    var StreamIO = require('../streams/_StreamIO');
+    var Transitionable = require('../core/Transitionable');
 
     var CONSTANTS = {
         DIRECTION : {
-            X : 0, 
+            X : 0,
             Y : 1
         }
     };
@@ -37,32 +40,37 @@ define(function(require, exports, module) {
             direction : CONSTANTS.DIRECTION.X,
             spacing : 0,
             offset : 0
-        }, 
+        },
         initialize : function initialize(options) {
             // Store nodes and flex values
             this.nodes = [];
 
-            this.stream = new ReduceStream(function(prev, size, spacing){
-                if (!size) return false;
-                return prev + size[options.direction] + spacing;
-            }, undefined, {sources : [options.spacing], offset : options.offset});
+            var offset = (typeof options.offset === 'number')
+                ? new Transitionable(options.offset)
+                : options.offset;
+
+            var spacing = (typeof options.spacing === 'number')
+                ? new Transitionable(options.spacing)
+                : options.spacing;
+
+            // add extras here
+            this.stream = new LinkedStream(function(prev, length, spacing){
+                return prev + length + spacing;
+            }, offset);
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
-            var length = Stream.lift(function(length, spacing){
-                return Math.max(length - spacing, 0);
+            var head = Stream.lift(function(length, spacing){
+                return length - spacing;
             }, [this.stream.headOutput, options.spacing]);
 
-            this.output.subscribe(length);
+            this.bounds = Stream.merge([this.stream.tailOutput, head]);
 
-            // SequentialLayout derives its size from its content
-            var size = [];
-            this.size = Stream.lift(function(parentSize, length){
-                if (!parentSize || length === undefined) return;
-                size[options.direction] = length;
-                size[1 - options.direction] = parentSize[1 - options.direction];
-                return size;
-            }, [this._size, length]);
+            this.pivot = new StreamIO();
+            this.pivot.subscribe(this.stream.pivotOutput);
+
+            this.prevPivot = new StreamIO();
+            this.prevPivot.subscribe(this.stream.prevPivot);
         },
         /*
         * Set a custom map from length displacements to transforms.
@@ -84,9 +92,14 @@ define(function(require, exports, module) {
          * @method push
          * @param map [Function] Map `(length) -> transform`
          */
-        push : function(item) {
+        push : function(item, spacing) {
+            var stream = item.size.map(function(size){
+                return size[this.options.direction];
+            }.bind(this));
+
+            var length = this.stream.push(stream, spacing || this.options.spacing);
+
             this.nodes.push(item);
-            var length = this.stream.push(item.size);
 
             var transform = (this.sources)
                 ? Stream.lift(this.transformMap, [length].concat(this.sources))
@@ -101,7 +114,8 @@ define(function(require, exports, module) {
          * @return item
          */
         pop : function(){
-            return this.unlink(this.nodes.length - 1);
+            var result = this.stream.pop();
+            return (result) ? this.nodes.pop() : false;
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -109,9 +123,15 @@ define(function(require, exports, module) {
          * @method unshift
          * @param item {Surface|View} Renderable
          */
-        unshift : function(item){
+        unshift : function(item, spacing){
+            var stream = item.size.map(function(size){
+                return size[this.options.direction];
+            }.bind(this));
+
+            var length = this.stream.unshift(stream, spacing || this.options.spacing);
+
             this.nodes.unshift(item);
-            var length = this.stream.unshift(item.size);
+
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
@@ -122,51 +142,8 @@ define(function(require, exports, module) {
          * @return item
          */
         shift : function(){
-            return this.unlink(0);
-        },
-        /*
-         * Add a renderable after a specified renderable
-         *
-         * @method insertAfter
-         * @param prevItem {NumberSurface|View} Index or renderable to insert after
-         * @param item {Surface|View}           Renderable to insert
-         */
-        insertAfter : function(prevItem, item) {
-            var index;
-            if (typeof prevItem === 'number'){
-                index = prevItem + 1;
-                prevItem = this.nodes[prevItem];
-            }
-            else index = this.nodes.indexOf(prevItem) + 1;
-
-            this.nodes.splice(index, 0, item);
-
-            if (!prevItem) return this.push(item);
-            var length = this.stream.insertAfter(prevItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
-        },
-        /*
-         * Add a renderable before a specified renderable
-         *
-         * @method insertAfter
-         * @param prevItem {Number|Surface|View} Index or renderable to insert before
-         * @param item {Surface|View}            Renderable to insert
-         */
-        insertBefore : function(postItem, item){
-            var index;
-            if (typeof postItem === 'number'){
-                index = postItem - 1;
-                postItem = this.nodes[postItem];
-            }
-            else index = this.nodes.indexOf(postItem) - 1;
-
-            this.nodes.splice(index + 1, 0, item);
-            
-            if (!postItem) return this.unshift(item);
-            var length = this.stream.insertBefore(postItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
+            var result = this.stream.shift();
+            return (result) ? this.nodes.shift() : false;
         },
         /*
          * Unlink the renderable.
@@ -184,11 +161,21 @@ define(function(require, exports, module) {
             }
             else index = this.nodes.indexOf(item);
 
-            if (!item || !item.size) return;
-            this.nodes.splice(index, 1);
-            this.stream.remove(item.size);
+            if (!item) return;
 
-            return item;
+            if (index === 0){
+                return this.shift();
+            }
+            else if (index === this.nodes.length - 1){
+                return this.pop();
+            }
+            else {
+                this.stream.remove(item.size);
+                this.nodes.splice(index, 1);
+            }
+        },
+        setPivot : function(index){
+            this.stream.setPivot(index);
         }
     }, CONSTANTS);
 

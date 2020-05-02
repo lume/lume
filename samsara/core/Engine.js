@@ -2,12 +2,13 @@
 // TODO: cancel RAF when asleep
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
-    var postTickQueue = require('./queues/postTickQueue');
+    var nextTick = require('./queues/nextTick');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
     var Transform = require('./Transform');
     var Timer = require('./Timer');
+    var tick = require('./tick');
 
     var rafId = Number.NaN;
     var isMobile = /Android|webOS|iPhone|iPad|Windows Phone|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
@@ -59,10 +60,13 @@ define(function(require, exports, module) {
 
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
-        // post tick is for resolving larger components from their incoming signals
-        while (postTickQueue.length) (postTickQueue.shift())();
+        tick.emit('tick');
 
         while (dirtyQueue.length) (dirtyQueue.shift())();
+
+        tick.emit('end tick');
+
+        while (nextTick.length) preTickQueue.push(nextTick.shift());
     };
 
     /**
@@ -88,8 +92,8 @@ define(function(require, exports, module) {
     };
 
     function firstStart(){
-        preTickQueue.push(handleResize);
-        preTickQueue.push(handleLayout);
+        handleResize(true);
+        handleLayout();
         if (isNaN(rafId)) Engine.start();
     }
 
@@ -122,14 +126,12 @@ define(function(require, exports, module) {
     var resizeDebounceTime = 150; // introduce lag to detect resize end event. see https://github.com/dmvaldman/samsara/issues/49
 
     var resizeEnd = Timer.debounce(function() {
-        dirtyQueue.push(function(){
-            Engine.size.emit('end', 'end');
-            isResizing = false;
-        });
+        Engine.size.emit('end', 'end');
+        isResizing = false;
     }, resizeDebounceTime);
 
     // Emit a resize event if the window's height or width has changed
-    function handleResize() {
+    function handleResize(firstStart) {
         var newHeight = window.innerHeight;
         var newWidth = window.innerWidth;
 
@@ -144,10 +146,7 @@ define(function(require, exports, module) {
 
             // Landscape/Portrait resize events are discrete on mobile
             // so don't fire updates
-            Engine.size.emit('start');
-            dirtyQueue.push(function(){
-                Engine.size.emit('end', 'end');
-            });
+            Engine.size.emit('set');
         }
         else {
             if (newWidth === windowWidth && newHeight === windowHeight)
@@ -157,15 +156,18 @@ define(function(require, exports, module) {
             windowHeight = newHeight;
 
             if (!isResizing){
-                Engine.size.emit('start');
-                isResizing = true;
-                resizeEnd();
+                if (firstStart === true){
+                    Engine.size.emit('set');
+                }
+                else {
+                    isResizing = true;
+                    Engine.size.emit('start');
+                    resizeEnd();
+                }
             }
             else {
-                postTickQueue.push(function(){
-                    Engine.size.emit('update');
-                    resizeEnd();
-                });
+                Engine.size.emit('update');
+                resizeEnd(); // debounced resize
             }
         }
     }
@@ -179,10 +181,7 @@ define(function(require, exports, module) {
     };
 
     function handleLayout(){
-        Engine.layout.trigger('start', layoutSpec);
-        dirtyQueue.push(function(){
-            Engine.layout.trigger('end', layoutSpec);
-        });
+        Engine.layout.trigger('set', layoutSpec);
     }
 
     module.exports = Engine;

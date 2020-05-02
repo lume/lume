@@ -1,10 +1,9 @@
 define(function(require, exports, module) {
     var Context = require('samsara/dom/Context');
-    var ArcballCamera = require('samsara/camera/TrackballCamera');
+    var TrackballCamera = require('samsara/camera/TrackballCamera');
     var Sphere = require('./app/Sphere');
     var Surface = require('samsara/dom/Surface');
     var Transform = require('samsara/core/Transform');
-    var Quaternion = require('samsara/camera/Quaternion');
 
     // Radius of sphere (fixed)
     var radius = Math.min(window.innerWidth/2, window.innerHeight/2, 300);
@@ -36,7 +35,7 @@ define(function(require, exports, module) {
 
     // Create "arc-ball" camera starting at [0, 0, -radius]
     var cameraStartPosition = [0, 0, -radius];
-    var camera = new ArcballCamera({
+    var camera = new TrackballCamera({
         radius : radius,
         position: cameraStartPosition
     });
@@ -56,9 +55,10 @@ define(function(require, exports, module) {
     });
 
     // Create the render tree for the sphere
-    var cameraNode = context
+    var centerNode = context.add({align : [.5,.5]});
+
+    centerNode
         .add(camera)
-        .add({align : [.5,.5]})
         .add(sphere);
 
     // Add a surface in the middle of the sphere that is a
@@ -70,12 +70,11 @@ define(function(require, exports, module) {
     });
 
     // Transform the gradient surface to follow the sphere
-    var gradientSurfaceTransform = camera.orientation.map(function(rotation){
-        return Quaternion.toTransform(rotation);
+    var gradientSurfaceTransform = camera.position.map(function(position){
+        return Transform.translate(position);
     });
 
-    // Create the render tree for the gradient surface
-    cameraNode
+    centerNode
         .add({transform : gradientSurfaceTransform})
         .add(gradientSurface);
 

@@ -79,7 +79,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
 
         this._eventForwarder = function _eventForwarder(event) {
-            event.stopPropagation();
+            // event.stopPropagation();
             var shouldEmit = processEvent.call(this, event);
             if (shouldEmit) this._eventOutput.emit(event.type, event);
         }.bind(this);
@@ -102,7 +102,7 @@ define(function(require, exports, module) {
             this.on('deploy', function(target) {
                 DOMOutput.on(target, 'touchmove', function(event){
                     event.preventDefault();
-                }, false);
+                }, {passive : false});
             });
         }
     }
@@ -127,21 +127,18 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Pull the perspective value from a transitionable.
+     * Provide the perspective value from a stream.
      *
      * @method perspectiveFrom
-     * @param perspective {Transitionable}    Perspective transitionable
+     * @param perspective {Stream}    Perspective stream
      */
     Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
         this._perspective.unsubscribe();
         this._perspective = perspective;
 
-        this._perspective.on('update', function(perspective){
-            this._domOutput.commitPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspective.on('end', function(perspective){
-            this._domOutput.commitPerspective(this.container, perspective);
+        this._perspective.on(['set', 'start', 'update', 'end'], function(perspective){
+            if (this.container)
+                setPerspective(this.container, perspective);
         }.bind(this));
     };
 
@@ -155,12 +152,9 @@ define(function(require, exports, module) {
         this._perspectiveOrigin.unsubscribe();
         this._perspectiveOrigin = perspectiveOrigin;
 
-        this._perspectiveOrigin.on('update', function(origin){
-            this._domOutput.commitPerspectiveOrigin(this.container, origin);
-        }.bind(this));
-
-        this._perspectiveOrigin.on('end', function(origin){
-            this._domOutput.commitPerspectiveOrigin(this.container, origin);
+        this._perspectiveOrigin.on(['set', 'start', 'update', 'end'], function(origin){
+            if (this.container)
+                setPerspectiveOrigin(this.container, origin);
         }.bind(this));
     };
 
@@ -214,7 +208,7 @@ define(function(require, exports, module) {
      * Allocate contents of the `context` to a DOM node.
      *
      * @method mount
-     * @param node {Node}  DOM element
+     * @param [node=document.body] {Node}  DOM element
      */
     Context.prototype.mount = function mount(node){
         node = node || window.document.body;
@@ -266,11 +260,18 @@ define(function(require, exports, module) {
      * @param handler {Function}    Callback
      */
     Context.prototype.on = function on(type, handler){
-        if (this.container)
-            this.container.addEventListener(type, this._eventForwarder);
+        if (this.container){
+            if (this.container === document.body){
+                this.container.addEventListener(type, this._eventForwarder, {passive : false})
+            }
+            else this.container.addEventListener(type, this._eventForwarder);
+        }
         else {
             this._eventOutput.on('deploy', function(target){
-                target.addEventListener(type, this._eventForwarder);
+                if (target === document.body){
+                    target.addEventListener(type, this._eventForwarder, {passive : false})
+                }
+                else target.addEventListener(type, this._eventForwarder);
             }.bind(this));
         }
         EventHandler.prototype.on.apply(this._eventOutput, arguments);

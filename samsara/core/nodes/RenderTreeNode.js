@@ -2,14 +2,13 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
-    var SimpleStream = require('../../streams/SimpleStream');
     var Stream = require('../../streams/Stream');
+    var StreamOutput = require('../../streams/_StreamOutput');
     var LayoutNode = require('./LayoutNode');
     var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
     var preTickQueue = require('../../core/queues/preTickQueue');
-    var dirtyQueue = require('../../core/queues/dirtyQueue');
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -28,8 +27,8 @@ define(function(require, exports, module) {
         this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = new SimpleStream();
-        this.layout = new SimpleStream();
+        this.size = new StreamOutput();
+        this.layout = new StreamOutput();
 
         // set node middleware
         if (object) _set.call(this, object);
@@ -38,22 +37,6 @@ define(function(require, exports, module) {
             this.layout.subscribe(this._layout);
             this.size.subscribe(this._size);
         }
-
-        // save last spec if node is removed and later added
-        this._cachedSpec = {
-            layout : null,
-            size : null
-        };
-
-        // update size cache
-        this.size.on('start', updateSizeCache.bind(this));
-        this.size.on('update', updateSizeCache.bind(this));
-        this.size.on('end', updateSizeCache.bind(this));
-
-        // update layout spec
-        this.layout.on('start', updateLayoutCache.bind(this));
-        this.layout.on('update', updateLayoutCache.bind(this));
-        this.layout.on('end', updateLayoutCache.bind(this));
 
         // reference to RootNode if a node is removed and later added
         this.root = null;
@@ -65,14 +48,6 @@ define(function(require, exports, module) {
         this._logic.on('unmount', function() {
             this.root = null;
         }.bind(this));
-    }
-
-    function updateLayoutCache(layout){
-        this._cachedSpec.layout = layout;
-    }
-
-    function updateSizeCache(size){
-        this._cachedSpec.size = size;
     }
 
     /**
@@ -99,7 +74,8 @@ define(function(require, exports, module) {
         }
         else if (node._onAdd){
             // View case
-            return node._onAdd(this);
+            // return node._onAdd(this);
+            childNode = node._onAdd(this);
         }
         else if (node instanceof RenderTreeNode){
             // RenderTree Node
@@ -118,18 +94,14 @@ define(function(require, exports, module) {
         if (this.root && !childNode.root)
             childNode._logic.trigger('mount', this.root);
 
-        // Emit previously cached values if node was removed
+        // Emit previously cached values if node added after initial resize
         if (!node.root){
-            var self = this;
+            // TODO: switch to nextQueue
             preTickQueue.push(function(){
-                if (!self._cachedSpec.size) return;
-                self.size.trigger('start', self._cachedSpec.size);
-                self.layout.trigger('start', self._cachedSpec.layout);
-                dirtyQueue.push(function(){
-                    self.size.trigger('end', self._cachedSpec.size);
-                    self.layout.trigger('end', self._cachedSpec.layout);
-                });
-            });
+                if (node.root) return;
+                if (this.size.get() !== null) this.size.trigger('set', this.size.get());
+                if (this.layout.get() !== null) this.layout.trigger('set', this.layout.get());
+            }.bind(this));
         }
 
         return childNode;

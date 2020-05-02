@@ -3,9 +3,8 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var OptionsManager = require('../core/_OptionsManager');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamOutput = require('../streams/_StreamOutput');
 
-    var MINIMUM_TICK_TIME = 8;
     var _now = Date.now;
 
     /**
@@ -56,7 +55,7 @@ define(function(require, exports, module) {
      *
      * @class MouseInput
      * @constructor
-     * @extend SimpleStream
+     * @extends SimpleStream
      * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse
@@ -68,22 +67,20 @@ define(function(require, exports, module) {
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
+        StreamOutput.call(this);
 
+        this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
 
         // references for event listeners put on document when
         // mouse is quickly moved off of target DOM element
-        this.boundMove = null;
+        this.boundMove = handleMove.bind(this);
+        this.boundEnter = handleEnter.bind(this);
+        this.boundLeave = handleLeave.bind(this);
         this.boundUp = null;
 
-        this._eventInput.on('mousedown',    handleStart.bind(this));
-        this._eventInput.on('mousemove',    handleMove.bind(this));
-        this._eventInput.on('mouseup',      handleEnd.bind(this));
-        this._eventInput.on('mouseenter',   handleEnter.bind(this));
-        this._eventInput.on('mouseleave',   handleLeave.bind(this));
+        this._eventInput.on('mousedown', handleStart.bind(this));
+        this._eventInput.on('mouseup', handleEnd.bind(this));
 
         this._payload = {
             x : 0,
@@ -98,11 +95,9 @@ define(function(require, exports, module) {
         this._cumulate = null;
         this._prevCoord = undefined;
         this._prevTime = undefined;
-        this._down = false;
-        this._move = false;
     }
 
-    MouseInput.prototype = Object.create(SimpleStream.prototype);
+    MouseInput.prototype = Object.create(StreamOutput.prototype);
     MouseInput.prototype.constructor = MouseInput;
 
     MouseInput.DEFAULT_OPTIONS = {
@@ -125,6 +120,10 @@ define(function(require, exports, module) {
     };
 
     function handleStart(event) {
+        this._eventInput.on('mousemove', this.boundMove);
+        this._eventInput.on('mouseenter', this.boundEnter);
+        this._eventInput.on('mouseleave', this.boundLeave);
+
         var delta;
         var velocity;
 
@@ -135,8 +134,6 @@ define(function(require, exports, module) {
 
         this._prevCoord = [x, y];
         this._prevTime = _now();
-        this._down = true;
-        this._move = false;
 
         var payload = this._payload;
 
@@ -163,12 +160,10 @@ define(function(require, exports, module) {
         payload.velocity = velocity;
         payload.event = event;
 
-        this._eventOutput.emit('start', payload);
+        this.emit('start', payload);
     }
 
     function handleMove(event){
-        if (!this._down) return false;
-
         var direction = this.options.direction;
         var scale = this.options.scale;
 
@@ -191,7 +186,7 @@ define(function(require, exports, module) {
             if (activateRails) return false;
         }
 
-        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        var dt = currTime - prevTime;
         var invDt = 1 / dt;
 
         var velX = diffX * invDt;
@@ -231,52 +226,47 @@ define(function(require, exports, module) {
         payload.delta = nextDelta;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
-        payload.velocity = nextVel;
+        payload.velocity = 0.5 * (payload.velocity + nextVel); // trailing average
         payload.event = event;
         payload.dt = dt;
 
-        this._eventOutput.emit('update', payload);
+        this.emit('update', payload);
 
         this._prevCoord = [x, y];
         this._prevTime = currTime;
-        this._move = true;
     }
 
     function handleEnd(event) {
-        if (!this._down) return false;
+        this._eventInput.off('mousemove');
+        this._eventInput.off('mouseenter');
+        this._eventInput.off('mouseleave');
 
         this._payload.event = event;
-        this._eventOutput.emit('end', this._payload);
+        this._payload.delta = (this.options.direction === undefined) ? [0,0] : 0;
+
+        this.emit('end', this._payload);
 
         this._prevCoord = undefined;
         this._prevTime = undefined;
-        this._down = false;
-        this._move = false;
     }
 
     function handleEnter(event){
-        if (!this._down || !this._move) return false;
-
-        this._eventInput.off('mousemove', handleMove.bind(this));
-        this._eventInput.off('mouseup', handleEnd.bind(this));
+        this._eventInput.off('mousemove');
+        this._eventInput.off('mouseup');
 
         document.removeEventListener('mousemove', this.boundMove);
         document.removeEventListener('mouseup', this.boundUp);
     }
 
     function handleLeave(event) {
-        if (!this._down || !this._move) return false;
-
-        this.boundMove = handleMove.bind(this);
         this.boundUp = function(event) {
             handleEnd.call(this, event);
             document.removeEventListener('mousemove', this.boundMove);
             document.removeEventListener('mouseup', this.boundUp);
         }.bind(this, event);
 
-
-        this._eventInput.off('mousemove', handleMove.bind(this));
-        this._eventInput.off('mouseup', handleEnd.bind(this));
+        this._eventInput.off('mousemove');
+        this._eventInput.off('mouseup');
 
         document.addEventListener('mousemove', this.boundMove);
         document.addEventListener('mouseup', this.boundUp);

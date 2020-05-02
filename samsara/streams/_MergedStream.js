@@ -1,54 +1,54 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var SimpleStream = require('./SimpleStream');
+    var Stream = require('./_Stream');
+    var Observable = require('./Observable');
 
     function MergedStream(streams) {
         this.mergedData = streams instanceof Array ? [] : {};
         this.streamCache = {};
 
-        var Stream = require('./Stream');
+        var boundEmit = function(){ return this.mergedData; }.bind(this);
 
         Stream.call(this, {
-            start : function() {
-                return this.mergedData;
-            }.bind(this),
-            update : function() {
-                return this.mergedData;
-            }.bind(this),
-            end : function() {
-                return this.mergedData;
-            }.bind(this)
+            set : boundEmit,
+            start : boundEmit,
+            update : boundEmit,
+            end : boundEmit
         });
 
-        for (var key in streams)
-            this.addStream(key, streams[key]);
+        if (streams) this.set(streams);
     }
 
-    MergedStream.prototype = Object.create(SimpleStream.prototype);
+    MergedStream.prototype = Object.create(Stream.prototype);
     MergedStream.prototype.constructor = MergedStream;
+
+    MergedStream.prototype.set = function(sources){
+        for (var key in sources) {
+            var source = sources[key];
+            this.addStream(key, source);
+        }
+    };
 
     MergedStream.prototype.addStream = function(key, stream) {
         var mergedData = this.mergedData;
+        mergedData[key] = (stream.get instanceof Function)
+            ? stream.get()
+            : undefined;
 
-        if (stream instanceof Object && stream.on){
-            mergedData[key] = undefined;
-
-            stream.on('start', function(data){
+        if (!stream.on) {
+            stream = new Observable(stream);
+            stream.on('set', function(data){
                 mergedData[key] = data;
             });
-
-            stream.on('update', function(data){
-                mergedData[key] = data;
-            });
-
-            stream.on('end', function(data){
-                mergedData[key] = data;
-            });
-
-            this.subscribe(stream);
         }
-        else mergedData[key] = stream;
+        else {
+            stream.on(['set', 'start', 'update', 'end'], function(data){
+                mergedData[key] = data;
+            });
+        }
+
+        this.subscribe(stream);
 
         this.streamCache[key] = stream;
     };
@@ -63,14 +63,13 @@ define(function(require, exports, module) {
             var index = this.mergedData.indexOf(key);
             this.mergedData.splice(index, 1);
         }
-        else
-            delete this.mergedData[key];
+        else delete this.mergedData[key];
     };
 
     MergedStream.prototype.replaceStream = function(key, stream) {
         this.removeStream(key);
         this.addStream(key, stream);
     };
-    
+
     module.exports = MergedStream;
 });

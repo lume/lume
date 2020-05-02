@@ -3,10 +3,9 @@
 define(function(require, exports, module) {
     var TouchTracker = require('./_TouchTracker');
     var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamOutput = require('../streams/_StreamOutput');
     var OptionsManager = require('../core/_OptionsManager');
-
-    var MINIMUM_TICK_TIME = 8;
+    var preTickQueue = require('../core/queues/preTickQueue');
 
     /**
      * Wrapper for DOM touch events. Converts
@@ -68,10 +67,9 @@ define(function(require, exports, module) {
     function TouchInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker(this.options);
+        StreamOutput.call(this);
 
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._touchTracker = new TouchTracker(this.options);
         EventHandler.setInputHandler(this, this._touchTracker);
 
         this._touchTracker.on('trackstart', handleStart.bind(this));
@@ -83,7 +81,7 @@ define(function(require, exports, module) {
         this._value = {};
     }
 
-    TouchInput.prototype = Object.create(SimpleStream.prototype);
+    TouchInput.prototype = Object.create(StreamOutput.prototype);
     TouchInput.prototype.constructor = TouchInput;
 
     TouchInput.DEFAULT_OPTIONS = {
@@ -142,7 +140,7 @@ define(function(require, exports, module) {
 
         this._payload[data.touchId] = payload;
 
-        this._eventOutput.emit('start', payload);
+        this.emit('start', payload);
     }
 
     function handleMove(data) {
@@ -170,7 +168,7 @@ define(function(require, exports, module) {
                 return;
         }
 
-        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
+        var dt = currTime - prevTime;
         var invDt = 1 / dt;
 
         var velX = diffX * invDt;
@@ -205,7 +203,7 @@ define(function(require, exports, module) {
         }
 
         payload.delta = nextDelta;
-        payload.velocity = nextVel;
+        payload.velocity = 0.5 * (payload.velocity + nextVel); // trailing average
         payload.value = this._value[touchId];
         payload.cumulate = this._cumulate[touchId];
         payload.count = data.count;
@@ -214,7 +212,7 @@ define(function(require, exports, module) {
         payload.timestamp = data.timestamp;
         payload.dt = dt;
 
-        this._eventOutput.emit('update', payload);
+        this.emit('update', payload);
     }
 
     function handleEnd(data) {
@@ -224,12 +222,11 @@ define(function(require, exports, module) {
         payload.count = data.count;
         payload.event = data.event;
         payload.timestamp = data.timestamp;
+        payload.delta = (this.options.direction === undefined) ? [0,0] : 0;
 
-        this._eventOutput.emit('end', payload);
-
+        this.emit('end', payload);
         delete this._payload[touchId];
         delete this._value[touchId];
-        delete this._cumulate[touchId];
     }
 
     module.exports = TouchInput;

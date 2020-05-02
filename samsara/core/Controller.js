@@ -4,6 +4,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./_OptionsManager');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
+    var StreamOutput = require('../streams/_StreamOutput');
 
     /**
      * A utility class which can be extended by custom classes. These classes will then
@@ -62,15 +63,15 @@ define(function(require, exports, module) {
 
         // set input and output streams
         this.input = new SimpleStream();
-        this.output = new SimpleStream();
+        this.output = new StreamOutput();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
 
-        // bind events defined in the constructor's EVENTS dictionary to the input
-        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
-
         this.input.bindThis(this);
         this.input.subscribe(this._optionsManager);
+
+        // bind events defined in the constructor's EVENTS dictionary to the input
+        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
         if (this.initialize) this.initialize(this.options);
     }
@@ -80,7 +81,7 @@ define(function(require, exports, module) {
      *  with the Controller to patch any options that are not prescribed on instantiation.
      *
      * @attribute DEFAULT_OPTIONS
-     * @readOnly
+     * @private
      */
     Controller.DEFAULT_OPTIONS = {};
 
@@ -90,7 +91,7 @@ define(function(require, exports, module) {
      *  event channel names and the values are functions to be executed.
      *
      * @attribute EVENTS
-     * @readOnly
+     * @private
      */
     Controller.EVENTS = {};
 
@@ -151,7 +152,7 @@ define(function(require, exports, module) {
             if (handler) inputHandler.on(key, handler.bind(this));
         }
     }
-    
+
     var RESERVED_KEYS = {
         DEFAULTS : 'defaults',
         EVENTS : 'events'

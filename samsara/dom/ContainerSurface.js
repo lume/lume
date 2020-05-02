@@ -1,4 +1,4 @@
-/* Copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2017 David Valdman */
 
 define(function(require, exports, module) {
     var Surface = require('./Surface');
@@ -41,7 +41,6 @@ define(function(require, exports, module) {
      * @param [options.origin] {Number[]}             Origin (x,y), with values between 0 and 1
      * @param [options.margins] {Number[]}            Margins (x,y) in pixels
      * @param [options.proportions] {Number[]}        Proportions (x,y) with values between 0 and 1
-     * @param [options.aspectRatio] {Number}          Aspect ratio
      * @param [options.opacity=1] {Number}            Opacity
      * @param [options.tagName="div"] {String}        HTML tagName
      * @param [options.enableScroll=false] {Boolean}  Allows a Surface to support native scroll behavior
@@ -88,6 +87,38 @@ define(function(require, exports, module) {
      */
     ContainerSurface.prototype.setPerspective = function setPerspective(){
         Context.prototype.setPerspective.apply(this.context, arguments);
+    };
+
+    /**
+     * Provide the perspective value from a stream.
+     *
+     * @method perspectiveFrom
+     * @param perspective {Stream}    Perspective stream
+     */
+    ContainerSurface.prototype.perspectiveFrom = function perspectiveFrom(){
+        Context.prototype.perspectiveFrom.apply(this.context, arguments);
+    };
+
+        /**
+     * Set current perspective of the `context` in pixels.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
+    ContainerSurface.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
+        Context.prototype.setPerspectiveOrigin.apply(this.context, arguments);
+    };
+
+    /**
+     * Pull the perspective-origin value from a transitionable.
+     *
+     * @method perspectiveOriginFrom
+     * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
+     */
+    ContainerSurface.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+        Context.prototype.perspectiveOriginFrom.apply(this.context, arguments);
     };
 
     /**

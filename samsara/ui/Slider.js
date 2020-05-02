@@ -23,7 +23,7 @@ define(function(require, exports, module){
      * A UI element that creates a slider controllable by mouse and touch events.
      *  A starting value and range is provided, and the user can change the value within
      *  the range by dragging and clicking on the slider.
-     *  The slider has a `.value` property that defines its value as a stream.
+     *  The slider has a `value` property that defines its value as a stream.
      *
      *  This file comes with an associated CSS file slider.css
      *
@@ -48,7 +48,7 @@ define(function(require, exports, module){
      * @constructor
      * @param [options] {Object}                    Options
      * @param [options.value=0.5] {Number}          Starting value
-     * @param [options.range=[0,1]] {Array}         Range of values ([min, max])
+     * @param [options.range] {Array}               Range of values ([min, max])
      * @param [options.label] {String}              Name of label
      * @param [options.precision=1] {Number}        Number of decimal points to display
      * @param [options.transition=false] {Object}   Default transition to animate values
@@ -67,7 +67,7 @@ define(function(require, exports, module){
             setupEvents.call(this, options);
             setupRenderTree.call(this, options);
 
-            this.size = Stream.lift(function(size, labelSize){
+            this.customSize = Stream.lift(function(size, labelSize){
                 if (!labelSize) return false;
                 return [size[0], size[1] + labelSize[1]];
             }, [this.foreground.size, this.label.size]);
@@ -114,14 +114,6 @@ define(function(require, exports, module){
     }
 
     function setupSurfaces(options){
-        this.background = new Surface({
-            classes : ['samsara-slider-background']
-        });
-
-        this.foreground = new Surface({
-            classes : ['samsara-slider-foreground']
-        });
-
         var template = String(
             '<span class="label">' + options.label +
                 '<span class="range">' + '[' + options.range[0] + '|' + options.range[1] + ']</span>' +
@@ -138,6 +130,23 @@ define(function(require, exports, module){
         this.label.on('deploy', function(target){
             this.labelContent = target.querySelector('.value');
         }.bind(this));
+
+        var size = Stream.lift(function(labelSize, size){
+            if (!size || !labelSize) return false;
+            return [
+                size[0], size[1] - labelSize[1]
+            ];
+        }, [this.label.size, this.size])
+
+        this.background = new Surface({
+            size : size,
+            classes : ['samsara-slider-background']
+        });
+
+        this.foreground = new Surface({
+            size : size,
+            classes : ['samsara-slider-foreground']
+        });
     }
 
     function setupState(options){
@@ -208,9 +217,7 @@ define(function(require, exports, module){
         this.ratio.subscribe(gestureDelta);
         this.ratio.subscribe(this.transitionDelta);
 
-        this.value.on('start', renderValue.bind(this));
-        this.value.on('update', renderValue.bind(this));
-        this.value.on('end', renderValue.bind(this));
+        this.value.on(['start', 'update', 'end', 'set'], renderValue.bind(this));
     }
 
     var prevValue = undefined;

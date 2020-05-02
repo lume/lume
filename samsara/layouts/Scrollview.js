@@ -1,4 +1,4 @@
-/* Copyright © 2015-2016 David Valdman */
+// /* Copyright © 2015-2016 David Valdman */
 
 // This code is still in beta. Documentation forthcoming.
 
@@ -7,8 +7,11 @@ define(function (require, exports, module) {
     var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
+    var SimpleStream = require('../streams/SimpleStream');
     var Accumulator = require('../streams/Accumulator');
     var Differential = require('../streams/Differential');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var nextTick = require('../core/queues/nextTick');
 
     var SequentialLayout = require('./SequentialLayout');
     var ContainerSurface = require('../dom/ContainerSurface');
@@ -40,12 +43,12 @@ define(function (require, exports, module) {
     var Scrollview = View.extend({
         defaults: {
             direction: CONSTANTS.DIRECTION.Y,
-            drag: 0.3,
+            drag: 0.25,
             paginated: false,
             pageChangeSpeed: 0.5,
             startPosition: 0,
-            marginTop: 0,
-            marginBottom: 0,
+            endPosition: false,
+            spacing: 0,
             clip: true,
             enableMouseDrag: false,
             pageTransition: {
@@ -55,52 +58,48 @@ define(function (require, exports, module) {
             },
             edgeTransition: {
                 curve: 'spring',
-                period: 100,
+                period: 70,
                 damping: 1
             },
-            edgeGrip: 0.5
+            edgeGrip: 0.25,
+            container: {properties : {}}
         },
         initialize: function (options) {
             this._currentIndex = 0;
             this._previousIndex = 0;
-            this.itemOffset = 0;
-            this.items = [];
             this.velocity = 0;
-            this.overflow = 0;
+            this.isPaused = false;
 
             var isTouching = false;
             var isMouseWheelActive = false;
             var edge = EDGE.NONE;
 
-            this.layout = new SequentialLayout({
-                direction: options.direction
-            });
-
             var inputs = options.enableMouseDrag
                 ? ['touch', 'scroll', 'mouse']
                 : ['touch', 'scroll'];
 
-            var genericInput = new GenericInput(inputs, {
-                direction: options.direction
+            this.input = new GenericInput(inputs, {
+                direction: options.direction,
+                limit: 1
             });
 
-            var position = new Accumulator(-options.startPosition);
-
+            this.position = new Accumulator(options.startPosition);
             this.drag = new Transitionable(0);
             this.spring = new Transitionable(0);
 
             var dragDifferential = new Differential();
             var springDifferential = new Differential();
-            var gestureDifferential = genericInput.pluck('delta');
+            var inputDifferential = this.input.pluck('delta');
 
             dragDifferential.subscribe(this.drag);
             springDifferential.subscribe(this.spring);
 
-            position.subscribe(gestureDifferential);
-            position.subscribe(dragDifferential);
-            position.subscribe(springDifferential);
+            this.position.subscribe(inputDifferential);
+            this.position.subscribe(dragDifferential);
+            this.position.subscribe(springDifferential);
 
-            var scrollInput = genericInput.getInput('scroll');
+            var scrollInput = this.input.getInput('scroll');
+
             scrollInput.on('start', function(){
                 isMouseWheelActive = true;
             });
@@ -109,259 +108,232 @@ define(function (require, exports, module) {
                 isMouseWheelActive = false;
             });
 
-            genericInput.on('start', function () {
+            this.input.on('start', function () {
                 isTouching = true;
-                this.drag.halt();
                 this.spring.halt();
+                this.drag.halt();
             }.bind(this));
 
-            genericInput.on('update', function (data) {
-                this.velocity = data.velocity;
-            }.bind(this));
-
-            genericInput.on('end', function (data) {
+            this.input.on('end', function (data) {
                 isTouching = false;
+                if (this.position._isPaused) return false;
 
-                switch (edge){
-                    case EDGE.NONE:
-                        (this.options.paginated)
-                            ? handlePagination.call(this, data.velocity)
-                            : handleDrag.call(this, data.velocity);
-                        break;
-                    case EDGE.TOP:
-                        handleEdge.call(this, this.overflow, data.velocity);
-                        break;
-                    case EDGE.BOTTOM:
-                        handleEdge.call(this, this.overflow, data.velocity);
-                        break;
-                }
+                nextTick.push(function(){
+                    switch (edge) {
+                        case EDGE.NONE:
+                            (this.options.paginated)
+                                ? handlePagination.call(this, this.pageOverflow, data.velocity)
+                                : handleDrag.call(this, data.velocity);
+                            break;
+                        case EDGE.TOP:
+                            handleEdge.call(this, this.edgeOverflow, data.velocity);
+                            break;
+                        case EDGE.BOTTOM:
+                            handleEdge.call(this, this.edgeOverflow, data.velocity);
+                            break;
+                    }
+                }.bind(this));
             }.bind(this));
 
-            this.drag.on('update', function(){
-                this.velocity = this.drag.getVelocity();
-            }.bind(this));
-
-            this.spring.on('update', function(){
-                this.velocity = this.spring.getVelocity();
-            }.bind(this));
-
-            position.on('end', function () {
-                if (!this.spring.isActive())
-                    changePage.call(this, this._currentIndex);
-            }.bind(this));
+            this.layout = new SequentialLayout({
+                direction : options.direction,
+                offset: this.position,
+                spacing: options.spacing
+            });
 
             // overflow is a measure of how much of the content
             // extends past the viewport
-            var overflowStream = Stream.lift(function (contentLength, viewportSize) {
-                if (!contentLength) return false;
-                var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
-                return (overflow >= 0) ? false : overflow;
-            }, [this.layout, this.size]);
+            // responsible for setting edgeGrip
+            this.edgeOverflow = 0;
+            this.pageOverflow = 0;
+            var handledEdge = false;
+            var overflow = Stream.lift(function (size, viewportSize, offset, endPosition) {
+                if (!size || !viewportSize) return false;
 
-            this.offset = Stream.lift(function (top, overflow) {
-                if (!overflow) return false;
+                var overflowPrev = size[0]
+                // var overflowNext = size[1] - viewportSize[options.direction];
+                // console.log(size[0], size[1])
+                var overflowNext = size[1] - (endPosition || viewportSize[options.direction]);
 
-                if (this.spring.isActive()) return Math.round(top);
-
-                if (top > 0) { // reached top of scrollview
-                    if (isMouseWheelActive){
-                        edge = EDGE.TOP;
-                        position.set(0, true);
-                        changePage.call(this, this._currentIndex);
-                        return 0;
+                // contents smaller than the viewport
+                if (overflowNext - overflowPrev < 0) {
+                    if (overflowPrev < 0){
+                        this.edgeOverflow = overflowPrev;
+                        if (edge !== EDGE.TOP){
+                            edge = EDGE.TOP;
+                            this.input.setOptions({scale : options.edgeGrip});
+                            if (!isTouching) {
+                                handleEdge.call(this, this.edgeOverflow, this.velocity);
+                                handledEdge = true;
+                            }
+                        }
+                    }
+                    else if (overflowNext > 0){
+                        this.edgeOverflow = overflowNext;
+                        if (edge !== EDGE.BOTTOM){
+                            edge = EDGE.BOTTOM;
+                            this.input.setOptions({scale : options.edgeGrip});
+                            if (!isTouching) {
+                                handleEdge.call(this, this.edgeOverflow, this.velocity);
+                                handledEdge = true;
+                            }
+                        }
+                    }
+                    else if (edge !== EDGE.NONE){
+                        this.input.setOptions({scale : 1});
+                        edge = EDGE.NONE;
                     }
 
-                    this.overflow = top;
+                    return false;
+                }
 
+                // contents larger than the viewport
+                if (overflowPrev > 0){
+                    // reached top of scrollview
+                    this.edgeOverflow = overflowPrev;
                     if (edge !== EDGE.TOP){
-                        genericInput.setOptions({scale: this.options.edgeGrip});
-
+                        console.log('top')
                         edge = EDGE.TOP;
-                        if (!isTouching)
-                            handleEdge.call(this, this.overflow, this.velocity);
+
+                        this.input.setOptions({scale : options.edgeGrip});
+                        if (!isTouching) handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
-                else if(top < overflow) { // reached bottom of scrollview
-                    if (isMouseWheelActive) {
-                        edge = EDGE.BOTTOM;
-                        position.set(overflow, true);
-                        changePage.call(this, this._currentIndex);
-                        return overflow;
-                    }
-
-                    this.overflow = top - overflow;
-
+                else if (overflowNext < 0){
+                    // reached bottom of scrollview
+                    this.edgeOverflow = overflowNext;
                     if (edge !== EDGE.BOTTOM){
-                        genericInput.setOptions({scale: .5});
-
+                        console.log('bottom')
                         edge = EDGE.BOTTOM;
 
-                        if (!isTouching)
-                            handleEdge.call(this, this.overflow, this.velocity);
+                        this.input.setOptions({scale : options.edgeGrip});
+                        if (!isTouching) handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
-                else if(top > overflow && top < 0 && edge !== EDGE.NONE){
-                    this.overflow = 0;
-                    genericInput.setOptions({scale: 1});
+                else if (edge !== EDGE.NONE){
+                    console.log('middle')
+                    this.input.setOptions({scale : 1});
                     edge = EDGE.NONE;
                 }
 
-                return Math.round(top);
-            }.bind(this), [position, overflowStream]);
+                return edge;
+            }.bind(this), [this.layout.bounds, this.size, this.position, this.options.endPosition]);
 
-            var transform = this.offset.map(function (position) {
-                position += options.marginTop;
-                return options.direction === CONSTANTS.DIRECTION.Y
-                    ? Transform.translateY(position)
-                    : Transform.translateX(position);
+            // var prevPivotLength;
+            this.layout.prevPivot.on(['set', 'start', 'update', 'end'], function(length){
+                prevPivotLength = length;
             });
 
-            this.container = new ContainerSurface({
-                properties: {overflow : 'hidden'}
-            });
+            // offset is positive and decreasing
+            // pivotLength is negative and decreasing
+            var pivot = Stream.lift(function(offset, pivotLength, prevPivotLength, edge){
+                // console.log(offset, pivotLength, prevPivotLength);
 
-            genericInput.subscribe(this.container);
+                var itemLength = pivotLength - offset;
+                if (-offset > itemLength/2){
+                    this.pageOverflow = pivotLength;
+                }
+                else {
+                    this.pageOverflow = offset;
+                }
 
-            this.container.add({transform : transform}).add(this.layout);
+                if (offset > 0 && edge !== EDGE.TOP){
+                    // previous
+                    // debugger
+                    console.log('prev')
+                    this.layout.setPivot(-1);
+                    this.position.set(prevPivotLength);
+                    this._currentIndex--;
+                    progress = 1;
+                }
+                else if (pivotLength < 0 && edge !== EDGE.BOTTOM){
+                    // next
+                    // debugger
+                    console.log('next')
+                    this.layout.setPivot(1);
+                    this.position.set(pivotLength);
+                    this._currentIndex++;
+                    progress = 0;
+                }
+                else {
+                    progress = offset / (offset - pivotLength);
+                }
+
+                return {
+                    index : this._currentIndex,
+                    progress : progress
+                }
+            }.bind(this), [this.position, this.layout.pivot, this.layout.prevPivot, overflow]);
+
+            pivot.on(['set', 'start', 'update', 'end'], function(){});
+
+            this.output.subscribe(pivot);
+
+            if (options.clip) options.container.properties.overflow = 'hidden';
+            this.container = new ContainerSurface(options.container);
+
+            this.input.subscribe(this.container);
+
+            this.container.add(this.layout);
             this.add(this.container);
+        },
+        setLengthMap : function(map, sources){
+            this.layout.setLengthMap(map, sources);
         },
         setPerspective: function(){
             ContainerSurface.prototype.setPerspective.apply(this.container, arguments);
         },
-        getVelocity: function(){
-            return this.velocity;
+        perspectiveFrom: function(){
+            ContainerSurface.prototype.perspectiveFrom.apply(this.container, arguments);
         },
-        goTo: function (index, transition, callback) {
-            transition = transition || this.options.pageTransition;
-            var position = this.itemOffset;
-            var i;
-
-            if (index > this._currentIndex && index < this.items.length) {
-                for (i = this._currentIndex; i < index; i++)
-                    position -= this.items[i].getSize()[this.options.direction];
-            }
-            else if (index < this._currentIndex && index >= 0) {
-                for (i = this._currentIndex; i > index; i--)
-                    position += this.items[i].getSize()[this.options.direction];
-            }
-
-            this.spring.halt();
-            this.spring.reset(0);
-            this.spring.set(Math.ceil(position), transition, callback);
+        setPerspectiveOrigin: function(){
+            ContainerSurface.prototype.setPerspectiveOrigin.apply(this.container, arguments);
         },
-        getCurrentIndex: function(){
-            return this._currentIndex;
+        perspectiveOriginFrom: function(){
+            ContainerSurface.prototype.perspectiveOriginFrom.apply(this.container, arguments);
         },
-        addItems: function (items) {
-            for (var i = 0; i < items.length; i++) 
-                this.layout.push(items[i]);
-            
-            this.items = items;
-
-            var args = [this.offset];
-            for (i = 0; i < items.length; i++) {
-                args.push(items[i].size);
-            }
-
-            var accumLength = 0;
-            var itemOffsetStream = Stream.lift(function () {
-                if (arguments[0] === undefined || arguments[1] === undefined)
-                    return false;
-
-                var offset = arguments[0];
-                var direction = this.options.direction;
-                var index = this._currentIndex;
-                var currentSize = arguments[index + 1];
-
-                if (!currentSize) return false;
-
-                var progress = 0;
-                var itemOffset = -offset - accumLength;
-                var currentLength = currentSize[direction];
-
-                if (itemOffset >= currentLength && this._currentIndex !== items.length - 1) {
-                    // pass currentNode forwards
-                    this._currentIndex++;
-                    progress = 0;
-                    accumLength += currentLength;
-                }
-                else if (itemOffset < 0 && this._currentIndex !== 0) {
-                    // pass currentNode backwards
-                    this._currentIndex--;
-                    progress = 1;
-                    currentLength = arguments[this._currentIndex + 1][direction];
-                    accumLength -= currentLength;
-                }
-                else {
-                    progress = itemOffset / currentLength;
-                }
-
-                this.itemOffset = itemOffset;
-
-                return {
-                    index: this._currentIndex,
-                    progress: progress
-                };
-            }.bind(this), args);
-
-            this.output.subscribe(itemOffsetStream);
-
-            itemOffsetStream.on('start', function () {});
-            itemOffsetStream.on('update', function () {});
-            itemOffsetStream.on('end', function () {});
+        push: function(item) {
+            return this.layout.push(item);
+        },
+        unshift: function(item) {
+            return this.layout.unshift(item);
+        },
+        pop: function (){
+            return this.layout.pop();
+        },
+        shift : function(){
+            return this.layout.shift();
+        },
+        pause : function(){
+            this.input.unsubscribe(this.container);
+        },
+        resume : function(){
+            this.input.subscribe(this.container);
         }
     }, CONSTANTS);
 
-    function changePage(index) {
-        if (index === this._previousIndex) return;
-        this.emit('page', index);
-        this._previousIndex = index;
-    }
-
     function handleEdge(overflow, velocity){
         this.drag.halt();
-        this.spring.reset(overflow);
         this.options.edgeTransition.velocity = velocity;
-        this.spring.set(0, this.options.edgeTransition);
+
+        this.spring.reset(0);
+        this.spring.set(-overflow, this.options.edgeTransition);
     }
 
-    function handlePagination(velocity){
-        var pageChangeSpeed = this.options.pageChangeSpeed;
-        var currentLength = this.items[this._currentIndex].getSize()[this.options.direction];
-
-        var backLength = this.itemOffset;
-        var forwardLength = this.itemOffset - currentLength;
-
-        var position = this.itemOffset;
-        var positionThreshold = currentLength / 2;
-
-        var target;
-        if (velocity < 0){
-            // moving forward
-            target = (position > positionThreshold || velocity < -pageChangeSpeed)
-                ? forwardLength
-                : backLength;
-        }
-        else {
-            // moving backward
-            target = (position < positionThreshold || velocity > pageChangeSpeed)
-                ? backLength
-                : forwardLength;
-        }
-
+    function handlePagination(pageOverflow, velocity){
+        this.drag.halt();
         this.options.pageTransition.velocity = velocity;
-        this.spring.halt();
-        this.spring.reset(-target);
+
+        this.spring.reset(pageOverflow);
         this.spring.set(0, this.options.pageTransition);
     }
 
     function handleDrag(velocity){
-        this.drag.halt();
         this.drag.reset(0);
         this.drag.set(0, {
-            curve: 'inertia',
-            velocity: velocity,
-            drag: this.options.drag
+            curve : 'inertia',
+            velocity : velocity,
+            drag : this.options.drag
         });
     }
 

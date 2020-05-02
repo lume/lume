@@ -106,12 +106,5 @@ define(function (require, exports, module) {
         return this._active;
     };
 
-    /**
-     * Update the transition in time.
-     *
-     * @method update
-     */
-    Transition.prototype.update = function update() {};
-
     module.exports = Transition;
 });

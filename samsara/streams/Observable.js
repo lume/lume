@@ -3,7 +3,6 @@
 define(function(require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
     var preTickQueue = require('../core/queues/preTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * An Observable is a stream for events set discretely in time, as opposed to continuously.
@@ -45,10 +44,7 @@ define(function(require, exports, module) {
         var self = this;
         self.value = value;
         preTickQueue.push(function(){
-            self.emit('start', value);
-            dirtyQueue.push(function(){
-                self.emit('end', value);
-            });
+            self.emit('set', value);
         });
     };
 

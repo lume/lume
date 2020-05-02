@@ -54,12 +54,18 @@ define(function(require, exports, module) {
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method on
-     * @param type {String}         Channel name
-     * @param handler {Function}    Callback
+     * @param type {String|Array}   Channel name or array of names
+     * @param handler {Function}    Callback handler
      */
     EventEmitter.prototype.on = function on(type, handler) {
-        if (!(type in this.listeners)) this.listeners[type] = [];
-        this.listeners[type].push(handler);
+        if (type instanceof Array) {
+            for (var i = 0; i < type.length; i++)
+                on.call(this, type[i], handler);
+        }
+        else {
+            if (!(type in this.listeners)) this.listeners[type] = [];
+            this.listeners[type].push(handler);
+        }
     };
 
     /**
@@ -84,24 +90,32 @@ define(function(require, exports, module) {
      *  If no handlers are left for the specified type returns true, otherwise false.
      *
      * @method off
-     * @param [type] {String}         Channel name
+     * @param [type] {String|Array}   Channel name
      * @param [handler] {Function}    Callback
+     * @return {Boolean}              True if no more listeners remain for the type. False otherwise.
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
             this.listeners = {};
             return true;
         }
+        else if (type instanceof Array){
+            var empty = false;
+            for (i = 0; i < type.length; i++)
+                empty |= off.call(this, type[i], handler);
+            return empty;
+        }
 
-        var listener = this.listeners[type];
-        if (listener !== undefined) {
+        var listeners = this.listeners[type];
+        if (listeners !== undefined) {
             if (!handler) this.listeners[type] = []; // remove all listeners of given type
             else {
-                var index = listener.indexOf(handler);
-                if (index >= 0) listener.splice(index, 1);
+                var index = listeners.indexOf(handler);
+                if (index >= 0) listeners.splice(index, 1);
             }
+            return listeners.length === 0;
         }
-        return this.listeners[type].length === 0;
+        else return false;
     };
 
     /**

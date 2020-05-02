@@ -13,18 +13,10 @@ define(function(require){
     differential.subscribe(t);
 
     QUnit.test('immediate', function(assert){
-        expect(3);
+        expect(1);
         var done = assert.async();
 
-        differential.on('start', function(){
-            assert.ok(true);
-        });
-
-        differential.on('update', function(diff){
-            assert.deepEqual(diff, [1,1]);
-        });
-
-        differential.on('end', function(){
+        differential.on('set', function(){
             assert.ok(true);
             loop.stop();
             done();

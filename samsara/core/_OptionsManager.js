@@ -8,38 +8,25 @@ define(function(require, exports, module) {
      *   with prescribed defaults and emitting `change` events when options are changed.
      *   Recursively defined for nested options objects.
      *
-     *   Note: only JSONable objects are allowed, so no functions.
+     *   Note: only JSON-able objects are allowed, so no functions.
      *
      * @class OptionsManager
      * @namespace Core
      * @constructor
-     * @private
      * @uses Core.EventHandler
      * @param value {Object} Options object literal
      */
     function OptionsManager(value) {
         this._value = value;
-        this._eventHandler = null;
+        this._eventHandler = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventHandler);
     }
-
-    /**
-     * Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.
-     *
-     * @method OptionsManager.patch
-     * @param options {Object}          Options to be patched
-     * @param patch {...Object}         Options to override
-     * @return source {Object}
-     */
-    OptionsManager.patch = function patch(options, patch) {
-        var manager = new OptionsManager(options);
-        for (var i = 1; i < arguments.length; i++) manager.patch(arguments[i]);
-        return options;
-    };
 
     /**
      * Constructor method. Convenience method to set options with defaults on an object instance.
      *
      * @method OptionsManager.setOptions
+     * @static
      * @param instance {Function}    Constructor
      * @param options {Object}       Overriding options
      * @param defaults {Object}      Default options
@@ -47,117 +34,82 @@ define(function(require, exports, module) {
      */
     // TODO: subscribe to change events
     OptionsManager.setOptions = function(instance, options, defaults){
-        defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
+        defaults = defaults || clone(instance.constructor.DEFAULT_OPTIONS) || {};
         var optionsManager = new OptionsManager(defaults);
         instance.setOptions = OptionsManager.prototype.setOptions.bind(optionsManager);
         instance.getOptions = OptionsManager.prototype.getOptions.bind(optionsManager);
         if (options) instance.setOptions(options);
-        return optionsManager.get();
-    };
-
-    function _createEventHandler() {
-        if (!this._eventHandler) this._eventHandler = new EventHandler();
-    }
-
-    /**
-     * Patch options with provided patches. Triggers `change` event on the object.
-     *
-     * @method patch
-     * @param options {Object}          Patch options
-     * @return this {OptionsManager}
-     */
-    OptionsManager.prototype.patch = function patch(options) {
-        var myState = this._value;
-        for (var key in options) {
-            if ((key in myState) && (options[key] && options[key].constructor === Object) && (myState[key] && myState[key].constructor === Object)) {
-                if (!myState.hasOwnProperty(key)) myState[key] = Object.create(myState[key]);
-                this.key(key).patch(options[key]);
-                if (this._eventHandler) this._eventHandler.emit('change', {key: key, value: this.key(key).value()});
-            }
-            else this.set(key, options[key]);
-        }
-        return this;
+        return optionsManager.getOptions();
     };
 
     /**
-     * Alias for patch
+     * Patch options with new values. Emits a `change` event if the values have changed.
      *
      * @method setOptions
+     * @param patch {Object}          Patch options
      */
-    OptionsManager.prototype.setOptions = OptionsManager.prototype.patch;
+    OptionsManager.prototype.setOptions = function setOptions(patch) {
+        var options = this._value;
 
-    /**
-     * Return OptionsManager based on sub-object retrieved by `key`.
-     *
-     * @method key
-     * @param key {string}      Key
-     * @return {OptionsManager} Value
-     */
-    OptionsManager.prototype.key = function key(key) {
-        var result = new OptionsManager(this._value[key]);
-        if (!(result._value instanceof Object) || result._value instanceof Array) result._value = {};
-        return result;
+        for (var key in patch) {
+            var patchValue = patch[key];
+
+            if (key in options) {
+                if (patchValue !== null && patchValue !== undefined && patchValue.constructor === Object){
+                    // patched value is object
+                    if (options[key] && options[key].constructor === Object){
+                        // options is also an object, so patch it with the patched values
+                        var subOptionsManager = new OptionsManager(options[key]);
+
+                        subOptionsManager.on('change', function(key, value){
+                            this.emit('change', {key : key, value : value});
+                        }.bind(this, key));
+
+                        subOptionsManager.setOptions(Object.create(patchValue));
+                        options[key] = subOptionsManager.getOptions();
+                    }
+                    else {
+                        // options is a simple type, so overwrite with the patched value
+                        options[key] = patchValue;
+                        this.emit('change', {key : key, value : patchValue});
+                    }
+                }
+                else {
+                    // patched value is simple type, so overwrite object's value
+                    var prevValue = this.getOptions(key);
+                    if (patchValue !== prevValue) {
+                        options[key] = patchValue;
+                        this.emit('change', {key : key, value : patchValue});
+                    }
+                }
+            }
+            else {
+                options[key] = patchValue;
+                this.emit('change', {key : key, value : patchValue});
+            }
+        }
     };
 
     /**
      * Look up options value by key or get the full options hash.
      *
-     * @method get
-     * @param key {string}  Key
+     * @method getOptions
+     * @param key {String}  Key
      * @return {Object}     Associated object or full options hash
      */
-    OptionsManager.prototype.get = function get(key) {
+    OptionsManager.prototype.getOptions = function getOptions(key) {
         return key ? this._value[key] : this._value;
     };
 
     /**
-     * Alias for get
+     * Clone a JSON object. Supports null and undefined values.
      *
-     * @method getOptions
+     * @method _clone
+     * @private
+     * @param obj {Object}      JSON object
+     * @return {Object}         Cloned object
      */
-    OptionsManager.prototype.getOptions = OptionsManager.prototype.get;
-
-    /**
-     * Set key to value. Outputs `change` event if a value is overwritten.
-     *
-     * @method set
-     * @param key {string}          Key
-     * @param value {Object}        Value
-     * @return {OptionsManager}     Updated OptionsManager
-     */
-    OptionsManager.prototype.set = function set(key, value) {
-        var originalValue = this.get(key);
-        this._value[key] = value;
-        if (this._eventHandler && value !== originalValue) this._eventHandler.emit('change', {key: key, value: value});
-        return this;
-    };
-
-    /**
-     * Adds a handler to the `type` channel which will be executed on `emit`.
-     *
-     * @method "on"
-     * @param type {String}         Channel name
-     * @param handler {Function}    Callback
-     */
-    OptionsManager.prototype.on = function on(type, handler) {
-        _createEventHandler.call(this);
-        EventHandler.prototype.on.apply(this._eventHandler, arguments);
-    };
-
-    /**
-     * Removes the `handler` from the `type` channel.
-     *   This undoes the work of `on`.
-     *
-     * @method off
-     * @param type {String}         Channel name
-     * @param handler {Function}    Callback
-     */
-    OptionsManager.prototype.off = function off(type, handler) {
-        _createEventHandler.call(this);
-        EventHandler.prototype.off.apply(this._eventHandler, arguments);
-    };
-
-    function _clone(obj) {
+    function clone(obj) {
         var copy;
         if (typeof obj === 'object') {
             copy = (obj instanceof Array) ? [] : {};
@@ -167,9 +119,9 @@ define(function(require, exports, module) {
                     if (value instanceof Array) {
                         copy[key] = [];
                         for (var i = 0; i < value.length; i++)
-                            copy[key][i] = _clone(value[i]);
+                            copy[key][i] = clone(value[i]);
                     }
-                    else copy[key] = _clone(value);
+                    else copy[key] = clone(value);
                 }
                 else copy[key] = value;
             }

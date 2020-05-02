@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "docs": "docco -l parallel js/main.js js/app/*.js -o docs",
+    "build": "npm run build-migrate && npm run build-bundle && npm run build-min && npm run build-patch",
+    "build-bundle": "r.js -o optimize=none wrap=true paths.samsara=../../samsara baseUrl=. name=node_modules/almond/almond include=js/main insertRequire=js/main out=build/js/app.js",
+    "build-min": "uglifyjs ./build/js/app.js -o ./build/js/app.min.js --mangle --compress warnings=false",
+    "build-migrate": "mkdir build; mkdir build/js; mkdir build/css; cp ../../samsara/samsara.css build/css/samsara.css; cp -R docs build/; cp -R css build/; cp -R assets build/",
+    "build-patch": "patch index.html -i index-patch.patch -o build/index.html"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "almond": "^0.3.1",
+    "docco": "^0.7.0",
+    "requirejs": "^2.1.22"
+  }
+}

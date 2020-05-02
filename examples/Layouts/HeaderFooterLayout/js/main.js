@@ -15,8 +15,11 @@ define(function (require, exports, module) {
     });
 
     // Animate the size on click. The layout changes the content's size appropriately.
+    var headerToggle = false;
     header.on('click', function(){
-        headerSize.set([undefined, 200], {duration : 500});
+        var height = headerToggle ? 100 : 200;
+        headerSize.set([undefined, height], {duration : 300});
+        headerToggle = !headerToggle;
     });
 
     // We let the size of the footer be a transitionable that animates on clicking the header.
@@ -29,14 +32,16 @@ define(function (require, exports, module) {
     });
 
     // Animate the size on click. The layout changes the content's size appropriately.
+    var footerToggle = false;
     footer.on('click', function(){
-        footerSize.set([undefined, 200], {duration : 500});
+        var height = footerToggle ? 50 : 150;
+        footerSize.set([undefined, height], {duration : 200});
+        footerToggle = !footerToggle;
     });
 
     // Content surface
     var content = new Surface({
         content : "Content",
-        size : [undefined, undefined],
         classes : ['content', 'center']
     });
 
