@@ -65,7 +65,7 @@
 		"regexr": "^1.5.1",
 		"three": "^0.111.0"
 	},
-	"COMMENT devDependencies": "Move eslint stuff into lume cli.",
+	"// TODO devDependencies": "Move eslint stuff into lume cli.",
 	"devDependencies": {
 		"@lume/cli": "^2.0.0",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
@@ -98,7 +98,7 @@
 		"rimraf": "^3.0.0",
 		"tinycolor2": "^1.4.1",
 		"tween.js": "^16.6.0",
-		"typescript": "^3.7.4",
+		"typescript": "3.8.3",
 		"typescript-eslint-parser": "20.1.1",
 		"vue": "^2.6.10",
 		"vuep": "^0.8.1"
