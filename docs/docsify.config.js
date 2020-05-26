@@ -11,6 +11,9 @@
 		return {
 			name: 'LUME',
 			nameLink: '//lume.io',
+			// basePath: 'https://unpkg.com/lume@0.0.0-rc.0/docs/', // TODO host on unpkg, with versioned docs?
+
+			homepage: 'install.md',
 			loadSidebar: true,
 			loadNavbar: true,
 			subMaxLevel: 3,
@@ -23,8 +26,12 @@
 			// replaces site `name` in sidebar with an image.
 			logo: './images/logo-and-word.svg',
 
+			alias: {
+				'/': '/install',
+			},
+
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
-				function(hook, vm) {
+				function (hook, vm) {
 					hook.beforeEach(content => {
 						const url = repo + '/edit/develop/docs/' + vm.route.file
 						const editTop = `
@@ -52,7 +59,7 @@
 					 * @param {string} lang
 					 * @returns {string}
 					 */
-					code: function(code, lang) {
+					code(code, lang) {
 						// support for mermaid (diagrams via markdown)
 						if (lang === 'mermaid') {
 							return '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + '</div>'
