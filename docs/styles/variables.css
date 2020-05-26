@@ -1,0 +1,88 @@
+:root {
+	/* *****************************
+	  Docify-themeable overrides
+	  ***************************** */
+
+	/* CUSTOM */
+	--logo-width: 168px;
+	--sidebar-width: 335px;
+	--sidebar-padding-size: 60px;
+	/* --sidebar-padding-size: calc((var(--sidebar-width) - var(--logo-width)) / 2); */
+	--sidebar-nav-link-active-mark-thickness: 10px;
+	--sidebar-nav-link-padding-left: 20px;
+
+	/* Sidebar sizing --------------------------------------- */
+	--sidebar-background: #f9f9f9;
+	--sidebar-width: 335px;
+	--search-input-margin: 0 calc(-1 * var(--sidebar-padding-size));
+	--search-input-padding: 0.65em 1em 0.65em 25px; /* TODO calc right padding from icon size? */
+	--sidebar-padding: 0 /*0 0*/ var(--sidebar-padding-size);
+	--sidebar-nav-link-border-width--active: 0 10px 0 0;
+	/* brings the right edge of the links to the right edge of the sidebar */
+	--sidebar-nav-link-margin: 0 calc(-1 * var(--sidebar-padding-size)) 0
+		calc(-1 * (var(--sidebar-nav-link-padding-left) - 2px));
+	/* brings the right edge of the text in the links back in by the padding minus border width. */
+	--sidebar-nav-link-padding: 0.25em calc(var(--sidebar-padding-size) - var(--sidebar-nav-link-active-mark-thickness))
+		0.25em 20px;
+	--sidebar-nav-pagelink-padding: 0.25em
+		calc(var(--sidebar-padding-size) - var(--sidebar-nav-link-active-mark-thickness)) 0.25em
+		var(--sidebar-nav-link-padding-left);
+	/* --sidebar-name-padding: var(--sidebar-padding-size); */
+	--sidebar-name-padding: 52px 106px 52px 60px;
+
+	/*
+	 * Make the header logo take up the whole space at the top of the sidebar
+	 * between top edge and search bar.
+	 */
+	--sidebar-name-margin: 0;
+	--search-margin: 0;
+
+	/* Search box --------------------------------------- */
+	--search-input-border-width: 0;
+	--search-input-background-position: -2px center;
+	--search-input-background-color: #eeeeee;
+	--search-input-background-color--focus: transparent;
+	--search-input-placeholder-color: #33333333;
+	/* Magnifying glass. The following works only with stroke="rgba(0, 67, 250, 1)" but not with stroke="#0043FA". Why is this? */
+	--search-input-background-image: url('data:image/svg+xml;utf8,<svg height="20px" width="20px" viewBox="0 0 24 24" fill="none" stroke="rgba(0, 67, 250, 1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><circle cx="10.5" cy="10.5" r="7.5" vector-effect="non-scaling-stroke"></circle><line x1="21" y1="21" x2="15.8" y2="15.8" vector-effect="non-scaling-stroke"></line></svg>');
+
+	/* --search-input-color: white; */
+
+	/* Sidebar content --------------------------------------- */
+	--sidebar-nav-link-font-weight: bold;
+	/* --sidebar-nav-link-padding: 4px 3em; */
+	/* --sidebar-nav-pagelink-padding: 4px 3em; */
+	--sidebar-nav-link-color--active: #0043fa;
+	--sidebar-nav-link-border-color--active: #0043fa;
+	/* --sidebar-nav-link-color--hover: ; */
+	/* --sidebar-nav-pagelink-background-position: 30px center; */
+	/* --sidebar-nav-strong-color: deeppink; */
+	--sidebar-nav-strong-font-size: 30px;
+	--sidebar-nav-strong-font-weight: normal;
+	--sidebar-nav-strong-color: #d3d3d5;
+	--sidebar-nav-strong-margin: 0 0;
+	--sidebar-nav-strong-padding: 0 0;
+	--sidebar-nav-strong-text-transform: capitalize;
+	--sidebar-nav-strong-border-width: 0;
+
+	/* Code styling --------------------------------------- */
+	--code-font-size: unset; /* fall back to Docsify's code sizing which varies across page headings */
+	/* original value from docsify-themeable */
+	--code-inline-padding: 0.125em 0.4em;
+	/* new version: */
+	--code-inline-padding-sides: 0.4em;
+	--code-inline-padding-top-bottom: 0.125em;
+	--code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
+
+	/* Main content typography --------------------------------------- */
+	/* --heading-h1-font-family: Gotham Extra Light; */
+	--heading-h1-font-family: Gotham Thin;
+	--heading-h1-font-size: 90px;
+
+	/* *****************************
+	  Custom variables
+	 ****************************** */
+	--sidebar-scrollbar-background-color: rgba(0, 0, 0, 0.05);
+	--sidebar-scrollbar-thumb-color: rgba(0, 0, 0, 0.1);
+	--sidebar-scrollbar-thickness: 5px;
+}

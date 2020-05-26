@@ -31,7 +31,13 @@ async function main() {
 	)
 	await renderer.render(docsMeta, './docs/api/')
 
-	const navMarkdown = renderer.renderNav(docsMeta, {linePadStart: '  ', basePath: path.sep + 'api'})
+	const navMarkdown = renderer
+		.renderNav(docsMeta, {linePadStart: '  ', basePath: path.sep + 'api'})
+		// unindent the nav markdown.
+		.split('\n')
+		.map(line => '  ' + line.trimLeft())
+		.join('\n')
+
 	const sidebarFile = path.resolve('.', 'docs', '_sidebar.md')
 
 	/** @type {string} */

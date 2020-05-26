@@ -64,6 +64,22 @@ const _Node = Mixin(NodeMixin)
  *
  * Other classes that extend from Node may create [layouts](/examples/autolayout-declarative), or
  * may render [WebGL content](/examples/material-texture), etc.
+ *
+ * # One
+ *
+ * asdfkl jasfjka sdfklj asdlfk j
+ *
+ * ```js
+ * console.log('foo')
+ * ```
+ *
+ * ## Hello
+ *
+ * asfasdfasdf asd fasd fasdf asdf
+ *
+ * ### Hello
+ *
+ * _asfasdfasdf asd fasd fasdf asdf_
  */
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 export const Node = _Node.mixin(HTMLInterface)

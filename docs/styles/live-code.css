@@ -1,0 +1,29 @@
+/* TODO move whatever necessary into the live-code package */
+
+.vuep {
+	/* TODO height:auto; doesn't work well, because it makes content below it appear higher than the bottom edge of the box. How can we make that work? */
+	height: auto;
+	max-height: 400px;
+	/* height: 400px; */
+}
+
+.vuep.full {
+	height: calc(100vh - 345px);
+	max-height: unset;
+}
+
+.vuep-preview {
+	padding: 0 !important;
+
+	/*
+     * TODO FIXME for some reason, without this, scroll bars appear, though nothing
+     * appears to go beyond the boundaries of the container.
+     */
+	overflow: hidden;
+}
+
+.vuep-editor,
+.vuep-preview {
+	/* height: 100%; */
+	height: auto;
+}

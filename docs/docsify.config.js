@@ -21,7 +21,7 @@
 			// coverpage: true,
 			// repo, // shows GitHub corner banner at the top of all pages.
 			// replaces site `name` in sidebar with an image.
-			logo: '//lume.community/uploads/default/original/1X/8c0497c2d7fea620d475d79fc26333de3391f9af.png',
+			logo: './images/logo-and-word.svg',
 
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
 				function(hook, vm) {

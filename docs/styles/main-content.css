@@ -1,14 +1,18 @@
-:root {
-	--sidebar-width: 300px;
-	--code-font-size: unset; /* fall back to Docsify's code sizing which varies across page headings */
+/*
+ * make the content full width, so it is especially easier to see the code
+ * examples
+ */
+.markdown-section {
+	max-width: unset;
+}
 
-	/* original value from docsify-themeable */
-	--code-inline-padding: 0.125em 0.4em;
-
-	/* new version: */
-	--code-inline-padding-sides: 0.4em;
-	--code-inline-padding-top-bottom: 0.125em;
-	--code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
+.markdown-section h1 {
+	text-transform: uppercase;
+}
+.markdown-section h1 code {
+	font-family: monospace;
+	text-transform: initial;
+	font-size: 0.6em;
 }
 
 .markdown-section h1 code,
@@ -23,6 +27,20 @@
 	/* font-weight: unset; */
 }
 
+/* docsify-themeable override */
+.markdown-section h1,
+.markdown-section h1 * {
+	/* Make the API doc page titles wrap, with padding on all line edges. https://css-tricks.com/multi-line-padded-text */
+	/* display: inline !important; */
+	white-space: pre-wrap !important;
+	position: relative !important;
+}
+.markdown-section h1 {
+	--code-inline-padding-sides: 20px;
+	line-height: 0.75 !important;
+	/* left: var(--code-inline-padding-sides); */
+}
+
 .markdown-section h1 > :first-child code,
 .markdown-section h1 > code:first-child,
 .markdown-section h2 > :first-child code,
@@ -32,6 +50,10 @@
 	padding-left: var(--code-inline-padding-sides) !important;
 	border-top-left-radius: var(--code-inline-border-radius) !important;
 	border-bottom-left-radius: var(--code-inline-border-radius) !important;
+
+	/* left padding on all broken lines using box-shadow after disabling padding-left, https://css-tricks.com/multi-line-padded-text */
+	padding-left: 0 !important;
+	box-shadow: calc(-1 * var(--code-inline-padding-sides)) 0 0 var(--code-inline-background);
 }
 
 .markdown-section h1 > :last-child code,
@@ -43,41 +65,7 @@
 	padding-right: var(--code-inline-padding-sides) !important;
 	border-top-right-radius: var(--code-inline-border-radius) !important;
 	border-bottom-right-radius: var(--code-inline-border-radius) !important;
-}
 
-.vuep {
-	/* TODO height:auto; doesn't work well, because it makes content below it appear higher than the bottom edge of the box. How can we make that work? */
-	height: auto;
-	max-height: 400px;
-	/* height: 400px; */
-}
-
-.vuep.full {
-	height: calc(100vh - 345px);
-	max-height: unset;
-}
-
-.vuep-preview {
-	padding: 0 !important;
-
-	/*
-     * TODO for some reason, without this, scroll bars appear, though nothing
-     * appears to go beyond the boundaries of the container.
-     */
-	overflow: hidden;
-}
-
-.vuep-editor,
-.vuep-preview {
-	/* TODO move this into the editor component */
-	/* height: 100%; */
-	height: auto;
-}
-
-/*
- * make the content full width, so it is especially easier to see the code
- * examples
- */
-.markdown-section {
-	max-width: unset;
+	/* left padding on all broken lines using box-shadow after disabling padding-left, https://css-tricks.com/multi-line-padded-text */
+	box-shadow: calc(-1 * var(--code-inline-padding-sides)) 0 0 var(--code-inline-background);
 }
