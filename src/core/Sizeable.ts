@@ -59,7 +59,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			if (!this.isConnected) return
 
 			// this covers single-valued properties like opacity, but has the
-			// sideeffect of trigger propertychange more than needed for
+			// sideeffect of emitting propertychange more than needed for
 			// XYZValues (here, and in the above valuechanged handlers).
 			//
 			// TODO FIXME we want to batch Observable updates so that this doesn't
@@ -67,7 +67,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			// name. We should make it possible to choose to have sync or async
 			// events, and whether they should batch or not.
 			for (const [prop, modified] of Object.entries(modifiedProps))
-				if (modified) this.trigger('propertychange', prop)
+				if (modified) this.emit('propertychange', prop)
 		}
 
 		/**
@@ -162,8 +162,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		// TODO change all event values to objects. See here for reasoning:
 		// https://github.com/airbnb/javascript#events
 		protected _setPropertyObservers() {
-			this._properties.sizeMode.on('valuechanged', () => this.trigger('propertychange', 'sizeMode'))
-			this._properties.size.on('valuechanged', () => this.trigger('propertychange', 'size'))
+			this._properties.sizeMode.on('valuechanged', () => this.emit('propertychange', 'sizeMode'))
+			this._properties.size.on('valuechanged', () => this.emit('propertychange', 'size'))
 		}
 
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
@@ -224,7 +224,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 				previousSize.y !== calculatedSize.y ||
 				previousSize.z !== calculatedSize.z
 			) {
-				this.trigger('sizechange', {...calculatedSize})
+				this.emit('sizechange', {...calculatedSize})
 			}
 		}
 

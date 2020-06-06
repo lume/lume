@@ -130,7 +130,7 @@ export default abstract class XYZValues<T = any> extends Observable {
 	set x(value: T) {
 		if (!this.checkValue('x', value)) return
 		this._x = value
-		this.trigger('valuechanged', 'x')
+		this.emit('valuechanged', 'x')
 	}
 
 	get x(): T {
@@ -140,7 +140,7 @@ export default abstract class XYZValues<T = any> extends Observable {
 	set y(value: T) {
 		if (!this.checkValue('y', value)) return
 		this._y = value
-		this.trigger('valuechanged', 'y')
+		this.emit('valuechanged', 'y')
 	}
 
 	get y(): T {
@@ -150,7 +150,7 @@ export default abstract class XYZValues<T = any> extends Observable {
 	set z(value: T) {
 		if (!this.checkValue('z', value)) return
 		this._z = value
-		this.trigger('valuechanged', 'z')
+		this.emit('valuechanged', 'z')
 	}
 
 	get z(): T {

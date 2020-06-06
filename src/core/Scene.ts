@@ -496,12 +496,12 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			const width = parseFloat(style.width || '0')
 			const height = parseFloat(style.height || '0')
 
-			// if we have a size change, trigger parentsizechange
+			// if we have a size change, emit parentsizechange
 			if (parentSize.x != width || parentSize.y != height) {
 				parentSize.x = width
 				parentSize.y = height
 
-				this.trigger('parentsizechange', Object.assign({}, parentSize))
+				this.emit('parentsizechange', Object.assign({}, parentSize))
 			}
 		}
 

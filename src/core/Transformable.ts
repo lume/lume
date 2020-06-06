@@ -18,7 +18,7 @@ import {toRadians} from './Utility'
 // allows the origin (pivot) of rotation and scale to be specified in local
 // coordinate space. For more info:
 // https://github.com/mrdoob/three.js/issues/15965
-Object3D.prototype.updateMatrix = function() {
+Object3D.prototype.updateMatrix = function () {
 	this.matrix.compose(this.position, this.quaternion, this.scale)
 
 	var pivot = (this as any).pivot
@@ -175,12 +175,12 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		protected _setPropertyObservers(): void {
 			super._setPropertyObservers && super._setPropertyObservers()
 
-			this._properties.position.on('valuechanged', () => this.trigger('propertychange', 'position'))
-			this._properties.rotation.on('valuechanged', () => this.trigger('propertychange', 'rotation'))
-			this._properties.scale.on('valuechanged', () => this.trigger('propertychange', 'scale'))
-			this._properties.origin.on('valuechanged', () => this.trigger('propertychange', 'origin'))
-			this._properties.align.on('valuechanged', () => this.trigger('propertychange', 'align'))
-			this._properties.mountPoint.on('valuechanged', () => this.trigger('propertychange', 'mountPoint'))
+			this._properties.position.on('valuechanged', () => this.emit('propertychange', 'position'))
+			this._properties.rotation.on('valuechanged', () => this.emit('propertychange', 'rotation'))
+			this._properties.scale.on('valuechanged', () => this.emit('propertychange', 'scale'))
+			this._properties.origin.on('valuechanged', () => this.emit('propertychange', 'origin'))
+			this._properties.align.on('valuechanged', () => this.emit('propertychange', 'align'))
+			this._properties.mountPoint.on('valuechanged', () => this.emit('propertychange', 'mountPoint'))
 
 			// this is also triggered by Sizeable.updated, besides the above lines
 			this.on('propertychange', (prop: string) => this._onPropChange(prop))
@@ -347,7 +347,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		protected _calculateWorldMatricesInSubtree(): void {
 			this.three.updateMatrixWorld()
 			this.threeCSS.updateMatrixWorld()
-			this.trigger('worldMatrixUpdate')
+			this.emit('worldMatrixUpdate')
 		}
 	}
 

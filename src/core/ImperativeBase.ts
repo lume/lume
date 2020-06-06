@@ -275,7 +275,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					this.removeNode(child, __updateDOMConnection)
 				}
 
-				this.off('sizechange', child._onParentSizeChange!)
+				this.off('sizechange', child._onParentSizeChange!, child)
 
 				// Unload GL/CSS on _deinit instead of here, but change
 				// Object3D hierarchy here.
