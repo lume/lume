@@ -24,18 +24,18 @@ describe('Observable', () => {
 			expect(eventCount).toBe(1)
 			expect(eventCount2).toBe(0)
 
-			o.trigger('foo')
+			o.emit('foo')
 
 			expect(eventCount).toBe(2)
 			expect(eventCount2).toBe(0)
 
-			o.triggerEvent('foo')
+			o.emit('foo')
 
 			expect(eventCount).toBe(3)
 			expect(eventCount2).toBe(0)
 
-			o.triggerEvent('foo')
-			o.trigger('foo')
+			o.emit('foo')
+			o.emit('foo')
 			o.emit('foo')
 
 			expect(eventCount).toBe(6)
@@ -46,27 +46,27 @@ describe('Observable', () => {
 			expect(eventCount).toBe(6)
 			expect(eventCount2).toBe(1)
 
-			o.trigger('bar')
+			o.emit('bar')
 
 			expect(eventCount).toBe(6)
 			expect(eventCount2).toBe(2)
 
-			o.triggerEvent('bar')
+			o.emit('bar')
 
 			expect(eventCount).toBe(6)
 			expect(eventCount2).toBe(3)
 
 			o.off('foo', eventHandler)
 
-			o.triggerEvent('foo')
-			o.trigger('foo')
+			o.emit('foo')
+			o.emit('foo')
 			o.emit('foo')
 
 			expect(eventCount).toBe(6)
 			expect(eventCount2).toBe(3)
 
-			o.triggerEvent('bar')
-			o.trigger('bar')
+			o.emit('bar')
+			o.emit('bar')
 			o.emit('bar')
 
 			expect(eventCount).toBe(6)
@@ -74,8 +74,8 @@ describe('Observable', () => {
 
 			o.off('bar', eventHandler)
 
-			o.triggerEvent('bar')
-			o.trigger('bar')
+			o.emit('bar')
+			o.emit('bar')
 			o.emit('bar')
 
 			expect(eventCount).toBe(6)
@@ -83,8 +83,8 @@ describe('Observable', () => {
 
 			o.off('bar', eventHandler2)
 
-			o.triggerEvent('bar')
-			o.trigger('bar')
+			o.emit('bar')
+			o.emit('bar')
 			o.emit('bar')
 
 			expect(eventCount).toBe(6)
