@@ -14,11 +14,10 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
 			if (!callbacks) eventMap.set(eventName, (callbacks = []))
 
 			if (typeof callback == 'function') callbacks.push([callback, context])
-			// save callback associated with context
 			else throw new Error('Expected a function in callback argument of Observable#on.')
 		}
 
-		off(eventName: string, callback?: Function) {
+		off(eventName: string, callback?: Function, context?: any) {
 			const eventMap = this.__eventMap
 
 			if (!eventMap) return
@@ -27,7 +26,7 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
 
 			if (!callbacks) return
 
-			const index = callbacks.findIndex(tuple => tuple[0] === callback)
+			const index = callbacks.findIndex(tuple => tuple[0] === callback && tuple[1] === context)
 
 			if (index == -1) return
 

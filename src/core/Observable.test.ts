@@ -126,5 +126,54 @@ describe('Observable', () => {
 			expect(thePayload).toBe('oh yeah')
 			expect(thePayload2).toBe(42)
 		})
+
+		it('allows callbacks to be paired with contexts with which to be called', () => {
+			const o = new Observable()
+
+			let obj = {n: 0}
+			const o1 = {}
+			const o2 = {}
+
+			const callback = function (this: any, data: {n: number}) {
+				// the first two calls
+				if (data.n <= 1) {
+					if (data.n === 0) {
+						data.n++
+						expect(this).toBe(o1)
+					} else {
+						data.n++
+						expect(this).toBe(o2)
+					}
+				}
+
+				// the 3rd and 4th calls
+				else {
+					data.n++
+					expect(this).toBe(o2)
+				}
+			}
+
+			o.on('foo', callback, o1)
+			o.on('foo', callback, o2)
+
+			o.emit('foo', obj)
+
+			expect(obj.n).toBe(2)
+
+			o.off('foo', callback, o1)
+
+			o.emit('foo', obj)
+			o.emit('foo', obj)
+
+			expect(obj.n).toBe(4)
+
+			o.off('foo', callback, o2)
+
+			o.emit('foo', obj)
+			o.emit('foo', obj)
+			o.emit('foo', obj)
+
+			expect(obj.n).toBe(4)
+		})
 	})
 })
