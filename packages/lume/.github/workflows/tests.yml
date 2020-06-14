@@ -1,4 +1,4 @@
-name: Node CI
+name: Build and Test
 
 on: [push]
 
@@ -12,15 +12,12 @@ jobs:
                 operating-system: [
 					ubuntu-latest,
 					macos-latest,
-					# TODO get tests working in Windows once tests work in Windows for all packages separately
+					# TODO get tests working in Windows
 					# windows-latest
 				]
 
         steps:
             - uses: actions/checkout@v1
-              with:
-                  submodules: 'recursive'
-                  token: ${{ secrets.ACCESS_TOKEN }}
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v1
               with:
@@ -28,6 +25,6 @@ jobs:
             - name: npm install, build, and test
               run: |
                   npm i
-                  npm run test:ci
+                  npm test
               env:
                   CI: true

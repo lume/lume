@@ -1,5 +1,19 @@
+# Editor files
+.vscode
+
+# Logs
+*.log
+
+# Dependencies
 node_modules/
 package-lock.json
-dist/
-.vscode/
-*.log
+
+# Build output
+**/dist/
+
+# Rush files
+common/temp/
+# ignore npm-shrinkwrap for now, due to issues in https://github.com/microsoft/rushstack/issues/1706
+common/config/rush/npm-shrinkwrap.json
+**/.rush/
+install-run*.js
