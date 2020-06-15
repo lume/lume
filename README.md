@@ -20,7 +20,7 @@
 LUME is composed of several packages that can be used individually, or
 together as a whole:
 
-### [`lume`](//github.com/lume/variable) - HTML elements for defining rich graphics
+### [`lume`](./packages/lume/README.md) - HTML elements for defining rich graphics
 
 This is the main package that exports HTML elements for defining rich and
 interactive visuals powered by both CSS and WebGL.
