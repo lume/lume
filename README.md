@@ -43,7 +43,7 @@ extend the features of LUME.
 
 Create variables that are easy to react to when their values change.
 
-### [`@lume/element-behaviors`](//github.com/lume/element-behaviors) - Augment HTML elements
+### [`element-behaviors`](//github.com/lume/element-behaviors) - Augment HTML elements
 
 This allows you to augment HTML elements with features called "behaviors"
 that are similar to custom elements: each behavior is defined as a `class`
