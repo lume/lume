@@ -6,9 +6,6 @@
 	max-width: unset;
 }
 
-.markdown-section h1 {
-	text-transform: uppercase;
-}
 .markdown-section h1 code {
 	font-family: monospace;
 	text-transform: initial;
