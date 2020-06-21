@@ -9,10 +9,11 @@
 	display: block;
 }
 
-/* Hide the button that makes the sidebar open/close.*/
-/* TODO Do this only on desktop. Mobile still needs it. */
-.sidebar-toggle {
-	display: none;
+@media (min-width: 768px) {
+	/* Hide the button that makes the sidebar open/close.*/
+	.sidebar-toggle {
+		display: none;
+	}
 }
 
 .sidebar .search input[type='search'] {
