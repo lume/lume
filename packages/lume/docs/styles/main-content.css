@@ -66,3 +66,10 @@
 	/* left padding on all broken lines using box-shadow after disabling padding-left, https://css-tricks.com/multi-line-padded-text */
 	box-shadow: calc(-1 * var(--code-inline-padding-sides)) 0 0 var(--code-inline-background);
 }
+
+/* code blocks ------------------------------------------------------ */
+.markdown-section code[class*='lang-'],
+.markdown-section pre[data-lang] {
+	/* Disable ligatures (namely for the Space Mono font) */
+	font-variant-ligatures: none;
+}

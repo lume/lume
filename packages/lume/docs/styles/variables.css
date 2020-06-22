@@ -66,6 +66,8 @@
 	--sidebar-nav-strong-border-width: 0;
 
 	/* Code styling --------------------------------------- */
+	--code-font-family: SpaceMono Regular, Inconsolata, Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono',
+		'Lucida Console', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
 	--code-font-size: unset; /* fall back to Docsify's code sizing which varies across page headings */
 	/* original value from docsify-themeable */
 	--code-inline-padding: 0.125em 0.4em;

@@ -24,6 +24,8 @@
 
 .vuep-editor,
 .vuep-preview {
-	/* height: 100%; */
 	height: auto;
+
+	/* avoid ligatures with the Space Mono font */
+	font-variant-ligatures: none;
 }
