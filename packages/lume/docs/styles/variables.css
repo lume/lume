@@ -11,6 +11,9 @@
 	--sidebar-nav-link-active-mark-thickness: 10px;
 	--sidebar-nav-link-padding-left: 20px;
 
+	/* base ------------------------------------------------- */
+	--base-font-family: Gotham Book;
+
 	/* Sidebar sizing --------------------------------------- */
 	--sidebar-background: #f9f9f9;
 	--sidebar-width: 335px;
@@ -77,8 +80,9 @@
 	--code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
 
 	/* Main content typography --------------------------------------- */
-	/* --heading-h1-font-family: Gotham Extra Light; */
-	/* --heading-h1-font-family: Gotham Thin; */
+	--heading-font-family: Gotham Medium;
+	--heading-h2-font-weight: 600;
+	--heading-margin: 0.5em 0;
 	--heading-h1-font-size: 70px;
 
 	/* *****************************
