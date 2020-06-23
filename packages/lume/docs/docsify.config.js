@@ -32,20 +32,18 @@
 
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
 				function (hook, vm) {
-					hook.beforeEach(content => {
-						const url = repo + '/edit/develop/docs/' + vm.route.file
+					hook.afterEach(content => {
+						const url = repo + '/edit/develop/packages/lume/docs/' + vm.route.file
 						const editTop = `
-<a href="${url}" style="position: absolute; right: 45px; top: 120px;" target="__blank">
-	Edit document.
-</a>
-
-`
+							<a href="${url}" style="position: absolute; right: 45px; top: 120px;" target="__blank">
+								Edit document.
+							</a>
+						`
 						const editBottom = `
-<a href="${url}" style="position: absolute; right: 45px;" target="__blank">
-	Edit document.
-</a>
-
-`
+							<a href="${url}" style="position: absolute; right: 45px;" target="__blank">
+								Edit document.
+							</a>
+						`
 						return editTop + content + editBottom
 					})
 				},
