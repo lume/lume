@@ -18,6 +18,7 @@
         padding: 0;
         overflow: hidden;
         background: #222;
+        touch-action: none; /* prevent touch drag from scrolling */
     }
 </style>
 
