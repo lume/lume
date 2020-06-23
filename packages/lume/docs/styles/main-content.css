@@ -73,3 +73,13 @@
 	/* Disable ligatures (namely for the Space Mono font) */
 	font-variant-ligatures: none;
 }
+
+/* pagination at the bottom ----------------------------------------- */
+.docsify-pagination-container {
+	margin: 2em 0 0 !important;
+}
+.pagination-item {
+	margin-top: 1em !important;
+	margin-bottom: 0;
+	transform: translateY(8px);
+}

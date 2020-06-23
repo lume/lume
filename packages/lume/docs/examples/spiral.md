@@ -4,7 +4,7 @@
 <script type="application/javascript">
   new Vue({
     el: '#example',
-    template: '<live-code :template="code" mode="html>iframe" :debounce="1000" />',
+    template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="1000" />',
     data: {
       code: `
 <script src="${location.origin+location.pathname}/global.js"><\/script>
@@ -76,7 +76,8 @@
   })
 </script>
 
--   A ["picked" pen](https://codepen.io/trusktr/pen/JMMXPB) on CodePen!
--   The 2D scene is defined using HTML
--   JavaScript used for minimal animation
--   Rendering: CSS3D
+<!-- TODO show demo information without breaking the full height demo view:
+- A ["picked" pen](https://codepen.io/trusktr/pen/JMMXPB) on CodePen!
+- The 2D scene is defined using HTML
+- JavaScript used for minimal animation
+- Rendering: CSS3D -->

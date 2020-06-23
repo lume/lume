@@ -4,7 +4,7 @@
 <script type="application/javascript">
   new Vue({
     el: '#example',
-    template: '<live-code :template="code" mode="html>iframe" :debounce="1000" />',
+    template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="1000" />',
     data: {
       code:
 `

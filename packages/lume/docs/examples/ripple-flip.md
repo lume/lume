@@ -4,7 +4,7 @@
 <script type="application/javascript">
   new Vue({
     el: '#example',
-    template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
+    template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="200" />',
     data: {
       code:
 `
@@ -259,6 +259,7 @@
   })
 </script>
 
--   The 3D scene is defined with imperative JavaScript
--   Rendering: CSS3D
--   [Fork on codepen](https://codepen.io/trusktr/pen/bWwdqR)
+<!-- TODO show demo information without breaking the full height demo view:
+- The 3D scene is defined with imperative JavaScript
+- Rendering: CSS3D
+- [Fork on codepen](https://codepen.io/trusktr/pen/bWwdqR) -->
