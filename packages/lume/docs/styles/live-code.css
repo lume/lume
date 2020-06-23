@@ -8,8 +8,18 @@
 }
 
 .vuep.full {
-	height: calc(100vh - 316px);
 	max-height: unset;
+}
+@media (min-width: 768px) {
+	.vuep.full {
+		height: calc(100vh - 316px);
+	}
+}
+@media (max-width: 767px) {
+	.vuep.full {
+		display: flex;
+		flex-direction: column-reverse;
+	}
 }
 
 .vuep-preview {
@@ -25,7 +35,4 @@
 .vuep-editor,
 .vuep-preview {
 	height: auto;
-
-	/* avoid ligatures with the Space Mono font */
-	font-variant-ligatures: none;
 }
