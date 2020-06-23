@@ -44,10 +44,11 @@
   <i-node
     id="node"
     size="100 100"
+    rotation="0 -70 0"
     align="0.5 0.5 0.5"
     mount-point="0.5 0.5 0.5"
   >
-    Hello 3D
+    <h3 align="center">Hello 3D world!</h3>
   </i-node>
 </i-scene>
 
@@ -57,10 +58,12 @@
     height: 100%; width: 100%;
   }
   i-scene {
-    background: #333
+    background: #333;
   }
   i-node {
     background: deeppink;
+    font-family: sans serif;
+    border-radius: 5px;
   }
 </style>
 

@@ -5,14 +5,14 @@
 
 - **Examples**
 
-  - [Hello 3D](/examples/hello3d.md ':class=no-sublist')
+  - [Hello 3D world!](/examples/hello3d.md ':class=no-sublist')
   - [Hello 3D, parent transforms](/examples/hello3d-parent-transforms.md ':class=no-sublist')
-  - [Ripple flip](/examples/ripple-flip.md ':class=no-sublist')
-  - [Autolayout (declarative)](/examples/autolayout-declarative.md ':class=no-sublist')
-  - [Autolayout (imperative)](/examples/autolayout-imperative.md ':class=no-sublist')
-  - [Morphing spiral](/examples/spiral.md ':class=no-sublist')
   - [OBJ model](/examples/obj-model.md ':class=no-sublist')
   - [Buttons with shadow](/examples/buttons-with-shadow.md ':class=no-sublist')
+  - [Ripple flip](/examples/ripple-flip.md ':class=no-sublist')
+  - [Morphing spiral](/examples/spiral.md ':class=no-sublist')
+  - [Autolayout (declarative)](/examples/autolayout-declarative.md ':class=no-sublist')
+  - [Autolayout (imperative)](/examples/autolayout-imperative.md ':class=no-sublist')
   - [Material texture](/examples/material-texture.md ':class=no-sublist')
   - [Origin](/examples/origin.md ':class=no-sublist')
 
