@@ -68,8 +68,7 @@
 }
 
 /* code blocks ------------------------------------------------------ */
-.markdown-section code[class*='lang-'],
-.markdown-section pre[data-lang] {
+code {
 	/* Disable ligatures (namely for the Space Mono font) */
 	font-variant-ligatures: none;
 }
