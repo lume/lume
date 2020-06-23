@@ -16,6 +16,7 @@
 			homepage: 'install.md',
 			loadSidebar: true,
 			loadNavbar: true,
+			mergeNavbar: true,
 			subMaxLevel: 3,
 			externalLinkTarget: '_self',
 			executeScript: true, // defaults to false unless Vue is present in which case defaults to true.
