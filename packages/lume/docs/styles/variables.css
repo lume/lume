@@ -31,7 +31,7 @@
 		calc(var(--sidebar-padding-size) - var(--sidebar-nav-link-active-mark-thickness)) 0.25em
 		var(--sidebar-nav-link-padding-left);
 	/* --sidebar-name-padding: var(--sidebar-padding-size); */
-	--sidebar-name-padding: 52px 106px 52px 60px;
+	--sidebar-name-padding: 21px 106px 21px 60px;
 
 	/*
 	 * Make the header logo take up the whole space at the top of the sidebar
@@ -67,6 +67,7 @@
 	--sidebar-nav-strong-padding: 0 0;
 	--sidebar-nav-strong-text-transform: capitalize;
 	--sidebar-nav-strong-border-width: 0;
+	--sidebar-nav-margin: 0.6em 0 0;
 
 	/* Code styling --------------------------------------- */
 	--code-font-family: SpaceMono Regular, Inconsolata, Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono',
