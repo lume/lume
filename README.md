@@ -9,7 +9,7 @@
   <a href="//lume.io/docs">Documentation</a>&nbsp;&nbsp;·&nbsp;
   <a href="//lume.io/docs/#/examples/hello3d">Examples</a>&nbsp;&nbsp;·&nbsp;
   <a href="//lume.community">Forum</a>&nbsp;&nbsp;·&nbsp;
-  <a href="//discord.gg/PgeyevP">Discord</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//discord.gg/PgeyevP">Chat</a>&nbsp;&nbsp;·&nbsp;
   <a href="//github.com/lume/lume">GitHub</a>
 </h3>
 
@@ -52,7 +52,7 @@ that an unlimited number of behaviors can be associated with an element.
 
 ## Getting involved
 
-There's various way to get involved!
+There's various ways to get involved!
 
 -   Visit the [documentation](//lume.io/docs) and make something awesome!
 -   Submit fixes or new features to any packages or the website! See the
