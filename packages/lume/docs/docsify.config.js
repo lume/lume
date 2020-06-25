@@ -11,9 +11,9 @@
 		return {
 			name: 'LUME',
 			nameLink: '//lume.io',
+			// replaces site `name` in sidebar with an image.
+			logo: './images/logo-and-word.svg',
 			// basePath: 'https://unpkg.com/lume@0.0.0-rc.0/docs/', // TODO host on unpkg, with versioned docs?
-
-			homepage: 'install.md',
 			loadSidebar: true,
 			loadNavbar: true,
 			mergeNavbar: true,
@@ -21,15 +21,8 @@
 			externalLinkTarget: '_self',
 			executeScript: true, // defaults to false unless Vue is present in which case defaults to true.
 			auto2top: true,
-			relativePath: true,
-			// coverpage: true,
-			// repo, // shows GitHub corner banner at the top of all pages.
-			// replaces site `name` in sidebar with an image.
-			logo: './images/logo-and-word.svg',
-
-			alias: {
-				'/': '/install',
-			},
+			// relativePath: true,
+			relativePath: false,
 
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
 				function (hook, vm) {

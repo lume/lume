@@ -2,7 +2,7 @@
 
 # <a href="//lume.io"><img src="./logo.svg" width="200" alt="LUME" title="LUME" /></a>
 
-#### **A toolkit for creating rich and interactive 2D or 3D experiences for any device form factor from mobile to desktop to AR/VR headsets.**
+#### **A toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.**
 
 <h3>
   <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;
@@ -20,10 +20,10 @@
 LUME is composed of several packages that can be used individually, or
 together as a whole:
 
-### [`lume`](./packages/lume/README.md) - HTML elements for defining rich graphics
+### [`lume`](./packages/lume/README.md) - HTML elements for rich graphics
 
-This is the main package that exports HTML elements for defining rich and
-interactive visuals powered by both CSS and WebGL.
+HTML elements for easily defining rich and interactive 2D or 3D applications
+powered by both CSS and WebGL.
 
 This package uses and re-exports features from the below packages.
 
@@ -39,11 +39,11 @@ performant HTML elements in a simple way. It provides the foundation for
 LUME's HTML elements, and a standard pattern for building new elements that
 extend the features of LUME.
 
-### [`@lume/variable`](//github.com/lume/variable) - A reactivity system
+### [`@lume/variable`](//github.com/lume/variable) - Reactivity system
 
 Create variables that are easy to react to when their values change.
 
-### [`element-behaviors`](//github.com/lume/element-behaviors) - Augment HTML elements
+### [`element-behaviors`](//github.com/lume/element-behaviors) - Mix functionalities onto HTML elements
 
 This allows you to augment HTML elements with features called "behaviors"
 that are similar to custom elements: each behavior is defined as a `class`

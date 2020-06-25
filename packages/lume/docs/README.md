@@ -1,19 +1,90 @@
-# Buttons with shadow
+# Introduction
 
-<div id="example"></div>
+<!-- #### **LUME is a toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.** -->
+
+> **LUME is a toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.**
+
+<h3 style="display: none;">
+  <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.io/docs">Documentation</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.io/docs/#/examples/hello3d">Examples</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.community">Forum</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//discord.gg/PgeyevP">Chat</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//github.com/lume/lume">GitHub</a>
+</h3>
+
+Lume gives you general-purpose HTML Elements for defining 2D or 3D scenes
+rendered with CSS3D, WebGL, or both mixed together.
+
+Lume's "mixed mode" let's us combine traditional HTML elements styled with
+CSS with new elements that render with WebGL, which means we can render both
+traditional HTML content and 3D models together in the same 3D space, with
+lighting and shadow effects on both.
+
+As an example, consider traditional CSS `box-shadow` which is flat and
+boring:
+
+<div id="boring"></div>
+
+With Lume we can give traditional HTML content **_real_** shadow and lighting! See
+for yourself!
+
+<div id="fun"></div>
+
+Lume is built on the [Web Component
+standards](https://www.w3.org/standards/techs/components#w3c_all), making it
+possible to write 3D scenes declaratively using custom HTML elements,
+regardless of which view layer you prefer. This makes it possible for you write
+3D scenes using popular HTML frameworks like (but not limited to)
+[React](https://facebook.github.io/react), [Vue.js](https://vuejs.org),
+[Meteor](http://meteor.com), [Angular](https://angular.io),
+[Ember.js](https://www.emberjs.com), or even the great
+[jQuery](http://jquery.com).
+
 <script>
-  new Vue({
-    el: '#example',
-    template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
-    data: {
-      code:
+new Vue({
+  el: '#boring',
+  template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
+  data: {
+    code:
 `
 <body>
-
+<style>
+    body, html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+        background: #62b997;
+    }
+    div {
+      width: 100px;
+      height: 100px;
+      box-shadow: 10px 10px 10px rgba(0,0,0,0.3);
+      background: skyblue;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+</style>
+<div> boring </div>
+</body>
+`
+  },
+})
+new Vue({
+  el: '#fun',
+  template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
+  data: {
+    code:
+`
+<body>
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 <script src="${location.origin+location.pathname}/node_modules/vue/dist/vue.js"><\/script>
 <script src="${location.origin+location.pathname}/node_modules/tween.js/src/Tween.js"><\/script>
-
 <style>
     body, html {
         width: 100%;
@@ -47,7 +118,6 @@
         border-color: #0a3359;
     }
 </style>
-
 <template vue>
     <!-- Lights and shadows are powered by WebGL, but written with HTML: -->
     <i-scene
@@ -101,14 +171,12 @@
         </i-dom-plane>
     </i-scene>
 </template>
-
-<div id="root"></div>
-
+<div id="funRoot"></div>
 <script>
     LUME.useDefaultNames()
 
     new Vue({
-        el: '#root',
+        el: '#funRoot',
         template: document.querySelector('[vue]').innerHTML,
         mounted: function() {
             var {Motor, Events} = LUME
@@ -209,18 +277,8 @@
     })
 
 <\/script>
-
 </body>
-
 `
-    },
-  })
+  },
+})
 </script>
-
-<!-- TODO show demo information without breaking the full height demo view:
-- A ["picked" pen](https://codepen.io/trusktr/pen/rpegZR) on CodePen!
-- The 3D scene is defined using HTML
-- JavaScript used for event handling and animating with Tween.js.
-- Rendering: experimental WebGL and CSS3D, blended together in "mixed mode",
-  where regular DOM elements (CSS3D) and WebGL objects are rendered together
-  in the same 3D space with lighting and shadow -->
