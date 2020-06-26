@@ -10,7 +10,7 @@
   <a href="//lume.io/docs/#/examples/hello3d">Examples</a>&nbsp;&nbsp;·&nbsp;
   <a href="//lume.community">Forum</a>&nbsp;&nbsp;·&nbsp;
   <a href="//discord.gg/PgeyevP">Chat</a>&nbsp;&nbsp;·&nbsp;
-  <a href="//github.com/lume/lume">GitHub</a>
+  <a href="//github.com/lume/lume">Source</a>
 </h3>
 
 Lume gives you general-purpose HTML Elements for defining 2D or 3D scenes
@@ -277,6 +277,7 @@ new Vue({
     })
 
 <\/script>
+
 </body>
 `
   },
