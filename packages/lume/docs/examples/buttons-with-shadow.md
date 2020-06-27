@@ -143,13 +143,22 @@
             document.querySelector('html').setAttribute('touch-action', 'none')
             document.querySelector('body').setAttribute('touch-action', 'none')
 
+            const targetPosition = {x: 0, y: 0}
+
             document.addEventListener('pointermove', function(e) {
                 e.preventDefault()
-                light.position.x = e.clientX
-                light.position.y = e.clientY
+
+                targetPosition.x = e.clientX
+                targetPosition.y = e.clientY
             })
 
             var Motor = LUME.Motor
+
+            Motor.addRenderTask(() => {
+                light.position.x += (targetPosition.x - light.position.x) * 0.01
+                light.position.y += (targetPosition.y - light.position.y) * 0.01
+            })
+
             var downTween, upTween, pressedButton
 
             // On mouse down animate the button downward

@@ -211,10 +211,20 @@ new Vue({
             document.querySelector('html').setAttribute('touch-action', 'none')
             document.querySelector('body').setAttribute('touch-action', 'none')
 
+            const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 4}
+
             document.addEventListener('pointermove', function(e) {
                 e.preventDefault()
-                light.position.x = e.clientX
-                light.position.y = e.clientY
+
+                targetPosition.x = e.clientX
+                targetPosition.y = e.clientY
+            })
+
+            var Motor = LUME.Motor
+
+            Motor.addRenderTask(() => {
+                light.position.x += (targetPosition.x - light.position.x) * 0.02
+                light.position.y += (targetPosition.y - light.position.y) * 0.02
             })
 
             var Motor = LUME.Motor
