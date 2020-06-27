@@ -24,7 +24,7 @@ If you don't have a GitHub account, you won't be able to propose changes to
 the code from a local copy, but you can still clone the code repo and modify
 it locally to try things out using an https URL:
 
-```sh
+```bash
 git clone --recursive https://github.com/lume/lume.git
 ```
 
@@ -44,13 +44,13 @@ edit code and submit code change proposals directly through the GitHub UI.
 If you have your SSH key set up and are ready to develop locally on your
 machine, then clone the main repo using the SSH URL:
 
-```sh
+```bash
 git clone --recursive git@github.com:lume/lume.git
 ```
 
 Go into the local copy of the code repo that you just cloned:
 
-```sh
+```bash
 cd lume
 ```
 
@@ -65,7 +65,7 @@ world of JavaScript for installing JavaScript depedencies into a JavaScript-
 Install the dependencies (both build dependencies and runtime dependencies)
 for all of the LUME projects with the following command:
 
-```sh
+```bash
 npm install
 ```
 
@@ -96,7 +96,7 @@ delete all dependencies (`node_modules` folders), delete build outputs,
 re-install all dependencies, re-link all projects, and finally re-build all
 projects:
 
-```sh
+```bash
 npm run reset
 ```
 
@@ -111,7 +111,7 @@ sure the changes work and don't break any existing functionality.
 In order to make changes to code of a project, run the project in development
 mode by entering into that project's folder and running the dev process:
 
-```sh
+```bash
 # Go into a packages/<project-name> or apps/<project-name> folder.
 cd packages/lume/
 
@@ -143,7 +143,7 @@ issue](https://github.com/karma-runner/karma/issues/3329)).
 
 To run the tests, run
 
-```sh
+```bash
 npm test
 ```
 
@@ -153,7 +153,7 @@ window in which Karma is running tests, and use Chrome's
 Electron is built on Chrome's renderer) for debugging (f.e. stepping through
 the test code). To do so, run:
 
-```sh
+```bash
 npm run test-debug
 ```
 
@@ -163,7 +163,7 @@ is useful for seeing console output to aid in debugging failed or new tests.
 
 If the test pass, now you should also run the tests for all of the projects to make sure the no other projects broke. To run tests for all projects, go back into the parent folder so you are outside of a project, then run tests:
 
-```sh
+```bash
 cd ../ # Back out of a project, back into the main repo.
 npm test # This runs tests for all projects.
 ```
@@ -177,7 +177,7 @@ the `describe()`/`it()` functions to describe unit tests, and provides the
 
 Unit test files generally follow this format:
 
-```ts
+```js
 import {SomeThing} from './a-file'
 
 // imagine SomeThing is a class with a foo property having an initial value of 'bar'
@@ -215,7 +215,7 @@ automatically follows the code formatting rules.
 Even if you don't have the editor plugins, you can automatically format all
 the code in a project to satisfy the requirements by running the following within a project:
 
-```sh
+```bash
 npm run prettier
 ```
 
@@ -239,7 +239,7 @@ repos in your local copy so that `git` will know where to push your code
 changes to. Run the following within the umbrella repo but _not_ within a sub
 project:
 
-```sh
+```bash
 # If needed, back out of a sub project and into the main repo.
 cd ../
 
@@ -252,7 +252,7 @@ where `<username>` is your GitHub username.
 Now make a commit with your changes on a new branch. Run the following in the
 main repo but _not_ in a sub project:
 
-```sh
+```bash
 # Make a new branch.
 git checkout -b my-changes
 
@@ -280,7 +280,7 @@ button to fork the repo to your GitHub account.
 Similarly as with the main repo, now commit changes in the sub project repo
 (git submodule):
 
-```sh
+```bash
 # If you're not in the project folder, go back in, for example.
 cd element/
 
@@ -337,7 +337,7 @@ This section is intended for maintainers of the project.
 
 To build the package for production, run
 
-```sh
+```bash
 npm run build
 ```
 
@@ -348,7 +348,7 @@ which part of the version number you want to increment (see
 [SemVer](https://semver.org/) for conventions on patch, minor, and major
 version numbers).
 
-```sh
+```bash
 npm run realease:patch
 npm run realease:minor
 npm run realease:major
@@ -356,18 +356,18 @@ npm run realease:major
 
 Any of the three `release:*` scripts will:
 
--   clean the project of any previous build output.
--   stash any changes in the repo.
--   build the project in production mode.
--   run the project's tests to ensure everything is okay.
--   increment the version number (according to SemVer rules depending on if you
-    choose patch, minor, or major).
--   create a new commit containing the version number in the form "v1.2.3" as
-    the commit message.
--   tag that commit with a git tag of the same name as the commit message.
--   publish the new version to NPM.
--   push the commit and the tag to GitHub.
--   unstash any changes if there were any at the beginning.
+- clean the project of any previous build output.
+- stash any changes in the repo.
+- build the project in production mode.
+- run the project's tests to ensure everything is okay.
+- increment the version number (according to SemVer rules depending on if you
+  choose patch, minor, or major).
+- create a new commit containing the version number in the form "v1.2.3" as
+  the commit message.
+- tag that commit with a git tag of the same name as the commit message.
+- publish the new version to NPM.
+- push the commit and the tag to GitHub.
+- unstash any changes if there were any at the beginning.
 
 If something goes wrong (f.e. an error during the build or test process), fear not, the package will
 not be published. Fix the failing tests or errors, and try again.
