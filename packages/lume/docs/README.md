@@ -21,15 +21,14 @@ CSS with new elements that render with WebGL, which means we can render both
 traditional HTML content and 3D models together in the same 3D space, with
 lighting and shadow effects on both.
 
-As an example, consider traditional CSS `box-shadow` which is flat and
-boring:
+As an example, consider traditional CSS `box-shadow` which is flat and static:
 
-<div id="boring"></div>
+<div id="traditional"></div>
 
-With Lume we can give traditional HTML content **_real_** shadow and lighting! See
+With Lume we can give traditional HTML content **_real and dynamic_** shadow and lighting! See
 for yourself!
 
-<div id="fun"></div>
+<div id="dynamic"></div>
 
 Lume is built on the [Web Component
 standards](https://www.w3.org/standards/techs/components#w3c_all), making it
@@ -43,7 +42,7 @@ regardless of which view layer you prefer. This makes it possible for you write
 
 <script>
 new Vue({
-  el: '#boring',
+  el: '#traditional',
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
@@ -70,13 +69,13 @@ new Vue({
       transform: translate(-50%, -50%);
     }
 </style>
-<div> boring </div>
+<div align="center"> <p>static</p> </div>
 </body>
 `
   },
 })
 new Vue({
-  el: '#fun',
+  el: '#dynamic',
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
@@ -171,12 +170,12 @@ new Vue({
         </i-dom-plane>
     </i-scene>
 </template>
-<div id="funRoot"></div>
+<div id="buttonsRoot"></div>
 <script>
     LUME.useDefaultNames()
 
     new Vue({
-        el: '#funRoot',
+        el: '#buttonsRoot',
         template: document.querySelector('[vue]').innerHTML,
         mounted: function() {
             var {Motor, Events} = LUME
