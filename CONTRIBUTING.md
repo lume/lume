@@ -1,1 +1,1 @@
-./packages/lume/docs/CONTRIBUTING.md
+See [docs/CONTRIBUING.md](docs/CONTRIBUING.md).
