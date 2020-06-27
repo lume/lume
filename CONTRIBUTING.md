@@ -1,1 +1,1 @@
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+See https://lume.io/docs/#/contributing.
