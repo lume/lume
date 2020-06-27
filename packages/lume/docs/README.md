@@ -149,24 +149,26 @@ new Vue({
                     <button>button {{n+1}}</button>
                 </i-dom-plane>
             </i-node>
-            <i-point-light
-                id="light"
-                color="white"
-                position="300 300 300"
-                size="0 0 0"
-                cast-shadow="true"
-                intensity="0.8"
-                >
-                <i-mesh
-                    has="sphere-geometry basic-material"
-                    size="10 10 10"
-                    color="white"
-                    receive-shadow="false"
-                    cast-shadow="false"
-                    style="pointer-events: none"
-                    >
-                </i-mesh>
-            </i-point-light>
+            <i-node id="lightContainer" size="0 0 0">
+              <i-point-light
+                  id="light"
+                  color="white"
+                  position="300 300 300"
+                  size="0 0 0"
+                  cast-shadow="true"
+                  intensity="0.8"
+              >
+                  <i-mesh
+                      has="sphere-geometry basic-material"
+                      size="10 10 10"
+                      color="white"
+                      receive-shadow="false"
+                      cast-shadow="false"
+                      style="pointer-events: none"
+                  >
+                  </i-mesh>
+              </i-point-light>
+            </i-node>
         </i-dom-plane>
     </i-scene>
 </template>
@@ -178,16 +180,15 @@ new Vue({
         el: '#buttonsRoot',
         template: document.querySelector('[vue]').innerHTML,
         mounted: function() {
-            var {Motor, Events} = LUME
-            var downTween, upTween, pressedButton
-
-            var scene = document.querySelector('#scene')
+            const {Motor, Events} = LUME
+            const scene = document.querySelector('#scene')
 
             scene.on(Events.GL_LOAD, async () => {
                 // TODO fix order of events. Why is Promise.resolve() needed for it to work?
                 await Promise.resolve()
 
-                var light = document.querySelector('#light')
+                const lightContainer = document.querySelector('#lightContainer')
+                const light = document.querySelector('#light')
                 light.three.shadow.radius = 2
                 light.three.distance = 800
                 light.three.shadow.bias = -0.001
@@ -206,11 +207,7 @@ new Vue({
 
             })
 
-            // prevent default touch actions so we can move the light with touch
-            document.querySelector('html').setAttribute('touch-action', 'none')
-            document.querySelector('body').setAttribute('touch-action', 'none')
-
-            const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 4}
+            const targetPosition = {x: 0, y: 0}
 
             document.addEventListener('pointermove', function(e) {
                 e.preventDefault()
@@ -219,15 +216,14 @@ new Vue({
                 targetPosition.y = e.clientY
             })
 
-            var Motor = LUME.Motor
-
-            Motor.addRenderTask(() => {
-                light.position.x += (targetPosition.x - light.position.x) * 0.02
-                light.position.y += (targetPosition.y - light.position.y) * 0.02
+            Motor.addRenderTask(time => {
+                lightContainer.position.x += (targetPosition.x - lightContainer.position.x) * 0.01
+                lightContainer.position.y += (targetPosition.y - lightContainer.position.y) * 0.01
+                light.position.x = 100 * Math.sin(time * 0.001)
+                light.position.y = 100 * Math.cos(time * 0.001)
             })
 
-            var Motor = LUME.Motor
-            var downTween, upTween, pressedButton
+            let downTween, upTween, pressedButton
 
             // On mouse down animate the button downward
             document.addEventListener('pointerdown', function(e) {
