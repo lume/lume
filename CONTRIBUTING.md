@@ -1,1 +1,1 @@
-See [docs/CONTRIBUING.md](docs/CONTRIBUING.md).
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
