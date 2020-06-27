@@ -3,6 +3,7 @@
   - [Introduction](/)
   - [Install](/install.md)
   - [Workflows](/workflows.md)
+  - [Contributing](/CONTRIBUTING.md)
 
 - **Examples**
 
