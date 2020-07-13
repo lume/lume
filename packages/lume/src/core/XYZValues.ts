@@ -1,4 +1,4 @@
-import Observable from './Observable'
+import Eventful from './Eventful'
 import r from 'regexr'
 
 export type XYZValuesArray<T> = [T, T, T]
@@ -17,7 +17,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-export default abstract class XYZValues<T = any> extends Observable {
+export default abstract class XYZValues<T = any> extends Eventful {
 	private _x: T = undefined!
 	private _y: T = undefined!
 	private _z: T = undefined!

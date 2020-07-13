@@ -1,12 +1,12 @@
-import Observable from './Observable'
+import Eventful from './Eventful'
 
 let eventCount = 0
 let eventCount2 = 0
 
-describe('Observable', () => {
+describe('Eventful', () => {
 	describe('provides an event pattern', () => {
 		it('triggers an event handler based on event names', () => {
-			const o = new Observable()
+			const o = new Eventful()
 
 			const eventHandler = () => {
 				eventCount += 1
@@ -92,7 +92,7 @@ describe('Observable', () => {
 		})
 
 		it('passes event payloads to event handlers', () => {
-			const o = new Observable()
+			const o = new Eventful()
 
 			let thePayload: string | number | undefined
 			let thePayload2: number | undefined
@@ -128,7 +128,7 @@ describe('Observable', () => {
 		})
 
 		it('allows callbacks to be paired with contexts with which to be called', () => {
-			const o = new Observable()
+			const o = new Eventful()
 
 			let obj = {n: 0}
 			const o1 = {}

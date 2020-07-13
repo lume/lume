@@ -2,8 +2,13 @@ import {Mixin, MixinResult, Constructor} from 'lowclass'
 
 // TODO @trusktr, make strongly typed event args. Combine with stuff in Events.ts (or similar).
 
+// TODO @trusktr, Make sure emit will not attempt to call event handlers removed
+// during emit (in place modification of listeners array during emit iteration
+// will try to access undefined after the end of the array). Possibly use
+// for..of with a Set instead, otherwise modify the iteration index manually.
+
 /**
- * @class Observable - An instance of Observable emits events that code can
+ * @class Eventful - An instance of Eventful emits events that code can
  * subscribe to with callbacks. Events may optionally pass a payload to the
  * callbacks.
  *
@@ -33,16 +38,16 @@ import {Mixin, MixinResult, Constructor} from 'lowclass'
  * rectangle.off("resize", onResize)
  * ```
  */
-export const Observable = Mixin(ObservableMixin)
-export interface Observable extends InstanceType<typeof Observable> {}
-export default Observable
+export const Eventful = Mixin(EventfulMixin)
+export interface Eventful extends InstanceType<typeof Eventful> {}
+export default Eventful
 
-export function ObservableMixin<T extends Constructor>(Base: T) {
-	class Observable extends Constructor(Base) {
+export function EventfulMixin<T extends Constructor>(Base: T) {
+	class Eventful extends Constructor(Base) {
 		/**
 		 * @method on - Register a `callback` to be executed any
 		 * time an event with name `eventName` is triggered by an instance of
-		 * Observable. If a `context` is passed to `.on()`, the `callback` is
+		 * Eventful. If a `context` is passed to `.on()`, the `callback` is
 		 * associated with both `eventName` and `context`. Make sure to also
 		 * call `.off()` with the same `context` or else the callabck
 		 * associated with that `context` will not be removed.
@@ -56,7 +61,7 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
 
 			// @prod-prune
 			if (typeof callback !== 'function')
-				throw new Error('Expected a function in callback argument of Observable#on.')
+				throw new Error('Expected a function in callback argument of Eventful#on.')
 
 			if (!eventMap) eventMap = this.__eventMap = new Map()
 
@@ -135,5 +140,5 @@ export function ObservableMixin<T extends Constructor>(Base: T) {
 		private __eventMap: Map<string, Array<[Function, any]>> | null = null
 	}
 
-	return Observable as MixinResult<typeof Observable, T>
+	return Eventful as MixinResult<typeof Eventful, T>
 }

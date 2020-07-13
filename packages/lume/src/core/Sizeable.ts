@@ -1,5 +1,5 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import Observable from './Observable'
+import Eventful from './Eventful'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -27,7 +27,7 @@ const previousSize: Partial<XYZValuesObject<number>> = {}
 
 function SizeableMixin<T extends Constructor>(Base: T) {
 	const _Base = Constructor(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
-	const Parent = Observable.mixin(TreeNode.mixin(_Base))
+	const Parent = Eventful.mixin(TreeNode.mixin(_Base))
 
 	// Sizeable extends TreeNode because Sizeable knows about its `parent` when
 	// calculating proportional sizes. Also Transformable knows about it's parent
@@ -62,7 +62,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			// sideeffect of emitting propertychange more than needed for
 			// XYZValues (here, and in the above valuechanged handlers).
 			//
-			// TODO FIXME we want to batch Observable updates so that this doesn't
+			// TODO FIXME we want to batch Eventful updates so that this doesn't
 			// happen. Maybe we'll do it by batching events that have the same
 			// name. We should make it possible to choose to have sync or async
 			// events, and whether they should batch or not.
