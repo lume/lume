@@ -30,12 +30,13 @@
         position="300 300 300"
         size="0 0 0"
         cast-shadow="true"
-        intensity="0.5"
+        intensity="0.8"
         >
     </i-point-light>
     <i-box id="model"
         rotation="40 40 0"
-        align="0.5 0.5 0"
+        align="0.5 0.5 0.5"
+        mount-point="0.5 0.5 0.5"
         size="100 100 100"
         color="white" COMMENT-otherwise-the-material-will-be-tinted-random-color
         texture="${location.origin+location.pathname}/textures/cement.jpg"
