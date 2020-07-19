@@ -1,5 +1,4 @@
-- [LUME](//lume.io)
-- [Docs](/)
+- [Documentation](/)
 - [Examples](/examples/hello3d.md)
 - [Forum](//lume.community)
 - [Chat](//discord.gg/PgeyevP)
