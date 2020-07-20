@@ -1,30 +1,8 @@
 # Workflows
 
-The following sample workflows show possible ways to install and start using
-Lume with or without build tools
-
-If you're a total beginner to development and don't know [how to use a
-terminal command line](https://www.davidbaumgold.com/tutorials/command-line/), then the
-[Global Workflow](#global-workflow-easiest) will be the easiest way for you
-to get started. The other workflows require basic understanding of the command
-line.
-
-In each workflow we will be making a version of [this example](https://codepen.io/trusktr/pen/veXNZj):
-
-<iframe height='418' scrolling='no' title='HTML Buttons with Real Shadow'
-src='https://codepen.io/trusktr/embed/preview/veXNZj/?height=418&theme-id=light&default-tab=result&embed-version=2&editable=true'
-frameborder='no' allowtransparency='true' allowfullscreen='true'
-style='width:100%;'></iframe>
-
-(Try it in a new browser window and resize the window to see that the example
-is responsive.)
-
 ## Global Workflow (easiest)
 
-This workflow involves simply placing a `<script>` tag into an HTML page in
-order to load `LUME` as a global variable, and requires no build steps or
-tooling. Many of the [examples](./examples.old.md) use this workflow, which you can
-learn from.
+<!-- TODO: move some info from here to the install.md file, then delete this. -->
 
 In this workflow we'll write HTML (a "declarative programming language") to
 define the 3D scene, and only a small sprinkle of JavaScript (an "imperative

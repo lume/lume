@@ -135,7 +135,7 @@ new Vue({
                 size="600 31 0"
                 align="0.5 0.5 0"
                 mount-point="0.5 0.5 0"
-                >
+            >
                 <i-dom-plane
                     v-for="n in [0,1,2,3,4]"
                     ref="btn"
@@ -145,29 +145,28 @@ new Vue({
                     :align="\`\${n*0.25} 0 0\`"
                     :mount-point="\`\${n*0.25} 0 0\`"
                     color="#444"
-                    >
+                >
                     <button>button {{n+1}}</button>
                 </i-dom-plane>
             </i-node>
-            <i-node id="lightContainer" size="0 0 0">
-              <i-point-light
-                  id="light"
-                  color="white"
-                  position="300 300 300"
-                  size="0 0 0"
-                  cast-shadow="true"
-                  intensity="0.8"
-              >
-                  <i-mesh
-                      has="sphere-geometry basic-material"
-                      size="10 10 10"
-                      color="white"
-                      receive-shadow="false"
-                      cast-shadow="false"
-                      style="pointer-events: none"
-                  >
-                  </i-mesh>
-              </i-point-light>
+            <i-node id="lightContainer" size="0 0 0" position="0 0 300">
+                <i-point-light
+                    id="light"
+                    color="white"
+                    size="0 0 0"
+                    cast-shadow="true"
+                    intensity="0.8"
+                >
+                    <i-mesh
+                        has="sphere-geometry basic-material"
+                        size="10 10 10"
+                        color="white"
+                        receive-shadow="false"
+                        cast-shadow="false"
+                        style="pointer-events: none"
+                    >
+                    </i-mesh>
+                </i-point-light>
             </i-node>
         </i-dom-plane>
     </i-scene>
@@ -182,13 +181,12 @@ new Vue({
         mounted: function() {
             const {Motor, Events} = LUME
             const scene = document.querySelector('#scene')
+            const lightContainer = document.querySelector('#lightContainer')
+            const light = document.querySelector('#light')
 
             scene.on(Events.GL_LOAD, async () => {
-                // TODO fix order of events. Why is Promise.resolve() needed for it to work?
+                // TODO fix order of events. Promise.resolve() should not be needed here.
                 await Promise.resolve()
-
-                const lightContainer = document.querySelector('#lightContainer')
-                const light = document.querySelector('#light')
                 light.three.shadow.radius = 2
                 light.three.distance = 800
                 light.three.shadow.bias = -0.001
@@ -204,14 +202,12 @@ new Vue({
                 document.querySelector('#bg').three.material.dithering = true
 
                 scene.needsUpdate()
-
             })
 
-            const targetPosition = {x: 0, y: 0}
+            const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 2}
 
             document.addEventListener('pointermove', function(e) {
                 e.preventDefault()
-
                 targetPosition.x = e.clientX
                 targetPosition.y = e.clientY
             })
@@ -228,7 +224,6 @@ new Vue({
             // On mouse down animate the button downward
             document.addEventListener('pointerdown', function(e) {
                 if ( is( e.target, 'button' ) ) {
-
                     pressedButton = e.target
 
                     if (upTween) {
@@ -245,14 +240,12 @@ new Vue({
                         if (!downTween) return false
                         downTween.update(time)
                     })
-
                 }
             })
 
             // On mouse up animate the button upward
             document.addEventListener('pointerup', function(e) {
                 if ( pressedButton ) {
-
                     if (downTween) {
                         downTween.stop()
                         downTween = null
@@ -267,7 +260,6 @@ new Vue({
                         if (!upTween) return false
                         upTween.update(time)
                     })
-
                 }
             })
 
