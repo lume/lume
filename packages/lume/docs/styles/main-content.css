@@ -4,6 +4,22 @@
  */
 .markdown-section {
 	max-width: unset;
+
+	/* This could go in docsify-themeable. */
+	/* Original value: */
+	/* padding: 2rem 45px; */
+	padding: var(--content-padding);
+
+	margin: var(--content-margin);
+}
+
+.app-nav:not(:empty) ~ main .markdown-section {
+	/*
+	 * Note, padding-top from _content.scss overrides the top padding set by
+	 * `padding` in the previous section, so we have to explicitly override
+	 * `padding-top` too.
+	 */
+	padding-top: 2.4rem;
 }
 
 .markdown-section h1 code {
@@ -38,6 +54,10 @@
 	/* left: var(--code-inline-padding-sides); */
 }
 
+.markdown-section h4 {
+	text-transform: uppercase;
+}
+
 .markdown-section h1 > :first-child code,
 .markdown-section h1 > code:first-child,
 .markdown-section h2 > :first-child code,
@@ -65,6 +85,24 @@
 
 	/* left padding on all broken lines using box-shadow after disabling padding-left, https://css-tricks.com/multi-line-padded-text */
 	box-shadow: calc(-1 * var(--code-inline-padding-sides)) 0 0 var(--code-inline-background);
+}
+
+/* navbar ------------------------------------------------------ */
+.app-nav {
+	/* There's doesn't seem to be docsify-themeable options for modifying the top-level of the app-nav. */
+
+	/* Overriden value for reference: */
+	/* top: calc(35px - (0.5em * var(--base-line-height))); */
+	top: 46px;
+
+	text-transform: uppercase;
+	font-size: 14px;
+	font-family: 'Gotham Bold', 'Helvetica', sans-serif;
+	letter-spacing: 0.105em;
+}
+
+.app-nav.no-badge {
+	right: var(--content-side-padding-size);
 }
 
 /* code blocks ------------------------------------------------------ */

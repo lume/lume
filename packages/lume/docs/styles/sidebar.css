@@ -1,8 +1,8 @@
 /* The .app-name contains the logo image. */
 /* Make it take up full width of the sidebar. */
 .sidebar .app-name {
-	width: calc(100% + 2 * var(--sidebar-padding-size));
-	transform: translateX(calc(-1 * var(--sidebar-padding-size)));
+	width: calc(100% + 2 * var(--sidebar-padding-left-size));
+	transform: translateX(calc(-1 * var(--sidebar-padding-left-size)));
 }
 
 .sidebar .app-name * {
@@ -17,7 +17,7 @@
 }
 
 .sidebar .search input[type='search'] {
-	margin: 0 0 0 var(--sidebar-padding-size);
+	margin: 0 0 0 var(--sidebar-padding-left-size);
 }
 
 .sidebar .search input[type='search']:active,
@@ -70,6 +70,7 @@
 .sidebar-nav ul ul,
 .sidebar nav ul ul {
 	color: var(--sidebar-nav-strong-color);
+	/* color: #555555; */
 	font-family: Gotham Medium Italic;
 	user-select: none;
 }
@@ -105,6 +106,7 @@
 	border-style: solid;
 	border-color: var(--sidebar-nav-strong-border-color);
 	color: var(--sidebar-nav-strong-color);
+	/* color: #737373; */
 	font-size: var(--sidebar-nav-strong-font-size);
 	font-weight: var(--sidebar-nav-strong-font-weight);
 	text-transform: var(--sidebar-nav-strong-text-transform);

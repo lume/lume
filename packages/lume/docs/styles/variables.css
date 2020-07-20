@@ -1,37 +1,39 @@
 :root {
 	/* *****************************
-	  Docify-themeable overrides
-	  ***************************** */
-
-	/* CUSTOM */
+	  Custom variables
+	 ****************************** */
 	--logo-width: 168px;
 	--sidebar-width: 335px;
-	--sidebar-padding-size: 60px;
-	/* --sidebar-padding-size: calc((var(--sidebar-width) - var(--logo-width)) / 2); */
+	--sidebar-padding-left-size: 60px;
+	/* --sidebar-padding-left-size: calc((var(--sidebar-width) - var(--logo-width)) / 2); */
 	--sidebar-nav-link-active-mark-thickness: 10px;
 	--sidebar-nav-link-padding-left: 20px;
+
+	/* *****************************
+	  Docify-themeable overrides
+	  ***************************** */
 
 	/* base ------------------------------------------------- */
 	--base-font-family: Gotham Book;
 
 	/* Sidebar sizing --------------------------------------- */
-	--sidebar-background: #f9f9f9;
+	--sidebar-background: var(--code-theme-background);
 	--sidebar-width: 335px;
-	--search-input-margin: 0 calc(-1 * var(--sidebar-padding-size));
+	--search-input-margin: 0 calc(-1 * var(--sidebar-padding-left-size));
 	--search-input-padding: 0.65em 1em 0.65em 25px; /* TODO calc right padding from icon size? */
-	--sidebar-padding: 0 /*0 0*/ var(--sidebar-padding-size);
+	--sidebar-padding: 0 /*0 0*/ var(--sidebar-padding-left-size);
 	--sidebar-nav-link-border-width--active: 0 10px 0 0;
 	/* brings the right edge of the links to the right edge of the sidebar */
-	--sidebar-nav-link-margin: 0 calc(-1 * var(--sidebar-padding-size)) 0
+	--sidebar-nav-link-margin: 0 calc(-1 * var(--sidebar-padding-left-size)) 0
 		calc(-1 * (var(--sidebar-nav-link-padding-left) - 2px));
 	/* brings the right edge of the text in the links back in by the padding minus border width. */
-	--sidebar-nav-link-padding: 0.25em calc(var(--sidebar-padding-size) - var(--sidebar-nav-link-active-mark-thickness))
-		0.25em 20px;
+	--sidebar-nav-link-padding: 0.25em
+		calc(var(--sidebar-padding-left-size) - var(--sidebar-nav-link-active-mark-thickness)) 0.25em 20px;
 	--sidebar-nav-pagelink-padding: 0.25em
-		calc(var(--sidebar-padding-size) - var(--sidebar-nav-link-active-mark-thickness)) 0.25em
+		calc(var(--sidebar-padding-left-size) - var(--sidebar-nav-link-active-mark-thickness)) 0.25em
 		var(--sidebar-nav-link-padding-left);
-	/* --sidebar-name-padding: var(--sidebar-padding-size); */
-	--sidebar-name-padding: 21px 106px 21px 60px;
+	/* --sidebar-name-padding: var(--sidebar-padding-left-size); */
+	--sidebar-name-padding: 25px 106px 25px var(--sidebar-padding-left-size);
 
 	/*
 	 * Make the header logo take up the whole space at the top of the sidebar
@@ -45,7 +47,7 @@
 	--search-input-background-position: -2px center;
 	--search-input-background-color: #eeeeee;
 	--search-input-background-color--focus: transparent;
-	--search-input-placeholder-color: #33333333;
+	--search-input-placeholder-color: #00000077;
 	/* Magnifying glass. The following works only with stroke="rgba(0, 67, 250, 1)" but not with stroke="#0043FA". Why is this? */
 	--search-input-background-image: url('data:image/svg+xml;utf8,<svg height="20px" width="20px" viewBox="0 0 24 24" fill="none" stroke="rgba(0, 67, 250, 1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><circle cx="10.5" cy="10.5" r="7.5" vector-effect="non-scaling-stroke"></circle><line x1="21" y1="21" x2="15.8" y2="15.8" vector-effect="non-scaling-stroke"></line></svg>');
 
@@ -62,12 +64,16 @@
 	/* --sidebar-nav-strong-color: deeppink; */
 	--sidebar-nav-strong-font-size: 30px;
 	--sidebar-nav-strong-font-weight: normal;
-	--sidebar-nav-strong-color: #d3d3d5;
+	/* --sidebar-nav-strong-color: #d3d3d5; */
+	--sidebar-nav-strong-color: rgba(0, 0, 0, 0.2);
 	--sidebar-nav-strong-margin: 0 0;
 	--sidebar-nav-strong-padding: 0 0;
 	--sidebar-nav-strong-text-transform: capitalize;
 	--sidebar-nav-strong-border-width: 0;
 	--sidebar-nav-margin: 0.6em 0 0;
+
+	/* Navbar --------------------------------------- */
+	--navbar-root-margin: 0 0 0 40px;
 
 	/* Code styling --------------------------------------- */
 	--code-font-family: SpaceMono Regular, Inconsolata, Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono',
@@ -79,17 +85,36 @@
 	--code-inline-padding-sides: 0.4em;
 	--code-inline-padding-top-bottom: 0.125em;
 	--code-inline-padding: var(--code-inline-padding-top-bottom) var(--code-inline-padding-sides);
+	--code-theme-background: rgba(0, 0, 0, 0.03); /* Equivalent to #f7f7f7 when on top of white. */
+	--code-inline-background: var(--code-theme-background);
+
+	/* The original value felt off: */
+	/* --code-block-padding: 1.75em 1.5em 1.5em 1.5em; */
+	--code-block-padding: 1.5em;
 
 	/* Main content typography --------------------------------------- */
+	--modular-scale: 1.462;
 	--heading-font-family: Gotham Medium;
-	--heading-h2-font-weight: 600;
+	--heading-font-weight: normal;
+	--heading-h2-padding: ; /* unset */
+
+	/* --heading-font-family: Gotham Book; */
+	/* --heading-h2-font-weight: 600; */
 	--heading-margin: 0.5em 0;
-	--heading-h1-font-size: 70px;
+	/* --heading-h1-font-size: 50px; */
+
+	--blockquote-background: var(--code-theme-background);
 
 	/* *****************************
-	  Custom variables
+	  More Custom variables
 	 ****************************** */
 	--sidebar-scrollbar-background-color: rgba(0, 0, 0, 0.05);
 	--sidebar-scrollbar-thumb-color: rgba(0, 0, 0, 0.1);
 	--sidebar-scrollbar-thickness: 5px;
+
+	--content-side-padding-size: 60px;
+
+	/* This could go in docsify-themeable's Content category of variables. */
+	--content-padding: 2rem var(--content-side-padding-size);
+	--content-margin: 100px 0 0 0;
 }
