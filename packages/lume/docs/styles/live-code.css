@@ -12,7 +12,7 @@
 }
 @media (min-width: 768px) {
 	.vuep.full {
-		height: calc(100vh - 340px);
+		height: calc(100vh - 340px); /* TODO we need a technique so we don't hard code this value 340px value. */
 	}
 }
 @media (max-width: 767px) {
