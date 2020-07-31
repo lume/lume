@@ -59,8 +59,8 @@
     const el = document.querySelector('#model')
     const Motor = LUME.Motor
 
-    const rotate = (t) => 180 * Math.sin(0.001 * t)
-    el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]
+    const rotate = (t) => 180 * Math.sin(0.0005 * t)
+    el.rotation = (x, y, z, t) => [rotate(t/1.4), rotate(t/2.1), rotate(t/2.5)]
 <\/script>
 
 `
