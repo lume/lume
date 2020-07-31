@@ -69,6 +69,7 @@
 	"devDependencies": {
 		"@lume/cli": "^2.0.0",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
+		"@lume/eventful": "^0.0.1",
 		"@lume/live-code": "^0.0.2",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",

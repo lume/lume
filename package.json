@@ -13,7 +13,7 @@
 		"docs": "npm run build && cd packages/lume && npm run docs",
 		"build": "npm run clean && lerna run build",
 		"TODO test": "replace 'test' with 'lerna run test', and fix errors in forked packages",
-		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas}'",
+		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful}'",
 		"TODO test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
 		"test:ci": "npm run test -- --concurrency 1",
 		"dev": "lerna run dev"

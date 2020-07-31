@@ -1,4 +1,4 @@
-import Eventful from './Eventful'
+import {Eventful} from '@lume/eventful'
 import r from 'regexr'
 
 export type XYZValuesArray<T> = [T, T, T]

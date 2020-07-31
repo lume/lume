@@ -31,3 +31,6 @@
 [submodule "packages/glas"]
 	path = packages/glas
 	url = https://github.com/lume/glas.git
+[submodule "packages/eventful"]
+	path = packages/eventful
+	url = https://github.com/lume/eventful.git

@@ -1,5 +1,5 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import Eventful from './Eventful'
+import {Eventful} from '@lume/eventful'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
