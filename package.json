@@ -8,7 +8,7 @@
 		"COMMENT bootstrap": "bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume)",
 		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem}' && lerna bootstrap --no-ci --scope '{,readem}'",
 		"COMMENT purge": "'lerna clean --yes' removes all node_modules while 'lerna run clean' runs each project's particular 'clean' script.",
-		"purge": "lerna run clean && lerna clean --yes",
+		"purge": "(lerna run clean || true) && lerna clean --yes",
 		"reset": "npm run purge && npm run bootstrap && npm run build",
 		"docs": "npm run build && cd packages/lume && npm run docs",
 		"build": "npm run clean && lerna run build",
