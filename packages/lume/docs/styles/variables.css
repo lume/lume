@@ -9,6 +9,9 @@
 	--sidebar-nav-link-active-mark-thickness: 10px;
 	--sidebar-nav-link-padding-left: 20px;
 
+	/* Colors */
+	--blue: #0043fa;
+
 	/* *****************************
 	  Docify-themeable overrides
 	  ***************************** */
@@ -57,8 +60,8 @@
 	--sidebar-nav-link-font-weight: bold;
 	/* --sidebar-nav-link-padding: 4px 3em; */
 	/* --sidebar-nav-pagelink-padding: 4px 3em; */
-	--sidebar-nav-link-color--active: #0043fa;
-	--sidebar-nav-link-border-color--active: #0043fa;
+	--sidebar-nav-link-color--active: var(--blue);
+	--sidebar-nav-link-border-color--active: var(--blue);
 	/* --sidebar-nav-link-color--hover: ; */
 	/* --sidebar-nav-pagelink-background-position: 30px center; */
 	/* --sidebar-nav-strong-color: deeppink; */
@@ -74,6 +77,10 @@
 
 	/* Navbar --------------------------------------- */
 	--navbar-root-margin: 0 0 0 40px;
+	--navbar-root-color--active: var(--blue);
+
+	/* Block quotes --------------------------------------- */
+	--blockquote-border-color: var(--blue);
 
 	/* Code styling --------------------------------------- */
 	--code-font-family: SpaceMono Regular, Inconsolata, Consolas, Menlo, Monaco, 'Andale Mono WT', 'Andale Mono',
