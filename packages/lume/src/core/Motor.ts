@@ -81,7 +81,7 @@ class _Motor {
 	private __treesToUpdate = [] as ImperativeBase[]
 
 	// default to requestAnimationFrame for regular non-VR/AR scenes.
-	private __requestFrame = window.requestAnimationFrame.bind(window) as (...args: any) => void // TODO TS rAF signature
+	private __requestFrame = window.requestAnimationFrame.bind(window)
 
 	/**
 	 * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
