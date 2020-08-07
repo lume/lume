@@ -2,7 +2,8 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
 import {props} from './props'
 import Node from './Node'
 import {Scene} from './Scene'
-type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
+
+import type {XYZValuesObject} from './XYZValues'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.

@@ -17,8 +17,9 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 }
 
 /**
- * Manages a DOM element. Exposes a set of recommended APIs for working with
- * DOM efficiently. Currently doesn't do much yet...
+ * Manages a DOM element. This is used by ImperativeBase, to keep
+ * DOM-manipulating code co-located in this separate place. Consider this
+ * internal API, not intended for end users.
  */
 export default class ElementOperations {
 	constructor(private __element: ImperativeBase) {}

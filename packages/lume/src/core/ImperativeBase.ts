@@ -9,8 +9,9 @@ import {Events} from './Events'
 import {TreeNode} from './TreeNode'
 import {Node} from './Node'
 import {Scene} from './Scene'
-type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
-type ConnectionType = import('../html/DeclarativeBase').ConnectionType
+
+import type {XYZValuesObject} from './XYZValues'
+import type {ConnectionType} from '../html/DeclarativeBase'
 
 window.addEventListener('error', event => {
 	const error = event.error

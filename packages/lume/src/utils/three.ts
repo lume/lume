@@ -1,10 +1,8 @@
 import {MeshPhongMaterial, Color, Camera, PerspectiveCamera, OrthographicCamera} from 'three'
 
-type Object3D = import('three').Object3D
-type TColor = import('three').Color | string | number
-type Material = import('three').Material
-type RenderItem = import('three').RenderItem
-type Quaternion = import('three').Quaternion
+import type {Object3D, Material, RenderItem, Quaternion} from 'three'
+
+type TColor = Color | string | number
 
 export function isRenderItem(obj: any): obj is RenderItem {
 	return 'geometry' in obj && 'material' in obj

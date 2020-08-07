@@ -4,9 +4,8 @@ import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
-import {props} from './props'
-type XYZValuesObject<T> = import('./XYZValues').XYZValuesObject<T>
-type XYZValuesArray<T> = import('./XYZValues').XYZValuesArray<T>
+
+import type {XYZValuesObject, XYZValuesArray} from './XYZValues'
 
 // Property functions are used for animating properties of type XYZNumberValues or XYZNonNegativeValues
 type XYZPropertyFunction = (
@@ -135,7 +134,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		}
 
 		/**
-		 * Set all properties of a Sizeable in one method.
+		 * Set all (or some) properties of a Sizeable at once.
 		 *
 		 * @param {Object} properties Properties object - see example
 		 *
