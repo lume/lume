@@ -100,8 +100,18 @@ export default abstract class XYZValues<T = any> extends Eventful {
 		return (value as unknown) as T
 	}
 
-	stringToArray(string: string, separator: string = ''): XYZPartialValuesArray<T> {
-		const values = string.trim().split(r`/(?:\s*${r.escape(separator) || ','}\s*)|(?:\s+)/g`)
+	// XXX This grows but never shrinks. Can we make the cache collectable? Maybe we
+	// need to use WeakRef along with a list of XYZValues instances.
+	private static __stringArrayRegexCache: {[k: string]: RegExp} = {}
+
+	stringToArray(string: string, separator: string = ','): XYZPartialValuesArray<T> {
+		separator = separator || ',' // prevent empty string
+		let re = (this.constructor as typeof XYZValues).__stringArrayRegexCache[separator]
+		if (!re) {
+			re = r`/(?:\s*${r.escape(separator)}\s*)|(?:\s+)/g`
+			;(this.constructor as typeof XYZValues).__stringArrayRegexCache[separator] = re
+		}
+		const values = string.trim().split(re)
 		const result = ([] as unknown) as XYZPartialValuesArray<T>
 		const length = values.length
 		if (length > 0) result[0] = this.deserializeValue('x', values[0])
