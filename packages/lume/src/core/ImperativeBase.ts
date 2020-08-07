@@ -508,6 +508,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// automatically be in place.
 			this.passInitialValuesToThree && this.passInitialValuesToThree()
 
+			this._emitPropchangeForAllProps()
+
 			this.needsUpdate()
 		}
 

@@ -1,103 +1,58 @@
 import 'element-behaviors'
-import WithUpdate from '../WithUpdate'
 import ForwardProps from './ForwardProps'
-import Node from '../../core/Node'
+
+import type {Constructor} from 'lowclass'
+import type Node from '../../core/Node'
 
 /**
  * Base class for all behaviors
  */
-export default abstract class Behavior extends WithUpdate.mixin(ForwardProps) {
+export default abstract class Behavior extends ForwardProps {
+	// If true, elementBehaviors will wait for a custom element to be defined
+	// before running "connectedCallback" or "disconnectedCallback" on the
+	// behavior. This guarantees that the host element is already upgraded
+	// before the life cycle hooks run.
+	awaitElementDefined = true
+
 	element: Node
 
 	constructor(element: Element) {
 		super()
 
-		// Unsafe cast here because the __checkElementIsLibraryElement method
-		// does a runtime check to ensure that element is of type Node. We have
-		// to do it this way because it it an asynchronous process that needs to
-		// wait for element to be upgraded in some cases. An error is thrown to
-		// console if element is not a Node.
-		this.element = element as Node
-		this.__checkElementIsLibraryElement(element)
+		// Ensure this.element is the type specified by a subclass's requiredElementType.
+		if (this.requiredElementType) this.__checkElementIsLibraryElement(element)
+
+		this.element = element as any
 	}
 
-	// use a getter because Mesh is undefined at module evaluation time due
-	// to a circular dependency.
-	get requiredElementType() {
-		return Node
-	}
-
-	// This could be useful, but at the moment it is only used by SkateJS in
-	// triggerUpdate, expecting `this` to be a DOM node.
-	get parentNode() {
-		// seems to be a bug in the `get`ter, as this.element works fine in regular methods
-		return this.element.parentNode
-	}
-
-	// proxy setAttribute to this.element so that WithUpdate works in certain cases
-	setAttribute(name: string, value: string) {
-		this.element.setAttribute(name, value)
-	}
-
-	// We use __elementDefined in the following methods so we can delay prop
-	// handling until the elements are upgraded and their APIs exist.
-	//
-	// NOTE, another way we could've achieved this is to let elements emit an
-	// event in connectedCallback, at which point the element is guaranteed to
-	// be upgraded. We currently do emit the GL_LOAD event. Which can only
-	// happen when the element is upgrade AND has loaded GL objects (and these
-	// behaviors only care about GL obbjects at the moment) so it'd be possible
-	// to rely only on that event for the GL behaviors (which they all currently
-	// are). If we have behaviors that work with CSS, not GL, then we could rely
-	// on the CSS_LOAD event. In any case, the current solution is more generic,
-	// for use with any type of custom elements.
-
-	async attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-		if (!this.__elementDefined) await this.__whenDefined
-
-		super.attributeChangedCallback(name, oldValue, newValue)
-	}
-
-	async connectedCallback() {
-		if (!this.__elementDefined) await this.__whenDefined
-
-		super.connectedCallback()
-
-		this._listenToElement()
-	}
-
-	async disconnectedCallback() {
-		if (!this.__elementDefined) await this.__whenDefined
-
-		super.disconnectedCallback()
-
-		this._unlistenToElement()
-	}
+	/**
+	 * @property {Constructor<Element>} requiredElementType - A subclass can
+	 * specify this property (whose value should be a constructor) in order to
+	 * enforce that the behavior operates only on a certain type of element. If
+	 * a type is specified, an error will be thrown if this.element is not of
+	 * the specified type. If the element name has a hyphen in it, the logic
+	 * will consider it to possibly be a custom element and will wait for it to
+	 * be upgraded before performing the check; if the custom element is not
+	 * upgraded within a second, an error is thrown.
+	 */
+	// TODO support an array of types.
+	requiredElementType?: Constructor<Element>
 
 	// used by ForwardProps. See ForwardProps.js
 	protected get _observedObject() {
 		return this.element
 	}
 
-	protected _listenToElement() {
-		// subclasses: add event listeners
-	}
-
-	protected _unlistenToElement() {
-		// subclasses: remove event listeners
-	}
-
 	// a promise resolved when an element is upgraded
 	private __whenDefined: Promise<void> = null! as Promise<void>
 
-	// we need to wait for __elementDefined to be true because running the
-	// superclass logic, otherwise `updated()` calls can happen before the
-	// element is upgraded (i.e. before any APIs are available).
 	private __elementDefined = false
 
 	// TODO add a test to make sure this check works
 	private async __checkElementIsLibraryElement(element: Element) {
 		const BaseClass = this.requiredElementType
+
+		if (!BaseClass) return
 
 		if (element.nodeName.includes('-')) {
 			this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())

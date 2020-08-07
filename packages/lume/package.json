@@ -51,6 +51,7 @@
 	},
 	"dependencies": {
 		"@awaitbox/document-ready": "^1.0.10",
+		"@lume/element": "^0.1.0",
 		"@trusktr/skatejs": "5.2.40002",
 		"army-knife": "^0.2.1",
 		"autolayout": "^0.7.0",

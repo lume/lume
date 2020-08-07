@@ -19,12 +19,17 @@
         overflow: hidden;
         background: #222;
         touch-action: none; /* prevent touch drag from scrolling */
+        color: #ccc;
     }
+    i-scene { position: absolute!important; top: 0; left: 0; }
+    i-scene:nth-child(2) { pointer-events: none; }
+    i-node { padding: 15px; pointer-events: all; }
 </style>
 
 <body>
 
-<!-- Use the disable-css attribute so that we only WebGL rendering is enabled. -->
+<!-- Use the disable-css attribute so that only WebGL rendering is enabled
+(if you don't need CSS rendering, turn it off to save CPU). -->
 <i-scene id="scene" experimental-webgl disable-css>
     <i-ambient-light intensity="0.1"></i-ambient-light>
     <i-point-light
@@ -52,9 +57,9 @@
             has="obj-model"
             size="0 0 0 "
             scale="200 200 200"
-            position="0 0 100"
-            obj="${location.origin+location.pathname}/models/spaceship/ship.obj"
-            mtl="${location.origin+location.pathname}/models/spaceship/ship.mtl"
+            position="0 -30 100"
+            obj="${location.origin + location.pathname}/models/spaceship/ship.obj"
+            mtl="${location.origin + location.pathname}/models/spaceship/ship.mtl"
         >
         </i-node>
     </i-node>
@@ -66,10 +71,20 @@
             id="ship2"
             size="0 0 0"
             scale="200 200 200"
-            position="0 0 210"
+            position="0 30 210"
             obj="${location.origin+location.pathname}/models/spaceship/ship.obj"
         >
         </i-obj-model>
+    </i-node>
+</i-scene>
+
+<!-- We're using two scenes, the next one for overlaid HTML/CSS-based UI, the previous one for WebGL content. -->
+
+<i-scene id="scene">
+    <i-node size-mode="proportional literal" size="1 80">
+        <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
+        <label><input id="objToggle" type="checkbox" checked /> Enable model on first ship.</label>
+        <label><input id="matToggle" type="checkbox" /> Enable material on second ship.</label>
     </i-node>
 </i-scene>
 
@@ -99,6 +114,7 @@
         // needed. 'model' is an instance of THREE.Group containing THREE.Mesh
         // objects
         objModelElement.on(Events.MODEL_LOAD, ({ model }) => {
+          console.log('%%%%%%%%%%%%%%%% modify geometry')
             modifyGeometry(model)
 
             // we modified the internals the element, signal that it
@@ -130,6 +146,18 @@
         })
 
     }
+
+    objToggle.addEventListener('click', () => {
+        objBehavior = ship1.behaviors.get('obj-model')
+        if (objBehavior.obj) objBehavior.obj = ''
+        else objBehavior.obj = '${location.origin + location.pathname}/models/spaceship/ship.obj'
+    })
+
+    matToggle.addEventListener('click', () => {
+        objBehavior = ship2.behaviors.get('obj-model')
+        if (objBehavior.mtl) objBehavior.mtl = ''
+        else objBehavior.mtl = '${location.origin + location.pathname}/models/spaceship/ship.mtl'
+    })
 <\/script>
 
 </body>

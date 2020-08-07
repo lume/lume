@@ -1,8 +1,11 @@
 import {observe, unobserve} from 'james-bond'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {PossibleCustomElement} from '../WithUpdate'
+
+import type {PossibleCustomElement} from '../PossibleCustomElement'
 
 function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
+	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
+	// from PossibleCustomElement), and we can have a separate mixin for that.
 	class ForwardProps extends Constructor<PossibleCustomElement>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
@@ -42,17 +45,13 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			unobserve(this._observedObject, this.__getProps(), this.__propChangedCallback)
 		}
 
-		private __getProps() {
-			let result
-			const props = (this.constructor as any).props
+		protected static _observedProperties?: string[]
 
-			if (Array.isArray(props)) result = props
-			else {
-				result = []
-				if (typeof props === 'object') for (const prop in props) result.push(prop)
-			}
-
-			return result
+		private __getProps(): string[] {
+			const props = (this.constructor as typeof ForwardProps)._observedProperties || []
+			if (!Array.isArray(props))
+				throw new TypeError('Expected protected static _observedProperties to be an array.')
+			return props
 		}
 
 		private __forwardInitialProps() {

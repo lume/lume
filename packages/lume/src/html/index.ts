@@ -18,6 +18,7 @@ import Camera from '../core/Camera'
 import AutoLayoutNode from '../layout/AutoLayoutNode'
 import ObjModel from '../core/ObjModel'
 // import PushPaneLayout from '../components/PushPaneLayout'
+import RoundedRectangle from '../core/RoundedRectangle'
 
 export * from './behaviors'
 
@@ -37,6 +38,7 @@ export function useDefaultNames() {
 		AutoLayoutNode,
 		ObjModel,
 		// PushPaneLayout,
+		RoundedRectangle,
 	]
 
 	for (const constructor of classes) {

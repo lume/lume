@@ -5,6 +5,8 @@ import {Mixin, getInheritedDescriptor, MixinResult, Constructor} from 'lowclass'
 import {dashCase, empty, unique, pick, identity} from './utils'
 import {defer} from '../core/Utility'
 
+import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement'
+
 // TODO This class is currently unused. We'll see about refactoring to make
 // _props private instead of protected, in which case this will be a protected
 // read-only interface (_props) to the private cache (__props).
@@ -23,17 +25,6 @@ import {defer} from '../core/Utility'
 //         // Object.freeze(this)
 //     },
 // }))
-
-export interface PossibleCustomElement extends HTMLElement {
-	connectedCallback?(): void
-	disconnectedCallback?(): void
-	adoptedCallback?(): void
-	attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
-}
-
-export interface PossibleCustomElementConstructor extends Constructor<HTMLElement> {
-	observedAttributes?: string[]
-}
 
 /**
  * @abstract

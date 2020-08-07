@@ -186,6 +186,22 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 			this.on('propertychange', (prop: string) => this._onPropChange(prop))
 		}
 
+		// We need this so that on re-load of GL, we can cause all props to be
+		// propagated to Three objects.
+		// TODO This is temporary until we switch entirely to reactive props, so
+		// we don't need to perform this sort of thing. Without this, if we
+		// unload then reload GL, the values won't be passed to the three
+		// instances. This will be replaced by `autorun()`.
+		protected _emitPropchangeForAllProps() {
+			super._emitPropchangeForAllProps()
+			this.emit('propertychange', 'position')
+			this.emit('propertychange', 'rotation')
+			this.emit('propertychange', 'scale')
+			this.emit('propertychange', 'origin')
+			this.emit('propertychange', 'align')
+			this.emit('propertychange', 'mountPoint')
+		}
+
 		protected _onPropChange(prop: string): void {
 			if (
 				// position not handled here because it is handled in _calculateMatrix

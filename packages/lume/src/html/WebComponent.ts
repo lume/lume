@@ -2,7 +2,8 @@ import {Mixin, MixinResult, Constructor} from 'lowclass'
 import jss from '../lib/jss'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
 import WithChildren from './WithChildren'
-import {PossibleCustomElement} from './WithUpdate'
+
+import type {PossibleCustomElement} from './PossibleCustomElement'
 
 // Very very bad hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:

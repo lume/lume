@@ -12,6 +12,7 @@ import '../html/behaviors/BoxGeometryBehavior'
 import '../html/behaviors/SphereGeometryBehavior'
 import '../html/behaviors/PlaneGeometryBehavior'
 import '../html/behaviors/DOMNodeGeometryBehavior'
+import '../html/behaviors/RoundedRectangleGeometryBehavior'
 
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top

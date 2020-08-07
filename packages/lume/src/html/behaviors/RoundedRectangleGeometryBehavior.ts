@@ -1,79 +1,130 @@
 import 'element-behaviors'
-import {Shape /*, ShapeGeometry*/, ExtrudeGeometry} from 'three'
-// import {RoundedRectangle} from '../../components/RoundedRectangle'
+import {reactive, attribute, autorun, StopFunction} from '@lume/element'
+import {Shape, ExtrudeGeometry, ShapeGeometry} from 'three'
+import type {Geometry} from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
-import {props, changePropContext} from '../../core/props'
+
+// function BoolAttribute(val: string | null) {
+// 	if (val === null || val === 'false') return false
+// 	return true
+// }
 
 export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
-	static props = {
-		...BaseGeometryBehavior.props,
-		cornerRadius: changePropContext(props.number, (self: any) => self.element),
+	// FIXME We need this because if we pass string numbers to Three.js it
+	// breaks. Three.js should be fixed.
+	@reactive @attribute({from: Number}) cornerRadius = 0
+	@reactive @attribute({from: Number}) thickness = 0
+
+	// @reactive @attribute({from: BoolAttribute}) quadraticCorners = false
+
+	private __quadraticCorners = false
+
+	@reactive
+	@attribute
+	get quadraticCorners() {
+		return this.__quadraticCorners
+	}
+	set quadraticCorners(val: boolean) {
+		// @ts-ignore handle incoming attribute values
+		if (val === null || val === 'false') this.__quadraticCorners = false
+		else this.__quadraticCorners = true
 	}
 
-	cornerRadius!: number
+	// TODO This make props forward to/from this.element. How do we want to handle this?
+	// protected static _observedProperties = {cornerRadius: true}
 
-	// static get requiredElementType() {
-	//     return RoundedRectangle
-	// }
+	private __stopFns: StopFunction[] = []
 
-	// element!: RoundedRectangle
+	loadGL() {
+		if (!super.loadGL()) return false
 
-	updated(oldProps: any, modifiedProps: any) {
-		super.updated(oldProps, modifiedProps)
+		// TODO, if making an autorun() within loadGL ends up being too common,
+		// we can make a pattern to abstract it away (similar to what we do with
+		// template() in lume/element elements)
+		const stop = autorun(() => {
+			this.cornerRadius
+			this.thickness
+			this.quadraticCorners
 
-		if (modifiedProps.cornerRadius) {
-			// TODO this is extra work if super.updated already called this. See
-			// if we can make resetMeshComponent operate only once per microtick
-			// (batch them).
+			// TODO PERFORMANCE This `resetMeshComponent` call recreates the
+			// whole mesh. We should instead try to update it without replacing
+			// it, so that we don't dispose the geometry and material on each
+			// property update.
 			this.resetMeshComponent()
-		}
+		})
+
+		this.__stopFns.push(stop)
+
+		return true
+	}
+
+	unloadGL() {
+		if (!super.unloadGL()) return false
+
+		for (const stop of this.__stopFns) stop()
+
+		return true
 	}
 
 	protected _createComponent() {
-		const roundedRectShape = new Shape()
+		let thickness = this.thickness
+		let geom: Geometry
 
-		roundedRect(
-			roundedRectShape,
-			-this.element.calculatedSize.x / 2,
-			-this.element.calculatedSize.y / 2,
+		const roundedRectShape = new RoundedRectShape(
+			0,
+			0,
 			this.element.calculatedSize.x,
 			this.element.calculatedSize.y,
-			(this.element as any).cornerRadius,
+			this.cornerRadius,
+			this.quadraticCorners,
 		)
 
-		// return new ShapeGeometry(roundedRectShape)
-		return new ExtrudeGeometry(roundedRectShape, {
-			depth: 8,
-			bevelEnabled: true,
-			bevelSegments: 2,
-			steps: 2,
-			bevelSize: 1,
-			bevelThickness: 1,
-		})
+		if (thickness > 0) {
+			geom = new ExtrudeGeometry(roundedRectShape, {
+				bevelEnabled: true,
+				steps: 1,
+				bevelSegments: 1,
+				bevelSize: 0,
+				bevelThickness: 0,
+				depth: thickness,
+			})
+		} else {
+			geom = new ShapeGeometry(roundedRectShape)
+		}
+
+		geom.translate(-this.element.calculatedSize.x / 2, -this.element.calculatedSize.y / 2, -thickness / 2)
+
+		return geom
 	}
 }
 
 elementBehaviors.define('rounded-rectangle-geometry', RoundedRectangleGeometryBehavior)
 
-// from Three.js example: https://github.com/mrdoob/three.js/blob/159a40648ee86755220491d4f0bae202235a341c/examples/webgl_geometry_shapes.html#L237
-function roundedRect(shape: Shape, x: number, y: number, width: number, height: number, radius: number) {
-	// shape.moveTo(x, y + radius)
-	// shape.lineTo(x, y + height - radius)
-	// shape.quadraticCurveTo(x, y + height, x + radius, y + height)
-	// shape.lineTo(x + width - radius, y + height)
-	// shape.quadraticCurveTo(x + width, y + height, x + width, y + height - radius)
-	// shape.lineTo(x + width, y + radius)
-	// shape.quadraticCurveTo(x + width, y, x + width - radius, y)
-	// shape.lineTo(x + radius, y)
-	// shape.quadraticCurveTo(x, y, x, y + radius)
+// Based on Three.js example: https://github.com/mrdoob/three.js/blob/159a40648ee86755220491d4f0bae202235a341c/examples/webgl_geometry_shapes.html#L237
+class RoundedRectShape extends Shape {
+	constructor(x: number, y: number, width: number, height: number, radius: number, quadraticCorners = false) {
+		super()
 
-	shape.moveTo(x, y + radius)
-	shape.lineTo(x, y + height - radius)
-	shape.absarc(x + radius, y + height - radius, radius, Math.PI, Math.PI / 2, true)
-	shape.lineTo(x + width - radius, y + height)
-	shape.absarc(x + width - radius, y + height - radius, radius, Math.PI / 2, 0, true)
-	shape.lineTo(x + width, y + radius)
-	shape.absarc(x + width - radius, y + radius, radius, 0, -Math.PI / 2, true)
-	shape.lineTo(x + radius, y)
-	shape.absarc(x + radius, y + radius, radius, -Math.PI / 2, -Math.PI, true)
+		if (quadraticCorners) {
+			// Quadratic corners (can look better, more bubbly)
+			this.moveTo(x, y + radius)
+			this.lineTo(x, y + height - radius)
+			this.quadraticCurveTo(x, y + height, x + radius, y + height)
+			this.lineTo(x + width - radius, y + height)
+			this.quadraticCurveTo(x + width, y + height, x + width, y + height - radius)
+			this.lineTo(x + width, y + radius)
+			this.quadraticCurveTo(x + width, y, x + width - radius, y)
+			this.lineTo(x + radius, y)
+			this.quadraticCurveTo(x, y, x, y + radius)
+
+			return
+		}
+
+		// Circular corners (matches DOM's rounded borders)
+		this.absarc(x + width - radius, y + radius, radius, -Math.PI / 2, 0, false)
+		this.absarc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2, false)
+		this.absarc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI, false)
+		this.absarc(x + radius, y + radius, radius, Math.PI, Math.PI + Math.PI / 2, false)
+		this.lineTo(x + width - radius, y) // complete the loop
+	}
 }

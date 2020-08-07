@@ -1,51 +1,61 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
-import {props, changePropContext} from '../../core/props'
 import XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
 import {XYZSizeModeValues, SizeModeValue, XYZPartialValuesArray, XYZPartialValuesObject} from '../../core'
+
+type _Size = XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+type _SizeMode =
+	| XYZSizeModeValues
+	| XYZPartialValuesArray<SizeModeValue>
+	| XYZPartialValuesObject<SizeModeValue>
+	| string
 
 // base class for geometry behaviors
 export default class BaseGeometryBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'geometry'
 
-	static props = {
-		// if we have no props defined here, WithUpdate breaks
-		size: changePropContext(props.XYZNonNegativeValues, (self: BaseGeometryBehavior) => self.element),
-		sizeMode: changePropContext(props.XYZSizeModeValues, (self: BaseGeometryBehavior) => self.element),
+	// We don't use @reactive or @attribute in this class because the values
+	// come from (or go to) the this.element.size property (via event
+	// listeners), which itself already reacts to attribute changes.
+
+	get size(): _Size {
+		return this.element.size
+	}
+	set size(val: _Size) {
+		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
+		this.element.size = val
 	}
 
-	size!: XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
-	sizeMode!: XYZSizeModeValues | XYZPartialValuesArray<SizeModeValue> | XYZPartialValuesObject<SizeModeValue> | string
-
-	updated(_oldProps: any, modifiedProps: any) {
-		const {size, sizeMode} = modifiedProps
-
-		if (size || sizeMode) {
-			this.__updateGeometryOnSizeChange(this.size as XYZNonNegativeValues)
-		}
+	get sizeMode(): _SizeMode {
+		return this.element.sizeMode
+	}
+	set sizeMode(val: _SizeMode) {
+		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
+		this.element.sizeMode = val
 	}
 
-	protected _listenToElement() {
-		super._listenToElement()
+	loadGL() {
+		if (!super.loadGL()) return false
 
 		// TODO the following three events can be replaced with a single propchange:size event
 		this.element.on('sizechange', this.__onSizeValueChanged, this)
 		this.element.size.on('valuechanged', this.__onSizeValueChanged, this)
 		this.element.sizeMode.on('valuechanged', this.__onSizeValueChanged, this)
+
+		return true
 	}
 
-	protected _unlistenToElement() {
-		super._unlistenToElement()
+	unloadGL() {
+		if (!super.unloadGL()) return false
 
 		this.element.off('sizechange', this.__onSizeValueChanged)
 		this.element.size.off('valuechanged', this.__onSizeValueChanged)
 		this.element.sizeMode.off('valuechanged', this.__onSizeValueChanged)
+
+		return true
 	}
 
 	private __onSizeValueChanged() {
-		// tells WithUpdate (from BaseMeshBehavior) which prop
-		// changed and makes it finally trigger our updated method
-		// this.size = this.size
-		this.triggerUpdateForProp('size')
+		this.__updateGeometryOnSizeChange(this.size as XYZNonNegativeValues)
 	}
 
 	// NOTE we may use the x, y, z args to calculate scale when/if we

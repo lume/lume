@@ -1,5 +1,6 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {PossibleCustomElement} from '../WithUpdate'
+
+import type {PossibleCustomElement} from '../PossibleCustomElement'
 
 function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO This is here for now. Make it an extension to

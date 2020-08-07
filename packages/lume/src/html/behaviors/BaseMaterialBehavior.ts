@@ -1,33 +1,49 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
-import {props} from '../../core/props'
+// import {props} from '../../core/props'
 import {Color, MeshPhongMaterial} from 'three'
+import {reactive, attribute, autorun} from '@lume/element'
 
 // base class for geometry behaviors
 export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'material'
 
-	static props = {
-		color: props.THREE.Color,
-		opacity: {...props.number, default: 1},
+	__color = new Color('deeppink')
+
+	@reactive
+	@attribute
+	get color(): string | number | Color {
+		return this.__color
+	}
+	set color(val: string | number | Color) {
+		if (typeof val === 'string') this.__color.set(val)
+		else if (typeof val === 'number') this.__color.set(val)
+		else this.__color = val
 	}
 
-	color!: Color | string | number
-	opacity!: number
-
-	updated(_oldProps: any, modifiedProps: any) {
-		const {color, opacity} = modifiedProps
-
-		if (color) this.updateMaterial('color')
-
-		if (opacity) {
-			this.updateMaterial('opacity')
-			this.updateMaterial('transparent')
-		}
-	}
+	@reactive @attribute opacity = 1
 
 	get transparent(): boolean {
 		if (this.opacity < 1) return true
 		else return false
+	}
+
+	protected static _observedProperties = ['color', 'opacity']
+
+	loadGL() {
+		if (!super.loadGL()) return false
+
+		autorun(() => {
+			this.color
+			this.updateMaterial('color')
+		})
+
+		autorun(() => {
+			this.opacity
+			this.updateMaterial('opacity')
+			this.updateMaterial('transparent')
+		})
+
+		return true
 	}
 
 	updateMaterial(propName: 'color' | 'opacity' | 'transparent') {

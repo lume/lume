@@ -166,6 +166,17 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			this._properties.size.on('valuechanged', () => this.emit('propertychange', 'size'))
 		}
 
+		// We need this so that on re-load of GL, we can cause all props to be
+		// propagated to Three objects.
+		// TODO This is temporary until we switch entirely to reactive props, so
+		// we don't need to perform this sort of thing. Without this, if we
+		// unload then reload GL, the values won't be passed to the three
+		// instances. This will be replaced by `autorun()`.
+		protected _emitPropchangeForAllProps() {
+			this.emit('propertychange', 'sizeMode')
+			this.emit('propertychange', 'size')
+		}
+
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
 		hasHtmlApi?: boolean
 		protected _composedParent?: Sizeable
