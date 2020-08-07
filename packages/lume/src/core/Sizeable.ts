@@ -4,6 +4,7 @@ import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor, {RenderTask} from './Motor'
+import {props} from './props'
 
 import type {XYZValuesObject, XYZValuesArray} from './XYZValues'
 
