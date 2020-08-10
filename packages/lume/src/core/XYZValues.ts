@@ -38,7 +38,8 @@ export default abstract class XYZValues<T = any> extends Eventful {
 			this.fromDefault()
 		} else if (Array.isArray(x)) {
 			this.fromArray(x)
-		} else if (typeof x === 'object' && x !== null && x !== this) {
+		} else if (typeof x === 'object' && x !== null) {
+			if (x === this) return this
 			this.fromObject(x as XYZValuesObject<T>)
 		} else if (typeof x === 'string' && y === undefined && z === undefined) {
 			this.fromString(x)
