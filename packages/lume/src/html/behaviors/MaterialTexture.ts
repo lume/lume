@@ -14,7 +14,10 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 
 		@reactive @attribute texture = ''
 
-		protected static _observedProperties = ['texture', ...((Base as any).observedProperties || [])]
+		protected static _observedProperties = [
+			'texture',
+			...(((Base as unknown) as typeof BaseMeshBehavior)._observedProperties || []),
+		]
 
 		private stopFns: StopFunction[] = []
 

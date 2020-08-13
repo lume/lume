@@ -1,8 +1,9 @@
+import {autorun, reactive, booleanAttribute} from '@lume/element'
+import {emits} from '@lume/eventful'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
-import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'
@@ -77,22 +78,19 @@ function NodeMixin<T extends Constructor>(Base: T) {
 	class Node extends Parent {
 		static defaultElementName = 'i-node'
 
-		static props = {
-			...(Parent.props || {}),
-			visible: {...mapPropTo(props.boolean, (self: ImperativeBase) => self.three), default: true},
-		}
-
-		visible!: boolean
+		@reactive @booleanAttribute(true) @emits('propertychange') visible = true
 
 		isNode = true
 
 		/**
-		 * @constructor - Create a Node instance with the given `props`.
+		 * @constructor - Create a Node instance.
 		 *
-		 * Each option maps to a property on the instance. For example, writing
+		 * The following examples calls `.set()` to set initial properties. Any
+		 * properties passed into .set() are applied to the instance. For
+		 * example, writing
 		 *
 		 * ```js
-		 * var node = new Node({
+		 * var node = new Node().set({
 		 *   size: {x:100, y:100, z:100},
 		 *   rotation: {x:30, y:20, z:25}
 		 * })
@@ -106,18 +104,6 @@ function NodeMixin<T extends Constructor>(Base: T) {
 		 * node.rotation = {x:30, y:20, z:25}
 		 * ```
 		 *
-		 * The `props` property inherited from
-		 * [`WithUpdate`](../html/WithUpdate) also works for setting multiple
-		 * properties at once:
-		 *
-		 * ```js
-		 * var node = new Node()
-		 * node.props = {
-		 *   size: {x:100, y:100, z:100},
-		 *   rotation: {x:30, y:20, z:25}
-		 * }
-		 * ```
-		 *
 		 * @param {Object} props - An object with initial property values for the Node instance.@
 		 * TODO describe the overall format and reactivity of the properties.
 		 *
@@ -127,50 +113,17 @@ function NodeMixin<T extends Constructor>(Base: T) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			// This was when using my `multiple()` implementation, we could call
-			// specific constructors using specific arguments. But, we're using
-			// class-factory style mixins for now, so we don't have control over the
-			// specific arguments we can pass to the constructors, so we're just
-			// using a single `options` parameter in all the constructors.
-			//this.callSuperConstructor(Transformable, options)
-			//this.callSuperConstructor(TreeNode)
-			//this.callSuperConstructor(ImperativeBase)
-
-			// `parent` can exist if this instance is in the DOM and being
-			// upgraded.
+			// The `parent` property can already be set if this instance is
+			// already in the DOM and wwhile being upgraded into a custom
+			// element.
+			// TODO Remove this after we make it lazy and deferred this to a
+			// render task.
 			if (this.parent) {
-				// if (this.isConnected) {
 				this._calcSize()
 				this.needsUpdate()
 			}
 		}
 
-		// @method foo(v: number): boolean
-		// a cool method to do cool stuff
-		updated(oldProps: any, modifiedProps: any) {
-			super.updated(oldProps, modifiedProps)
-
-			if (modifiedProps.visible) {
-				console.log(
-					'                           visibility change',
-					this.constructor.name,
-					this._cssLoaded,
-					this.visible,
-				)
-				setTimeout(() => {
-					console.log(
-						'                           visibility later',
-						this.constructor.name,
-						this._cssLoaded,
-						this.visible,
-					)
-				}, 1000)
-				this._elementOperations.shouldRender = this._cssLoaded && this.visible
-				this.needsUpdate()
-			}
-		}
-
-		// See ImperativeBase#add and ImperativeBase#remove.
 		protected _onParentSizeChange() {
 			// We only need to recalculate sizing and matrices if this node has
 			// properties that depend on parent sizing (proportional size,
@@ -179,12 +132,12 @@ function NodeMixin<T extends Constructor>(Base: T) {
 			// size of this element which depends on the size of this element's
 			// parent. Align also depends on parent sizing.
 			if (
-				this._properties.sizeMode.x === 'proportional' ||
-				this._properties.sizeMode.y === 'proportional' ||
-				this._properties.sizeMode.z === 'proportional' ||
-				this._properties.align.x !== 0 ||
-				this._properties.align.y !== 0 ||
-				this._properties.align.z !== 0
+				this.sizeMode.x === 'proportional' ||
+				this.sizeMode.y === 'proportional' ||
+				this.sizeMode.z === 'proportional' ||
+				this.align.x !== 0 ||
+				this.align.y !== 0 ||
+				this.align.z !== 0
 			) {
 				this._calcSize()
 				this.needsUpdate()
@@ -192,39 +145,38 @@ function NodeMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _loadCSS() {
-			if (this._cssLoaded) return
+			if (!super._loadCSS()) return false
 			console.log('                ----------------------------- LOAD NODE CSS')
-			super._loadCSS()
-			this.triggerUpdateForProp('visible')
+
+			this._cssStopFns.push(
+				autorun(() => {
+					this._elementOperations.shouldRender = this.visible
+					this.needsUpdate()
+				}),
+			)
+
+			return true
 		}
 
 		protected _unloadCSS() {
-			if (!this._cssLoaded) return
+			if (!super._unloadCSS()) return false
 			console.log('                ----------------------------- UNLOAD NODE CSS')
-			super._unloadCSS()
-			this.triggerUpdateForProp('visible')
+			return true
+		}
+
+		protected _loadGL() {
+			if (!super._loadGL()) return false
+
+			this._glStopFns.push(
+				autorun(() => {
+					this.three.visible = this.visible
+					this.needsUpdate()
+				}),
+			)
+
+			return true
 		}
 	}
 
 	return Node as MixinResult<typeof Node, T>
 }
-
-// const n: Node = new Node(1, 2, 3)
-// n.asdfasdf
-// n.calculatedSize = 123
-// n.innerHTML = 123
-// n.innerHTML = 'asdf'
-// n.emit('asfasdf', 1, 2, 3)
-// n.removeNode('asfasdf')
-// n.updated(1, 2, 3, 4)
-// n.blahblah
-// n.sizeMode
-// n._render(1, 2, 3)
-// n.qwerqwer
-// n.rotation
-// n.three.sdf
-// n.threeCSS.sdf
-// n.possiblyLoadThree(new ImperativeBase!())
-// n.possiblyLoadThree(1)
-// n.visible = false
-// n.visible = 123123

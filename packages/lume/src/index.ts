@@ -3,6 +3,8 @@
 import {Class, Mixin} from 'lowclass'
 export {Class, Mixin}
 export * from '@lume/eventful'
+export * from '@lume/element'
+
 export * from './core'
 export * from './html'
 export * from './components'

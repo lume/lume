@@ -1,13 +1,6 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
-import XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
-import {XYZSizeModeValues, SizeModeValue, XYZPartialValuesArray, XYZPartialValuesObject} from '../../core'
 
-type _Size = XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
-type _SizeMode =
-	| XYZSizeModeValues
-	| XYZPartialValuesArray<SizeModeValue>
-	| XYZPartialValuesObject<SizeModeValue>
-	| string
+import type XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
 
 // base class for geometry behaviors
 export default class BaseGeometryBehavior extends BaseMeshBehavior {
@@ -17,18 +10,18 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 	// come from (or go to) the this.element.size property (via event
 	// listeners), which itself already reacts to attribute changes.
 
-	get size(): _Size {
+	get size() {
 		return this.element.size
 	}
-	set size(val: _Size) {
+	set size(val) {
 		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
 		this.element.size = val
 	}
 
-	get sizeMode(): _SizeMode {
+	get sizeMode() {
 		return this.element.sizeMode
 	}
-	set sizeMode(val: _SizeMode) {
+	set sizeMode(val) {
 		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
 		this.element.sizeMode = val
 	}
@@ -47,15 +40,15 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		this.element.off('sizechange', this.__onSizeValueChanged)
-		this.element.size.off('valuechanged', this.__onSizeValueChanged)
-		this.element.sizeMode.off('valuechanged', this.__onSizeValueChanged)
+		this.element.off('sizechange', this.__onSizeValueChanged, this)
+		this.element.size.off('valuechanged', this.__onSizeValueChanged, this)
+		this.element.sizeMode.off('valuechanged', this.__onSizeValueChanged, this)
 
 		return true
 	}
 
 	private __onSizeValueChanged() {
-		this.__updateGeometryOnSizeChange(this.size as XYZNonNegativeValues)
+		this.__updateGeometryOnSizeChange(this.size)
 	}
 
 	// NOTE we may use the x, y, z args to calculate scale when/if we

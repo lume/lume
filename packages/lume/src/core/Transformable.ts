@@ -1,10 +1,12 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {Object3D} from 'three'
+import {attribute, reactive, autorun} from '@lume/element'
+import {emits} from '@lume/eventful'
 import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
-import Sizeable, {SizeProp} from './Sizeable'
-import {props} from './props'
+import Sizeable from './Sizeable'
 import {toRadians} from './Utility'
+import {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
 
 // TODO, this module augmentation doesn't work as prescribed in
 // https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
@@ -42,8 +44,6 @@ const alignAdjustment = [0, 0, 0]
 const mountPointAdjustment = [0, 0, 0]
 const appliedPosition = [0, 0, 0]
 
-type TransformProp = SizeProp | 'position' | 'rotation' | 'scale' | 'origin' | 'align' | 'mountPoint' | 'opacity'
-
 function TransformableMixin<T extends Constructor>(Base: T) {
 	const _Base = Constructor(Base)
 	const Parent = Sizeable.mixin(_Base)
@@ -51,16 +51,19 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 	// Transformable extends TreeNode (indirectly through Sizeable) because it
 	// needs to be aware of its `parent` when calculating align adjustments.
 	class Transformable extends Parent {
-		static props = {
-			...(Parent.props || {}),
-			position: props.XYZNumberValues,
-			rotation: props.XYZNumberValues,
-			scale: props.XYZNumberValues,
-			origin: props.XYZNumberValues,
-			align: props.XYZNumberValues,
-			mountPoint: props.XYZNumberValues,
-			opacity: props.number,
+		constructor(...args: any[]) {
+			super(...args)
+
+			this.position.on('valuechanged', () => (this.position = this.position))
+			this.rotation.on('valuechanged', () => (this.rotation = this.rotation))
+			this.scale.on('valuechanged', () => (this.scale = this.scale))
+			this.origin.on('valuechanged', () => (this.origin = this.origin))
+			this.align.on('valuechanged', () => (this.align = this.align))
+			this.mountPoint.on('valuechanged', () => (this.mountPoint = this.mountPoint))
 		}
+
+		// @ts-ignore
+		private __position = new XYZNumberValues(0, 0, 0).from(this.__position ?? undefined)
 
 		/**
 		 * Set the position of the Transformable.
@@ -70,12 +73,17 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis position to apply.
 		 * @param {number} [newValue.z] The z-axis position to apply.
 		 */
-		set position(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('position', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set position(newValue) {
+			this._setPropertyXYZ('position', newValue)
 		}
-		get position(): any {
-			return this._props.position
+		get position() {
+			return this.__position
 		}
+
+		private __rotation = new XYZNumberValues(0, 0, 0)
 
 		/**
 		 * @param {Object} newValue
@@ -83,12 +91,17 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis rotation to apply.
 		 * @param {number} [newValue.z] The z-axis rotation to apply.
 		 */
-		set rotation(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('rotation', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set rotation(newValue) {
+			this._setPropertyXYZ('rotation', newValue)
 		}
-		get rotation(): any {
-			return this._props.rotation
+		get rotation() {
+			return this.__rotation
 		}
+
+		private __scale = new XYZNumberValues(1, 1, 1)
 
 		/**
 		 * @param {Object} newValue
@@ -96,12 +109,17 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis scale to apply.
 		 * @param {number} [newValue.z] The z-axis scale to apply.
 		 */
-		set scale(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('scale', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set scale(newValue) {
+			this._setPropertyXYZ('scale', newValue)
 		}
-		get scale(): any {
-			return this._props.scale
+		get scale() {
+			return this.__scale
 		}
+
+		private __origin = new XYZNumberValues(0.5, 0.5, 0.5)
 
 		/**
 		 * @param {Object} newValue
@@ -109,25 +127,17 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis origin to apply.
 		 * @param {number} [newValue.z] The z-axis origin to apply.
 		 */
-		set origin(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('origin', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set origin(newValue) {
+			this._setPropertyXYZ('origin', newValue)
 		}
-		get origin(): any {
-			return this._props.origin
+		get origin() {
+			return this.__origin
 		}
 
-		/**
-		 * Set this Node's opacity.
-		 *
-		 * @param {number} opacity A floating point number clamped between 0 and
-		 * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
-		 */
-		set opacity(newValue: any) {
-			this._setPropertySingle<Transformable, TransformProp>('opacity', newValue)
-		}
-		get opacity(): any {
-			return this._props.opacity
-		}
+		private __align = new XYZNumberValues(0, 0, 0)
 
 		/**
 		 * Set the alignment of the Node. This determines at which point in this
@@ -138,12 +148,17 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis align to apply.
 		 * @param {number} [newValue.z] The z-axis align to apply.
 		 */
-		set align(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('align', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set align(newValue) {
+			this._setPropertyXYZ('align', newValue)
 		}
-		get align(): any {
-			return this._props.align
+		get align() {
+			return this.__align
 		}
+
+		private __mountPoint = new XYZNumberValues(0, 0, 0)
 
 		/**
 		 * Set the mount point of the Node.
@@ -153,67 +168,52 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis mountPoint to apply.
 		 * @param {number} [newValue.z] The z-axis mountPoint to apply.
 		 */
-		set mountPoint(newValue: any) {
-			this._setPropertyXYZ<Transformable, TransformProp>('mountPoint', newValue)
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set mountPoint(newValue) {
+			this._setPropertyXYZ('mountPoint', newValue)
 		}
-		get mountPoint(): any {
-			return this._props.mountPoint
-		}
-
-		makeDefaultProps() {
-			return Object.assign(super.makeDefaultProps(), {
-				position: new XYZNumberValues(0, 0, 0),
-				rotation: new XYZNumberValues(0, 0, 0),
-				scale: new XYZNumberValues(1, 1, 1),
-				origin: new XYZNumberValues(0.5, 0.5, 0.5),
-				align: new XYZNumberValues(0, 0, 0),
-				mountPoint: new XYZNumberValues(0, 0, 0),
-				opacity: 1,
-			})
+		get mountPoint() {
+			return this.__mountPoint
 		}
 
-		protected _setPropertyObservers(): void {
-			super._setPropertyObservers && super._setPropertyObservers()
+		private __opacity = 1
 
-			this._properties.position.on('valuechanged', () => this.emit('propertychange', 'position'))
-			this._properties.rotation.on('valuechanged', () => this.emit('propertychange', 'rotation'))
-			this._properties.scale.on('valuechanged', () => this.emit('propertychange', 'scale'))
-			this._properties.origin.on('valuechanged', () => this.emit('propertychange', 'origin'))
-			this._properties.align.on('valuechanged', () => this.emit('propertychange', 'align'))
-			this._properties.mountPoint.on('valuechanged', () => this.emit('propertychange', 'mountPoint'))
-
-			// this is also triggered by Sizeable.updated, besides the above lines
-			this.on('propertychange', (prop: string) => this._onPropChange(prop))
+		/**
+		 * Set this Node's opacity.
+		 *
+		 * @param {number} opacity A floating point number clamped between 0 and
+		 * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
+		 */
+		@reactive
+		@attribute
+		@emits('propertychange')
+		set opacity(newValue) {
+			this._setPropertySingle('opacity', newValue)
+		}
+		get opacity() {
+			return this.__opacity
 		}
 
-		// We need this so that on re-load of GL, we can cause all props to be
-		// propagated to Three objects.
-		// TODO This is temporary until we switch entirely to reactive props, so
-		// we don't need to perform this sort of thing. Without this, if we
-		// unload then reload GL, the values won't be passed to the three
-		// instances. This will be replaced by `autorun()`.
-		protected _emitPropchangeForAllProps() {
-			super._emitPropchangeForAllProps()
-			this.emit('propertychange', 'position')
-			this.emit('propertychange', 'rotation')
-			this.emit('propertychange', 'scale')
-			this.emit('propertychange', 'origin')
-			this.emit('propertychange', 'align')
-			this.emit('propertychange', 'mountPoint')
+		connectedCallback() {
+			super.connectedCallback()
+
+			this._stopFns.push(
+				autorun(() => {
+					this.rotation
+					this._updateRotation()
+				}),
+				autorun(() => {
+					this.scale
+					this._updateScale()
+				}),
+				// position is handled _calculateMatrix
+			)
 		}
 
-		protected _onPropChange(prop: string): void {
-			if (
-				// position not handled here because it is handled in _calculateMatrix
-				// prop === 'position' ||
-				prop === 'rotation' ||
-				prop === 'scale'
-			) {
-				;(this as any)['_update_' + prop]()
-			}
-		}
-
-		// TODO rename "render" to "update".
+		/** This is called by Motor on each update before the GL or CSS renderers will re-render. */
+		// TODO rename "render" to "update". "render" is more for the renderer classes.
 		protected _render(_timestamp: number): void {
 			// super._render && super._render()
 
@@ -222,25 +222,50 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 			this._calculateMatrix()
 		}
 
-		// TODO These is from ImerativeBase. Refactor?
+		// TODO These are from ImerativeBase. Transformable shouldn't know about
+		// Three.js objects. Maybe Three-specific stuff belongs somewhere else?
+		// Not sure where though.
 		three!: Object3D
 		threeCSS!: Object3D
 
-		protected _update_rotation(): void {
-			// TODO make the rotation unit configurable (f.e. use degrees or
+		protected _updateRotation(): void {
+			// NOTE Currently rotation is left-handed as far as values inputted
+			// into the LUME APIs. This method converts them to Three's
+			// right-handed system.
+
+			// TODO Make an option to use left-handed or right-handed rotation,
+			// where right-handed will match with Three.js transforms, while
+			// left-handed matches with CSS transforms (but in the latter case
+			// using Three.js APIs will not match the same paradigm because the
+			// option changes only the LUME API).
+
+			// TODO Make the rotation unit configurable (f.e. use degrees or
 			// radians)
-			this.three.rotation.set(toRadians(this.rotation.x), toRadians(this.rotation.y), toRadians(this.rotation.z))
 
-			const childOfScene = this.threeCSS.parent && this.threeCSS.parent.type === 'Scene'
-
-			this.threeCSS.rotation.set(
-				(childOfScene ? 1 : -1) * toRadians(this.rotation.x),
+			this.three.rotation.set(
+				-toRadians(this.rotation.x),
+				// We don't negate Y rotation here, but we negate Y translation
+				// in _calculateMatrix so that it has the same effect.
 				toRadians(this.rotation.y),
-				(childOfScene ? 1 : -1) * toRadians(this.rotation.z),
+				-toRadians(this.rotation.z),
+			)
+
+			// TODO Besides that Transformable shouldn't know about Three.js
+			// objects, it should also not know about Scene. The isScene check
+			// prevents us from having to import Scene (circular dependency).
+			const childOfScene = this.parent && (this.parent as any).isScene // duck type checking
+
+			// TODO write a comment as to why we needed the childOfScne check to
+			// alternate rotation directions here. It's been a while, I forgot
+			// why. I should've left a comment when I wrote this!
+			this.threeCSS.rotation.set(
+				(childOfScene ? -1 : 1) * toRadians(this.rotation.x),
+				toRadians(this.rotation.y),
+				(childOfScene ? -1 : 1) * toRadians(this.rotation.z),
 			)
 		}
 
-		protected _update_scale(): void {
+		protected _updateScale(): void {
 			this.three.scale.set(this.scale.x, this.scale.y, this.scale.z)
 
 			this.threeCSS.scale.set(this.scale.x, this.scale.y, this.scale.z)
@@ -259,7 +284,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * move _calcSize to a render task.
 		 */
 		protected _calculateMatrix(): void {
-			const {align, mountPoint, position, origin} = this._properties
+			const {__align: align, __mountPoint: mountPoint, __position: position, __origin: origin} = this
 			const size = this.calculatedSize
 
 			// THREE-COORDS-TO-DOM-COORDS
@@ -295,6 +320,11 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 			appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
 			appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
 			appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
+
+			// NOTE We negate Y translation in several places below so that Y
+			// goes downward like in DOM's CSS transforms.
+
+			// TODO Make an option that configures whether Y goes up or down.
 
 			this.three.position.set(
 				appliedPosition[0] + threeJsPostAdjustment[0],
@@ -374,39 +404,42 @@ export const Transformable = Mixin(TransformableMixin)
 export interface Transformable extends InstanceType<typeof Transformable> {}
 export default Transformable
 
-// const s: Transformable = new Transformable()
-// s.asdfasdf
-// s.calculatedSize = 123
-// s.innerHTML = 123
-// s.innerHTML = 'asdf'
-// s.emit('asfasdf', 1, 2, 3)
-// s.removeNode('asfasdf')
-// s.updated(1, 2, 3, 4)
-// s.blahblah
-// s.sizeMode
-// s._render(1, 2, 3)
-// s.qwerqwer
-// s.rotation
-// s.three.sdf
-// s.threeCSS.sdf
+// position
+// rotation
+// scale
+// origin
+// align
+// mountPoint
 
-// const o = new (Transformable.mixin(
-//     class {
-//         test = 123
-//     }
-// ))()
-// o.asdfasdf
-// o.calculatedSize = 123
-// o.innerHTML = 123
-// o.innerHTML = 'asdf'
-// o.emit('asfasdf', 1, 2, 3)
-// o.removeNode('asfasdf')
-// o.updated(1, 2, 3, 4)
-// o.blahblah
-// o.sizeMode
-// o._render(1, 2, 3)
-// o.qwerqwer
-// o.rotation
-// o.three.sdf
-// o.threeCSS.sdf
-// o.test = 'asdfasdf'
+export type NumberValues = XYZNumberValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+
+export type Position = NumberValues
+export type Rotation = NumberValues
+export type Scale = NumberValues
+export type Origin = NumberValues
+export type Align = NumberValues
+export type MountPoint = NumberValues
+
+export function position(val: Position) {
+	return val as XYZNumberValues
+}
+
+export function rotation(val: Rotation) {
+	return val as XYZNumberValues
+}
+
+export function scale(val: Origin) {
+	return val as XYZNumberValues
+}
+
+export function origin(val: Origin) {
+	return val as XYZNumberValues
+}
+
+export function align(val: Align) {
+	return val as XYZNumberValues
+}
+
+export function mountPoint(val: MountPoint) {
+	return val as XYZNumberValues
+}

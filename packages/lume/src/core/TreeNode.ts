@@ -1,20 +1,16 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import WithUpdate from '../html/WithUpdate'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected
  * to each other in parent-child relationships in a tree structure. A parent
- * can have multiple children, and a child can have only one parent. Inherits from [WithUpdate](../html/WithUpdate)
- * @extends WithUpdate
+ * can have multiple children, and a child can have only one parent.
  */
 export const TreeNode = Mixin(TreeNodeMixin)
 export interface TreeNode extends InstanceType<typeof TreeNode> {}
 export default TreeNode
 
 export function TreeNodeMixin<T extends Constructor>(Base: T) {
-	// TODO WithUpdate.mixin isn't enforcing that we pass Constructor
-	// constrained to extend from HTMLElement
-	class TreeNode extends WithUpdate.mixin(Constructor<HTMLElement>(Base)) {
+	class TreeNode extends Constructor(Base) {
 		private __parent: TreeNode | null = null
 		private __children: TreeNode[] = []
 
@@ -43,6 +39,18 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 			return [...this.__children]
 		}
 
+		private __isConnected = false
+
+		/** @readonly */
+		get isConnected(): boolean {
+			if (this instanceof Element) {
+				// TODO Report this to TypeScript
+				// @ts-ignore TS doesn't know that super.isConnected would work here.
+				return super.isConnected
+			}
+			return this.__isConnected
+		}
+
 		/**
 		 * @method add - Add a child node to this TreeNode.
 		 * @param {TreeNode} childNode - The child node to add.
@@ -60,6 +68,10 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 
 			this.__children.push(childNode)
 
+			childNode.__isConnected = true
+
+			// TODO avoid deferring. We may need this now that we switched from
+			// WithUpdate to reactive props.
 			Promise.resolve().then(() => {
 				childNode.connected()
 				this.childConnected(childNode)
@@ -97,6 +109,10 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 			childNode.__parent = null
 			this.__children.splice(this.__children.indexOf(childNode), 1)
 
+			childNode.__isConnected = false
+
+			// TODO avoid deferring. We may need this now that we switched from
+			// WithUpdate to reactive props.
 			Promise.resolve().then(() => {
 				childNode.disconnected()
 				this.childDisconnected(childNode)

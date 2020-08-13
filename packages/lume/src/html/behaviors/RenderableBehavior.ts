@@ -26,8 +26,8 @@ export class RenderableBehavior extends Behavior {
 
 		this.unloadGL()
 
-		this.element.off(Events.BEHAVIOR_GL_LOAD, this.loadGL)
-		this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL)
+		this.element.off(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)
+		this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
 	}
 
 	loadGL(): boolean {

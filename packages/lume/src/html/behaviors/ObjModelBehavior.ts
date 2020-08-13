@@ -23,7 +23,7 @@ export default class ObjModelBehavior extends RenderableBehavior {
 	objLoader: any
 	mtlLoader: any
 
-	protected static _observedProperties = ['obj', 'mtl', ...((RenderableBehavior as any).observedProperties || [])]
+	protected static _observedProperties = ['obj', 'mtl', ...(RenderableBehavior._observedProperties || [])]
 
 	private __stopFns: StopFunction[] = []
 

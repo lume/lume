@@ -50,7 +50,9 @@ class _Motor {
 		if (taskIndex <= this.__taskIterationIndex) this.__taskIterationIndex -= 1
 	}
 
+	/** Adds a render task that executes only once instead of repeatedly. */
 	once(fn: RenderTask) {
+		// The `false` return value of the task tells Motor not to re-run it.
 		return this.addRenderTask(time => (fn(time), false))
 	}
 
@@ -103,15 +105,6 @@ class _Motor {
 			timestamp = await this.__animationFrame()
 
 			this.__runRenderTasks(timestamp)
-
-			// wait for the next microtask before continuing so that SkateJS
-			// updated methods (or any other microtask handlers) have a
-			// chance to handle changes before the next __renderNodes call.
-			//
-			// TODO add test to make sure behavior size change doesn't
-			// happen after render
-			await Promise.resolve()
-
 			this.__renderNodes(timestamp)
 
 			// If no tasks are left, stop the animation loop.

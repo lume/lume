@@ -1,5 +1,3 @@
-import ImperativeBase from './ImperativeBase'
-
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
 	if (typeof CSSStyleDeclaration !== 'undefined') {
@@ -17,14 +15,14 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 }
 
 /**
- * Manages a DOM element. This is used by ImperativeBase, to keep
- * DOM-manipulating code co-located in this separate place. Consider this
+ * Manages the some DOM operations. This is used by ImperativeBase to keep
+ * DOM-manipulation code co-located in this separate place. Consider this
  * internal API, not intended for end users.
  */
 export default class ElementOperations {
-	constructor(private __element: ImperativeBase) {}
+	constructor(private __element: HTMLElement) {}
 
-	connectChildElement(child: ImperativeBase) {
+	connectChildElement(child: HTMLElement) {
 		if (
 			// When using the imperative API, this statement is
 			// true, so the DOM elements need to be connected.
@@ -48,7 +46,7 @@ export default class ElementOperations {
 		}
 	}
 
-	disconnectChildElement(child: ImperativeBase) {
+	disconnectChildElement(child: HTMLElement) {
 		// If DeclarativeBase#remove was called first, we don't need to
 		// call this again.
 		if (!child.parentNode) return
@@ -67,6 +65,8 @@ export default class ElementOperations {
 
 	set shouldRender(shouldRender: boolean) {
 		this.__shouldRender = shouldRender
+
+		// TODO replace this with Motor.once() (might cause a circular dependency)
 		requestAnimationFrame(() => {
 			this.__applyStyle('display', shouldRender ? 'block' : 'none')
 		})
@@ -75,18 +75,20 @@ export default class ElementOperations {
 		return this.__shouldRender
 	}
 
-	private __add(child: ImperativeBase) {
+	private __add(child: HTMLElement) {
 		this.__element.appendChild(child)
 	}
 
-	private __remove(child: ImperativeBase) {
+	private __remove(child: HTMLElement) {
 		// This conditional check is needed incase the element was already
 		// removed from the HTML-API side.
 		if (child.parentNode === this.__element) this.__element.removeChild(child)
 	}
 
 	private __applySize() {
-		const {x, y} = this.__element.calculatedSize
+		// TODO remove this any, the refactor code so non-HTMLElement stuff is
+		// moved outside of this class.
+		const {x, y} = (this.__element as any).calculatedSize
 
 		this.__applyStyle('width', `${x}px`)
 		this.__applyStyle('height', `${y}px`)
@@ -95,7 +97,9 @@ export default class ElementOperations {
 	}
 
 	private __applyOpacity() {
-		this.__applyStyle('opacity', this.__element.opacity)
+		// TODO remove this any, the refactor code so non-HTMLElement stuff is
+		// moved outside of this class.
+		this.__applyStyle('opacity', (this.__element as any).opacity.toString())
 	}
 
 	/**

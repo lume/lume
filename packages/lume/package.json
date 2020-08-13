@@ -51,8 +51,8 @@
 	},
 	"dependencies": {
 		"@awaitbox/document-ready": "^1.0.10",
-		"@lume/element": "^0.1.0",
-		"@trusktr/skatejs": "5.2.40002",
+		"@lume/element": "^0.1.1",
+		"@lume/eventful": "^0.1.0",
 		"army-knife": "^0.2.1",
 		"autolayout": "^0.7.0",
 		"element-behaviors": "^2.2.3",
@@ -70,7 +70,6 @@
 	"devDependencies": {
 		"@lume/cli": "^2.0.0",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
-		"@lume/eventful": "^0.0.1",
 		"@lume/live-code": "^0.0.2",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",

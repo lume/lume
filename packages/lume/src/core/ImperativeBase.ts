@@ -1,5 +1,6 @@
 import {Object3D, Vector3} from 'three'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
+import {reactive, StopFunction, autorun, sample} from '@lume/element'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
 import Motor from './Motor'
@@ -9,6 +10,7 @@ import {Events} from './Events'
 import {TreeNode} from './TreeNode'
 import {Node} from './Node'
 import {Scene} from './Scene'
+import Settable from '../utils/Settable'
 
 import type {XYZValuesObject} from './XYZValues'
 import type {ConnectionType} from '../html/DeclarativeBase'
@@ -64,24 +66,7 @@ class PossiblyWebComponent {
  * base classes.
  */
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
-	const Parent = Transformable.mixin(Constructor<PossiblyWebComponent>(Base))
-
-	// type Parent = InstanceType<typeof Parent>
-	// const s = new Parent()
-	// s.asdfasdf
-	// s.calculatedSize = 123
-	// s.innerHTML = 123
-	// s.innerHTML = 'asdf'
-	// s.emit('asfasdf', 1, 2, 3)
-	// s.removeNode('asfasdf')
-	// s.updated(1, 2, 3, 4)
-	// s.blahblah
-	// s.sizeMode
-	// s._render(1, 2, 3)
-	// s.qwerqwer
-	// s.rotation
-	// s.three.sdf
-	// s.threeCSS.sdf
+	const Parent = Settable.mixin(Transformable.mixin(Constructor<PossiblyWebComponent>(Base)))
 
 	class ImperativeBase extends Parent {
 		// we don't need this, keep for backward compatibility (mainly
@@ -97,17 +82,16 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		// for Node instances
 		isNode = false
 
-		// constructor(options = {}) {
 		constructor(...args: any[]) {
-			// super(options)
 			super(...args)
 
-			// TODO type of options in subclasses that use it.
-			// const options: any = args[0]
-
 			// See Transformable/Sizeable propertychange event.
-			// TODO: defer size calculation to render task
 			this.on('propertychange', this.__onPropertyChange, this)
+		}
+
+		private __onPropertyChange(): void {
+			// if (this.parent) this._calcSize()
+			this.needsUpdate()
 		}
 
 		get glLoaded(): boolean {
@@ -117,6 +101,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		get cssLoaded(): boolean {
 			return this._cssLoaded
 		}
+
+		private __three: Object3D | null = null
 
 		get three(): Object3D {
 			// if (!(this.scene && this.scene.experimentalWebgl)) return null
@@ -129,6 +115,8 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return this.__three
 		}
 
+		private __threeCSS: Object3D | null = null // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
+
 		get threeCSS(): Object3D {
 			// if (!(this.scene && !this.scene.disableCss)) return null
 
@@ -138,6 +126,43 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			}
 
 			return this.__threeCSS!
+		}
+
+		connectedCallback() {
+			super.connectedCallback()
+
+			this._stopFns.push(
+				autorun(() => {
+					this.sizeMode
+					this.size
+
+					// Sample blocks are untracked, so they don't register
+					// further dependencies for this autorun.
+					sample(() => {
+						// TODO: size calculation should happen in a render task
+						// just like _calculateMatrix, instead of on each property
+						// change, unless the calculatedSize prop is acessed by the
+						// user in which case it should trigger a calculation (sort
+						// of like DOM properties that cause re-layout). We should
+						// document to prefer not to force calculation, and instead
+						// observe the property changes (f.e. with autorun()).
+						if (this.parent) this._calcSize()
+					})
+				}),
+				autorun(() => {
+					this.sizeMode
+					this.size
+					this.position
+					this.rotation
+					this.scale
+					this.origin
+					this.align
+					this.mountPoint
+					this.opacity
+
+					this.needsUpdate()
+				}),
+			)
 		}
 
 		possiblyLoadThree(child: ImperativeBase): void {
@@ -348,7 +373,10 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// // child should watch the parent for size changes.
 			// this.on('sizechange', childNode._onParentSizeChange, childNode)
 
-			if (__updateDOMConnection) this._elementOperations.connectChildElement(childNode)
+			// FIXME remove the type cast here and modify it so it is
+			// DOM-agnostic for when we run thsi in a non-DOM environment.
+			if (__updateDOMConnection)
+				this._elementOperations.connectChildElement((childNode as unknown) as HTMLElement)
 
 			return this
 		}
@@ -376,22 +404,27 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _glLoaded = false
-		protected _cssLoaded = false
+		@reactive protected _cssLoaded = false
 		protected _willBeRendered = false
-		// Here we create the DOM HTMLElement associated with this
-		// Imperative-API Node.
-		protected _elementOperations: ElementOperations = new ElementOperations(this)
+
+		// TODO Remove this type cast, see all the errors, then figure out how
+		// to polyfill the APIs for use in a non-DOM environment (most likely in
+		// the TreeNode base class).
+		protected _elementOperations: ElementOperations = new ElementOperations((this as unknown) as HTMLElement)
 
 		// stores a ref to this Node's root Scene when/if this Node is
 		// in a scene.
 		// protected _scene: Scene | null = null
-		protected _scene: any | null = null
+		@reactive protected _scene: any | null = null // TODO no any
 
 		protected _makeThreeObject3d(): Object3D {
 			return new Object3D()
 		}
 
 		protected _makeThreeCSSObject(): Object3D {
+			// @prod-prune
+			if (!(this instanceof HTMLElement)) throw 'API available only in DOM environment.'
+
 			return new CSS3DObjectNested(this)
 		}
 
@@ -477,10 +510,13 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		passInitialValuesToThree?(): void
 
-		protected _loadGL(): void {
-			if (!(this.scene && this.scene.experimentalWebgl)) return
+		protected _glStopFns: StopFunction[] = []
 
-			if (this._glLoaded) return
+		protected _loadGL(): boolean {
+			if (!(this.scene && this.scene.experimentalWebgl)) return false
+
+			if (this._glLoaded) return false
+
 			this._glLoaded = true
 
 			// we don't let Three update local matrices automatically, we do
@@ -497,8 +533,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// this.parent && this.parent.three.add(this.three)
 			this._connectThree()
 
-			console.log(' >>>>>>>>>>>>>>>>>>>>>>> load GL!', this.constructor.name, this.id)
-
 			// If a subclass needs to initialize values in its Three.js
 			// object, it will have the passInitialValuesToThree method for
 			// that.
@@ -508,27 +542,35 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// automatically be in place.
 			this.passInitialValuesToThree && this.passInitialValuesToThree()
 
-			this._emitPropchangeForAllProps()
-
 			this.needsUpdate()
+
+			return true
 		}
 
-		protected _unloadGL(): void {
-			if (!this._glLoaded) return
+		protected _unloadGL(): boolean {
+			if (!this._glLoaded) return false
+
 			this._glLoaded = false
+
+			for (const stop of this._glStopFns) stop()
 
 			this.__three && disposeObject(this.__three)
 			this.__three = null
 
 			this.needsUpdate()
+
+			return true
 		}
 
-		protected _loadCSS(): void {
-			if (!(this.scene && !this.scene.disableCss)) return
+		protected _cssStopFns: StopFunction[] = []
 
-			if (this._cssLoaded) return
+		protected _loadCSS(): boolean {
+			const cssIsEnabled = this.scene && !this.scene.disableCss
+
+			if (!cssIsEnabled) return false
+
+			if (this._cssLoaded) return false
 			this._cssLoaded = true
-			this.triggerUpdateForProp('visible')
 
 			// we don't let Three update local matrices automatically, we do
 			// it ourselves in Transformable._calculateMatrix and
@@ -543,20 +585,24 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// this.parent && this.parent.threeCSS.add(this.threeCSS)
 			this._connectThreeCSS()
 
-			console.log(' >>>>>>>>>>>>>>>>>>>>>>> load CSS!', this.constructor.name, this.id)
-
 			this.needsUpdate()
+
+			return true
 		}
 
-		protected _unloadCSS(): void {
-			if (!this._cssLoaded) return
+		protected _unloadCSS(): boolean {
+			if (!this._cssLoaded) return false
+
 			this._cssLoaded = false
-			this.triggerUpdateForProp('visible')
+
+			for (const stop of this._cssStopFns) stop()
 
 			this.__threeCSS && disposeObject(this.__threeCSS)
 			this.__threeCSS = null
 
 			this.needsUpdate()
+
+			return true
 		}
 
 		protected _triggerLoadGL(): void {
@@ -586,8 +632,12 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _render(timestamp: number): void {
-			if (super._render) super._render(timestamp)
+			super._render(timestamp)
 
+			// TODO, pass the needed data into the elementOperations calls,
+			// instead of relying on ElementOperations knowing about
+			// non-HTMLElement features. See the TODOs in __applyStyle and
+			// __applyOpacity there.
 			this._elementOperations.applyImperativeNodeProperties()
 		}
 
@@ -605,23 +655,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			}
 
 			return false
-		}
-
-		private __three: Object3D | null = null
-		private __threeCSS: Object3D | null = null // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
-
-		private __onPropertyChange(prop: string /*TODO keyof props*/): void {
-			if (prop == 'sizeMode' || prop == 'size') {
-				if (this.parent) this._calcSize()
-			}
-
-			if (this.constructor.name === 'ShimmerCube' && prop === 'rotation') {
-				const rot = this._props.rotation
-				console.log(rot.x, rot.y, rot.z)
-				debugger
-			}
-
-			this.needsUpdate()
 		}
 	}
 
@@ -678,21 +711,3 @@ function makeMixin() {
 
 // "as default" form is required here, otherwise it'll break.
 export {ImperativeBase as default}
-
-// const i: ImperativeBase = new ImperativeBase()
-// i.asdfasdf
-// i.calculatedSize = 123
-// i.innerHTML = 123
-// i.innerHTML = 'asdf'
-// i.emit('asfasdf', 1, 2, 3)
-// i.removeNode('asfasdf')
-// i.updated(1, 2, 3, 4)
-// i.blahblah
-// i.sizeMode
-// i._render(1, 2, 3)
-// i.qwerqwer
-// i.rotation
-// i.three.sdf
-// i.threeCSS.sdf
-// i.possiblyLoadThree(new ImperativeBase!())
-// i.possiblyLoadThree(1)

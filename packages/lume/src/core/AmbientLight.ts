@@ -6,7 +6,6 @@ export default class AmbientLight extends LightBase {
 
 	protected _makeThreeObject3d() {
 		const light = new ThreeAmbientLight()
-		light.intensity = 1 // default
 		return light
 	}
 }

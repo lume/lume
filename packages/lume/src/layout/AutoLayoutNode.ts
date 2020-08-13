@@ -20,9 +20,12 @@
 // - Allow visual-format to be fetch by path (like img src attribute).
 
 import * as AutoLayout from 'autolayout'
+import {reactive, attribute, autorun} from '@lume/element'
+import {emits} from '@lume/eventful'
 import Node from '../core/Node'
 import Motor from '../core/Motor'
 import {XYZPartialValuesArray} from '../core/XYZValues'
+import {sizeMode, size, position} from '../core'
 
 export {AutoLayout}
 
@@ -48,12 +51,7 @@ export default class AutoLayoutNode extends Node {
 		strict: false,
 	}
 
-	static props = {
-		...(Node.props || {}),
-		visualFormat: String,
-	}
-
-	visualFormat!: string
+	@reactive @attribute @emits('propertychange') visualFormat: string | null = ''
 
 	/**
 	 * Constructor
@@ -85,17 +83,19 @@ export default class AutoLayoutNode extends Node {
 		}
 	}
 
-	updated(oldProps: any, modifiedProps: any) {
-		super.updated(oldProps, modifiedProps)
-		if (modifiedProps.visualFormat) {
-			this.setVisualFormat(this.visualFormat)
-		}
+	connectedCallback() {
+		super.connectedCallback()
+
+		this._stopFns.push(
+			autorun(() => {
+				this.setVisualFormat(this.visualFormat || '')
+			}),
+		)
 	}
 
 	private _autoLayoutView?: any | undefined
 
 	childConnected(child: Node) {
-		// TODO, this was working, although we were not passing child into childConnected. Why????
 		super.childConnected(child)
 
 		if (!this._autoLayoutView) return
@@ -103,8 +103,6 @@ export default class AutoLayoutNode extends Node {
 	}
 
 	childDisconnected(child: Node) {
-		// TODO, this was working. Why????
-		// super.childConnected()
 		super.childDisconnected(child)
 
 		if (!this._autoLayoutView) return
@@ -146,7 +144,6 @@ export default class AutoLayoutNode extends Node {
 			parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS,
 		)
 		this._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
-		// @ts-ignore
 		this._autoLayoutView = new AutoLayout.View({
 			constraints: constraints,
 		})
@@ -317,26 +314,30 @@ export default class AutoLayoutNode extends Node {
 	}
 
 	private _updateNode(node: Node, subView: any, x: number, y: number, widths: any, heights: any) {
-		node.sizeMode = [
+		// NOTE The following sizeMode, size, and position functions are no-ops,
+		// they only perform type casting for use in TypeScript code. Without
+		// them there will be type errors.
+
+		node.sizeMode = sizeMode([
 			// PORTED
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			widths && widths[key] === true ? 'proportional' : 'literal',
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			heights && heights[key] === true ? 'proportional' : 'literal',
-		]
-		node.size = [
+		])
+		node.size = size([
 			// PORTED
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			widths && widths[key] === true ? 1 : subView.width,
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			heights && heights[key] === true ? 1 : subView.height,
-		]
-		node.position = [
+		])
+		node.position = position([
 			// PORTED
 			x + subView.left,
 			y + subView.top,
 			subView.zIndex * 5,
-		]
+		])
 	}
 
 	private _checkNodes() {
@@ -344,7 +345,8 @@ export default class AutoLayoutNode extends Node {
 		const subViewKeys = Object.keys(subViews)
 		const _idToNode = this._idToNode
 
-		// if a node is not found for a subview key, see if exists in this's DOM children by className
+		// If a node is not found for a subview key, see if exists in this's DOM children by className
+		// XXX Should we use a `data-*` attribute instead of a class name?
 		for (var key of subViewKeys) {
 			var subView = subViews[key]
 			if (key.indexOf('_') !== 0 && subView.type !== 'stack') {

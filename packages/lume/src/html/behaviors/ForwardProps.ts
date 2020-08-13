@@ -49,6 +49,7 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
 		private __getProps(): string[] {
 			const props = (this.constructor as typeof ForwardProps)._observedProperties || []
+			// @prod-prune
 			if (!Array.isArray(props))
 				throw new TypeError('Expected protected static _observedProperties to be an array.')
 			return props

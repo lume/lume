@@ -3,6 +3,8 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import {Mixin, MixinResult, Constructor} from 'lowclass'
+import {reactive, autorun, booleanAttribute, attribute, numberAttribute} from '@lume/element'
+import {emits} from '@lume/eventful'
 import documentReady from '@awaitbox/document-ready'
 import {
 	Scene as ThreeScene,
@@ -17,12 +19,13 @@ import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
-import {props} from './props'
 import {documentBody} from './Utility'
 import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
 import TreeNode from './TreeNode'
+
+import type {TColor} from '../utils/three'
 
 initImperativeBase()
 
@@ -33,29 +36,28 @@ function SceneMixin<T extends Constructor>(Base: T) {
 	class Scene extends Parent {
 		static defaultElementName = 'i-scene'
 
-		static props = {
-			...(Parent.props || {}),
-			backgroundColor: props.THREE.Color,
-			backgroundOpacity: props.number,
-			shadowmapType: props.string, //  TODO runtime check for ShadowMapTypeString
-			vr: props.boolean,
-			experimentalWebgl: props.boolean,
-			disableCss: props.boolean,
-		}
+		isScene = true
 
-		// TODO replace WithUpdate props with decorators
-		backgroundColor!: Color | string | number
-		backgroundOpacity!: number
-		shadowmapType!: ShadowMapTypeString
-		vr!: boolean
-		experimentalWebgl!: boolean
-		disableCss!: boolean
+		@reactive @emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
+		@reactive @emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
+		@reactive @emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+		@reactive @emits('propertychange') @booleanAttribute(false) vr = false
+		@reactive @emits('propertychange') @booleanAttribute(false) experimentalWebgl = false
+		@reactive @emits('propertychange') @booleanAttribute(false) disableCss = false
+
+		/** @override */
+		sizeMode = new XYZSizeModeValues('proportional', 'proportional', 'literal')
+		/** @override */
+		size = new XYZNonNegativeValues(1, 1, 0)
 
 		three!: ThreeScene
 		threeCSS!: ThreeScene
-		threeCamera!: ThreePerspectiveCamera
 
-		isScene = true
+		@reactive private __threeCamera!: ThreePerspectiveCamera
+
+		get threeCamera(): ThreePerspectiveCamera {
+			return this.__threeCamera
+		}
 
 		// Used by the `scene` getter in ImperativeBase
 		protected _scene: Scene | null = this
@@ -87,15 +89,18 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			this.__cssRenderer && this.__cssRenderer.drawScene(this)
 		}
 
-		// TODO perspective SkateJS prop
+		private __perspective = 400
+
+		@reactive
+		@numberAttribute(400)
 		set perspective(value) {
-			this._perspective = value
+			this.__perspective = value
 			this._updateCameraPerspective()
 			this._updateCameraProjection()
 			this.needsUpdate()
 		}
 		get perspective() {
-			return this._perspective
+			return this.__perspective
 		}
 
 		/**
@@ -108,6 +113,9 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		 * provided, that will be the mount point. If no mount point is provided,
 		 * the scene will be mounted into document.body.
 		 */
+		// TODO move some mount/unmount logic to connected/disconnectedCallback.
+		// mount() is just a tool for specifying where to connect the scene
+		// element to.
 		async mount(mountPoint?: string | Element | null) {
 			// if no mountPoint was provided, just mount onto the <body> element.
 			if (!mountPoint) {
@@ -162,66 +170,29 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			this._mounted = false
 		}
 
-		updated(oldProps: any, moddedProps: any) {
-			if (!this.isConnected) return
+		connectedCallback() {
+			super.connectedCallback()
 
-			if (moddedProps.experimentalWebgl) {
-				if (this.experimentalWebgl) this._triggerLoadGL()
-				else this._triggerUnloadGL()
-			}
+			this._stopFns.push(
+				autorun(() => {
+					if (this.experimentalWebgl) this._triggerLoadGL()
+					else this._triggerUnloadGL()
+				}),
+				autorun(() => {
+					if (!this.disableCss) this._triggerLoadCSS()
+					else this._triggerUnloadCSS()
+				}),
+				autorun(() => {
+					if (this.disableCss && !this.experimentalWebgl) return this.__stopSizePolling()
 
-			if (moddedProps.disableCss) {
-				if (!this.disableCss) this._triggerLoadCSS()
-				else this._triggerUnloadCSS()
-			}
-
-			// call super.updated() after the above _triggerLoadGL() so that WebGL
-			// stuff will be ready in super.updated()
-			super.updated(oldProps, moddedProps)
-
-			// if this.experimentalWebgl is true, then this.__glRenderer is defined in the following
-			if (this.experimentalWebgl) {
-				if (moddedProps.backgroundColor) {
-					this.__glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
-					this.needsUpdate()
-				}
-				if (moddedProps.backgroundOpacity) {
-					this.__glRenderer!.setClearAlpha(this, this.backgroundOpacity)
-					this.needsUpdate()
-				}
-				if (moddedProps.shadowmapType) {
-					this.__glRenderer!.setShadowMapType(this, this.shadowmapType)
-					this.needsUpdate()
-				}
-				if (moddedProps.vr) {
-					this.__glRenderer!.enableVR(this, this.vr)
-
-					if (this.vr) {
-						Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
-						this.__glRenderer!.createDefaultWebVREntryUI(this)
-					} else {
-						// TODO else return back to normal requestAnimationFrame
-					}
-				}
-			}
-
-			if (moddedProps.sizeMode) {
-				this.__startOrStopSizePolling()
-			}
-		}
-
-		makeDefaultProps() {
-			return Object.assign(super.makeDefaultProps(), {
-				sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'literal'),
-				size: new XYZNonNegativeValues(1, 1, 0),
-			})
+					this.sizeMode
+					this.__startOrStopSizePolling()
+				}),
+			)
 		}
 
 		protected _mounted = false
 		protected _elementParentSize: XYZValuesObject<number>
-
-		// TODO get default camera values from somewhere.
-		protected _perspective = 1000
 
 		protected _makeThreeObject3d() {
 			return new ThreeScene()
@@ -232,20 +203,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _cameraSetup() {
-			// this.threeCamera holds the active camera. There can be many
+			// this.__threeCamera holds the active camera. There can be many
 			// cameras in the scene tree, but the last one with active="true"
 			// will be the one referenced here.
 			// If there are no cameras in the tree, a virtual default camera is
 			// referenced here, who's perspective is that of the scene's
 			// perspective attribute.
-			// this.threeCamera = null
+			// this.__threeCamera = null
 			this._createDefaultCamera()
-
-			// holds active cameras found in the DOM tree (if this is empty, it
-			// means no camera elements are in the DOM, but this.threeCamera
-			// will still have a reference to the default camera that scenes
-			// are rendered with when no camera elements exist).
-			this.__activeCameras = new Set()
 		}
 
 		protected _createDefaultCamera() {
@@ -254,41 +219,48 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			// We apply Three perspective the same way as CSS3D perspective here.
 			// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
 			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-			this.threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
-			this.perspective = 1000
+			// TODO update with calculatedSize in autorun
+			this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
+			this.perspective = this.perspective
 		}
 
 		// TODO can this be moved to a render task like _calcSize? It depends
 		// on size values.
 		protected _updateCameraPerspective() {
-			const perspective = this._perspective
-			this.threeCamera!.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
-			this.threeCamera!.position.z = perspective
+			const perspective = this.__perspective
+			this.__threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
+			this.__threeCamera.position.z = perspective
 		}
 
 		protected _updateCameraAspect() {
-			this.threeCamera!.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
+			this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
 		}
 
 		protected _updateCameraProjection() {
-			this.threeCamera!.updateProjectionMatrix()
+			this.__threeCamera.updateProjectionMatrix()
 		}
 
-		// TODO leak SceneProtected to Camera to call this, and move to protected
+		// holds active cameras found in the DOM tree (if this is empty, it
+		// means no camera elements are in the DOM, but this.__threeCamera
+		// will still have a reference to the default camera that scenes
+		// are rendered with when no camera elements exist).
+		private __activeCameras: Set<PerspectiveCamera> = new Set()
+
 		protected _addCamera(camera: PerspectiveCamera) {
-			this.__activeCameras!.add(camera)
+			this.__activeCameras.add(camera)
 			this.__setCamera(camera)
 		}
 
 		protected _removeCamera(camera: PerspectiveCamera) {
-			this.__activeCameras!.delete(camera)
+			this.__activeCameras.delete(camera)
 
-			if (this.__activeCameras!.size) {
+			if (this.__activeCameras.size) {
 				// get the last camera in the Set
-				this.__activeCameras!.forEach(c => (camera = c))
+				this.__activeCameras.forEach(c => (camera = c))
+				this.__setCamera(camera)
+			} else {
+				this.__setCamera()
 			}
-
-			this.__setCamera(camera)
 		}
 
 		/** @override */
@@ -300,14 +272,12 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		// Basically it has position, frag colors, point light, directional
 		// light, and ambient light.
 		protected _loadGL() {
-			if (this._glLoaded) return
+			// THREE
+			// maybe keep this in sceneState in WebGLRendererThree
+			if (!super._loadGL()) return false
 
 			console.log('    ---------------------------- LOAD SCENE GL')
 			this._composedChildren
-
-			// THREE
-			// maybe keep this in sceneState in WebGLRendererThree
-			super._loadGL()
 
 			// We don't let Three update any matrices, we supply our own world
 			// matrices.
@@ -318,12 +288,33 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			//const ambientLight = new AmbientLight( 0x353535 )
 			//this.three.add( ambientLight )
 
-			this.__glRenderer = this.__getRenderer('three')
+			this.__glRenderer = this.__getGLRenderer('three')
 
-			// default orange background color and 0 opacity. Use the
-			// backgroundColor and backgroundOpacity attributes to
-			// customize.
-			this.__glRenderer.setClearColor(this, new Color(0xff6600), 0)
+			this._glStopFns.push(
+				autorun(() => {
+					// if this.experimentalWebgl is true, then this.__glRenderer must be defined
+					this.__glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
+					this.needsUpdate()
+				}),
+				autorun(() => {
+					this.__glRenderer!.setClearAlpha(this, this.backgroundOpacity)
+					this.needsUpdate()
+				}),
+				autorun(() => {
+					this.__glRenderer!.setShadowMapType(this, this.shadowmapType)
+					this.needsUpdate()
+				}),
+				autorun(() => {
+					this.__glRenderer!.enableVR(this, this.vr)
+
+					if (this.vr) {
+						Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
+						this.__glRenderer!.createDefaultWebVREntryUI(this)
+					} else {
+						// TODO else return back to normal requestAnimationFrame
+					}
+				}),
+			)
 
 			this.traverse((node: TreeNode) => {
 				// skip `this`, we already handled it above
@@ -333,14 +324,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					// @ts-ignore: access protected member
 					node._triggerLoadGL()
 			})
+
+			return true
 		}
 
 		protected _unloadGL() {
-			if (!this._glLoaded) return
+			if (!super._unloadGL()) return false
 
 			console.log('    ---------------------------- UNLOAD SCENE GL')
-
-			super._unloadGL()
 
 			if (this.__glRenderer) {
 				this.__glRenderer.uninitialize(this)
@@ -355,13 +346,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					// @ts-ignore: access protected member
 					node._triggerUnloadGL()
 			})
+
+			return true
 		}
 
 		protected _loadCSS() {
-			if (this._cssLoaded) return
-			console.log('    ---------------------------- LOAD SCENE CSS')
+			if (!super._loadCSS()) return false
 
-			super._loadCSS()
+			console.log('    ---------------------------- LOAD SCENE CSS')
 
 			this.__cssRenderer = this.__getCSSRenderer('three')
 
@@ -379,13 +371,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			setTimeout(() => {
 				console.log([].map.call(this.children, (n: any) => [n.constructor.name, n.parent, n.position]))
 			}, 1000)
+
+			return true
 		}
 
 		protected _unloadCSS() {
-			if (!this._cssLoaded) return
-			console.log('    ---------------------------- UNLOAD SCENE CSS')
+			if (!super._unloadCSS()) return false
 
-			super._unloadCSS()
+			console.log('    ---------------------------- UNLOAD SCENE CSS')
 
 			if (this.__cssRenderer) {
 				this.__cssRenderer.uninitialize(this)
@@ -400,17 +393,18 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					// @ts-ignore: access protected member
 					node._unloadCSS()
 			})
+
+			return true
 		}
 
 		private __glRenderer: WebGLRendererThree | null = null
 		private __cssRenderer: CSS3DRendererThree | null = null
-		private __activeCameras: Set<PerspectiveCamera> | null = null // Set<Camera>
 
 		// The idea here is that in the future we might have "babylon",
 		// "playcanvas", etc, on a per scene basis. We'd needed to abstract the
 		// renderer more, have abstract base classes to define the common
 		// interfaces.
-		private __getRenderer(type: 'three'): WebGLRendererThree {
+		private __getGLRenderer(type: 'three'): WebGLRendererThree {
 			if (this.__glRenderer) return this.__glRenderer
 
 			let renderer: WebGLRendererThree
@@ -429,7 +423,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			let renderer: CSS3DRendererThree
 
 			if (type === 'three') renderer = CSS3DRendererThree.singleton()
-			else throw new Error('invalid WebGL renderer')
+			else throw new Error('invalid CSS renderer. The only type supported is currently "three" (i.e. Three.js).')
 
 			renderer.initialize(this)
 
@@ -438,19 +432,21 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		// TODO FIXME: manual camera doesn't work after we've added the
 		// default-camera feature.
-		private __setCamera(camera: PerspectiveCamera) {
+		private __setCamera(camera?: PerspectiveCamera) {
 			if (!camera) {
 				this._createDefaultCamera()
 			} else {
 				// TODO?: implement an changecamera event/method and emit/call
 				// that here, then move this logic to the renderer
 				// handler/method?
-				this.threeCamera = camera.three
+				this.__threeCamera = camera.three
 				this._updateCameraAspect()
 				this._updateCameraProjection()
 				this.needsUpdate()
 			}
 		}
+
+		// TODO move the following parent size change stuff to a separate re-usable class.
 
 		private __sizePollTask: RenderTask | null = null
 		private __parentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
@@ -459,9 +455,9 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		private __startOrStopSizePolling() {
 			if (
 				this._mounted &&
-				(this._properties.sizeMode.x == 'proportional' ||
-					this._properties.sizeMode.y == 'proportional' ||
-					this._properties.sizeMode.z == 'proportional')
+				(this.sizeMode.x == 'proportional' ||
+					this.sizeMode.y == 'proportional' ||
+					this.sizeMode.z == 'proportional')
 			) {
 				this.__startSizePolling()
 			} else {
@@ -481,7 +477,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		// HTM-API
 		private __stopSizePolling() {
-			this.off('parentsizechange', this.__onElementParentSizeChange)
+			this.off('parentsizechange', this.__onElementParentSizeChange, this)
 			Motor.removeRenderTask(this.__sizePollTask!)
 			this.__sizePollTask = null
 		}
@@ -531,23 +527,3 @@ export const Scene = _Scene.mixin(HTMLInterface)
 export interface Scene extends InstanceType<typeof Scene> {}
 // export interface Scene extends InstanceType<typeof _Scene> {}
 export default Scene
-
-// const s: Scene = new Scene()
-// s.asdfasdf
-// s.calculatedSize = 123
-// s.innerHTML = 123
-// s.innerHTML = 'asdf'
-// s.emit('asfasdf', 1, 2, 3)
-// s.removeNode('asfasdf')
-// s.updated(1, 2, 3, 4)
-// s.blahblah
-// s.sizeMode
-// s._render(1, 2, 3)
-// s.qwerqwer
-// s.rotation
-// s.three.sdf
-// s.threeCSS.sdf
-// s.possiblyLoadThree(new ImperativeBase!())
-// s.possiblyLoadThree(1)
-// s.mount('somewhere')
-// s.mount(123)

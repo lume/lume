@@ -8,7 +8,7 @@ export default class HTMLScene extends DeclarativeBase {
 		super()
 
 		this.__root = this.attachShadow({mode: 'open'})
-		this.__root.innerHTML = `
+		this.__root.innerHTML = /*html*/ `
             <style>
                 .i-scene-inner {
                     position: relative
@@ -70,7 +70,7 @@ export default class HTMLScene extends DeclarativeBase {
 		this._cssLayer = this.__root.querySelector('.i-scene-CSS3DLayer')
 
 		const root = this._cssLayer!.attachShadow({mode: 'open'})
-		root.innerHTML = `
+		root.innerHTML = /*html*/ `
             <style>
                 .i-scene-CSS3DLayer-inner {
                     /* make sure CSS3D rendering is contained inside of the CSS3DLayer
@@ -93,7 +93,7 @@ export default class HTMLScene extends DeclarativeBase {
 	// from Scene
 	// TODO PossiblyScene type, or perhaps a mixin that can be applied to the
 	// Scene class to make it gain the HTML interface
-	protected _mounted!: boolean
+	protected _mounted = false
 	mount?(f?: string | Element | null): void
 	unmount?(): void
 
@@ -104,7 +104,7 @@ export default class HTMLScene extends DeclarativeBase {
 		if (!this._mounted) this.mount!(this.parentNode as Element)
 	}
 
-	async disconnectedCallback() {
+	disconnectedCallback() {
 		super.disconnectedCallback()
 
 		this.unmount!()

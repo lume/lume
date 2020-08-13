@@ -1,72 +1,50 @@
 import {PointLight as ThreePointLight} from 'three'
+import {autorun, reactive, numberAttribute, booleanAttribute} from '@lume/element'
+import {emits} from '@lume/eventful'
 import LightBase from './LightBase'
-import {props} from './props'
-import {mapPropTo} from './props'
 
 export default class PointLight extends LightBase {
 	static defaultElementName = 'i-point-light'
 
-	static props = {
-		...LightBase.props,
-		distance: mapPropTo({...props.number, default: 0}, (self: any) => self.three),
-		decay: mapPropTo({...props.number, default: 1}, (self: any) => self.three),
-		castShadow: mapPropTo({...props.boolean, default: true}, (self: any) => self.three),
-		shadowMapWidth: {...props.number, default: 512},
-		shadowMapHeight: {...props.number, default: 512},
-		shadowRadius: {...props.number, default: 3},
-		shadowBias: {...props.number, default: 0},
-		shadowCameraNear: {...props.number, default: 1},
-		shadowCameraFar: {...props.number, default: 2000},
-	}
-
-	distance!: number
-	decay!: number
-	castShadow!: boolean
-	shadowMapWidth!: number
-	shadowMapHeight!: number
-	shadowRadius!: number
-	shadowBias!: number
-	shadowCameraNear!: number
-	shadowCameraFar!: number
-
 	three!: ThreePointLight
 
-	passInitialValuesToThree() {
-		super.passInitialValuesToThree()
+	@reactive @numberAttribute(0) @emits('propertychange') distance = 0
+	@reactive @numberAttribute(1) @emits('propertychange') decay = 1
+	@reactive @booleanAttribute(true) @emits('propertychange') castShadow = true
+	@reactive @numberAttribute(512) @emits('propertychange') shadowMapWidth = 512
+	@reactive @numberAttribute(512) @emits('propertychange') shadowMapHeight = 512
+	@reactive @numberAttribute(3) @emits('propertychange') shadowRadius = 3
+	@reactive @numberAttribute(0) @emits('propertychange') shadowBias = 0
+	@reactive @numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
+	@reactive @numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
 
-		const light = this.three
+	protected _loadGL() {
+		if (!super._loadGL()) return false
 
-		light.distance = this.distance
-		light.decay = this.decay
-		light.castShadow = this.castShadow
-		console.log(' ?????????????????????????????? PointLight, pass initial values to three', light.castShadow)
+		this._glStopFns.push(
+			autorun(() => {
+				const light = this.three
 
-		const shadow = light.shadow
+				light.distance = this.distance
+				light.decay = this.decay
+				light.castShadow = this.castShadow
 
-		shadow.mapSize.width = this.shadowMapWidth
-		shadow.mapSize.height = this.shadowMapHeight
-		shadow.radius = this.shadowRadius
-		shadow.bias = this.shadowBias
+				const shadow = this.three.shadow
 
-		// TODO: auto-adjust near and far planes like we will with Camera,
-		// unless the user supplies a manual value.
-		shadow.camera.near = this.shadowCameraNear
-		shadow.camera.far = this.shadowCameraFar
-	}
+				shadow.mapSize.width = this.shadowMapWidth
+				shadow.mapSize.height = this.shadowMapHeight
+				shadow.radius = this.shadowRadius
+				shadow.bias = this.shadowBias
+				// TODO: auto-adjust near and far planes like we will with Camera,
+				// unless the user supplies a manual value.
+				shadow.camera.near = this.shadowCameraNear
+				shadow.camera.far = this.shadowCameraFar
 
-	updated(oldProps: any, modifiedProps: any) {
-		super.updated(oldProps, modifiedProps)
+				this.needsUpdate()
+			}),
+		)
 
-		if (!this.isConnected) return
-
-		const shadow = this.three.shadow
-
-		if (modifiedProps.shadowMapWidth) shadow.mapSize.width = this.shadowMapWidth
-		if (modifiedProps.shadowMapHeight) shadow.mapSize.height = this.shadowMapHeight
-		if (modifiedProps.shadowRadius) shadow.radius = this.shadowRadius
-		if (modifiedProps.shadowBias) shadow.bias = this.shadowBias
-		if (modifiedProps.shadowCameraNear) shadow.camera.near = this.shadowCameraNear
-		if (modifiedProps.shadowCameraFar) shadow.camera.far = this.shadowCameraFar
+		return true
 	}
 
 	protected _makeThreeObject3d() {

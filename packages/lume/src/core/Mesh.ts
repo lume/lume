@@ -1,6 +1,7 @@
 import {Mesh as ThreeMesh, Material} from 'three'
+import {reactive, autorun, booleanAttribute} from '@lume/element'
+import {emits} from '@lume/eventful'
 import Node from './Node'
-import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
@@ -17,10 +18,6 @@ import '../html/behaviors/RoundedRectangleGeometryBehavior'
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
 //   of element-behaviors.
-// - [x] Ability specify default initial behaviors. Make this generic, or on top of
-//   element-behaviors? DONE, with DefaultBehaviors class
-// - [x] generic ability to specify custom element attribute types, as an addon to
-//   Custom Elements. We can use the same mechanism to specify types for behaviors too? DONE, with WithUpdate class.
 
 export default class Mesh extends Node {
 	static defaultElementName = 'i-mesh'
@@ -37,37 +34,28 @@ export default class Mesh extends Node {
 		},
 	}
 
-	static props = {
-		...(Node.props || {}),
-		castShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-		receiveShadow: {...mapPropTo(props.boolean, (self: any) => self.three), default: true},
-	}
-
-	castShadow!: boolean
-	receiveShadow!: boolean
-
 	three!: ThreeMesh
 
-	passInitialValuesToThree() {
-		this.three.castShadow = this.castShadow
-		console.log(' ?????????????????? Mesh, pass initial values to three', this.three.castShadow)
-		this.three.receiveShadow = this.receiveShadow
-	}
+	@reactive @booleanAttribute(true) @emits('propertychange') castShadow = true
+	@reactive @booleanAttribute(true) @emits('propertychange') receiveShadow = true
 
-	updated(oldProps: any, modifiedProps: any) {
-		super.updated(oldProps, modifiedProps)
+	protected _loadGL() {
+		if (!super._loadGL()) return false
 
-		if (!this.isConnected) return
+		this._glStopFns.push(
+			autorun(() => {
+				this.three.castShadow = this.castShadow
+				this.needsUpdate()
+			}),
+			autorun(() => {
+				this.three.receiveShadow = this.receiveShadow
+				// TODO handle material arrays
+				;(this.three.material as Material).needsUpdate = true
+				this.needsUpdate()
+			}),
+		)
 
-		if (modifiedProps.castShadow) {
-			this.needsUpdate()
-		}
-
-		if (modifiedProps.receiveShadow) {
-			// TODO handle material arrays
-			;(this.three.material as Material).needsUpdate = true
-			this.needsUpdate()
-		}
+		return true
 	}
 
 	protected _makeThreeObject3d() {

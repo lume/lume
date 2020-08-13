@@ -1,12 +1,16 @@
-import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {Eventful} from '@lume/eventful'
+import {Mixin, Constructor} from 'lowclass'
+import {Eventful, emits} from '@lume/eventful'
+import {reactive, attribute} from '@lume/element'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
-import Motor, {RenderTask} from './Motor'
-import {props} from './props'
+import Motor from './Motor'
 
-import type {XYZValuesObject, XYZValuesArray} from './XYZValues'
+import type {MixinResult} from 'lowclass'
+import type {StopFunction} from '@lume/element'
+import type {XYZValuesObject, XYZValuesArray, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
+import type {SizeModeValue} from './XYZSizeModeValues'
+import type {RenderTask} from './Motor'
 
 // Property functions are used for animating properties of type XYZNumberValues or XYZNonNegativeValues
 type XYZPropertyFunction = (
@@ -17,8 +21,6 @@ type XYZPropertyFunction = (
 ) => XYZValuesObject<number> | XYZValuesArray<number> | false
 
 type SinglePropertyFunction = (value: number, time: number) => number | false
-
-export type SizeProp = 'sizeMode' | 'size'
 
 // working variables (used synchronously only, to avoid making new variables in
 // repeatedly-called methods)
@@ -33,53 +35,29 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 	// calculating proportional sizes. Also Transformable knows about it's parent
 	// in order to calculate it's world matrix based on it's parent's.
 	class Sizeable extends Parent {
-		static props = {
-			...(Parent.props || {}),
-			size: props.XYZNonNegativeValues, // FIXME the whole app breaks on a negative value. Handle the error.
-			sizeMode: props.XYZSizeModeValues,
-		}
-
-		// TODO remove any
-		// protected _properties: (typeof Parent)['_props']
-		protected _properties: any
-
 		// TODO handle ctor arg types
 		constructor(...args: any[]) {
 			super(...args)
-			const options = args[0] || {}
 
-			this.__calculatedSize = {x: 0, y: 0, z: 0}
-			this._properties = this._props // alias to WithUpdate._props
-			this._setPropertyObservers()
-			this.properties = options
+			this.sizeMode.on('valuechanged', () => (this.sizeMode = this.sizeMode))
+			this.size.on('valuechanged', () => (this.size = this.size))
 		}
 
-		// TODO types for props
-		updated(_oldProps: any, modifiedProps: any) {
-			if (!this.isConnected) return
-
-			// this covers single-valued properties like opacity, but has the
-			// sideeffect of emitting propertychange more than needed for
-			// XYZValues (here, and in the above valuechanged handlers).
-			//
-			// TODO FIXME we want to batch Eventful updates so that this doesn't
-			// happen. Maybe we'll do it by batching events that have the same
-			// name. We should make it possible to choose to have sync or async
-			// events, and whether they should batch or not.
-			for (const [prop, modified] of Object.entries(modifiedProps))
-				if (modified) this.emit('propertychange', prop)
-		}
+		private __sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
 
 		/**
 		 * Set the size mode for each axis. Possible size modes are "literal"
 		 * and "proportional". The default values are "literal" for all axes.
 		 */
+		@reactive
+		@attribute
+		@emits('propertychange')
 		set sizeMode(newValue) {
 			if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
-			this._setPropertyXYZ<Sizeable, SizeProp>('sizeMode', newValue)
+			this._setPropertyXYZ('sizeMode', newValue)
 		}
 		get sizeMode() {
-			return this._props.sizeMode
+			return this.__sizeMode
 		}
 
 		// TODO: A "differential" size would be cool. Good for padding,
@@ -88,6 +66,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		// TODO: A "target" size where sizing can be relative to another node.
 		// This would be tricky though, because there could be circular size
 		// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
+
+		private __size = new XYZNonNegativeValues(0, 0, 0)
 
 		/**
 		 * Set the size of each axis. The size for each axis depends on the
@@ -110,11 +90,14 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis size to apply.
 		 * @param {number} [newValue.z] The z-axis size to apply.
 		 */
+		@reactive
+		@attribute
+		@emits('propertychange')
 		set size(newValue) {
-			this._setPropertyXYZ<Sizeable, SizeProp>('size', newValue)
+			this._setPropertyXYZ('size', newValue)
 		}
 		get size() {
-			return this._props.size
+			return this.__size
 		}
 
 		/**
@@ -127,54 +110,47 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		 * @return {Array.number} An Oject with x, y, and z properties, each
 		 * property representing the computed size of the x, y, and z axes
 		 * respectively.
+		 *
+		 * @reactive
 		 */
 		get calculatedSize() {
-			// TODO
-			// if (this.__sizeDirty) Protected(this._calcSize)
+			// TODO we can re-calculate the actual size lazily, this way it can
+			// normally be deferred to a Motor render task, unless a user
+			// explicitly needs it and reads the value.
+			// if (this.__sizeDirty) this._calcSize
+
+			// TODO make __calculatedSize properties readonly and don't clone it
+			// each time.
 			return {...this.__calculatedSize}
 		}
 
 		/**
-		 * Set all (or some) properties of a Sizeable at once.
-		 *
-		 * @param {Object} properties Properties object - see example
-		 *
-		 * @example
-		 * node.properties = {
-		 *   sizeMode: {x:'literal', y:'proportional', z:'literal'},
-		 *   size: {x:300, y:0.2, z:200},
-		 * }
+		 * Subclasses should push stop functions returned by autorun() into this
+		 * array in connectedCallback, then disconnectedCallback will
+		 * automatically clean them up.
 		 */
-		set properties(properties) {
-			this.props = properties
-		}
-		get properties() {
-			return this.props
+		// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
+		protected _stopFns: Array<StopFunction> = []
+
+		connectedCallback() {
+			// TODO remove ts-ignore when we figure how to make this work in a
+			// non-DOM env. It doesn't recognize the method existing, we
+			// probably need to define it in TreeNode.
+			// @ts-ignore
+			super.connectedCallback()
+
+			// For example, subclasses should push autoruns in connectedCallback.
+			this._stopFns.push(/* autorun(...) */)
 		}
 
-		makeDefaultProps() {
-			return Object.assign(super.makeDefaultProps(), {
-				sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-				size: new XYZNonNegativeValues(0, 0, 0),
-			})
-		}
+		disconnectedCallback() {
+			// TODO remove ts-ignore when we figure how to make this work in a
+			// non-DOM env. It doesn't recognize the method existing, we
+			// probably need to define it in TreeNode.
+			// @ts-ignore
+			super.disconnectedCallback()
 
-		// TODO change all event values to objects. See here for reasoning:
-		// https://github.com/airbnb/javascript#events
-		protected _setPropertyObservers() {
-			this._properties.sizeMode.on('valuechanged', () => this.emit('propertychange', 'sizeMode'))
-			this._properties.size.on('valuechanged', () => this.emit('propertychange', 'size'))
-		}
-
-		// We need this so that on re-load of GL, we can cause all props to be
-		// propagated to Three objects.
-		// TODO This is temporary until we switch entirely to reactive props, so
-		// we don't need to perform this sort of thing. Without this, if we
-		// unload then reload GL, the values won't be passed to the three
-		// instances. This will be replaced by `autorun()`.
-		protected _emitPropchangeForAllProps() {
-			this.emit('propertychange', 'sizeMode')
-			this.emit('propertychange', 'size')
+			for (const stop of this._stopFns) stop()
 		}
 
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
@@ -206,7 +182,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		protected _calcSize() {
 			const calculatedSize = this.__calculatedSize
 			Object.assign(previousSize, calculatedSize)
-			const {sizeMode, size} = this._properties
+			const {__sizeMode: sizeMode, __size: size} = this
 			const parentSize = this._getParentSize()
 
 			if (sizeMode.x == 'literal') {
@@ -230,6 +206,9 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 				calculatedSize.z = parentSize.z * size.z
 			}
 
+			// trigger reactive updates (although we set it to the same value)
+			this.__calculatedSize = calculatedSize
+
 			if (
 				previousSize.x !== calculatedSize.x ||
 				previousSize.y !== calculatedSize.y ||
@@ -239,33 +218,32 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			}
 		}
 
-		protected _setPropertyXYZ<T, K extends keyof T>(name: K, newValue: T[K]) {
+		protected _setPropertyXYZ<K extends keyof this>(name: K, newValue: this[K]) {
+			if (newValue === (this as any)['__' + name]) return
 			if (isXYZPropertyFunction(newValue)) {
-				this.__handleXYZPropertyFunction<T, K>(newValue, name)
+				this.__handleXYZPropertyFunction(newValue, name)
 			} else {
-				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction<T, K>(name)
+				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
 				else this.__settingValueFromPropFunction = false
-
-				this._props[name] = newValue
+				;(this as any)['__' + name].from(newValue)
 			}
 		}
 
-		protected _setPropertySingle<T, K extends keyof T>(name: K, newValue: T[K]) {
+		protected _setPropertySingle<K extends keyof this>(name: K, newValue: this[K]) {
 			if (isSinglePropertyFunction(newValue)) {
-				this.__handleSinglePropertyFunction<T, K>(newValue, name)
+				this.__handleSinglePropertyFunction(newValue, name)
 			} else {
-				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction<T, K>(name)
+				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
 				else this.__settingValueFromPropFunction = false
-
-				this._props[name] = newValue
+				;(this as any)['__' + name] = newValue
 			}
 		}
 
-		private __calculatedSize: XYZValuesObject<number>
+		@reactive private __calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 		private __propertyFunctions: Map<string, RenderTask> | null = null
 		private __settingValueFromPropFunction = false
 
-		private __handleXYZPropertyFunction<T, K extends keyof T>(fn: XYZPropertyFunction, name: K) {
+		private __handleXYZPropertyFunction(fn: XYZPropertyFunction, name: keyof this) {
 			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
 			if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
@@ -277,9 +255,9 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 				name as string,
 				Motor.addRenderTask(time => {
 					const result = fn(
-						this._properties[name].x,
-						this._properties[name].y,
-						this._properties[name].z,
+						(this as any)['__' + name].x,
+						(this as any)['__' + name].y,
+						(this as any)['__' + name].z,
 						time,
 					)
 
@@ -293,13 +271,12 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 					// user can set this[name] to a value that isn't a function
 					// to disable the prop function).
 					this.__settingValueFromPropFunction = true
-
-					this[name as SizeProp] = result
+					;(this as any)[name] = result
 				}),
 			)
 		}
 
-		private __handleSinglePropertyFunction<T, K extends keyof T>(fn: SinglePropertyFunction, name: K) {
+		private __handleSinglePropertyFunction(fn: SinglePropertyFunction, name: keyof this) {
 			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
 			if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
@@ -310,7 +287,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			this.__propertyFunctions.set(
 				name as string,
 				Motor.addRenderTask(time => {
-					const result = fn(this._properties[name], time)
+					const result = fn((this as any)['__' + name], time)
 
 					if (result === false) {
 						this.__propertyFunctions!.delete(name as string)
@@ -318,14 +295,13 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 					}
 
 					this.__settingValueFromPropFunction = true
-
-					this[name as SizeProp] = result
+					;(this as any)[name] = result
 				}),
 			)
 		}
 
 		// remove property function (render task) if any.
-		private __removePropertyFunction<T, K extends keyof T>(name: K) {
+		private __removePropertyFunction(name: keyof this) {
 			if (this.__propertyFunctions && (propFunctionTask = this.__propertyFunctions.get(name as string))) {
 				Motor.removeRenderTask(propFunctionTask)
 				this.__propertyFunctions.delete(name as string)
@@ -354,13 +330,17 @@ export const Sizeable = Mixin(SizeableMixin)
 export interface Sizeable extends InstanceType<typeof Sizeable> {}
 export default Sizeable
 
-// const s: Sizeable = new Sizeable()
-// s.sizeMode
-// s.asdfasdf
-// s.calculatedSize = 123
-// s.innerHTML = 123
-// s.innerHTML = 'asdf'
-// s.emit('asfasdf', 1, 2, 3)
-// s.removeNode('asfasdf')
-// s.updated(1, 2, 3, 4)
-// s.blahblah
+export type Size = XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+export type SizeMode =
+	| XYZSizeModeValues
+	| XYZPartialValuesArray<SizeModeValue>
+	| XYZPartialValuesObject<SizeModeValue>
+	| string
+
+export function size(val: Size) {
+	return val as XYZNonNegativeValues
+}
+
+export function sizeMode(val: SizeMode) {
+	return val as XYZSizeModeValues
+}

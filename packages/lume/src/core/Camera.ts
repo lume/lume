@@ -1,78 +1,91 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
-import {props} from './props'
+import {reactive, numberAttribute, booleanAttribute, autorun} from '@lume/element'
 import Node from './Node'
 import {Scene} from './Scene'
-
-import type {XYZValuesObject} from './XYZValues'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
 export default class PerspectiveCamera extends Node {
 	static defaultElementName = 'i-perspective-camera'
 
-	// TODO remove attributeChangedCallback, replace with updated based on these props
-	static props = {
-		...(Node.props || {}),
-		fov: {...props.number, default: 75},
-		aspect: {
-			...props.number,
-			default(): any {
-				return this._getDefaultAspect()
-			},
-			deserialize(val: any) {
-				val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
-			},
-		},
-		near: {...props.number, default: 0.1},
-		far: {...props.number, default: 1000},
-		zoom: {...props.number, default: 1},
-		active: {...props.boolean, default: false},
-	}
-
-	fov!: number
-	aspect!: number
-	near!: number
-	far!: number
-	zoom!: number
-	active!: boolean
+	@reactive @numberAttribute(50) fov = 50
+	/** A value of 0 sets the internal aspect ratio to automatic, based on the scene dimensions. */
+	@reactive @numberAttribute(0) aspect = 0
+	@reactive @numberAttribute(0.1) near = 0.1
+	@reactive @numberAttribute(3000) far = 3000
+	@reactive @numberAttribute(1) zoom = 1
+	@reactive @booleanAttribute(false) active = false
 
 	three!: ThreePerspectiveCamera
-
-	updated(oldProps: any, modifiedProps: any) {
-		super.updated(oldProps, modifiedProps)
-
-		if (!this.isConnected) return
-
-		if (modifiedProps.active) {
-			this.__setSceneCamera(this.active ? undefined : 'unset')
-		}
-		if (modifiedProps.aspect) {
-			if (!this.aspect)
-				// default aspect value based on the scene size.
-				this.__startAutoAspect()
-			else this.__stopAutoAspect()
-		}
-		// TODO handle the other props here, remove attributeChangedCallback
-	}
 
 	connectedCallback() {
 		super.connectedCallback()
 
-		this.__lastKnownScene = this.scene
+		// XXX This doesn't work becauwe this.scene returns bull because it uses
+		// this.parent which returns bull because this.parent's internal
+		// this._parent property isn't set yet at this point.
+		// this.__lastKnownScene = this.scene
+
+		// TODO once(condition) to make this simler, F.e.:
+		// once(() => this.scene).then(() => { ... })
+		const stop = autorun(_ => {
+			if (this.scene) {
+				this.__lastKnownScene = this.scene
+				this.__setSceneCamera(this.active ? undefined : 'unset')
+				Promise.resolve().then(stop)
+			}
+		})
+
+		this._stopFns.push(
+			autorun(_ => {
+				this.three.fov = this.fov
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+			}),
+			autorun(_ => {
+				// Any value other than zero means the user supplied an aspect
+				// ratio manually. Stop auto-aspect in that case.
+				if (this.aspect !== 0) {
+					this.three.aspect = this.aspect
+					this.three.updateProjectionMatrix()
+					return
+				}
+
+				let aspect = 0
+
+				if (this.scene) aspect = this.scene.calculatedSize.x / this.scene.calculatedSize.y
+
+				// in case of a 0 or NaN (f.e. 0 / 0 == NaN)
+				if (!aspect) aspect = 16 / 9
+
+				this.three.aspect = aspect
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+			}),
+			autorun(_ => {
+				this.three.near = this.near
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+			}),
+			autorun(_ => {
+				this.three.far = this.far
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+			}),
+			autorun(_ => {
+				this.three.zoom = this.zoom
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+			}),
+			autorun(_ => {
+				this.__setSceneCamera(this.active ? undefined : 'unset')
+				this.needsUpdate() // XXX need this?
+			}),
+		)
 	}
 
 	// TODO, unmountedCallback functionality. issue #150
 	unmountedCallback() {}
-
-	attributeChangedCallback(attr: string, oldVal: string | null, newVal: string | null) {
-		super.attributeChangedCallback(attr, oldVal, newVal)
-
-		if (typeof newVal == 'string') {
-			this.__attributeAddedOrChanged(attr, newVal)
-		} else {
-			this.__attributeRemoved(attr)
-		}
-	}
 
 	protected _makeThreeObject3d() {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
@@ -91,89 +104,10 @@ export default class PerspectiveCamera extends Node {
 
 	private __lastKnownScene: Scene | null = null
 
-	// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-	private __attributeRemoved(attr: string) {
-		const three = this.three
-
-		if (attr == 'fov') {
-			three.fov = 75
-			three.updateProjectionMatrix()
-		} else if (attr == 'aspect') {
-			this.__startAutoAspect()
-			three.aspect = this.__getDefaultAspect()
-			three.updateProjectionMatrix()
-		} else if (attr == 'near') {
-			three.near = 0.1
-			three.updateProjectionMatrix()
-		} else if (attr == 'far') {
-			three.far = 1000
-			three.updateProjectionMatrix()
-		} else if (attr == 'zoom') {
-			three.zoom = 1
-			three.updateProjectionMatrix()
-		} else if (attr == 'active') {
-			this.__setSceneCamera('unset')
-		}
-	}
-
-	private __attributeAddedOrChanged(attr: string, newVal: string) {
-		const three = this.three
-
-		if (attr == 'fov') {
-			three.fov = parseFloat(newVal)
-			three.updateProjectionMatrix()
-		} else if (attr == 'aspect') {
-			this.__stopAutoAspect()
-			three.aspect = parseFloat(newVal)
-			three.updateProjectionMatrix()
-		} else if (attr == 'near') {
-			three.near = parseFloat(newVal)
-			three.updateProjectionMatrix()
-		} else if (attr == 'far') {
-			three.far = parseFloat(newVal)
-			three.updateProjectionMatrix()
-		} else if (attr == 'zoom') {
-			three.zoom = parseFloat(newVal)
-			three.updateProjectionMatrix()
-		} else if (attr == 'active') {
-			this.__setSceneCamera()
-		}
-	}
-
-	private __startedAutoAspect = false
-
-	private __startAutoAspect() {
-		if (!this.__startedAutoAspect) {
-			this.__startedAutoAspect = true
-			this.scene.on('sizechange', this.__updateAspectOnSceneResize, this)
-		}
-	}
-	private __stopAutoAspect() {
-		if (this.__startedAutoAspect) {
-			this.__startedAutoAspect = false
-			this.scene.off('sizechange', this.__updateAspectOnSceneResize)
-		}
-	}
-
-	private __updateAspectOnSceneResize({x, y}: XYZValuesObject<number>) {
-		;(this.three as ThreePerspectiveCamera).aspect = x / y
-	}
-
-	private __getDefaultAspect() {
-		let result = 0
-
-		if (this.scene) {
-			result = this.scene.calculatedSize.x / this.scene.calculatedSize.y
-		}
-
-		// in case of a 0 or NaN (0 / 0 == NaN)
-		if (!result) result = 16 / 9
-
-		return result
-	}
-
 	private __setSceneCamera(unset?: 'unset') {
 		if (unset) {
+			console.log('Camera: unset cam', this.__lastKnownScene)
+
 			// TODO: unset might be triggered before the scene was mounted, so
 			// there might not be a last known scene. We won't need this check
 			// when we add unmountedCallback. #150
@@ -183,6 +117,7 @@ export default class PerspectiveCamera extends Node {
 					._removeCamera(this)
 		} else {
 			if (!this.scene || !this.isConnected) return
+			console.log('Camera: set cam')
 
 			this.scene
 				// @ts-ignore: call protected method

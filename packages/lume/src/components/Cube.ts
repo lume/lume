@@ -18,7 +18,7 @@ export default class Cube extends Node {
 	 * @constructor - Create a new Cube with the given `size` applied to all sides.
 	 * @param {Number} size The size width of the sides of the cube.
 	 */
-	constructor(public size: number, options: object) {
+	constructor(size: number, options: object) {
 		// cubes, the same size on all sides
 		super({size: [size, size, size], ...options})
 
@@ -63,7 +63,7 @@ export default class Cube extends Node {
 		// top/bottom
 		else rotator.rotation.x = 90 * (index % 2 ? -1 : 1)
 
-		side.position.z = this.size / 2
+		side.position.z = this.size.x / 2
 
 		this.add(rotator)
 	}

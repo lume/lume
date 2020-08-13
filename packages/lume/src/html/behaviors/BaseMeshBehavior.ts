@@ -34,7 +34,6 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 
 		this.resetMeshComponent()
 
-		// this.triggerUpdateForAllProps()
 		this.element.needsUpdate()
 
 		return true

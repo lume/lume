@@ -30,8 +30,12 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 		else this.__quadraticCorners = true
 	}
 
-	// TODO This make props forward to/from this.element. How do we want to handle this?
-	// protected static _observedProperties = {cornerRadius: true}
+	protected static _observedProperties = [
+		'cornerRadius',
+		'thickness',
+		'quadraticCorners',
+		...(BaseGeometryBehavior._observedProperties || []),
+	]
 
 	private __stopFns: StopFunction[] = []
 
