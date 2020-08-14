@@ -3,7 +3,7 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {reactive, autorun, booleanAttribute, attribute, numberAttribute} from '@lume/element'
+import {reactive, autorun, booleanAttribute, attribute, numberAttribute, sample} from '@lume/element'
 import {emits} from '@lume/eventful'
 import documentReady from '@awaitbox/document-ready'
 import {
@@ -214,14 +214,18 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _createDefaultCamera() {
-			const size = this.calculatedSize
-			// THREE-COORDS-TO-DOM-COORDS
-			// We apply Three perspective the same way as CSS3D perspective here.
-			// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-			// TODO update with calculatedSize in autorun
-			this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
-			this.perspective = this.perspective
+			// Use sample so this method is non-reactive.
+			// TODO rename sample to something better.
+			sample(() => {
+				const size = this.calculatedSize
+				// THREE-COORDS-TO-DOM-COORDS
+				// We apply Three perspective the same way as CSS3D perspective here.
+				// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
+				// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
+				// TODO update with calculatedSize in autorun
+				this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
+				this.perspective = this.perspective
+			})
 		}
 
 		// TODO can this be moved to a render task like _calcSize? It depends

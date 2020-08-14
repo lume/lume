@@ -21,11 +21,12 @@ export default class PerspectiveCamera extends Node {
 	connectedCallback() {
 		super.connectedCallback()
 
-		// XXX This doesn't work becauwe this.scene returns bull because it uses
-		// this.parent which returns bull because this.parent's internal
-		// this._parent property isn't set yet at this point.
+		// XXX This doesn't work becauwe this.scene returns null because it uses
+		// this.parent which returns null because this.parent's internal
+		// this._parent property isn't set yet at this point...
 		// this.__lastKnownScene = this.scene
 
+		// ... So instead we use an autorun to wait for the this.scene to exist.
 		// TODO once(condition) to make this simler, F.e.:
 		// once(() => this.scene).then(() => { ... })
 		const stop = autorun(_ => {
@@ -105,6 +106,7 @@ export default class PerspectiveCamera extends Node {
 	private __lastKnownScene: Scene | null = null
 
 	private __setSceneCamera(unset?: 'unset') {
+		debugger
 		if (unset) {
 			console.log('Camera: unset cam', this.__lastKnownScene)
 
