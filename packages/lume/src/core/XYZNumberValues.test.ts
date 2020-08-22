@@ -168,9 +168,10 @@ describe('XYZNumberValues', () => {
 	it("doesn't work with values that aren't numbers", () => {
 		expect(() => new XYZNumberValues(1, 2, 3)).not.toThrow()
 
-		expect(() => new XYZNumberValues('1', '2' as any, '3' as any)).toThrowError(TypeError)
-		expect(() => new XYZNumberValues(1, '2' as any, '3' as any)).toThrowError(TypeError)
-		expect(() => new XYZNumberValues(1, 2, '3' as any)).toThrowError(TypeError)
+		// It tries to coerce strings to numbers.
+		expect(() => new XYZNumberValues('1', '2' as any, '3' as any)).not.toThrow()
+		expect(() => new XYZNumberValues(1, '2' as any, '3' as any)).not.toThrow()
+		expect(() => new XYZNumberValues(1, 2, '3' as any)).not.toThrow()
 
 		expect(() => new XYZNumberValues([1] as any)).not.toThrow()
 		expect(() => new XYZNumberValues([1, 2] as any)).not.toThrow()
@@ -185,7 +186,8 @@ describe('XYZNumberValues', () => {
 		expect(() => new XYZNumberValues({x: 1, y: 2, z: 3})).not.toThrow()
 
 		expect(() => new XYZNumberValues({x: 1, y: 2, z: false as any})).toThrowError(TypeError)
-		expect(() => new XYZNumberValues({x: 1, y: undefined as any, z: 3})).not.toThrow()
+		expect(() => new XYZNumberValues({x: 1, y: undefined, z: 3})).not.toThrow()
+		expect(() => new XYZNumberValues({x: 1, y: undefined, z: undefined})).not.toThrow()
 		expect(() => new XYZNumberValues({x: 'foo' as any, y: 2, z: 3})).toThrowError(TypeError)
 
 		const a = new XYZNumberValues()

@@ -9,15 +9,15 @@ export default class XYZNumberValues extends XYZValues<number> {
 		return Number(value)
 	}
 
+	// XYZValues also accepts numbers in the form of strings.
 	checkValue(prop: string, value: number) {
 		if (!super.checkValue(prop, value)) return false
 
-		// this allows undefined values to be ignored. So we can for example do
-		// things like v.fromObject({z: 123}) to set only z
+		// Skip setting undefined values...
 		if (value === undefined) return false
 
-		// but if any value is supplied, it needs to be a valid number
-		if (isNaN(value) || !isFinite(value))
+		// ...but if a value is supplied, it needs to be a valid number (string number is ok).
+		if (!(typeof value === 'number' || typeof value === 'string') || isNaN(value) || !isFinite(value))
 			throw new TypeError(`Expected ${prop} to be a finite number. Received: ${value}`)
 
 		return true

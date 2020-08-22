@@ -131,6 +131,11 @@ export default abstract class XYZValues<T = any> extends Eventful {
 	 * Subclasses extend this to implement type checks. Return true if the
 	 * value should be assigned, false otherwise. A subclass could also throw
 	 * an error when receiving an unexpected values.
+	 *
+	 * Returning false, for example, can allow 'undefined' values to be
+	 * ignored. So we can for example do things like `v.fromObject({z: 123})` to
+	 * set only z and ignore x and y.
+	 *
 	 * @param prop
 	 * @param value
 	 */

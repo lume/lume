@@ -2,7 +2,7 @@ import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {XYZValuesArray, XYZValuesObject} from './XYZValues'
 import {checkValues, testWithSeparator} from './XYZValues.test.common'
 
-describe('XYZNumberValues', () => {
+describe('XYZNonNegativeValues', () => {
 	describe('.constructor', () => {
 		it('is a function', () => {
 			expect(typeof XYZNonNegativeValues).toBe('function')
@@ -176,14 +176,19 @@ describe('XYZNumberValues', () => {
 		expect(() => new XYZNonNegativeValues([1, 2])).not.toThrow()
 		expect(() => new XYZNonNegativeValues([1, 2, 3])).not.toThrow()
 
+		// Coerces string values to numbers.
+		expect(() => new XYZNonNegativeValues(['1'] as any)).not.toThrow()
+		expect(() => new XYZNonNegativeValues(['1', '2'] as any)).not.toThrow()
+		expect(() => new XYZNonNegativeValues(['1', '2', '3'] as any)).not.toThrow()
+
 		expect(() => new XYZNonNegativeValues([1, 2, false as any])).toThrowError(TypeError)
-		expect(() => new XYZNonNegativeValues([1, undefined as any, 3])).not.toThrow() // undefined values are ignored when it comes to XYZNumberValues
+		expect(() => new XYZNonNegativeValues([1, undefined as any, 3])).not.toThrow() // undefined values are ignored when it comes to XYZNonNegativeValues
 		expect(() => new XYZNonNegativeValues(['foo' as any, 2, 3])).toThrowError(TypeError)
 		expect(() => new XYZNonNegativeValues([1, undefined as any, false as any])).toThrowError(TypeError)
 		expect(() => new XYZNonNegativeValues(['foo' as any, undefined as any, false as any])).toThrowError(TypeError)
 
 		expect(() => new XYZNonNegativeValues([1, 2, -4])).toThrowError(TypeError)
-		expect(() => new XYZNonNegativeValues([1, -3, 3])).toThrowError(TypeError) // undefined values are ignored when it comes to XYZNumberValues
+		expect(() => new XYZNonNegativeValues([1, -3, 3])).toThrowError(TypeError) // undefined values are ignored when it comes to XYZNonNegativeValues
 		expect(() => new XYZNonNegativeValues([-2, 2, 3])).toThrowError(TypeError)
 		expect(() => new XYZNonNegativeValues([1, -1, -8])).toThrowError(TypeError)
 		expect(() => new XYZNonNegativeValues([-9, -2, -0.2])).toThrowError(TypeError)
@@ -193,7 +198,8 @@ describe('XYZNumberValues', () => {
 		expect(() => new XYZNonNegativeValues({x: 1, y: 2, z: 3})).not.toThrow()
 
 		expect(() => new XYZNonNegativeValues({x: 1, y: 2, z: false as any})).toThrowError(TypeError)
-		expect(() => new XYZNonNegativeValues({x: 1, y: undefined as any, z: 3})).not.toThrow()
+		expect(() => new XYZNonNegativeValues({x: 1, y: undefined, z: 3})).not.toThrow()
+		expect(() => new XYZNonNegativeValues({x: 1, y: undefined, z: undefined})).not.toThrow()
 		expect(() => new XYZNonNegativeValues({x: 'foo' as any, y: 2, z: 3})).toThrowError(TypeError)
 
 		expect(() => new XYZNonNegativeValues({x: 1, y: 2, z: -1})).toThrowError(TypeError)
