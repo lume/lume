@@ -16,7 +16,7 @@
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful}'",
 		"TODO test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
 		"test:ci": "npm run test -- --concurrency 1",
-		"dev": "lerna run dev"
+		"dev": "echo ' --- TODO: dev script for running everything in dev mode. For now, cd into each packages and run dev manually.'"
 	},
 	"devDependencies": {
 		"lerna": "^3.20.2",
