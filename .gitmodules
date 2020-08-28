@@ -34,3 +34,6 @@
 [submodule "packages/eventful"]
 	path = packages/eventful
 	url = https://github.com/lume/eventful.git
+[submodule "packages/basicss"]
+	path = packages/basicss
+	url = https://github.com/lume/basicss.git
