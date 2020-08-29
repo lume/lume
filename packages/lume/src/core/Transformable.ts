@@ -54,12 +54,12 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			this.position.on('valuechanged', () => (this.position = this.position))
-			this.rotation.on('valuechanged', () => (this.rotation = this.rotation))
-			this.scale.on('valuechanged', () => (this.scale = this.scale))
-			this.origin.on('valuechanged', () => (this.origin = this.origin))
-			this.align.on('valuechanged', () => (this.align = this.align))
-			this.mountPoint.on('valuechanged', () => (this.mountPoint = this.mountPoint))
+			this.position.on('valuechanged', () => !this._isSettingProperty && (this.position = this.position))
+			this.rotation.on('valuechanged', () => !this._isSettingProperty && (this.rotation = this.rotation))
+			this.scale.on('valuechanged', () => !this._isSettingProperty && (this.scale = this.scale))
+			this.origin.on('valuechanged', () => !this._isSettingProperty && (this.origin = this.origin))
+			this.align.on('valuechanged', () => !this._isSettingProperty && (this.align = this.align))
+			this.mountPoint.on('valuechanged', () => !this._isSettingProperty && (this.mountPoint = this.mountPoint))
 		}
 
 		// @ts-ignore
@@ -229,9 +229,9 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		threeCSS!: Object3D
 
 		protected _updateRotation(): void {
-			// NOTE Currently rotation is left-handed as far as values inputted
-			// into the LUME APIs. This method converts them to Three's
-			// right-handed system.
+			// Currently rotation is left-handed as far as values inputted into
+			// the LUME APIs. This method converts them to Three's right-handed
+			// system.
 
 			// TODO Make an option to use left-handed or right-handed rotation,
 			// where right-handed will match with Three.js transforms, while
@@ -241,6 +241,9 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 
 			// TODO Make the rotation unit configurable (f.e. use degrees or
 			// radians)
+
+			// TODO Make the handedness configurable (f.e. left handed or right
+			// handed rotation)
 
 			this.three.rotation.set(
 				-toRadians(this.rotation.x),
@@ -252,8 +255,9 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 
 			// TODO Besides that Transformable shouldn't know about Three.js
 			// objects, it should also not know about Scene. The isScene check
-			// prevents us from having to import Scene (circular dependency).
-			const childOfScene = this.parent && (this.parent as any).isScene // duck type checking
+			// prevents us from having to import Scene (avoiding a circular
+			// dependency).
+			const childOfScene = (this.parent as any)?.isScene
 
 			// TODO write a comment as to why we needed the childOfScne check to
 			// alternate rotation directions here. It's been a while, I forgot
@@ -334,8 +338,11 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 				appliedPosition[2] + threeJsPostAdjustment[2],
 			)
 
+			// TODO Besides that Transformable shouldn't know about Three.js
+			// objects, it should also not know about Scene.
 			const childOfScene = this.threeCSS.parent && this.threeCSS.parent.type === 'Scene'
 
+			// FIXME we shouldn't need this conditional check. See the next XXX.
 			if (childOfScene) {
 				this.threeCSS.position.set(
 					appliedPosition[0] + threeJsPostAdjustment[0],
@@ -345,7 +352,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 					appliedPosition[2] + threeJsPostAdjustment[2],
 				)
 			} else {
-				// CSS objects that aren't direct child of a scene are
+				// XXX CSS objects that aren't direct child of a scene are
 				// already centered on X and Y (not sure why, but maybe
 				// CSS3DObjectNested has clues, which is based on
 				// THREE.CSS3DObject)

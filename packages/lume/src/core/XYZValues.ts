@@ -1,4 +1,5 @@
 import {Eventful} from '@lume/eventful'
+import {reactive} from '@lume/element'
 import r from 'regexr'
 
 export type XYZValuesArray<T> = [T, T, T]
@@ -18,9 +19,9 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 export default abstract class XYZValues<T = any> extends Eventful {
-	private _x: T = undefined!
-	private _y: T = undefined!
-	private _z: T = undefined!
+	@reactive private __x: T = undefined!
+	@reactive private __y: T = undefined!
+	@reactive private __z: T = undefined!
 
 	constructor(x?: XYZValuesParameters<T>, y?: T, z?: T) {
 		super()
@@ -145,32 +146,32 @@ export default abstract class XYZValues<T = any> extends Eventful {
 
 	set x(value: T) {
 		if (!this.checkValue('x', value)) return
-		this._x = value
+		this.__x = value
 		this.emit('valuechanged', 'x')
 	}
 
 	get x(): T {
-		return this._x
+		return this.__x
 	}
 
 	set y(value: T) {
 		if (!this.checkValue('y', value)) return
-		this._y = value
+		this.__y = value
 		this.emit('valuechanged', 'y')
 	}
 
 	get y(): T {
-		return this._y
+		return this.__y
 	}
 
 	set z(value: T) {
 		if (!this.checkValue('z', value)) return
-		this._z = value
+		this.__z = value
 		this.emit('valuechanged', 'z')
 	}
 
 	get z(): T {
-		return this._z
+		return this.__z
 	}
 }
 

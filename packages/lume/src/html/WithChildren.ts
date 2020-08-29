@@ -8,7 +8,7 @@ import type {PossibleCustomElement, PossibleCustomElementConstructor} from './Po
 if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
 	let rootNode: any = null
 
-	if (Node.prototype.getRootNode) rootNode = (node: Node) => node.getRootNode({composed: true})
+	if ((Node.prototype as any).getRootNode) rootNode = (node: Node) => node.getRootNode({composed: true})
 	else {
 		rootNode = (node: Node) => {
 			for (let ancestor: Node = node, ancestorParent; ancestor; ancestor = ancestorParent) {
@@ -44,7 +44,7 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		connectedCallback() {
-			super.connectedCallback && super.connectedCallback()
+			super.connectedCallback?.()
 
 			if (this.__handleChildrenWhenConnected) {
 				this.__handleConnectedChildren()
@@ -54,7 +54,7 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		disconnectedCallback() {
-			super.disconnectedCallback && super.disconnectedCallback()
+			super.disconnectedCallback?.()
 
 			this.__destroyObserver()
 			this.__handleChildrenWhenConnected = true

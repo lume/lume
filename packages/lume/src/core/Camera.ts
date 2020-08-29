@@ -1,5 +1,5 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
-import {reactive, numberAttribute, booleanAttribute, autorun} from '@lume/element'
+import {reactive, numberAttribute, booleanAttribute, autorun, sample} from '@lume/element'
 import Node from './Node'
 import {Scene} from './Scene'
 
@@ -9,7 +9,7 @@ export default class PerspectiveCamera extends Node {
 	static defaultElementName = 'i-perspective-camera'
 
 	@reactive @numberAttribute(50) fov = 50
-	/** A value of 0 sets the internal aspect ratio to automatic, based on the scene dimensions. */
+	/** A value of 0 sets the aspect ratio to automatic, based on the scene dimensions. */
 	@reactive @numberAttribute(0) aspect = 0
 	@reactive @numberAttribute(0.1) near = 0.1
 	@reactive @numberAttribute(3000) far = 3000
@@ -31,9 +31,11 @@ export default class PerspectiveCamera extends Node {
 		// once(() => this.scene).then(() => { ... })
 		const stop = autorun(_ => {
 			if (this.scene) {
-				this.__lastKnownScene = this.scene
-				this.__setSceneCamera(this.active ? undefined : 'unset')
-				Promise.resolve().then(stop)
+				sample(() => {
+					this.__lastKnownScene = this.scene
+					this.__setSceneCamera(this.active ? undefined : 'unset')
+					Promise.resolve().then(() => stop())
+				})
 			}
 		})
 

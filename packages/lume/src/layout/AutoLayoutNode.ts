@@ -181,6 +181,8 @@ export default class AutoLayoutNode extends Node {
 	) {
 		// PORTED
 		super.add(child) // PORTED
+		// TODO instead of handling nodes here, we should handle them in
+		// childComposedCallback, to support ShadowDOM.
 		if (id) this._idToNode[id] = child
 		this.reflowLayout()
 		return child

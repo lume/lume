@@ -1,6 +1,6 @@
 import {Mixin, Constructor} from 'lowclass'
 import {Eventful, emits} from '@lume/eventful'
-import {reactive, attribute} from '@lume/element'
+import {reactive, attribute, sample} from '@lume/element'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -39,8 +39,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			this.sizeMode.on('valuechanged', () => (this.sizeMode = this.sizeMode))
-			this.size.on('valuechanged', () => (this.size = this.size))
+			this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
+			this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
 		}
 
 		private __sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
@@ -218,25 +218,52 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			}
 		}
 
+		private __isSettingProperty = false
+
+		protected get _isSettingProperty() {
+			return this.__isSettingProperty
+		}
+
 		protected _setPropertyXYZ<K extends keyof this>(name: K, newValue: this[K]) {
 			if (newValue === (this as any)['__' + name]) return
+
+			this.__isSettingProperty = true
+
 			if (isXYZPropertyFunction(newValue)) {
 				this.__handleXYZPropertyFunction(newValue, name)
 			} else {
 				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
 				else this.__settingValueFromPropFunction = false
-				;(this as any)['__' + name].from(newValue)
+
+				// If we're in a computation, we don't want the valuechanged
+				// event that will be emitted to trigger reactivity (see
+				// valuechanged listeners above). If we've reached this logic,
+				// it is because a property is being set, which will already
+				// trigger reactivity.
+				sample(() => {
+					;(this as any)['__' + name].from(newValue)
+				})
 			}
+
+			this.__isSettingProperty = false
 		}
 
 		protected _setPropertySingle<K extends keyof this>(name: K, newValue: this[K]) {
+			this.__isSettingProperty = true
+
 			if (isSinglePropertyFunction(newValue)) {
 				this.__handleSinglePropertyFunction(newValue, name)
 			} else {
 				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
 				else this.__settingValueFromPropFunction = false
-				;(this as any)['__' + name] = newValue
+
+				// Same note about this sample() call as the one in _setPropertyXYZ.
+				sample(() => {
+					;(this as any)['__' + name] = newValue
+				})
 			}
+
+			this.__isSettingProperty = false
 		}
 
 		@reactive private __calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}

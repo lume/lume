@@ -205,6 +205,9 @@ function getObjectCSSMatrix(object: THREE.Object3D, matrix: THREE.Matrix4) {
 	const parent = object.parent
 	const childOfScene = parent && parent.type === 'Scene'
 
+	// TODO I don't remember why we negate values based on childOfScene below.
+	// It's been a while and I forgot. This should be documented.
+
 	const elements = matrix.elements
 	const matrix3d =
 		'matrix3d(' +

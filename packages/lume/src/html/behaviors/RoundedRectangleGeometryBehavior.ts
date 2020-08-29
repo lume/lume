@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {reactive, attribute, autorun, StopFunction} from '@lume/element'
+import {reactive, attribute, autorun} from '@lume/element'
 import {Shape, ExtrudeGeometry, ShapeGeometry} from 'three'
 import type {Geometry} from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
@@ -37,35 +37,25 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 		...(BaseGeometryBehavior._observedProperties || []),
 	]
 
-	private __stopFns: StopFunction[] = []
-
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		// TODO, if making an autorun() within loadGL ends up being too common,
+		// XXX, if making an autorun() within loadGL ends up being too common,
 		// we can make a pattern to abstract it away (similar to what we do with
-		// template() in lume/element elements)
-		const stop = autorun(() => {
-			this.cornerRadius
-			this.thickness
-			this.quadraticCorners
+		// template() in lume/element elements, or perhaps with a decorator).
+		this._stopFns.push(
+			autorun(() => {
+				this.cornerRadius
+				this.thickness
+				this.quadraticCorners
 
-			// TODO PERFORMANCE This `resetMeshComponent` call recreates the
-			// whole mesh. We should instead try to update it without replacing
-			// it, so that we don't dispose the geometry and material on each
-			// property update.
-			this.resetMeshComponent()
-		})
-
-		this.__stopFns.push(stop)
-
-		return true
-	}
-
-	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this.__stopFns) stop()
+				// TODO PERFORMANCE This `resetMeshComponent` call recreates the
+				// whole mesh. We should instead try to update it without replacing
+				// it, so that we don't dispose the geometry and material on each
+				// property update.
+				this.resetMeshComponent()
+			}),
+		)
 
 		return true
 	}

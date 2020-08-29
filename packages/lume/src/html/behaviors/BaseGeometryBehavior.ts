@@ -1,6 +1,7 @@
+import {autorun} from '@lume/element'
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 
-import type XYZNonNegativeValues from '../../core/XYZNonNegativeValues'
+import type {StopFunction} from '@lume/element'
 
 // base class for geometry behaviors
 export default class BaseGeometryBehavior extends BaseMeshBehavior {
@@ -14,7 +15,6 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 		return this.element.size
 	}
 	set size(val) {
-		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
 		this.element.size = val
 	}
 
@@ -22,17 +22,29 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 		return this.element.sizeMode
 	}
 	set sizeMode(val) {
-		// This causes this.element's 'sizechange' or 'valuechanged' events to fire.
 		this.element.sizeMode = val
 	}
+
+	protected _stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		// TODO the following three events can be replaced with a single propchange:size event
-		this.element.on('sizechange', this.__onSizeValueChanged, this)
-		this.element.size.on('valuechanged', this.__onSizeValueChanged, this)
-		this.element.sizeMode.on('valuechanged', this.__onSizeValueChanged, this)
+		this._stopFns.push(
+			autorun(() => {
+				this.size
+				this.sizeMode
+
+				// NOTE we may use this.size's x, y, z values to calculate scale when/if we
+				// implement size under the hood as an Object3D.scale.
+
+				// TODO PERFORMANCE, resetMeshComponent creates a new geometry.
+				// Re-creating geometries is wasteful, re-use them when possible, and
+				// add instancing. Maybe we use Object3D.scale as an implementation
+				// detail of our `size` prop.
+				this.resetMeshComponent()
+			}),
+		)
 
 		return true
 	}
@@ -40,25 +52,9 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		this.element.off('sizechange', this.__onSizeValueChanged, this)
-		this.element.size.off('valuechanged', this.__onSizeValueChanged, this)
-		this.element.sizeMode.off('valuechanged', this.__onSizeValueChanged, this)
+		for (const stop of this._stopFns) stop()
 
 		return true
-	}
-
-	private __onSizeValueChanged() {
-		this.__updateGeometryOnSizeChange(this.size)
-	}
-
-	// NOTE we may use the x, y, z args to calculate scale when/if we
-	// implement size under the hood as an Object3D.scale.
-	private __updateGeometryOnSizeChange(_size: XYZNonNegativeValues) {
-		// TODO PERFORMANCE, resetMeshComponent creates a new geometry.
-		// Re-creating geometries is wasteful, re-use them when possible, and
-		// add instancing. Maybe we use Object3D.scale as an implementation
-		// detail of our `size` prop.
-		this.resetMeshComponent()
 	}
 }
 

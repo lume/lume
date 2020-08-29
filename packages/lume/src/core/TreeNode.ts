@@ -11,6 +11,14 @@ export default TreeNode
 
 export function TreeNodeMixin<T extends Constructor>(Base: T) {
 	class TreeNode extends Constructor(Base) {
+		constructor(...args: any[]) {
+			super(...args)
+
+			// If we're already in the DOM, let's set up the tree state right away.
+			// @ts-ignore
+			this.parentNode?.add?.(this)
+		}
+
 		private __parent: TreeNode | null = null
 		private __children: TreeNode[] = []
 
@@ -20,6 +28,13 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 		 * @readonly
 		 */
 		get parent() {
+			// In case we're in the DOM when this is called and the parent has
+			// the TreeNode API, immediately set up our tree state so that APIs
+			// depending on .parent (f.e. before childComposedCallback fires the
+			// .add method) don't receive a deceitful null value.
+			// @ts-ignore
+			if (!this.__parent) this.parentNode?.add?.(this)
+
 			return this.__parent
 		}
 
@@ -57,10 +72,11 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 		 * @returns {this}
 		 */
 		add(childNode: TreeNode): this {
+			// @prod-prune
 			if (!(childNode instanceof TreeNode))
 				throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
-			if (childNode.__parent === this) throw new ReferenceError('childNode is already a child of this parent.')
+			if (childNode.__parent === this) return this
 
 			if (childNode.__parent) childNode.__parent.removeNode(childNode)
 

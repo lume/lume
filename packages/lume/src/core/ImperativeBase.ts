@@ -356,11 +356,16 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 			// We cannot add Scenes to Nodes, for now.
 			if (isScene(childNode)) {
-				throw new TypeError(`
-                    A Scene cannot be added to another Node or Scene (at
-                    least for now). To place a Scene in a Node, just mount
-                    a new Scene onto an HTMLNode with Scene.mount().
-                `)
+				return this
+
+				// TODO Figure how to handle nested scenes. We were throwing
+				// this error, but it has been harmless not to throw in the
+				// existing demos, but we haven't defined the behavior.
+				// throw new TypeError(`
+				//     A Scene cannot be added to another Node or Scene (at
+				//     least for now). To place a Scene in a Node, just mount
+				//     a new Scene onto an HTMLNode with Scene.mount().
+				// `)
 			}
 
 			super.add(childNode)
