@@ -56,7 +56,7 @@
         id="scene"
         background-color="black"
         background-opacity="0"
-        style="perspective: 800px"
+        perspective="800"
         shadowmap-type="pcfsoft" NOTE="one of basic, pcf, pcfsoft"
     >
         <i-ambient-light color="#ffffff" intensity="0"></i-ambient-light>
@@ -119,14 +119,12 @@
             const light = document.querySelector('#light')
 
             scene.on(Events.GL_LOAD, async () => {
-                // TODO fix order of events. Promise.resolve() should not be needed here.
-                await Promise.resolve()
                 light.three.shadow.radius = 2
                 light.three.distance = 800
                 light.three.shadow.bias = -0.001
 
-                // The following is a temporary hack because opacity isn't
-                // exposed through the HTML API yet. work-in-progress...
+                // The following is a temporary hack because material opacity
+                // isn't exposed through the HTML API yet. work-in-progress...
                 // TODO this stuff should be doable via the HTML
                 Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
                     n.three.material.opacity = 0.3

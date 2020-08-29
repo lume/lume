@@ -20,7 +20,7 @@
 
 <body>
 
-<script>
+<script type="module">
   LUME.useDefaultNames()
 
   const {Motor, Scene, Node} = LUME
@@ -57,18 +57,21 @@
 
     document.body.style.background = mainColor
 
-    const scene = new Scene
+    const scene = new Scene().set({
+      perspective: 800
+    })
+
     scene.mount('body')
 
     const gridSizeX = 13
     const gridSizeY = 13
     const gridCellSize = 200
 
-    const grid = new Node({
+    const grid = new Node().set({
       size: [gridSizeX*gridCellSize, gridSizeY*gridCellSize],
       align: [0.5, 0.5],
       mountPoint: [0.5, 0.5],
-      rotation: [-30],
+      rotation: [30],
       position: {z: -600},
     })
 
@@ -89,7 +92,7 @@
     // make a grid of rectangles
     for (let i=0; i<gridSizeX; i++) {
       for (let j=0; j<gridSizeY; j++) {
-        const node = new Node({
+        const node = new Node().set({
           size: [gridCellSize, gridCellSize],
           position: [i*gridCellSize, j*gridCellSize],
           opacity: 0,

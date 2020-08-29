@@ -16,6 +16,7 @@
     <i-scene>
       <i-node
         ref="rotator"
+        TODO-calculate-minimum-size-based-on-viewport-size
         size="1630 1630"
         align="0.5 0.5"
         mount-point="0.5 0.5"

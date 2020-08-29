@@ -76,8 +76,6 @@
     rect2.rotation = (x, y) => [0, ++y, 0]
 
     scene.on(LUME.Events.GL_LOAD, async () => {
-        // TODO fix order of events. Promise.resolve() should not be needed here.
-        await Promise.resolve()
         light.three.shadow.radius = 2
         light.three.distance = 800
         light.three.shadow.bias = -0.001

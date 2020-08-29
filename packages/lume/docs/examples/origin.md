@@ -15,17 +15,48 @@
         width: 100%; height: 100%;
         margin: 0; padding: 0;
         background: #333;
+        touch-action: none; /* prevent touch drag from scrolling */
+        color: #ccc;
     }
+    i-scene { position: absolute!important; top: 0; left: 0; }
+    i-node { padding: 15px; pointer-events: all; }
 </style>
 
 <!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
 <i-scene experimental-webgl disable-css>
     <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></i-point-light>
+    <i-point-light
+      align="0.5 0.5 0.5"
+      position="-200 -200 400"
+      intensity="0.5"
+      shadow-map-width="1024"
+      shadow-map-height="1024"
+    ></i-point-light>
+</i-scene>
+
+<i-scene id="scene2">
+    <i-node size-mode="proportional literal" size="1 80">
+        <label>
+            X rotation <code id="xRotationVal"></code>:
+            <input id="xRotation" type="range" min="0" max="360" value="0">
+        </label>
+        <br />
+        <label>
+            Y rotation <code id="yRotationVal"></code>:
+            <input id="yRotation" type="range" min="0" max="360" value="0">
+        </label>
+        <br />
+        <label>
+            Z rotation <code id="zRotationVal"></code>:
+            <input id="zRotation" type="range" min="0" max="360" value="0">
+        </label>
+    </i-node>
 </i-scene>
 
 <script>
     LUME.useDefaultNames()
+
+    const {html} = LUME
 
     // the following values of origin allow the boxes to rotate around one of
     // their corners.
@@ -40,21 +71,53 @@
         '1 1 1', // right/bottom/front
     ]
 
-    const box = (origin, i) => \`
-        <i-box origin="\${origin}" align="\${0.15+i} 0.5 0" size="100 100 100" mount-point="0.5 0.5 0.5" color="skyblue">
-            <i-sphere align="\${origin}" size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></i-sphere>
+    const makeBox = (origin, i) => html\`
+        ${/* Lays the boxes out in a two-row grid, four boxes per row. */''}
+        <i-box origin=\${origin}
+            align=\${[0.20 + i%4 * 0.20, i < 4 ? 0.4 : 0.6, 0]}
+            size="100 100 100"
+            mount-point="0.5 0.5 0.5"
+            color="skyblue"
+            opacity="0.5"
+        >
+            <i-sphere align=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></i-sphere>
         </i-box>
     \`
 
     const scene = document.querySelector('i-scene')
+    const boxes = []
 
     let i = 0
 
     for (const origin of origins) {
-        scene.insertAdjacentHTML('beforeend', box(origin, i))
-        scene.lastElementChild.rotation = ( x, y, z ) => [ x -= 0.8, y -= 0.8, z ]
-        i += 0.1
+        const box = makeBox(origin, i)
+        boxes.push(box)
+        scene.append(box)
+        i += 1
     }
+
+
+    const updateValues = () => {
+        xRotationVal.innerHTML = '('+xRotation.value.padStart(3).replace(' ', '&nbsp;')+' deg)'
+        yRotationVal.innerHTML = '('+yRotation.value.padStart(3).replace(' ', '&nbsp;')+' deg)'
+        zRotationVal.innerHTML = '('+zRotation.value.padStart(3).replace(' ', '&nbsp;')+' deg)'
+    }
+
+    updateValues()
+
+    const onChangeXRotation = () => {
+        for (const box of boxes)
+            box.rotation = [ xRotation.value, yRotation.value, zRotation.value ]
+
+        updateValues()
+    }
+
+    xRotation.addEventListener('change', onChangeXRotation)
+    xRotation.addEventListener('input', onChangeXRotation)
+    yRotation.addEventListener('change', onChangeXRotation)
+    yRotation.addEventListener('input', onChangeXRotation)
+    zRotation.addEventListener('change', onChangeXRotation)
+    zRotation.addEventListener('input', onChangeXRotation)
 <\/script>
 
 `
