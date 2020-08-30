@@ -17,7 +17,9 @@ describe('TreeNode', () => {
 		const b = new TreeNode()
 
 		t.add(a)
-		expect(() => t.add(a)).toThrowError(ReferenceError, 'childNode is already a child of this parent.')
+
+		// Adding an already-added node is a no-op.
+		expect(() => t.add(a)).not.toThrow()
 
 		expect(t.subnodes).toEqual([a])
 
@@ -26,20 +28,22 @@ describe('TreeNode', () => {
 		expect(t.subnodes).toEqual([a, b])
 	})
 
-	it('.add', () => {
+	it('.addChildren', () => {
 		const t = new TreeNode()
 		const a = new TreeNode()
 		const b = new TreeNode()
 		const c = new TreeNode()
 
 		t.addChildren([b, c])
-		expect(() => t.addChildren([b, c])).toThrowError(ReferenceError, 'childNode is already a child of this parent.')
+
+		// If children are re-added, it's a no-op.
+		expect(() => t.addChildren([b, c])).not.toThrow()
 
 		expect(t.childCount).toBe(2)
 		expect(t.subnodes).toEqual([b, c])
 
 		t.addChildren([a])
-		expect(() => t.addChildren([a, b])).toThrowError(ReferenceError, 'childNode is already a child of this parent.')
+		expect(() => t.addChildren([a, b])).not.toThrow()
 
 		expect(t.childCount).toBe(3)
 		expect(t.subnodes).toEqual([b, c, a])

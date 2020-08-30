@@ -19,9 +19,9 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 export default abstract class XYZValues<T = any> extends Eventful {
-	@reactive private __x: T = undefined!
-	@reactive private __y: T = undefined!
-	@reactive private __z: T = undefined!
+	private __x: T = undefined!
+	private __y: T = undefined!
+	private __z: T = undefined!
 
 	constructor(x?: XYZValuesParameters<T>, y?: T, z?: T) {
 		super()
@@ -144,6 +144,7 @@ export default abstract class XYZValues<T = any> extends Eventful {
 		return true
 	}
 
+	@reactive
 	set x(value: T) {
 		if (!this.checkValue('x', value)) return
 		this.__x = value
@@ -154,6 +155,7 @@ export default abstract class XYZValues<T = any> extends Eventful {
 		return this.__x
 	}
 
+	@reactive
 	set y(value: T) {
 		if (!this.checkValue('y', value)) return
 		this.__y = value
@@ -164,6 +166,7 @@ export default abstract class XYZValues<T = any> extends Eventful {
 		return this.__y
 	}
 
+	@reactive
 	set z(value: T) {
 		if (!this.checkValue('z', value)) return
 		this.__z = value
