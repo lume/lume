@@ -14,6 +14,7 @@ import Settable from '../utils/Settable'
 
 import type {XYZValuesObject} from './XYZValues'
 import type {ConnectionType} from '../html/DeclarativeBase'
+import {defer} from './Utility'
 
 window.addEventListener('error', event => {
 	const error = event.error
@@ -56,6 +57,8 @@ class PossiblyWebComponent {
 	childDisconnectedCallback?(child: Element): void
 	protected _isPossiblyDistributedToShadowRoot?: boolean
 	protected _distributedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+	protected _shadowRootParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+	protected _composedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
 	protected _deinit?(): void
 }
 
@@ -102,7 +105,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return this._cssLoaded
 		}
 
-		private __three: Object3D | null = null
+		private __three?: Object3D
 
 		get three(): Object3D {
 			// if (!(this.scene && this.scene.experimentalWebgl)) return null
@@ -115,7 +118,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return this.__three
 		}
 
-		private __threeCSS: Object3D | null = null // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
+		private __threeCSS?: Object3D // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
 
 		get threeCSS(): Object3D {
 			// if (!(this.scene && !this.scene.disableCss)) return null
@@ -168,12 +171,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		possiblyLoadThree(child: ImperativeBase): void {
 			// children can be non-lib DOM nodes (f.e. div, h1, etc)
 			if (isNode(child)) {
-				console.log(
-					'     >> LOAD THREE',
-					child._renderParent.constructor.name,
-					child.constructor.name,
-					child.id,
-				)
 				child._triggerLoadGL()
 				child._triggerLoadCSS()
 			}
@@ -185,52 +182,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// for ImperativeBase? Or do we not want to run this on Scene
 			// instances?
 			if (isNode(child)) {
-				console.log('     >> UNLOAD THREE', '<No Parent>', child.constructor.name, child.id)
 				child._triggerUnloadGL()
 				child._triggerUnloadCSS()
 			}
-		}
-
-		// called when child is connected to a node directly, not when
-		// distributed to a slot or added to a shadow root. For that,
-		// see childComposedCallback
-		childConnectedCallback(child: Element): void {
-			super.childConnectedCallback && super.childConnectedCallback(child)
-
-			// console.log(' ================== CHILD CONNECTED', child.parentElement.constructor.name, child.constructor.name, child.id)
-
-			// // mirror the DOM connections in the imperative API's virtual scene graph.
-			// if ((child instanceof ImperativeBase)) {
-			//     // If ImperativeBase#add was called first, child's
-			//     // `parent` will already be set, so prevent recursion.
-			//     if (child.parent) return
-			//
-			//     this.add(child)
-			// }
-
-			// console.log(' ------------------ NODE CONNECTED NORMALLY', child.constructor.name, child.id)
-
-			// TODO handle in composed and remove this call
-			// this.possiblyLoadThree(child)
-		}
-
-		// called when a child is disconnected from a node directly, not
-		// when undistributed from a slot or removed from a shadow root.
-		// For that, see childUncomposedCallback
-		childDisconnectedCallback(child: Element): void {
-			super.childDisconnectedCallback && super.childDisconnectedCallback(child)
-
-			// // mirror the connection in the imperative API's virtual scene graph.
-			// if ((child instanceof ImperativeBase)) {
-			//     // If ImperativeBase#removeNode was called first, child's
-			//     // `parent` will already be null, so prevent recursion.
-			//     if (!child.parent) return
-			//
-			//     this.removeNode(child)
-			// }
-
-			// TODO handle in composed and remove this call
-			// this.possiblyUnloadThree(child)
 		}
 
 		protected _onParentSizeChange?(size: XYZValuesObject<number>): void
@@ -249,28 +203,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		 * childConnectedCallback).
 		 */
 		childComposedCallback(child: Element, connectionType: ConnectionType): void {
-			console.log(
-				'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ImerativeBase.childComposedCallback',
-				child.tagName,
-			)
 			if (child instanceof ImperativeBase) {
-				console.log(
-					' ------------------ CHILD COMPOSED',
-					child._composedParent!.constructor.name + '#' + (child as any)._composedParent.id,
-					child.constructor.name + '#' + child.id,
-				)
-
-				if (connectionType === 'root') {
-					console.log('    >>> CHILD CONNECTED VIA SHADOW ROOT')
-				} else if (connectionType === 'slot') {
-					console.log('    >>> CHILD DISTRIBUTED TO SLOT')
-				} else if (connectionType === 'actual') {
-					console.log('    >>> CHILD CONNECTED NORMALLY')
-				}
-
 				// If ImperativeBase#add was called first, child's
 				// `parent` will already be set, so prevent recursion.
-				// debugger
 				if (!child.parent) {
 					// mirror the DOM connections in the imperative API's virtual scene graph.
 					const __updateDOMConnection = connectionType === 'actual'
@@ -291,8 +226,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		childUncomposedCallback(child: Element, connectionType: ConnectionType): void {
 			if (child instanceof ImperativeBase) {
-				console.log(' ------------------ CHILD UNCOMPOSED', child.constructor.name + '#' + child.id)
-
 				// If ImperativeBase#removeNode was called first, child's
 				// `parent` will already be null, so prevent recursion.
 				if (child.parent) {
@@ -319,6 +252,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// NOTE: this._scene is initally null.
 
 			const parent = this.parent
+			// const parent = this.parent || this._composedParent
 
 			// if already cached, return it. Or if no parent, return it (it'll be null).
 			// Additionally, Scenes have this._scene already set to themselves.
@@ -360,7 +294,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 				// TODO Figure how to handle nested scenes. We were throwing
 				// this error, but it has been harmless not to throw in the
-				// existing demos, but we haven't defined the behavior.
+				// existing demos.
 				// throw new TypeError(`
 				//     A Scene cannot be added to another Node or Scene (at
 				//     least for now). To place a Scene in a Node, just mount
@@ -400,7 +334,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		needsUpdate(): void {
 			// we don't need to render until we're connected into a tree with a scene.
-			if (!this.scene || !this.isConnected) return
+			// if (!this.scene || !this.isConnected) return
 			// TODO make sure we render when connected into a tree with a scene
 
 			this._willBeRendered = true
@@ -412,10 +346,15 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		@reactive protected _cssLoaded = false
 		protected _willBeRendered = false
 
+		private __elOps?: ElementOperations
+
 		// TODO Remove this type cast, see all the errors, then figure out how
 		// to polyfill the APIs for use in a non-DOM environment (most likely in
 		// the TreeNode base class).
-		protected _elementOperations: ElementOperations = new ElementOperations((this as unknown) as HTMLElement)
+		protected get _elementOperations(): ElementOperations {
+			if (!this.__elOps) this.__elOps = new ElementOperations((this as unknown) as HTMLElement)
+			return this.__elOps
+		}
 
 		// stores a ref to this Node's root Scene when/if this Node is
 		// in a scene.
@@ -442,28 +381,23 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 				// other Nodes.
 				this.parent !== this.scene
 			) {
-				this.scene.removeNode
 				if (this._distributedParent) {
-					console.log(
-						'    --- CONNECT THREE TO SHADOW PARENT',
-						this._distributedParent.constructor.name,
-						this.constructor.name,
-					)
-
+					// TODO make sure this check works.
 					// @prod-prune
-					if (!(this._distributedParent instanceof ImperativeBase))
-						throw new Error('expected _distributedParent to be ImperativeBase')
+					// if (!(this._distributedParent instanceof ImperativeBase))
+					// 	throw new Error('expected _distributedParent to be ImperativeBase')
 
-					this._distributedParent && this._distributedParent.three.add(this.three)
+					;(this._distributedParent as ImperativeBase).three.add(this.three)
 				}
-			} else {
-				if (this.parent)
-					console.log(
-						'    --- CONNECT THREE TO NORMAL PARENT',
-						this.parent.constructor.name,
-						this.constructor.name,
-					)
+			} else if (this._shadowRootParent) {
+				// TODO make sure this check works.
+				// @prod-prune
+				// if (!(this._shadowRootParent instanceof ImperativeBase))
+				// 	throw new Error('expected _distributedParent to be ImperativeBase')
 
+				;(this._shadowRootParent as ImperativeBase).three.add(this.three)
+			} else {
+				// TODO make sure this check works.
 				// @prod-prune
 				// TODO instanceof check doesn't work here. Investigate Symbol.hasInstance feature in Mixin.
 				// if (!(this.parent instanceof ImperativeBase)) throw new Error('expected parent to be ImperativeBase')
@@ -475,6 +409,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _connectThreeCSS(): void {
+			// @ts-ignore
 			if (
 				this._isPossiblyDistributedToShadowRoot &&
 				// check parent isn't a Scene because Scenes always
@@ -484,36 +419,30 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 				this.parent !== this.scene
 			) {
 				if (this._distributedParent) {
-					console.log(
-						'    --- CONNECT THREE TO SHADOW PARENT',
-						this._distributedParent.constructor.name,
-						this.constructor.name,
-					)
-
+					// TODO make sure this check works.
 					// @prod-prune
-					if (!(this._distributedParent instanceof ImperativeBase))
-						throw new Error('expected _distributedParent to be ImperativeBase')
+					// if (!(this._distributedParent instanceof ImperativeBase))
+					// 	throw new Error('Expected _distributedParent to be a LUME Node.')
 
-					this._distributedParent && this._distributedParent.threeCSS.add(this.threeCSS)
+					;(this._distributedParent as ImperativeBase).threeCSS.add(this.threeCSS)
 				}
-			} else {
-				if (this.parent)
-					console.log(
-						'    --- CONNECT THREE TO NORMAL PARENT',
-						this.parent.constructor.name,
-						this.constructor.name,
-					)
-
+			} else if (this._shadowRootParent) {
+				// TODO make sure this check works.
 				// @prod-prune
-				// if (!(this.parent instanceof ImperativeBase)) throw new Error('expected parent to be ImperativeBase')
+				// if (!(this._shadowRootParent instanceof ImperativeBase))
+				// 	throw new Error('Expected _distributedParent to be a LUME Node.')
+
+				;(this._shadowRootParent as ImperativeBase).threeCSS.add(this.threeCSS)
+			} else {
+				// TODO make sure this check works.
+				// @prod-prune
+				// if (!(this.parent instanceof ImperativeBase)) throw new Error('Expected parent to be a LUME Node.')
 
 				this.parent && (this.parent as ImperativeBase).threeCSS.add(this.threeCSS)
 			}
 
 			this.needsUpdate()
 		}
-
-		passInitialValuesToThree?(): void
 
 		protected _glStopFns: StopFunction[] = []
 
@@ -538,15 +467,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			// this.parent && this.parent.three.add(this.three)
 			this._connectThree()
 
-			// If a subclass needs to initialize values in its Three.js
-			// object, it will have the passInitialValuesToThree method for
-			// that.
-			//
-			// TODO we shouldn't need to define passInitialValuesToThree in
-			// sub classes, the default values of the props should
-			// automatically be in place.
-			this.passInitialValuesToThree && this.passInitialValuesToThree()
-
 			this.needsUpdate()
 
 			return true
@@ -560,7 +480,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			for (const stop of this._glStopFns) stop()
 
 			this.__three && disposeObject(this.__three)
-			this.__three = null
+			this.__three = undefined
 
 			this.needsUpdate()
 
@@ -603,7 +523,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			for (const stop of this._cssStopFns) stop()
 
 			this.__threeCSS && disposeObject(this.__threeCSS)
-			this.__threeCSS = null
+			this.__threeCSS = undefined
 
 			this.needsUpdate()
 
@@ -611,24 +531,39 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _triggerLoadGL(): void {
-			this._loadGL()
+			if (!this._loadGL()) return
+
 			this.emit(Events.BEHAVIOR_GL_LOAD, this)
-			Promise.resolve().then(() => {
+
+			defer(async () => {
+				// FIXME Can we get rid of the code deferral here? Without the
+				// deferral of a total of three microtasks, then GL_LOAD may
+				// fire before behaviors have loaded GL (when their
+				// connectedCallbacks fire) due to ordering of when custom
+				// elements and element-behaviors life cycle methods fire, and
+				// thus the user code that relies on GL_LOAD will modify
+				// Three.js object properties and then once the behaviors load
+				// the behaviors overwrite the users' values.
+				await null
+				await null
+
 				this.emit(Events.GL_LOAD, this)
 			})
+
+			for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadGL()
 		}
 
 		protected _triggerUnloadGL(): void {
 			this._unloadGL()
 			this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
-			Promise.resolve().then(() => {
-				this.emit(Events.GL_UNLOAD, this)
-			})
+			defer(() => this.emit(Events.GL_UNLOAD, this))
 		}
 
 		protected _triggerLoadCSS(): void {
-			this._loadCSS()
+			if (!this._loadCSS()) return
+
 			this.emit(Events.CSS_LOAD, this)
+			for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadCSS()
 		}
 
 		protected _triggerUnloadCSS(): void {

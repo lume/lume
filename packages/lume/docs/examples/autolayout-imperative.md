@@ -10,8 +10,6 @@
 `
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 
-<script> LUME.useDefaultNames() <\/script>
-
 <style>
     body, html {
         width: 100%; height: 100%;
@@ -21,7 +19,7 @@
     }
 </style>
 
-<script>
+<script type="module">
     const {
         AutoLayoutNode,
         Scene,
@@ -30,6 +28,8 @@
         DOMPlane,
         Sphere
     } = LUME
+
+    LUME.useDefaultNames()
 
     const scene = new Scene().set({
         experimentalWebgl: true,
@@ -42,6 +42,7 @@
     })
 
     scene.add(ambientLight)
+    debugger
 
     const pointLight = new PointLight().set({
         color: "white",
@@ -153,16 +154,21 @@
         lastSize = size
     })
 
-    // because we have just created the elements and placed them into
-    // the DOM, we have to wait for their GL objects to be loaded before
-    // we can work with those underlying objects.
-    scene.on('GL_LOAD', async () => {
-        Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
+    debugger
+    Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
+        // Because we have just created the elements and placed them into
+        // the DOM, we have to wait for their GL objects to be loaded before
+        // we can work with those underlying objects.
+        plane.on('GL_LOAD', async () => {
+            console.log('    DEBUG set material opacity in user code')
+
             // FIXME, props/attributes should work instead of this
             plane.three.material.opacity = 0.3
             plane.needsUpdate()
         })
+    })
 
+    pointLight.on('GL_LOAD', async () => {
         pointLight.three.shadow.radius = 2
         pointLight.three.distance = 800
         pointLight.three.shadow.bias = -0.01

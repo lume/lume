@@ -134,6 +134,13 @@ class _Motor {
 		for (let i = 0, l = this.__nodesToUpdate.length; i < l; i += 1) {
 			const node = this.__nodesToUpdate[i]
 
+			// We removed the early return in ImperativeBase and replaced it
+			// with this early continue, because otherwise
+			// ImperativeBase.needsUpdate can be called during an autorun in
+			// which case it causes an infinite autorun loop because it would
+			// read this.scene which would then set this.scene.
+			if (!node.scene) continue
+
 			// @ts-ignore: call protected method
 			node._render(
 				//

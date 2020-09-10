@@ -45,7 +45,7 @@
 		"lint-fix": "npm run lint -- --fix",
 		"lint-all": "npm run lint-js && npm run lint-ts",
 		"lint-fix-all": "npm run lint-js -- --fix && npm run lint-ts -- --fix",
-		"lint-watch": "npm run lint-js -- --watch & $p5=$!; npm run lint-ts -- --watch & p6=$!; wait $p5 $p6",
+		"lint-watch": "npm run lint-js -- --watch & p5=$!; npm run lint-ts -- --watch & p6=$!; wait $p5 $p6",
 		"lint-js": "npm run lint -- 'src/**/{.,}*.{js,json,html}'",
 		"lint-ts": "npm run lint -- 'src/**/*.{ts,tsx}'"
 	},

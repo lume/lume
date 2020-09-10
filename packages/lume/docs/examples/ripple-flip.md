@@ -77,9 +77,6 @@
 
     scene.add(grid)
 
-    await grid.mountPromise
-    await sleep(500)
-
     console.log('grid size', grid.calculatedSize)
 
     options = Object.assign({}, options, {
@@ -106,8 +103,6 @@
         grid.add(node)
       }
     }
-
-    await sleep(500)
 
     while (true) {
       await ripple(grid, options)

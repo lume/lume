@@ -123,7 +123,6 @@ export default abstract class XYZValues<T = any> extends Eventful {
 	}
 
 	fromDefault(): this {
-		// console.log('default values:', this.default)
 		this.set(this._default.x as any, this._default.y as any, this._default.z as any)
 		return this
 	}

@@ -112,29 +112,40 @@
     new Vue({
         el: '#root',
         template: document.querySelector('[vue]').innerHTML,
-        mounted: function() {
+        mounted() {
             const {Motor, Events} = LUME
             const scene = document.querySelector('#scene')
             const lightContainer = document.querySelector('#lightContainer')
             const light = document.querySelector('#light')
 
-            scene.on(Events.GL_LOAD, async () => {
+            light.on(Events.GL_LOAD, async () => {
                 light.three.shadow.radius = 2
                 light.three.distance = 800
                 light.three.shadow.bias = -0.001
-
-                // The following is a temporary hack because material opacity
-                // isn't exposed through the HTML API yet. work-in-progress...
-                // TODO this stuff should be doable via the HTML
-                Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
-                    n.three.material.opacity = 0.3
-                })
-
-                document.querySelector('#bg').three.material.opacity = 0.3
-                document.querySelector('#bg').three.material.dithering = true
-
-                scene.needsUpdate()
+                light.needsUpdate()
             })
+
+            // The following is a temporary hack because material opacity
+            // isn't exposed through the HTML API yet. work-in-progress...
+            // TODO this stuff should be doable via the HTML
+            Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
+                n.on(Events.GL_LOAD, async () => {
+                    n.three.material.opacity = 0.3
+                    n.needsUpdate()
+                })
+            })
+
+            const bg = document.querySelector('#bg')
+
+            bg.on(Events.GL_LOAD, async () => {
+                bg.three.material.opacity = 0.3
+                bg.three.material.dithering = true
+                bg.needsUpdate()
+            })
+
+            // scene.on(Events.GL_LOAD, async () => {
+            //     scene.needsUpdate()
+            // })
 
             const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 2}
 

@@ -2,6 +2,7 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
 import {reactive, numberAttribute, booleanAttribute, autorun, sample} from '@lume/element'
 import Node from './Node'
 import {Scene} from './Scene'
+import {defer} from './Utility'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
@@ -24,20 +25,25 @@ export default class PerspectiveCamera extends Node {
 		// XXX This doesn't work becauwe this.scene returns null because it uses
 		// this.parent which returns null because this.parent's internal
 		// this._parent property isn't set yet at this point...
+		//
 		// this.__lastKnownScene = this.scene
 
 		// ... So instead we use an autorun to wait for the this.scene to exist.
-		// TODO once(condition) to make this simler, F.e.:
-		// once(() => this.scene).then(() => { ... })
 		const stop = autorun(_ => {
 			if (this.scene) {
 				sample(() => {
 					this.__lastKnownScene = this.scene
 					this.__setSceneCamera(this.active ? undefined : 'unset')
-					Promise.resolve().then(() => stop())
+					defer(() => stop())
 				})
 			}
 		})
+
+		// TODO once(condition) to make the above simpler, F.e.:
+		// once(() => this.scene).then(() => {
+		// 	this.__lastKnownScene = this.scene
+		// 	this.__setSceneCamera(this.active ? undefined : 'unset')
+		// })
 
 		this._stopFns.push(
 			autorun(_ => {
@@ -108,10 +114,7 @@ export default class PerspectiveCamera extends Node {
 	private __lastKnownScene: Scene | null = null
 
 	private __setSceneCamera(unset?: 'unset') {
-		debugger
 		if (unset) {
-			console.log('Camera: unset cam', this.__lastKnownScene)
-
 			// TODO: unset might be triggered before the scene was mounted, so
 			// there might not be a last known scene. We won't need this check
 			// when we add unmountedCallback. #150
@@ -121,7 +124,6 @@ export default class PerspectiveCamera extends Node {
 					._removeCamera(this)
 		} else {
 			if (!this.scene || !this.isConnected) return
-			console.log('Camera: set cam')
 
 			this.scene
 				// @ts-ignore: call protected method

@@ -1,4 +1,5 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
+import {defer} from './Utility'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected
@@ -20,7 +21,9 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 		}
 
 		private __parent: TreeNode | null = null
-		private __children: TreeNode[] = []
+		private __children: TreeNode[] =
+			// @ts-ignore
+			this.__children || []
 
 		/**
 		 * @property {TreeNode} parent - The parent of the current TreeNode.
@@ -78,6 +81,8 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 
 			if (childNode.__parent === this) return this
 
+			if (!this.__children) this.__children = []
+
 			if (childNode.__parent) childNode.__parent.removeNode(childNode)
 
 			childNode.__parent = this
@@ -88,7 +93,7 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 
 			// TODO avoid deferring. We may need this now that we switched from
 			// WithUpdate to reactive props.
-			Promise.resolve().then(() => {
+			defer(() => {
 				childNode.connected()
 				this.childConnected(childNode)
 			})
@@ -129,7 +134,7 @@ export function TreeNodeMixin<T extends Constructor>(Base: T) {
 
 			// TODO avoid deferring. We may need this now that we switched from
 			// WithUpdate to reactive props.
-			Promise.resolve().then(() => {
+			defer(() => {
 				childNode.disconnected()
 				this.childDisconnected(childNode)
 			})

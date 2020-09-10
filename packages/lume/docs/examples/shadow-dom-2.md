@@ -1,0 +1,57 @@
+# Shadow DOM
+
+<div id="example"></div>
+<script type="application/javascript">
+  new Vue({
+    el: '#example',
+    template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="200" />',
+    data: {
+      code:
+`
+<script src="${location.origin+location.pathname}/global.js"><\/script>
+
+<div id="div">
+	<i-point-light intensity="0.6"></i-point-light>
+	<i-point-light align="0.5 0.5" position="300 0 300"></i-point-light>
+	<i-box id="node" size="100 100 100" rotation="0 -70 0" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" color="cornflowerblue">
+		<i-node align="0 1 1" size="100 100">
+			<h3 align="center">Hello 3D world!</h3>
+		</i-node>
+	</i-box>
+</div>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		width: 100%;
+		background: #333;
+    color: hsl(337, 90%, 60%);
+	}
+
+	#div {
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<script>
+	LUME.useDefaultNames()
+	node.rotation = (x, y, z) => [x, ++y, z]
+	const root = div.attachShadow({
+		mode: 'open'
+	})
+	root.innerHTML = \`
+    <i-scene experimental-webgl>
+      <slot></slot>
+    </i-scene>
+  \`
+	window.addEventListener('error', e => console.log(e))
+<\/script>
+
+`
+    },
+  })
+</script>

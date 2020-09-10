@@ -175,8 +175,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _getParentSize() {
-			const parent = this._renderParent
-			return parent ? parent.__calculatedSize : {x: 0, y: 0, z: 0}
+			return this._renderParent?.__calculatedSize ?? {x: 0, y: 0, z: 0}
 		}
 
 		protected _calcSize() {

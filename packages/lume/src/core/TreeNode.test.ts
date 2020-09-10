@@ -118,7 +118,6 @@ describe('TreeNode', () => {
 		expect(t.childCount).toBe(4)
 		expect(t.subnodes).toEqual([b, a, c, d])
 
-		// debugger
 		t.removeAllChildren()
 		expect(() => t.removeAllChildren()).toThrowError(ReferenceError, 'This node has no children.')
 

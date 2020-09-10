@@ -1,6 +1,7 @@
 import {MeshPhongMaterial, Color, Camera, PerspectiveCamera, OrthographicCamera} from 'three'
 
 import type {Object3D, Material, RenderItem, Quaternion} from 'three'
+import {defer} from '../core/Utility'
 
 export type TColor = Color | string | number
 
@@ -28,7 +29,7 @@ export function disposeObject(obj: Object3D, removeFromParent = true, destroyGeo
 	}
 
 	removeFromParent &&
-		Promise.resolve().then(() => {
+		defer(() => {
 			// if we remove children in the same tick then we can't continue traversing,
 			// so we defer to the next microtask
 			obj.parent && obj.parent.remove(obj)

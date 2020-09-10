@@ -78,9 +78,6 @@ function createChildObserver(onConnect: any, onDisconnect: any, skipTextNodes = 
 	})
 }
 
-const hasShadowDomV1 =
-	typeof Element.prototype.attachShadow == 'function' && typeof HTMLSlotElement == 'function' ? true : false
-
 function documentBody(): Promise<void> {
 	return new Promise(resolve => {
 		if (document.body) return resolve()
@@ -103,19 +100,32 @@ function toRadians(degrees: number): number {
 /**
  * Execute the given `func`tion on the next micro "tick" of the JS engine.
  */
-export function defer(func: () => unknown): Promise<unknown> {
+function defer(func: () => unknown): Promise<unknown> {
 	// "defer" is used as a semantic label for Promise.resolve().then
 	return Promise.resolve().then(func)
+}
+
+function thro(msg?: any): never {
+	throw new Error(msg)
+}
+
+function trim(s: string) {
+	return s
+		.split('\n')
+		.map(s => s.trim())
+		.join('\n')
 }
 
 export {
 	epsilon,
 	applyCSSLabel,
 	observeChildren,
-	hasShadowDomV1,
 	// helper function to use instead of instanceof for classes that implement the
 	// static Symbol.hasInstance method, because the behavior of instanceof isn't
 	// polyfillable.
 	documentBody,
 	toRadians,
+	defer,
+	thro,
+	trim,
 }

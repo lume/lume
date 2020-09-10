@@ -99,24 +99,24 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		private __handleConnectedChild(element: Element) {
-			Promise.resolve().then(() => {
-				if (isNotPossiblyCustom(element) || element.matches(':defined')) {
-					this.childConnectedCallback && this.childConnectedCallback(element)
-				} else {
-					setTimeout(() => {
-						this.childConnectedCallback && this.childConnectedCallback(element)
-					})
-				}
-			})
+			const elementIsUpgraded = element.matches(':defined')
+
+			if (elementIsUpgraded) {
+				this.childConnectedCallback?.(element)
+			} else {
+				customElements.whenDefined(element.tagName.toLowerCase()).then(() => {
+					this.childConnectedCallback?.(element)
+				})
+			}
 		}
 	}
 
 	return WithChildren as MixinResult<typeof WithChildren, T>
 }
 
-function isNotPossiblyCustom(element: Element) {
-	return !element.localName.includes('-')
-}
+// function isPossiblyCustomElement(element: Element) {
+// 	return element.localName.includes('-')
+// }
 
 export const WithChildren = Mixin(WithChildrenMixin)
 export interface WithChildren extends InstanceType<typeof WithChildren> {}

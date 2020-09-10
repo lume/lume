@@ -33,7 +33,6 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 		if (!super.loadGL()) return false
 
 		this.resetMeshComponent()
-
 		this.element.needsUpdate()
 
 		return true

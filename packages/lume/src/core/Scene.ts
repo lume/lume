@@ -12,14 +12,14 @@ import {
 	//AmbientLight,
 	Color,
 } from 'three'
-import Motor, {RenderTask} from './Motor'
+import Motor from './Motor'
 import {WebGLRendererThree, ShadowMapTypeString} from './WebGLRendererThree'
 import {CSS3DRendererThree} from './CSS3DRendererThree'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
-import {documentBody} from './Utility'
+import {documentBody, thro, trim} from './Utility'
 import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
@@ -118,7 +118,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		// element to.
 		async mount(mountPoint?: string | Element | null) {
 			// if no mountPoint was provided, just mount onto the <body> element.
-			if (!mountPoint) {
+			if (mountPoint === undefined) {
 				if (!document.body) await documentBody()
 				mountPoint = document.body
 			}
@@ -137,12 +137,15 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			}
 
 			// At this point we should have an actual mount point (the user may have passed it in)
-			if (!(mountPoint instanceof HTMLElement)) {
-				throw new Error(`
-                    Invalid mount point specified in Scene.mount() call. Pass a
-                    selector, an actual HTMLElement, or don\'t pass anything to
-                    mount to <body>.
-                `)
+			if (!(mountPoint instanceof HTMLElement || mountPoint instanceof ShadowRoot)) {
+				throw new Error(
+					trim(`
+						Invalid mount point specified in Scene.mount() call
+						(${mountPoint}). Pass a selector or an HTMLElement. Not
+						passing any argument will cause the Scene to be mounted
+						to the <body>.
+					`),
+				)
 			}
 
 			// The user can mount to a new location without calling unmount
@@ -153,7 +156,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 			this._mounted = true
 
-			this.__startOrStopSizePolling()
+			// this.__startOrStopParentSizeObservation()
 		}
 
 		/**
@@ -163,7 +166,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		unmount() {
 			if (!this._mounted) return
 
-			this.__stopSizePolling()
+			this.__stopParentSizeObservation()
 
 			if (this.parentNode) this.parentNode.removeChild(this)
 
@@ -183,12 +186,17 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					else this._triggerUnloadCSS()
 				}),
 				autorun(() => {
-					if (this.disableCss && !this.experimentalWebgl) return this.__stopSizePolling()
+					if (this.disableCss && !this.experimentalWebgl) return this.__stopParentSizeObservation()
 
 					this.sizeMode
-					this.__startOrStopSizePolling()
+					this.__startOrStopParentSizeObservation()
 				}),
 			)
+		}
+
+		disconnectedCallback() {
+			super.disconnectedCallback()
+			this.__stopParentSizeObservation()
 		}
 
 		protected _mounted = false
@@ -280,7 +288,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			// maybe keep this in sceneState in WebGLRendererThree
 			if (!super._loadGL()) return false
 
-			console.log('    ---------------------------- LOAD SCENE GL')
 			this._composedChildren
 
 			// We don't let Three update any matrices, we supply our own world
@@ -335,8 +342,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		protected _unloadGL() {
 			if (!super._unloadGL()) return false
 
-			console.log('    ---------------------------- UNLOAD SCENE GL')
-
 			if (this.__glRenderer) {
 				this.__glRenderer.uninitialize(this)
 				this.__glRenderer = null
@@ -357,8 +362,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		protected _loadCSS() {
 			if (!super._loadCSS()) return false
 
-			console.log('    ---------------------------- LOAD SCENE CSS')
-
 			this.__cssRenderer = this.__getCSSRenderer('three')
 
 			this.traverse((node: TreeNode) => {
@@ -370,19 +373,11 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					node._loadCSS()
 			})
 
-			console.log([].map.call(this.children, (n: any) => [n.constructor.name, n.parent, n.position]))
-
-			setTimeout(() => {
-				console.log([].map.call(this.children, (n: any) => [n.constructor.name, n.parent, n.position]))
-			}, 1000)
-
 			return true
 		}
 
 		protected _unloadCSS() {
 			if (!super._unloadCSS()) return false
-
-			console.log('    ---------------------------- UNLOAD SCENE CSS')
 
 			if (this.__cssRenderer) {
 				this.__cssRenderer.uninitialize(this)
@@ -452,56 +447,75 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		// TODO move the following parent size change stuff to a separate re-usable class.
 
-		private __sizePollTask: RenderTask | null = null
+		// private __sizePollTask: RenderTask | null = null
 		private __parentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 		// HTM-API
-		private __startOrStopSizePolling() {
+		private __startOrStopParentSizeObservation() {
 			if (
-				this._mounted &&
-				(this.sizeMode.x == 'proportional' ||
-					this.sizeMode.y == 'proportional' ||
-					this.sizeMode.z == 'proportional')
+				// this._mounted && (
+				this.sizeMode.x == 'proportional' ||
+				this.sizeMode.y == 'proportional' ||
+				this.sizeMode.z == 'proportional'
+				// )
 			) {
-				this.__startSizePolling()
+				this.__startParentSizeObservation()
 			} else {
-				this.__stopSizePolling()
+				this.__stopParentSizeObservation()
 			}
 		}
 
+		private __resizeObserver: ResizeObserver | null = null
+
 		// observe size changes on the scene element.
 		// HTM-API
-		private __startSizePolling() {
-			// NOTE Polling is currently required because there's no other way to do this
-			// reliably, not even with MutationObserver. ResizeObserver hasn't
-			// landed in browsers yet.
-			if (!this.__sizePollTask) this.__sizePollTask = Motor.addRenderTask(this.__checkSize.bind(this))
-			this.on('parentsizechange', this.__onElementParentSizeChange, this)
+		private __startParentSizeObservation() {
+			const parent =
+				this.parentNode instanceof HTMLElement
+					? this.parentNode
+					: this.parentNode instanceof ShadowRoot
+					? this.parentNode.host
+					: thro('A Scene can only be child of an HTMLElement or ShadowRoot (and f.e. not an SVGElement).')
+
+			// TODO use a single ResizeObserver for all scenes.
+
+			this.__resizeObserver = new ResizeObserver(changes => {
+				for (const change of changes) {
+					const {inlineSize, blockSize} = Array.isArray(change.borderBoxSize)
+						? change.borderBoxSize[0]
+						: change.borderBoxSize
+
+					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
+
+					// If the text writing mode is horizontal, then inlinSize is
+					// the width, otherwise in vertical modes it is the height.
+					// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize#Syntax
+					if (isHorizontal) this.__checkSize(inlineSize, blockSize)
+					else this.__checkSize(blockSize, inlineSize)
+				}
+			})
+
+			this.__resizeObserver.observe(parent)
 		}
 
 		// HTM-API
-		private __stopSizePolling() {
-			this.off('parentsizechange', this.__onElementParentSizeChange, this)
-			Motor.removeRenderTask(this.__sizePollTask!)
-			this.__sizePollTask = null
+		private __stopParentSizeObservation() {
+			this.__resizeObserver?.disconnect()
+			this.__resizeObserver = null
 		}
 
 		// NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
 		// we haven't taken that into consideration here.
 		// HTM-API
-		private __checkSize() {
-			const parent = this.parentNode! as Element
+		private __checkSize(x: number, y: number) {
 			const parentSize = this.__parentSize
-			const style = getComputedStyle(parent)
-			const width = parseFloat(style.width || '0')
-			const height = parseFloat(style.height || '0')
 
 			// if we have a size change, emit parentsizechange
-			if (parentSize.x != width || parentSize.y != height) {
-				parentSize.x = width
-				parentSize.y = height
+			if (parentSize.x != x || parentSize.y != y) {
+				parentSize.x = x
+				parentSize.y = y
 
-				this.emit('parentsizechange', Object.assign({}, parentSize))
+				this.__onElementParentSizeChange(parentSize)
 			}
 		}
 

@@ -45,7 +45,6 @@ export default abstract class Behavior extends ForwardProps {
 
 	// a promise resolved when an element is upgraded
 	private __whenDefined: Promise<void> = null! as Promise<void>
-
 	private __elementDefined = false
 
 	// TODO add a test to make sure this check works
@@ -57,32 +56,25 @@ export default abstract class Behavior extends ForwardProps {
 		if (element.nodeName.includes('-')) {
 			this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
 
-			// We use `.then` here on purpose, so that setting
-			// __elementDefined happens in the very first microtask after
-			// __whenDefined is resolved. Otherwise if we set
-			// __elementDefined after awaiting the following Promise.race,
-			// then it will happen on the second microtask after
-			// __whenDefined is resolved. Our goal is to have APIs ready as
-			// soon as possible in the methods above that wait for
-			// __whenDefined.
 			this.__whenDefined.then(() => {
 				this.__elementDefined = element instanceof BaseClass
 			})
 
 			await Promise.race([this.__whenDefined, new Promise(r => setTimeout(r, 1000))])
 
-			if (!this.__elementDefined)
+			if (!this.__elementDefined) {
 				throw new Error(`
                     Either the element you're using the behavior on is not an
                     instance of ${BaseClass.name}, or there was a 1-second
                     timeout waiting for the element to be defined. Please make
                     sure all elements you intend to use are defined.
-                `)
+				`)
+			}
 		} else {
 			throw new Error(`
-                    The element you're using the mesh behavior on (<${element.tagName.toLowerCase()}>)
-                    is not an instance of ${BaseClass.name}.
-                `)
+				The element you're using the mesh behavior on (<${element.tagName.toLowerCase()}>)
+				is not an instance of ${BaseClass.name}.
+			`)
 		}
 	}
 }

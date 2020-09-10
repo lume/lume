@@ -2,7 +2,7 @@
 
 import {Element} from '@lume/element'
 import HTMLNode from './HTMLNode'
-import {observeChildren, hasShadowDomV1} from '../core/Utility'
+import {observeChildren} from '../core/Utility'
 import WithChildren from './WithChildren'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
 
@@ -64,23 +64,12 @@ function makeDeclarativeBase() {
 
 			observers.set(root, observer)
 
-			// Arrray.from isn't needed for older Safari which can't iterate on HTMLCollection
+			// Arrray.from is needed for older Safari which can't iterate on HTMLCollection
 			const children = Array.from(this.children)
 
 			for (const child of children) {
-				// debugger
-
 				if (!(child instanceof DeclarativeBase)) continue
-
-				// TODO replace this with generic private access for
-				// any object, so we can check instanceof HTMLElement instead of
-				// DeclarativeBase, and make it more generic?
 				child.__isPossiblyDistributedToShadowRoot = true
-				console.log(
-					'   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, BY ADDING SHADOW ROOT',
-					child.constructor.name,
-					child.id,
-				)
 				this.__childUncomposedCallback(child, 'slot')
 			}
 
@@ -96,40 +85,40 @@ function makeDeclarativeBase() {
 		isNode = false
 
 		childConnectedCallback(child: HTMLElement) {
-			console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4')
-			// mirror the DOM connections in the imperative API's virtual scene graph.
+			// TODO Another case to handle is default slot content: when there
+			// are no nodes distributed to a slot, then connect the <slot>
+			// element's children to the <slot> parent.
+
+			// This code handles two cases: the element has a ShadowRoot
+			// ("composed children" are children of the ShadowRoot), or it has a
+			// <slot> child ("composed children" are nodes that may be
+			// distributed to the <slot>).
 			if (isNode(child)) {
-				console.log(
-					' ----------------------- childConnectedCallback',
-					this.constructor.name,
-					child.constructor.name,
-					child.id,
-				)
+				// We skip Scene here because we know it already has a
+				// ShadowRoot that serves a different purpose than for Nodes. A
+				// Scene child's three objects will always be connected to the
+				// scene's three object regardless of its ShadowRoot.
 				if (!this.isScene && this.__shadowRoot) {
-					console.log(' *************** parent has shadow, dont compose child here', this.tagName)
 					child.__isPossiblyDistributedToShadowRoot = true
+
+					// We don't call __childComposedCallback here because that
+					// will be called indirectly due to a slotchange event on a
+					// <slot> element if the added child will be distributed to
+					// a slot.
 				} else {
 					// If there's no shadow root, call the childComposedCallback
-					// with connection type "actual". This is effectively
-					// similar to childConnectedCallback.
-					console.log(
-						'   >>>>>>>>>>>>>>> CHILD SHOULD BE COMPOSED, NORMALLY',
-						child.constructor.name,
-						child.id,
-					)
-					// debugger
+					// with connection type "actual". This is effectively a
+					// regular parent-child composition (no distribution, no
+					// children of a ShadowRoot).
+
 					this.__childComposedCallback(child, 'actual')
 				}
-			} else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
+			} else if (child instanceof HTMLSlotElement) {
 				if (!this.__slots) this.__slots = []
 				this.__slots.push(child)
-				child.addEventListener(
-					'slotchange',
-					// @ts-ignore: allow handleEvent to be protected (upstream
-					// type needs update, the addEventListener method expects it
-					// to be public)
-					this.onChildSlotChange,
-				)
+
+				child.addEventListener('slotchange', this.__onChildSlotChange)
+
 				// TODO do we need __handleDistributedChildren for initial
 				// slotted nodes? Or does `slotchange` conver that? Also, does
 				// `slotchange` fire for distributed slots? Or do we need to
@@ -148,21 +137,10 @@ function makeDeclarativeBase() {
 					// If there's no shadow root, call the
 					// childUncomposedCallback with connection type "actual".
 					// This is effectively similar to childDisconnectedCallback.
-					console.log(
-						'   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, NORMALLY',
-						child.constructor.name,
-						child.id,
-					)
 					this.__childUncomposedCallback(child, 'actual')
 				}
-			} else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-				child.removeEventListener(
-					'slotchange',
-					// @ts-ignore: allow handleEvent to be protected (upstream
-					// type needs update, the addEventListener method expects it
-					// to be public)
-					this.onChildSlotChange,
-				)
+			} else if (child instanceof HTMLSlotElement) {
+				child.removeEventListener('slotchange', this.__onChildSlotChange)
 
 				this.__slots!.splice(this.__slots!.indexOf(child), 1)
 				if (!this.__slots!.length) this.__slots = null
@@ -188,10 +166,8 @@ function makeDeclarativeBase() {
 		// renderer, but at the moment we're using Three.js nodes and composing
 		// them in the structured of the composed tree, then Three.js handles
 		// the traversal for rendering the WebGL.
-		traverseComposed(isShadowChild?: boolean) {
-			console.log(isShadowChild ? 'distributedNode:' : 'node:', this)
-
-			// in the future, the user will be use a pure-JS API with no HTML
+		traverseComposed(cb: (n: Node) => void) {
+			// In the future, the user will be use a pure-JS API with no HTML
 			// DOM API.
 			const hasHtmlApi = this.hasHtmlApi
 
@@ -203,13 +179,17 @@ function makeDeclarativeBase() {
 
 				// skip nodes that are possiblyDistributed, i.e. they have a parent
 				// that has a ShadowRoot.
-				if ((!hasHtmlApi || !child.__isPossiblyDistributedToShadowRoot) && child.traverseComposed)
-					child.traverseComposed()
+				if (!hasHtmlApi || !child.__isPossiblyDistributedToShadowRoot) child.traverseComposed(cb)
+
+				cb(child)
 			}
 
 			const distributedChildren = this.__distributedChildren
 			if (hasHtmlApi && distributedChildren) {
-				for (const shadowChild of distributedChildren) shadowChild.traverseComposed(true)
+				for (const shadowChild of distributedChildren) {
+					shadowChild.traverseComposed(cb)
+					cb(shadowChild)
+				}
 			}
 		}
 
@@ -272,17 +252,22 @@ function makeDeclarativeBase() {
 		// whether to render this node or not, in the case of WebGL.
 		private __isPossiblyDistributedToShadowRoot = false
 
+		private __prevAssignedNodes?: WeakMap<HTMLSlotElement, Node[]>
+
 		// A map of the slot elements that are children of this node and
 		// their last-known assigned nodes. When a slotchange happens while
 		// this node is in a shadow root and has a slot child, we can
 		// detect what the difference is between the last known and the new
 		// assignments, and notate the new distribution of child nodes. See
 		// issue #40 for background on why we do this.
-		private __previousSlotAssignedNodes = new WeakMap()
+		private get __previousSlotAssignedNodes() {
+			if (!this.__prevAssignedNodes) this.__prevAssignedNodes = new WeakMap()
+			return this.__prevAssignedNodes
+		}
 
 		// If this node is distributed into a shadow tree, this will
 		// reference the parent of the <slot> element where this node is
-		// distribuetd to. Basically, this node will render as a child of
+		// distributed to. Basically, this node will render as a child of
 		// that parent node in the flat tree (composed tree).
 		private __distributedParent: DeclarativeBase | null = null
 
@@ -293,9 +278,6 @@ function makeDeclarativeBase() {
 		private __shadowRootParent: DeclarativeBase | null = null
 
 		private __isComposed = false
-		// get __isComposed() {
-		//     return this.__distributedParent || this.__shadowRootParent
-		// },
 
 		// If this element has a child <slot> element while in
 		// a shadow root, then this will be a Set of the nodes distributed
@@ -309,24 +291,9 @@ function makeDeclarativeBase() {
 
 			if (child instanceof DeclarativeBase) {
 				child.__shadowRootParent = this
-
-				// this.add(child)
-				// this.possiblyLoadThree(child)
-
-				console.log(
-					'   >>>>>>>>>>>>>>> CHILD SHOULD BE COMPOSED, SHADOW ROOT',
-					child.constructor.name,
-					child.id,
-				)
 				this.__childComposedCallback(child, 'root')
-			} else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-				child.addEventListener(
-					'slotchange',
-					// @ts-ignore: allow handleEvent to be protected (upstream
-					// type needs update, the addEventListener method expects it
-					// to be public)
-					this.onChildSlotChange,
-				)
+			} else if (child instanceof HTMLSlotElement) {
+				child.addEventListener('slotchange', this.__onChildSlotChange)
 				this.__handleDistributedChildren(child /*, true*/)
 			}
 		}
@@ -336,31 +303,16 @@ function makeDeclarativeBase() {
 
 			if (child instanceof DeclarativeBase) {
 				child.__shadowRootParent = null
-
-				// this.removeNode(child)
-
-				console.log(
-					'   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, SHADOW ROOT',
-					child.constructor.name,
-					child.id,
-				)
 				this.__childUncomposedCallback(child, 'root')
-			} else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-				child.removeEventListener(
-					'slotchange',
-					// @ts-ignore: allow handleEvent to be protected (upstream
-					// type needs update, the addEventListener method expects it
-					// to be public)
-					this.onChildSlotChange,
-				)
+			} else if (child instanceof HTMLSlotElement) {
+				child.removeEventListener('slotchange', this.__onChildSlotChange)
 				this.__handleDistributedChildren(child)
 				this.__previousSlotAssignedNodes.delete(child)
 			}
 		}
 
-		private onChildSlotChange = (event: Event) => {
+		private __onChildSlotChange = (event: Event) => {
 			const slot = event.target as HTMLSlotElement // must be a <slot> element, if the event is slotchange
-			console.log('######################### SLOT CHANGE')
 			this.__handleDistributedChildren(slot)
 		}
 
@@ -370,8 +322,6 @@ function makeDeclarativeBase() {
 		private __childComposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
 			if (child.__isComposed) return
 			child.__isComposed = true
-
-			console.log(' ---------------- __childComposedCallback')
 
 			this.childComposedCallback && this.childComposedCallback(child, connectionType)
 		}
@@ -383,7 +333,7 @@ function makeDeclarativeBase() {
 			this.childUncomposedCallback && this.childUncomposedCallback(child, connectionType)
 		}
 
-		private __handleDistributedChildren(slot: HTMLSlotElement /*, isInitial = false*/) {
+		private __handleDistributedChildren(slot: HTMLSlotElement) {
 			const diff = this.__getDistributedChildDifference(slot)
 
 			const {added} = diff
@@ -416,26 +366,6 @@ function makeDeclarativeBase() {
 				if (!this.__distributedChildren) this.__distributedChildren = new Set()
 				this.__distributedChildren.add(addedNode)
 
-				// ********** copied from ImperativeBase#add {{
-
-				// // Calculate sizing because proportional size might depend on
-				// // the new parent.
-				// childNode._calcSize()
-				// childNode.needsUpdate()
-				//
-				// // child should watch the parent for size changes.
-				// this.on('sizechange', childNode._onParentSizeChange, childNode)
-
-				// ******** }}
-
-				// addedNode._connectThree()
-
-				console.log(
-					'   >>>>>>>>>>>>>>> CHILD SHOULD BE COMPOSED, SLOTTED',
-					addedNode.constructor.name,
-					addedNode.id,
-				)
-				// debugger
 				this.__childComposedCallback(addedNode, 'slot')
 			}
 
@@ -449,24 +379,14 @@ function makeDeclarativeBase() {
 				this.__distributedChildren!.delete(removedNode)
 				if (!this.__distributedChildren!.size) this.__distributedChildren = null
 
-				console.log(
-					'   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, UN SLOTTED',
-					removedNode.constructor.name,
-					removedNode.id,
-				)
-				// debugger
 				this.__childUncomposedCallback(removedNode, 'slot')
 			}
 		}
 
 		private __getDistributedChildDifference(slot: HTMLSlotElement) {
-			let previousNodes
-
-			if (this.__previousSlotAssignedNodes.has(slot)) previousNodes = this.__previousSlotAssignedNodes.get(slot)
-			else previousNodes = []
+			let previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
 
 			const newNodes = slot.assignedNodes({flatten: true})
-			// debugger
 
 			// save the newNodes to be used as the previousNodes for next time.
 			this.__previousSlotAssignedNodes.set(slot, newNodes)
@@ -475,8 +395,6 @@ function makeDeclarativeBase() {
 				added: newNodes,
 				removed: [],
 			}
-
-			// let last: Node
 
 			for (let i = 0, l = previousNodes.length; i < l; i += 1) {
 				const oldNode = previousNodes[i]
@@ -491,11 +409,6 @@ function makeDeclarativeBase() {
 				// otherwise the node wasn't added or removed.
 				else {
 					newNodes.splice(i, 1)
-
-					// TODO test version faster than slice:
-					// last = newNodes[newNodes.length - 1]
-					// newNodes[i] = last
-					// newNodes.pop()
 				}
 			}
 

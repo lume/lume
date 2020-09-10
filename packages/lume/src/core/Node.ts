@@ -146,7 +146,6 @@ function NodeMixin<T extends Constructor>(Base: T) {
 
 		protected _loadCSS() {
 			if (!super._loadCSS()) return false
-			console.log('                ----------------------------- LOAD NODE CSS')
 
 			this._cssStopFns.push(
 				autorun(() => {
@@ -155,12 +154,6 @@ function NodeMixin<T extends Constructor>(Base: T) {
 				}),
 			)
 
-			return true
-		}
-
-		protected _unloadCSS() {
-			if (!super._unloadCSS()) return false
-			console.log('                ----------------------------- UNLOAD NODE CSS')
 			return true
 		}
 
