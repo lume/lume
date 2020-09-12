@@ -6,12 +6,10 @@ import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {reactive, autorun, booleanAttribute, attribute, numberAttribute, sample} from '@lume/element'
 import {emits} from '@lume/eventful'
 import documentReady from '@awaitbox/document-ready'
-import {
-	Scene as ThreeScene,
-	PerspectiveCamera as ThreePerspectiveCamera,
-	//AmbientLight,
-	Color,
-} from 'three'
+import {Scene as ThreeScene} from 'three/src/scenes/Scene'
+import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
+// import {AmbientLight} from 'three/src/lights/AmbientLight'
+import {Color} from 'three/src/math/Color'
 import Motor from './Motor'
 import {WebGLRendererThree, ShadowMapTypeString} from './WebGLRendererThree'
 import {CSS3DRendererThree} from './CSS3DRendererThree'
@@ -68,7 +66,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			super(...args)
 
 			// The scene should always render CSS properties (it needs to always
-			// be rendered on resized, for example, because it contains the
+			// be rendered or resized, for example, because it contains the
 			// WebGL canvas which also needs to be resized). Namely, we still
 			// want to apply size values to the scene so that it can size
 			// relative to it's parent container, or literally if size mode is

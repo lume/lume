@@ -1,4 +1,4 @@
-import {Object3D, Vector3} from 'three'
+import {Object3D} from 'three/src/core/Object3D'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {reactive, StopFunction, autorun, sample} from '@lume/element'
 import Transformable from './Transformable'
@@ -111,10 +111,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		get three(): Object3D {
 			// if (!(this.scene && this.scene.experimentalWebgl)) return null
 
-			if (!this.__three) {
-				this.__three = this._makeThreeObject3d()
-				;(this.__three as any).pivot = new Vector3()
-			}
+			if (!this.__three) this.__three = this._makeThreeObject3d()
 
 			return this.__three
 		}
@@ -124,10 +121,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		get threeCSS(): Object3D {
 			// if (!(this.scene && !this.scene.disableCss)) return null
 
-			if (!this.__threeCSS) {
-				this.__threeCSS = this._makeThreeCSSObject()
-				;(this.__threeCSS as any).pivot = new Vector3()
-			}
+			if (!this.__threeCSS) this.__threeCSS = this._makeThreeCSSObject()
 
 			return this.__threeCSS!
 		}

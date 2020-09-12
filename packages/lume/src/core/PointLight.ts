@@ -1,4 +1,4 @@
-import {PointLight as ThreePointLight} from 'three'
+import {PointLight as ThreePointLight} from 'three/src/lights/PointLight'
 import {autorun, reactive, numberAttribute, booleanAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import LightBase from './LightBase'

@@ -1,11 +1,6 @@
+import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
+import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants'
 import WEBVR from '../lib/three/WebVR'
-import {
-	//PerspectiveCamera,
-	WebGLRenderer,
-	BasicShadowMap,
-	PCFSoftShadowMap,
-	PCFShadowMap,
-} from 'three'
 import {Scene} from './Scene'
 
 interface SceneState {
@@ -50,9 +45,6 @@ export class WebGLRendererThree {
 		sceneStates.set(
 			scene,
 			(sceneState = {
-				// TODO: get the active camera from the scene
-				//camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
-
 				// TODO: options controlled by HTML attributes on scene elements.
 				renderer: new WebGLRenderer({
 					// TODO: how do we change alpha:true to alpha:false after the

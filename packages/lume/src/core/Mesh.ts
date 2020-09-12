@@ -1,7 +1,9 @@
-import {Mesh as ThreeMesh, Material} from 'three'
+import {Mesh as ThreeMesh} from 'three/src/objects/Mesh'
 import {reactive, autorun, booleanAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node from './Node'
+
+import type {Material} from 'three/src/materials/Material'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can

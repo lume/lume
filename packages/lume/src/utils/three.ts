@@ -1,7 +1,14 @@
-import {MeshPhongMaterial, Color, Camera, PerspectiveCamera, OrthographicCamera} from 'three'
-
-import type {Object3D, Material, RenderItem, Quaternion} from 'three'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
+import {Color} from 'three/src/math/Color'
 import {defer} from '../core/Utility'
+
+import type {Object3D} from 'three/src/core/Object3D'
+import type {Material} from 'three/src/materials/Material'
+import type {RenderItem} from 'three/src/renderers/webgl/WebGLRenderLists'
+import type {Quaternion} from 'three/src/math/Quaternion'
+import type {Camera} from 'three/src/cameras/Camera'
+import type {OrthographicCamera} from 'three/src/cameras/OrthographicCamera'
+import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
 
 export type TColor = Color | string | number
 

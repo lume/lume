@@ -1,9 +1,15 @@
 // based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 
-import * as THREE from 'three'
+import {REVISION} from 'three/src/constants'
+import {Matrix4} from 'three/src/math/Matrix4'
+import {Object3DWithPivot} from '../../core/Object3DWithPivot'
 import {isPerspectiveCamera, isOrthographicCamera} from '../../utils/three'
 
-export class CSS3DObjectNested extends THREE.Object3D {
+import type {Object3D} from 'three/src/core/Object3D'
+import type {Scene} from 'three/src/scenes/Scene'
+import type {Camera} from 'three/src/cameras/Camera'
+
+export class CSS3DObjectNested extends Object3DWithPivot {
 	private __initialFrame = requestAnimationFrame(() => {
 		// delay to the next frame because attributes are not allowed be set
 		// inside Custom Element (i.e. Web Component) constructors, otherwise
@@ -29,7 +35,7 @@ export class CSS3DNestedSprite extends CSS3DObjectNested {}
 
 export class CSS3DRendererNested {
 	domElement: HTMLDivElement
-	private matrix = new THREE.Matrix4()
+	private matrix = new Matrix4()
 
 	private cache = {
 		camera: {fov: 0, style: ''},
@@ -43,7 +49,7 @@ export class CSS3DRendererNested {
 	private __cameraElement: HTMLDivElement
 
 	constructor() {
-		console.log('THREE.CSS3DRendererNested', THREE.REVISION)
+		console.log('THREE.CSS3DRendererNested', REVISION)
 
 		const domElement = document.createElement('div')
 		domElement.classList.add('CSS3DRendererNested')
@@ -82,7 +88,7 @@ export class CSS3DRendererNested {
 		this.__cameraElement.style.height = height + 'px'
 	}
 
-	private __renderObject(object: THREE.Object3D, camera: THREE.Camera) {
+	private __renderObject(object: Object3D, camera: Camera) {
 		if (object instanceof CSS3DObjectNested) {
 			let style: string = ''
 
@@ -122,7 +128,7 @@ export class CSS3DRendererNested {
 		}
 	}
 
-	render(scene: THREE.Scene, camera: THREE.Camera) {
+	render(scene: Scene, camera: Camera) {
 		const fov = camera.projectionMatrix.elements[5] * this._heightHalf
 
 		if (this.cache.camera.fov !== fov) {
@@ -161,7 +167,7 @@ export class CSS3DRendererNested {
 	}
 }
 
-function getCameraCSSMatrix(matrix: THREE.Matrix4) {
+function getCameraCSSMatrix(matrix: Matrix4) {
 	const elements = matrix.elements
 
 	return (
@@ -201,7 +207,7 @@ function getCameraCSSMatrix(matrix: THREE.Matrix4) {
 	)
 }
 
-function getObjectCSSMatrix(object: THREE.Object3D, matrix: THREE.Matrix4) {
+function getObjectCSSMatrix(object: Object3D, matrix: Matrix4) {
 	const parent = object.parent
 	const childOfScene = parent && parent.type === 'Scene'
 

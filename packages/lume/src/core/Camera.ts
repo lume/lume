@@ -1,4 +1,4 @@
-import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
+import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
 import {reactive, numberAttribute, booleanAttribute, autorun, sample} from '@lume/element'
 import Node from './Node'
 import {Scene} from './Scene'

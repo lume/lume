@@ -1,12 +1,13 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun, StopFunction} from '@lume/element'
-import {Object3D} from 'three'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three'
 import {OBJLoader} from '../../lib/three/OBJLoader'
 import {MTLLoader} from '../../lib/three/MTLLoader'
 import {Events} from '../../core/Events'
 import {RenderableBehavior} from './RenderableBehavior'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
+
+import type {Object3D} from 'three/src/core/Object3D'
 
 declare global {
 	interface Element {

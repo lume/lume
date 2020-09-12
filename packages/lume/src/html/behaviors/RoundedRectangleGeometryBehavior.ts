@@ -1,8 +1,11 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun} from '@lume/element'
-import {Shape, ExtrudeGeometry, ShapeGeometry} from 'three'
-import type {Geometry} from 'three'
+import {Shape} from 'three/src/extras/core/Shape'
+import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry'
+import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
+
+import type {Geometry} from 'three/src/core/Geometry'
 
 // function BoolAttribute(val: string | null) {
 // 	if (val === null || val === 'false') return false

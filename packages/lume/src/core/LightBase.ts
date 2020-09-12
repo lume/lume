@@ -1,8 +1,10 @@
-import {Color, Light} from 'three'
+import {Color} from 'three/src/math/Color'
 import {attribute, autorun, reactive, numberAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {TColor} from '../utils/three'
 import Node from './Node'
+
+import type {Light} from 'three/src/lights/Light'
 
 // base class for light elements.
 @reactive

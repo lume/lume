@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {BoxGeometry} from 'three'
+import {BoxGeometry} from 'three/src/geometries/BoxGeometry'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
 export default class DOMNodeGeometryBehavior extends BaseGeometryBehavior {

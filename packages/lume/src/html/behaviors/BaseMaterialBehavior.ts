@@ -1,5 +1,5 @@
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
-import {Color} from 'three'
+import {Color} from 'three/src/math/Color'
 import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
 
 // base class for geometry behaviors

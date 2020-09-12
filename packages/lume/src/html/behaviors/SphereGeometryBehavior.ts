@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {SphereGeometry} from 'three'
+import {SphereGeometry} from 'three/src/geometries/SphereGeometry'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
 export default class SphereGeometryBehavior extends BaseGeometryBehavior {

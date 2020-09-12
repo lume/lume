@@ -1,5 +1,5 @@
 import LightBase from './LightBase'
-import {AmbientLight as ThreeAmbientLight} from 'three'
+import {AmbientLight as ThreeAmbientLight} from 'three/src/lights/AmbientLight'
 
 export default class AmbientLight extends LightBase {
 	static defaultElementName = 'i-ambient-light'

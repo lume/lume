@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {PlaneGeometry} from 'three'
+import {PlaneGeometry} from 'three/src/geometries/PlaneGeometry'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
 export default class PlaneGeometryBehavior extends BaseGeometryBehavior {

@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {MeshBasicMaterial} from 'three'
+import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial'
 // import {multiple} from 'lowclass'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 import MaterialTexture from './MaterialTexture'

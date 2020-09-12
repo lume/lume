@@ -1,5 +1,7 @@
 import 'element-behaviors'
-import {MeshPhongMaterial, Color, NoBlending /*DoubleSide*/} from 'three'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
+import {Color} from 'three/src/math/Color'
+import {NoBlending /*, DoubleSide*/} from 'three/src/constants'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 import MaterialTexture from './MaterialTexture'
 

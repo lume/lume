@@ -1,6 +1,10 @@
-import {BoxGeometry, MeshPhongMaterial, Material, Geometry} from 'three'
+import {BoxGeometry} from 'three/src/geometries/BoxGeometry'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
 import {RenderableBehavior} from './RenderableBehavior'
 import Mesh from '../../core/Mesh'
+
+import type {Material} from 'three/src/materials/Material'
+import type {Geometry} from 'three/src/core/Geometry'
 
 export type MeshComponentType = 'geometry' | 'material'
 

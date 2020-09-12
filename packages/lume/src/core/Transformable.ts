@@ -1,5 +1,5 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {Object3D} from 'three'
+import {Object3D} from 'three/src/core/Object3D'
 import {attribute, reactive, autorun} from '@lume/element'
 import {emits} from '@lume/eventful'
 import '../lib/three/make-global'
@@ -7,37 +7,6 @@ import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
 import {toRadians} from './Utility'
 import {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
-
-// TODO, this module augmentation doesn't work as prescribed in
-// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-// declare module 'three' {
-//     interface Object3D {
-//         pivot: Vector3
-//     }
-// }
-
-// This patches Object3D to have a `.pivot` property of type THREE.Vector3 that
-// allows the origin (pivot) of rotation and scale to be specified in local
-// coordinate space. For more info:
-// https://github.com/mrdoob/three.js/issues/15965
-Object3D.prototype.updateMatrix = function () {
-	this.matrix.compose(this.position, this.quaternion, this.scale)
-
-	var pivot = (this as any).pivot
-
-	if (pivot && (pivot.x !== 0 || pivot.y !== 0 || pivot.z !== 0)) {
-		var px = pivot.x,
-			py = pivot.y,
-			pz = pivot.z
-		var te = this.matrix.elements
-
-		te[12] += px - te[0] * px - te[4] * py - te[8] * pz
-		te[13] += py - te[1] * px - te[5] * py - te[9] * pz
-		te[14] += pz - te[2] * px - te[6] * py - te[10] * pz
-	}
-
-	this.matrixWorldNeedsUpdate = true
-}
 
 const threeJsPostAdjustment = [0, 0, 0]
 const alignAdjustment = [0, 0, 0]
@@ -370,7 +339,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 				// centered around (0,0,0) meaning Three.js origin goes from
 				// -0.5 to 0.5 instead of from 0 to 1.
 
-				;(this.three as any).pivot.set(
+				this.three.pivot.set(
 					origin.x * size.x - size.x / 2,
 					// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
 					// positive Y means down instead of up (because Three,js Y
@@ -378,7 +347,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 					-(origin.y * size.y - size.y / 2),
 					origin.z * size.z - size.z / 2,
 				)
-				;(this.threeCSS as any).pivot.set(
+				this.threeCSS.pivot.set(
 					origin.x * size.x - size.x / 2,
 					// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
 					// positive Y means down instead of up (because Three,js Y
@@ -390,8 +359,8 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 			// otherwise, use default Three.js origin of (0,0,0) which is
 			// equivalent to our (0.5,0.5,0.5), by removing the pivot value.
 			else {
-				;(this.three as any).pivot.set(0, 0, 0)
-				;(this.threeCSS as any).pivot.set(0, 0, 0)
+				this.three.pivot.set(0, 0, 0)
+				this.threeCSS.pivot.set(0, 0, 0)
 			}
 
 			this.three.updateMatrix()

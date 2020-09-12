@@ -1,6 +1,7 @@
 // adapted from Three.js, r88, https://github.com/mrdoob/three.js/blob/r88/examples/js/vr/WebVR.js
+// TODO update to latest ^
 
-import {WebGLRenderer} from 'three'
+import type {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
 
 /**
  * @author mrdoob / http://mrdoob.com
@@ -10,7 +11,7 @@ import {WebGLRenderer} from 'three'
  */
 
 var WEBVR = {
-	createButton: function(renderer: WebGLRenderer) {
+	createButton: function (renderer: WebGLRenderer) {
 		function showEnterVR(display: VRDisplay) {
 			button.style.display = ''
 
@@ -20,14 +21,14 @@ var WEBVR = {
 
 			button.textContent = 'ENTER VR'
 
-			button.onmouseenter = function() {
+			button.onmouseenter = function () {
 				button.style.opacity = '1.0'
 			}
-			button.onmouseleave = function() {
+			button.onmouseleave = function () {
 				button.style.opacity = '0.5'
 			}
 
-			button.onclick = function() {
+			button.onclick = function () {
 				display.isPresenting ? display.exitPresent() : display.requestPresent([{source: renderer.domElement}])
 			}
 
@@ -74,7 +75,7 @@ var WEBVR = {
 
 			window.addEventListener(
 				'vrdisplayconnect',
-				function(event: any) {
+				function (event: any) {
 					showEnterVR(event.display)
 				},
 				false,
@@ -82,7 +83,7 @@ var WEBVR = {
 
 			window.addEventListener(
 				'vrdisplaydisconnect',
-				function(_event) {
+				function (_event) {
 					showVRNotFound()
 				},
 				false,
@@ -90,13 +91,13 @@ var WEBVR = {
 
 			window.addEventListener(
 				'vrdisplaypresentchange',
-				function(event: any) {
+				function (event: any) {
 					button.textContent = event.display.isPresenting ? 'EXIT VR' : 'ENTER VR'
 				},
 				false,
 			)
 
-			navigator.getVRDisplays().then(function(displays) {
+			navigator.getVRDisplays().then(function (displays) {
 				if (displays.length > 0) {
 					showEnterVR(displays[0])
 				} else {
@@ -122,22 +123,22 @@ var WEBVR = {
 
 	// DEPRECATED
 
-	checkAvailability: function() {
+	checkAvailability: function () {
 		console.warn('WEBVR.checkAvailability has been deprecated.')
-		return new Promise(function() {})
+		return new Promise(function () {})
 	},
 
-	getMessageContainer: function() {
+	getMessageContainer: function () {
 		console.warn('WEBVR.getMessageContainer has been deprecated.')
 		return document.createElement('div')
 	},
 
-	getButton: function() {
+	getButton: function () {
 		console.warn('WEBVR.getButton has been deprecated.')
 		return document.createElement('div')
 	},
 
-	getVRDisplay: function() {
+	getVRDisplay: function () {
 		console.warn('WEBVR.getVRDisplay has been deprecated.')
 	},
 }
