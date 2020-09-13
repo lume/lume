@@ -18,6 +18,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
+@reactive
 export default abstract class XYZValues<T = any> extends Eventful {
 	private __x: T = undefined!
 	private __y: T = undefined!

@@ -6,6 +6,7 @@ import {defer} from './Utility'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
+@reactive
 export default class PerspectiveCamera extends Node {
 	static defaultElementName = 'i-perspective-camera'
 

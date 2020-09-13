@@ -43,6 +43,7 @@ type Viewport = {
  * A Node that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
+@reactive
 export default class AutoLayoutNode extends Node {
 	static defaultElementName = 'i-autolayout-node'
 

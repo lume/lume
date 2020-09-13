@@ -8,6 +8,7 @@ import {Mesh} from '../../core'
  * Mixin class for adding textures to a mesh behavior
  */
 function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) {
+	@reactive
 	class MaterialTexture extends Constructor<BaseMeshBehavior>(Base) {
 		type: MeshComponentType = 'material'
 		element!: Mesh

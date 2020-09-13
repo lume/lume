@@ -14,6 +14,7 @@ declare global {
 	}
 }
 
+@reactive
 export default class ObjModelBehavior extends RenderableBehavior {
 	@reactive @attribute obj = ''
 	@reactive @attribute mtl = ''

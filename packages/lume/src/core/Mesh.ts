@@ -19,6 +19,7 @@ import '../html/behaviors/RoundedRectangleGeometryBehavior'
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
 //   of element-behaviors.
 
+@reactive
 export default class Mesh extends Node {
 	static defaultElementName = 'i-mesh'
 

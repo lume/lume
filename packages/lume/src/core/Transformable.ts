@@ -50,6 +50,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 
 	// Transformable extends TreeNode (indirectly through Sizeable) because it
 	// needs to be aware of its `parent` when calculating align adjustments.
+	@reactive
 	class Transformable extends Parent {
 		constructor(...args: any[]) {
 			super(...args)

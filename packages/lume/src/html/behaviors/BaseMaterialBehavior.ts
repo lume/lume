@@ -3,6 +3,7 @@ import {Color} from 'three'
 import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
 
 // base class for geometry behaviors
+@reactive
 export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'material'
 

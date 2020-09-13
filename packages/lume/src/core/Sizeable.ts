@@ -34,6 +34,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 	// Sizeable extends TreeNode because Sizeable knows about its `parent` when
 	// calculating proportional sizes. Also Transformable knows about it's parent
 	// in order to calculate it's world matrix based on it's parent's.
+	@reactive
 	class Sizeable extends Parent {
 		// TODO handle ctor arg types
 		constructor(...args: any[]) {

@@ -71,6 +71,7 @@ class PossiblyWebComponent {
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 	const Parent = Settable.mixin(Transformable.mixin(Constructor<PossiblyWebComponent>(Base)))
 
+	@reactive
 	class ImperativeBase extends Parent {
 		// we don't need this, keep for backward compatibility (mainly
 		// all my demos at trusktr.io).

@@ -15,8 +15,6 @@ export class RenderableBehavior extends Behavior {
 	connectedCallback() {
 		super.connectedCallback()
 
-		console.log(' DEBUG behavior connectedCallback')
-
 		this.loadGL()
 
 		this.element.on(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)

@@ -5,6 +5,7 @@ import {TColor} from '../utils/three'
 import Node from './Node'
 
 // base class for light elements.
+@reactive
 export default class LightBase extends Node {
 	three!: Light
 

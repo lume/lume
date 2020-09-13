@@ -75,6 +75,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 	// NOTE for now, we assume Node is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
+	@reactive
 	class Node extends Parent {
 		static defaultElementName = 'i-node'
 

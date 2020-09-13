@@ -3,6 +3,7 @@ import {autorun, reactive, numberAttribute, booleanAttribute} from '@lume/elemen
 import {emits} from '@lume/eventful'
 import LightBase from './LightBase'
 
+@reactive
 export default class PointLight extends LightBase {
 	static defaultElementName = 'i-point-light'
 

@@ -33,6 +33,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 	// NOTE for now, we assume Scene is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
+	@reactive
 	class Scene extends Parent {
 		static defaultElementName = 'i-scene'
 

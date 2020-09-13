@@ -9,6 +9,7 @@ import BaseGeometryBehavior from './BaseGeometryBehavior'
 // 	return true
 // }
 
+@reactive
 export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 	// FIXME We need this because if we pass string numbers to Three.js it
 	// breaks. Three.js should be fixed.
