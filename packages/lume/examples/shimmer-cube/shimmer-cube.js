@@ -1,4 +1,4 @@
-const {Class} = LUME
+const {Class, reactify} = LUME
 
 const BasicHTMLRendererBrand = {}
 
@@ -74,6 +74,14 @@ const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super
 		},
 		// htmlRenderMode: 'replace',
 		htmlRenderMode: 'shadow',
+	},
+
+	constructor() {
+		super.constructor()
+
+		// TODO, besides reactify as an alternative to the @reactive decorator,
+		// we need to make plain-JS equivalent for the @attribute decorator.
+		reactify(this, ['color'])
 	},
 
 	updated(oldProps, modifiedProps) {
@@ -158,7 +166,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
 
 			// prettier-ignore
 			return html`
-                <i-box
+                <lume-box
                     ${this.id ? `id="${this.id}-box"` : ``}
                     color="#364659"
                     size-mode="proportional proportional proportional"
@@ -166,7 +174,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
                     opacity="0.2"
                 >
                     <slot></slot>
-                </i-box>
+                </lume-box>
 
                 ${cubeFaceOrientations.map(orientation => html`
                     <shimmer-surface
@@ -182,7 +190,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
                 `)}
             `
 
-			// root.querySelector('i-box').three.material.opacity = 0.2
+			// root.querySelector('lume-box').three.material.opacity = 0.2
 		},
 	},
 }))

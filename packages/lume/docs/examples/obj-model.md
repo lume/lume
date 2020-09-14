@@ -21,25 +21,25 @@
         touch-action: none; /* prevent touch drag from scrolling */
         color: #ccc;
     }
-    i-scene { position: absolute!important; top: 0; left: 0; }
-    i-scene:nth-child(2) { pointer-events: none; }
-    i-node { padding: 15px; pointer-events: all; }
+    lume-scene { position: absolute!important; top: 0; left: 0; }
+    lume-scene:nth-child(2) { pointer-events: none; }
+    lume-node { padding: 15px; pointer-events: all; }
 </style>
 
 <body>
 
 <!-- Use the disable-css attribute so that only WebGL rendering is enabled
 (if you don't need CSS rendering, turn it off to save CPU). -->
-<i-scene id="scene" experimental-webgl disable-css>
-    <i-ambient-light intensity="0.1"></i-ambient-light>
-    <i-point-light
+<lume-scene id="scene" experimental-webgl disable-css>
+    <lume-ambient-light intensity="0.1"></lume-ambient-light>
+    <lume-point-light
         id="light"
         color="#ffe9ab"
         position="300 300 600"
         size="0 0 0"
         cast-shadow="true"
         >
-        <i-sphere
+        <lume-sphere
             has="basic-material"
             size="5 5 5"
             color="#ffe9ab"
@@ -47,12 +47,12 @@
             cast-shadow="false"
             style="pointer-events: none"
             >
-        </i-sphere>
-    </i-point-light>
-    <i-node id="ship1Rotator" align="0.5 0.5 0" rotation="0 40 0">
-        <!-- This is an i-node element with an obj-model behavior. The
+        </lume-sphere>
+    </lume-point-light>
+    <lume-node id="ship1Rotator" align="0.5 0.5 0" rotation="0 40 0">
+        <!-- This is an lume-node element with an obj-model behavior. The
         obj-model behavior observes the obj and mtl attributes. -->
-        <i-node
+        <lume-node
             id="ship1"
             has="obj-model"
             size="0 0 0 "
@@ -61,32 +61,32 @@
             obj="${location.origin + location.pathname}/models/spaceship/ship.obj"
             mtl="${location.origin + location.pathname}/models/spaceship/ship.mtl"
         >
-        </i-node>
-    </i-node>
-    <i-node id="ship2Rotator" align="0.5 0.5 0" rotation="0 20 0">
-        <!-- Alternatively, the i-obj-model is an element that implicityly
+        </lume-node>
+    </lume-node>
+    <lume-node id="ship2Rotator" align="0.5 0.5 0" rotation="0 20 0">
+        <!-- Alternatively, the lume-obj-model is an element that implicityly
         has an obj-model behavior. We've omitted the mtl attribute, so this
         model will by default have a plain random color. -->
-        <i-obj-model
+        <lume-obj-model
             id="ship2"
             size="0 0 0"
             scale="200 200 200"
             position="0 30 210"
             obj="${location.origin+location.pathname}/models/spaceship/ship.obj"
         >
-        </i-obj-model>
-    </i-node>
-</i-scene>
+        </lume-obj-model>
+    </lume-node>
+</lume-scene>
 
 <!-- We're using two scenes, the next one for overlaid HTML/CSS-based UI, the previous one for WebGL content. -->
 
-<i-scene id="scene">
-    <i-node size-mode="proportional literal" size="1 80">
+<lume-scene id="scene">
+    <lume-node size-mode="proportional literal" size="1 80">
         <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
         <label><input id="objToggle" type="checkbox" checked /> Enable model on first ship.</label>
         <label><input id="matToggle" type="checkbox" /> Enable material on second ship.</label>
-    </i-node>
-</i-scene>
+    </lume-node>
+</lume-scene>
 
 <script>
     // defines the default names for the HTML elements

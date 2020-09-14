@@ -33,7 +33,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 	@reactive
 	class Scene extends Parent {
-		static defaultElementName = 'i-scene'
+		static defaultElementName = 'lume-scene'
 
 		isScene = true
 

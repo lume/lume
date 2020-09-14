@@ -21,15 +21,15 @@
         touch-action: none; /* prevent touch drag from scrolling */
         color: #ccc;
     }
-    i-scene { position: absolute!important; top: 0; left: 0; }
-    i-scene:nth-child(2) { pointer-events: none; }
-    i-node { padding: 15px; pointer-events: all; }
+    lume-scene { position: absolute!important; top: 0; left: 0; }
+    lume-scene:nth-child(2) { pointer-events: none; }
+    lume-node { padding: 15px; pointer-events: all; }
     label { padding-right: 10px; }
 </style>
 
-<i-scene id="scene" experimental-webgl perspective="150">
-    <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light
+<lume-scene id="scene" experimental-webgl perspective="150">
+    <lume-ambient-light intensity="0.3"></lume-ambient-light>
+    <lume-point-light
         id="light"
         color="white"
         position="300 300 300"
@@ -37,9 +37,9 @@
         cast-shadow="true"
         intensity="0.8"
         >
-    </i-point-light>
+    </lume-point-light>
     <!-- Specify a color otherwise the material will be tinted deeppink by default -->
-    <i-box id="model"
+    <lume-box id="model"
         rotation="40 40 0"
         align="0.5 0.5 0.5"
         mount-point="0.5 0.5 0.5"
@@ -47,11 +47,11 @@
         color="white"
         texture="${location.origin+location.pathname}/textures/cement.jpg"
     >
-    </i-box>
-</i-scene>
+    </lume-box>
+</lume-scene>
 
-<i-scene id="scene2">
-    <i-node size-mode="proportional literal" size="1 80">
+<lume-scene id="scene2">
+    <lume-node size-mode="proportional literal" size="1 80">
         <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
         <label>
             X size:
@@ -86,8 +86,8 @@
             Perspective <code id="perspectiveVal"></code>:
             <input id="perspective" type="range" min="75" max="250">
         </label>
-    </i-node>
-</i-scene>
+    </lume-node>
+</lume-scene>
 
 <script>
     // defines the default names for the HTML elements

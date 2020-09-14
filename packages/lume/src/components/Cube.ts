@@ -5,7 +5,7 @@ import Node from '../core/Node'
  * @extends Node
  * @class Cube - A scenegraph tree that lays things out in a cube form.@
  *
- * TODO: extend from i-mesh, using a Cube geometry? Or perhaps this is a CubeLayout, not necessarily a Cube mesh.
+ * TODO: extend from lume-mesh, using a Cube geometry? Or perhaps this is a CubeLayout, not necessarily a Cube mesh.
  * TODO: this is written imperatively. How would it be declaratively?
  */
 export default class Cube extends Node {

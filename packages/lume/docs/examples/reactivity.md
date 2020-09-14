@@ -36,8 +36,8 @@
     const rotation = () => [0, rotationY(), 0]
 
     const scene = html\`
-      <i-scene>
-        <i-node
+      <lume-scene>
+        <lume-node
           id="node"
           rotation=\${rotation}
           size="100 100"
@@ -45,9 +45,9 @@
           mount-point="0.5 0.5 0.5"
         >
           <h1 align="center">\${count}</h1>
-        </i-node>
+        </lume-node>
 
-        <i-node
+        <lume-node
           id="node"
           align="0.5 0.5"
           position="0 80"
@@ -58,8 +58,8 @@
           >
             Click
           </button>
-        </i-node>
-      </i-scene>
+        </lume-node>
+      </lume-scene>
     \`
 
     console.log(scene instanceof HTMLElement) // true
@@ -74,7 +74,7 @@
       background: #333;
       font-family: sans-serif;
     }
-    i-node {
+    lume-node {
       background: deeppink;
       border-radius: 5px;
     }

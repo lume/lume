@@ -9,15 +9,15 @@
       code:
 `<script src="${location.origin+location.pathname}/global.js"><\/script>
 
-<i-scene>
-  <i-node id="one" position="50 50" size="10 10">
-    <i-node id="two" position="50 50" size="10 10">
-      <i-node id="three" position="50 50" size="100 100">
+<lume-scene>
+  <lume-node id="one" position="50 50" size="10 10">
+    <lume-node id="two" position="50 50" size="10 10">
+      <lume-node id="three" position="50 50" size="100 100">
         Positioning is relative to parents!
-      </i-node>
-    </i-node>
-  </i-node>
-</i-scene>
+      </lume-node>
+    </lume-node>
+  </lume-node>
+</lume-scene>
 
 <script>
   LUME.useDefaultNames()
@@ -32,7 +32,7 @@
     height: 100%; width: 100%;
     background: #333
   }
-  i-node { padding: 5px; }
+  lume-node { padding: 5px; }
   #one { background: coral; }
   #two { background: yellowgreen; }
   #three { background: royalblue; }

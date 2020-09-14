@@ -11,13 +11,13 @@
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 
 <div id="div">
-	<i-point-light intensity="0.6"></i-point-light>
-	<i-point-light align="0.5 0.5" position="300 0 300"></i-point-light>
-	<i-box id="node" size="100 100 100" rotation="0 -70 0" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" color="cornflowerblue">
-		<i-node align="0 1 1" size="100 100">
+	<lume-point-light intensity="0.6"></lume-point-light>
+	<lume-point-light align="0.5 0.5" position="300 0 300"></lume-point-light>
+	<lume-box id="node" size="100 100 100" rotation="0 -70 0" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" color="cornflowerblue">
+		<lume-node align="0 1 1" size="100 100">
 			<h3 align="center">Hello 3D world!</h3>
-		</i-node>
-	</i-box>
+		</lume-node>
+	</lume-box>
 </div>
 
 <style>
@@ -44,9 +44,9 @@
 		mode: 'open'
 	})
 	root.innerHTML = \`
-    <i-scene experimental-webgl>
+    <lume-scene experimental-webgl>
       <slot></slot>
-    </i-scene>
+    </lume-scene>
   \`
 	window.addEventListener('error', e => console.log(e))
 <\/script>

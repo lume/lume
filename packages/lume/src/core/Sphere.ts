@@ -1,7 +1,7 @@
 import Mesh from './Mesh'
 
 export default class Sphere extends Mesh {
-	static defaultElementName = 'i-sphere'
+	static defaultElementName = 'lume-sphere'
 
 	static defaultBehaviors = {
 		'sphere-geometry': (initialBehaviors: string[]) => {

@@ -1,7 +1,7 @@
 import Mesh from './Mesh'
 
 export default class DOMNode extends Mesh {
-	static defaultElementName = 'i-dom-node'
+	static defaultElementName = 'lume-dom-node'
 
 	static defaultBehaviors = {
 		'domnode-geometry': (initialBehaviors: any) => {

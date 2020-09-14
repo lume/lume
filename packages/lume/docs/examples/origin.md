@@ -18,24 +18,24 @@
         touch-action: none; /* prevent touch drag from scrolling */
         color: #ccc;
     }
-    i-scene { position: absolute!important; top: 0; left: 0; }
-    i-node { padding: 15px; pointer-events: all; }
+    lume-scene { position: absolute!important; top: 0; left: 0; }
+    lume-node { padding: 15px; pointer-events: all; }
 </style>
 
 <!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
-<i-scene experimental-webgl disable-css>
-    <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light
+<lume-scene experimental-webgl disable-css>
+    <lume-ambient-light intensity="0.3"></lume-ambient-light>
+    <lume-point-light
       align="0.5 0.5 0.5"
       position="-200 -200 400"
       intensity="0.5"
       shadow-map-width="1024"
       shadow-map-height="1024"
-    ></i-point-light>
-</i-scene>
+    ></lume-point-light>
+</lume-scene>
 
-<i-scene id="scene2">
-    <i-node size-mode="proportional literal" size="1 80">
+<lume-scene id="scene2">
+    <lume-node size-mode="proportional literal" size="1 80">
         <label>
             X rotation <code id="xRotationVal"></code>:
             <input id="xRotation" type="range" min="0" max="360" value="0">
@@ -50,8 +50,8 @@
             Z rotation <code id="zRotationVal"></code>:
             <input id="zRotation" type="range" min="0" max="360" value="0">
         </label>
-    </i-node>
-</i-scene>
+    </lume-node>
+</lume-scene>
 
 <script>
     LUME.useDefaultNames()
@@ -73,18 +73,18 @@
 
     const makeBox = (origin, i) => html\`
         ${/* Lays the boxes out in a two-row grid, four boxes per row. */''}
-        <i-box origin=\${origin}
+        <lume-box origin=\${origin}
             align=\${[0.20 + i%4 * 0.20, i < 4 ? 0.4 : 0.6, 0]}
             size="100 100 100"
             mount-point="0.5 0.5 0.5"
             color="skyblue"
             opacity="0.5"
         >
-            <i-sphere align=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></i-sphere>
-        </i-box>
+            <lume-sphere align=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></lume-sphere>
+        </lume-box>
     \`
 
-    const scene = document.querySelector('i-scene')
+    const scene = document.querySelector('lume-scene')
     const boxes = []
 
     let i = 0

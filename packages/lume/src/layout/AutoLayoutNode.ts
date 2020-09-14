@@ -15,7 +15,7 @@
 // be more powerful, letting us distribute any number of nodes into each layout
 // slot. Also it eliminated edge cases that we'll have to handle with the
 // className approach.
-// - Make an <i-visual-format> element that can contain visual format code to
+// - Make an <lume-visual-format> element that can contain visual format code to
 // re-use in multiple layouts.
 // - Allow visual-format to be fetch by path (like img src attribute).
 
@@ -45,7 +45,7 @@ type Viewport = {
  */
 @reactive
 export default class AutoLayoutNode extends Node {
-	static defaultElementName = 'i-autolayout-node'
+	static defaultElementName = 'lume-autolayout-node'
 
 	static DEFAULT_PARSE_OPTIONS = {
 		extended: true,

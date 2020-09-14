@@ -1,7 +1,7 @@
 import Mesh from './Mesh'
 
 export default class Plane extends Mesh {
-	static defaultElementName = 'i-plane'
+	static defaultElementName = 'lume-plane'
 
 	static defaultBehaviors = {
 		'plane-geometry': (initialBehaviors: string[]) => {

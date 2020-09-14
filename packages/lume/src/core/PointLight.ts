@@ -5,7 +5,7 @@ import LightBase from './LightBase'
 
 @reactive
 export default class PointLight extends LightBase {
-	static defaultElementName = 'i-point-light'
+	static defaultElementName = 'lume-point-light'
 
 	three!: ThreePointLight
 

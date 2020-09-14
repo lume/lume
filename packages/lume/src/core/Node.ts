@@ -32,23 +32,23 @@ const _Node = Mixin(NodeMixin)
  *       code:
  * `<script src="${location.origin+location.pathname}/global.js"><\/script>
  *
- * <i-scene>
- *   <i-node
+ * <lume-scene>
+ *   <lume-node
  *     id="container"
  *     size="100 100"
  *     position="100 100"
  *   >
  *     Hello 3D World!
- *   </i-node>
- * </i-scene>
+ *   </lume-node>
+ * </lume-scene>
  *
  * <style>
  *   html, body {
  *     margin: 0; padding: 0;
  *     height: 100%; width: 100%;
  *   }
- *   i-scene { background: #333 }
- *   i-node { background: royalblue }
+ *   lume-scene { background: #333 }
+ *   lume-node { background: royalblue }
  * </style>
  *
  * <script>
@@ -77,7 +77,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 
 	@reactive
 	class Node extends Parent {
-		static defaultElementName = 'i-node'
+		static defaultElementName = 'lume-node'
 
 		@reactive @booleanAttribute(true) @emits('propertychange') visible = true
 

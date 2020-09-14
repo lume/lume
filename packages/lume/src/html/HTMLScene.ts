@@ -32,49 +32,49 @@ export default class HTMLScene extends DeclarativeBase {
 			transform-style: preserve-3d;
 		}
 
-		.i-scene-inner {
+		.lume-scene-inner {
 			position: relative
 		}
 
-		.i-scene-inner,
-		.i-scene-CSS3DLayer,
-		.i-scene-MiscellaneousLayer,
-		.i-scene-WebGLLayer,
-		.i-scene-WebGLLayer > canvas  {
+		.lume-scene-inner,
+		.lume-scene-CSS3DLayer,
+		.lume-scene-MiscellaneousLayer,
+		.lume-scene-WebGLLayer,
+		.lume-scene-WebGLLayer > canvas  {
 			margin: 0; padding: 0;
 			width: 100%; height: 100%;
 			display: block;
 		}
 
-		.i-scene-CSS3DLayer,
-		.i-scene-MiscellaneousLayer,
-		.i-scene-WebGLLayer {
+		.lume-scene-CSS3DLayer,
+		.lume-scene-MiscellaneousLayer,
+		.lume-scene-WebGLLayer {
 			/* make sure all layers are stacked on top of each other */
 			position: absolute; top: 0; left: 0;
 		}
 
-		.i-scene-CSS3DLayer {
+		.lume-scene-CSS3DLayer {
 			transform-style: preserve-3d;
 		}
 
-		.i-scene-WebGLLayer,
-		.i-scene-MiscellaneousLayer {
+		.lume-scene-WebGLLayer,
+		.lume-scene-MiscellaneousLayer {
 			pointer-events: none;
 		}
 	`
 
 	template = () => html`
-		<div class="i-scene-inner">
-			<div ref=${(el: any) => (this._cssLayer = el)} class="i-scene-CSS3DLayer">
+		<div class="lume-scene-inner">
+			<div ref=${(el: any) => (this._cssLayer = el)} class="lume-scene-CSS3DLayer">
 				${/* WebGLRendererThree places the CSS3DRendererNested domElement
 				here, which contains a <slot> element that child elements of
 				a Scene are distributed into (rendered relative to).
 				*/ ''}
 			</div>
-			<div ref=${(el: any) => (this._glLayer = el)} class="i-scene-WebGLLayer">
+			<div ref=${(el: any) => (this._glLayer = el)} class="lume-scene-WebGLLayer">
 				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
 			</div>
-			<div class="i-scene-MiscellaneousLayer">
+			<div class="lume-scene-MiscellaneousLayer">
 				<slot name="misc"></slot>
 			</div>
 		</div>
@@ -96,7 +96,7 @@ export default class HTMLScene extends DeclarativeBase {
 		const root = this._cssLayer!.attachShadow({mode: 'open'})
 		root.append(html`
 			<style>
-				.i-scene-CSS3DLayer-inner {
+				.lume-scene-CSS3DLayer-inner {
 					/*
 					 * make sure CSS3D rendering is contained inside of the
 					 * CSS3DLayer (all 3D elements have position:absolute,
@@ -107,7 +107,7 @@ export default class HTMLScene extends DeclarativeBase {
 			</style>
 		`)
 		root.append(html`
-			<div class="i-scene-CSS3DLayer-inner">
+			<div class="lume-scene-CSS3DLayer-inner">
 				<slot></slot>
 			</div>
 		`)

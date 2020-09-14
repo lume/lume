@@ -94,7 +94,7 @@ new Vue({
         font-family: sans-serif;
         touch-action: none;
     }
-    i-node {
+    lume-node {
         text-align: center;
     }
     #bg {
@@ -119,24 +119,24 @@ new Vue({
 </style>
 <template vue>
     <!-- Lights and shadows are powered by WebGL, but written with HTML: -->
-    <i-scene
+    <lume-scene
         experimental-webgl="true"
         id="scene"
         background-color="black"
         background-opacity="0"
-        style="perspective: 800px"
+        perspective="800"
         shadowmap-type="pcfsoft" NOTE="one of basic, pcf, pcfsoft"
     >
-        <i-ambient-light color="#ffffff" intensity="0"></i-ambient-light>
-        <i-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
-            <i-node
+        <lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
+        <lume-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
+            <lume-node
                 id="button-container"
                 position="0 0 20"
                 size="600 31 0"
                 align="0.5 0.5 0"
                 mount-point="0.5 0.5 0"
             >
-                <i-dom-plane
+                <lume-dom-plane
                     v-for="n in [0,1,2,3,4]"
                     ref="btn"
                     :key="n"
@@ -147,17 +147,17 @@ new Vue({
                     color="#444"
                 >
                     <button>button {{n+1}}</button>
-                </i-dom-plane>
-            </i-node>
-            <i-node id="lightContainer" size="0 0 0" position="0 0 300">
-                <i-point-light
+                </lume-dom-plane>
+            </lume-node>
+            <lume-node id="lightContainer" size="0 0 0" position="0 0 300">
+                <lume-point-light
                     id="light"
                     color="white"
                     size="0 0 0"
                     cast-shadow="true"
                     intensity="0.8"
                 >
-                    <i-mesh
+                    <lume-mesh
                         has="sphere-geometry basic-material"
                         size="10 10 10"
                         color="white"
@@ -165,11 +165,11 @@ new Vue({
                         cast-shadow="false"
                         style="pointer-events: none"
                     >
-                    </i-mesh>
-                </i-point-light>
-            </i-node>
-        </i-dom-plane>
-    </i-scene>
+                    </lume-mesh>
+                </lume-point-light>
+            </lume-node>
+        </lume-dom-plane>
+    </lume-scene>
 </template>
 <div id="buttonsRoot"></div>
 <script>
@@ -194,7 +194,7 @@ new Vue({
                 // The following is a temporary hack because opacity isn't
                 // exposed through the HTML API yet. work-in-progress...
                 // TODO this stuff should be doable via the HTML
-                Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
+                Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(function(n) {
                     n.three.material.opacity = 0.3
                 })
 

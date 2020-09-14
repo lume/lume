@@ -8,7 +8,7 @@ import {defer} from './Utility'
 // default camera.
 @reactive
 export default class PerspectiveCamera extends Node {
-	static defaultElementName = 'i-perspective-camera'
+	static defaultElementName = 'lume-perspective-camera'
 
 	@reactive @numberAttribute(50) fov = 50
 	/** A value of 0 sets the aspect ratio to automatic, based on the scene dimensions. */

@@ -4,74 +4,94 @@
 <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
 
 <style>
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
 
-    html, body { background: #333; }
+	html,
+	body {
+		background: #333;
+	}
 
-    .cube {
-        background: #af304a;
-    }
+	.cube {
+		background: #af304a;
+	}
 
-    .plane {
-        background: #0066ff;
-    }
+	.plane {
+		background: #0066ff;
+	}
 
-    .x-axis { background: red; }
-    .y-axis { background: green; }
-    .z-axis { background: blue; }
+	.x-axis {
+		background: red;
+	}
+	.y-axis {
+		background: green;
+	}
+	.z-axis {
+		background: blue;
+	}
 </style>
 
-<i-scene experimental-webgl="false">
-    <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></i-point-light>
+<lume-scene experimental-webgl="false">
+	<lume-ambient-light intensity="0.3"></lume-ambient-light>
+	<lume-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
 
-    <i-node id="root" size="0 0 0" align="0.5 0.5 0.5" rotation="0 30 0">
-        <i-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100"></i-sphere>
-        <i-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 200"></i-sphere>
+	<lume-node id="root" size="0 0 0" align="0.5 0.5 0.5" rotation="0 30 0">
+		<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100"></lume-sphere>
+		<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 200"></lume-sphere>
 
-        <i-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></i-dom-plane>
-        <i-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></i-dom-plane>
-        <i-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></i-dom-plane>
-        <i-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></i-dom-plane>
+		<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
+		<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
+		<lume-dom-plane
+			align="0.5 0.5 0"
+			mount-point="0.5 0.5 0"
+			class="z-axis"
+			size="1 1000 0"
+			rotation="90 45 0"
+		></lume-dom-plane>
+		<lume-dom-plane
+			align="0.5 0.5 0"
+			mount-point="0.5 0.5 0"
+			class="z-axis"
+			size="1 1000 0"
+			rotation="90 -45 0"
+		></lume-dom-plane>
 
-        <i-box class="cube" mount-point="0.5 0.5 0" align="0.5 0.5 0" size="100 100 100">
-            <i-dom-plane class="plane" size="100 100 0"></i-dom-plane>
-            <i-dom-plane class="plane" size="100 100 0" position="0 0 100"></i-dom-plane>
-            <i-dom-plane class="plane" size="100 100 0" position="0 0 200"></i-dom-plane>
-        </i-box>
+		<lume-box class="cube" mount-point="0.5 0.5 0" align="0.5 0.5 0" size="100 100 100">
+			<lume-dom-plane class="plane" size="100 100 0"></lume-dom-plane>
+			<lume-dom-plane class="plane" size="100 100 0" position="0 0 100"></lume-dom-plane>
+			<lume-dom-plane class="plane" size="100 100 0" position="0 0 200"></lume-dom-plane>
+		</lume-box>
 
-        <i-node origin="0 0 0" align="0.5 0.5" size="100 100 100" mount-point="0.5 0.5 0" position="0 -100 0">
-            <i-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5"></i-sphere>
+		<lume-node origin="0 0 0" align="0.5 0.5" size="100 100 100" mount-point="0.5 0.5 0" position="0 -100 0">
+			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5"></lume-sphere>
 
-            <i-dom-node size="100 100 100" position="0 0 100" class="plane"></i-dom-node>
-        </i-node>
-
-    </i-node>
-</i-scene>
+			<lume-dom-node size="100 100 100" position="0 0 100" class="plane"></lume-dom-node>
+		</lume-node>
+	</lume-node>
+</lume-scene>
 
 <script src="../global.js"></script>
 <script>
-    LUME.useDefaultNames()
+	LUME.useDefaultNames()
 
-    Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
-        console.log( n )
-        n.on('GL_LOAD', () => {
-            n.three.material.opacity = 0.1
-        })
-    })
-    // for (const n of Array.from(document.querySelectorAll('i-dom-plane'))) {
-    //     console.log( n )
-    //     n.on('GL_LOAD', () => {
-    //         n.three.material.opacity = 0.1
-    //     })
-    // }
+	Array.from(document.querySelectorAll('lume-dom-plane')).forEach(function (n) {
+		console.log(n)
+		n.on('GL_LOAD', () => {
+			n.three.material.opacity = 0.1
+		})
+	})
+	// for (const n of Array.from(document.querySelectorAll('lume-dom-plane'))) {
+	//     console.log( n )
+	//     n.on('GL_LOAD', () => {
+	//         n.three.material.opacity = 0.1
+	//     })
+	// }
 
-    // if (typeof root !== 'undefined')
-    //     root.rotation = (x,y,z) => [x,y+=1,z]
+	// if (typeof root !== 'undefined')
+	//     root.rotation = (x,y,z) => [x,y+=1,z]
 </script>

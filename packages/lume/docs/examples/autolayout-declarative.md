@@ -23,9 +23,9 @@
 <!-- FIXME: If we move this script to after the scene's markup, then the last item in the layout never becomes visible for some reason. -->
 <script> LUME.useDefaultNames() <\/script>
 
-<i-scene id="scene" experimental-webgl>
-    <i-ambient-light intensity="0.1"></i-ambient-light>
-    <i-point-light
+<lume-scene id="scene" experimental-webgl>
+    <lume-ambient-light intensity="0.1"></lume-ambient-light>
+    <lume-point-light
         id="light"
         color="white"
         position="300 300 120"
@@ -33,7 +33,7 @@
         cast-shadow="true"
         intensity="0.5"
         >
-        <i-mesh
+        <lume-mesh
             has="sphere-geometry basic-material"
             size="10 10 10"
             color="white"
@@ -42,9 +42,9 @@
             mount-point="0.5 0.5 0.5"
             style="pointer-events: none"
             >
-        </i-sphere>
-    </i-point-light>
-    <i-autolayout-node
+        </lume-sphere>
+    </lume-point-light>
+    <lume-autolayout-node
         id="layout"
         size="100 100 0" TODO="why do we need Z size 0 here, but not in the imperative example?"
         position="0 0 0"
@@ -59,13 +59,13 @@
         "
         style="background: rgba(0,0,0,0.3)"
     >
-        <i-dom-plane size="1 1 0" color="deeppink" class="child1">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</i-dom-plane>
-        <i-dom-plane size="1 1 0" color="deeppink" class="child2">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</i-dom-plane>
-        <i-dom-plane size="1 1 0" color="deeppink" class="child3">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</i-dom-plane>
-        <i-dom-plane size="1 1 0" color="deeppink" class="child4">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</i-dom-plane>
-        <i-dom-plane size="1 1 0" color="deeppink" class="child5">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</i-dom-plane>
-    </i-autolayout-node>
-</i-scene>
+        <lume-dom-plane size="1 1 0" color="deeppink" class="child1">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+        <lume-dom-plane size="1 1 0" color="deeppink" class="child2">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+        <lume-dom-plane size="1 1 0" color="deeppink" class="child3">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+        <lume-dom-plane size="1 1 0" color="deeppink" class="child4">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+        <lume-dom-plane size="1 1 0" color="deeppink" class="child5">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+    </lume-autolayout-node>
+</lume-scene>
 
 <script>
     debugger
@@ -109,7 +109,7 @@
         lastSize = size
     })
 
-    Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
+    Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(plane => {
         plane.three.material.opacity = 0.3
         plane.needsUpdate()
     })

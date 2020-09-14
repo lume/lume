@@ -23,7 +23,7 @@ import '../html/behaviors/RoundedRectangleGeometryBehavior'
 
 @reactive
 export default class Mesh extends Node {
-	static defaultElementName = 'i-mesh'
+	static defaultElementName = 'lume-mesh'
 
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should

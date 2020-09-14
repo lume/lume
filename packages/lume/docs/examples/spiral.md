@@ -13,8 +13,8 @@
 <body>
 
   <template>
-    <i-scene>
-      <i-node
+    <lume-scene>
+      <lume-node
         ref="rotator"
         TODO-calculate-minimum-size-based-on-viewport-size
         size="1630 1630"
@@ -22,15 +22,15 @@
         mount-point="0.5 0.5"
         rotation="0 0 0"
       >
-        <i-scene v-once>
-          <i-node
+        <lume-scene v-once>
+          <lume-node
             v-for="(n, i) of Array(400)"
             :key="i"
             size="0 0 0"
             align="0.5 0.5"
             :rotation="[0, 0, i * 10]"
           >
-            <i-node
+            <lume-node
               :size="[50 - i % 50, 50 - i % 50, 0]"
               mount-point="0.5 0.5"
               :position="[0, i * 2, 0]"
@@ -39,15 +39,15 @@
                 borderRadius: (i % 50) + 'px',
               }"
             >
-            </i-node>
-          </i-node>
-        </i-scene>
-      </i-node>
-    </i-scene>
+            </lume-node>
+          </lume-node>
+        </lume-scene>
+      </lume-node>
+    </lume-scene>
   </template>
 
   <style>
-    i-scene {
+    lume-scene {
       background: #333;
     }
     html, body {

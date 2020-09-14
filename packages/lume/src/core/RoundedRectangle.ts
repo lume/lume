@@ -1,7 +1,7 @@
 import {Mesh} from './Mesh'
 
 export default class RoundedRectangle extends Mesh {
-	static defaultElementName = 'i-rounded-rectangle'
+	static defaultElementName = 'lume-rounded-rectangle'
 
 	static defaultBehaviors = {
 		'rounded-rectangle-geometry': (initialBehaviors: any) => {

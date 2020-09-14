@@ -23,40 +23,40 @@ Make a file named `index.html` containing the following:
 		background: #333;
 	}
 
-	i-node {
-		/* Give the rotating rectangle (the i-node below) a pink color. */
+	lume-node {
+		/* Give the rotating rectangle (the lume-node below) a pink color. */
 		background: pink;
 	}
 </style>
 
 <!-- Define a 3D scene. -->
-<i-scene>
+<lume-scene>
 	<!--
-		The <i-node> is a basic element that is rendered with CSS.
+		The <lume-node> is a basic element that is rendered with CSS.
 
 		Here we give it "proportional" sizing along the X nd Y axes, which
 		means it will be sized relative to the size of its parent (in this
-		case the parent is the <i-scene> element). The <i-node> will have 75%
+		case the parent is the <lume-scene> element). The <lume-node> will have 75%
 		or the width and height of the scene width and height.
 
 		The align and mount-point properties have values that center the
-		<i-node> rectangle in the center of the view.
+		<lume-node> rectangle in the center of the view.
 	-->
-	<i-node size-mode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mount-point="0.5 0.5">
+	<lume-node size-mode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mount-point="0.5 0.5">
 		<!-- Put some italicized text inside of it. -->
 		<i>Hello 3D</i>
-	</i-node>
-</i-scene>
+	</lume-node>
+</lume-scene>
 
 <!-- Include the global version of Lume in the app. -->
 <script src="https://unpkg.com/lume/dist/global.js"></script>
 
 <script>
-	// Tell Lume to use default names for the elements (f.e. i-node and i-scene).
+	// Tell Lume to use default names for the elements (f.e. lume-node and lume-scene).
 	LUME.useDefaultNames()
 
-	// Get a reference to the i-node element.
-	const node = document.querySelector('i-node')
+	// Get a reference to the lume-node element.
+	const node = document.querySelector('lume-node')
 
 	// Define a "property function" to increment only the Y rotation. This
 	// increments rotation around the Y axis by 1 degree every time the scene
@@ -149,7 +149,7 @@ Make a file named `output/index.html` in your poject containing the following:
 		background: #333;
 	}
 
-	i-node {
+	lume-node {
 		background: pink;
 	}
 

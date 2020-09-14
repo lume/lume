@@ -63,7 +63,7 @@ describe('Node', () => {
 
 	it('element is an instance of Node, created with `document.createElement`', async () => {
 		// TODO: is there a better way than casting the result of createElement?
-		const n = document.createElement('i-node') as Node
+		const n = document.createElement('lume-node') as Node
 
 		scene.add(n)
 

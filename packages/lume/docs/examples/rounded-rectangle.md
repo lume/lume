@@ -22,9 +22,9 @@
     }
 </style>
 
-<i-scene id="scene" experimental-webgl>
-    <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light
+<lume-scene id="scene" experimental-webgl>
+    <lume-ambient-light intensity="0.3"></lume-ambient-light>
+    <lume-point-light
         id="light"
         color="white"
         position="300 300 300"
@@ -32,8 +32,8 @@
         cast-shadow="true"
         intensity="0.8"
         >
-    </i-point-light>
-    <i-rounded-rectangle
+    </lume-point-light>
+    <lume-rounded-rectangle
         id="rect1"
         corner-radius="45"
         thickness="1"
@@ -44,8 +44,8 @@
         position="55"
         color="skyblue"
     >
-    </i-rounded-rectangle>
-    <i-rounded-rectangle
+    </lume-rounded-rectangle>
+    <lume-rounded-rectangle
         id="rect2"
         corner-radius="45"
         thickness="1"
@@ -56,9 +56,9 @@
         position="-55"
         color="pink"
     >
-    </i-rounded-rectangle>
+    </lume-rounded-rectangle>
 
-</i-scene>
+</lume-scene>
 
 <script>
     // defines the default names for the HTML elements

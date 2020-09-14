@@ -66,11 +66,8 @@ export default class ElementOperations {
 	set shouldRender(shouldRender: boolean) {
 		this.__shouldRender = shouldRender
 
-		console.log('ElementOperations.shouldRender(): request frame to set display:block')
-
 		// TODO replace this with Motor.once() (might cause a circular dependency)
 		requestAnimationFrame(() => {
-			console.log('ElementOperations.shouldRender(): set display:block')
 			this.__applyStyle('display', shouldRender ? 'block' : 'none')
 		})
 	}

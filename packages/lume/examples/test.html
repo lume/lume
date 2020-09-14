@@ -23,7 +23,7 @@
     <body>
 
         <!-- Render something below the scene to test transparency -->
-        <!-- <style> i-scene {position:absolute!important; top:0; left:0;} </style>
+        <!-- <style> lume-scene {position:absolute!important; top:0; left:0;} </style>
         <p>This is some text below the scene.</p> -->
 
         <!--This script only defines classes.-->
@@ -36,8 +36,8 @@
         <!-- WORKS ======================================================== -->
 
         <style>
-            i-dom-node { text-align: center; }
-            i-node { color: royalblue; }
+            lume-dom-node { text-align: center; }
+            lume-node { color: royalblue; }
             button {
                 background: #e96699;
                 color: white;
@@ -51,7 +51,7 @@
             LUME.useDefaultNames()
         </script>
 
-        <i-scene
+        <lume-scene
             experimental-webgl="true"
             id="scene"
             TODO-perspective="800"
@@ -60,9 +60,9 @@
             shadowmap-type="pcfsoft" // one of basic, pcf, pcfsoft
         >
 
-            <i-ambient-light color="white" intensity="0.3"></i-ambient-light>
+            <lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-            <i-dom-node
+            <lume-dom-node
                 size-mode="proportional proportional"
                 size="1 1 0"
                 style="background: #0e99d9"
@@ -71,7 +71,7 @@
 
                 <h1> HTML content, with lighting and shadows! </h1>
 
-                <i-dom-node
+                <lume-dom-node
                     position="0 100 10"
                     size="70 21 0"
                     align="0.5 0 0"
@@ -80,13 +80,13 @@
                 >
 
                     <button> A button! </button>
-                </i-dom-node>
+                </lume-dom-node>
 
-            </i-dom-node>
+            </lume-dom-node>
 
-            <i-node id="root" align="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
+            <lume-node id="root" align="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
 
-                <i-dom-node
+                <lume-dom-node
                     size="200 200 0"
                     mount-point="0.5 0.5 0.5"
                     style="background: #A1D490"
@@ -95,25 +95,25 @@
 
                     <h1>Hello</h1>
 
-                </i-dom-node>
+                </lume-dom-node>
 
-                <i-sphere
+                <lume-sphere
                     size="50 50 50"
                     mount-point="0.5 0.5 0.5"
                     position="60 30 80"
                     color="#e96699"
                     TODO-material-opacity="0.9"
-                ></i-sphere>
+                ></lume-sphere>
 
-                <i-plane
+                <lume-plane
                     size="50 50 50"
                     mount-point="0.5 0.5 0.5"
                     position="80 20 80"
                     color="pink"
                     rotation="0 0 0"
-                ></i-plane>
+                ></lume-plane>
 
-                <i-dom-node
+                <lume-dom-node
                     id="little"
                     size="50 50 50"
                     mount-point="0.5 0.5 0.5"
@@ -125,7 +125,7 @@
                 >
                     3D!
 
-                    <i-dom-node
+                    <lume-dom-node
                         id="little2"
                         size="50 50 50"
                         position="20 30 110"
@@ -134,19 +134,19 @@
                         TODO-material-opacity="0.3"
                     >
                         Yeah!
-                    </i-dom-node>
+                    </lume-dom-node>
 
-                </i-dom-node>
+                </lume-dom-node>
 
-                <i-box
+                <lume-box
                     id="cube"
                     size="50 50 50"
                     mount-point="0.5 0 0.5"
                     position="-60 20 80"
                     color="#ff6157"
-                ></i-box>
+                ></lume-box>
 
-                <i-mesh
+                <lume-mesh
                     id="lightMesh"
                     has="sphere-geometry basic-material"
                     size="10 10 10"
@@ -155,18 +155,18 @@
                     receive-shadow="false"
                     cast-shadow="false"
                 >
-                    <i-point-light
+                    <lume-point-light
                         id="light"
                         color="#ffffff"
                         align="0.5 0.5 0.5"
                         size="0 0 0"
                         intensity="0.5"
-                    ></i-point-light>
-                </i-mesh>
+                    ></lume-point-light>
+                </lume-mesh>
 
-            </i-node>
+            </lume-node>
 
-        </i-scene>
+        </lume-scene>
 
         <script>
             const { Motor, Events } = LUME
@@ -188,7 +188,7 @@
                 little2.rotation.x += 1
             })
 
-            Array.from( document.querySelectorAll('i-dom-node') ).forEach(plane => {
+            Array.from( document.querySelectorAll('lume-dom-node') ).forEach(plane => {
                 // if already loaded, run intial logic
                 if (plane.glLoaded) onGLLoad(plane)
                 plane.on(Events.GL_LOAD, onGLLoad)
@@ -199,12 +199,12 @@
                 plane.needsUpdate()
             }
 
-            const scene = document.querySelector('i-scene')
+            const scene = document.querySelector('lume-scene')
 
             // This setInterval shows that
             //
             // - the above GL_LOAD event handler re-establishes the material
-            // opacity of the i-dom-node elements every couple of seconds.
+            // opacity of the lume-dom-node elements every couple of seconds.
             //
             // - that turning GL rendering off and on makes the animation
             // stutter for a small moment, because destroying and re-creating
@@ -240,7 +240,7 @@
         <style>
             html, body { background: #333; }
 
-            i-node { background: deeppink; border: 1px solid yellow }
+            lume-node { background: deeppink; border: 1px solid yellow }
 
             div {
                 position: absolute; top: 50%; left: 50%;
@@ -249,13 +249,13 @@
             }
         </style>
 
-        <i-scene
+        <lume-scene
             experimental-webgl="true"
             backgroundColor="rgb(0,0,0)"
             backgroundOpacity="0"
         >
-            <i-ambient-light color="white"></i-ambient-light>
-            <i-node id="n"
+            <lume-ambient-light color="white"></lume-ambient-light>
+            <lume-node id="n"
                 size-mode="proportional proportional"
                 size="0.25 0.25"
                 align="0.5 0.5"
@@ -263,10 +263,10 @@
             >
                 <!~~ TODO: align 1 places items at the front of the cube space, but the parent DOM element is rendered at the back of the cube space.
                 Where should a DOM element (or Plane) be rendered in the cube space, and where is align 0 and 1 relative to it? ~~>
-                <i-plane align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 0 1" id="a" color="cyan" map="BG_Map.png"></i-plane>
-                <i-node  align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 250 2" id="b">HELLO</i-node>
-            </i-node>
-        </i-scene>
+                <lume-plane align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 0 1" id="a" color="cyan" map="BG_Map.png"></lume-plane>
+                <lume-node  align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 250 2" id="b">HELLO</lume-node>
+            </lume-node>
+        </lume-scene>
 
         <!~~ <script>
             LUME.useDefaultNames()
@@ -282,17 +282,17 @@
  -->
 
         <!-- WORKS ======================================================== -->
-<!--         <i-scene
+<!--         <lume-scene
             experimental-webgl="true"
             backgroundColor="rgb(0,0,0)"
             backgroundOpacity="0"
         >
-            <i-ambient-light color="white"></i-ambient-light>
-            <i-node id="n">
-                <i-plane size="100 250 0" color="white" map="BG_Map.png"></i-plane>
-                <i-node size="100 250 0" position="0 250 0">hello</i-node>
-            </i-node>
-        </i-scene>
+            <lume-ambient-light color="white"></lume-ambient-light>
+            <lume-node id="n">
+                <lume-plane size="100 250 0" color="white" map="BG_Map.png"></lume-plane>
+                <lume-node size="100 250 0" position="0 250 0">hello</lume-node>
+            </lume-node>
+        </lume-scene>
         <script>
             LUME.useDefaultNames()
             const n = document.querySelector('#n')
@@ -311,7 +311,7 @@
         <style>
             html, body { background: #333; }
 
-            i-node { background: deeppink; }
+            lume-node { background: deeppink; }
 
             div {
                 position: absolute; top: 50%; left: 50%;
@@ -320,8 +320,8 @@
             }
         </style>
 
-        <i-scene>
-            <i-node
+        <lume-scene>
+            <lume-node
                 size-mode="proportional proportional"
                 sizeMode="proportional proportional"
                 size="0.75 0.75"
@@ -330,31 +330,31 @@
                 mountPoint="0.5 0.5"
             >
                 <div> Hello 3D </div>
-            </i-node>
-        </i-scene>
+            </lume-node>
+        </lume-scene>
 
         <script>
-            const node = document.querySelector('i-node')
+            const node = document.querySelector('lume-node')
             node.rotation = ( x, y, z ) => [ x, ++y, z ] // increment Y rotation only
         </script>
  -->
         <!-- WORKS ======================================================== -->
             <!--
-               -<i-scene experimental-webgl="true">
-               -    <i-box size="10 10 10" has="basic-material" color="pink"></i-box>
-               -    <i-perspective-camera
+               -<lume-scene experimental-webgl="true">
+               -    <lume-box size="10 10 10" has="basic-material" color="pink"></lume-box>
+               -    <lume-perspective-camera
                -        active="true"
                -        fov="45"
                -        aspect="1.9"
                -        near="0.1"
                -        far="100"
                -        position="0 0 -10"
-               -    ></i-perspective-camera>
-               -</i-scene>
+               -    ></lume-perspective-camera>
+               -</lume-scene>
                -<script>
                -    LUME.useDefaultNames()
-               -    const scene = document.querySelector('i-scene')
-               -    const cam = document.querySelector('i-perspective-camera')
+               -    const scene = document.querySelector('lume-scene')
+               -    const cam = document.querySelector('lume-perspective-camera')
                -</script>
                -->
 
@@ -364,22 +364,22 @@
            -    console.log('  ---- define elements ---- ')
            -    LUME.useDefaultNames()
            -</script>
-           -<i-scene>
-           -    <i-node size="100 100 100" rotation="30 30 30">
+           -<lume-scene>
+           -    <lume-node size="100 100 100" rotation="30 30 30">
            -        <p> hello </p>
-           -        <i-node sizeMode="proportional literal" size="0.5 100 100">
+           -        <lume-node sizeMode="proportional literal" size="0.5 100 100">
            -            <p> there </p>
-           -        </i-node>
-           -    </i-node>
-           -</i-scene>
+           -        </lume-node>
+           -    </lume-node>
+           -</lume-scene>
            -->
 
         <!-- WORKS ======================================================== -->
-        <!--<i-scene>-->
-        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--<lume-scene>-->
+        <!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--        <p> hello </p>-->
-        <!--    </i-node>-->
-        <!--</i-scene>-->
+        <!--    </lume-node>-->
+        <!--</lume-scene>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
         <!--    LUME.useDefaultNames()-->
@@ -392,22 +392,22 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
         <!--<script>-->
@@ -422,11 +422,11 @@
         <!--        LUME.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
-        <!--<i-scene>-->
-        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--<lume-scene>-->
+        <!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--        <p> hello </p>-->
-        <!--    </i-node>-->
-        <!--</i-scene>-->
+        <!--    </lume-node>-->
+        <!--</lume-scene>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
@@ -437,11 +437,11 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
@@ -454,11 +454,11 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.write(`-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
@@ -469,22 +469,22 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.write(`-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--document.write(`-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
         <!--<script>-->
@@ -501,22 +501,22 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.write(`-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--document.write(`-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
         <!--<script>-->
@@ -533,18 +533,18 @@
         <!--        LUME.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
-        <!--<i-scene>-->
-        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--<lume-scene>-->
+        <!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--        <p> hello </p>-->
-        <!--    </i-node>-->
-        <!--</i-scene>-->
+        <!--    </lume-node>-->
+        <!--</lume-scene>-->
 
         <!-- WORKS ======================================================== -->
-        <!--<i-scene>-->
-        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--<lume-scene>-->
+        <!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--        <p> hello </p>-->
-        <!--    </i-node>-->
-        <!--</i-scene>-->
+        <!--    </lume-node>-->
+        <!--</lume-scene>-->
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
@@ -561,22 +561,22 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
         <!--<script>-->
@@ -595,22 +595,22 @@
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('afterbegin', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('afterbegin', `-->
-        <!--    <i-scene>-->
-        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--    <lume-scene>-->
+        <!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
         <!--            <p> hello </p>-->
-        <!--        </i-node>-->
-        <!--    </i-scene>-->
+        <!--        </lume-node>-->
+        <!--    </lume-scene>-->
         <!--`)-->
         <!--</script>-->
         <!--<script>-->

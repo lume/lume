@@ -21,16 +21,16 @@
         touch-action: none; /* prevent touch drag from scrolling */
         color: #ccc;
     }
-    i-scene { position: absolute!important; top: 0; left: 0; }
-    i-scene:nth-child(2) { pointer-events: none; }
-    i-node { padding: 15px; pointer-events: all; }
+    lume-scene { position: absolute!important; top: 0; left: 0; }
+    lume-scene:nth-child(2) { pointer-events: none; }
+    lume-node { padding: 15px; pointer-events: all; }
     label { padding-right: 10px; }
 </style>
 
-<i-scene id="scene" experimental-webgl>
-    <i-perspective-camera id="cam" active position="0 0 1000"></i-perspective-camera>
-    <i-ambient-light intensity="0.3"></i-ambient-light>
-    <i-point-light
+<lume-scene id="scene" experimental-webgl>
+    <lume-perspective-camera id="cam" active position="0 0 1000"></lume-perspective-camera>
+    <lume-ambient-light intensity="0.3"></lume-ambient-light>
+    <lume-point-light
         id="light"
         color="white"
         position="300 300 300"
@@ -39,10 +39,10 @@
         intensity="0.8"
         align="-0.5 -0.5" FIXME-this-needed-while-using-custom-camera
     >
-        <i-mesh has="sphere-geometry basic-material" cast-shadow="false" size="10" mount-point="0.5 0.5" color="#eee"></i-mesh>
-    </i-point-light>
+        <lume-mesh has="sphere-geometry basic-material" cast-shadow="false" size="10" mount-point="0.5 0.5" color="#eee"></lume-mesh>
+    </lume-point-light>
     <!-- Specify a color otherwise the material will be tinted deeppink by default -->
-    <i-mesh id="model"
+    <lume-mesh id="model"
         has="box-geometry phong-material"
         rotation="40 40 0"
         Xalign="0.5 0.5 0.5" FIXME-this-is-disabled-while-using-custom-camera
@@ -51,11 +51,11 @@
         color="white"
         texture="${location.origin+location.pathname}/textures/cement.jpg"
     >
-    </i-mesh>
-</i-scene>
+    </lume-mesh>
+</lume-scene>
 
-<i-scene id="scene2">
-    <i-node size-mode="proportional literal" size="1 80">
+<lume-scene id="scene2">
+    <lume-node size-mode="proportional literal" size="1 80">
         <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
         <label>
             Field of view <code id="fovValue">(50)</code>:
@@ -65,8 +65,8 @@
             Camera element active:
             <input id="active" type="checkbox" checked>
         </label>
-    </i-node>
-</i-scene>
+    </lume-node>
+</lume-scene>
 
 <script>
     // defines the default names for the HTML elements

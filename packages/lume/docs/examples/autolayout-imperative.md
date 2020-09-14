@@ -155,7 +155,7 @@
     })
 
     debugger
-    Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
+    Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(plane => {
         // Because we have just created the elements and placed them into
         // the DOM, we have to wait for their GL objects to be loaded before
         // we can work with those underlying objects.
