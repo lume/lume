@@ -22,6 +22,7 @@ import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
 import TreeNode from './TreeNode'
+import {possiblyPolyfillResizeObserver} from './ResizeObserver'
 
 import type {TColor} from '../utils/three'
 
@@ -465,10 +466,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		private __resizeObserver: ResizeObserver | null = null
+		private __observingResize = false
 
 		// observe size changes on the scene element.
 		// HTM-API
 		private __startParentSizeObservation() {
+			this.__observingResize = true
+
 			const parent =
 				this.parentNode instanceof HTMLElement
 					? this.parentNode
@@ -478,29 +482,41 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 			// TODO use a single ResizeObserver for all scenes.
 
-			this.__resizeObserver = new ResizeObserver(changes => {
-				for (const change of changes) {
-					const {inlineSize, blockSize} = Array.isArray(change.borderBoxSize)
-						? change.borderBoxSize[0]
-						: change.borderBoxSize
+			possiblyPolyfillResizeObserver().then(() => {
+				if (!this.__observingResize) return
 
-					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
+				this.__resizeObserver = new ResizeObserver(changes => {
+					for (const change of changes) {
+						const {inlineSize, blockSize} = Array.isArray(change.borderBoxSize)
+							? change.borderBoxSize[0]
+							: change.borderBoxSize
 
-					// If the text writing mode is horizontal, then inlinSize is
-					// the width, otherwise in vertical modes it is the height.
-					// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize#Syntax
-					if (isHorizontal) this.__checkSize(inlineSize, blockSize)
-					else this.__checkSize(blockSize, inlineSize)
-				}
+						console.log(inlineSize, blockSize)
+
+						// const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
+						const isHorizontal = true
+
+						// If the text writing mode is horizontal, then inlinSize is
+						// the width, otherwise in vertical modes it is the height.
+						// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize#Syntax
+						if (isHorizontal) this.__checkSize(inlineSize, blockSize)
+						else this.__checkSize(blockSize, inlineSize)
+
+						console.log('--- end of size change code')
+
+						// this.__checkSize(Math.random() * 200, Math.random() * 200)
+					}
+				})
+
+				this.__resizeObserver.observe(parent)
 			})
-
-			this.__resizeObserver.observe(parent)
 		}
 
 		// HTM-API
 		private __stopParentSizeObservation() {
 			this.__resizeObserver?.disconnect()
 			this.__resizeObserver = null
+			this.__observingResize = false
 		}
 
 		// NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
