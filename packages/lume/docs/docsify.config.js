@@ -67,54 +67,60 @@
 					 * @param {string} html
 					 * @returns {string}
 					 */
-					html(html) {
-						const matches = html.matchAll(reAnchorWithHref)
+					// TODO Why did we need this?
+					// html(html) {
+					// 	const matches = html.match(reAnchorWithHref)
 
-						const {linkTarget, router} = vm.compiler
+					// 	if (!matches) return html
 
-						// if we find an anchor tag with an href attribute
-						for (const match of matches) {
-							// if the link is a Docsify link generated from markdown, skip it, it is already handled
-							if (match[0].startsWith('<a docsify-link')) continue
+					// 	const {linkTarget, router} = vm.compiler
 
-							// the result will be one of the three capturing groups from the regex
-							let href = match[1] || match[2] || match[3]
+					// 	// if we find an anchor tag with an href attribute
+					// 	for (const match of matches) {
+					// 		// if the link is a Docsify link generated from markdown, skip it, it is already handled
+					// 		if (match.startsWith('<a docsify-link')) continue
 
-							const originalHref = href
+					// 		// the result will be one of the three capturing groups from the regex
+					// 		// let href = match[1] || match[2] || match[3]
+					// 		let href = match.split('=')[1].trim()
 
-							// the first two capturing groups catch single or double quoted values
-							const hasQuotes = !!(match[1] || match[2])
+					// 		const originalHref = href
 
-							// based on Docsify's Compiler._initRenderer() logic for the markdown "link" hook {{{
+					// 		// the first two capturing groups catch single or double quoted values
+					// 		// const hasQuotes = !!(match[1] || match[2])
+					// 		const hasQuotes = !!(href.startsWith('"') || href.startsWith("'"))
 
-							// TODO make some syntax for telling it to ignore the compiling the href
-							const ignoreLink = false
+					// 		// based on Docsify's Compiler._initRenderer() logic for the markdown "link" hook {{{
 
-							if (
-								!Docsify.util.isAbsolutePath(href) &&
-								!vm.compiler._matchNotCompileLink(href) &&
-								!ignoreLink &&
-								// skip hrefs like `#/page?id=section`, which
-								// are already in the format Docsify compiles
-								// hrefs to
-								// TODO move this to router.toURL
-								!href.trim().startsWith('#/')
-							) {
-								if (href === vm.compiler.config.homepage) {
-									href = 'README'
-								}
-								href = router.toURL(href, null, router.getCurrentPath())
-							}
+					// 		// TODO make some syntax for telling it to ignore the compiling the href
+					// 		const ignoreLink = false
 
-							// }}}
+					// 		if (
+					// 			!Docsify.util.isAbsolutePath(href) &&
+					// 			!vm.compiler._matchNotCompileLink(href) &&
+					// 			!ignoreLink &&
+					// 			// skip hrefs like `#/page?id=section`, which
+					// 			// are already in the format Docsify compiles
+					// 			// hrefs to
+					// 			// TODO move this to router.toURL
+					// 			!href.trim().startsWith('#/')
+					// 		) {
+					// 			debugger
+					// 			if (href === vm.compiler.config.homepage) {
+					// 				href = 'README'
+					// 			}
+					// 			href = router.toURL(href, null, router.getCurrentPath())
+					// 		}
 
-							if (!hasQuotes) href = '"' + href + '"'
+					// 		// }}}
 
-							html = html.replace(originalHref, href)
-						}
+					// 		if (!hasQuotes) href = '"' + href + '"'
 
-						return html
-					},
+					// 		html = html.replace(originalHref, href)
+					// 	}
+
+					// 	return html
+					// },
 
 					/**
 					 * @param {string} text The html string to compile
