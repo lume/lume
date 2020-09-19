@@ -1,17 +1,11 @@
 /**
  * @return {typeof Window} - the global object. We assume it is a `Window`
  * because this lib is designed for the web. In theory it can run in Node.js in
- * the future, but it may need the same globals, so typing it as Window is OK as
- * long as we're using the same globals in Node.js. We might also augment the
- * Node.js global at that point.
+ * the future, but it may need the some of the same globals as in the web.
  */
 export function getGlobal() {
-	let globalObject
-
-	if (typeof globalThis !== 'undefined') globalObject = globalThis
-	else if (typeof window !== 'undefined') globalObject = window
-	else if (typeof global !== 'undefined') globalObject = global
-	else throw new Error('No global detected!')
-
-	return (globalObject as any) as Window
+	if (typeof globalThis !== 'undefined') return globalThis
+	else if (typeof window !== 'undefined') return window
+	else if (typeof global !== 'undefined') return global
+	else return Function('return this')()
 }

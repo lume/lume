@@ -22,6 +22,7 @@ import {PerspectiveCamera} from './Camera'
 import {XYZValuesObject} from './XYZValues'
 import Sizeable from './Sizeable'
 import TreeNode from './TreeNode'
+import {possiblyPolyfillResizeObserver} from './ResizeObserver'
 
 import type {TColor} from '../utils/three'
 
@@ -478,19 +479,38 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 			// TODO use a single ResizeObserver for all scenes.
 
+			possiblyPolyfillResizeObserver()
+
 			this.__resizeObserver = new ResizeObserver(changes => {
 				for (const change of changes) {
-					const {inlineSize, blockSize} = Array.isArray(change.borderBoxSize)
-						? change.borderBoxSize[0]
-						: change.borderBoxSize
+					// Use the newer API if available.
+					// NOTE We care about the contentBoxSize (not the
+					// borderBoxSize) because the content box is the area in
+					// which we're rendering visuals.
+					if (change.contentBoxSize) {
+						// If change.contentBoxSize is an array with more than
+						// one item, it means the observed element is split
+						// across multiple CSS columns.
+						// TODO If the Scene is used as display:inline{-block},
+						// ensure that it is the size of the column in which it
+						// is located.
+						const {inlineSize, blockSize} = Array.isArray(change.contentBoxSize)
+							? (change.contentBoxSize[0] as ResizeObserverEntryBoxSize)
+							: change.contentBoxSize
 
-					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
+						const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
 
-					// If the text writing mode is horizontal, then inlinSize is
-					// the width, otherwise in vertical modes it is the height.
-					// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize#Syntax
-					if (isHorizontal) this.__checkSize(inlineSize, blockSize)
-					else this.__checkSize(blockSize, inlineSize)
+						// If the text writing mode is horizontal, then inlinSize is
+						// the width, otherwise in vertical modes it is the height.
+						// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize#Syntax
+						if (isHorizontal) this.__checkSize(inlineSize, blockSize)
+						else this.__checkSize(blockSize, inlineSize)
+					}
+					// Otherwise use the older API (possibly polyfilled)
+					else {
+						const {width, height} = change.contentRect
+						this.__checkSize(width, height)
+					}
 				}
 			})
 

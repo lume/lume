@@ -64,6 +64,7 @@
 		"lowclass": "^4.9.3",
 		"readem": "^0.2.1",
 		"regexr": "^1.5.1",
+		"resize-observer-polyfill": "^1.5.1",
 		"three": "^0.111.0"
 	},
 	"// TODO devDependencies": "Move eslint stuff into lume cli.",
