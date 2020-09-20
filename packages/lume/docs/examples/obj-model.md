@@ -9,6 +9,8 @@
       code:
 `
 <script src="${location.origin+location.pathname}/global.js"><\/script>
+<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+<script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
 
 <style>
     body, html {
@@ -26,7 +28,7 @@
     lume-node { padding: 15px; pointer-events: all; }
 </style>
 
-<body>
+<body touch-action="none">
 
 <!-- Use the disable-css attribute so that only WebGL rendering is enabled
 (if you don't need CSS rendering, turn it off to save CPU). -->

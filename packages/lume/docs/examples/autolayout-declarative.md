@@ -8,7 +8,10 @@
     data: {
       code:
 `
+<body touch-action="none">
 <script src="${location.origin+location.pathname}/global.js"><\/script>
+<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+<script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
 
 <style>
     body, html {
@@ -119,7 +122,7 @@
     light.three.shadow.bias = -0.01
     light.needsUpdate()
 <\/script>
-
+</body>
 `
     },
   })

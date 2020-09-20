@@ -8,6 +8,8 @@
     data: {
       code:
 `
+<body touch-action="none">
+
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 
 <style>
@@ -119,7 +121,7 @@
     zRotation.addEventListener('change', onChangeXRotation)
     zRotation.addEventListener('input', onChangeXRotation)
 <\/script>
-
+</body>
 `
     },
   })

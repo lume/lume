@@ -8,11 +8,14 @@
     data: {
       code:
 `
-<body>
+<body touch-action="none">
 
 <script src="${location.origin+location.pathname}/global.js"><\/script>
 <script src="${location.origin+location.pathname}/node_modules/vue/dist/vue.js"><\/script>
+<!-- Tween.js is a lib for animating numbers based on "easing curves". -->
 <script src="${location.origin+location.pathname}/node_modules/tween.js/src/Tween.js"><\/script>
+<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+<script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
 
 <style>
     body, html {
