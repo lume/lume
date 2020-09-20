@@ -1,8 +1,9 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
 import {reactive, numberAttribute, booleanAttribute, autorun, sample} from '@lume/element'
 import Node from './Node'
-import {Scene} from './Scene'
 import {defer} from './Utility'
+
+import type {Scene} from './Scene'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
@@ -23,13 +24,7 @@ export default class PerspectiveCamera extends Node {
 	connectedCallback() {
 		super.connectedCallback()
 
-		// XXX This doesn't work becauwe this.scene returns null because it uses
-		// this.parent which returns null because this.parent's internal
-		// this._parent property isn't set yet at this point...
-		//
-		// this.__lastKnownScene = this.scene
-
-		// ... So instead we use an autorun to wait for the this.scene to exist.
+		// We use an autorun to wait for the this.scene to exist.
 		const stop = autorun(_ => {
 			if (this.scene) {
 				sample(() => {

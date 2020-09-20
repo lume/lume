@@ -7,14 +7,14 @@ import Motor from './Motor'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
-import {TreeNode} from './TreeNode'
-import {Node} from './Node'
-import {Scene} from './Scene'
 import Settable from '../utils/Settable'
+import {defer} from './Utility'
 
+import type {TreeNode} from './TreeNode'
+import type {Node} from './Node'
+import type {Scene} from './Scene'
 import type {XYZValuesObject} from './XYZValues'
 import type {ConnectionType} from '../html/DeclarativeBase'
-import {defer} from './Utility'
 
 window.addEventListener('error', event => {
 	const error = event.error
@@ -353,8 +353,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		// stores a ref to this Node's root Scene when/if this Node is
 		// in a scene.
-		// protected _scene: Scene | null = null
-		@reactive protected _scene: any | null = null // TODO no any
+		@reactive protected _scene: Scene | null = null
 
 		protected _makeThreeObject3d(): Object3D {
 			return new Object3D()

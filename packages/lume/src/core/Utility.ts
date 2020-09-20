@@ -2,16 +2,6 @@ function epsilon(value: any) {
 	return Math.abs(value) < 0.000001 ? 0 : value
 }
 
-function applyCSSLabel(value: any, label: any) {
-	if (value === 0) {
-		return '0px'
-	} else if (label === '%') {
-		return value * 100 + '%'
-	} else if (label === 'px') {
-		return value + 'px'
-	}
-}
-
 // TODO padd an options object to make it more clear what the args are.
 function observeChildren(target: any, onConnect: any, onDisconnect: any, skipTextNodes: any) {
 	// TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
@@ -118,7 +108,6 @@ function trim(s: string) {
 
 export {
 	epsilon,
-	applyCSSLabel,
 	observeChildren,
 	// helper function to use instead of instanceof for classes that implement the
 	// static Symbol.hasInstance method, because the behavior of instanceof isn't

@@ -1,12 +1,13 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {Object3D} from 'three/src/core/Object3D'
 import {attribute, reactive, autorun} from '@lume/element'
 import {emits} from '@lume/eventful'
 import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
 import {toRadians} from './Utility'
-import {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
+
+import type {Object3D} from 'three/src/core/Object3D'
+import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
 
 const threeJsPostAdjustment = [0, 0, 0]
 const alignAdjustment = [0, 0, 0]

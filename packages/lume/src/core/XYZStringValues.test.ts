@@ -1,6 +1,7 @@
 import XYZStringValues from './XYZStringValues'
-import {XYZValuesArray, XYZValuesObject} from './XYZValues'
 import {checkValues, testWithSeparator} from './XYZValues.test.common'
+
+import type {XYZValuesArray, XYZValuesObject} from './XYZValues'
 
 describe('XYZNumberValues', () => {
 	describe('.constructor', () => {

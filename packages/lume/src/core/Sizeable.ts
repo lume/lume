@@ -299,6 +299,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 					// to disable the prop function).
 					this.__settingValueFromPropFunction = true
 					;(this as any)[name] = result
+
+					return
 				}),
 			)
 		}
@@ -323,6 +325,11 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 
 					this.__settingValueFromPropFunction = true
 					;(this as any)[name] = result
+
+					// TODO The RenderTask return type is `false | void`, so why
+					// does the noImplicitReturns TS option require a return
+					// here? Open bug on TypeScript.
+					return
 				}),
 			)
 		}

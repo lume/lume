@@ -18,13 +18,13 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import {default as HTMLInterface} from '../html/HTMLScene'
 import {documentBody, thro, trim} from './Utility'
-import {PerspectiveCamera} from './Camera'
-import {XYZValuesObject} from './XYZValues'
-import Sizeable from './Sizeable'
-import TreeNode from './TreeNode'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver'
 
 import type {TColor} from '../utils/three'
+import type {PerspectiveCamera} from './Camera'
+import type {XYZValuesObject} from './XYZValues'
+import type Sizeable from './Sizeable'
+import type TreeNode from './TreeNode'
 
 initImperativeBase()
 
@@ -60,8 +60,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		// Used by the `scene` getter in ImperativeBase
-		protected _scene: Scene | null = this
-		// protected _scene: this | null = this
+		protected _scene: this | null = this
 
 		constructor(...args: any[]) {
 			super(...args)

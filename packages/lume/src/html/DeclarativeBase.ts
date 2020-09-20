@@ -1,10 +1,11 @@
 /* global HTMLSlotElement */
 
 import {Element} from '@lume/element'
-import HTMLNode from './HTMLNode'
 import {observeChildren} from '../core/Utility'
 import WithChildren from './WithChildren'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
+
+import type HTMLNode from './HTMLNode'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 

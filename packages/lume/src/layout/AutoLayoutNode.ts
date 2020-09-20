@@ -24,8 +24,9 @@ import {reactive, attribute, autorun} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node from '../core/Node'
 import Motor from '../core/Motor'
-import {XYZPartialValuesArray} from '../core/XYZValues'
 import {sizeMode, size, position} from '../core'
+
+import type {XYZPartialValuesArray} from '../core/XYZValues'
 
 export {AutoLayout}
 

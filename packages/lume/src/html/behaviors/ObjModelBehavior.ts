@@ -5,9 +5,9 @@ import {OBJLoader} from '../../lib/three/OBJLoader'
 import {MTLLoader} from '../../lib/three/MTLLoader'
 import {Events} from '../../core/Events'
 import {RenderableBehavior} from './RenderableBehavior'
-import BaseMaterialBehavior from './BaseMaterialBehavior'
 
 import type {Object3D} from 'three/src/core/Object3D'
+import type BaseMaterialBehavior from './BaseMaterialBehavior'
 
 declare global {
 	interface Element {

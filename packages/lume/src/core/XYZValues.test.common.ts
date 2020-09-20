@@ -1,5 +1,5 @@
-import XYZValues from './XYZValues'
-import {XYZValuesArray} from './XYZValues'
+import type XYZValues from './XYZValues'
+import type {XYZValuesArray} from './XYZValues'
 
 export function testWithSeparator<T>(a: XYZValues, separator: string, ...values: XYZValuesArray<T>) {
 	let string = `${values[0]}${separator} ${values[1]}${separator} ${values[2]}`

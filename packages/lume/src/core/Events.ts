@@ -1,4 +1,4 @@
-import {Constructor} from 'lowclass'
+import type {Constructor} from 'lowclass'
 
 export class EventTypes {
 	constructor(

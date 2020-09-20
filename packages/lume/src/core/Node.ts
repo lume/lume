@@ -1,7 +1,6 @@
 import {autorun, reactive, booleanAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import {default as HTMLInterface} from '../html/HTMLNode'
 

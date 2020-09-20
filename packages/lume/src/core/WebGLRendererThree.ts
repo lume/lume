@@ -1,7 +1,8 @@
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants'
 import WEBVR from '../lib/three/WebVR'
-import {Scene} from './Scene'
+
+import type {Scene} from './Scene'
 
 interface SceneState {
 	renderer: WebGLRenderer

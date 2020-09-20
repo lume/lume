@@ -1,6 +1,7 @@
 import XYZNonNegativeValues from './XYZNonNegativeValues'
-import {XYZValuesArray, XYZValuesObject} from './XYZValues'
 import {checkValues, testWithSeparator} from './XYZValues.test.common'
+
+import type {XYZValuesArray, XYZValuesObject} from './XYZValues'
 
 describe('XYZNonNegativeValues', () => {
 	describe('.constructor', () => {

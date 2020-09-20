@@ -1,10 +1,11 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {TextureLoader} from 'three/src/loaders/TextureLoader'
 import {reactive, attribute, autorun, StopFunction} from '@lume/element'
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
-import {Mesh} from '../../core'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
+import type BaseMeshBehavior from './BaseMeshBehavior'
+import type {MeshComponentType} from './BaseMeshBehavior'
+import type {Mesh} from '../../core'
 
 /**
  * Mixin class for adding textures to a mesh behavior
