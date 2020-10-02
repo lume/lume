@@ -1,4 +1,4 @@
-import {html as _html} from '@lume/element'
+import {html as _html} from '@lume/element/dist/html'
 import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 
 // TODO This type cast not needed on the next lit-dom-expressions release after v0.19.10.
