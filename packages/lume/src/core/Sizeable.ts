@@ -1,6 +1,6 @@
 import {Mixin, Constructor} from 'lowclass'
 import {Eventful, emits} from '@lume/eventful'
-import {reactive, attribute, sample} from '@lume/element'
+import {reactive, attribute, untrack} from '@lume/element'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -240,7 +240,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 				// valuechanged listeners above). If we've reached this logic,
 				// it is because a property is being set, which will already
 				// trigger reactivity.
-				sample(() => {
+				untrack(() => {
 					;(this as any)['__' + name].from(newValue)
 				})
 			}
@@ -257,8 +257,8 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
 				else this.__settingValueFromPropFunction = false
 
-				// Same note about this sample() call as the one in _setPropertyXYZ.
-				sample(() => {
+				// Same note about this untrack() call as the one in _setPropertyXYZ.
+				untrack(() => {
 					;(this as any)['__' + name] = newValue
 				})
 			}

@@ -46,7 +46,7 @@
     }
     button:focus,
     button:hover {
-        background: #0099d9;
+        background: #eb4b89;
         color: #0a3359;
         border-color: #0a3359;
     }

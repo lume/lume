@@ -3,7 +3,7 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {reactive, autorun, booleanAttribute, attribute, numberAttribute, sample} from '@lume/element'
+import {reactive, autorun, booleanAttribute, attribute, numberAttribute, untrack} from '@lume/element'
 import {emits} from '@lume/eventful'
 import documentReady from '@awaitbox/document-ready'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene'
@@ -221,9 +221,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		protected _createDefaultCamera() {
-			// Use sample so this method is non-reactive.
-			// TODO rename sample to something better.
-			sample(() => {
+			// Use untrack so this method is non-reactive.
+			untrack(() => {
 				const size = this.calculatedSize
 				// THREE-COORDS-TO-DOM-COORDS
 				// We apply Three perspective the same way as CSS3D perspective here.

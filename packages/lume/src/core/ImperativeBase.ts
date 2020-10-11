@@ -1,6 +1,6 @@
 import {Object3D} from 'three/src/core/Object3D'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {reactive, StopFunction, autorun, sample} from '@lume/element'
+import {reactive, StopFunction, autorun, untrack} from '@lume/element'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
 import Motor from './Motor'
@@ -134,9 +134,10 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					this.sizeMode
 					this.size
 
-					// Sample blocks are untracked, so they don't register
-					// further dependencies for this autorun.
-					sample(() => {
+					// Code wrapped with `untrack` causes dependencies not to be
+					// tracked within that code, so it won't register more
+					// dependencies for this autorun.
+					untrack(() => {
 						// TODO: size calculation should happen in a render task
 						// just like _calculateMatrix, instead of on each property
 						// change, unless the calculatedSize prop is acessed by the

@@ -1,5 +1,5 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
-import {reactive, numberAttribute, booleanAttribute, autorun, sample} from '@lume/element'
+import {reactive, numberAttribute, booleanAttribute, autorun, untrack} from '@lume/element'
 import Node from './Node'
 import {defer} from './Utility'
 
@@ -27,7 +27,7 @@ export default class PerspectiveCamera extends Node {
 		// We use an autorun to wait for the this.scene to exist.
 		const stop = autorun(_ => {
 			if (this.scene) {
-				sample(() => {
+				untrack(() => {
 					this.__lastKnownScene = this.scene
 					this.__setSceneCamera(this.active ? undefined : 'unset')
 					defer(() => stop())
