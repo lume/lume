@@ -45,7 +45,6 @@
     })
 
     scene.add(ambientLight)
-    debugger
 
     const pointLight = new PointLight().set({
         color: "white",
@@ -157,7 +156,6 @@
         lastSize = size
     })
 
-    debugger
     Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(plane => {
         // Because we have just created the elements and placed them into
         // the DOM, we have to wait for their GL objects to be loaded before

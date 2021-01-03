@@ -71,8 +71,6 @@
 </lume-scene>
 
 <script>
-    debugger
-
     const layout = document.querySelector('#layout')
     layout.size = (x,y,z,t) => [600+200*Math.sin(t/1000),400+200*Math.sin(t/1000),z]
 

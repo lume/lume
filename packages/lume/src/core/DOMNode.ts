@@ -1,5 +1,6 @@
 import Mesh from './Mesh'
 
+/** See DOMNodeGeometryBehavior and DOMNodeMaterialBehavior for available properties. */
 export default class DOMNode extends Mesh {
 	static defaultElementName = 'lume-dom-node'
 

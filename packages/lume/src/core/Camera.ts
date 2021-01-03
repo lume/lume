@@ -89,16 +89,14 @@ export default class PerspectiveCamera extends Node {
 		)
 	}
 
-	// TODO, unmountedCallback functionality. issue #150
-	unmountedCallback() {}
-
 	protected _makeThreeObject3d() {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
 	}
 
-	// TODO replace with unmountedCallback #150
-	protected _deinit() {
-		super._deinit && super._deinit()
+	// TODO make sure this works. Camera should switch to scene's default on
+	// removal of last camera, etc.
+	disconnectedCallback() {
+		super.disconnectedCallback()
 
 		// TODO we want to call this in the upcoming
 		// unmountedCallback, but for now it's harmless but
