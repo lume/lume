@@ -35,7 +35,7 @@
     LUME.useDefaultNames()
 
     const scene = new Scene().set({
-        experimentalWebgl: true,
+        webgl: true,
     })
 
     scene.mount(document.body)

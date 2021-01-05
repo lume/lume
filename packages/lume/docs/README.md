@@ -123,7 +123,7 @@ new Vue({
 <template vue>
     <!-- Lights and shadows are powered by WebGL, but written with HTML: -->
     <lume-scene
-        experimental-webgl="true"
+        webgl="true"
         id="scene"
         background-color="black"
         background-opacity="0"

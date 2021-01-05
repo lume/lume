@@ -31,7 +31,7 @@
     label { padding-right: 10px; }
 </style>
 
-<lume-scene id="scene" experimental-webgl>
+<lume-scene id="scene" webgl>
     <lume-perspective-camera id="cam" active position="0 0 1000"></lume-perspective-camera>
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light

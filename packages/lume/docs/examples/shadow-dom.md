@@ -71,7 +71,7 @@
 <script type=module>
   const root = div2.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene experimental-webgl disable-css>
+    <lume-scene webgl disable-css>
       <slot></slot>
     </lume-scene>
   \`
@@ -118,7 +118,7 @@
 <script type=module>
   const root = div4.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene experimental-webgl disable-css>
+    <lume-scene webgl disable-css>
       <lume-node align="0.75 0.25">
         <slot></slot>
       </lume-node>
@@ -197,7 +197,7 @@
 <script type=module>
   const root = div7.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene id="scene1" experimental-webgl>
+    <lume-scene id="scene1" webgl>
       <lume-node id="node3 "size="10 10" align="0.25 0.25" style="background: pink;">
         <slot></slot>
       </lume-node>
@@ -229,7 +229,7 @@
 <script type=module>
   const root = div8.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene id="scene1" experimental-webgl>
+    <lume-scene id="scene1" webgl>
       <lume-node id="node3 "size="10 10" align="0.25 0.25" style="background: pink;">
         <lume-ambient-light intensity="0.7"></lume-ambient-light>
         <lume-point-light intensity="0.7" align="0.5 0.5" position="300 0 300"></lume-point-light>
@@ -265,7 +265,7 @@
 <script type=module>
   const root = div9.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene id="scene1" experimental-webgl>
+    <lume-scene id="scene1" webgl>
       <lume-node id="node3 "size="10 10" align="0.25 0.25" style="background: pink;">
         <slot></slot>
       </lume-node>
@@ -302,7 +302,7 @@
 <script type=module>
   const root = div9.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene id="scene1" experimental-webgl>
+    <lume-scene id="scene1" webgl>
       <lume-node id="node3 "size="10 10" align="0.25 0.25" style="background: pink;">
         <slot></slot>
       </lume-node>

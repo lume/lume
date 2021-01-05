@@ -24,7 +24,7 @@
     }
 </style>
 
-<lume-scene id="scene" experimental-webgl>
+<lume-scene id="scene" webgl>
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
         id="light"

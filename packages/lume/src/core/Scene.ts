@@ -42,7 +42,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		@reactive @emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
 		@reactive @emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
 		@reactive @emits('propertychange') @booleanAttribute(false) vr = false
-		@reactive @emits('propertychange') @booleanAttribute(false) experimentalWebgl = false
+		@reactive @emits('propertychange') @booleanAttribute(false) webgl = false
 		@reactive @emits('propertychange') @booleanAttribute(false) disableCss = false
 
 		/** @override */

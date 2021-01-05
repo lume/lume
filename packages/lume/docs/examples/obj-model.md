@@ -32,7 +32,7 @@
 
 <!-- Use the disable-css attribute so that only WebGL rendering is enabled
 (if you don't need CSS rendering, turn it off to save CPU). -->
-<lume-scene id="scene" experimental-webgl disable-css>
+<lume-scene id="scene" webgl disable-css>
     <lume-ambient-light intensity="0.1"></lume-ambient-light>
     <lume-point-light
         id="light"

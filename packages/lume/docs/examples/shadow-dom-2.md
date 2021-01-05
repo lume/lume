@@ -44,7 +44,7 @@
 		mode: 'open'
 	})
 	root.innerHTML = \`
-    <lume-scene experimental-webgl>
+    <lume-scene webgl>
       <slot></slot>
     </lume-scene>
   \`

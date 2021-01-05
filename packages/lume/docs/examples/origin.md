@@ -25,7 +25,7 @@
 </style>
 
 <!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
-<lume-scene experimental-webgl disable-css>
+<lume-scene webgl disable-css>
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
       align="0.5 0.5 0.5"
