@@ -1,14 +1,15 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun, StopFunction} from '@lume/element'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three'
-import {OBJLoader} from '../../lib/three/OBJLoader'
-import {MTLLoader} from '../../lib/three/MTLLoader'
+import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader'
+import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader'
 import {Events} from '../../core/Events'
 import {RenderableBehavior} from './RenderableBehavior'
 
 import type {Object3D} from 'three/src/core/Object3D'
 import type BaseMaterialBehavior from './BaseMaterialBehavior'
 
+// TODO move this somewhere better.
 declare global {
 	interface Element {
 		behaviors: Map<string, unknown>
@@ -48,12 +49,13 @@ export default class ObjModelBehavior extends RenderableBehavior {
 			this.obj
 
 			if (!firstRun) this.__cleanupModel()
-			firstRun = false
 
 			// TODO We can update only the material or model specifically
 			// instead of reloading the whole object.
 			this.__loadObj()
 		})
+
+		firstRun = false
 
 		this.__stopFns.push(stop)
 

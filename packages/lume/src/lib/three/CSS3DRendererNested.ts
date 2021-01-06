@@ -1,6 +1,5 @@
 // based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 
-import {REVISION} from 'three/src/constants'
 import {Matrix4} from 'three/src/math/Matrix4'
 import {Object3DWithPivot} from '../../core/Object3DWithPivot'
 import {isPerspectiveCamera, isOrthographicCamera} from '../../utils/three'
@@ -49,8 +48,6 @@ export class CSS3DRendererNested {
 	private __cameraElement: HTMLDivElement
 
 	constructor() {
-		console.log('THREE.CSS3DRendererNested', REVISION)
-
 		const domElement = document.createElement('div')
 		domElement.classList.add('CSS3DRendererNested')
 		domElement.style.overflow = 'hidden'
