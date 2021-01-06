@@ -10,7 +10,6 @@ import {Scene as ThreeScene} from 'three/src/scenes/Scene'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
 // import {AmbientLight} from 'three/src/lights/AmbientLight'
 import {Color} from 'three/src/math/Color'
-import Motor from './Motor'
 import {WebGLRendererThree, ShadowMapTypeString} from './WebGLRendererThree'
 import {CSS3DRendererThree} from './CSS3DRendererThree'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -20,7 +19,7 @@ import {default as HTMLInterface} from '../html/HTMLScene'
 import {documentBody, thro, trim} from './Utility'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver'
 
-import type {TColor} from '../utils/three'
+import {TColor, isDisposable} from '../utils/three'
 import type {PerspectiveCamera} from './Camera'
 import type {XYZValuesObject} from './XYZValues'
 import type Sizeable from './Sizeable'
@@ -44,6 +43,20 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		@reactive @emits('propertychange') @booleanAttribute(false) vr = false
 		@reactive @emits('propertychange') @booleanAttribute(false) webgl = false
 		@reactive @emits('propertychange') @booleanAttribute(false) disableCss = false
+
+		/** @property {string} background - The background can be a path to a jpeg, jpg, or png. Other types not supported yet. */
+		@reactive @emits('propertychange') @attribute background = ''
+
+		/** @property {string} equirectangularBackground - The background is can be a path to a jpeg, jpg, or png. Other types not supported yet. */
+		@reactive @emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
+
+		/**
+		 * @property {string} environment - The environment can be a path to a
+		 * jpeg, jpg, or png (other format not yet supported). It is assumed to
+		 * be an equirectangular image used for env maps for things like
+		 * reflections on metallic objects in the scene.
+		 */
+		@reactive @emits('propertychange') @attribute environment = ''
 
 		/** @override */
 		sizeMode = new XYZSizeModeValues('proportional', 'proportional', 'literal')
@@ -177,16 +190,73 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 			this._stopFns.push(
 				autorun(() => {
-					if (this.experimentalWebgl) this._triggerLoadGL()
+					if (this.webgl) this._triggerLoadGL()
 					else this._triggerUnloadGL()
+
+					// TODO Need this?
+					this.needsUpdate()
+				}),
+				autorun(() => {
+					if (!this.webgl || !this.background) {
+						if (isDisposable(this.three.background)) this.three.background.dispose()
+						this.__glRenderer!.disableBackground(this)
+						return
+					}
+
+					if (this.background.match(/\.(jpg|jpeg|png)$/)) {
+						// Dispose each time we switch to a new one.
+						if (isDisposable(this.three.background)) this.three.background.dispose()
+
+						// destroy the previous one, if any.
+						this.__glRenderer!.disableBackground(this)
+
+						console.log('enable background!!')
+						this.__glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
+							this.three.background = texture || null
+							this.needsUpdate()
+
+							// TODO emit background load event.
+						})
+					} else {
+						console.warn(
+							`<${this.tagName.toLowerCase()}> background attribute ignored, the given image type is not currently supported.`,
+						)
+					}
+				}),
+				autorun(() => {
+					if (!this.webgl || !this.environment) {
+						if (isDisposable(this.three.environment)) this.three.environment.dispose()
+						this.__glRenderer!.disableEnvironment(this)
+						return
+					}
+
+					if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
+						// Dispose each time we switch to a new one.
+						if (isDisposable(this.three.environment)) this.three.environment.dispose()
+
+						// destroy the previous one, if any.
+						this.__glRenderer!.disableEnvironment(this)
+
+						this.__glRenderer!.enableEnvironment(this, texture => {
+							this.three.environment = texture
+							this.needsUpdate()
+
+							// TODO emit background load event.
+						})
+					} else {
+						console.warn(
+							`<${this.tagName.toLowerCase()}> environment attribute ignored, the given image type is not currently supported.`,
+						)
+					}
 				}),
 				autorun(() => {
 					if (!this.disableCss) this._triggerLoadCSS()
 					else this._triggerUnloadCSS()
+
+					// Do we need this? Doesn't hurt to have it just in case.
+					this.needsUpdate()
 				}),
 				autorun(() => {
-					if (this.disableCss && !this.experimentalWebgl) return this.__stopParentSizeObservation()
-
 					this.sizeMode
 					this.__startOrStopParentSizeObservation()
 				}),
@@ -301,7 +371,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 			this._glStopFns.push(
 				autorun(() => {
-					// if this.experimentalWebgl is true, then this.__glRenderer must be defined
+					// if this.webgl is true, then _loadGL will have fired,
+					// therefore this.__glRenderer must be defined.
 					this.__glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
 					this.needsUpdate()
 				}),
@@ -353,6 +424,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					// @ts-ignore: access protected member
 					node._triggerUnloadGL()
 			})
+
+			// Not all things are loaded in _loadGL (they may be loaded
+			// depending on property/attribute values), but all things, if any, should
+			// still be disposed in _unloadGL.
+			{
+				this.three.environment?.dispose()
+				if (isDisposable(this.three.background)) this.three.background.dispose()
+			}
 
 			return true
 		}
@@ -451,12 +530,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		// HTM-API
 		private __startOrStopParentSizeObservation() {
 			if (
-				// this._mounted && (
-				this.sizeMode.x == 'proportional' ||
-				this.sizeMode.y == 'proportional' ||
-				this.sizeMode.z == 'proportional'
-				// )
+				// If we will be rendering something...
+				(!this.disableCss || this.webgl) &&
+				// ...and if one size dimension is proportional...
+				(this.sizeMode.x == 'proportional' || this.sizeMode.y == 'proportional')
+				// Note, we don't care about the Z dimension, because Scenes are flat surfaces.
 			) {
+				// ...then observe the parent element size (it may not be a LUME
+				// element, so we observe with ResizeObserver).
 				this.__startParentSizeObservation()
 			} else {
 				this.__stopParentSizeObservation()
@@ -539,6 +620,9 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		// HTM-API
 		private __onElementParentSizeChange(newSize: XYZValuesObject<number>) {
 			this._elementParentSize = newSize
+			// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
+			// unless explicitly requested by a user (f.e. they read a prop so
+			// the size must be calculated). https://github.com/lume/lume/issues/66
 			this._calcSize()
 			this.needsUpdate()
 		}

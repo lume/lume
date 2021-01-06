@@ -1,11 +1,17 @@
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants'
-import WEBVR from '../lib/three/WebVR'
+import {PMREMGenerator} from 'three/src/extras/PMREMGenerator'
 
 import type {Scene} from './Scene'
+import type {Texture} from 'three/src/textures/Texture'
+import {TextureLoader} from 'three'
 
 interface SceneState {
 	renderer: WebGLRenderer
+	pmremgen?: PMREMGenerator
+	backgroundIsEquirectangular?: boolean
+	hasBackground?: boolean
+	hasEnvironment?: boolean
 	sizeChangeHandler: () => void
 }
 
@@ -16,8 +22,11 @@ let isCreatingSingleton = false
 
 export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
 
-// A singleton responsible for setting up and drawing a WebGL scene for a given
-// core/Scene using Three.js
+/**
+ * @internal
+ * @class WebGLRendererThree - A singleton responsible for setting up and
+ * drawing a WebGL scene for a given core/Scene using Three.js
+ */
 export class WebGLRendererThree {
 	static singleton() {
 		if (instance) return instance
@@ -91,6 +100,7 @@ export class WebGLRendererThree {
 			.removeChild(sceneState.renderer.domElement)
 
 		sceneState.renderer.dispose()
+		sceneState.pmremgen?.dispose()
 
 		sceneStates.delete(scene)
 	}
@@ -156,6 +166,140 @@ export class WebGLRendererThree {
 			// default
 			state.renderer.shadowMap.type = PCFShadowMap
 		}
+	}
+
+	private __bgVersion = 0
+
+	/**
+	 * @method enableBackground - Enable background texture handling for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 * @param {boolean} isEquirectangular - True if the background is equirectangular (to use as an environment map), false for a static background image.
+	 * @param {(t: Texture | undefined) => void} cb - A callback that is called
+	 * when the background mechanics are done loading. The Callback receives the
+	 * background Texture instance.
+	 */
+	enableBackground(scene: Scene, isEquirectangular: boolean, cb: (tex: Texture | undefined) => void): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		this.__bgVersion += 1
+		state.backgroundIsEquirectangular = isEquirectangular
+
+		if (isEquirectangular) {
+			// Load the PMREM machinery only if needed.
+			if (!state.pmremgen) {
+				state.pmremgen = new PMREMGenerator(state.renderer)
+				state.pmremgen.compileCubemapShader()
+			}
+		}
+
+		state.hasBackground = true
+		this.__loadBackgroundTexture(scene, cb)
+	}
+
+	/**
+	 * @method disableBackground - Disable background for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 */
+	disableBackground(scene: Scene): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		this.__bgVersion += 1
+
+		if (!state.hasBackground && !state.hasEnvironment) {
+			state.pmremgen?.dispose()
+			state.pmremgen = undefined
+		}
+	}
+
+	/**
+	 * @method __loadBackgroundTexture - Load the background texture for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 * @param {(t: Texture | undefined) => void} cb - Callback called when the
+	 * texture is done loading. It receives the Texture, or undefined if loading
+	 * was canceled or if other issues.
+	 */
+	private __loadBackgroundTexture(scene: Scene, cb: (texture: Texture) => void): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		const version = this.__bgVersion
+
+		new TextureLoader().load(scene.background, tex => {
+			// In case state changed during load, ignore a loaded texture that
+			// corresponds to previous state:
+			if (version !== this.__bgVersion) return
+
+			if (state.backgroundIsEquirectangular) {
+				cb(state.pmremgen!.fromEquirectangular(tex).texture)
+			} else {
+				cb(tex)
+			}
+		})
+	}
+
+	private __envVersion = 0
+
+	/**
+	 * @method enableEnvironment - Enable environment texture handling for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 * @param {(t: Texture | undefined) => void} cb - A callback that is called
+	 * when the environment mechanics are done loading. The Callback receives the
+	 * background Texture instance.
+	 */
+	enableEnvironment(scene: Scene, cb: (tex: Texture) => void): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		this.__envVersion += 1
+
+		// Load the PMREM machinery only if needed.
+		if (!state.pmremgen) {
+			state.pmremgen = new PMREMGenerator(state.renderer)
+			state.pmremgen.compileCubemapShader()
+		}
+
+		state.hasEnvironment = true
+		this.__loadEnvironmentTexture(scene, cb)
+	}
+
+	/**
+	 * @method disableEnvironment - Disable the environment map for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 */
+	disableEnvironment(scene: Scene): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		this.__envVersion += 1
+
+		if (!state.hasBackground && !state.hasEnvironment) {
+			state.pmremgen?.dispose()
+			state.pmremgen = undefined
+		}
+	}
+
+	/**
+	 * @method __loadEnvironmentTexture - Load the environment texture for the given scene.
+	 * @param {Scene} scene - The given scene.
+	 * @param {(t: Texture | undefined) => void} cb - Callback called when the
+	 * texture is done loading. It receives the Texture.
+	 */
+	private __loadEnvironmentTexture(scene: Scene, cb: (texture: Texture) => void): void {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
+
+		const version = this.__envVersion
+
+		new TextureLoader().load(scene.environment, tex => {
+			// In case state changed during load, ignore a loaded texture that
+			// corresponds to previous state:
+			if (version !== this.__envVersion) return
+
+			cb(state.pmremgen!.fromEquirectangular(tex).texture)
+			tex.dispose() // Three.js demos do this. Not sure if it is really needed.
+		})
 	}
 
 	requestFrame(scene: Scene, fn: FrameRequestCallback) {
