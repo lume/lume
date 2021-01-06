@@ -95,3 +95,12 @@ export function isPerspectiveCamera(camera: Camera): camera is PerspectiveCamera
 export function isOrthographicCamera(camera: Camera): camera is OrthographicCamera {
 	return !!(camera as any).isOrthographicCamera
 }
+
+export interface Disposable {
+	dispose: () => void
+}
+
+export function isDisposable(o: any): o is Disposable {
+	if (typeof o === 'object' && o && 'dispose' in o) return true
+	return false
+}

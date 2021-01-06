@@ -1,0 +1,50 @@
+<title>&lt;lume-gltf-model&gt;</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+	}
+</style>
+
+<lume-scene
+	id="scene"
+	perspective="800"
+	webgl
+	background="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+	equirectangular-background="true"
+	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+>
+	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+	<lume-perspective-camera size="0 0 0" position="0 0 1000" rotation="0 0 0" active></lume-perspective-camera>
+
+	<lume-gltf-model
+		id="model"
+		rotation="0 45 0"
+		size="2 2 0"
+		src="./models/DamagedHelmet.glb"
+		scale="200 200 200"
+		style="background: blue"
+	>
+	</lume-gltf-model>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+
+	let t0 = performance.now()
+	let dt = 0
+
+	model.rotation = (x, y, z, t) => {
+		dt = t - t0
+		t0 = t
+		return [x, y + dt * 0.05, z]
+	}
+</script>
