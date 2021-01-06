@@ -199,7 +199,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				autorun(() => {
 					if (!this.webgl || !this.background) {
 						if (isDisposable(this.three.background)) this.three.background.dispose()
-						this.__glRenderer!.disableBackground(this)
+						this.__glRenderer?.disableBackground(this)
 						return
 					}
 
@@ -226,7 +226,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				autorun(() => {
 					if (!this.webgl || !this.environment) {
 						if (isDisposable(this.three.environment)) this.three.environment.dispose()
-						this.__glRenderer!.disableEnvironment(this)
+						this.__glRenderer?.disableEnvironment(this)
 						return
 					}
 
