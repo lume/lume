@@ -2,6 +2,9 @@ import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator'
 
+// TODO update to WebXR
+// import WEBVR from '../lib/three/WebVR'
+
 import type {Scene} from './Scene'
 import type {Texture} from 'three/src/textures/Texture'
 import {TextureLoader} from 'three'
@@ -318,54 +321,58 @@ export class WebGLRendererThree {
 
 	// TODO: at the moment this has only been tested toggling it on
 	// once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
-	enableVR(scene: Scene, enable: boolean) {
-		const state = sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
+	// TODO Update to WebXR
+	// enableVR(scene: Scene, enable: boolean) {
+	// 	const state = sceneStates.get(scene)
+	// 	if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
 
-		const {renderer} = state
-		renderer.vr.enabled = enable
-	}
+	// 	const {renderer} = state
+
+	// 	// TODO TESTME updated from .vr.enabled to .xr.enabled, ensure it works the same.
+	// 	renderer.xr.enabled = enable
+	// }
 
 	// TODO the UI here should be configurable via HTML
-	createDefaultWebVREntryUI(scene: Scene) {
-		const state = sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
+	// TODO Update to WebXR
+	// createDefaultWebVREntryUI(scene: Scene) {
+	// 	const state = sceneStates.get(scene)
+	// 	if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
 
-		const {renderer} = state
+	// 	const {renderer} = state
 
-		window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false)
-		window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false)
+	// 	window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false)
+	// 	window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false)
 
-		function onPointerRestricted() {
-			var pointerLockElement = renderer.domElement
-			if (pointerLockElement && typeof pointerLockElement.requestPointerLock === 'function') {
-				pointerLockElement.requestPointerLock()
-			}
-		}
+	// 	function onPointerRestricted() {
+	// 		var pointerLockElement = renderer.domElement
+	// 		if (pointerLockElement && typeof pointerLockElement.requestPointerLock === 'function') {
+	// 			pointerLockElement.requestPointerLock()
+	// 		}
+	// 	}
 
-		function onPointerUnrestricted() {
-			var currentPointerLockElement = document.pointerLockElement
-			var expectedPointerLockElement = renderer.domElement
-			if (
-				currentPointerLockElement &&
-				currentPointerLockElement === expectedPointerLockElement &&
-				typeof document.exitPointerLock === 'function'
-			) {
-				document.exitPointerLock()
-			}
-		}
+	// 	function onPointerUnrestricted() {
+	// 		var currentPointerLockElement = document.pointerLockElement
+	// 		var expectedPointerLockElement = renderer.domElement
+	// 		if (
+	// 			currentPointerLockElement &&
+	// 			currentPointerLockElement === expectedPointerLockElement &&
+	// 			typeof document.exitPointerLock === 'function'
+	// 		) {
+	// 			document.exitPointerLock()
+	// 		}
+	// 	}
 
-		const button = WEBVR.createButton(renderer)
+	// 	const button = WEBVR.createButton(renderer)
 
-		button.setAttribute('id', 'vrButton')
-		button.style.color = 'black'
-		button.style.setProperty('border-color', 'black')
+	// 	button.setAttribute('id', 'vrButton')
+	// 	button.style.color = 'black'
+	// 	button.style.setProperty('border-color', 'black')
 
-		button.setAttribute('slot', 'misc')
-		scene.appendChild(button)
+	// 	button.setAttribute('slot', 'misc')
+	// 	scene.appendChild(button)
 
-		return button
-	}
+	// 	return button
+	// }
 }
 
 export function releaseWebGLRendererThree() {

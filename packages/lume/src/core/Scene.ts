@@ -385,14 +385,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					this.needsUpdate()
 				}),
 				autorun(() => {
-					this.__glRenderer!.enableVR(this, this.vr)
-
-					if (this.vr) {
-						Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
-						this.__glRenderer!.createDefaultWebVREntryUI(this)
-					} else {
-						// TODO else return back to normal requestAnimationFrame
-					}
+					// TODO Update to WebXR
+					// this.__glRenderer!.enableVR(this, this.vr)
+					// if (this.vr) {
+					// 	Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
+					// 	this.__glRenderer!.createDefaultWebVREntryUI(this)
+					// } else {
+					// 	// TODO else return back to normal requestAnimationFrame
+					// }
 				}),
 			)
 
