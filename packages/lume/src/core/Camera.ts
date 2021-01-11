@@ -83,8 +83,11 @@ export default class PerspectiveCamera extends Node {
 				this.needsUpdate()
 			}),
 			autorun(_ => {
-				this.__setSceneCamera(this.active ? undefined : 'unset')
-				this.needsUpdate() // XXX need this?
+				const active = this.active
+				untrack(() => {
+					this.__setSceneCamera(active ? undefined : 'unset')
+				})
+				this.needsUpdate() // TODO need this? Cameras don't render as anything, maybe they don't need an update in this case.
 			}),
 		)
 	}
