@@ -1,8 +1,16 @@
 - **Guide**
 
   - [Introduction](/)
-  - [Install](/install.md)
-  - [Contributing](/contributing.md)
+  - [Install](/guide/install)
+  - [Scene Graph](/guide/scene-graph)
+  - [Alignment](/guide/alignment)
+  - [Sizing](/guide/sizing)
+  - [Rendering Modes](/guide/rendering-modes)
+  - [Reactivity](/guide/reactivity)
+  - [Making Elements](/guide/making-elements)
+  - [Element Behaviors](/guide/element-behaviors)
+  - [Compatibility](/guide/compatibility)
+  - [Contributing](/guide/contributing)
 
 - **Examples**
 
