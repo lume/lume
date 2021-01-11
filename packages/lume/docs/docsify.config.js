@@ -50,20 +50,6 @@
 				// `this` in the following hooks is an instace of Marked Renderer
 				renderer: {
 					/**
-					 * @param {string} code
-					 * @param {string} lang
-					 * @returns {string}
-					 */
-					code(code, lang) {
-						// support for mermaid (diagrams via markdown)
-						if (lang === 'mermaid') {
-							return '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + '</div>'
-						}
-
-						return this.origin.code.apply(this, arguments)
-					},
-
-					/**
 					 * @param {string} html
 					 * @returns {string}
 					 */
