@@ -41,6 +41,7 @@ export default class PointLight extends LightBase {
 				shadow.camera.near = this.shadowCameraNear
 				shadow.camera.far = this.shadowCameraFar
 
+				shadow.needsUpdate = true
 				this.needsUpdate()
 			}),
 		)
