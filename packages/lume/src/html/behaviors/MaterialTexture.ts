@@ -17,9 +17,13 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		element!: Mesh
 
 		@reactive @attribute texture = ''
+		@reactive @attribute bumpMap = ''
+		@reactive @attribute specularMap = ''
 
 		protected static _observedProperties = [
 			'texture',
+			'bumpMap',
+			'specularMap',
 			...(((Base as unknown) as typeof BaseMeshBehavior)._observedProperties || []),
 		]
 
@@ -28,34 +32,46 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		loadGL() {
 			if (!super.loadGL()) return false
 
-			const stop = autorun(() => {
-				// "as MeshPhongMaterial" needed because we don't know what
-				// material it will be, and Material base class doesn't have
-				// `map`., but most other materrials do. So this shows intent,
-				// and we assume all materials are subclasses of Material, and
-				// have `.map`, at least for now.
+			const handleTexture = (sourceProp: keyof this, threeProp: keyof MeshPhongMaterial) => {
+				this[sourceProp] // this is a dependency of this computation
+
 				const mat = this.element.three.material as MeshPhongMaterial
 
-				// Is this how to clean up? See https://discourse.threejs.org/t/the-need-for-a-how-to-clean-things-up-section-of-the-docs/5831
-				if (mat.map) mat.map.dispose()
+				if (!(threeProp in mat)) {
+					console.warn(
+						`Warning: The material specified for the <${this.element.tagName.toLowerCase()}> element does not support a "${threeProp}" texture.`,
+					)
+					return
+				}
 
-				if (this.texture) {
+				// Is this how to clean up? See
+				// https://discourse.threejs.org/t/the-need-for-a-how-to-clean-things-up-section-of-the-docs/5831
+				if (mat[threeProp]) mat[threeProp].dispose()
+
+				if (this[sourceProp]) {
 					// TODO The default material color (if not specified) when
 					// there's a texture should be white
 
-					const texture = new TextureLoader().load(this.texture, () => this.element.needsUpdate())
+					// @ts-ignore
+					const texture = new TextureLoader().load(this[sourceProp], () => this.element.needsUpdate())
 
 					// TODO handle Material[] arrays
-					mat.map = texture
+					// @ts-ignore
+					mat[threeProp] = texture
 				} else {
-					mat.map = null
+					// @ts-ignore
+					mat[threeProp] = null
 				}
 
 				mat.needsUpdate = true // Three.js needs to update the material in the GPU
 				this.element.needsUpdate() // Lume needs to re-render
-			})
+			}
 
-			this.stopFns.push(stop)
+			this.stopFns.push(
+				autorun(() => handleTexture('texture', 'map')),
+				autorun(() => handleTexture('bumpMap', 'bumpMap')),
+				autorun(() => handleTexture('specularMap', 'specularMap')),
+			)
 
 			return true
 		}
