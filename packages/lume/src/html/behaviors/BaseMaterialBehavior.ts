@@ -1,7 +1,7 @@
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 import {Color} from 'three/src/math/Color'
-import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants'
+import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
+import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
 
@@ -53,12 +53,12 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		else return false
 	}
 
-	private __stopFns: StopFunction[] = []
+	protected _stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		this.__stopFns.push(
+		this._stopFns.push(
 			autorun(() => {
 				this.wireframe
 				this.updateMaterial('wireframe')
@@ -99,14 +99,26 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		for (const stop of this.__stopFns) stop()
+		for (const stop of this._stopFns) stop()
 
 		return true
 	}
 
 	updateMaterial<Prop extends 'color' | 'opacity' | 'transparent' | 'wireframe'>(propName: Prop) {
-		// TODO support Material[]
-		;(this.element.three.material as any)[propName] = this[propName]
+		const mat = this.element.three.material as any
+
+		// TODO Better taxonomy organization. F.e. ShaderMaterial doesn't have
+		// a 'color' prop, but it has the others that we've enabled to far.
+
+		if (Array.isArray(mat)) {
+			for (const m of mat) {
+				// @ts-ignore
+				m[propName] = this[propName]
+			}
+		} else {
+			// @ts-ignore
+			mat[propName] = this[propName]
+		}
 
 		this.element.needsUpdate()
 	}

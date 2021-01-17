@@ -11,8 +11,10 @@ import type {Mesh} from '../../core'
  * Mixin class for adding textures to a mesh behavior
  */
 function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) {
+	const Parent = Constructor<BaseMeshBehavior, typeof BaseMeshBehavior>(Base)
+
 	@reactive
-	class MaterialTexture extends Constructor<BaseMeshBehavior>(Base) {
+	class MaterialTexture extends Parent {
 		type: MeshComponentType = 'material'
 		element!: Mesh
 
@@ -24,7 +26,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 			'texture',
 			'bumpMap',
 			'specularMap',
-			...(((Base as unknown) as typeof BaseMeshBehavior)._observedProperties || []),
+			...(Parent._observedProperties || []),
 		]
 
 		private stopFns: StopFunction[] = []

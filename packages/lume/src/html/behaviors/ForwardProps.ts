@@ -6,6 +6,8 @@ import type {PossibleCustomElement} from '../PossibleCustomElement'
 function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
 	// from PossibleCustomElement), and we can have a separate mixin for that.
+
+	// TODO Use abstract with TS 4.2
 	class ForwardProps extends Constructor<PossibleCustomElement>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
