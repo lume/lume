@@ -6,6 +6,7 @@ import {default as HTMLInterface} from '../html/HTMLNode'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior'
+import '../html/behaviors/GltfModelBehavior'
 
 initImperativeBase()
 
