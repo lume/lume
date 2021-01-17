@@ -1,4 +1,6 @@
 import type {Constructor} from 'lowclass'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
+import type {Group} from 'three/src/objects/Group'
 
 export class EventTypes {
 	constructor(
@@ -31,7 +33,13 @@ export class EventTypes {
 		public BEHAVIOR_GL_UNLOAD: undefined,
 		// This event is fired when an obj-model element, or a node element with an
 		// obj-model behavior, has loaded it's model.
-		public MODEL_LOAD: {format: string; model: THREE.Group},
+		public MODEL_LOAD: {format: string; model: Group},
+		// Fired when a gltf-model element has loaded the GLTF model.
+		public GLTF_LOAD: {model: GLTF},
+		// Fired by elements that load resources. See
+		// https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+		public PROGRESS: ProgressEvent,
+		public GLTF_ERROR: {src: string; dracoDecoderPath: string},
 	) {}
 }
 
