@@ -11,4 +11,7 @@ export * from './html'
 export * from './components'
 export * from './layout'
 
+import * as THREE from 'three/src/Three'
+export {THREE}
+
 export const version = '0.0.0-rc.0'
