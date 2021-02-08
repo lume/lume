@@ -1,10 +1,5 @@
 # Miscellaneous Notes
 
-- WebGL rendering is currently in "experimental" mode because the API isn't
-  entirely finished, though many parts of it are stable.
-  - This requires the `webgl="true"` attribute on root Scene
-    elements, otherwise only CSS3D rendering is enabled by default.
-- CSS3D rendering is stable.
 - WebGL rendering is currently powered by [Three.js](https://threejs.org). All
   elements have a `.three` property that you can access if you want to
   do custom things with the Three.js parts.

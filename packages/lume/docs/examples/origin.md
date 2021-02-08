@@ -24,8 +24,10 @@
     lume-node { padding: 15px; pointer-events: all; }
 </style>
 
-<!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
-<lume-scene webgl disable-css>
+<!-- Use the enable-css attribute to disable CSS rendering so that only WebGL
+rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
+-->
+<lume-scene webgl enable-css="false">
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
       align="0.5 0.5 0.5"

@@ -71,7 +71,7 @@
 <script type=module>
   const root = div2.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene webgl disable-css>
+    <lume-scene webgl enable-css="false">
       <slot></slot>
     </lume-scene>
   \`
@@ -118,7 +118,7 @@
 <script type=module>
   const root = div4.attachShadow({mode: 'open'})
   root.innerHTML = \`
-    <lume-scene webgl disable-css>
+    <lume-scene webgl enable-css="false">
       <lume-node align="0.75 0.25">
         <slot></slot>
       </lume-node>

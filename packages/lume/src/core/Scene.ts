@@ -42,7 +42,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		@reactive @emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
 		@reactive @emits('propertychange') @booleanAttribute(false) vr = false
 		@reactive @emits('propertychange') @booleanAttribute(false) webgl = false
-		@reactive @emits('propertychange') @booleanAttribute(false) disableCss = false
+		@reactive @emits('propertychange') @booleanAttribute(false) enableCss = true
 
 		/** @property {string} background - The background can be a path to a jpeg, jpg, or png. Other types not supported yet. */
 		@reactive @emits('propertychange') @attribute background = ''
@@ -250,7 +250,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 					}
 				}),
 				autorun(() => {
-					if (!this.disableCss) this._triggerLoadCSS()
+					if (this.enableCss) this._triggerLoadCSS()
 					else this._triggerUnloadCSS()
 
 					// Do we need this? Doesn't hurt to have it just in case.
@@ -531,7 +531,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		private __startOrStopParentSizeObservation() {
 			if (
 				// If we will be rendering something...
-				(!this.disableCss || this.webgl) &&
+				(this.enableCss || this.webgl) &&
 				// ...and if one size dimension is proportional...
 				(this.sizeMode.x == 'proportional' || this.sizeMode.y == 'proportional')
 				// Note, we don't care about the Z dimension, because Scenes are flat surfaces.

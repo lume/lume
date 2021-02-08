@@ -485,7 +485,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		protected _cssStopFns: StopFunction[] = []
 
 		protected _loadCSS(): boolean {
-			const cssIsEnabled = this.scene && !this.scene.disableCss
+			const cssIsEnabled = this.scene && this.scene.enableCss
 
 			if (!cssIsEnabled) return false
 

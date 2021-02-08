@@ -30,9 +30,10 @@
 
 <body touch-action="none">
 
-<!-- Use the disable-css attribute so that only WebGL rendering is enabled
-(if you don't need CSS rendering, turn it off to save CPU). -->
-<lume-scene id="scene" webgl disable-css>
+<!-- Use the enable-css attribute to disable CSS rendering so that only WebGL
+rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
+-->
+<lume-scene id="scene" webgl enable-css="false">
     <lume-ambient-light intensity="0.1"></lume-ambient-light>
     <lume-point-light
         id="light"
