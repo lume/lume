@@ -1,18 +1,22 @@
 import {Color} from 'three/src/math/Color'
-import {attribute, autorun, reactive, numberAttribute} from '@lume/element'
+import {attribute, autorun, element, numberAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node from './Node'
 
-import type {Light} from 'three/src/lights/Light'
 import type {TColor} from '../utils/three'
+import type {Light} from 'three/src/lights/Light'
 
-// base class for light elements.
-@reactive
+/**
+ * @abstract
+ * @class LightBase - An abstract base class for light elements.
+ * @extends Node
+ */
+@element
 export default class LightBase extends Node {
 	three!: Light
 
-	@reactive @attribute @emits('propertychange') color: TColor = 'white'
-	@reactive @numberAttribute(1) @emits('propertychange') intensity: number = 1
+	@attribute @emits('propertychange') color: TColor = 'white'
+	@numberAttribute(1) @emits('propertychange') intensity: number = 1
 
 	protected _loadGL() {
 		if (!super._loadGL()) return false

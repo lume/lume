@@ -20,7 +20,7 @@
 // - Allow visual-format to be fetch by path (like img src attribute).
 
 import * as AutoLayout from 'autolayout'
-import {reactive, attribute, autorun} from '@lume/element'
+import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node from '../core/Node'
 import Motor from '../core/Motor'
@@ -44,7 +44,7 @@ type Viewport = {
  * A Node that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
-@reactive
+@element
 export default class AutoLayoutNode extends Node {
 	static defaultElementName = 'lume-autolayout-node'
 
@@ -53,7 +53,7 @@ export default class AutoLayoutNode extends Node {
 		strict: false,
 	}
 
-	@reactive @attribute @emits('propertychange') visualFormat: string | null = ''
+	@attribute @emits('propertychange') visualFormat: string | null = ''
 
 	/**
 	 * Constructor

@@ -3,7 +3,7 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {reactive, autorun, booleanAttribute, attribute, numberAttribute, untrack} from '@lume/element'
+import {reactive, autorun, booleanAttribute, attribute, numberAttribute, untrack, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import documentReady from '@awaitbox/document-ready'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene'
@@ -28,27 +28,27 @@ import type TreeNode from './TreeNode'
 initImperativeBase()
 
 function SceneMixin<T extends Constructor>(Base: T) {
-	// NOTE for now, we assume Scene is mixed with its HTMLInterface.
+	// NOTE For now, we assume Scene is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
-	@reactive
+	@element
 	class Scene extends Parent {
 		static defaultElementName = 'lume-scene'
 
 		isScene = true
 
-		@reactive @emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
-		@reactive @emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
-		@reactive @emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
-		@reactive @emits('propertychange') @booleanAttribute(false) vr = false
-		@reactive @emits('propertychange') @booleanAttribute(false) webgl = false
-		@reactive @emits('propertychange') @booleanAttribute(false) enableCss = true
+		@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+		@emits('propertychange') @booleanAttribute(false) vr = false
+		@emits('propertychange') @booleanAttribute(false) webgl = false
+		@emits('propertychange') @booleanAttribute(true) enableCss = true
+		@emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
+		@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
 
 		/** @property {string} background - The background can be a path to a jpeg, jpg, or png. Other types not supported yet. */
-		@reactive @emits('propertychange') @attribute background = ''
+		@emits('propertychange') @attribute background = ''
 
 		/** @property {string} equirectangularBackground - The background is can be a path to a jpeg, jpg, or png. Other types not supported yet. */
-		@reactive @emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
+		@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
 
 		/**
 		 * @property {string} environment - The environment can be a path to a
@@ -56,7 +56,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		 * be an equirectangular image used for env maps for things like
 		 * reflections on metallic objects in the scene.
 		 */
-		@reactive @emits('propertychange') @attribute environment = ''
+		@emits('propertychange') @attribute environment = ''
 
 		/** @override */
 		sizeMode = new XYZSizeModeValues('proportional', 'proportional', 'literal')
@@ -103,7 +103,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		private __perspective = 400
 
-		@reactive
 		@numberAttribute(400)
 		set perspective(value) {
 			this.__perspective = value

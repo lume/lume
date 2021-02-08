@@ -7,8 +7,8 @@ export type RenderTask = (timestamp: number) => false | void
 
 class _Motor {
 	/**
-	 * When a render tasks is added a new requestAnimationFrame loop will be started if there
-	 * isn't one currently.
+	 * When a render tasks is added a new requestAnimationFrame loop will be
+	 * started if there isn't one currently.
 	 *
 	 * A render task is simply a function that will be called over and over
 	 * again, in the Motor's animation loop. That's all, nothing special.
@@ -22,6 +22,7 @@ class _Motor {
 	 * the loop.
 	 *
 	 * @param {Function} fn The render task to add.
+	 *
 	 * @return {Function} A reference to the render task. Useful for saving to
 	 * a variable so that it can later be passed to Motor.removeRenderTask().
 	 */

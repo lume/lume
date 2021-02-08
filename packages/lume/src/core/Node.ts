@@ -1,4 +1,4 @@
-import {autorun, reactive, booleanAttribute} from '@lume/element'
+import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -228,7 +228,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 	// NOTE for now, we assume Node is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
 
-	@reactive
+	@element
 	class Node extends Parent {
 		static defaultElementName = 'lume-node'
 
@@ -244,7 +244,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 		 *
 		 * If a `Node` is not visible, its children are also not visible.
 		 */
-		@reactive @booleanAttribute(true) @emits('propertychange') visible = true
+		@booleanAttribute(true) @emits('propertychange') visible = true
 
 		/**
 		 * @readonly

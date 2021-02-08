@@ -1,23 +1,23 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight'
-import {autorun, reactive, numberAttribute, booleanAttribute} from '@lume/element'
+import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import LightBase from './LightBase'
 
-@reactive
+@element
 export default class PointLight extends LightBase {
 	static defaultElementName = 'lume-point-light'
 
 	three!: ThreePointLight
 
-	@reactive @numberAttribute(0) @emits('propertychange') distance = 0
-	@reactive @numberAttribute(1) @emits('propertychange') decay = 1
-	@reactive @booleanAttribute(true) @emits('propertychange') castShadow = true
-	@reactive @numberAttribute(512) @emits('propertychange') shadowMapWidth = 512
-	@reactive @numberAttribute(512) @emits('propertychange') shadowMapHeight = 512
-	@reactive @numberAttribute(3) @emits('propertychange') shadowRadius = 3
-	@reactive @numberAttribute(0) @emits('propertychange') shadowBias = 0
-	@reactive @numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
-	@reactive @numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
+	@numberAttribute(0) @emits('propertychange') distance = 0
+	@numberAttribute(1) @emits('propertychange') decay = 1
+	@booleanAttribute(true) @emits('propertychange') castShadow = true
+	@numberAttribute(512) @emits('propertychange') shadowMapWidth = 512
+	@numberAttribute(512) @emits('propertychange') shadowMapHeight = 512
+	@numberAttribute(3) @emits('propertychange') shadowRadius = 3
+	@numberAttribute(0) @emits('propertychange') shadowBias = 0
+	@numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
+	@numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
 
 	protected _loadGL() {
 		if (!super._loadGL()) return false

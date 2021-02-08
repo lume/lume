@@ -1,6 +1,6 @@
 import {Object3D} from 'three/src/core/Object3D'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {reactive, StopFunction, autorun, untrack} from '@lume/element'
+import {reactive, StopFunction, autorun, untrack, element} from '@lume/element'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
 import Motor from './Motor'
@@ -24,9 +24,10 @@ window.addEventListener('error', event => {
 
 	if (/Illegal constructor/i.test(error.message)) {
 		console.error(`
-            One of the reasons the following error can happen is if a Custom
-            Element is called with 'new' before being defined.
-            For other reasons, see: https://www.google.com/search?q=chrome%20illegal%20constructor
+			One of the reasons the following error can happen is if a Custom
+			Element is called with 'new' before being defined. Did you forget
+			to call 'LUME.useDefaultNames'?  For other reasons, see:
+			https://www.google.com/search?q=chrome%20illegal%20constructor
         `)
 	}
 })
@@ -71,7 +72,8 @@ class PossiblyWebComponent {
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 	const Parent = Settable.mixin(Transformable.mixin(Constructor<PossiblyWebComponent>(Base)))
 
-	@reactive
+	// TODO switch to @element('element-name', false) and use defineElement in html/index.ts
+	@element
 	class ImperativeBase extends Parent {
 		// we don't need this, keep for backward compatibility (mainly
 		// all my demos at trusktr.io).

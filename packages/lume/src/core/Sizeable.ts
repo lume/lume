@@ -1,6 +1,6 @@
 import {Mixin, Constructor} from 'lowclass'
 import {Eventful, emits} from '@lume/eventful'
-import {reactive, attribute, untrack} from '@lume/element'
+import {reactive, attribute, untrack, element} from '@lume/element'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -34,7 +34,7 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 	// Sizeable extends TreeNode because Sizeable knows about its `parent` when
 	// calculating proportional sizes. Also Transformable knows about it's parent
 	// in order to calculate it's world matrix based on it's parent's.
-	@reactive
+	@element
 	class Sizeable extends Parent {
 		// TODO handle ctor arg types
 		constructor(...args: any[]) {
@@ -50,7 +50,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		 * Set the size mode for each axis. Possible size modes are "literal"
 		 * and "proportional". The default values are "literal" for all axes.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set sizeMode(newValue) {
@@ -91,7 +90,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis size to apply.
 		 * @param {number} [newValue.z] The z-axis size to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set size(newValue) {

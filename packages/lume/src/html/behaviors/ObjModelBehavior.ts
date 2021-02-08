@@ -18,8 +18,8 @@ declare global {
 
 @reactive
 export default class ObjModelBehavior extends RenderableBehavior {
-	@reactive @attribute obj = ''
-	@reactive @attribute mtl = ''
+	@attribute obj = ''
+	@attribute mtl = ''
 
 	// TODO no any
 	model: any = null

@@ -1,5 +1,5 @@
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh'
-import {reactive, autorun, booleanAttribute} from '@lume/element'
+import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node from './Node'
 
@@ -22,7 +22,7 @@ import '../html/behaviors/RoundedRectangleGeometryBehavior'
 // - [ ] API for registering new behaviors as they pertain to our API, built on top
 //   of element-behaviors.
 
-@reactive
+@element
 export default class Mesh extends Node {
 	static defaultElementName = 'lume-mesh'
 
@@ -40,8 +40,8 @@ export default class Mesh extends Node {
 
 	three!: ThreeMesh
 
-	@reactive @booleanAttribute(true) @emits('propertychange') castShadow = true
-	@reactive @booleanAttribute(true) @emits('propertychange') receiveShadow = true
+	@booleanAttribute(true) @emits('propertychange') castShadow = true
+	@booleanAttribute(true) @emits('propertychange') receiveShadow = true
 
 	protected _loadGL() {
 		if (!super._loadGL()) return false

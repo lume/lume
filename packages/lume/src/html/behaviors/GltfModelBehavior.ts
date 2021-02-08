@@ -12,8 +12,8 @@ import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 
 @reactive
 export default class GltfModelBehavior extends RenderableBehavior {
-	@reactive @attribute src = ''
-	@reactive @attribute dracoDecoderPath = ''
+	@attribute src = ''
+	@attribute dracoDecoderPath = ''
 	dracoLoader?: DRACOLoader
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null

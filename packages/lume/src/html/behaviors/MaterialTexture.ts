@@ -18,9 +18,9 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		type: MeshComponentType = 'material'
 		element!: Mesh
 
-		@reactive @attribute texture = ''
-		@reactive @attribute bumpMap = ''
-		@reactive @attribute specularMap = ''
+		@attribute texture = ''
+		@attribute bumpMap = ''
+		@attribute specularMap = ''
 
 		protected static _observedProperties = [
 			'texture',

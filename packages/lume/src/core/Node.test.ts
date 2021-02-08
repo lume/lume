@@ -55,10 +55,10 @@ describe('Node', () => {
 		scene.add(n)
 
 		expect(n instanceof Node).toBe(true)
-		expect(n.constructor.name).toBe('Node')
+		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 		expect(n.three).not.toBeUndefined()
 		expect(n.scene).not.toBeUndefined()
-		expect(n.scene.constructor.name).toBe('Scene')
+		// expect(n.scene.constructor.name).toBe('Scene') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 	})
 
 	it('element is an instance of Node, created with `document.createElement`', async () => {
@@ -68,9 +68,9 @@ describe('Node', () => {
 		scene.add(n)
 
 		expect(n instanceof Node).toBe(true)
-		expect(n.constructor.name).toBe('Node')
+		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 		expect(n.three).not.toBeUndefined()
 		expect(n.scene).not.toBeUndefined()
-		expect(n.scene.constructor.name).toBe('Scene')
+		// expect(n.scene.constructor.name).toBe('Scene') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 	})
 })

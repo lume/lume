@@ -1,5 +1,5 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {attribute, reactive, autorun} from '@lume/element'
+import {attribute, element, autorun} from '@lume/element'
 import {emits} from '@lume/eventful'
 import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
@@ -20,7 +20,7 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 
 	// Transformable extends TreeNode (indirectly through Sizeable) because it
 	// needs to be aware of its `parent` when calculating align adjustments.
-	@reactive
+	@element
 	class Transformable extends Parent {
 		constructor(...args: any[]) {
 			super(...args)
@@ -44,7 +44,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis position to apply.
 		 * @param {number} [newValue.z] The z-axis position to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set position(newValue) {
@@ -62,7 +61,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis rotation to apply.
 		 * @param {number} [newValue.z] The z-axis rotation to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set rotation(newValue) {
@@ -80,7 +78,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis scale to apply.
 		 * @param {number} [newValue.z] The z-axis scale to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set scale(newValue) {
@@ -98,7 +95,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis origin to apply.
 		 * @param {number} [newValue.z] The z-axis origin to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set origin(newValue) {
@@ -119,7 +115,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis align to apply.
 		 * @param {number} [newValue.z] The z-axis align to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set align(newValue) {
@@ -139,7 +134,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis mountPoint to apply.
 		 * @param {number} [newValue.z] The z-axis mountPoint to apply.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set mountPoint(newValue) {
@@ -157,7 +151,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		 * @param {number} opacity A floating point number clamped between 0 and
 		 * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
 		 */
-		@reactive
 		@attribute
 		@emits('propertychange')
 		set opacity(newValue) {

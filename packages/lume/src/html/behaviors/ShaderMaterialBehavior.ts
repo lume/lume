@@ -8,6 +8,7 @@ import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fr
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 import MaterialTexture from './MaterialTexture'
 
+@reactive
 export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {
 	protected static _observedProperties = [
 		'uniforms',
@@ -21,7 +22,6 @@ export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBe
 	// specific data handling and type definitions for each one. This would
 	// make it easier to animate particular uniforms instead of replacing the
 	// whole object each time.
-	@reactive
 	@attribute
 	get uniforms(): string | Record<string, any> | null {
 		return this.__uniforms
@@ -41,8 +41,8 @@ export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBe
 
 	private __uniforms: Record<string, any> = {}
 
-	@reactive @attribute vertexShader = default_vertex
-	@reactive @attribute fragmentShader = default_fragment
+	@attribute vertexShader = default_vertex
+	@attribute fragmentShader = default_fragment
 
 	protected _createComponent() {
 		return new ShaderMaterial({

@@ -16,14 +16,13 @@ import type {Geometry} from 'three/src/core/Geometry'
 export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 	// FIXME We need this because if we pass string numbers to Three.js it
 	// breaks. Three.js should be fixed.
-	@reactive @attribute({from: Number}) cornerRadius = 0
-	@reactive @attribute({from: Number}) thickness = 0
+	@attribute({from: Number}) cornerRadius = 0
+	@attribute({from: Number}) thickness = 0
 
-	// @reactive @attribute({from: BoolAttribute}) quadraticCorners = false
+	// @attribute({from: BoolAttribute}) quadraticCorners = false
 
 	private __quadraticCorners = false
 
-	@reactive
 	@attribute
 	get quadraticCorners() {
 		return this.__quadraticCorners

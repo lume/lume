@@ -21,9 +21,9 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	// TODO wireframe works with -geometry behaviors, but not with obj-model
 	// because obj-model doesn't inherit from geometry. We should share common
 	// props like wireframe...
-	@reactive @booleanAttribute(false) wireframe = false
+	@booleanAttribute(false) wireframe = false
 
-	@reactive @numberAttribute(1) opacity = 1
+	@numberAttribute(1) opacity = 1
 
 	/**
 	 * @property {'front' | 'back' | 'double'} sidedness - Whether to render
@@ -32,11 +32,10 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	 * invisible. Use "both" if you want the polygons to always be visible no
 	 * matter which side faces the camera.
 	 */
-	@reactive @attribute sidedness: 'front' | 'back' | 'double' = 'front'
+	@attribute sidedness: 'front' | 'back' | 'double' = 'front'
 
 	private __color = new Color('deeppink')
 
-	@reactive
 	@attribute
 	get color(): string | number | Color {
 		return this.__color
