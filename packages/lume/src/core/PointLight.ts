@@ -7,8 +7,6 @@ import LightBase from './LightBase'
 export default class PointLight extends LightBase {
 	static defaultElementName = 'lume-point-light'
 
-	three!: ThreePointLight
-
 	@numberAttribute(0) @emits('propertychange') distance = 0
 	@numberAttribute(1) @emits('propertychange') decay = 1
 	@booleanAttribute(true) @emits('propertychange') castShadow = true
@@ -49,7 +47,7 @@ export default class PointLight extends LightBase {
 		return true
 	}
 
-	protected _makeThreeObject3d() {
+	makeThreeObject3d() {
 		return new ThreePointLight()
 	}
 }

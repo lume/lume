@@ -113,24 +113,38 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return this._cssLoaded
 		}
 
-		private __three?: Object3D
+		private __three?: ReturnType<this['makeThreeObject3d']>
 
-		get three(): Object3D {
+		get three(): ReturnType<this['makeThreeObject3d']> {
 			// if (!(this.scene && this.scene.webgl)) return null
 
-			if (!this.__three) this.__three = this._makeThreeObject3d()
+			if (!this.__three) this.__three = this.__makeThreeObject3d()
 
 			return this.__three
 		}
 
-		private __threeCSS?: Object3D // TODO possible to constrain this to THREE.Scene or CSS3DObjectNested? Maybe with StrictUnion.
+		private __makeThreeObject3d(): ReturnType<this['makeThreeObject3d']> {
+			const o = this.makeThreeObject3d() as ReturnType<this['makeThreeObject3d']>
+			// Helpful for debugging when looking in devtools.
+			// @prod-prune
+			o.name = this.tagName + (this.id ? '#' + this.id : '')
+			return o
+		}
 
-		get threeCSS(): Object3D {
+		private __threeCSS?: ReturnType<this['makeThreeCSSObject']>
+
+		get threeCSS(): ReturnType<this['makeThreeCSSObject']> {
 			// if (!(this.scene && !this.scene.disableCss)) return null
 
-			if (!this.__threeCSS) this.__threeCSS = this._makeThreeCSSObject()
+			if (!this.__threeCSS) this.__threeCSS = this.__makeThreeCSSObject()
 
-			return this.__threeCSS!
+			return this.__threeCSS
+		}
+
+		private __makeThreeCSSObject() {
+			const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
+			o.name = this.tagName + (this.id ? '#' + this.id : '')
+			return o
 		}
 
 		connectedCallback() {
@@ -371,11 +385,19 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		// in a scene.
 		@reactive protected _scene: Scene | null = null
 
-		protected _makeThreeObject3d(): Object3D {
+		/**
+		 * @protected
+		 * @method makeThreeObject3d
+		 */
+		makeThreeObject3d(): Object3D {
 			return new Object3D()
 		}
 
-		protected _makeThreeCSSObject(): Object3D {
+		/**
+		 * @protected
+		 * @method makeThreeCSSObject
+		 */
+		makeThreeCSSObject(): Object3D {
 			// @prod-prune
 			if (!(this instanceof HTMLElement)) throw 'API available only in DOM environment.'
 

@@ -38,8 +38,6 @@ export default class Mesh extends Node {
 		},
 	}
 
-	three!: ThreeMesh
-
 	@booleanAttribute(true) @emits('propertychange') castShadow = true
 	@booleanAttribute(true) @emits('propertychange') receiveShadow = true
 
@@ -62,7 +60,7 @@ export default class Mesh extends Node {
 		return true
 	}
 
-	protected _makeThreeObject3d() {
+	makeThreeObject3d() {
 		return new ThreeMesh()
 	}
 }

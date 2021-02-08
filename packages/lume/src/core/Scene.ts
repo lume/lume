@@ -63,9 +63,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		/** @override */
 		size = new XYZNonNegativeValues(1, 1, 0)
 
-		three!: ThreeScene
-		threeCSS!: ThreeScene
-
 		@reactive private __threeCamera!: ThreePerspectiveCamera
 
 		get threeCamera(): ThreePerspectiveCamera {
@@ -270,11 +267,11 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		protected _mounted = false
 		protected _elementParentSize: XYZValuesObject<number>
 
-		protected _makeThreeObject3d() {
+		makeThreeObject3d() {
 			return new ThreeScene()
 		}
 
-		protected _makeThreeCSSObject() {
+		makeThreeCSSObject() {
 			return new ThreeScene()
 		}
 
