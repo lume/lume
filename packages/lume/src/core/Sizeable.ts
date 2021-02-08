@@ -43,8 +43,16 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		/**
-		 * Set the size mode for each axis. Possible size modes are "literal"
-		 * and "proportional". The default values are "literal" for all axes.
+		 * @property {XYZSizeModeValues} sizeMode - Set the size mode for each
+		 * axis. Possible size modes are "literal" and "proportional". The
+		 * default values are "literal" for all axes. The size mode speicified
+		 * for an axis dictates how the respective value of the same axis in
+		 * the [`size`](TODO) property will behave.  A value of
+		 * "literal" for the X axis of `sizeMode` means the value for the X axis
+		 * of `size` will be a literal value.  A value of "proportional" for
+		 * the X axis of `sizeMode` means the value for the X axis of
+		 * `size` is a proportion of whatever the current size of
+		 * this node's parent node is.
 		 */
 		@attribute
 		@emits('propertychange')

@@ -27,6 +27,63 @@ import type TreeNode from './TreeNode'
 
 initImperativeBase()
 
+const _Scene = Mixin(SceneMixin)
+
+/**
+ * @class Scene - This is the backing class for `<lume-scene>` elements. All
+ * [`Node`](TODO) elements must be inside of a `<lume-scene>` element. A `Scene`
+ * establishes a visual area in a web application where a 3D scene will be
+ * rendered.
+ *
+ * A Scene has some properties that apply to the scene as a whole and will have an effect on all LUME elements in the scene.
+ *
+ * The following example shows how to begin making a LUME scene within an HTML
+ * file. To learn more about how to get started, see the [install guide](TODO).
+ *
+ * <div id="example1"></div> <script type="application/javascript">
+ *   new Vue({
+ *     el: '#example1',
+ *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
+ *     data: {
+ *       code:
+ * `<script src="${location.origin+location.pathname}/global.js"><\/script>
+ *
+ * <lume-scene id="scene">
+ *   <lume-node size="100 100" align="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
+ *   	I am centered in the scene, and I am rotated a bit.
+ *   </lume-node>
+ * </lume-scene>
+ *
+ * <style>
+ *   html, body {
+ *     margin: 0; padding: 0;
+ *     height: 100%; width: 100%;
+ *   }
+ *   lume-node {
+ *     padding: 5px;
+ *     border: 1px solid skyblue;
+ *   }
+ * </style>
+ *
+ * <script>
+ *   // Make sure you register LUME's custom elements with the
+ *   // browser, or nothing will happen.
+ *   LUME.useDefaultNames()
+ * <\/script>
+ * `
+ *     },
+ *   })
+ * </script>
+ *
+ * @extends ImperativeBase
+ */
+// TODO For now we hard-mixin the HTMLInterface class, but later we'll do this
+// automatically depending on if we have a DOM or not (f.e. in Node.js or
+// Gnome Desktop's JS environment).
+export const Scene = _Scene.mixin(HTMLInterface)
+export interface Scene extends InstanceType<typeof Scene> {}
+export default Scene
+
 function SceneMixin<T extends Constructor>(Base: T) {
 	// NOTE For now, we assume Scene is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
@@ -35,19 +92,59 @@ function SceneMixin<T extends Constructor>(Base: T) {
 	class Scene extends Parent {
 		static defaultElementName = 'lume-scene'
 
-		isScene = true
+		/**
+		 * @readonly
+		 * @property {true} isNode - Always true for things that are or inherit from `Scene`.
+		 */
+		readonly isScene = true
 
+		/** @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType */
 		@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+
+		/** @property {boolean} vs */
 		@emits('propertychange') @booleanAttribute(false) vr = false
+
+		/** @property {boolean} webgl */
 		@emits('propertychange') @booleanAttribute(false) webgl = false
+
+		/** @property {boolean} enableCss */
 		@emits('propertychange') @booleanAttribute(true) enableCss = true
+
+		/**
+		 * @property {Color | string | number} backgroundColor - The color of
+		 * the scene's background when WebGL rendering is enabled. If the
+		 * [`background`](TODO) property is set also, then `backgroundColor` is ignored.
+		 */
 		@emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
+
+		/**
+		 * @property {number} backgroundOpacity - A number between `0` and `1`
+		 * that defines the opacity of the `backgroundColor` WebGL is enabled.
+		 * If the value is less than 1, it means that any DOM contend behind
+		 * the `<lume-scene>` element will be visible. This is ignored if the
+		 * [`background`](TODO) property is set.
+		 */
 		@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
 
-		/** @property {string} background - The background can be a path to a jpeg, jpg, or png. Other types not supported yet. */
+		/**
+		 * @property {string} background - Set an image as the scene's
+		 * background. If the image is an [equirectangular environment
+		 * map](TODO), then set the value of
+		 * [`equirectangularBackground`](TODO) to `true`, otherwise the image
+		 * will be treated as a 2D background image. The value should be a path
+		 * to a jpeg, jpg, or png. Other types not supported yet. This value
+		 * takes priority over the [`backgroundColor`](TODO) and
+		 * [`backgroundOpacity`](TODO) properties; those properties will be
+		 * ignored. Any transparent parts of the image will be rendered
+		 * as color white.
+		 */
 		@emits('propertychange') @attribute background = ''
 
-		/** @property {string} equirectangularBackground - The background is can be a path to a jpeg, jpg, or png. Other types not supported yet. */
+		/**
+		 * @property {string} equirectangularBackground - If the `background`
+		 * is equirectangular, set this to `true` so use it like a skybox,
+		 * otherwise the image will be used as a regular 2D background image.
+		 */
 		@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
 
 		/**
@@ -57,11 +154,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		 * reflections on metallic objects in the scene.
 		 */
 		@emits('propertychange') @attribute environment = ''
-
-		/** @override */
-		sizeMode = new XYZSizeModeValues('proportional', 'proportional', 'literal')
-		/** @override */
-		size = new XYZNonNegativeValues(1, 1, 0)
 
 		@reactive private __threeCamera!: ThreePerspectiveCamera
 
@@ -74,6 +166,29 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		constructor(...args: any[]) {
 			super(...args)
+
+			// this.sizeMode and this.size have to be overriden here inside the
+			// constructor in TS 4. This is because class properties on a
+			// subclass are no longer allowed to be defined outside the
+			// constructor if a base class has the same properties as
+			// accessors.
+
+			/**
+			 * @override
+			 * @property {XYZSizeModeValues} sizeMode - This overrides the
+			 * [`Sizeable.sizeMode`](TODO) property to make the default values for the X and
+			 * Y axes both "proportional".
+			 */
+			this.sizeMode.set('proportional', 'proportional', 'literal')
+
+			/**
+			 * @override
+			 *
+			 * @property {XYZNonNegativeValues} size - This overrides the
+			 * [`Sizeable.size`](TODO) property to make the default values for the
+			 * X and Y axes both `1`.
+			 */
+			this.size.set(1, 1, 0)
 
 			// The scene should always render CSS properties (it needs to always
 			// be rendered or resized, for example, because it contains the
@@ -633,12 +748,3 @@ function isImperativeBase(_n: TreeNode): _n is ImperativeBase {
 	// return n instanceof ImperativeBase
 	return true
 }
-
-// TODO cleanup above parentsizechange code
-
-const _Scene = Mixin(SceneMixin)
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-export const Scene = _Scene.mixin(HTMLInterface)
-export interface Scene extends InstanceType<typeof Scene> {}
-// export interface Scene extends InstanceType<typeof _Scene> {}
-export default Scene

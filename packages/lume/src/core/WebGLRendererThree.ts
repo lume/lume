@@ -23,6 +23,7 @@ const sceneStates = new WeakMap<Scene, SceneState>()
 let instance: WebGLRendererThree | null = null
 let isCreatingSingleton = false
 
+/** @typedef {'pcf' | 'pcfsoft' | 'basic'} ShadowMapTypeString */
 export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
 
 /**

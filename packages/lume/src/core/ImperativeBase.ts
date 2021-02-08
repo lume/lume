@@ -69,9 +69,34 @@ const appliedPosition = [0, 0, 0]
 
 /**
  * @abstract
- * @class ImperativeBase - An abstract base class that makes up the foundation
- * for the APIs and functionalities provided by the non-abstract Scene and Node
- * base classes.
+ * @class ImperativeBase - This is an abstract base class that makes up the
+ * foundation for the APIs and functionalities provided by the non-abstract
+ * classes.
+ *
+ * This class generally is not intended for use by the library end user. Normal
+ * users will want to extend from [`Scene`](./Scene.md) or [`Node`](./Node.md)
+ * (or their subclasses) instead of this class.
+ *
+ * For purposes of documentation it is still useful to know what properties and
+ * methods subclasses inherit from here.
+ *
+ * <details><summary>
+ *
+ * **Internal details (end users skip this):**
+ *
+ * </summary>
+ *
+ * Generally anything that extends from this class becomes a backing class of a
+ * LUME HTML element such as `<lume-scene>` and `<lume-node>`, the most basic
+ * of the elements.
+ *
+ * There are two branches of subclasses of ImperativeBase that ImperativeBase
+ * is intentionally aware of: `Scene` and `Node`.
+ *
+ * </details>
+ *
+ * @extends Settable
+ * @extends Transformable
  */
 function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 	const Parent = Settable.mixin(Transformable.mixin(Constructor<PossiblyWebComponent>(Base)))
@@ -86,10 +111,10 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		// TODO re-organize variables like isScene and isNode, so they come from
 		// one place. f.e. isScene is currently also used in DeclarativeBase.
 
-		// for Scene instances
+		/** @property {boolean} isScene - True if a subclass of this class is a Scene. */
 		isScene = false
 
-		// for Node instances
+		/** @property {boolean} isNode - True if a subclass of this class is a Node. */
 		isNode = false
 
 		constructor(...args: any[]) {
@@ -100,20 +125,33 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		private __onPropertyChange(): void {
-			// if (this.parent) this._calcSize()
 			this.needsUpdate()
 		}
 
+		/**
+		 * @readonly
+		 * @property {boolean} glLoaded
+		 */
 		get glLoaded(): boolean {
 			return this._glLoaded
 		}
 
+		/**
+		 * @readonly
+		 * @property {boolean} cssLoaded
+		 */
 		get cssLoaded(): boolean {
 			return this._cssLoaded
 		}
 
 		private __three?: ReturnType<this['makeThreeObject3d']>
 
+		/**
+		 * @readonly
+		 * @property {Object3D} three - The WebGL rendering content of this
+		 * element. Useful if you know Three.js APIs. See
+		 * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
+		 */
 		get three(): ReturnType<this['makeThreeObject3d']> {
 			// if (!(this.scene && this.scene.webgl)) return null
 
@@ -132,6 +170,12 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		private __threeCSS?: ReturnType<this['makeThreeCSSObject']>
 
+		/**
+		 * @readonly
+		 * @property {Object3D} threeCSS - The CSS rendering content of this
+		 * element. Useful if you know Three.js APIs. See
+		 * [`THREE.Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
+		 */
 		get threeCSS(): ReturnType<this['makeThreeCSSObject']> {
 			// if (!(this.scene && !this.scene.disableCss)) return null
 
@@ -166,7 +210,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					// tracked within that code, so it won't register more
 					// dependencies for this autorun.
 					untrack(() => {
-						// TODO: size calculation should happen in a render task
+						// TODO: Size calculation should happen in a render task
 						// just like _calculateMatrix, instead of on each property
 						// change, unless the calculatedSize prop is acessed by the
 						// user in which case it should trigger a calculation (sort
@@ -267,10 +311,11 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		/**
-		 * Get the Scene that this Node is in, null if no Scene. This traverses up recursively
-		 * at first, then the value is cached.
-		 *
 		 * @readonly
+		 * @property {THREE.Scene} scene - Get the Scene that this element is a
+		 * child of, null if no Scene exists (the element is not in a tree that
+		 * is connected into a Scene). This traverses recursively upward at
+		 * first, then the value is cached on subsequent reads.
 		 */
 		get scene(): Scene {
 			// NOTE: this._scene is initally null.
@@ -356,6 +401,24 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return this
 		}
 
+		/**
+		 * @method needsUpdate - Schedules a rendering update for the element. Usually you don't need to call this when using the outer APIs.
+		 *
+		 * But if you're doing something special to a Node or a Scene, f.e.
+		 * modifying the [`.three`](#three) or [`.threeCSS`](#threeCSS)
+		 * properties whose updates are not tracked, you should call this so
+		 * that LUME will know to re-render the visuals for the element.
+		 *
+		 * Example:
+		 *
+		 * ```js
+		 * const mesh = document.querySelector('lume-mesh')
+		 * mesh.three.material.transparent = true
+		 * mesh.three.material.opacity = 0.4
+		 * mesh.three.add(new THREE.Mesh(...))
+		 * mesh.needsUpdate()
+		 * ```
+		 */
 		needsUpdate(): void {
 			// we don't need to render until we're connected into a tree with a scene.
 			// if (!this.scene || !this.isConnected) return
