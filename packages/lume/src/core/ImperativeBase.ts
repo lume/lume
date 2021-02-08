@@ -109,7 +109,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		private __three?: Object3D
 
 		get three(): Object3D {
-			// if (!(this.scene && this.scene.experimentalWebgl)) return null
+			// if (!(this.scene && this.scene.webgl)) return null
 
 			if (!this.__three) this.__three = this._makeThreeObject3d()
 
