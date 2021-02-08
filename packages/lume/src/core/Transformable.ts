@@ -6,8 +6,8 @@ import Sizeable from './Sizeable'
 
 import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
 
-function TransformableMixin<T extends Constructor>(Base: T) {
-	const _Base = Constructor(Base)
+function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
+	const _Base = Constructor<HTMLElement>(Base)
 	const Parent = Sizeable.mixin(_Base)
 
 	// Transformable extends TreeNode (indirectly through Sizeable) because it

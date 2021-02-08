@@ -25,8 +25,8 @@ type SinglePropertyFunction = (value: number, time: number) => number | false
 // Cache variables to avoid making new variables in repeatedly-called methods.
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
-function SizeableMixin<T extends Constructor>(Base: T) {
-	const _Base = Constructor(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
+function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
+	const _Base = Constructor<HTMLElement>(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
 	const Parent = Eventful.mixin(TreeNode.mixin(_Base))
 
 	// Sizeable extends TreeNode because Sizeable knows about its `parent` when

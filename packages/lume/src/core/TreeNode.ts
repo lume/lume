@@ -10,8 +10,8 @@ export const TreeNode = Mixin(TreeNodeMixin)
 export interface TreeNode extends InstanceType<typeof TreeNode> {}
 export default TreeNode
 
-export function TreeNodeMixin<T extends Constructor>(Base: T) {
-	class TreeNode extends Constructor(Base) {
+export function TreeNodeMixin<T extends Constructor<HTMLElement>>(Base: T) {
+	class TreeNode extends Constructor<HTMLElement>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
 
