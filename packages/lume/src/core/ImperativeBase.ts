@@ -8,7 +8,7 @@ import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
 import Settable from '../utils/Settable'
-import {defer} from './Utility'
+import {defer, toRadians} from './Utility'
 
 import type {TreeNode} from './TreeNode'
 import type {Node} from './Node'
@@ -62,6 +62,11 @@ class PossiblyWebComponent {
 	protected _composedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
 	protected _deinit?(): void
 }
+
+const threeJsPostAdjustment = [0, 0, 0]
+const alignAdjustment = [0, 0, 0]
+const mountPointAdjustment = [0, 0, 0]
+const appliedPosition = [0, 0, 0]
 
 /**
  * @abstract
@@ -132,6 +137,14 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			super.connectedCallback()
 
 			this._stopFns.push(
+				autorun(() => {
+					this.rotation
+					this._updateRotation()
+				}),
+				autorun(() => {
+					this.scale
+					this._updateScale()
+				}),
 				autorun(() => {
 					this.sizeMode
 					this.size
@@ -568,8 +581,189 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this.emit(Events.CSS_UNLOAD, this)
 		}
 
-		protected _render(timestamp: number): void {
-			super._render(timestamp)
+		/**
+		 * Takes all the current component values (position, rotation, etc) and
+		 * calculates a transformation DOMMatrix from them. See "W3C Geometry
+		 * Interfaces" to learn about DOMMatrix.
+		 *
+		 * @method
+		 * @private
+		 * @memberOf Node
+		 *
+		 * TODO #66: make sure this is called after size calculations when we
+		 * move _calcSize to a render task.
+		 */
+		protected _calculateMatrix(): void {
+			// const {__align: align, __mountPoint: mountPoint, __position: position, __origin: origin} = this
+			const {align, mountPoint, position, origin} = this
+
+			const size = this.calculatedSize
+
+			// THREE-COORDS-TO-DOM-COORDS
+			// translate the "mount point" back to the top/left/back of the object
+			// (in Three.js it is in the center of the object).
+			threeJsPostAdjustment[0] = size.x / 2
+			threeJsPostAdjustment[1] = size.y / 2
+			threeJsPostAdjustment[2] = size.z / 2
+
+			// TODO If a Scene has a `parent`, it is not mounted directly into a
+			// regular DOM element but rather it is child of a Node. In this
+			// case we don't want the scene size to be based on observed size
+			// of a regular DOM element, but relative to a parent Node just
+			// like for all other Nodes.
+			const parentSize = this._getParentSize()
+
+			// THREE-COORDS-TO-DOM-COORDS
+			// translate the "align" back to the top/left/back of the parent element.
+			// We offset this in ElementOperations#applyTransform. The Y
+			// value is inverted because we invert it below.
+			threeJsPostAdjustment[0] += -parentSize.x / 2
+			threeJsPostAdjustment[1] += -parentSize.y / 2
+			threeJsPostAdjustment[2] += -parentSize.z / 2
+
+			alignAdjustment[0] = parentSize.x * align.x
+			alignAdjustment[1] = parentSize.y * align.y
+			alignAdjustment[2] = parentSize.z * align.z
+
+			mountPointAdjustment[0] = size.x * mountPoint.x
+			mountPointAdjustment[1] = size.y * mountPoint.y
+			mountPointAdjustment[2] = size.z * mountPoint.z
+
+			appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
+			appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
+			appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
+
+			// NOTE We negate Y translation in several places below so that Y
+			// goes downward like in DOM's CSS transforms.
+
+			// TODO Make an option that configures whether Y goes up or down.
+
+			this.three.position.set(
+				appliedPosition[0] + threeJsPostAdjustment[0],
+				// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+				// Three.js' positive Y is downward like DOM.
+				-(appliedPosition[1] + threeJsPostAdjustment[1]),
+				appliedPosition[2] + threeJsPostAdjustment[2],
+			)
+
+			// TODO Besides that Transformable shouldn't know about Three.js
+			// objects, it should also not know about Scene.
+			const childOfScene = this.threeCSS.parent && this.threeCSS.parent.type === 'Scene'
+
+			// FIXME we shouldn't need this conditional check. See the next XXX.
+			if (childOfScene) {
+				this.threeCSS.position.set(
+					appliedPosition[0] + threeJsPostAdjustment[0],
+					// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+					// Three.js' positive Y is downward like DOM.
+					-(appliedPosition[1] + threeJsPostAdjustment[1]),
+					appliedPosition[2] + threeJsPostAdjustment[2],
+				)
+			} else {
+				// XXX CSS objects that aren't direct child of a scene are
+				// already centered on X and Y (not sure why, but maybe
+				// CSS3DObjectNested has clues, which is based on
+				// THREE.CSS3DObject)
+				this.threeCSS.position.set(
+					appliedPosition[0],
+					-appliedPosition[1],
+					appliedPosition[2] + threeJsPostAdjustment[2], // only apply Z offset
+				)
+			}
+
+			if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
+				// Here we multiply by size to convert from a ratio to a range
+				// of units, then subtract half because Three.js origin is
+				// centered around (0,0,0) meaning Three.js origin goes from
+				// -0.5 to 0.5 instead of from 0 to 1.
+
+				this.three.pivot.set(
+					origin.x * size.x - size.x / 2,
+					// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+					// positive Y means down instead of up (because Three,js Y
+					// values go up).
+					-(origin.y * size.y - size.y / 2),
+					origin.z * size.z - size.z / 2,
+				)
+				this.threeCSS.pivot.set(
+					origin.x * size.x - size.x / 2,
+					// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+					// positive Y means down instead of up (because Three,js Y
+					// values go up).
+					-(origin.y * size.y - size.y / 2),
+					origin.z * size.z - size.z / 2,
+				)
+			}
+			// otherwise, use default Three.js origin of (0,0,0) which is
+			// equivalent to our (0.5,0.5,0.5), by removing the pivot value.
+			else {
+				this.three.pivot.set(0, 0, 0)
+				this.threeCSS.pivot.set(0, 0, 0)
+			}
+
+			this.three.updateMatrix()
+			this.threeCSS.updateMatrix()
+		}
+
+		protected _updateRotation(): void {
+			// Currently rotation is left-handed as far as values inputted into
+			// the LUME APIs. This method converts them to Three's right-handed
+			// system.
+
+			// TODO Make an option to use left-handed or right-handed rotation,
+			// where right-handed will match with Three.js transforms, while
+			// left-handed matches with CSS transforms (but in the latter case
+			// using Three.js APIs will not match the same paradigm because the
+			// option changes only the LUME API).
+
+			// TODO Make the rotation unit configurable (f.e. use degrees or
+			// radians)
+
+			// TODO Make the handedness configurable (f.e. left handed or right
+			// handed rotation)
+
+			this.three.rotation.set(
+				-toRadians(this.rotation.x),
+				// We don't negate Y rotation here, but we negate Y translation
+				// in _calculateMatrix so that it has the same effect.
+				toRadians(this.rotation.y),
+				-toRadians(this.rotation.z),
+			)
+
+			// TODO Besides that Transformable shouldn't know about Three.js
+			// objects, it should also not know about Scene. The isScene check
+			// prevents us from having to import Scene (avoiding a circular
+			// dependency).
+			const childOfScene = (this.parent as any)?.isScene
+
+			// TODO write a comment as to why we needed the childOfScne check to
+			// alternate rotation directions here. It's been a while, I forgot
+			// why. I should've left a comment when I wrote this!
+			this.threeCSS.rotation.set(
+				(childOfScene ? -1 : 1) * toRadians(this.rotation.x),
+				toRadians(this.rotation.y),
+				(childOfScene ? -1 : 1) * toRadians(this.rotation.z),
+			)
+		}
+
+		protected _updateScale(): void {
+			this.three.scale.set(this.scale.x, this.scale.y, this.scale.z)
+
+			this.threeCSS.scale.set(this.scale.x, this.scale.y, this.scale.z)
+		}
+
+		protected _calculateWorldMatricesInSubtree(): void {
+			this.three.updateMatrixWorld()
+			this.threeCSS.updateMatrixWorld()
+			this.emit('worldMatrixUpdate')
+		}
+
+		/** This is called by Motor on each update before the GL or CSS renderers will re-render. */
+		// TODO rename "render" to "update". "render" is more for the renderer classes.
+		protected _render(_timestamp: number): void {
+			// TODO: only run this when necessary (f.e. not if only opacity
+			// changed, only if position/align/mountPoint changed, etc)
+			this._calculateMatrix()
 
 			// TODO, pass the needed data into the elementOperations calls,
 			// instead of relying on ElementOperations knowing about
