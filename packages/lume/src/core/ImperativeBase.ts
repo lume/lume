@@ -52,7 +52,7 @@ function isNode(n: ImperativeBase): n is Node {
 
 // TODO replace with Partial<DeclarativeBase> instead of re-writing properties manually
 // @prod-prune @dev-prune
-class PossiblyWebComponent {
+declare class PossiblyWebComponent extends HTMLElement {
 	// TODO re-organize properties from WebComponent/DeclarativeBase
 	childConnectedCallback?(child: Element): void
 	childDisconnectedCallback?(child: Element): void
@@ -60,7 +60,6 @@ class PossiblyWebComponent {
 	protected _distributedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
 	protected _shadowRootParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
 	protected _composedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
-	protected _deinit?(): void
 }
 
 const threeJsPostAdjustment = [0, 0, 0]
