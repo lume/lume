@@ -13,9 +13,10 @@ import PointLight from '../core/PointLight'
 import DOMNode from '../core/DOMNode'
 import DOMPlane from '../core/DOMPlane'
 import AmbientLight from '../core/AmbientLight'
-import Camera from '../core/Camera'
+import PerspectiveCamera from '../core/PerspectiveCamera'
 import AutoLayoutNode from '../layout/AutoLayoutNode'
 import ObjModel from '../core/ObjModel'
+import GltfModel from '../core/GltfModel'
 // import PushPaneLayout from '../components/PushPaneLayout'
 import RoundedRectangle from '../core/RoundedRectangle'
 
@@ -33,9 +34,10 @@ export function useDefaultNames() {
 		DOMNode,
 		DOMPlane,
 		AmbientLight,
-		Camera,
+		PerspectiveCamera,
 		AutoLayoutNode,
 		ObjModel,
+		GltfModel,
 		// PushPaneLayout,
 		RoundedRectangle,
 	]

@@ -1,5 +1,5 @@
 export * from './Events'
-export * from './Camera'
+export * from './PerspectiveCamera'
 export * from './Motor'
 export * from './AmbientLight'
 export * from './Box'

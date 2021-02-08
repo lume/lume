@@ -1,25 +1,26 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
-import {reactive, numberAttribute, booleanAttribute, autorun, untrack} from '@lume/element'
+import {numberAttribute, booleanAttribute, autorun, untrack, attribute, element} from '@lume/element'
 import Node from './Node'
 import {defer} from './Utility'
 
 import type {Scene} from './Scene'
 
-// TODO: update this to have a CSS3D-perspective-like API like with the Scene's
-// default camera.
-@reactive
+@element
 export default class PerspectiveCamera extends Node {
 	static defaultElementName = 'lume-perspective-camera'
 
-	@reactive @numberAttribute(50) fov = 50
+	@numberAttribute(50) fov = 50
 	/** A value of 0 sets the aspect ratio to automatic, based on the scene dimensions. */
-	@reactive @numberAttribute(0) aspect = 0
-	@reactive @numberAttribute(0.1) near = 0.1
-	@reactive @numberAttribute(3000) far = 3000
-	@reactive @numberAttribute(1) zoom = 1
-	@reactive @booleanAttribute(false) active = false
+	@numberAttribute(0) aspect = 0
+	@numberAttribute(0.1) near = 0.1
+	@numberAttribute(3000) far = 3000
+	@numberAttribute(1) zoom = 1
+	@booleanAttribute(false) active = false
 
-	three!: ThreePerspectiveCamera
+	// TODO lookat property
+	@attribute lookat: string | Node | null = null
+
+	// declare three: ThreePerspectiveCamera
 
 	connectedCallback() {
 		super.connectedCallback()
@@ -92,7 +93,7 @@ export default class PerspectiveCamera extends Node {
 		)
 	}
 
-	protected _makeThreeObject3d() {
+	makeThreeObject3d() {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
 	}
 
