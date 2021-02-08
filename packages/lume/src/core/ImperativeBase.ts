@@ -457,7 +457,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		protected _glStopFns: StopFunction[] = []
 
 		protected _loadGL(): boolean {
-			if (!(this.scene && this.scene.experimentalWebgl)) return false
+			if (!(this.scene && this.scene.webgl)) return false
 
 			if (this._glLoaded) return false
 
