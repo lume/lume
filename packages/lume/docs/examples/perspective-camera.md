@@ -31,31 +31,32 @@
     label { padding-right: 10px; }
 </style>
 
-<lume-scene id="scene" webgl>
-    <lume-perspective-camera id="cam" active position="0 0 1000"></lume-perspective-camera>
+<lume-scene id="scene" webgl perspective="800">
+    <!-- This node visualizes the size of the default viewing area. -->
+    <lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
+    <lume-perspective-camera id="cam" position="0 0 1000" align="0.5 0.5"></lume-perspective-camera>
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
         id="light"
         color="white"
-        position="300 300 300"
-        size="0 0 0"
         cast-shadow="true"
         intensity="0.8"
-        align="-0.5 -0.5" FIXME-this-needed-while-using-custom-camera
+        position="0 0 300"
     >
-        <lume-mesh has="sphere-geometry basic-material" cast-shadow="false" size="10" mount-point="0.5 0.5" color="#eee"></lume-mesh>
+        <lume-mesh has="sphere-geometry basic-material" cast-shadow="false" size="10 10 10" mount-point="0.5 0.5" color="#eee"></lume-mesh>
     </lume-point-light>
     <!-- Specify a color otherwise the material will be tinted deeppink by default -->
     <lume-mesh id="model"
         has="box-geometry phong-material"
         rotation="40 40 0"
-        Xalign="0.5 0.5 0.5" FIXME-this-is-disabled-while-using-custom-camera
+        align="0.5 0.5 0.5"
         mount-point="0.5 0.5 0.5"
         size="100 100 100"
         color="white"
         texture="${location.origin+location.pathname}/textures/cement.jpg"
     >
     </lume-mesh>
+
 </lume-scene>
 
 <lume-scene id="scene2">
@@ -67,7 +68,7 @@
         </label><br />
         <label>
             Camera element active:
-            <input id="active" type="checkbox" checked>
+            <input id="active" type="checkbox">
         </label>
     </lume-node>
 </lume-scene>
