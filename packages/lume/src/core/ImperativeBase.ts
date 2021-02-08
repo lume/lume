@@ -217,7 +217,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 						// of like DOM properties that cause re-layout). We should
 						// document to prefer not to force calculation, and instead
 						// observe the property changes (f.e. with autorun()).
-						if (this.parent) this._calcSize()
+						this._calcSize()
 					})
 				}),
 				autorun(() => {
