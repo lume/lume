@@ -347,6 +347,25 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		/**
+		 * @property {ImperativeBase | null} parent - The parent of this node,
+		 * if it has one, must be a Node or a Scene.
+		 */
+		// This override serves mainly to change the type of `parent` for
+		// subclasses of ImperativeBase.
+		// Nodes (f.e. Mesh, Sphere, etc) and Scenes should always have parents
+		// that are Nodes or Scenes (at least for now). The overridden add()
+		// method below enforces this.
+		// @prod-prune
+		get parent(): ImperativeBase | null {
+			const parent = super.parent
+
+			if (parent && !(parent instanceof ImperativeBase))
+				throw new TypeError('Parent must be type ImperativeBase.')
+
+			return parent
+		}
+
+		/**
 		 * @override
 		 */
 		// @ts-ignore: strict function types normally prevent differing subclass method signatures.
