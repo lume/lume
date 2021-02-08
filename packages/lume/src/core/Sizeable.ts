@@ -22,9 +22,7 @@ type XYZPropertyFunction = (
 
 type SinglePropertyFunction = (value: number, time: number) => number | false
 
-// working variables (used synchronously only, to avoid making new variables in
-// repeatedly-called methods)
-let propFunctionTask: RenderTask | undefined | null
+// Cache variables to avoid making new variables in repeatedly-called methods.
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
 function SizeableMixin<T extends Constructor>(Base: T) {
@@ -277,10 +275,9 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		private __handleXYZPropertyFunction(fn: XYZPropertyFunction, name: keyof this) {
 			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
-			if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
-				Motor.removeRenderTask(propFunctionTask)
-				propFunctionTask = null
-			}
+			const propFunction = this.__propertyFunctions.get(name as string)
+
+			if (propFunction) Motor.removeRenderTask(propFunction)
 
 			this.__propertyFunctions.set(
 				name as string,
@@ -312,10 +309,9 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		private __handleSinglePropertyFunction(fn: SinglePropertyFunction, name: keyof this) {
 			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
-			if ((propFunctionTask = this.__propertyFunctions.get(name as string))) {
-				Motor.removeRenderTask(propFunctionTask)
-				propFunctionTask = null
-			}
+			const propFunction = this.__propertyFunctions.get(name as string)
+
+			if (propFunction) Motor.removeRenderTask(propFunction)
 
 			this.__propertyFunctions.set(
 				name as string,
@@ -340,11 +336,14 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 
 		// remove property function (render task) if any.
 		private __removePropertyFunction(name: keyof this) {
-			if (this.__propertyFunctions && (propFunctionTask = this.__propertyFunctions.get(name as string))) {
-				Motor.removeRenderTask(propFunctionTask)
+			if (!this.__propertyFunctions) return
+
+			const propFunction = this.__propertyFunctions.get(name as string)
+
+			if (propFunction) {
+				Motor.removeRenderTask(propFunction)
 				this.__propertyFunctions.delete(name as string)
 				if (!this.__propertyFunctions.size) this.__propertyFunctions = null
-				propFunctionTask = null
 			}
 		}
 	}
