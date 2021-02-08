@@ -33,9 +33,6 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 			this.mountPoint.on('valuechanged', () => !this._isSettingProperty && (this.mountPoint = this.mountPoint))
 		}
 
-		// @ts-ignore
-		private __position = new XYZNumberValues(0, 0, 0).from(this.__position ?? undefined)
-
 		/**
 		 * Set the position of the Transformable.
 		 *
@@ -47,13 +44,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set position(newValue) {
+			if (!this.__position) this.__position = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('position', newValue)
 		}
 		get position() {
+			if (!this.__position) this.__position = new XYZNumberValues(0, 0, 0)
 			return this.__position
 		}
 
-		private __rotation = new XYZNumberValues(0, 0, 0)
+		private __position?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -64,13 +63,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set rotation(newValue) {
+			if (!this.__rotation) this.__rotation = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('rotation', newValue)
 		}
 		get rotation() {
+			if (!this.__rotation) this.__rotation = new XYZNumberValues(0, 0, 0)
 			return this.__rotation
 		}
 
-		private __scale = new XYZNumberValues(1, 1, 1)
+		private __rotation?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -81,13 +82,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set scale(newValue) {
+			if (!this.__scale) this.__scale = new XYZNumberValues(1, 1, 1)
 			this._setPropertyXYZ('scale', newValue)
 		}
 		get scale() {
+			if (!this.__scale) this.__scale = new XYZNumberValues(1, 1, 1)
 			return this.__scale
 		}
 
-		private __origin = new XYZNumberValues(0.5, 0.5, 0.5)
+		private __scale?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -98,13 +101,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set origin(newValue) {
+			if (!this.__origin) this.__origin = new XYZNumberValues(0.5, 0.5, 0.5)
 			this._setPropertyXYZ('origin', newValue)
 		}
 		get origin() {
+			if (!this.__origin) this.__origin = new XYZNumberValues(0.5, 0.5, 0.5)
 			return this.__origin
 		}
 
-		private __align = new XYZNumberValues(0, 0, 0)
+		private __origin?: XYZNumberValues
 
 		/**
 		 * Set the alignment of the Node. This determines at which point in this
@@ -118,13 +123,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set align(newValue) {
+			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('align', newValue)
 		}
 		get align() {
+			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
 			return this.__align
 		}
 
-		private __mountPoint = new XYZNumberValues(0, 0, 0)
+		private __align?: XYZNumberValues
 
 		/**
 		 * Set the mount point of the Node.
@@ -137,13 +144,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set mountPoint(newValue) {
+			if (!this.__mountPoint) this.__mountPoint = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('mountPoint', newValue)
 		}
 		get mountPoint() {
+			if (!this.__mountPoint) this.__mountPoint = new XYZNumberValues(0, 0, 0)
 			return this.__mountPoint
 		}
 
-		private __opacity = 1
+		private __mountPoint?: XYZNumberValues
 
 		/**
 		 * Set this Node's opacity.
@@ -154,11 +163,15 @@ function TransformableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set opacity(newValue) {
+			if (this.__opacity == null) this.__opacity = 1
 			this._setPropertySingle('opacity', newValue)
 		}
 		get opacity() {
+			if (this.__opacity == null) this.__opacity = 1
 			return this.__opacity
 		}
+
+		private __opacity?: number
 
 		connectedCallback() {
 			super.connectedCallback()

@@ -44,8 +44,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 			this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
 		}
 
-		private __sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
-
 		/**
 		 * Set the size mode for each axis. Possible size modes are "literal"
 		 * and "proportional". The default values are "literal" for all axes.
@@ -54,11 +52,15 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		@emits('propertychange')
 		set sizeMode(newValue) {
 			if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
+			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
 			this._setPropertyXYZ('sizeMode', newValue)
 		}
 		get sizeMode() {
+			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
 			return this.__sizeMode
 		}
+
+		private __sizeMode?: XYZSizeModeValues
 
 		// TODO: A "differential" size would be cool. Good for padding,
 		// borders, etc. Inspired from Famous' differential sizing.
@@ -66,8 +68,6 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		// TODO: A "target" size where sizing can be relative to another node.
 		// This would be tricky though, because there could be circular size
 		// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
-
-		private __size = new XYZNonNegativeValues(0, 0, 0)
 
 		/**
 		 * Set the size of each axis. The size for each axis depends on the
@@ -93,11 +93,15 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 		@attribute
 		@emits('propertychange')
 		set size(newValue) {
+			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
 			this._setPropertyXYZ('size', newValue)
 		}
 		get size() {
+			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
 			return this.__size
 		}
+
+		private __size?: XYZNonNegativeValues
 
 		/**
 		 * Get the actual size of the Node. This can be useful when size is
@@ -179,8 +183,10 @@ function SizeableMixin<T extends Constructor>(Base: T) {
 
 		protected _calcSize() {
 			const calculatedSize = this.__calculatedSize
+
 			Object.assign(previousSize, calculatedSize)
-			const {__sizeMode: sizeMode, __size: size} = this
+
+			const {sizeMode, size} = this
 			const parentSize = this._getParentSize()
 
 			if (sizeMode.x == 'literal') {
