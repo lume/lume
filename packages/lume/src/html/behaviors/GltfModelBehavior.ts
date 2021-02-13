@@ -83,17 +83,14 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
-		// In the followins, if __version doesn't match, it means this.src or
-		// this.dracoDecoderPath changed while a previous model was
-		// loading, in which case we ignore that result and wait for the
-		// next model to load.
+		// In the followinggltfLoader.load() callbacks, if __version doesn't
+		// match, it means this.src or this.dracoDecoderPath changed while
+		// a previous model was loading, in which case we ignore that
+		// result and wait for the next model to load.
 
 		this.gltfLoader!.load(
 			src,
-			model => {
-				console.log(__version, this.__version)
-				__version == this.__version && this.__setModel(model)
-			},
+			model => __version == this.__version && this.__setModel(model),
 			progress => __version == this.__version && this.element.emit(Events.PROGRESS, progress),
 			error => __version == this.__version && this.__onError(src, dracoDecoderPath, error),
 		)

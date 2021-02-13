@@ -319,7 +319,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 						// destroy the previous one, if any.
 						this.__glRenderer!.disableBackground(this)
 
-						console.log('enable background!!')
 						this.__glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
 							this.three.background = texture || null
 							this.needsUpdate()
