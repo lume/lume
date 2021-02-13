@@ -18,11 +18,20 @@
 	}
 
 	.cube {
-		background: #af304a;
+		outline: 2px solid deeppink;
 	}
 
-	.plane {
+	.plane:first-child {
 		background: #0066ff;
+	}
+	.plane:nth-child(2) {
+		background: cyan;
+	}
+	.plane:nth-child(3) {
+		background: violet;
+	}
+	.plane:nth-child(4) {
+		background: springgreen;
 	}
 
 	.x-axis {
@@ -36,62 +45,59 @@
 	}
 </style>
 
-<lume-scene webgl="false">
+<lume-scene id="scene" perspective="800" webgl>
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
 	<lume-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
 
-	<lume-node id="root" size="0 0 0" align="0.5 0.5 0.5" rotation="0 30 0">
-		<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100"></lume-sphere>
-		<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 200"></lume-sphere>
+	<lume-node id="root" size="0 0 0" align="0.5 0.5 0.5" rotation="-10 30 0">
+		<!-- prettier-ignore -->
+		<lume-node>
+			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
+			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150" color="springgreen"></lume-sphere>
+		</lume-node>
 
-		<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
-		<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
-		<lume-dom-plane
-			align="0.5 0.5 0"
-			mount-point="0.5 0.5 0"
-			class="z-axis"
-			size="1 1000 0"
-			rotation="90 45 0"
-		></lume-dom-plane>
-		<lume-dom-plane
-			align="0.5 0.5 0"
-			mount-point="0.5 0.5 0"
-			class="z-axis"
-			size="1 1000 0"
-			rotation="90 -45 0"
-		></lume-dom-plane>
+		<!-- axis helpers -->
+		<!-- prettier-ignore -->
+		<lume-node>
+			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
+			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
+			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-dom-plane>
+			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-dom-plane>
+		</lume-node>
 
+		<!-- prettier-ignore -->
 		<lume-box class="cube" mount-point="0.5 0.5 0" align="0.5 0.5 0" size="100 100 100">
-			<lume-dom-plane class="plane" size="100 100 0"></lume-dom-plane>
-			<lume-dom-plane class="plane" size="100 100 0" position="0 0 100"></lume-dom-plane>
-			<lume-dom-plane class="plane" size="100 100 0" position="0 0 200"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 -100"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 0"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 100"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 200"></lume-dom-plane>
 		</lume-box>
 
-		<lume-node origin="0 0 0" align="0.5 0.5" size="100 100 100" mount-point="0.5 0.5 0" position="0 -100 0">
-			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5"></lume-sphere>
-
-			<lume-dom-node size="100 100 100" position="0 0 100" class="plane"></lume-dom-node>
-		</lume-node>
+		<lume-box origin="0 0 0" align="0.5 0.5" mount-point="0.5 0.5 0" size="100 100 100" position="0 -100 0">
+			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" color="springgreen"></lume-sphere>
+			<lume-dom-node class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-dom-node>
+		</lume-box>
 	</lume-node>
 </lume-scene>
 
-<script src="../global.js"></script>
+<script src="../dist/global.js"></script>
 <script>
 	LUME.useDefaultNames()
 
-	Array.from(document.querySelectorAll('lume-dom-plane')).forEach(function (n) {
-		console.log(n)
-		n.on('GL_LOAD', () => {
-			n.three.material.opacity = 0.1
-		})
-	})
-	// for (const n of Array.from(document.querySelectorAll('lume-dom-plane'))) {
-	//     console.log( n )
-	//     n.on('GL_LOAD', () => {
-	//         n.three.material.opacity = 0.1
-	//     })
-	// }
+	setInterval(() => {
+		scene.webgl = !scene.webgl
+		scene.needsUpdate()
+	}, 1500)
 
-	// if (typeof root !== 'undefined')
-	//     root.rotation = (x,y,z) => [x,y+=1,z]
+	for (const n of Array.from(document.querySelectorAll('lume-scene *'))) {
+		transparent(n)
+		n.on('GL_LOAD', () => transparent(n))
+	}
+
+	function transparent(n) {
+		n.three && n.three.material && (n.three.material.opacity = 0.4)
+		n.needsUpdate()
+	}
+
+	root.rotation = (x, y, z) => [x, (y += 1), z]
 </script>

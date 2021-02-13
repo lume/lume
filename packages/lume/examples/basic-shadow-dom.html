@@ -7,10 +7,10 @@
 		<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
 
 		<!-- the library -->
-		<script src="../global.js"></script>
+		<script src="../dist/global.js"></script>
 
 		<!-- provides the html`` template tag function -->
-		<script src="./js/html-template-tag.js"></script>
+		<!-- <script src="./js/html-template-tag.js"></script> -->
 
 		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
@@ -28,8 +28,7 @@
 		</style>
 	</head>
 	<body>
-		<!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
-		<lume-scene id="scene" webgl disable-css="false">
+		<lume-scene id="scene" webgl>
 			<lume-ambient-light intensity="0.3"></lume-ambient-light>
 
 			<lume-point-light
@@ -48,15 +47,17 @@
 				size="100 100 100"
 				color="white"
 				COMMENT-otherwise-the-material-will-be-tinted-random-color
-				texture="./textures/cement.jpg"
+				texture="../docs/textures/cement.jpg"
 			>
-				<lume-sphere size="200 200 200"></lume-sphere>
+				<lume-sphere size="100 100 100" rotation="30 30 30" texture="../docs/textures/cement.jpg"></lume-sphere>
 			</lume-box>
 		</lume-scene>
 
 		<script>
 			// defines the default names for the HTML elements
 			LUME.useDefaultNames()
+
+			const {html} = LUME
 
 			const light = document.querySelector('#light')
 
@@ -67,21 +68,43 @@
 			})
 
 			const el = document.querySelector('lume-box')
-			const Motor = LUME.Motor
 
 			const rotate = t => 180 * Math.sin(0.0001 * t)
-			el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]
+			// el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]
 
 			const root = el.attachShadow({mode: 'open'})
 
-			root.innerHTML = html`
-				<lume-dom-node class="container" size="300 300" style="background: red">
-					<slot></slot>
-				</lume-dom-node>
-				<lume-node position="100 100 100"> </lume-node>
-			`
+			let slot
+			let slotContainer
 
-			root.querySelector('.container').rotation = (x, y, z) => [x, ++y, z]
+			root.append(
+				...html`
+					<lume-box size="50 50 50" position="-100 -100 -100" color="royalblue"></lume-box>
+					<lume-node position="10 10 10">
+						<lume-dom-node
+							ref=${el => (slotContainer = el)}
+							position="50 50 50"
+							rotation="30 30 30"
+							align="1 1 1"
+							size="100 100"
+							style="background: red"
+						>
+							<slot ref=${el => (slot = el)}>
+								<!-- The sphere inside the lume-box renders relative to here. -->
+							</slot>
+						</lume-dom-node>
+					</lume-node>
+				`,
+			)
+
+			// Remove the slot every second to ensure rendering updates as expected (toggles the sphere being visible)
+			// setInterval(() => {
+			setTimeout(() => {
+				if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
+				else slotContainer.appendChild(slot)
+			}, 2000)
+
+			// slotContainer.rotation = (x, y, z) => [x, ++y, z]
 		</script>
 	</body>
 </html>

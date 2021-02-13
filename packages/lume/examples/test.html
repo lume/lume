@@ -27,7 +27,7 @@
         <p>This is some text below the scene.</p> -->
 
         <!--This script only defines classes.-->
-        <script src="../global.js"></script>
+        <script src="../dist/global.js"></script>
 
         <script>
             console.log('--- beginning of body')
@@ -209,23 +209,21 @@
             // - that turning GL rendering off and on makes the animation
             // stutter for a small moment, because destroying and re-creating
             // all the GPU stuff is a heavy operation. Generally you'll want to
-            // start with experimentalWebgl attribute set to an initial value
+            // start with webgl attribute set to an initial value
             // and leave it that way, without changing it.
             //
             // - that turning CSS rendering off and on is not very expensive.
             // This is because the DOM (the custom elements) aren't being
             // destroyed and re-created, only the CSS styling is being removed
-            // and then added back. Also when CSS is re-enabled the elements are
-            // re-distributed into the Shadow Root of the scene, all without
-            // having to allocate much new memory unlike with GL and the GPU.
+            // and then added back but otherwise the DOM objects are already instantiated.
             setInterval(() => {
                 if (
-                    scene.disableCss && !scene.experimentalWebgl ||
-                    !scene.disableCss && scene.experimentalWebgl
+                    scene.disableCss && !scene.webgl ||
+                    !scene.disableCss && scene.webgl
                 )
                     scene.disableCss = !scene.disableCss
                 else
-                    scene.experimentalWebgl = !scene.experimentalWebgl
+                    scene.webgl = !scene.webgl
             }, 2000)
         </script>
 
@@ -250,7 +248,7 @@
         </style>
 
         <lume-scene
-            experimental-webgl="true"
+            webgl="true"
             backgroundColor="rgb(0,0,0)"
             backgroundOpacity="0"
         >
@@ -283,7 +281,7 @@
 
         <!-- WORKS ======================================================== -->
 <!--         <lume-scene
-            experimental-webgl="true"
+            webgl="true"
             backgroundColor="rgb(0,0,0)"
             backgroundOpacity="0"
         >
@@ -340,7 +338,7 @@
  -->
         <!-- WORKS ======================================================== -->
             <!--
-               -<lume-scene experimental-webgl="true">
+               -<lume-scene webgl="true">
                -    <lume-box size="10 10 10" has="basic-material" color="pink"></lume-box>
                -    <lume-perspective-camera
                -        active="true"
