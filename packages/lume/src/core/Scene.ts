@@ -18,7 +18,7 @@ import {documentBody, thro, trim} from './Utility'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver'
 
 import {TColor, isDisposable} from '../utils/three'
-import type {PerspectiveCamera} from './Camera'
+import type {PerspectiveCamera} from './PerspectiveCamera'
 import type {XYZValuesObject} from './XYZValues'
 import type Sizeable from './Sizeable'
 import type TreeNode from './TreeNode'
