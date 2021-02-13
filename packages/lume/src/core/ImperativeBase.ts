@@ -13,7 +13,6 @@ import {defer, toRadians} from './Utility'
 import type {TreeNode} from './TreeNode'
 import type {Node} from './Node'
 import type {Scene} from './Scene'
-import type {XYZValuesObject} from './XYZValues'
 import type {ConnectionType} from '../html/DeclarativeBase'
 
 window.addEventListener('error', event => {
@@ -116,17 +115,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		/** @property {boolean} isNode - True if a subclass of this class is a Node. */
 		isNode = false
-
-		constructor(...args: any[]) {
-			super(...args)
-
-			// See Transformable/Sizeable propertychange event.
-			this.on('propertychange', this.__onPropertyChange, this)
-		}
-
-		private __onPropertyChange(): void {
-			this.needsUpdate()
-		}
 
 		/**
 		 * @readonly
@@ -236,6 +224,25 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					})
 				}),
 				autorun(() => {
+					if (!this.parent) return
+
+					this.parent.calculatedSize
+
+					untrack(() => {
+						if (
+							this.sizeMode.x === 'proportional' ||
+							this.sizeMode.y === 'proportional' ||
+							this.sizeMode.z === 'proportional' ||
+							this.align.x !== 0 ||
+							this.align.y !== 0 ||
+							this.align.z !== 0
+						) {
+							this._calcSize()
+							this.needsUpdate()
+						}
+					})
+				}),
+				autorun(() => {
 					this.sizeMode
 					this.size
 					this.position
@@ -270,8 +277,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			}
 		}
 
-		protected _onParentSizeChange?(size: XYZValuesObject<number>): void
-
 		/**
 		 * Called whenever a node is connected, but this is called with
 		 * a connectionType that tells us how the node is connected
@@ -300,9 +305,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 				child._calcSize()
 				child.needsUpdate()
 
-				// child should watch the parent for size changes.
-				if (child._onParentSizeChange) this.on('sizechange', child._onParentSizeChange, child)
-
 				this.possiblyLoadThree(child)
 			}
 		}
@@ -317,10 +319,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					this.removeNode(child, __updateDOMConnection)
 				}
 
-				this.off('sizechange', child._onParentSizeChange!, child)
-
-				// Unload GL/CSS on _deinit instead of here, but change
-				// Object3D hierarchy here.
 				this.possiblyUnloadThree(child)
 			}
 		}
@@ -407,14 +405,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 			super.add(childNode)
 
-			// // Calculate sizing because proportional size might depend on
-			// // the new parent.
-			// childNode._calcSize()
-			// childNode.needsUpdate()
-			//
-			// // child should watch the parent for size changes.
-			// this.on('sizechange', childNode._onParentSizeChange, childNode)
-
 			// FIXME remove the type cast here and modify it so it is
 			// DOM-agnostic for when we run thsi in a non-DOM environment.
 			if (__updateDOMConnection)
@@ -427,8 +417,6 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			if (!isNode(childNode)) return this
 
 			super.removeNode(childNode)
-
-			// this.off('sizechange', childNode._onParentSizeChange, childNode)
 
 			if (__updateDOMConnection) this._elementOperations.disconnectChildElement(childNode)
 

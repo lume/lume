@@ -1,5 +1,6 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {defer} from './Utility'
+import {reactive} from '@lume/element'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected
@@ -11,6 +12,7 @@ export interface TreeNode extends InstanceType<typeof TreeNode> {}
 export default TreeNode
 
 export function TreeNodeMixin<T extends Constructor<HTMLElement>>(Base: T) {
+	@reactive
 	class TreeNode extends Constructor<HTMLElement>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
@@ -20,7 +22,7 @@ export function TreeNodeMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			this.parentNode?.add?.(this)
 		}
 
-		private __parent: TreeNode | null = null
+		@reactive private __parent: TreeNode | null = null
 		private __children: TreeNode[] =
 			// @ts-ignore
 			this.__children || []
@@ -57,6 +59,7 @@ export function TreeNodeMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return [...this.__children]
 		}
 
+		// @ts-ignore
 		private __isConnected = false
 
 		/** @readonly */
@@ -66,6 +69,8 @@ export function TreeNodeMixin<T extends Constructor<HTMLElement>>(Base: T) {
 				// @ts-ignore TS doesn't know that super.isConnected would work here.
 				return super.isConnected
 			}
+
+			// @ts-ignore
 			return this.__isConnected
 		}
 

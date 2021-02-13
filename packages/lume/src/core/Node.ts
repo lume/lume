@@ -294,26 +294,6 @@ function NodeMixin<T extends Constructor>(Base: T) {
 			}
 		}
 
-		protected _onParentSizeChange() {
-			// We only need to recalculate sizing and matrices if this node has
-			// properties that depend on parent sizing (proportional size,
-			// align, and mountPoint). mountPoint isn't obvious: if this node
-			// is proportionally sized, then the mountPoint will depend on the
-			// size of this element which depends on the size of this element's
-			// parent. Align also depends on parent sizing.
-			if (
-				this.sizeMode.x === 'proportional' ||
-				this.sizeMode.y === 'proportional' ||
-				this.sizeMode.z === 'proportional' ||
-				this.align.x !== 0 ||
-				this.align.y !== 0 ||
-				this.align.z !== 0
-			) {
-				this._calcSize()
-				this.needsUpdate()
-			}
-		}
-
 		protected _loadCSS() {
 			if (!super._loadCSS()) return false
 
