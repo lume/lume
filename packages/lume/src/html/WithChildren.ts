@@ -114,10 +114,6 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	return WithChildren as MixinResult<typeof WithChildren, T>
 }
 
-// function isPossiblyCustomElement(element: Element) {
-// 	return element.localName.includes('-')
-// }
-
 export const WithChildren = Mixin(WithChildrenMixin)
 export interface WithChildren extends InstanceType<typeof WithChildren> {}
 export default WithChildren

@@ -11,7 +11,11 @@ export * from './html'
 export * from './components'
 export * from './layout'
 
-import * as THREE from 'three/src/Three'
-export {THREE}
+import * as _THREE from 'three/src/Three'
+
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+
+// Add more objects as needed.
+export const THREE = {..._THREE, OrbitControls}
 
 export const version = '0.0.0-rc.0'
