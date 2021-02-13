@@ -144,7 +144,7 @@ function makeDeclarativeBase() {
 				child.removeEventListener('slotchange', this.__onChildSlotChange)
 
 				this.__slots!.splice(this.__slots!.indexOf(child), 1)
-				if (!this.__slots!.length) this.__slots = null
+				if (!this.__slots!.length) this.__slots = undefined
 				this.__handleDistributedChildren(child)
 				this.__previousSlotAssignedNodes.delete(child)
 			}
@@ -156,8 +156,6 @@ function makeDeclarativeBase() {
 			// @prod-prune
 			if (this instanceof HTMLElement) return true
 			return false
-
-			return true
 		}
 
 		// Traverses a tree while considering ShadowDOM disribution.
@@ -243,17 +241,17 @@ function makeDeclarativeBase() {
 		// This node's shadow root, if any. This always points to the shadow
 		// root, even if it is a closed root, unlike the public shadowRoot
 		// property.
-		private __shadowRoot: ShadowRoot | null = null
+		private declare __shadowRoot?: ShadowRoot
 
 		// All <slot> elements of this node, if any.
-		private __slots: HTMLSlotElement[] | null = null
+		private declare __slots?: HTMLSlotElement[]
 
 		// True when this node has a parent that has a shadow root. When
 		// using the HTML API, Imperative API can look at this to determine
 		// whether to render this node or not, in the case of WebGL.
 		private __isPossiblyDistributedToShadowRoot = false
 
-		private __prevAssignedNodes?: WeakMap<HTMLSlotElement, Node[]>
+		private declare __prevAssignedNodes?: WeakMap<HTMLSlotElement, Node[]>
 
 		// A map of the slot elements that are children of this node and
 		// their last-known assigned nodes. When a slotchange happens while
@@ -285,7 +283,7 @@ function makeDeclarativeBase() {
 		// into the <slot>, and those nodes render relatively
 		// to this node in the flat tree. We instantiate this later, only
 		// when/if needed.
-		private __distributedChildren: Set<DeclarativeBase> | null = null
+		private declare __distributedChildren?: Set<DeclarativeBase>
 
 		private __shadowRootChildAdded(child: HTMLElement) {
 			// NOTE Logic here is similar to childConnectedCallback
@@ -358,7 +356,7 @@ function makeDeclarativeBase() {
 					const distributedChildren = distributedParent.__distributedChildren
 					if (distributedChildren) {
 						distributedChildren.delete(addedNode)
-						if (!distributedChildren.size) distributedParent.__distributedChildren = null
+						if (!distributedChildren.size) distributedParent.__distributedChildren = undefined
 					}
 				}
 
@@ -378,7 +376,7 @@ function makeDeclarativeBase() {
 
 				removedNode.__distributedParent = null
 				this.__distributedChildren!.delete(removedNode)
-				if (!this.__distributedChildren!.size) this.__distributedChildren = null
+				if (!this.__distributedChildren!.size) this.__distributedChildren = undefined
 
 				this.__childUncomposedCallback(removedNode, 'slot')
 			}
