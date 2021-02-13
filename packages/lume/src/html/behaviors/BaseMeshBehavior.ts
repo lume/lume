@@ -17,11 +17,7 @@ export type MeshComponentType = 'geometry' | 'material'
 export default abstract class BaseMeshBehavior extends RenderableBehavior {
 	abstract type: MeshComponentType
 
-	// use a getter because Mesh is undefined at module evaluation time due
-	// to a circular dependency.
-	get requiredElementType() {
-		return Mesh
-	}
+	requiredElementType = Mesh
 
 	element!: Mesh
 

@@ -35,7 +35,7 @@ export default abstract class Behavior extends ForwardProps {
 	 * be upgraded before performing the check; if the custom element is not
 	 * upgraded within a second, an error is thrown.
 	 */
-	// TODO support an array of types.
+	// TODO support an array of types for behaviors that are allowed on multiple types of elements.
 	requiredElementType?: Constructor<Element>
 
 	// used by ForwardProps. See ForwardProps.js

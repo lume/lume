@@ -4,7 +4,7 @@ import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
 import type {StopFunction} from '@lume/element'
 
 // base class for geometry behaviors
-export default class BaseGeometryBehavior extends BaseMeshBehavior {
+export default abstract class BaseGeometryBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'geometry'
 
 	// We don't use @reactive or @attribute in this class because the values
