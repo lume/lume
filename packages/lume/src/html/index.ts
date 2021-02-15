@@ -22,6 +22,8 @@ import RoundedRectangle from '../core/RoundedRectangle'
 
 export * from './behaviors'
 
+import {defineElements} from '../defineElements'
+
 export function useDefaultNames() {
 	const classes = [
 		Scene,
@@ -45,4 +47,6 @@ export function useDefaultNames() {
 	for (const constructor of classes) {
 		if (!customElements.get(constructor.defaultElementName)) constructor.define()
 	}
+
+	defineElements()
 }
