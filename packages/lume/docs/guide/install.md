@@ -75,17 +75,10 @@ Next we wrote some HTML code using the LUME elements to define the structure
 of a 3D scene on the screen:
 
 ```html
-<<<<<<< Updated upstream:packages/lume/docs/guide/install.md
-<i-scene webgl>
-	<i-ambient-light intensity="0.5"></i-ambient-light>
-	<i-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
-	</i-point-light>
-=======
 <lume-scene experimental-webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
 	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
->>>>>>> Stashed changes:packages/lume/docs/install.md
 
 	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
