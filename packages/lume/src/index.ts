@@ -10,6 +10,9 @@ export * from './core'
 export * from './html'
 export * from './components'
 export * from './layout'
+export * from './interaction'
+
+export * from './defineElements'
 
 import * as _THREE from 'three/src/Three'
 
