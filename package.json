@@ -3,10 +3,13 @@
 	"description": "An umbrella repo that hosts all the LUME projects as git submodules in order to centralize management of all the projects.",
 	"private": true,
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
+	"engines": {
+		"node": ">=13 <15"
+	},
 	"scripts": {
 		"clean": "lerna run clean",
 		"install": "npm run bootstrap && npm run build",
-		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem}' --ignore-scripts --loglevel debug -- --loglevel debug && lerna bootstrap --no-ci --scope '{,readem}' --ignore-scripts",
+		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem}' --ignore-scripts --loglevel notice -- --loglevel notice && lerna bootstrap --no-ci --scope '{,readem}' --ignore-scripts",
 		"// ^ bootstrap": "Bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume).",
 		"// ^ bootstrap 2": "TODO bootstrap readem along with cli, so that cli is linked into it. Maybe the scope would be {readem,cli}",
 		"// ^ bootstrap 3": "We use --ignore-scripts so that the bootstrap doesn't run prepare scripts. We want it to only put dependencies in place. A subsequent lerna build step builds everything in correct order. Otherwise some packages will try to build themselves before dependencies are in place.",
