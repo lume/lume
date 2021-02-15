@@ -66,7 +66,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__sizeMode
 		}
 
-		private __sizeMode?: XYZSizeModeValues
+		private declare __sizeMode?: XYZSizeModeValues
 
 		// TODO: A "differential" size would be cool. Good for padding,
 		// borders, etc. Inspired from Famous' differential sizing.
@@ -107,7 +107,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__size
 		}
 
-		private __size?: XYZNonNegativeValues
+		private declare __size?: XYZNonNegativeValues
 
 		/**
 		 * Get the actual size of the Node. This can be useful when size is

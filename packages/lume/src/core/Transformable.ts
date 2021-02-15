@@ -44,7 +44,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__position
 		}
 
-		private __position?: XYZNumberValues
+		private declare __position?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -63,7 +63,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__rotation
 		}
 
-		private __rotation?: XYZNumberValues
+		private declare __rotation?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -82,7 +82,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__scale
 		}
 
-		private __scale?: XYZNumberValues
+		private declare __scale?: XYZNumberValues
 
 		/**
 		 * @param {Object} newValue
@@ -101,7 +101,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__origin
 		}
 
-		private __origin?: XYZNumberValues
+		private declare __origin?: XYZNumberValues
 
 		/**
 		 * Set the alignment of the Node. This determines at which point in this
@@ -123,7 +123,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__align
 		}
 
-		private __align?: XYZNumberValues
+		private declare __align?: XYZNumberValues
 
 		/**
 		 * Set the mount point of the Node.
@@ -144,7 +144,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__mountPoint
 		}
 
-		private __mountPoint?: XYZNumberValues
+		private declare __mountPoint?: XYZNumberValues
 
 		/**
 		 * Set this Node's opacity.
@@ -163,7 +163,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return this.__opacity
 		}
 
-		private __opacity?: number
+		private declare __opacity?: number
 	}
 
 	return Transformable as MixinResult<typeof Transformable, T>

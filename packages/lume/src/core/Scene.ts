@@ -614,8 +614,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			return renderer
 		}
 
-		// TODO FIXME: manual camera doesn't work after we've added the
-		// default-camera feature.
 		private __setCamera(camera?: PerspectiveCamera) {
 			if (!camera) {
 				this._createDefaultCamera()
