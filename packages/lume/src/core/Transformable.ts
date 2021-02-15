@@ -180,7 +180,12 @@ export default Transformable
 // align
 // mountPoint
 
-export type NumberValues = XYZNumberValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
+export type NumberValues =
+	| XYZNumberValues
+	| XYZPartialValuesArray<number>
+	| XYZPartialValuesObject<number>
+	| string
+	| ((x: number, y: number, z: number, time: number) => NumberValues | false)
 
 export type Position = NumberValues
 export type Rotation = NumberValues
