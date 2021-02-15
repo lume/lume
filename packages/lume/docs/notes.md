@@ -1,5 +1,7 @@
 # Miscellaneous Notes
 
+TODO move these to the guide.
+
 - WebGL rendering is currently powered by [Three.js](https://threejs.org). All
   elements have a `.three` property that you can access if you want to
   do custom things with the Three.js parts.

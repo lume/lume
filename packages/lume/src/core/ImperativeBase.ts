@@ -196,6 +196,11 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		connectedCallback() {
 			super.connectedCallback()
 
+			if (this.tagName === 'LUME-SPHERE') console.log('SPHERE CONNECTED TO ACTUAL PARENT')
+
+			// FIXME why is this.parent sometimes still null here?
+			// console.log(this.parent, this.tagName)
+
 			this._stopFns.push(
 				autorun(() => {
 					this.rotation
@@ -224,7 +229,17 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					})
 				}),
 				autorun(() => {
-					if (!this.parent) return
+					// This is for debug, I'm observing how things work for a while.
+					if (!this.parent && !this.isScene) console.warn('Parent is not defined yet.')
+
+					if (!this.parent) {
+						// ;(this as any).hadNoParent = true
+						return
+					}
+
+					// if ((this as any).hadNoParent)
+					// 	console.error(' ---------------- We got a parent!  calc size! ', this.tagName)
+					// ;(this as any).hadNoParent = false
 
 					this.parent.calculatedSize
 
@@ -242,6 +257,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 						}
 					})
 				}),
+				// XXX Perhaps we can come up with a decorator pattern to make this react-to-list-of-variables pattern simpler.
 				autorun(() => {
 					this.sizeMode
 					this.size
@@ -253,6 +269,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					this.mountPoint
 					this.opacity
 
+					// Queues an update (if needed) for next render tick.
 					this.needsUpdate()
 				}),
 			)
@@ -291,7 +308,19 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		 * childConnectedCallback).
 		 */
 		childComposedCallback(child: Element, connectionType: ConnectionType): void {
+			console.log(' ----------------------- child composed:', this.tagName, child, connectionType)
 			if (child instanceof ImperativeBase) {
+				if (child.tagName === 'LUME-SPHERE') {
+					if (connectionType === 'slot') console.log('SPHERE COMPOSED TO SLOT PARENT')
+					if (connectionType === 'root') console.log('SPHERE COMPOSED TO SHADOWROOT HOST')
+					if (connectionType === 'actual') console.log('SPHERE COMPOSED TO ACTUAL PARENT')
+				}
+				if (child.tagName === 'LUME-PERSPECTIVE-CAMERA') {
+					if (connectionType === 'slot') console.log('CAMERA COMPOSED TO SLOT PARENT')
+					if (connectionType === 'root') console.log('CAMERA COMPOSED TO SHADOWROOT HOST')
+					if (connectionType === 'actual') console.log('CAMERA COMPOSED TO ACTUAL PARENT')
+				}
+
 				// If ImperativeBase#add was called first, child's
 				// `parent` will already be set, so prevent recursion.
 				if (!child.parent) {

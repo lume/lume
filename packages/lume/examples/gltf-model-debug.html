@@ -1,0 +1,67 @@
+<title>&lt;lume-orbit-controls&gt;</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		background: #333;
+	}
+
+	lume-scene * {
+		outline: 3px solid teal;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-node size="1 1" size-mode="proportional proportional" style="outline: 1px solid red"></lume-node>
+
+	<lume-point-light position="200 -200 200" intensity="1" color="white"></lume-point-light>
+	<lume-perspective-camera
+		size="0 0 0"
+		align="0.5 0.5"
+		position="0 -20 1000"
+		rotation="0 0 0"
+		active
+		lookat="#model"
+	></lume-perspective-camera>
+	<lume-ambient-light color="white" intensity="0.8"></lume-ambient-light>
+
+	<!-- TODO default values: Shouldn't need the extra Y and Z values to size the box the same as the sphere. -->
+	<lume-sphere id="sphere" size="100 100 100" align="0.5 0.5" mount-point="0.5 0.5" color="deeppink"></lume-sphere>
+
+	<!-- <lume-gltf-model
+		size="200 200"
+		id="model"
+		src="./models/cargo-ship/source/cargo-ship.glb"
+		scale="200 200 200"
+	></lume-gltf-model> -->
+
+	<!-- <lume-gltf-model
+		id="model"
+		src="https://cdn.jsdelivr.net/gh/siouxcitizen/3DModel@a1c2e47550ca20de421f6d779229f66efab07830/yuusha.gltf"
+		scale="20 20 20"
+	></lume-gltf-model> -->
+
+	<!-- <lume-gltf-model
+		src="https://brianchirls.github.io/aframe-test/assets/duck/Duck.gltf"
+		scale="10 10 10"
+	></lume-gltf-model> -->
+	<!-- <lume-gltf-model
+		src="https://brianchirls.github.io/aframe-test/assets/wolf_link/scene.gltf"
+		scale="1 1 1"
+	></lume-gltf-model> -->
+
+	<lume-gltf-model size="200 200" id="model" src="./models/DamagedHelmet.glb" scale="200 200 200"></lume-gltf-model>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	LUME.useDefaultNames()
+
+	sphere.on(LUME.Events.GL_LOAD, () => {
+		sphere.three.material.opacity = 0.2
+		sphere.needsUpdate()
+	})
+</script>

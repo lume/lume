@@ -86,6 +86,8 @@ function makeDeclarativeBase() {
 		isNode = false
 
 		childConnectedCallback(child: HTMLElement) {
+			console.log('%%% child connected:', this.tagName, child)
+
 			// TODO Another case to handle is default slot content: when there
 			// are no nodes distributed to a slot, then connect the <slot>
 			// element's children to the <slot> parent.
@@ -95,6 +97,7 @@ function makeDeclarativeBase() {
 			// <slot> child ("composed children" are nodes that may be
 			// distributed to the <slot>).
 			if (isNode(child)) {
+				console.log('%%% 2 child connected:', this.tagName + '#' + this.id, child)
 				// We skip Scene here because we know it already has a
 				// ShadowRoot that serves a different purpose than for Nodes. A
 				// Scene child's three objects will always be connected to the
@@ -115,9 +118,19 @@ function makeDeclarativeBase() {
 					this.__childComposedCallback(child, 'actual')
 				}
 			} else if (child instanceof HTMLSlotElement) {
+				console.log(' $$$$$$ SLOT CONNECTED', this.tagName + '#' + this.id, this.__slots)
 				if (!this.__slots) this.__slots = []
+				console.log(' $$$$$$ SLOT CONNECTED', this.tagName + '#' + this.id, this.__slots)
 				this.__slots.push(child)
 
+				// TODO: If elements are defined before they appear in markup,
+				// then while the tree is being parsed, a slot will have no
+				// assignedNodes at this point. However, Chrome and Firefox
+				// seem to have a bug (spec bug?) where the future assigned
+				// nodes do not trigger a slotchange event, and for example in
+				// orbit-controls.html, the perspective-camera is composed but
+				// a slotchange event does not fire. Note, things works out if
+				// we define the elements after they appear in markup.
 				child.addEventListener('slotchange', this.__onChildSlotChange)
 
 				// TODO do we need __handleDistributedChildren for initial
@@ -130,6 +143,8 @@ function makeDeclarativeBase() {
 		}
 
 		childDisconnectedCallback(child: HTMLElement) {
+			console.log('%%% child disconnected:', this.tagName, child)
+
 			// mirror the connection in the imperative API's virtual scene graph.
 			if (isNode(child)) {
 				if (this.__shadowRoot) {
@@ -143,8 +158,10 @@ function makeDeclarativeBase() {
 			} else if (child instanceof HTMLSlotElement) {
 				child.removeEventListener('slotchange', this.__onChildSlotChange)
 
+				console.log(' $$$$$$ SLOT DISCONNECTED', this.__slots)
 				this.__slots!.splice(this.__slots!.indexOf(child), 1)
 				if (!this.__slots!.length) this.__slots = undefined
+				console.log(' $$$$$$ SLOT DISCONNECTED', this.__slots)
 				this.__handleDistributedChildren(child)
 				this.__previousSlotAssignedNodes.delete(child)
 			}
@@ -245,6 +262,12 @@ function makeDeclarativeBase() {
 
 		// All <slot> elements of this node, if any.
 		private declare __slots?: HTMLSlotElement[]
+		// @ts-ignore this.__slots may already be defined due to
+		// WithChildren's super class constructor calling our
+		// childConnectedCallback before our subclass.
+		// XXX Maybe we can avoid this sort of thing by instead usinga
+		// decorator. However decorators are not able to modify class types.
+		// = this.__slots || null
 
 		// True when this node has a parent that has a shadow root. When
 		// using the HTML API, Imperative API can look at this to determine
@@ -310,7 +333,11 @@ function makeDeclarativeBase() {
 			}
 		}
 
+		// TODO file Chrome bug: looks as if slotchange doesn't fire in a
+		// certain case. In orbit-controls.html, it doesn't fire for when the
+		// perspective-camera is composed.
 		private __onChildSlotChange = (event: Event) => {
+			console.log(' @@@@ slotchange.', this.tagName + '#' + this.id)
 			const slot = event.target as HTMLSlotElement // must be a <slot> element, if the event is slotchange
 			this.__handleDistributedChildren(slot)
 		}
@@ -319,6 +346,7 @@ function makeDeclarativeBase() {
 		childUncomposedCallback?(child: Element, connectionType: ConnectionType): void
 
 		private __childComposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
+			console.log('### __composed', child)
 			if (child.__isComposed) return
 			child.__isComposed = true
 
@@ -326,6 +354,7 @@ function makeDeclarativeBase() {
 		}
 
 		private __childUncomposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
+			console.log('### __uncomposed', child)
 			if (!child.__isComposed) return
 			child.__isComposed = false
 
@@ -386,6 +415,7 @@ function makeDeclarativeBase() {
 			let previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
 
 			const newNodes = slot.assignedNodes({flatten: true})
+			console.log(' $$$ current composed children:', newNodes)
 
 			// save the newNodes to be used as the previousNodes for next time.
 			this.__previousSlotAssignedNodes.set(slot, newNodes)

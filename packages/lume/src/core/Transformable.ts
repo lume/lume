@@ -33,6 +33,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 * @param {number} [newValue.y] The y-axis position to apply.
 		 * @param {number} [newValue.z] The z-axis position to apply.
 		 */
+		// TODO Remove all @emits decorator usages. We're going with dep-tracking reactivity!
 		@attribute
 		@emits('propertychange')
 		set position(newValue) {

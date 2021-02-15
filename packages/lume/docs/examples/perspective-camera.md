@@ -74,6 +74,9 @@
 </lume-scene>
 
 <script>
+    // TODO Why does the scene not update until a viewport resize after
+    // disabling the active camera and reverting to the default internal one?
+
     // defines the default names for the HTML elements
     LUME.useDefaultNames()
 

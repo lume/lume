@@ -3,6 +3,8 @@ import {observeChildren} from '../core/Utility'
 
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement'
 
+// TODO add a childrenChangedCallback feature for reacting to when *any* children have changed, in batch (MutationObserver).
+
 // polyfill for Node.isConnected based on Ryosuke Niwa's
 // https://github.com/w3c/webcomponents/issues/789#issuecomment-459858405
 if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {

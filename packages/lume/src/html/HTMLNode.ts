@@ -4,9 +4,14 @@ import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 initDeclarativeBase()
 
 export default class HTMLNode extends DeclarativeBase {
+	// TODO Delete this property when ShadowDOM support is finished, which will
+	// in turn cause all nodes to have a shadow root, and everything should
+	// continue to work (as a proof of concept that ShadowDOM support is
+	// complete).
 	// prettier-ignore
 	get root() { return this }
 	set root(_v) {}
+	// TODO ^ Replace with a hasShadow option from @lume/element or similar.
 
 	static css = /*css*/ `
 		:host {

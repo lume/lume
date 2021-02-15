@@ -1,0 +1,216 @@
+<!--
+Made with LUME.
+http://github.com/lume/lume
+-->
+<script src="../dist/global.js"></script>
+
+<!-- Polyfill for Pointer Events (boo Safari) -->
+<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+<!-- By default a <lume-scene> fills the space of it's parent, in this case the <body>. -->
+<lume-scene webgl touch-action="none" enable-css>
+	<lume-node size="100 100 " style="background: red"></lume-node>
+
+	<!-- Add some light to the scene! -->
+	<lume-point-light size="0 0" position="0 0 1000" color="white" intensity="1.5"></lume-point-light>
+
+	<!--
+	A way to create padding is make a node smaller within a parent node.
+	This <shader-image> element is a node that render a GPU-powered WebGL plane, and an <img> element.
+	We give the WebGL plane a black coloring. We apply a material opacity in the JavaScript below.
+	-->
+	<shaded-image
+		color="black"
+		size-mode="proportional natural"
+		size="0.8 0.95"
+		align="0.5 0.5"
+		mount-point="0.5 0.5"
+		src="https://assets.codepen.io/191583/shelby-gt350.jpg"
+	></shaded-image>
+
+	<lume-node size-mode="proportional proportional" size="0.8 0.95" align="0.5 0.5" mount-point="0.5 0.5"></lume-node>
+
+	<!-- Different ways to size the <shaded-image> -->
+	<!-- <shaded-image src="https://assets.codepen.io/191583/shelby-gt350.jpg" color="black"></shaded-image> -->
+	<!-- <shaded-image src="https://assets.codepen.io/191583/shelby-gt350.jpg" color="black" size-mode="natural proportional" size="0.95 0.95"></shaded-image> -->
+	<!-- <shaded-image src="https://assets.codepen.io/191583/shelby-gt350.jpg" color="black" size-mode="proportional proportional" size="0.95 0.95"></shaded-image> -->
+</lume-scene>
+
+<style>
+	html,
+	body {
+		background: #222;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+
+	lume-scene {
+		/* Prevent touch scrolling from interfering with out pointermove handler. */
+		touch-action: none;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		/* background: black; */
+	}
+</style>
+
+<script>
+	{
+		// Define LUME's HTML elements with their default names.
+		LUME.useDefaultNames()
+
+		const {element, attribute, html, XYZStringValues, autorun, untrack} = LUME
+
+		element('shaded-image')(
+			class ShadedImg extends LUME.DOMPlane {
+				observedAttributes = {
+					src: attribute.string(''),
+					maxWidth: attribute.number(0),
+					maxHeight: attribute.number(0),
+				}
+
+				src = ''
+
+				// These properties only apply when sizeMode (below) is 'natural'.
+				// Boundaries for the shaded-image. If only one is set, then the <img>'s aspect ratio is used to
+				// determine the size of the other dimension.
+				// If both are set, then the <img> is fit (like CSS `object-fit:contain`) inside of the space.
+				// If both are set to 0 (default), then the size of the shaded-image will be the natural size of the <img>
+				maxWidth = 0
+				maxHeight = 0
+
+				// Override the super value, which accepts only values 'literal' and 'proportional' at time of writing.
+				get sizeMode() {
+					if (!this.sizeMode__) this.sizeMode__ = new XYZStringValues('natural', 'natural', 'literal')
+
+					// read the value only so it triggers reactivity.
+					super.sizeMode
+
+					return this.sizeMode__
+				}
+				set sizeMode(v) {
+					if (!this.sizeMode__) this.sizeMode__ = new XYZStringValues('natural', 'natural', 'literal')
+
+					this.sizeMode__.from(v)
+
+					// triggers reactivity on set of the super value.
+					if (v instanceof Array) {
+						super.sizeMode = {
+							x: v[0] == 'natural' ? 'literal' : v[0],
+							y: v[1] == 'natural' ? 'literal' : v[1],
+							z: v[2] == 'natural' ? 'literal' : v[2],
+						}
+					} else if (typeof v == 'object') {
+						super.sizeMode = {
+							x: v.x == 'natural' ? 'literal' : v.x,
+							y: v.y == 'natural' ? 'literal' : v.y,
+							z: v.z == 'natural' ? 'literal' : v.z,
+						}
+					}
+				}
+
+				__img = null
+
+				template = () => html` <img src=${() => this.src} ref=${el => (this.__img = el)} /> `
+
+				connectedCallback() {
+					super.connectedCallback()
+
+					this.recompute()
+
+					this.sizeMode.on('valuechanged', this.recompute)
+					this.size.on('valuechanged', this.recompute)
+					this.__img.addEventListener('load', this.recompute)
+
+					this.stopAutorun = autorun(() => {
+						// On parent size change...
+						this.parentNode.calculatedSize
+
+						// ...recompute sizing (but don't record any dependencies (with an
+						// untrack() block) because recompute accesses reactive instance
+						// properties).
+						untrack(() => {
+							this.recompute()
+						})
+					})
+				}
+
+				disconnectedCallback() {
+					super.disconnectedCallback()
+					this.stopAutorun()
+				}
+
+				recompute = changedProp => {
+					if (this.sizeMode.x == 'natural' && this.sizeMode.y == 'natural') {
+						if (!this.maxWidth && !this.maxHeight) {
+							this.size.set(this.__img.naturalWidth, this.__img.naturalHeight)
+						}
+					} else if (this.sizeMode.x == 'natural' && this.sizeMode.y != 'natural' && changedProp != 'x') {
+						if (!this.maxWidth && !this.maxHeight) {
+							const ratio = this.__img.naturalWidth / this.__img.naturalHeight || 1
+							this.size.x = ratio * this.calculatedSize.y
+						}
+					} else if (this.sizeMode.x != 'natural' && this.sizeMode.y == 'natural' && changedProp != 'y') {
+						if (!this.maxWidth && !this.maxHeight) {
+							const ratio = this.__img.naturalWidth / this.__img.naturalHeight || 1
+							this.size.y = this.calculatedSize.x / ratio
+						}
+					}
+				}
+			},
+		)
+
+		// The following is temporary way to set material opacity because it
+		// isn't exposed through the HTML interface yet, but this shows how
+		// we can manipulate the underlying Three.js objects if we so wish.
+		Array.from(document.querySelectorAll('lume-dom-plane, shaded-image')).forEach(node => {
+			// Once the node's GL API is ready, then we can access underlying Three.js stuff.
+			node.on(LUME.Events.GL_LOAD, async () => {
+				setTimeout(() => {
+					// node.three in this case is a Three.js Mesh instance.
+					// Three.js Mesh docs: https://threejs.org/docs/index.html#api/en/objects/Mesh
+					node.three.material.opacity = 0.3
+
+					// If we modify properties on the underlying Three.js objects, we need to
+					// manually signal to LUME that a re-render should happen:
+					node.needsUpdate()
+				}, 1000)
+			})
+		})
+
+		Array.from(document.querySelectorAll('lume-point-light')).forEach(node => {
+			// Once the node's GL API is ready, then we can access underlying Three.js stuff.
+			node.on(LUME.Events.GL_LOAD, async () => {
+				// node.three in this case is a Three.js PointLight instance.
+				// Three.js PointLight docs: https://threejs.org/docs/index.html#api/en/lights/PointLight
+				// A little bias adjustment helps make things look smooth when the light source is further away.
+				node.three.shadow.bias = -0.001
+
+				// If we modify properties on the underlying Three.js objects, we need to
+				// manually signal to LUME that a re-render should happen:
+				node.needsUpdate()
+			})
+		})
+
+		const scene = document.querySelector('lume-scene')
+		const light = document.querySelector('lume-point-light')
+		const image = document.querySelector('shaded-image')
+		const rotationAmount = 15
+
+		// Add some interaction so we can see the shine from the light!
+		scene.addEventListener('pointermove', event => {
+			// Move the light on mouse move or finger drag.
+			light.position.x = event.clientX
+			light.position.y = event.clientY
+
+			// Rotate the image a little bit too.
+			image.rotation.y = -((event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount)
+			image.rotation.x = (event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount
+		})
+	}
+</script>

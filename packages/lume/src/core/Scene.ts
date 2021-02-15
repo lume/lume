@@ -319,6 +319,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 						// destroy the previous one, if any.
 						this.__glRenderer!.disableBackground(this)
 
+						console.log('enable background!!')
 						this.__glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
 							this.three.background = texture || null
 							this.needsUpdate()
@@ -617,11 +618,23 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		private __setCamera(camera?: PerspectiveCamera) {
 			if (!camera) {
 				this._createDefaultCamera()
+
+				// XXX Should this stuff be deferred to a render task? It doesn't change often, maybe it doesn't matter.
+				// FIXME This apparently doesn't fix the perspective-camera
+				// example. For some reason, when disabling a camera and going
+				// back to the default camera, a window resize if required for
+				// everything to render properly.
+				// this._updateCameraPerspective()
+				// this._updateCameraAspect()
+				// this._updateCameraProjection()
+				// this.needsUpdate()
 			} else {
 				// TODO?: implement an changecamera event/method and emit/call
 				// that here, then move this logic to the renderer
 				// handler/method?
 				this.__threeCamera = camera.three
+
+				// XXX Should this stuff be deferred to a render task? It doesn't change often, maybe it doesn't matter.
 				this._updateCameraAspect()
 				this._updateCameraProjection()
 				this.needsUpdate()
@@ -644,8 +657,10 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			) {
 				// ...then observe the parent element size (it may not be a LUME
 				// element, so we observe with ResizeObserver).
+				console.log('Scene start size watch')
 				this.__startParentSizeObservation()
 			} else {
+				console.log('Scene stop size watch')
 				this.__stopParentSizeObservation()
 			}
 		}

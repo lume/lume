@@ -218,12 +218,15 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
 			// trigger reactive updates (although we set it to the same value)
 			this.__calculatedSize = calculatedSize
+			if (this.tagName === 'LUME-SCENE')
+				console.log('Scene size change!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', sizeMode, size)
 
 			if (
 				previousSize.x !== calculatedSize.x ||
 				previousSize.y !== calculatedSize.y ||
 				previousSize.z !== calculatedSize.z
 			) {
+				// TODO replace usage of events and replace with reactive variables
 				this.emit('sizechange', {...calculatedSize})
 			}
 		}

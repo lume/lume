@@ -1,198 +1,154 @@
-const {Class, reactify} = LUME
+// TODO replace this with ES Module `import`
+const {Node, reactify, html, For} = LUME
 
-const BasicHTMLRendererBrand = {}
+// FIXME: If this script is not ran as type=module, then the above `Node`
+// variable ovarwrites the global `window.Node` variable, which causes the
+// `html` template tag to break (because it has `instanceof Node` in its code
+// expecting the original window.Node class). We should rename `Node` to
+// something else. Perhaps `Node3D` or `Element3D`.
 
-function BasicHTMLRenderer(Base = {}) {
-	// prettier-ignore
-	return Class('BasicHTMLRenderer').extends(Base, ({Super, Public, Protected, Private}) => ({
-        static: {
-            // "shadow" means it renders to a shadow root, "replace" means it
-            // uses innerHTML, and "append" means it appends with
-            // insertAdjacentHTML('beforeend')
-            htmlRenderMode: 'shadow', // 'shadow' | 'replace' | 'append'
-        },
+class ShimmerSurface extends Node {
+	static reactiveProperties = ['color']
 
-        connectedCallback() {
-            super.connectedCallback()
-            this.shouldRender()
-        },
-
-        disconnectedCallback() {
-            super.disconnectedCallback()
-
-            cancelAnimationFrame(this.__frame)
-            this.__frame = null
-        },
-
-        shouldRender() {
-            if (this.__frame) return
-
-            this.__frame = requestAnimationFrame(() => {
-                this.__frame = null
-
-                const {__renderMode} = this
-
-                if (['replace', 'shadow'].includes(this.__renderMode))
-                    this._root.innerHTML = this._render()
-                else if (this.__renderMode === 'append')
-                    this._root.insertAdjacentHTML('beforeend', this._render())
-            })
-        },
-
-        private: {
-            get __renderMode() {
-                return this.constructor.htmlRenderMode || "shadow"
-            },
-        },
-
-        protected: {
-            // subclasses should override this, returning HTML to render
-            _render() {
-                return html``
-            },
-
-            get _root() {
-                if (['replace', 'append'].includes(this.__renderMode))
-                    return this
-
-                if (this.__renderMode === 'shadow')
-                    return this.__root || (this.__root = this.attachShadow({mode: 'open'}))
-            },
-        },
-    }), BasicHTMLRendererBrand)
-}
-
-const NodeWithRenderer = BasicHTMLRenderer(LUME.Node)
-
-const ShimmerSurface = Class('ShimmerSurface').extends(NodeWithRenderer, ({Super, Public}) => ({
-	static: {
-		props: {
-			// TODO log a warning if Node or Scene props are missing (most
-			// likely someone extended props wrong)
-			...LUME.Node.props,
-			color: LUME.props.props.THREE.Color,
-		},
-		// htmlRenderMode: 'replace',
-		htmlRenderMode: 'shadow',
-	},
+	root = this.attachShadow({mode: 'open'})
 
 	constructor() {
-		super.constructor()
+		super()
+		reactify(this, ShimmerSurface)
+	}
 
-		// TODO, besides reactify as an alternative to the @reactive decorator,
-		// we need to make plain-JS equivalent for the @attribute decorator.
-		reactify(this, ['color'])
-	},
+	static observedAttributes = this.reactiveProperties
+	attributeChangedCallback(attr, oldValue, newValue) {
+		this[attr] = newValue
+	}
 
-	updated(oldProps, modifiedProps) {
-		super.updated(oldProps, modifiedProps)
+	__color = new THREE.Color('deeppink')
 
-		if (modifiedProps.color) {
-			this.shouldRender()
-		}
-	},
+	get color() {
+		return this.__color
+	}
+	set color(val) {
+		val = val ?? ''
+		if (typeof val === 'string') this.__color.set(val)
+		else if (typeof val === 'number') this.__color.set(val)
+		else if (val instanceof THREE.Color) this.__color = val
+		else throw new Error('Invalid value')
+	}
 
-	protected: {
-		_render() {
-			// const {r, g, b} = { r: 244/255, g: 196/255, b: 48/255 }
-			const {r, g, b} = this.color
+	// prettier-ignore
+	template = () => html`
+		<style>${() => /*css*/`
+			@keyframes ShimmerEffect {
+				0% { transform: translate3d(-15%, -15%, 30px) }
+				100% { transform: translate3d(-60%, -60%, 30px) }
+			}
+			:host {
+				overflow: hidden;
+				perspective: 100000px
+			}
+			.shimmerSurface {
+				transform-style: preserve-3d;
+				background: linear-gradient(
+					-45deg,
+					rgba(0,0,0,0) 40%,
+					rgba(${this.color.r*255}, ${this.color.g*255}, ${this.color.b*255}, 0.2) 50%,
+					rgba(0,0,0,0) 60%
+				);
+				background-repeat: repeat;
+				background-size: 100% 100%;
+				width: 400%; height: 400%;
 
-			// prettier-ignore
-			return html`
-                <style>
-                    @keyframes ShimmerEffect {
-                        0% { transform: translate3d(-15%, -15%, 30px) }
-                        100% { transform: translate3d(-60%, -60%, 30px) }
-                    }
-                    :host {
-                        overflow: hidden;
-                        perspective: 100000px
-                    }
-                    .shimmerSurfaceContent {
-                        transform-style: preserve-3d;
-                        background: linear-gradient(
-                            -45deg,
-                            rgba(0,0,0,0) 40%,
-                            rgba(${r*255}, ${g*255}, ${b*255}, 0.2) 50%,
-                            rgba(0,0,0,0) 60%
-                        );
-                        background-repeat: repeat;
-                        background-size: 100% 100%;
-                        width: 400%; height: 400%;
+				animation: ShimmerEffect 1.8s cubic-bezier(0.75, 0.000, 0.25, 1.000) infinite;
+			}
+		`}</style>
+		<div class="shimmerSurface"></div>
+	`
 
-                        animation: ShimmerEffect 1.8s cubic-bezier(0.75, 0.000, 0.25, 1.000) infinite;
-                    }
-                </style>
-
-                <div class="shimmerSurfaceContent"></div>
-            `
-		},
-	},
-}))
+	// css = /* css */`
+	// `
+}
 
 customElements.define('shimmer-surface', ShimmerSurface)
 
-const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Public}) => ({
-	static: {
-		props: {
-			...LUME.Node.props,
-			color: LUME.props.props.THREE.Color,
-		},
-		// htmlRenderMode: 'replace',
-		htmlRenderMode: 'shadow',
-	},
+class ShimmerCube extends Node {
+	static reactiveProperties = ['color']
 
-	updated(oldProps, modifiedProps) {
-		super.updated(oldProps, modifiedProps)
+	// root = this
 
-		if (modifiedProps.color) {
-			this.shouldRender()
-		}
-	},
+	constructor() {
+		super()
+		reactify(this, ShimmerCube)
+	}
 
-	protected: {
-		_render() {
-			const {r, g, b} = this.color
+	static observedAttributes = this.reactiveProperties
+	attributeChangedCallback(attr, oldValue, newValue) {
+		this[attr] = newValue
+	}
 
-			// prettier-ignore
-			const cubeFaceOrientations = [
-                [0, 180, 0],
-                [0, 0, 0],
-                [0, 90, 0],
-                [0, 270, 0],
-                [90, 0, 0],
-                [270, 0, 0],
-            ]
+	__color = new THREE.Color('deeppink')
 
-			// prettier-ignore
-			return html`
-                <lume-box
-                    ${this.id ? `id="${this.id}-box"` : ``}
-                    color="#364659"
-                    size-mode="proportional proportional proportional"
-                    size="1 1 1"
-                    opacity="0.2"
-                >
-                    <slot></slot>
-                </lume-box>
+	get color() {
+		return this.__color
+	}
+	set color(val) {
+		val = val ?? ''
+		if (typeof val === 'string') this.__color.set(val)
+		else if (typeof val === 'number') this.__color.set(val)
+		else if (val instanceof THREE.Color) this.__color = val
+		else throw new Error('Invalid value')
+	}
 
-                ${cubeFaceOrientations.map(orientation => html`
-                    <shimmer-surface
-                        ${this.id ? `id="${this.id}-shimmer-surface"` : ``}
-                        color="rgb(${r*255}, ${g*255}, ${b*255})"
-                        size-mode="proportional proportional proportional"
-                        size="1 1 1"
-                        origin="0.5 0.5 0"
-                        align="0 0 0.5"
-                        rotation="${orientation}"
-                    >
-                    </shimmer-surface>
-                `)}
-            `
+	template() {
+		const cubeFaceOrientations = [
+			[0, 180, 0],
+			[0, 0, 0],
+			[0, 90, 0],
+			[0, 270, 0],
+			[90, 0, 0],
+			[270, 0, 0],
+		]
 
-			// root.querySelector('lume-box').three.material.opacity = 0.2
-		},
-	},
-}))
+		// <lume-box
+		// 	${this.id ? `id="${this.id}-box"` : ``}
+		// 	color="#364659"
+		// 	size-mode="proportional proportional proportional"
+		// 	size="1 1 1"
+		// 	opacity="0.2"
+		// >
+		// 	<slot></slot>
+		// </lume-box>
+		// box.three.material.opacity = 0.2
+
+		// prettier-ignore
+		// return html`
+		// 	<${For} each=${() => cubeFaceOrientations}>
+		// 		${orientation => html`
+		// 			<shimmer-surface
+		// 				color=${() => this.color}
+		// 				size-mode="proportional proportional proportional"
+		// 				size="1 1 1"
+		// 				origin="0.5 0.5 0"
+		// 				align="0 0 0.5"
+		// 				rotation=${orientation}
+		// 			>
+		// 			</shimmer-surface>
+		// 		`}
+		// 	<//>
+		// `
+
+		// ${this.id ? `id="${this.id}-shimmer-surface"` : ``}
+		return cubeFaceOrientations.map(orientation => html`
+			<shimmer-surface
+				color=${() => this.color}
+				size-mode="proportional proportional proportional"
+				size="1 1 1"
+				origin="0.5 0.5 0"
+				align="0 0 0.5"
+				rotation=${orientation}
+			>
+			</shimmer-surface>
+		`)
+	}
+}
 
 customElements.define('shimmer-cube', ShimmerCube)
