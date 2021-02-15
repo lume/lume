@@ -47,7 +47,7 @@ it. You should see the same visual as in the following example:
 Let's go over what this does. The first line,
 
 ```html
-<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"></script>
+<script src="https://unpkg.com/lume@0.0.0/dist/global.js"></script>
 ```
 
 is an HTML `<script>` element that tells the browser where to get LUME code from.
@@ -75,20 +75,27 @@ Next we wrote some HTML code using the LUME elements to define the structure
 of a 3D scene on the screen:
 
 ```html
+<<<<<<< Updated upstream:packages/lume/docs/guide/install.md
 <i-scene webgl>
 	<i-ambient-light intensity="0.5"></i-ambient-light>
 	<i-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</i-point-light>
+=======
+<lume-scene experimental-webgl>
+	<lume-ambient-light intensity="0.5"></lume-ambient-light>
+	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	</lume-point-light>
+>>>>>>> Stashed changes:packages/lume/docs/install.md
 
-	<i-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </i-box>
-</i-scene>
+	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+</lume-scene>
 ```
 
-The `i-ambient-light`, `i-point-light`, and `i-box` elements must be placed
-within the `i-scene` element. We gave each element some properties like
+The `lume-ambient-light`, `lume-point-light`, and `lume-box` elements must be placed
+within the `lume-scene` element. We gave each element some properties like
 `color`, `size`, `intensity`, etc, by specifying values for those properties
 with HTML attributes on the elements (for example, `size="100 100 100"` on
-the `i-box` element to make a cube with a size of `100` in each dimension).
+the `lume-box` element to make a cube with a size of `100` in each dimension).
 
 <!-- TODO: add a tip about 3D space, dimensions, etc, here. -->
 
@@ -101,7 +108,7 @@ to make our cube rotate:
 </script>
 ```
 
-The `box` variable is a global variable that references the `i-box` element
+The `box` variable is a global variable that references the `lume-box` element
 because we gave that element an ID of "box" with the attribute `id="box"`.
 The browser saves top-level elements as global variables with names matching
 their IDs.
@@ -221,7 +228,7 @@ new Vue({
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
-`<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
 <script>
     LUME.useDefaultNames()
@@ -229,13 +236,13 @@ new Vue({
 
 <!-- This defines the structure of a 3D scene with some lighting, and a 3D
 cube in the middle of the view: -->
-<i-scene experimental-webgl>
-	<i-ambient-light intensity="0.5"></i-ambient-light>
-	<i-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
-	</i-point-light>
+<lume-scene experimental-webgl>
+	<lume-ambient-light intensity="0.5"></lume-ambient-light>
+	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	</lume-point-light>
 
-	<i-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </i-box>
-</i-scene>
+	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+</lume-scene>
 
 <!-- Now we give the cube a basic rotation around the Y axis: -->
 <script>
@@ -274,7 +281,7 @@ el: '#defaultNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
 <script>
   LUME.useDefaultNames()
@@ -294,9 +301,9 @@ code:
 
   // The code outputs these elements to the DOM:
   // <body>
-  //   <i-scene>
-  //     <i-node position="50 50 0" size="100 100 0"></i-node>
-  //   </i-scene>
+  //   <lume-scene>
+  //     <lume-node position="50 50 0" size="100 100 0"></lume-node>
+  //   </lume-scene>
   // </body>
 <\/script>
 
@@ -312,11 +319,11 @@ el: '#defaultNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
-<i-scene>
-  <i-node id="node" position="50 50" size="100 100"></i-node>
-</i-scene>
+<lume-scene>
+  <lume-node id="node" position="50 50" size="100 100"></lume-node>
+</lume-scene>
 
 <script>
   LUME.useDefaultNames()
@@ -336,7 +343,7 @@ el: '#customNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
 <script>
   const {Scene, Node} = LUME
@@ -377,7 +384,7 @@ el: '#customNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0-rc.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
 <x-scene>
   <x-node id="node" position="50 50" size="100 100"></x-node>
