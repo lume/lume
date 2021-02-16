@@ -1,5 +1,5 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
-import {numberAttribute, booleanAttribute, autorun, untrack, attribute, element} from '@lume/element'
+import {numberAttribute, booleanAttribute, autorun, untrack, element} from '@lume/element'
 import Node, {NodeAttributes} from './Node.js'
 import {defer} from './Utility.js'
 
