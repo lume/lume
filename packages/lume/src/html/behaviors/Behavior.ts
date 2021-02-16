@@ -1,8 +1,8 @@
 import 'element-behaviors'
-import ForwardProps from './ForwardProps'
+import ForwardProps from './ForwardProps.js'
 
 import type {Constructor} from 'lowclass'
-import type Node from '../../core/Node'
+import type Node from '../../core/Node.js'
 
 /**
  * Base class for all behaviors

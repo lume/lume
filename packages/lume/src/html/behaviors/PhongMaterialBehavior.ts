@@ -1,8 +1,8 @@
 import 'element-behaviors'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 // import {multiple} from 'lowclass'
-import BaseMaterialBehavior from './BaseMaterialBehavior'
-import MaterialTexture from './MaterialTexture'
+import BaseMaterialBehavior from './BaseMaterialBehavior.js'
+import MaterialTexture from './MaterialTexture.js'
 
 // export default class PhongMaterialBehavior extends multiple(BaseMaterialBehavior, MaterialTexture) {
 export default class PhongMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {

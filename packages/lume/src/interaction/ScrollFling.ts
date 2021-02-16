@@ -1,8 +1,8 @@
 import {reactive} from '@lume/element'
-import {Motor} from '../core'
-import {clamp} from '../math/clamp'
+import {Motor} from '../core/Motor.js'
+import {clamp} from '../math/clamp.js'
 
-import type {RenderTask} from '../core'
+import type {RenderTask} from '../core/index.js'
 
 type ScrollFlingOptions = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY'>>
 

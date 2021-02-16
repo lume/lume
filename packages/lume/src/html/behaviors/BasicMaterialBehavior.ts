@@ -1,8 +1,8 @@
 import 'element-behaviors'
-import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial'
+import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial.js'
 // import {multiple} from 'lowclass'
-import BaseMaterialBehavior from './BaseMaterialBehavior'
-import MaterialTexture from './MaterialTexture'
+import BaseMaterialBehavior from './BaseMaterialBehavior.js'
+import MaterialTexture from './MaterialTexture.js'
 
 // export default class BasicMaterialBehavior extends multiple(BaseMaterialBehavior, MaterialTexture) {
 export default class BasicMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {

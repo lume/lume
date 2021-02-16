@@ -1,11 +1,11 @@
 import {element, numberAttribute, stringAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html'
-import {autoDefineElements} from '../LumeConfig'
-import {Node} from '../core/Node'
-import {Motor} from '../core/Motor'
+import {html} from '@lume/element/dist/html.js'
+import {autoDefineElements} from '../LumeConfig.js'
+import {Node} from '../core/Node.js'
+import {Motor} from '../core/Motor.js'
 
-import type {PointLight} from '../core/PointLight'
-import type {Sphere} from '../core/Sphere'
+import type {PointLight} from '../core/PointLight.js'
+import type {Sphere} from '../core/Sphere.js'
 
 @element('flickering-orb', autoDefineElements)
 export class FlickeringOrb extends Node {

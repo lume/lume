@@ -1,6 +1,6 @@
-import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
+import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested.js'
 
-import type {Scene} from './Scene'
+import type {Scene} from './Scene.js'
 
 interface SceneState {
 	renderer: CSS3DRendererNested

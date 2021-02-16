@@ -1,11 +1,9 @@
-/* global HTMLSlotElement */
-
 import {Element} from '@lume/element'
-import {observeChildren} from '../core/Utility'
-import WithChildren from './WithChildren'
-import DefaultBehaviors from './behaviors/DefaultBehaviors'
+import {observeChildren} from '../core/Utility.js'
+import WithChildren from './WithChildren.js'
+import DefaultBehaviors from './behaviors/DefaultBehaviors.js'
 
-import type HTMLNode from './HTMLNode'
+import type HTMLNode from './HTMLNode.js'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 

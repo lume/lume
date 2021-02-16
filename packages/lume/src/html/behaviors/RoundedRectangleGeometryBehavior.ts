@@ -1,11 +1,11 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun} from '@lume/element'
-import {Shape} from 'three/src/extras/core/Shape'
-import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry'
-import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry'
-import BaseGeometryBehavior from './BaseGeometryBehavior'
+import {Shape} from 'three/src/extras/core/Shape.js'
+import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
+import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
+import BaseGeometryBehavior from './BaseGeometryBehavior.js'
 
-import type {Geometry} from 'three/src/core/Geometry'
+import type {Geometry} from 'three/src/core/Geometry.js'
 
 // function BoolAttribute(val: string | null) {
 // 	if (val === null || val === 'false') return false

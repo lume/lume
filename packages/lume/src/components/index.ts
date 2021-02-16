@@ -1,3 +1,3 @@
-export * from './CameraRig'
-export * from './Cube'
-export * from './PushPaneLayout'
+export * from './CameraRig.js'
+export * from './Cube.js'
+export * from './PushPaneLayout.js'

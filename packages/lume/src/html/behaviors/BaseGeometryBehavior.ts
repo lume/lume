@@ -1,5 +1,5 @@
 import {autorun} from '@lume/element'
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
+import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior.js'
 
 import type {StopFunction} from '@lume/element'
 

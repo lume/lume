@@ -1,6 +1,6 @@
 import type {Constructor} from 'lowclass'
-import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
-import type {Group} from 'three/src/objects/Group'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type {Group} from 'three/src/objects/Group.js'
 
 export class EventTypes {
 	constructor(

@@ -1,4 +1,4 @@
-import DOMNode from './DOMNode'
+import DOMNode from './DOMNode.js'
 
 // This class is an alias for DOMNode/lume-dom-node
 export default class DOMPlane extends DOMNode {

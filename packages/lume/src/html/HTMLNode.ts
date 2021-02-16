@@ -1,5 +1,4 @@
-// import styles from './HTMLNode.style'
-import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
+import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase.js'
 
 initDeclarativeBase()
 

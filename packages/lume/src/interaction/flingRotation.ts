@@ -1,7 +1,7 @@
-import {clamp} from '../math'
+import {clamp} from '../math/clamp.js'
+import {rotation} from '../core/index.js'
 
-import type {Node} from '../core/Node'
-import {rotation} from '../core'
+import type {Node} from '../core/Node.js'
 
 interface FlingRotationOptions {
 	// The object that will be rotated on Y.

@@ -1,6 +1,6 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {defer} from './Utility'
 import {reactive} from '@lume/element'
+import {defer} from './Utility.js'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected

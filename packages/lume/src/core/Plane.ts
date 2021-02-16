@@ -1,4 +1,4 @@
-import Mesh from './Mesh'
+import Mesh from './Mesh.js'
 
 export default class Plane extends Mesh {
 	static defaultElementName = 'lume-plane'

@@ -1,12 +1,12 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import {default as HTMLInterface} from '../html/HTMLNode'
+import ImperativeBase, {initImperativeBase} from './ImperativeBase.js'
+import {default as HTMLInterface} from '../html/HTMLNode.js'
 
 // register behaviors that can be used on this element
-import '../html/behaviors/ObjModelBehavior'
-import '../html/behaviors/GltfModelBehavior'
+import '../html/behaviors/ObjModelBehavior.js'
+import '../html/behaviors/GltfModelBehavior.js'
 
 initImperativeBase()
 

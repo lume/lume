@@ -1,4 +1,4 @@
-import XYZValues from './XYZValues'
+import XYZValues from './XYZValues.js'
 
 export class XYZAnyValues extends XYZValues<any> {
 	protected get default() {

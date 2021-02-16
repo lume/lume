@@ -1,10 +1,10 @@
-import {Color} from 'three/src/math/Color'
-import {Light as ThreeLight} from 'three/src/lights/Light'
+import {Color} from 'three/src/math/Color.js'
+import {Light as ThreeLight} from 'three/src/lights/Light.js'
 import {attribute, autorun, element, numberAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from './Node'
+import Node from './Node.js'
 
-import type {TColor} from '../utils/three'
+import type {TColor} from '../utils/three.js'
 
 /**
  * @abstract

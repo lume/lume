@@ -1,12 +1,12 @@
 // based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 
-import {Matrix4} from 'three/src/math/Matrix4'
-import {Object3DWithPivot} from '../../core/Object3DWithPivot'
-import {isPerspectiveCamera, isOrthographicCamera} from '../../utils/three'
+import {Matrix4} from 'three/src/math/Matrix4.js'
+import {Object3DWithPivot} from '../../core/Object3DWithPivot.js'
+import {isPerspectiveCamera, isOrthographicCamera} from '../../utils/three.js'
 
-import type {Object3D} from 'three/src/core/Object3D'
-import type {Scene} from 'three/src/scenes/Scene'
-import type {Camera} from 'three/src/cameras/Camera'
+import type {Object3D} from 'three/src/core/Object3D.js'
+import type {Scene} from 'three/src/scenes/Scene.js'
+import type {Camera} from 'three/src/cameras/Camera.js'
 
 export class CSS3DObjectNested extends Object3DWithPivot {
 	private __initialFrame = requestAnimationFrame(() => {

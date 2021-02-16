@@ -1,5 +1,5 @@
-import {Vector3} from 'three/src/math/Vector3'
-import {Object3D} from 'three/src/core/Object3D'
+import {Vector3} from 'three/src/math/Vector3.js'
+import {Object3D} from 'three/src/core/Object3D.js'
 
 // Augment the Object3D class definition with a new pivot property.
 //
@@ -8,7 +8,7 @@ import {Object3D} from 'three/src/core/Object3D'
 // 'three/src/core/Object3D'` instead of `from 'three'`). Otherwise we get this
 // bug: https://github.com/microsoft/TypeScript/issues/18877. See also the
 // report on Three.js: https://github.com/mrdoob/three.js/issues/19468.
-declare module 'three/src/core/Object3D' {
+declare module 'three/src/core/Object3D.js' {
 	interface Object3D {
 		pivot: Vector3
 	}

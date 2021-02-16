@@ -1,9 +1,9 @@
 import 'element-behaviors'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
-import {Color} from 'three/src/math/Color'
-import {NoBlending /*, DoubleSide*/} from 'three/src/constants'
-import BaseMaterialBehavior from './BaseMaterialBehavior'
-import MaterialTexture from './MaterialTexture'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import {Color} from 'three/src/math/Color.js'
+import {NoBlending /*, DoubleSide*/} from 'three/src/constants.js'
+import BaseMaterialBehavior from './BaseMaterialBehavior.js'
+import MaterialTexture from './MaterialTexture.js'
 
 export default class DOMNodeMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {
 	protected _createComponent() {

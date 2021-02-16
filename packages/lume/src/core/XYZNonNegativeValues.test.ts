@@ -1,7 +1,7 @@
-import XYZNonNegativeValues from './XYZNonNegativeValues'
-import {checkValues, testWithSeparator} from './XYZValues.test.common'
+import XYZNonNegativeValues from './XYZNonNegativeValues.js'
+import {checkValues, testWithSeparator} from './XYZValues.test.common.js'
 
-import type {XYZValuesArray, XYZValuesObject} from './XYZValues'
+import type {XYZValuesArray, XYZValuesObject} from './XYZValues.js'
 
 describe('XYZNonNegativeValues', () => {
 	describe('.constructor', () => {

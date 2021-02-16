@@ -1,9 +1,9 @@
-import {Color} from 'three/src/math/Color'
-import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants'
+import {Color} from 'three/src/math/Color.js'
+import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
 import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior'
+import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior.js'
 
-import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
+import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 
 /** @class BaseMaterialBehavior - Base class for material behaviors. */
 @reactive

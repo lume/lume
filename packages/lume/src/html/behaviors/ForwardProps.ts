@@ -1,7 +1,7 @@
 import {observe, unobserve} from 'james-bond'
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 
-import type {PossibleCustomElement} from '../PossibleCustomElement'
+import type {PossibleCustomElement} from '../PossibleCustomElement.js'
 
 function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO Maybe this class should not depend on DOM (i.e. don't use methods

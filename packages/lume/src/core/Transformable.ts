@@ -1,10 +1,10 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {attribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import XYZNumberValues from './XYZNumberValues'
-import Sizeable from './Sizeable'
+import XYZNumberValues from './XYZNumberValues.js'
+import {Sizeable} from './Sizeable.js'
 
-import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
+import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
 
 function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	const _Base = Constructor<HTMLElement>(Base)

@@ -1,4 +1,4 @@
-import XYZValues from './XYZValues'
+import XYZValues from './XYZValues.js'
 
 export default class XYZStringValues extends XYZValues<string> {
 	get default() {

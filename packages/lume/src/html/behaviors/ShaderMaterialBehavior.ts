@@ -1,12 +1,12 @@
 import 'element-behaviors'
 import {reactive, autorun, attribute} from '@lume/element'
-import {ShaderMaterial} from 'three/src/materials/ShaderMaterial'
+import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 // @ts-ignore, no type def
-import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl'
+import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
-import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl'
-import BaseMaterialBehavior from './BaseMaterialBehavior'
-import MaterialTexture from './MaterialTexture'
+import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
+import BaseMaterialBehavior from './BaseMaterialBehavior.js'
+import MaterialTexture from './MaterialTexture.js'
 
 @reactive
 export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {

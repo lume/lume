@@ -1,14 +1,14 @@
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
-import {Color} from 'three/src/math/Color'
-import {defer} from '../core/Utility'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import {Color} from 'three/src/math/Color.js'
+import {defer} from '../core/Utility.js'
 
-import type {Object3D} from 'three/src/core/Object3D'
-import type {Material} from 'three/src/materials/Material'
-import type {RenderItem} from 'three/src/renderers/webgl/WebGLRenderLists'
-import type {Quaternion} from 'three/src/math/Quaternion'
-import type {Camera} from 'three/src/cameras/Camera'
-import type {OrthographicCamera} from 'three/src/cameras/OrthographicCamera'
-import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
+import type {Object3D} from 'three/src/core/Object3D.js'
+import type {Material} from 'three/src/materials/Material.js'
+import type {RenderItem} from 'three/src/renderers/webgl/WebGLRenderLists.js'
+import type {Quaternion} from 'three/src/math/Quaternion.js'
+import type {Camera} from 'three/src/cameras/Camera.js'
+import type {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
+import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 
 export type TColor = Color | string | number
 

@@ -1,2 +1,2 @@
-export * from './FlickeringOrb'
-export * from './FlickeringOrbs'
+export * from './FlickeringOrb.js'
+export * from './FlickeringOrbs.js'

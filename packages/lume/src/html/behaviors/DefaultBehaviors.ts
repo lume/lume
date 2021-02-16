@@ -1,6 +1,6 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 
-import type {PossibleCustomElement} from '../PossibleCustomElement'
+import type {PossibleCustomElement} from '../PossibleCustomElement.js'
 
 function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO This is here for now. Make it an extension to

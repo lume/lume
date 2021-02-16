@@ -1,5 +1,5 @@
-import forLength from 'army-knife/forLength'
-import Node from '../core/Node'
+import forLength from 'army-knife/forLength.js'
+import Node from '../core/Node.js'
 
 /**
  * @extends Node

@@ -22,11 +22,11 @@
 import * as AutoLayout from 'autolayout'
 import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from '../core/Node'
-import Motor from '../core/Motor'
-import {sizeMode, size, position} from '../core'
+import Node from '../core/Node.js'
+import Motor from '../core/Motor.js'
+import {sizeMode, size, position} from '../core/index.js'
 
-import type {XYZPartialValuesArray} from '../core/XYZValues'
+import type {XYZPartialValuesArray} from '../core/XYZValues.js'
 
 export {AutoLayout}
 

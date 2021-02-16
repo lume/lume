@@ -1,1 +1,1 @@
-export * from './clamp'
+export * from './clamp.js'

@@ -1,4 +1,4 @@
-import Mesh from './Mesh'
+import Mesh from './Mesh.js'
 
 /** See DOMNodeGeometryBehavior and DOMNodeMaterialBehavior for available properties. */
 export default class DOMNode extends Mesh {

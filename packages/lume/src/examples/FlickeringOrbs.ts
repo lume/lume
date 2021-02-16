@@ -1,7 +1,7 @@
 import {element, numberAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html'
-import {autoDefineElements} from '../LumeConfig'
-import {Node} from '../core/Node'
+import {html} from '@lume/element/dist/html.js'
+import {autoDefineElements} from '../LumeConfig.js'
+import {Node} from '../core/Node.js'
 
 @element('flickering-orbs', autoDefineElements)
 export class FlickeringOrbs extends Node {

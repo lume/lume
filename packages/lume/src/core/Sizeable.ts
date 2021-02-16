@@ -1,16 +1,16 @@
 import {Mixin, Constructor} from 'lowclass'
 import {Eventful, emits} from '@lume/eventful'
 import {reactive, attribute, untrack, element} from '@lume/element'
-import TreeNode from './TreeNode'
-import XYZSizeModeValues from './XYZSizeModeValues'
-import XYZNonNegativeValues from './XYZNonNegativeValues'
-import Motor from './Motor'
+import TreeNode from './TreeNode.js'
+import XYZSizeModeValues from './XYZSizeModeValues.js'
+import XYZNonNegativeValues from './XYZNonNegativeValues.js'
+import Motor from './Motor.js'
 
 import type {MixinResult} from 'lowclass'
 import type {StopFunction} from '@lume/element'
-import type {XYZValuesObject, XYZValuesArray, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues'
-import type {SizeModeValue} from './XYZSizeModeValues'
-import type {RenderTask} from './Motor'
+import type {XYZValuesObject, XYZValuesArray, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
+import type {SizeModeValue} from './XYZSizeModeValues.js'
+import type {RenderTask} from './Motor.js'
 
 // Property functions are used for animating properties of type XYZNumberValues or XYZNonNegativeValues
 type XYZPropertyFunction = (

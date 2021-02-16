@@ -1,4 +1,4 @@
-import XYZNumberValues from './XYZNumberValues'
+import XYZNumberValues from './XYZNumberValues.js'
 
 export default class XYZNonNegativeValues extends XYZNumberValues {
 	checkValue(prop: string, value: number) {

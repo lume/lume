@@ -1,13 +1,13 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun, StopFunction} from '@lume/element'
-import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three'
-import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader'
-import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader'
-import {Events} from '../../core/Events'
-import {RenderableBehavior} from './RenderableBehavior'
+import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../utils/three.js'
+import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
+import {Events} from '../../core/Events.js'
+import {RenderableBehavior} from './RenderableBehavior.js'
 
-import type {Object3D} from 'three/src/core/Object3D'
-import type BaseMaterialBehavior from './BaseMaterialBehavior'
+import type {Object3D} from 'three/src/core/Object3D.js'
+import type BaseMaterialBehavior from './BaseMaterialBehavior.js'
 
 // TODO move this somewhere better.
 declare global {

@@ -1,4 +1,4 @@
-import XYZStringValues from './XYZStringValues'
+import XYZStringValues from './XYZStringValues.js'
 
 export type SizeModeValue = 'literal' | 'proportional'
 

@@ -1,7 +1,7 @@
-import {PointLight as ThreePointLight} from 'three/src/lights/PointLight'
+import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import LightBase from './LightBase'
+import LightBase from './LightBase.js'
 
 @element
 export default class PointLight extends LightBase {

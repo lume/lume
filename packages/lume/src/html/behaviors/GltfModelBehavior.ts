@@ -1,14 +1,14 @@
 import 'element-behaviors'
 import {reactive, attribute, autorun} from '@lume/element'
-import {Scene} from 'three/src/scenes/Scene'
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader'
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
-import {disposeObjectTree} from '../../utils/three'
-import {Events} from '../../core/Events'
-import {RenderableBehavior} from './RenderableBehavior'
+import {Scene} from 'three/src/scenes/Scene.js'
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {disposeObjectTree} from '../../utils/three.js'
+import {Events} from '../../core/Events.js'
+import {RenderableBehavior} from './RenderableBehavior.js'
 
 import type {StopFunction} from '@lume/element'
-import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 @reactive
 export default class GltfModelBehavior extends RenderableBehavior {

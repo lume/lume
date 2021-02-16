@@ -1,11 +1,11 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
-import {TextureLoader} from 'three/src/loaders/TextureLoader'
+import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {reactive, attribute, autorun, StopFunction} from '@lume/element'
 
-import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
-import type BaseMeshBehavior from './BaseMeshBehavior'
-import type {MeshComponentType} from './BaseMeshBehavior'
-import type {Mesh} from '../../core'
+import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import type BaseMeshBehavior from './BaseMeshBehavior.js'
+import type {MeshComponentType} from './BaseMeshBehavior.js'
+import type {Mesh} from '../../core/Mesh.js'
 
 /**
  * Mixin class for adding textures to a mesh behavior

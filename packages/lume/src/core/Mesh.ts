@@ -1,22 +1,22 @@
-import {Mesh as ThreeMesh} from 'three/src/objects/Mesh'
+import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from './Node'
+import Node from './Node.js'
 
-import type {Material} from 'three/src/materials/Material'
+import type {Material} from 'three/src/materials/Material.js'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
 // choose names for better flexibility. See TODO NAMING below.
-import '../html/behaviors/BasicMaterialBehavior'
-import '../html/behaviors/PhongMaterialBehavior'
-import '../html/behaviors/ShaderMaterialBehavior'
-import '../html/behaviors/DOMNodeMaterialBehavior'
-import '../html/behaviors/BoxGeometryBehavior'
-import '../html/behaviors/SphereGeometryBehavior'
-import '../html/behaviors/PlaneGeometryBehavior'
-import '../html/behaviors/DOMNodeGeometryBehavior'
-import '../html/behaviors/RoundedRectangleGeometryBehavior'
+import '../html/behaviors/BasicMaterialBehavior.js'
+import '../html/behaviors/PhongMaterialBehavior.js'
+import '../html/behaviors/ShaderMaterialBehavior.js'
+import '../html/behaviors/DOMNodeMaterialBehavior.js'
+import '../html/behaviors/BoxGeometryBehavior.js'
+import '../html/behaviors/SphereGeometryBehavior.js'
+import '../html/behaviors/PlaneGeometryBehavior.js'
+import '../html/behaviors/DOMNodeGeometryBehavior.js'
+import '../html/behaviors/RoundedRectangleGeometryBehavior.js'
 
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on top

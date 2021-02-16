@@ -1,6 +1,6 @@
 import 'element-behaviors'
-import {SphereGeometry} from 'three/src/geometries/SphereGeometry'
-import BaseGeometryBehavior from './BaseGeometryBehavior'
+import {SphereGeometry} from 'three/src/geometries/SphereGeometry.js'
+import BaseGeometryBehavior from './BaseGeometryBehavior.js'
 
 export default class SphereGeometryBehavior extends BaseGeometryBehavior {
 	protected _createComponent() {

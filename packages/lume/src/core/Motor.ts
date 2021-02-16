@@ -1,7 +1,7 @@
 // TODO import and use animation-loop
 
-import type {ImperativeBase} from './ImperativeBase'
-import type {Scene} from './Scene'
+import type {ImperativeBase} from './ImperativeBase.js'
+import type {Scene} from './Scene.js'
 
 export type RenderTask = (timestamp: number) => false | void
 

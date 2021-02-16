@@ -1,10 +1,10 @@
 import {element, numberAttribute, untrack, autorun} from '@lume/element'
-import {html} from '@lume/element/dist/html'
-import {autoDefineElements} from '../LumeConfig'
-import {Node} from '../core'
-import {flingRotation, ScrollFling} from '../interaction'
+import {html} from '@lume/element/dist/html.js'
+import {autoDefineElements} from '../LumeConfig.js'
+import {Node} from '../core/index.js'
+import {flingRotation, ScrollFling} from '../interaction/index.js'
 
-import type {PerspectiveCamera} from '../core'
+import type {PerspectiveCamera} from '../core/index.js'
 
 @element('lume-camera-rig', autoDefineElements)
 export class CameraRig extends Node {

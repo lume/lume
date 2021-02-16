@@ -1,5 +1,5 @@
-import {html as _html} from '@lume/element/dist/html'
-import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
+import {html as _html} from '@lume/element/dist/html.js'
+import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase.js'
 
 // TODO This type cast not needed on the next lit-dom-expressions release after v0.19.10.
 const html = _html as any
@@ -66,10 +66,12 @@ export default class HTMLScene extends DeclarativeBase {
 	template = () => html`
 		<div class="lume-scene-inner">
 			<div ref=${(el: any) => (this._cssLayer = el)} class="lume-scene-CSS3DLayer">
-				${/* WebGLRendererThree places the CSS3DRendererNested domElement
+				${
+					/* WebGLRendererThree places the CSS3DRendererNested domElement
 				here, which contains a <slot> element that child elements of
 				a Scene are distributed into (rendered relative to).
-				*/ ''}
+				*/ ''
+				}
 			</div>
 			<div ref=${(el: any) => (this._glLayer = el)} class="lume-scene-WebGLLayer">
 				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}

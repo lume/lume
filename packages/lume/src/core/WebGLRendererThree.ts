@@ -1,13 +1,12 @@
-import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
-import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants'
-import {PMREMGenerator} from 'three/src/extras/PMREMGenerator'
-
-// TODO update to WebXR
-// import WEBVR from '../lib/three/WebVR'
-
-import type {Scene} from './Scene'
-import type {Texture} from 'three/src/textures/Texture'
+import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
+import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
+import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three'
+// TODO update to WebXR
+// import WEBVR from '../lib/three/WebVR.js'
+
+import type {Scene} from './Scene.js'
+import type {Texture} from 'three/src/textures/Texture.js'
 
 interface SceneState {
 	renderer: WebGLRenderer

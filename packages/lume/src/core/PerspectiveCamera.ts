@@ -1,9 +1,9 @@
-import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera'
+import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {numberAttribute, booleanAttribute, autorun, untrack, attribute, element} from '@lume/element'
-import Node from './Node'
-import {defer} from './Utility'
+import Node from './Node.js'
+import {defer} from './Utility.js'
 
-import type {Scene} from './Scene'
+import type {Scene} from './Scene.js'
 
 @element
 export default class PerspectiveCamera extends Node {

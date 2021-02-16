@@ -1,10 +1,10 @@
-import {BoxGeometry} from 'three/src/geometries/BoxGeometry'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial'
-import {RenderableBehavior} from './RenderableBehavior'
-import Mesh from '../../core/Mesh'
+import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
+import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import {RenderableBehavior} from './RenderableBehavior.js'
+import Mesh from '../../core/Mesh.js'
 
-import type {Material} from 'three/src/materials/Material'
-import type {Geometry} from 'three/src/core/Geometry'
+import type {Material} from 'three/src/materials/Material.js'
+import type {Geometry} from 'three/src/core/Geometry.js'
 
 export type MeshComponentType = 'geometry' | 'material'
 

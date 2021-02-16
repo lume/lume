@@ -1,6 +1,6 @@
 // TODO update to WebXR. See for example: https://github.com/mrdoob/three.js/blob/master/examples/webxr_vr_dragging.html and the VRButton file that sets up the device session.
 
-// import type {WebGLRenderer} from 'three/src/renderers/WebGLRenderer'
+// import type {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 
 // /**
 //  * @author mrdoob / http://mrdoob.com
