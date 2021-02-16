@@ -1,4 +1,8 @@
-import Mesh from './Mesh.js'
+import Mesh, {MeshAttributes} from './Mesh.js'
+
+import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../html/index.js'
+
+export type PlaneAttributes = MeshAttributes
 
 export default class Plane extends Mesh {
 	static defaultElementName = 'lume-plane'
@@ -14,3 +18,23 @@ export default class Plane extends Mesh {
 }
 
 export {Plane}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-plane': ElementAttributes<
+				Plane,
+				PlaneAttributes,
+				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+			>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-plane': Plane
+	}
+}

@@ -22,7 +22,7 @@
 import * as AutoLayout from 'autolayout'
 import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from '../core/Node.js'
+import Node, {NodeAttributes} from '../core/Node.js'
 import Motor from '../core/Motor.js'
 import {sizeMode, size, position} from '../core/index.js'
 
@@ -39,6 +39,8 @@ type Viewport = {
 	'max-height': any
 	'aspect-ratio': number
 }
+
+export type AutoLayoutNodeAttributes = NodeAttributes | 'visualFormat'
 
 /**
  * A Node that lays children out based on an Apple AutoLayout VFL layout
@@ -380,3 +382,19 @@ export default class AutoLayoutNode extends Node {
 }
 
 export {AutoLayoutNode}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-autolayout-node': ElementAttributes<AutoLayoutNode, AutoLayoutNodeAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-autolayout-node': AutoLayoutNode
+	}
+}

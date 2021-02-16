@@ -5,6 +5,9 @@ import {emits} from '@lume/eventful'
 import Node from './Node.js'
 
 import type {TColor} from '../utils/three.js'
+import type {NodeAttributes} from './Node.js'
+
+export type LightAttributes = NodeAttributes | 'color' | 'intensity'
 
 /**
  * @abstract

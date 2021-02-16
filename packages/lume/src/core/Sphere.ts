@@ -1,4 +1,8 @@
-import Mesh from './Mesh.js'
+import Mesh, {MeshAttributes} from './Mesh.js'
+
+import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../html/index.js'
+
+export type SphereAttributes = MeshAttributes
 
 export default class Sphere extends Mesh {
 	static defaultElementName = 'lume-sphere'
@@ -14,3 +18,23 @@ export default class Sphere extends Mesh {
 }
 
 export {Sphere}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-sphere': ElementAttributes<
+				Sphere,
+				SphereAttributes,
+				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+			>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-sphere': Sphere
+	}
+}

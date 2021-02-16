@@ -1,4 +1,8 @@
-import Node from './Node.js'
+import Node, {NodeAttributes} from './Node.js'
+
+import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../html/index.js'
+
+export type GltfModelAttributes = NodeAttributes
 
 /**
  * @element lume-gltf-model
@@ -29,3 +33,23 @@ export default class GltfModel extends Node {
 }
 
 export {GltfModel}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-gltf-model': ElementAttributes<
+				GltfModel,
+				GltfModelAttributes,
+				ElementAttributes<GltfModelBehavior, GltfModelBehaviorAttributes>
+			>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-gltf-model': GltfModel
+	}
+}

@@ -5,6 +5,17 @@ import XYZNumberValues from './XYZNumberValues.js'
 import {Sizeable} from './Sizeable.js'
 
 import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
+import type {SizeableAttributes} from './Sizeable.js'
+
+export type TransformableAttributes =
+	| SizeableAttributes
+	| 'position'
+	| 'rotation'
+	| 'scale'
+	| 'origin'
+	| 'align'
+	| 'mountPoint'
+	| 'opacity'
 
 function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	const _Base = Constructor<HTMLElement>(Base)
@@ -152,6 +163,7 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 * @param {number} opacity A floating point number clamped between 0 and
 		 * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
 		 */
+		// TODO opacity doesn't belong in Transformable
 		@attribute
 		@emits('propertychange')
 		set opacity(newValue) {

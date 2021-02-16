@@ -22,6 +22,7 @@ import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 import type {XYZValuesObject} from './XYZValues.js'
 import type Sizeable from './Sizeable.js'
+import type {SizeableAttributes} from './Sizeable.js'
 import type TreeNode from './TreeNode.js'
 
 initImperativeBase()
@@ -82,6 +83,19 @@ const _Scene = Mixin(SceneMixin)
 export const Scene = _Scene.mixin(HTMLInterface)
 export interface Scene extends InstanceType<typeof Scene> {}
 export default Scene
+
+export type SceneAttributes =
+	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
+	| SizeableAttributes
+	| 'shadowmapType'
+	| 'vr'
+	| 'webgl'
+	| 'enableCss'
+	| 'backgroundColor'
+	| 'backgroundOpacity'
+	| 'background'
+	| 'equirectangularBackground'
+	| 'environment'
 
 function SceneMixin<T extends Constructor>(Base: T) {
 	// NOTE For now, we assume Scene is mixed with its HTMLInterface.
@@ -743,4 +757,20 @@ function isImperativeBase(_n: TreeNode): _n is ImperativeBase {
 	// to always have an ImperativeNode where we use this.
 	// return n instanceof ImperativeBase
 	return true
+}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-scene': ElementAttributes<Scene, SceneAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-scene': Scene
+	}
 }

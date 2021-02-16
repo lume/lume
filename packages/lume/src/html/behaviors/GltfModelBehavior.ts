@@ -10,10 +10,15 @@ import {RenderableBehavior} from './RenderableBehavior.js'
 import type {StopFunction} from '@lume/element'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder'
+
 @reactive
 export default class GltfModelBehavior extends RenderableBehavior {
+	/** Path to a .gltf or .glb file. */
 	@attribute src = ''
-	@attribute dracoDecoderPath = ''
+	/** Path to the draco decoder for the GLTF src file. */
+	@attribute dracoDecoder = ''
+
 	dracoLoader?: DRACOLoader
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null
@@ -36,14 +41,14 @@ export default class GltfModelBehavior extends RenderableBehavior {
 		this.__stopFns.push(
 			autorun(() => {
 				this.src
-				if (this.dracoDecoderPath) {
+				if (this.dracoDecoder) {
 					if (!firstRun) this.dracoLoader?.dispose()
-					this.dracoLoader!.setDecoderPath(this.dracoDecoderPath)
+					this.dracoLoader!.setDecoderPath(this.dracoDecoder)
 				}
 			}),
 			autorun(() => {
 				this.src
-				this.dracoDecoderPath
+				this.dracoDecoder
 
 				if (!firstRun) this.__cleanupModel()
 
@@ -79,12 +84,12 @@ export default class GltfModelBehavior extends RenderableBehavior {
 	}
 
 	private __loadObj() {
-		const {src, dracoDecoderPath, __version} = this
+		const {src, dracoDecoder, __version} = this
 
 		if (!src) return
 
 		// In the followinggltfLoader.load() callbacks, if __version doesn't
-		// match, it means this.src or this.dracoDecoderPath changed while
+		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
@@ -92,15 +97,15 @@ export default class GltfModelBehavior extends RenderableBehavior {
 			src,
 			model => __version == this.__version && this.__setModel(model),
 			progress => __version == this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version == this.__version && this.__onError(src, dracoDecoderPath, error),
+			error => __version == this.__version && this.__onError(src, dracoDecoder, error),
 		)
 	}
 
-	private __onError(src: string, dracoDecoderPath: string, error: ErrorEvent) {
+	private __onError(src: string, dracoDecoder: string, error: ErrorEvent) {
 		const message =
-			error?.message ?? `Failed to load <gltf-model> with src "${src}" and dracoDecoderPath "${dracoDecoderPath}"`
+			error?.message ?? `Failed to load <gltf-model> with src "${src}" and dracoDecoder "${dracoDecoder}"`
 		console.warn(message)
-		this.element.emit(Events.GLTF_ERROR, {src, dracoDecoderPath})
+		this.element.emit(Events.GLTF_ERROR, {src, dracoDecoder})
 	}
 
 	private __setModel(model: GLTF) {

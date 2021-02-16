@@ -1,11 +1,13 @@
 import {element, numberAttribute, stringAttribute} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Node} from '../core/Node.js'
+import {Node, NodeAttributes} from '../core/Node.js'
 import {Motor} from '../core/Motor.js'
 
 import type {PointLight} from '../core/PointLight.js'
 import type {Sphere} from '../core/Sphere.js'
+
+export type FlickeringOrbAttributes = NodeAttributes | 'color' | 'intensity' | 'shadowBias'
 
 @element('flickering-orb', autoDefineElements)
 export class FlickeringOrb extends Node {
@@ -53,5 +55,21 @@ export class FlickeringOrb extends Node {
 		}
 
 		Motor.once(flickerFunction)
+	}
+}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'flickering-orb': ElementAttributes<FlickeringOrb, FlickeringOrbAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'flickering-orb': FlickeringOrb
 	}
 }

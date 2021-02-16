@@ -1,4 +1,8 @@
-import Node from './Node.js'
+import Node, {NodeAttributes} from './Node.js'
+
+import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../html/index.js'
+
+export type ObjModelAttributes = NodeAttributes
 
 /**
  * @element lume-obj-model
@@ -29,3 +33,23 @@ export default class ObjModel extends Node {
 }
 
 export {ObjModel}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-obj-model': ElementAttributes<
+				ObjModel,
+				ObjModelAttributes,
+				ElementAttributes<ObjModelBehavior, ObjModelBehaviorAttributes>
+			>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-obj-model': ObjModel
+	}
+}

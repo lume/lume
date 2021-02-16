@@ -1,7 +1,9 @@
 import {element, numberAttribute} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Node} from '../core/Node.js'
+import {Node, NodeAttributes} from '../core/Node.js'
+
+export type FlickeringOrbsAttributes = NodeAttributes | 'shadowBias'
 
 @element('flickering-orbs', autoDefineElements)
 export class FlickeringOrbs extends Node {
@@ -17,4 +19,20 @@ export class FlickeringOrbs extends Node {
 			<flickering-orb color="white" position="0 250 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
 		</>
 	`
+}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'flickering-orbs': ElementAttributes<FlickeringOrbs, FlickeringOrbsAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'flickering-orbs': FlickeringOrbs
+	}
 }

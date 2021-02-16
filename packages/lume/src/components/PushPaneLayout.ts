@@ -1,5 +1,7 @@
 import Node from '../core/Node.js'
 
+// !! WIP under construction
+
 export default class PushPaneLayout extends Node {
 	static defaultElementName = 'lume-push-pane-layout'
 

@@ -3,6 +3,20 @@ import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element
 import {emits} from '@lume/eventful'
 import LightBase from './LightBase.js'
 
+import type {LightAttributes} from './LightBase.js'
+
+export type PointLightAttributes =
+	| LightAttributes
+	| 'distance'
+	| 'decay'
+	| 'castShadow'
+	| 'shadowMapWidth'
+	| 'shadowMapHeight'
+	| 'shadowRadius'
+	| 'shadowBias'
+	| 'shadowCameraNear'
+	| 'shadowCameraFar'
+
 @element
 export default class PointLight extends LightBase {
 	static defaultElementName = 'lume-point-light'
@@ -53,3 +67,19 @@ export default class PointLight extends LightBase {
 }
 
 export {PointLight}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-point-light': ElementAttributes<PointLight, PointLightAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-point-light': PointLight
+	}
+}

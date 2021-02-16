@@ -67,6 +67,8 @@ const alignAdjustment = [0, 0, 0]
 const mountPointAdjustment = [0, 0, 0]
 const appliedPosition = [0, 0, 0]
 
+export type BaseAttributes = TransformableAttributes
+
 /**
  * @abstract
  * @class ImperativeBase - This is an abstract base class that makes up the

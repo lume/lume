@@ -4,6 +4,7 @@ import {emits} from '@lume/eventful'
 import Node from './Node.js'
 
 import type {Material} from 'three/src/materials/Material.js'
+import type {NodeAttributes} from './Node.js'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
@@ -19,8 +20,12 @@ import '../html/behaviors/DOMNodeGeometryBehavior.js'
 import '../html/behaviors/RoundedRectangleGeometryBehavior.js'
 
 // TODO:
-// - [ ] API for registering new behaviors as they pertain to our API, built on top
-//   of element-behaviors.
+// - [ ] API for registering new behaviors as they pertain to our API, built on
+//   top of element-behaviors. Or maybe, we just allow people to use
+//   elementBehaviors directly, and thus we're done (just make sure they know
+//   what classes to use).
+
+export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
 
 @element
 export default class Mesh extends Node {
@@ -66,3 +71,19 @@ export default class Mesh extends Node {
 }
 
 export {Mesh}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-mesh': ElementAttributes<Mesh, MeshAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-mesh': Mesh
+	}
+}

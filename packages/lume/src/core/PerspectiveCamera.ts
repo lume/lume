@@ -1,9 +1,12 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {numberAttribute, booleanAttribute, autorun, untrack, attribute, element} from '@lume/element'
-import Node from './Node.js'
+import Node, {NodeAttributes} from './Node.js'
 import {defer} from './Utility.js'
 
 import type {Scene} from './Scene.js'
+
+export type PerspectiveCameraAttributes = NodeAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active'
+// | 'lookAt' // TODO
 
 @element
 export default class PerspectiveCamera extends Node {
@@ -18,7 +21,7 @@ export default class PerspectiveCamera extends Node {
 	@booleanAttribute(false) active = false
 
 	// TODO lookat property
-	@attribute lookat: string | Node | null = null
+	// @attribute lookat: string | Node | null = null
 
 	// declare three: ThreePerspectiveCamera
 
@@ -134,3 +137,19 @@ export default class PerspectiveCamera extends Node {
 }
 
 export {PerspectiveCamera}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-perspective-camera': ElementAttributes<PerspectiveCamera, PerspectiveCameraAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-perspective-camera': PerspectiveCamera
+	}
+}

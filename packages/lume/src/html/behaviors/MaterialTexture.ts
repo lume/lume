@@ -1,11 +1,13 @@
 import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
-import {reactive, attribute, autorun, StopFunction} from '@lume/element'
+import {reactive, autorun, StopFunction, stringAttribute} from '@lume/element'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import type BaseMeshBehavior from './BaseMeshBehavior.js'
 import type {MeshComponentType} from './BaseMeshBehavior.js'
 import type {Mesh} from '../../core/Mesh.js'
+
+export type MaterialTextureAttributes = 'texture' | 'bumpMap' | 'specularMap'
 
 /**
  * Mixin class for adding textures to a mesh behavior
@@ -18,9 +20,9 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		type: MeshComponentType = 'material'
 		element!: Mesh
 
-		@attribute texture = ''
-		@attribute bumpMap = ''
-		@attribute specularMap = ''
+		@stringAttribute('') texture = ''
+		@stringAttribute('') bumpMap = ''
+		@stringAttribute('') specularMap = ''
 
 		protected static _observedProperties = [
 			'texture',

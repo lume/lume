@@ -1,6 +1,8 @@
 import forLength from 'army-knife/forLength.js'
 import Node from '../core/Node.js'
 
+// !! WIP under construction
+
 /**
  * @extends Node
  * @class Cube - A scenegraph tree that lays things out in a cube form.@

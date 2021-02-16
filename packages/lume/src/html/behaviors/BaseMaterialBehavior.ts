@@ -1,9 +1,11 @@
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
-import {reactive, attribute, autorun, numberAttribute, booleanAttribute, StopFunction} from '@lume/element'
+import {reactive, autorun, numberAttribute, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
 import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior.js'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+
+export type BaseMaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidedness' | 'color'
 
 /** @class BaseMaterialBehavior - Base class for material behaviors. */
 @reactive
@@ -32,11 +34,9 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	 * invisible. Use "both" if you want the polygons to always be visible no
 	 * matter which side faces the camera.
 	 */
-	@attribute sidedness: 'front' | 'back' | 'double' = 'front'
+	@stringAttribute('front') sidedness: 'front' | 'back' | 'double' = 'front'
 
-	private __color = new Color('deeppink')
-
-	@attribute
+	@stringAttribute('deeppink')
 	get color(): string | number | Color {
 		return this.__color
 	}
@@ -46,6 +46,8 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		else if (typeof val === 'number') this.__color.set(val)
 		else this.__color = val
 	}
+
+	private __color = new Color('deeppink')
 
 	get transparent(): boolean {
 		if (this.opacity < 1) return true

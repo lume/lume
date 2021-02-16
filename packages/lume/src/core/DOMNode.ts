@@ -1,20 +1,16 @@
-import Mesh from './Mesh.js'
+import DOMPlane from './DOMPlane.js'
 
-/** See DOMNodeGeometryBehavior and DOMNodeMaterialBehavior for available properties. */
-export default class DOMNode extends Mesh {
+// This class is an alias for DOMPlane/lume-dom-plane
+
+/**
+ * @deprecated Use DOMPlane (<lume-dom-plane>) instead.
+ */
+export default class DOMNode extends DOMPlane {
 	static defaultElementName = 'lume-dom-node'
 
-	static defaultBehaviors = {
-		'domnode-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'domnode-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
-
-	get isDOMNode() {
-		return true
+	constructor() {
+		super()
+		console.warn('<lume-dom-node is deprecated. Use <lume-dom-plane> instead.')
 	}
 }
 

@@ -8,6 +8,8 @@ import {default as HTMLInterface} from '../html/HTMLNode.js'
 import '../html/behaviors/ObjModelBehavior.js'
 import '../html/behaviors/GltfModelBehavior.js'
 
+import type {BaseAttributes} from './ImperativeBase.js'
+
 initImperativeBase()
 
 const _Node = Mixin(NodeMixin)
@@ -224,6 +226,8 @@ export const Node = _Node.mixin(HTMLInterface)
 export interface Node extends InstanceType<typeof Node> {}
 export default Node
 
+export type NodeAttributes = BaseAttributes | 'visible'
+
 function NodeMixin<T extends Constructor>(Base: T) {
 	// NOTE for now, we assume Node is mixed with its HTMLInterface.
 	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
@@ -322,4 +326,20 @@ function NodeMixin<T extends Constructor>(Base: T) {
 	}
 
 	return Node as MixinResult<typeof Node, T>
+}
+
+import type {ElementAttributes} from '@lume/element'
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-node': ElementAttributes<Node, NodeAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-node': Node
+	}
 }
