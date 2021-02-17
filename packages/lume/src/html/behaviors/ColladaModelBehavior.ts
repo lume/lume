@@ -35,7 +35,6 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		this.__stopFns.push(
 			autorun(() => {
 				this.src
-				console.log(this.src)
 
 				this.__cleanupModel()
 
@@ -71,8 +70,6 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 	private __loadObj() {
 		const {src, __version} = this
-
-		console.log('load model!!!!', src)
 
 		if (!src) return
 
