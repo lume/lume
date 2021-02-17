@@ -30,30 +30,6 @@ export type GltfModelAttributes = NodeAttributes
 export default class GltfModel extends Node {
 	static defaultElementName = 'lume-gltf-model'
 	static defaultBehaviors = ['gltf-model']
-
-	// FIXME, without the following accessors, the src and dracoDecoder
-	// properties of the GltfModelBehavior may not be initially triggered when
-	// using JSX as in <lume-gltf-model src={"path/to/file.gltf"}>. Why?
-	// These accessors should not be required, because the behaviors already
-	// set up the observation mechanism on their host elements.
-
-	get src() {
-		return this.__src
-	}
-	set src(v) {
-		this.__src = v
-	}
-
-	private __src: string = ''
-
-	get dracoDecoder() {
-		return this.__dracoDecoder
-	}
-	set dracoDecoder(v) {
-		this.__dracoDecoder = v
-	}
-
-	private __dracoDecoder: string = ''
 }
 
 export {GltfModel}

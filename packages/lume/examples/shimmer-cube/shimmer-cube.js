@@ -183,7 +183,7 @@ const ShimmerCube = Class('ShimmerCube').extends(NodeWithRenderer, ({Super, Publ
                         size-mode="proportional proportional proportional"
                         size="1 1 1"
                         origin="0.5 0.5 0"
-                        align="0 0 0.5"
+                        align-point="0 0 0.5"
                         rotation="${orientation}"
                     >
                     </shimmer-surface>

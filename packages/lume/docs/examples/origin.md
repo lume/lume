@@ -30,7 +30,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 <lume-scene webgl enable-css="false">
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
-      align="0.5 0.5 0.5"
+      align-point="0.5 0.5 0.5"
       position="-200 -200 400"
       intensity="0.5"
       shadow-map-width="1024"
@@ -78,13 +78,13 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
     const makeBox = (origin, i) => html\`
         ${/* Lays the boxes out in a two-row grid, four boxes per row. */''}
         <lume-box origin=\${origin}
-            align=\${[0.20 + i%4 * 0.20, i < 4 ? 0.4 : 0.6, 0]}
+            align-point=\${[0.20 + i%4 * 0.20, i < 4 ? 0.4 : 0.6, 0]}
             size="100 100 100"
             mount-point="0.5 0.5 0.5"
             color="skyblue"
             opacity="0.5"
         >
-            <lume-sphere align=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></lume-sphere>
+            <lume-sphere align-point=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></lume-sphere>
         </lume-box>
     \`
 

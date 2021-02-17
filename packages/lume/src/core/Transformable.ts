@@ -12,7 +12,7 @@ export type TransformableAttributes =
 	| 'rotation'
 	| 'scale'
 	| 'origin'
-	| 'align'
+	| 'alignPoint'
 	| 'mountPoint'
 	| 'opacity'
 
@@ -38,7 +38,10 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			this.getRotation().on('valuechanged', () => !this._isSettingProperty && (this.rotation = this.rotation))
 			this.getScale().on('valuechanged', () => !this._isSettingProperty && (this.scale = this.scale))
 			this.getOrigin().on('valuechanged', () => !this._isSettingProperty && (this.origin = this.origin))
-			this.getAlign().on('valuechanged', () => !this._isSettingProperty && (this.align = this.align))
+			this.getAlignPoint().on(
+				'valuechanged',
+				() => !this._isSettingProperty && (this.alignPoint = this.alignPoint),
+			)
 			this.getMountPoint().on(
 				'valuechanged',
 				() => !this._isSettingProperty && (this.mountPoint = this.mountPoint),
@@ -146,19 +149,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set align(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
-			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
-			this._setPropertyXYZ('align', newValue)
+		set alignPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+			if (!this.__alignPoint) this.__alignPoint = new XYZNumberValues(0, 0, 0)
+			this._setPropertyXYZ('alignPoint', newValue)
 		}
-		get align(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
-			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
-			return this.__align
+		get alignPoint(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
+			if (!this.__alignPoint) this.__alignPoint = new XYZNumberValues(0, 0, 0)
+			return this.__alignPoint
 		}
 
-		private declare __align?: XYZNumberValues
+		private declare __alignPoint?: XYZNumberValues
 
 		// prettier-ignore
-		getAlign(): XYZNumberValues { return this.align as XYZNumberValues }
+		getAlignPoint(): XYZNumberValues { return this.alignPoint as XYZNumberValues }
 
 		/**
 		 * Set the mount point of the Node.

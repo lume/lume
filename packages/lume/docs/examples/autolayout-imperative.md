@@ -84,7 +84,7 @@
     const layout = new AutoLayoutNode().set({
         size: [600, 400],
         position: "0 0 0",
-        align: " 0.5 0.5 0",
+        alignPoint: " 0.5 0.5 0",
         mountPoint: " 0.5 0.5 0",
         visualFormat: vfl2,
         style: "background: rgba(0,0,0,0.3)",

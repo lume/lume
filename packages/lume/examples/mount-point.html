@@ -47,34 +47,39 @@
 
 <lume-scene id="scene" perspective="800" webgl>
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
-	<lume-point-light align="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
+	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
 
-	<lume-node id="root" size="0 0 0" align="0.5 0.5 0.5" rotation="-10 30 0">
+	<lume-node id="root" size="0 0 0" align-point="0.5 0.5 0.5" rotation="-10 30 0">
 		<!-- prettier-ignore -->
 		<lume-node>
-			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
-			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150" color="springgreen"></lume-sphere>
+			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
+			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150" color="springgreen"></lume-sphere>
 		</lume-node>
 
 		<!-- axis helpers -->
 		<!-- prettier-ignore -->
 		<lume-node>
-			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
-			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
-			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-dom-plane>
-			<lume-dom-plane align="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-dom-plane>
+			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
+			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
+			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-dom-plane>
+			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-dom-plane>
 		</lume-node>
 
 		<!-- prettier-ignore -->
-		<lume-box class="cube" mount-point="0.5 0.5 0" align="0.5 0.5 0" size="100 100 100">
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 -100"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 0"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 100"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align="0 0 0.5" position="0 0 200"></lume-dom-plane>
+		<lume-box class="cube" mount-point="0.5 0.5 0" align-point="0.5 0.5 0" size="100 100 100">
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 -100"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 0"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 100"></lume-dom-plane>
+			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 200"></lume-dom-plane>
 		</lume-box>
 
-		<lume-box origin="0 0 0" align="0.5 0.5" mount-point="0.5 0.5 0" size="100 100 100" position="0 -100 0">
-			<lume-sphere align="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" color="springgreen"></lume-sphere>
+		<lume-box origin="0 0 0" align-point="0.5 0.5" mount-point="0.5 0.5 0" size="100 100 100" position="0 -100 0">
+			<lume-sphere
+				align-point="1 1 1"
+				size="10 10 10"
+				mount-point="0.5 0.5 0.5"
+				color="springgreen"
+			></lume-sphere>
 			<lume-dom-node class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-dom-node>
 		</lume-box>
 	</lume-node>

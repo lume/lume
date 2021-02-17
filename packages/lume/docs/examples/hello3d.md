@@ -5,7 +5,7 @@
   <lume-scene>
     <lume-node ref="node"
       size="100 100"
-      align="0.5 0.5 0.5"
+      align-point="0.5 0.5 0.5"
       mount-point="0.5 0.5 0.5"
     >
       Hello 3D
@@ -45,7 +45,7 @@
     id="node"
     size="100 100"
     rotation="0 -70 0"
-    align="0.5 0.5 0.5"
+    align-point="0.5 0.5 0.5"
     mount-point="0.5 0.5 0.5"
   >
     <h3 align="center">Hello 3D world!</h3>

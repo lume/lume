@@ -68,7 +68,7 @@
                 id="button-container"
                 position="0 0 20"
                 size="600 31 0"
-                align="0.5 0.5 0"
+                align-point="0.5 0.5 0"
                 mount-point="0.5 0.5 0"
             >
                 <lume-dom-plane
@@ -77,7 +77,7 @@
                     :key="n"
                     size-mode="literal proportional"
                     size="100 1 0"
-                    :align="\`\${n*0.25} 0 0\`"
+                    :align-point="\`\${n*0.25} 0 0\`"
                     :mount-point="\`\${n*0.25} 0 0\`"
                     color="#444"
                 >

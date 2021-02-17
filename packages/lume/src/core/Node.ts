@@ -89,67 +89,67 @@ const _Node = Mixin(NodeMixin)
  *   <lume-node
  *     id="container"
  *     size="78 78"
- *     align="0.5 0.5"
+ *     align-point="0.5 0.5"
  *     mount-point="0.5 0.5"
  *   >
- *     <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *     <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *       <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *     </lume-node>
- *     <lume-node class="rotator A" size="60 60" align="1 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *     <lume-node class="rotator A" size="60 60" align-point="1 1">
+ *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align="1 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *       <lume-node class="rotator" size="45 45" align-point="1 1">
+ *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align="1 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *         <lume-node class="rotator" size="28 28" align-point="1 1">
+ *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *           </lume-node>
  *         </lume-node>
  *       </lume-node>
  *     </lume-node>
  *     <lume-node class="rotator A" size="60 60" mount-point="1 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *       </lume-node>
  *       <lume-node class="rotator" size="45 45" mount-point="1 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *         </lume-node>
  *         <lume-node class="rotator" size="28 28" mount-point="1 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *           </lume-node>
  *         </lume-node>
  *       </lume-node>
  *     </lume-node>
- *     <lume-node class="rotator B" size="60 60" align="0 1" mount-point="1 0">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *     <lume-node class="rotator B" size="60 60" align-point="0 1" mount-point="1 0">
+ *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align="0 1" mount-point="1 0">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *       <lume-node class="rotator" size="45 45" align-point="0 1" mount-point="1 0">
+ *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align="0 1" mount-point="1 0">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *         <lume-node class="rotator" size="28 28" align-point="0 1" mount-point="1 0">
+ *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *           </lume-node>
  *         </lume-node>
  *       </lume-node>
  *     </lume-node>
- *     <lume-node class="B" size="60 60" align="1 0" mount-point="0 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *     <lume-node class="B" size="60 60" align-point="1 0" mount-point="0 1">
+ *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align="1 0" mount-point="0 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *       <lume-node class="rotator" size="45 45" align-point="1 0" mount-point="0 1">
+ *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align="1 0" mount-point="0 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align="0.5 0.5" mount-point="0.5 0.5">
+ *         <lume-node class="rotator" size="28 28" align-point="1 0" mount-point="0 1">
+ *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
  *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
  *           </lume-node>
  *         </lume-node>

@@ -42,7 +42,7 @@ Make a file named `index.html` containing the following:
 		The align and mount-point properties have values that center the
 		<lume-node> rectangle in the center of the view.
 	-->
-	<lume-node size-mode="proportional proportional" size="0.75 0.75" align="0.5 0.5" mount-point="0.5 0.5">
+	<lume-node size-mode="proportional proportional" size="0.75 0.75" align-point="0.5 0.5" mount-point="0.5 0.5">
 		<!-- Put some italicized text inside of it. -->
 		<i>Hello 3D</i>
 	</lume-node>
@@ -123,7 +123,7 @@ const node = new Node({
 	size: [0.75, 0.75],
 
 	// Position the node in the center of the view.
-	align: [0.5, 0.5],
+	alignPoint: [0.5, 0.5],
 	mountPoint: [0.5, 0.5],
 })
 
