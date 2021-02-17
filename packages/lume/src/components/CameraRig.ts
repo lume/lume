@@ -1,4 +1,4 @@
-import {element, numberAttribute, untrack, autorun} from '@lume/element'
+import {element, numberAttribute, untrack, autorun, booleanAttribute} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Node} from '../core/Node.js'
@@ -14,6 +14,10 @@ export type CameraRigAttributes =
 	| 'initialDistance'
 	| 'minDistance'
 	| 'maxDistance'
+	| 'active'
+	| 'dollySpeed'
+
+// TODO allow overriding the camera props, or when ShadowDOM is complete make the default camera overridable via <slot>
 
 @element('lume-camera-rig', autoDefineElements)
 export class CameraRig extends Node {
@@ -23,6 +27,8 @@ export class CameraRig extends Node {
 	@numberAttribute(1000) initialDistance = 1000
 	@numberAttribute(200) minDistance = 200
 	@numberAttribute(2000) maxDistance = 2000
+	@booleanAttribute(true) active = true
+	@numberAttribute(1) dollySpeed = 1
 
 	cam?: PerspectiveCamera
 
@@ -34,7 +40,7 @@ export class CameraRig extends Node {
 		>
 			<lume-perspective-camera
 				ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
-				active
+				active=${() => this.active}
 				position=${() => untrack(() => [0, 0, this.initialDistance])}
 				align-point="0.5 0.5 0.5"
 				far="10000"
@@ -60,6 +66,7 @@ export class CameraRig extends Node {
 			y: this.initialDistance,
 			minY: this.minDistance,
 			maxY: this.maxDistance,
+			scrollFactor: this.dollySpeed,
 		}).start()
 
 		autorun(() => {

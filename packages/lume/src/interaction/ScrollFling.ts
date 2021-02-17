@@ -4,7 +4,9 @@ import {clamp} from '../math/clamp.js'
 
 import type {RenderTask} from '../core/index.js'
 
-type ScrollFlingOptions = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY'>>
+type ScrollFlingOptions = Partial<
+	Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'scrollFactor'>
+>
 
 @reactive
 export class ScrollFling {
@@ -18,8 +20,7 @@ export class ScrollFling {
 
 	target: Document | ShadowRoot | Element = document
 
-	deltaX = 0
-	deltaY = 0
+	scrollFactor = 1
 
 	__task!: RenderTask
 
@@ -30,18 +31,15 @@ export class ScrollFling {
 	__onWheel = (event: WheelEvent) => {
 		event.preventDefault()
 
-		this.deltaX = event.deltaX
-		this.deltaY = event.deltaY
+		let dx = event.deltaX * this.scrollFactor
+		let dy = event.deltaY * this.scrollFactor
 
-		this.x = clamp(this.x + this.deltaX, this.minX, this.maxX)
-		this.y = clamp(this.y + this.deltaY, this.minY, this.maxY)
+		this.x = clamp(this.x + dx, this.minX, this.maxX)
+		this.y = clamp(this.y + dy, this.minY, this.maxY)
 
-		if (this.deltaX === 0 && this.deltaY === 0) return
+		if (dx === 0 && dy === 0) return
 
 		if (this.__task) Motor.removeRenderTask(this.__task)
-
-		let dx = this.deltaX
-		let dy = this.deltaY
 
 		// slow the rotation down based on former drag speed
 		this.__task = Motor.addRenderTask((): false | void => {
