@@ -192,7 +192,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			 * [`Sizeable.sizeMode`](TODO) property to make the default values for the X and
 			 * Y axes both "proportional".
 			 */
-			this.sizeMode.set('proportional', 'proportional', 'literal')
+			this.getSizeMode().set('proportional', 'proportional', 'literal')
 
 			/**
 			 * @override
@@ -201,7 +201,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			 * [`Sizeable.size`](TODO) property to make the default values for the
 			 * X and Y axes both `1`.
 			 */
-			this.size.set(1, 1, 0)
+			this.getSize().set(1, 1, 0)
 
 			// The scene should always render CSS properties (it needs to always
 			// be rendered or resized, for example, because it contains the
@@ -654,7 +654,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				// If we will be rendering something...
 				(this.enableCss || this.webgl) &&
 				// ...and if one size dimension is proportional...
-				(this.sizeMode.x == 'proportional' || this.sizeMode.y == 'proportional')
+				(this.getSizeMode().x == 'proportional' || this.getSizeMode().y == 'proportional')
 				// Note, we don't care about the Z dimension, because Scenes are flat surfaces.
 			) {
 				// ...then observe the parent element size (it may not be a LUME

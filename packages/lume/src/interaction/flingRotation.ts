@@ -1,5 +1,4 @@
 import {clamp} from '../math/clamp.js'
-import {rotation} from '../core/index.js'
 
 import type {Node} from '../core/Node.js'
 
@@ -34,20 +33,20 @@ export function flingRotation({
 }: FlingRotationOptions) {
 	interactionInitiator.addEventListener('pointerdown', () => {
 		// Stop rotation if any.
-		rotationYTarget.rotation = rotation(() => false)
+		rotationYTarget.rotation = () => false
 
 		let deltaX = 0
 		let deltaY = 0
 
 		const onMove = (event: PointerEvent) => {
 			deltaX = event.movementY * 0.2
-			rotationXTarget.rotation.x = clamp(
-				rotationXTarget.rotation.x + deltaX,
+			rotationXTarget.getRotation().x = clamp(
+				rotationXTarget.getRotation().x + deltaX,
 				minFlingRotationX,
 				maxFlingRotationX,
 			)
 			deltaY = -event.movementX * 0.2
-			rotationYTarget.rotation.y += deltaY
+			rotationYTarget.getRotation().y += deltaY
 		}
 
 		// @ts-ignore, whyyyy TypeScript
@@ -63,7 +62,7 @@ export function flingRotation({
 				if (deltaX === 0 && deltaY === 0) return
 
 				// slow the rotation down based on former drag speed
-				rotationXTarget.rotation = rotation((x, y, z) => {
+				rotationXTarget.rotation = (x, y, z) => {
 					deltaX = deltaX * 0.95
 
 					// stop rotation once the delta is small enough that we
@@ -71,9 +70,9 @@ export function flingRotation({
 					if (Math.abs(deltaX) < 0.01) return false
 
 					return [clamp(x + deltaX, minFlingRotationX, maxFlingRotationX), y, z]
-				})
+				}
 
-				rotationYTarget.rotation = rotation((x, y, z) => {
+				rotationYTarget.rotation = (x, y, z) => {
 					deltaY = deltaY * 0.95
 
 					// stop rotation once the delta is small enough that we
@@ -81,7 +80,7 @@ export function flingRotation({
 					if (Math.abs(deltaY) < 0.01) return false
 
 					return [x, y + deltaY, z]
-				})
+				}
 			},
 			{once: true},
 		)

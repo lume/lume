@@ -61,11 +61,11 @@ export default class Cube extends Node {
 		// rotate and place each side.
 		if (index < 4)
 			// 4 sides
-			rotator.rotation.y = 90 * index
+			rotator.getRotation().y = 90 * index
 		// top/bottom
-		else rotator.rotation.x = 90 * (index % 2 ? -1 : 1)
+		else rotator.getRotation().x = 90 * (index % 2 ? -1 : 1)
 
-		side.position.z = this.size.x / 2
+		side.getPosition().z = this.getSize().x / 2
 
 		this.add(rotator)
 	}

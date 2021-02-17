@@ -24,7 +24,6 @@ import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import Node, {NodeAttributes} from '../core/Node.js'
 import Motor from '../core/Motor.js'
-import {sizeMode, size, position} from '../core/index.js'
 
 import type {XYZPartialValuesArray} from '../core/XYZValues.js'
 
@@ -284,7 +283,7 @@ export default class AutoLayoutNode extends Node {
 		}
 		var x
 		var y
-		var size = this.size.toArray()
+		var size = this.getSize().toArray()
 		if (this._layoutOptions.spacing || this._metaInfo.spacing) {
 			this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing)
 		}
@@ -324,26 +323,26 @@ export default class AutoLayoutNode extends Node {
 		// they only perform type casting for use in TypeScript code. Without
 		// them there will be type errors.
 
-		node.sizeMode = sizeMode([
+		node.sizeMode = [
 			// PORTED
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			widths && widths[key] === true ? 'proportional' : 'literal',
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			heights && heights[key] === true ? 'proportional' : 'literal',
-		])
-		node.size = size([
+		]
+		node.size = [
 			// PORTED
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			widths && widths[key] === true ? 1 : subView.width,
 			// @ts-ignore: TODO, key is not defined from anywhere, but it was working???
 			heights && heights[key] === true ? 1 : subView.height,
-		])
-		node.position = position([
+		]
+		node.position = [
 			// PORTED
 			x + subView.left,
 			y + subView.top,
 			subView.zIndex * 5,
-		])
+		]
 	}
 
 	private _checkNodes() {

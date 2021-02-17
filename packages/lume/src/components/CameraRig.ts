@@ -66,7 +66,7 @@ export class CameraRig extends Node {
 			this.scrollFling!.y
 
 			untrack(() => {
-				this.cam!.position.z = this.scrollFling!.y
+				this.cam!.getPosition().z = this.scrollFling!.y
 			})
 		})
 	}

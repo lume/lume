@@ -2,9 +2,8 @@ import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {attribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import XYZNumberValues from './XYZNumberValues.js'
-import {Sizeable} from './Sizeable.js'
+import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
-import type {XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 
 export type TransformableAttributes =
@@ -28,12 +27,22 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			this.position.on('valuechanged', () => !this._isSettingProperty && (this.position = this.position))
-			this.rotation.on('valuechanged', () => !this._isSettingProperty && (this.rotation = this.rotation))
-			this.scale.on('valuechanged', () => !this._isSettingProperty && (this.scale = this.scale))
-			this.origin.on('valuechanged', () => !this._isSettingProperty && (this.origin = this.origin))
-			this.align.on('valuechanged', () => !this._isSettingProperty && (this.align = this.align))
-			this.mountPoint.on('valuechanged', () => !this._isSettingProperty && (this.mountPoint = this.mountPoint))
+			// TODO: Once TS lands the upcoming feature to have getters with
+			// different types than setters, we can fix the ugly type casting
+			// in the following constructor lines.
+			// Tracking issues: https://github.com/microsoft/TypeScript/issues/2521 and https://github.com/microsoft/TypeScript/pull/42425
+			// The get*() methods (f.e. getPosition()) are temporary for
+			// us TypeScript users until the above issues are fixed soon, at which
+			// point we can use the getters like a JavaScript user would.
+			this.getPosition().on('valuechanged', () => !this._isSettingProperty && (this.position = this.position))
+			this.getRotation().on('valuechanged', () => !this._isSettingProperty && (this.rotation = this.rotation))
+			this.getScale().on('valuechanged', () => !this._isSettingProperty && (this.scale = this.scale))
+			this.getOrigin().on('valuechanged', () => !this._isSettingProperty && (this.origin = this.origin))
+			this.getAlign().on('valuechanged', () => !this._isSettingProperty && (this.align = this.align))
+			this.getMountPoint().on(
+				'valuechanged',
+				() => !this._isSettingProperty && (this.mountPoint = this.mountPoint),
+			)
 		}
 
 		/**
@@ -46,16 +55,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set position(newValue) {
+		set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__position) this.__position = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('position', newValue)
 		}
-		get position() {
+		get position(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__position) this.__position = new XYZNumberValues(0, 0, 0)
 			return this.__position
 		}
 
 		private declare __position?: XYZNumberValues
+
+		// prettier-ignore
+		getPosition(): XYZNumberValues { return this.position as XYZNumberValues }
 
 		/**
 		 * @param {Object} newValue
@@ -65,16 +77,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set rotation(newValue) {
+		set rotation(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__rotation) this.__rotation = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('rotation', newValue)
 		}
-		get rotation() {
+		get rotation(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__rotation) this.__rotation = new XYZNumberValues(0, 0, 0)
 			return this.__rotation
 		}
 
 		private declare __rotation?: XYZNumberValues
+
+		// prettier-ignore
+		getRotation(): XYZNumberValues { return this.rotation as XYZNumberValues }
 
 		/**
 		 * @param {Object} newValue
@@ -84,16 +99,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set scale(newValue) {
+		set scale(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__scale) this.__scale = new XYZNumberValues(1, 1, 1)
 			this._setPropertyXYZ('scale', newValue)
 		}
-		get scale() {
+		get scale(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__scale) this.__scale = new XYZNumberValues(1, 1, 1)
 			return this.__scale
 		}
 
 		private declare __scale?: XYZNumberValues
+
+		// prettier-ignore
+		getScale(): XYZNumberValues { return this.scale as XYZNumberValues }
 
 		/**
 		 * @param {Object} newValue
@@ -103,16 +121,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set origin(newValue) {
+		set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__origin) this.__origin = new XYZNumberValues(0.5, 0.5, 0.5)
 			this._setPropertyXYZ('origin', newValue)
 		}
-		get origin() {
+		get origin(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__origin) this.__origin = new XYZNumberValues(0.5, 0.5, 0.5)
 			return this.__origin
 		}
 
 		private declare __origin?: XYZNumberValues
+
+		// prettier-ignore
+		getOrigin(): XYZNumberValues { return this.origin as XYZNumberValues }
 
 		/**
 		 * Set the alignment of the Node. This determines at which point in this
@@ -125,16 +146,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set align(newValue) {
+		set align(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('align', newValue)
 		}
-		get align() {
+		get align(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__align) this.__align = new XYZNumberValues(0, 0, 0)
 			return this.__align
 		}
 
 		private declare __align?: XYZNumberValues
+
+		// prettier-ignore
+		getAlign(): XYZNumberValues { return this.align as XYZNumberValues }
 
 		/**
 		 * Set the mount point of the Node.
@@ -146,16 +170,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set mountPoint(newValue) {
+		set mountPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 			if (!this.__mountPoint) this.__mountPoint = new XYZNumberValues(0, 0, 0)
 			this._setPropertyXYZ('mountPoint', newValue)
 		}
-		get mountPoint() {
+		get mountPoint(): XYZNumberValuesProperty | XYZNumberValuesPropertyFunction {
 			if (!this.__mountPoint) this.__mountPoint = new XYZNumberValues(0, 0, 0)
 			return this.__mountPoint
 		}
 
 		private declare __mountPoint?: XYZNumberValues
+
+		// prettier-ignore
+		getMountPoint(): XYZNumberValues { return this.mountPoint as XYZNumberValues }
 
 		/**
 		 * Set this Node's opacity.
@@ -166,16 +193,19 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		// TODO opacity doesn't belong in Transformable
 		@attribute
 		@emits('propertychange')
-		set opacity(newValue) {
+		set opacity(newValue: number | SinglePropertyFunction) {
 			if (this.__opacity == null) this.__opacity = 1
 			this._setPropertySingle('opacity', newValue)
 		}
-		get opacity() {
+		get opacity(): number | SinglePropertyFunction {
 			if (this.__opacity == null) this.__opacity = 1
 			return this.__opacity
 		}
 
 		private declare __opacity?: number
+
+		// prettier-ignore
+		getOpacity(): number { return this.opacity as number }
 	}
 
 	return Transformable as MixinResult<typeof Transformable, T>
@@ -184,48 +214,3 @@ function TransformableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 export const Transformable = Mixin(TransformableMixin)
 export interface Transformable extends InstanceType<typeof Transformable> {}
 export default Transformable
-
-// position
-// rotation
-// scale
-// origin
-// align
-// mountPoint
-
-export type NumberValues =
-	| XYZNumberValues
-	| XYZPartialValuesArray<number>
-	| XYZPartialValuesObject<number>
-	| string
-	| ((x: number, y: number, z: number, time: number) => NumberValues | false)
-
-export type Position = NumberValues
-export type Rotation = NumberValues
-export type Scale = NumberValues
-export type Origin = NumberValues
-export type Align = NumberValues
-export type MountPoint = NumberValues
-
-export function position(val: Position) {
-	return val as XYZNumberValues
-}
-
-export function rotation(val: Rotation) {
-	return val as XYZNumberValues
-}
-
-export function scale(val: Origin) {
-	return val as XYZNumberValues
-}
-
-export function origin(val: Origin) {
-	return val as XYZNumberValues
-}
-
-export function align(val: Align) {
-	return val as XYZNumberValues
-}
-
-export function mountPoint(val: MountPoint) {
-	return val as XYZNumberValues
-}

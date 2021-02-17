@@ -7,6 +7,7 @@ import {default as HTMLInterface} from '../html/HTMLNode.js'
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior.js'
 import '../html/behaviors/GltfModelBehavior.js'
+import '../html/behaviors/ColladaModelBehavior.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
 

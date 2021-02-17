@@ -8,19 +8,10 @@ import Motor from './Motor.js'
 
 import type {MixinResult} from 'lowclass'
 import type {StopFunction} from '@lume/element'
-import type {XYZValuesObject, XYZValuesArray, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
+import type {XYZValues, XYZValuesObject, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
 import type {SizeModeValue} from './XYZSizeModeValues.js'
 import type {RenderTask} from './Motor.js'
-
-// Property functions are used for animating properties of type XYZNumberValues or XYZNonNegativeValues
-type XYZPropertyFunction = (
-	x: number,
-	y: number,
-	z: number,
-	time: number,
-) => XYZValuesObject<number> | XYZValuesArray<number> | false
-
-type SinglePropertyFunction = (value: number, time: number) => number | false
+import type {XYZNumberValues} from './XYZNumberValues.js'
 
 // Cache variables to avoid making new variables in repeatedly-called methods.
 const previousSize: Partial<XYZValuesObject<number>> = {}
@@ -40,8 +31,12 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
-			this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
+			// TODO: Once TS lands the upcoming feature to have getters with
+			// different types than setters, we can fix the ugly type casting
+			// in the following constructor lines.
+			// Tracking issues: https://github.com/microsoft/TypeScript/issues/2521 and https://github.com/microsoft/TypeScript/pull/42425
+			this.getSizeMode().on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
+			this.getSize().on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
 		}
 
 		/**
@@ -58,17 +53,20 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set sizeMode(newValue) {
+		set sizeMode(newValue: XYZSizeModeValuesProperty) {
 			if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
 			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
 			this._setPropertyXYZ('sizeMode', newValue)
 		}
-		get sizeMode() {
+		get sizeMode(): XYZSizeModeValuesProperty {
 			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
 			return this.__sizeMode
 		}
 
 		private declare __sizeMode?: XYZSizeModeValues
+
+		// prettier-ignore
+		getSizeMode(): XYZSizeModeValues { return this.sizeMode as XYZSizeModeValues }
 
 		// TODO: A "differential" size would be cool. Good for padding,
 		// borders, etc. Inspired from Famous' differential sizing.
@@ -100,16 +98,19 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 */
 		@attribute
 		@emits('propertychange')
-		set size(newValue) {
+		set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
 			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
 			this._setPropertyXYZ('size', newValue)
 		}
-		get size() {
+		get size(): XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction {
 			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
 			return this.__size
 		}
 
 		private declare __size?: XYZNonNegativeValues
+
+		// prettier-ignore
+		getSize(): XYZNonNegativeValues { return this.size as XYZNonNegativeValues }
 
 		/**
 		 * Get the actual size of the Node. This can be useful when size is
@@ -194,7 +195,8 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
 			Object.assign(previousSize, calculatedSize)
 
-			const {sizeMode, size} = this
+			const size = this.getSize()
+			const sizeMode = this.getSizeMode()
 			const parentSize = this._getParentSize()
 
 			if (sizeMode.x == 'literal') {
@@ -282,7 +284,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		private __propertyFunctions: Map<string, RenderTask> | null = null
 		private __settingValueFromPropFunction = false
 
-		private __handleXYZPropertyFunction(fn: XYZPropertyFunction, name: keyof this) {
+		private __handleXYZPropertyFunction(fn: XYZNumberValuesPropertyFunction, name: keyof this) {
 			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
 
 			const propFunction = this.__propertyFunctions.get(name as string)
@@ -361,11 +363,15 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	return Sizeable as MixinResult<typeof Sizeable, T>
 }
 
+export const Sizeable = Mixin(SizeableMixin)
+export interface Sizeable extends InstanceType<typeof Sizeable> {}
+export default Sizeable
+
 // the following type guards are used above just to satisfy the type system,
 // though the actual runtime check does not guarantee that the functions are of
 // the expected shape.
 
-function isXYZPropertyFunction(f: any): f is XYZPropertyFunction {
+function isXYZPropertyFunction(f: any): f is XYZNumberValuesPropertyFunction {
 	return typeof f === 'function'
 }
 
@@ -373,21 +379,31 @@ function isSinglePropertyFunction(f: any): f is SinglePropertyFunction {
 	return typeof f === 'function'
 }
 
-export const Sizeable = Mixin(SizeableMixin)
-export interface Sizeable extends InstanceType<typeof Sizeable> {}
-export default Sizeable
-
-export type Size = XYZNonNegativeValues | XYZPartialValuesArray<number> | XYZPartialValuesObject<number> | string
-export type SizeMode =
-	| XYZSizeModeValues
-	| XYZPartialValuesArray<SizeModeValue>
-	| XYZPartialValuesObject<SizeModeValue>
+// This type represents the types of values that can be set via attributes or
+// properties (attributes pass strings to properties and properties all handle
+// string values for example, hence why it includes `| string`)
+export type XYZValuesProperty<XYZValuesType extends XYZValues, DataType> =
+	| XYZValuesType
+	| XYZPartialValuesArray<DataType>
+	| XYZPartialValuesObject<DataType>
 	| string
 
-export function size(val: Size) {
-	return val as XYZNonNegativeValues
-}
+export type XYZNumberValuesProperty = XYZValuesProperty<XYZNumberValues, number>
+export type XYZNonNegativeNumberValuesProperty = XYZValuesProperty<XYZNonNegativeValues, number>
+export type XYZSizeModeValuesProperty = XYZValuesProperty<XYZSizeModeValues, SizeModeValue>
 
-export function sizeMode(val: SizeMode) {
-	return val as XYZSizeModeValues
-}
+// Property functions are used for animating properties of type XYZNumberValues
+export type XYZValuesPropertyFunction<XYZValuesPropertyType, DataType> = (
+	x: DataType,
+	y: DataType,
+	z: DataType,
+	time: number,
+) => XYZValuesPropertyType | false
+
+export type XYZNumberValuesPropertyFunction = XYZValuesPropertyFunction<XYZNumberValuesProperty, number>
+export type XYZNonNegativeNumberValuesPropertyFunction = XYZValuesPropertyFunction<
+	XYZNonNegativeNumberValuesProperty,
+	number
+>
+
+export type SinglePropertyFunction = (value: number, time: number) => number | false
