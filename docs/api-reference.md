@@ -1,5 +1,0 @@
-
-API Reference
-=============
-
-Coming soon...

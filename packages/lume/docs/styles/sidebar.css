@@ -1,0 +1,120 @@
+/* The .app-name contains the logo image. */
+/* Make it take up full width of the sidebar. */
+.sidebar .app-name {
+	width: calc(100% + 2 * var(--sidebar-padding-left-size));
+	transform: translateX(calc(-1 * var(--sidebar-padding-left-size)));
+}
+
+.sidebar .app-name * {
+	display: block;
+}
+
+@media (min-width: 768px) {
+	/* Hide the button that makes the sidebar open/close.*/
+	.sidebar-toggle {
+		display: none;
+	}
+}
+
+.sidebar .search input[type='search'] {
+	margin: 0 0 0 var(--sidebar-padding-left-size);
+}
+
+.sidebar .search input[type='search']:active,
+.sidebar .search input[type='search']:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.sidebar-nav ul ul,
+.sidebar nav ul ul {
+	margin-left: 0;
+}
+.sidebar-nav ul ul ul,
+.sidebar nav ul ul ul {
+	margin-left: var(--sidebar-nav-indent);
+}
+
+.sidebar-nav ul.unindent,
+.sidebar nav ul.unindent {
+	margin-left: 0;
+}
+
+.sidebar-nav ul a,
+.sidebar nav ul a {
+	user-select: initial;
+}
+
+/**
+ * The big sidebar section titles
+ */
+.sidebar-nav ul > li > p,
+.sidebar nav ul > li > p {
+	margin-bottom: 2px;
+	user-select: none;
+	white-space: nowrap;
+}
+
+/**
+ * second-level menu items (collapsible items)
+ */
+.sidebar-nav > ul > li > ul > li > a,
+.sidebar nav > ul > li > ul > li > a {
+	font-size: 15px;
+	line-height: 1.3;
+	font-family: Gotham Medium;
+	font-style: normal;
+	font-weight: bold;
+	/* text-transform: capitalize; */
+}
+.sidebar-nav ul ul,
+.sidebar nav ul ul {
+	color: var(--sidebar-nav-strong-color);
+	/* color: #555555; */
+	font-family: Gotham Medium Italic;
+	user-select: none;
+}
+
+/**
+ * third-level menu items
+ */
+.sidebar-nav ul ul ul,
+.sidebar nav ul ul ul {
+	margin-bottom: 8px;
+}
+/* .sidebar-nav > ul > li > ul > li > ul > li > a,
+.sidebar nav > ul > li > ul > li > ul > li > a { */
+.sidebar-nav ul ul ul a,
+.sidebar nav ul ul ul a {
+	font-size: 15px;
+	line-height: 1.3;
+	font-family: Gotham Book;
+	font-style: normal;
+}
+.sidebar-nav ul ul ul a::before,
+.sidebar nav ul ul ul a::before {
+	content: none !important;
+}
+
+/* Augment docsify-themeable's ability to style all sidebar <strong> items. See https://github.com/jhildenbiddle/docsify-themeable/issues/46 */
+.sidebar-nav ul > li > p > strong,
+.sidebar nav ul > li > p > strong {
+	display: block;
+	margin: var(--sidebar-nav-strong-margin);
+	padding: var(--sidebar-nav-strong-padding);
+	border-width: var(--sidebar-nav-strong-border-width, 0);
+	border-style: solid;
+	border-color: var(--sidebar-nav-strong-border-color);
+	color: var(--sidebar-nav-strong-color);
+	/* color: #737373; */
+	font-size: var(--sidebar-nav-strong-font-size);
+	font-weight: var(--sidebar-nav-strong-font-weight);
+	text-transform: var(--sidebar-nav-strong-text-transform);
+
+	/* custom properties */
+	font-family: Gotham Medium;
+}
+
+.sidebar-nav > ul > li > ul > li > a.no-sublist {
+	background-image: none !important;
+}

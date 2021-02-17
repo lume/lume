@@ -1,0 +1,39 @@
+[submodule "packages/readem"]
+	path = packages/readem
+	url = https://github.com/lume/readem.git
+[submodule "packages/docsifyjs+docsify"]
+	path = packages/docsifyjs+docsify
+	url = https://github.com/trusktr/docsify.git
+[submodule "packages/cli"]
+	path = packages/cli
+	url = https://github.com/lume/cli.git
+[submodule "packages/element-behaviors"]
+	path = packages/element-behaviors
+	url = https://github.com/lume/element-behaviors.git
+[submodule "packages/live-code"]
+	path = packages/live-code
+	url = https://github.com/lume/live-code.git
+[submodule "packages/lowclass"]
+	path = packages/lowclass
+	url = https://github.com/trusktr/lowclass.git
+[submodule "packages/james-bond"]
+	path = packages/james-bond
+	url = https://github.com/trusktr/james-bond.git
+[submodule "apps/website"]
+	path = apps/website
+	url = https://github.com/lume/website.git
+[submodule "packages/element"]
+	path = packages/element
+	url = https://github.com/lume/element.git
+[submodule "packages/variable"]
+	path = packages/variable
+	url = https://github.com/lume/variable.git
+[submodule "packages/glas"]
+	path = packages/glas
+	url = https://github.com/lume/glas.git
+[submodule "packages/eventful"]
+	path = packages/eventful
+	url = https://github.com/lume/eventful.git
+[submodule "packages/basicss"]
+	path = packages/basicss
+	url = https://github.com/lume/basicss.git

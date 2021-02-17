@@ -1,0 +1,42 @@
+<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
+<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+
+<script src="../../dist/global.js"></script>
+<script src="../js/html-template-tag.js"></script>
+<script src="./shimmer-cube.js"></script>
+
+<script>
+	LUME.useDefaultNames()
+</script>
+
+<lume-scene webgl="false">
+	<lume-point-light position="0 0 600" id="p-light"></lume-point-light>
+	<lume-ambient-light intensity="0.7" id="a-light"></lume-ambient-light>
+
+	<shimmer-cube
+		size="200 200 200"
+		align="0.5 0.5"
+		mount-point="0.5 0.5"
+		color="rgb(244, 196, 48)"
+		id="shimmer-cube-1"
+	>
+		<!-- <lume-sphere size="20 20 20" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" color="rgb(244,150,48)" rotation="0 45 0" opacity="0.2" id="distributed-sphere"></lume-sphere> -->
+		<!-- <shimmer-cube size="20 20 20" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" id="shimmer-cube-2"></shimmer-cube> -->
+	</shimmer-cube>
+</lume-scene>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #364659;
+	}
+</style>
+
+<script>
+	const cube = document.querySelector('shimmer-cube')
+	cube.rotation = (x, y, z, t) => [x, 90 * Math.sin(t * 0.001), z] // Y rotation only
+</script>

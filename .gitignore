@@ -1,33 +1,19 @@
-### ignore everything
-/*
+# Editor files
+.vscode
 
-# including hidden files, those have to be manually added to the repo.
-/**/.*
+# Logs
+*.log
 
-### except for the following top-level whitelist:
+# Dependencies
+node_modules/
+package-lock.json
 
-# folders
-!/src
-!/tests
-!/docs
-!/examples
-!/website
+# Build output
+**/dist/
 
-# global build, to be published
-!/global.js
-!/global.js.map
-
-# config files
-!/.all-contributorsrc
-!/.builderrc
-!/.editorconfig
-!/.gitignore
-!/.npmignore
-!/.npmrc
-!/bower.json
-!/builder.config.js
-!/package.json
-
-# the basics!
-!/README.md
-!/LICENSE
+# Rush files
+common/temp/
+# ignore npm-shrinkwrap for now, due to issues in https://github.com/microsoft/rushstack/issues/1706
+common/config/rush/npm-shrinkwrap.json
+**/.rush/
+install-run*.js

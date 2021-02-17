@@ -1,0 +1,33 @@
+name: tests
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ${{ matrix.operating-system }}
+
+        strategy:
+            matrix:
+                node-version: [14.x]
+                operating-system: [
+					ubuntu-latest,
+					macos-latest,
+					# TODO get tests working in Windows once tests work in Windows for all packages separately
+					# windows-latest
+				]
+
+        steps:
+            - uses: actions/checkout@v1
+              with:
+                  submodules: 'recursive'
+                  token: ${{ secrets.ACCESS_TOKEN }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: npm install, build, and test
+              run: |
+                  npm i
+                  npm run test:ci
+              env:
+                  CI: true

@@ -1,0 +1,140 @@
+# material-texture
+
+<div id="example"></div>
+<script type="application/javascript">
+  new Vue({
+    el: '#example',
+    template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="200" />',
+    data: {
+      code:
+`
+<body touch-action="none">
+
+<script src="${location.origin+location.pathname}/global.js"><\/script>
+<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+<script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
+
+<style>
+    body, html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #191919;
+        touch-action: none; /* prevent touch drag from scrolling */
+        color: #ccc;
+    }
+    lume-scene { position: absolute!important; top: 0; left: 0; }
+    lume-scene:nth-child(2) { pointer-events: none; }
+    lume-node { padding: 15px; pointer-events: all; }
+    label { padding-right: 10px; }
+</style>
+
+<lume-scene id="scene" webgl perspective="150">
+    <lume-ambient-light intensity="0.3"></lume-ambient-light>
+    <lume-point-light
+        id="light"
+        color="white"
+        position="300 300 300"
+        size="0 0 0"
+        cast-shadow="true"
+        intensity="0.8"
+        >
+    </lume-point-light>
+    <!-- Specify a color otherwise the material will be tinted deeppink by default -->
+    <lume-box id="model"
+        rotation="40 40 0"
+        align="0.5 0.5 0.5"
+        mount-point="0.5 0.5 0.5"
+        size="100 100 100"
+        color="white"
+        texture="${location.origin+location.pathname}/textures/cement.jpg"
+    >
+    </lume-box>
+</lume-scene>
+
+<lume-scene id="scene2">
+    <lume-node size-mode="proportional literal" size="1 80">
+        <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
+        <label>
+            X size:
+            <select id="sizeX">
+                <option value="50">50</option>
+                <option selected value="100">100</option>
+                <option value="150">150</option>
+            </select>
+        </label>
+        <label>
+            Y size:
+            <select id="sizeY">
+                <option value="50">50</option>
+                <option selected value="100">100</option>
+                <option value="150">150</option>
+            </select>
+        </label>
+        <label>
+            Z size:
+            <select id="sizeZ">
+                <option value="50">50</option>
+                <option selected value="100">100</option>
+                <option value="150">150</option>
+            </select>
+        </label>
+        <label>
+            Enable texture:
+            <input type="checkbox" id="enableTex" checked />
+        </label>
+        <br />
+        <label>
+            Perspective <code id="perspectiveVal"></code>:
+            <input id="perspective" type="range" min="75" max="250">
+        </label>
+    </lume-node>
+</lume-scene>
+
+<script>
+    // defines the default names for the HTML elements
+    LUME.useDefaultNames()
+
+    const light = document.querySelector('#light')
+
+    document.addEventListener('pointermove', event => {
+        event.preventDefault()
+        light.position.x = event.clientX
+        light.position.y = event.clientY
+    })
+
+    const el = document.querySelector('#model')
+
+    const rotate = (t) => 180 * Math.sin(0.0005 * t)
+    el.rotation = (x, y, z, t) => [rotate(t/1.4), rotate(t/2.1), rotate(t/2.5)]
+
+    // This shows three ways to update a node's properties.
+    sizeX.addEventListener('change', event => el.size = {x: event.target.value})
+    sizeY.addEventListener('change', event => el.size.y = event.target.value)
+    sizeZ.addEventListener('change', event => el.behaviors.get('box-geometry').size = {z: event.target.value})
+
+    enableTex.addEventListener('click', event => {
+      // TODO FIXME Make sure ForwardProps sets initial values. Currently el.texture
+      // starts as 'undefined' althought the attribute value is not.
+      // el.texture = el.texture ? '' : '${location.origin+location.pathname}/textures/cement.jpg'
+      el.setAttribute('texture', el.getAttribute('texture') ? '' : '${location.origin+location.pathname}/textures/cement.jpg')
+    })
+
+    perspectiveVal.innerHTML = '('+scene.perspective.toString().padStart(3).replace(' ', '&nbsp;')+'px)'
+    perspective.value = scene.perspective
+
+    const onPerspectiveChange = event => {
+        scene.perspective = perspective.value
+        perspectiveVal.innerHTML = '('+perspective.value.padStart(3).replace(' ', '&nbsp;')+'px)'
+    }
+
+    perspective.addEventListener('change', onPerspectiveChange)
+    perspective.addEventListener('input', onPerspectiveChange)
+<\/script>
+</body>
+`
+    },
+  })
+</script>

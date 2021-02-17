@@ -1,56 +1,65 @@
-infamous
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
-========
+<!-- # LUME -->
 
-Create 3D CSS+WebGL apps declaratively with HTML.
+# <a href="//lume.io"><img src="./logo.svg" width="200" alt="LUME" title="LUME" /></a>
 
-[Site](https://infamous.io) — [Forums](https://forums.infamous.io) — [Examples](https://infamous.io/docs/examples.html) — [Docs](https://infamous.io/docs/index.html)
+#### **A toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.**
 
-<h2> About </h2>
+<h3>
+  <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.io/docs">Documentation</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.io/docs/#/examples/hello3d">Examples</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//lume.community">Forum</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//discord.gg/PgeyevP">Chat</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//github.com/lume/lume">Source</a>
+</h3>
 
-Infamous gives you general-purpose [Custom HTML
-Elements](https://developers.google.com/web/fundamentals/architecture/building-components/customelements)
-that the browser understands, for defining 2D or 3D scenes rendered with CSS3D,
-WebGL, or both mixed together.
+### `npm install lume`
 
-If you prefer imperative JavaScript, you can also use the imperative JavaScript
-API.
+## Features
 
-Infamous' "mixed mode" let's us combine traditional HTML elements with new ones
-that render to WebGL (powered by Three.js), which means we can render
-traditional elements and 3D objects like spheres and cubes (and soon any 3D
-model) together in the same 3D space (with lighting and shadow not just on the
-WebGL objects, but on the DOM elements too!).
+LUME is composed of several packages that can be used individually, or
+together as a whole:
 
-Unlike traditional CSS `box-shadow` which is flat and boring, with Infamous we
-can give UIs __*real*__ shadows! [See for
-yourself!](https://codepen.io/trusktr/pen/rpegZR)
+### [`lume`](./packages/lume/README.md) - HTML elements for rich graphics
 
-Infamous is built on the [Web Component
-standards](https://www.w3.org/standards/techs/components#w3c_all), making it
-possible to write 3D scenes declaratively using custom HTML elements,
-regardless of which view layer you prefer. This makes it possible for you write
-3D scenes using popular HTML frameworks like (but not limited to)
-[React](https://facebook.github.io/react), [Vue.js](https://vuejs.org),
-[Meteor](http://meteor.com), [Angular](https://angular.io),
-[Ember.js](https://www.emberjs.com), or even the great
-[jQuery](http://jquery.com).
+HTML elements for easily defining rich and interactive 2D or 3D applications
+powered by both CSS and WebGL.
 
-Supported browsers are Google Chrome, Mozilla Firefox, Opera, and Microsoft
-Edge. You're luck may vary with anything lower than Edge, though in theory this
-should at least work in IE11 but it might require some additional transpile
-steps and WebGL feature detection guards. CSS3D rendering may even work in IE10
-with scenes that only have one level of nesting. PRs welcome!
+This package uses and re-exports features from the below packages.
 
-<h2> Contributors </h2>
+### [`glas`](//github.com/lume/glas) - WebGL engine written in AssemblyScript
 
-Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+This is a port of Three.js to AssemblyScript (TypeScript that compiles to
+WebAssembly) for running WebGL graphics with consistent performance.
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-| [<img src="https://avatars0.githubusercontent.com/u/2830402?v=4" width="100px;"/><br /><sub>corruptedzulu</sub>](https://github.com/corruptedzulu)<br />[💻](https://github.com/trusktr/infamous/commits?author=corruptedzulu "Code") [📖](https://github.com/trusktr/infamous/commits?author=corruptedzulu "Documentation") | [<img src="https://avatars3.githubusercontent.com/u/297678?v=4" width="100px;"/><br /><sub>Joseph Orbegoso Pea</sub>](http://trusktr.io)<br />[💻](https://github.com/trusktr/infamous/commits?author=trusktr "Code") [🐛](https://github.com/trusktr/infamous/issues?q=author%3Atrusktr "Bug reports") [📖](https://github.com/trusktr/infamous/commits?author=trusktr "Documentation") [💡](#example-trusktr "Examples") |
-| :---: | :---: |
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+### [`@lume/element`](//github.com/lume/element) - System for defining HTML elements
 
-This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
+This is a web component system that allows you to create new, fast, and
+performant HTML elements in a simple way. It provides the foundation for
+LUME's HTML elements, and a standard pattern for building new elements that
+extend the features of LUME.
 
-[![BrowserStack](https://cloud.githubusercontent.com/assets/297678/18807024/f6a2ed04-81f1-11e6-94d7-b4205ed77db8.png)](https://www.browserstack.com/)
+### [`@lume/variable`](//github.com/lume/variable) - Reactivity system
+
+Create variables that are easy to react to when their values change.
+
+### [`element-behaviors`](//github.com/lume/element-behaviors) - Mix functionalities onto HTML elements
+
+This allows you to augment HTML elements with features called "behaviors"
+that are similar to custom elements: each behavior is defined as a `class`
+that has the same lifecycle methods as custom elements. The difference is
+that an unlimited number of behaviors can be associated with an element.
+
+## Getting involved
+
+There's various ways to get involved!
+
+-   Visit the [documentation](//lume.io/docs) and make something awesome!
+-   Submit fixes or new features to any packages or the website! See the
+    [contributing](./CONTRIBUTING.md) guide.
+-   Discuss LUME, get help, or help others in the [forums](//lume.community) or
+    on our Discord [chat server](//discord.gg/PgeyevP).
+
+## Status
+
+![](https://github.com/lume/lume/workflows/tests/badge.svg)

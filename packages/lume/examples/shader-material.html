@@ -1,0 +1,90 @@
+<script src="../dist/global.js"></script>
+
+<lume-scene id="scene" webgl>
+	<lume-plane
+		id="plane"
+		has="shader-material"
+		size-mode="proportional proportional"
+		size="0.4 0.4"
+		align="0.5 0.5"
+		mount-point="0.5 0.5"
+		sidedness="double"
+		uniforms='{
+			"iTime": {"value": 0},
+			"iResolution": {"value": {"x": 0, "y": 0, "z": 0}}
+		}'
+		fragment-shader="
+			#include <common>
+
+			uniform vec3 iResolution;
+			uniform float iTime;
+
+			// BEGIN SHADERTOY CODE {{
+
+			// This is the default shader when you start a new shadertoy example.
+
+			// By iq: https://www.shadertoy.com/user/iq
+			// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+			void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+				// Normalized pixel coordinates (from 0 to 1)
+				vec2 uv = fragCoord / iResolution.xy;
+
+				// Time varying pixel color
+				vec3 col = 0.5 + 0.5 * cos(iTime + uv.xyx + vec3(0,2,4));
+
+				// Output to screen
+				fragColor = vec4(col, 1.0);
+			}
+
+			// END SHADERTOY CODE }}
+
+			void main() {
+			  mainImage(gl_FragColor, gl_FragCoord.xy);
+			}
+		"
+	></lume-plane>
+</lume-scene>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+	lume-scene {
+		background: #222;
+		touch-action: none;
+	}
+</style>
+
+<script>
+	{
+		LUME.useDefaultNames()
+
+		// Set new values for the shader uniforms when needed.
+		plane.on('GL_LOAD', () => {
+			const shaderMaterial = plane.behaviors.get('shader-material')
+
+			LUME.autorun(() => {
+				shaderMaterial.uniforms.iResolution.value.x = plane.calculatedSize.x
+				shaderMaterial.uniforms.iResolution.value.y = plane.calculatedSize.y
+				plane.needsUpdate()
+			})
+
+			LUME.Motor.addRenderTask(t => {
+				shaderMaterial.uniforms.iTime.value = t * 0.001
+				plane.needsUpdate()
+			})
+		})
+
+		const rotationAmount = 15
+
+		// Add some interaction!
+		scene.addEventListener('pointermove', event => {
+			// Rotate the image a little bit too.
+			plane.rotation.y = -((event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount)
+			plane.rotation.x = (event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount
+		})
+	}
+</script>
