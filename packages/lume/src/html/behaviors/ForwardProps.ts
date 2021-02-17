@@ -11,12 +11,12 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	class ForwardProps extends Constructor<PossibleCustomElement>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
-			this.__propChangedCallback = this.__propChangedCallback.bind(this)
+			this._propChangedCallback = this._propChangedCallback.bind(this)
 		}
 
 		connectedCallback() {
 			super.connectedCallback && super.connectedCallback()
-			this.__forwardInitialProps()
+			this._forwardInitialProps()
 			this.__observeProps()
 		}
 
@@ -33,23 +33,23 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
             `)
 		}
 
-		private __propChangedCallback(propName: string, value: any) {
+		protected _propChangedCallback(propName: string, value: any) {
 			;(this as any)[propName] = value
 		}
 
 		private __observeProps() {
-			observe(this._observedObject, this.__getProps(), this.__propChangedCallback, {
+			observe(this._observedObject, this._forwardedProps(), this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
 		}
 
 		private __unobserveProps() {
-			unobserve(this._observedObject, this.__getProps(), this.__propChangedCallback)
+			unobserve(this._observedObject, this._forwardedProps(), this._propChangedCallback)
 		}
 
 		protected static _observedProperties?: string[]
 
-		private __getProps(): string[] {
+		protected _forwardedProps(): string[] {
 			const props = (this.constructor as typeof ForwardProps)._observedProperties || []
 			// @prod-prune
 			if (!Array.isArray(props))
@@ -57,11 +57,11 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return props
 		}
 
-		private __forwardInitialProps() {
+		protected _forwardInitialProps() {
 			const observed = this._observedObject
 
-			for (const prop of this.__getProps()) {
-				prop in observed && this.__propChangedCallback(prop, (observed as any)[prop])
+			for (const prop of this._forwardedProps()) {
+				prop in observed && this._propChangedCallback(prop, (observed as any)[prop])
 			}
 		}
 	}

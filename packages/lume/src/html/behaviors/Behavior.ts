@@ -1,6 +1,7 @@
 import 'element-behaviors'
 import ForwardProps from './ForwardProps.js'
 
+import type {Element as LumeElement} from '@lume/element'
 import type {Constructor} from 'lowclass'
 import type Node from '../../core/Node.js'
 
@@ -20,13 +21,13 @@ export default abstract class Behavior extends ForwardProps {
 		super()
 
 		// Ensure this.element is the type specified by a subclass's requiredElementType.
-		if (this.requiredElementType) this.__checkElementIsLibraryElement(element)
+		this.__checkElementIsLibraryElement(element)
 
 		this.element = element as any
 	}
 
 	/**
-	 * @property {Constructor<Element>} requiredElementType - A subclass can
+	 * @method requiredElementType - A subclass can
 	 * specify this property (whose value should be a constructor) in order to
 	 * enforce that the behavior operates only on a certain type of element. If
 	 * a type is specified, an error will be thrown if this.element is not of
@@ -34,9 +35,11 @@ export default abstract class Behavior extends ForwardProps {
 	 * will consider it to possibly be a custom element and will wait for it to
 	 * be upgraded before performing the check; if the custom element is not
 	 * upgraded within a second, an error is thrown.
+	 *
+	 * @returns {Constructor<Element>}
 	 */
 	// TODO support an array of types for behaviors that are allowed on multiple types of elements.
-	requiredElementType?: Constructor<Element>
+	abstract requiredElementType(): Constructor<Element>
 
 	// used by ForwardProps. See ForwardProps.js
 	protected get _observedObject() {
@@ -47,9 +50,34 @@ export default abstract class Behavior extends ForwardProps {
 	private __whenDefined: Promise<void> = null! as Promise<void>
 	private __elementDefined = false
 
+	protected _forwardInitialProps() {
+		super._forwardInitialProps()
+		this.__fowardPreUpgradeValues()
+	}
+
+	private __preUpgradeValuesHandled = false
+
+	// TODO Write a test to ensure that pre-upgrade values are handled.
+	private __fowardPreUpgradeValues() {
+		if (this.__preUpgradeValuesHandled) return
+
+		const el = this._observedObject
+
+		if (!isLumeElement(el)) return
+
+		this.__preUpgradeValuesHandled = true
+
+		for (const prop of this._forwardedProps()) {
+			// @ts-ignore, protected access of _preUpgradeValues
+			const value = el._preUpgradeValues.get(prop)
+
+			if (value !== undefined) this._propChangedCallback(prop, value)
+		}
+	}
+
 	// TODO add a test to make sure this check works
 	private async __checkElementIsLibraryElement(element: Element) {
-		const BaseClass = this.requiredElementType
+		const BaseClass = this.requiredElementType()
 
 		if (!BaseClass) return
 
@@ -58,6 +86,8 @@ export default abstract class Behavior extends ForwardProps {
 
 			this.__whenDefined.then(() => {
 				this.__elementDefined = element instanceof BaseClass
+
+				this.__fowardPreUpgradeValues()
 			})
 
 			await Promise.race([this.__whenDefined, new Promise(r => setTimeout(r, 1000))])
@@ -80,3 +110,7 @@ export default abstract class Behavior extends ForwardProps {
 }
 
 export {Behavior}
+
+function isLumeElement(el: Element): el is LumeElement {
+	return '_preUpgradeValues' in el
+}

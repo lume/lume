@@ -30,20 +30,6 @@ export type ColladaModelAttributes = NodeAttributes
 export default class ColladaModel extends Node {
 	static defaultElementName = 'lume-collada-model'
 	static defaultBehaviors = ['collada-model']
-
-	// FIXME, without this accessor, the src property of the
-	// ColladaModelBehavior may not be initially triggered when using JSX as in
-	// <lume-collada-model src={"path/to/file.dae"}>. Why?
-	// This accessor should not be required, because the behaviors already
-	// set up the observation mechanism on their host elements.
-	get src() {
-		return this.__src
-	}
-	set src(v) {
-		this.__src = v
-	}
-
-	private __src: string = ''
 }
 
 export {ColladaModel}

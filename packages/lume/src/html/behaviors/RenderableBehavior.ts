@@ -6,7 +6,9 @@ import Node from '../../core/Node.js'
  * Base class for behaviors relating to rendering
  */
 export abstract class RenderableBehavior extends Behavior {
-	requiredElementType = Node
+	requiredElementType() {
+		return Node
+	}
 
 	connectedCallback() {
 		super.connectedCallback()
