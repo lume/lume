@@ -41,7 +41,7 @@
           id="node"
           rotation=\${rotation}
           size="100 100"
-          align="0.5 0.5 0.5"
+          align-point="0.5 0.5 0.5"
           mount-point="0.5 0.5 0.5"
         >
           <h1 align="center">\${count}</h1>
@@ -49,7 +49,7 @@
 
         <lume-node
           id="node"
-          align="0.5 0.5"
+          align-point="0.5 0.5"
           position="0 80"
         >
           <button

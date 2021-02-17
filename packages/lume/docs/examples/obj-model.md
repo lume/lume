@@ -52,7 +52,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             >
         </lume-sphere>
     </lume-point-light>
-    <lume-node id="ship1Rotator" align="0.5 0.5 0" rotation="0 40 0">
+    <lume-node id="ship1Rotator" align-point="0.5 0.5 0" rotation="0 40 0">
         <!-- This is an lume-node element with an obj-model behavior. The
         obj-model behavior observes the obj and mtl attributes. -->
         <lume-node
@@ -66,7 +66,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
         >
         </lume-node>
     </lume-node>
-    <lume-node id="ship2Rotator" align="0.5 0.5 0" rotation="0 20 0">
+    <lume-node id="ship2Rotator" align-point="0.5 0.5 0" rotation="0 20 0">
         <!-- Alternatively, the lume-obj-model is an element that implicityly
         has an obj-model behavior. We've omitted the mtl attribute, so this
         model will by default have a plain random color. -->

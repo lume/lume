@@ -74,7 +74,7 @@
                 <lume-dom-node
                     position="0 100 10"
                     size="70 21 0"
-                    align="0.5 0 0"
+                    align-point="0.5 0 0"
                     mount-point="0.5 0 0"
                     color="#333333"
                 >
@@ -84,7 +84,7 @@
 
             </lume-dom-node>
 
-            <lume-node id="root" align="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
+            <lume-node id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
 
                 <lume-dom-node
                     size="200 200 0"
@@ -158,7 +158,7 @@
                     <lume-point-light
                         id="light"
                         color="#ffffff"
-                        align="0.5 0.5 0.5"
+                        align-point="0.5 0.5 0.5"
                         size="0 0 0"
                         intensity="0.5"
                     ></lume-point-light>
@@ -256,13 +256,13 @@
             <lume-node id="n"
                 size-mode="proportional proportional"
                 size="0.25 0.25"
-                align="0.5 0.5"
+                align-point="0.5 0.5"
                 mount-point="0.5 0.5"
             >
                 <!~~ TODO: align 1 places items at the front of the cube space, but the parent DOM element is rendered at the back of the cube space.
                 Where should a DOM element (or Plane) be rendered in the cube space, and where is align 0 and 1 relative to it? ~~>
-                <lume-plane align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 0 1" id="a" color="cyan" map="BG_Map.png"></lume-plane>
-                <lume-node  align="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 250 2" id="b">HELLO</lume-node>
+                <lume-plane align-point="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 0 1" id="a" color="cyan" map="BG_Map.png"></lume-plane>
+                <lume-node  align-point="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 250 2" id="b">HELLO</lume-node>
             </lume-node>
         </lume-scene>
 
@@ -323,7 +323,7 @@
                 size-mode="proportional proportional"
                 sizeMode="proportional proportional"
                 size="0.75 0.75"
-                align="0.5 0.5"
+                align-point="0.5 0.5"
                 mount-point="0.5 0.5"
                 mountPoint="0.5 0.5"
             >

@@ -49,7 +49,7 @@ const _Scene = Mixin(SceneMixin)
  * `<script src="${location.origin+location.pathname}/global.js"><\/script>
  *
  * <lume-scene id="scene">
- *   <lume-node size="100 100" align="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
+ *   <lume-node size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
  *   	I am centered in the scene, and I am rotated a bit.
  *   </lume-node>
  * </lume-scene>

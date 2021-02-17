@@ -36,7 +36,7 @@ export class CameraRig extends Node {
 				ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
 				active
 				position=${() => untrack(() => [0, 0, this.initialDistance])}
-				align="0.5 0.5 0.5"
+				align-point="0.5 0.5 0.5"
 				far="10000"
 			></lume-perspective-camera>
 		</lume-node>

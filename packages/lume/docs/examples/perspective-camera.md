@@ -34,7 +34,7 @@
 <lume-scene id="scene" webgl perspective="800">
     <!-- This node visualizes the size of the default viewing area. -->
     <lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
-    <lume-perspective-camera id="cam" position="0 0 1000" align="0.5 0.5"></lume-perspective-camera>
+    <lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera>
     <lume-ambient-light intensity="0.3"></lume-ambient-light>
     <lume-point-light
         id="light"
@@ -49,7 +49,7 @@
     <lume-mesh id="model"
         has="box-geometry phong-material"
         rotation="40 40 0"
-        align="0.5 0.5 0.5"
+        align-point="0.5 0.5 0.5"
         mount-point="0.5 0.5 0.5"
         size="100 100 100"
         color="white"

@@ -69,7 +69,7 @@
 
     const grid = new Node().set({
       size: [gridSizeX*gridCellSize, gridSizeY*gridCellSize],
-      align: [0.5, 0.5],
+      alignPoint: [0.5, 0.5],
       mountPoint: [0.5, 0.5],
       rotation: [30],
       position: {z: -600},

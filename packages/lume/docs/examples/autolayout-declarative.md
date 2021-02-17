@@ -51,7 +51,7 @@
         id="layout"
         size="100 100 0" TODO="why do we need Z size 0 here, but not in the imperative example?"
         position="0 0 0"
-        align=" 0.5 0.5 0"
+        align-point=" 0.5 0.5 0"
         mount-point=" 0.5 0.5 0"
         visual-format="
             V:|-[child1(child3)]-[child3]-|

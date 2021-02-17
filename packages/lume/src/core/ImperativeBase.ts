@@ -236,9 +236,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 							this.getSizeMode().x === 'proportional' ||
 							this.getSizeMode().y === 'proportional' ||
 							this.getSizeMode().z === 'proportional' ||
-							this.getAlign().x !== 0 ||
-							this.getAlign().y !== 0 ||
-							this.getAlign().z !== 0
+							this.getAlignPoint().x !== 0 ||
+							this.getAlignPoint().y !== 0 ||
+							this.getAlignPoint().z !== 0
 						) {
 							this._calcSize()
 							this.needsUpdate()
@@ -252,7 +252,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 					this.rotation
 					this.scale
 					this.origin
-					this.align
+					this.alignPoint
 					this.mountPoint
 					this.opacity
 
@@ -703,7 +703,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		 * move _calcSize to a render task.
 		 */
 		protected _calculateMatrix(): void {
-			const align = this.getAlign()
+			const align = this.getAlignPoint()
 			const mountPoint = this.getMountPoint()
 			const position = this.getPosition()
 			const origin = this.getOrigin()

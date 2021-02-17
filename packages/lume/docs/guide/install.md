@@ -77,10 +77,17 @@ of a 3D scene on the screen:
 ```html
 <lume-scene experimental-webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	<lume-point-light
+		color="white"
+		align-point="0.5 0.5"
+		position="0 0 300"
+		size="0 0 0"
+		cast-shadow="true"
+		intensity="0.65"
+	>
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 ```
 
@@ -231,10 +238,10 @@ new Vue({
 cube in the middle of the view: -->
 <lume-scene experimental-webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	<lume-point-light color="white" align-point="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 
 <!-- Now we give the cube a basic rotation around the Y axis: -->

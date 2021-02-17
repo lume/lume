@@ -30,9 +30,9 @@ describe('Node', () => {
 		expect(n.getScale().y).toEqual(1)
 		expect(n.getScale().z).toEqual(1)
 
-		expect(n.getAlign().x).toEqual(0)
-		expect(n.getAlign().y).toEqual(0)
-		expect(n.getAlign().z).toEqual(0)
+		expect(n.getAlignPoint().x).toEqual(0)
+		expect(n.getAlignPoint().y).toEqual(0)
+		expect(n.getAlignPoint().z).toEqual(0)
 
 		expect(n.getMountPoint().x).toEqual(0)
 		expect(n.getMountPoint().y).toEqual(0)

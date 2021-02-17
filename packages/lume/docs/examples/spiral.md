@@ -18,7 +18,7 @@
         ref="rotator"
         TODO-calculate-minimum-size-based-on-viewport-size
         size="1630 1630"
-        align="0.5 0.5"
+        align-point="0.5 0.5"
         mount-point="0.5 0.5"
         rotation="0 0 0"
       >
@@ -27,7 +27,7 @@
             v-for="(n, i) of Array(400)"
             :key="i"
             size="0 0 0"
-            align="0.5 0.5"
+            align-point="0.5 0.5"
             :rotation="[0, 0, i * 10]"
           >
             <lume-node

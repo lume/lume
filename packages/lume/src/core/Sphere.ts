@@ -24,10 +24,11 @@ import type {ElementAttributes} from '@lume/element'
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
+			// TODO finish swapping ElementAttributes orderings for elements with behaviors
 			'lume-sphere': ElementAttributes<
-				Sphere,
-				SphereAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+				PhongMaterialBehavior,
+				PhongMaterialBehaviorAttributes,
+				ElementAttributes<Sphere, SphereAttributes>
 			>
 		}
 	}

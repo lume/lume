@@ -45,7 +45,7 @@
     <!-- Specify a color otherwise the material will be tinted deeppink by default -->
     <lume-box id="model"
         rotation="40 40 0"
-        align="0.5 0.5 0.5"
+        align-point="0.5 0.5 0.5"
         mount-point="0.5 0.5 0.5"
         size="100 100 100"
         color="white"

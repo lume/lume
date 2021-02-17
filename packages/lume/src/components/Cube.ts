@@ -38,15 +38,15 @@ export default class Cube extends Node {
 	 * @param {string} name - The name of the side.
 	 */
 	_createCubeSide(index: number) {
-		const rotator = new Node({
-			align: [0.5, 0.5],
+		const rotator = new Node().set({
+			alignPoint: [0.5, 0.5],
 			mountPoint: [0.5, 0.5],
 		})
 
-		const side = new Node({
-			align: [0.5, 0.5],
+		const side = new Node().set({
+			alignPoint: [0.5, 0.5],
 			mountPoint: [0.5, 0.5],
-			size: [this.size, this.size],
+			size: [this.getSize().x, this.getSize().x],
 		})
 
 		this.sides.push(side)
