@@ -947,3 +947,12 @@ function makeMixin() {
 
 // "as default" form is required here, otherwise it'll break.
 export {ImperativeBase as default}
+
+declare module '@lume/element' {
+	namespace JSX {
+		// Attributes for all elements.
+		interface CustomAttributes<T> {
+			has?: string
+		}
+	}
+}
