@@ -21,4 +21,4 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 // Add more objects as needed.
 export const THREE = {..._THREE, OrbitControls}
 
-export const version = '0.2.0'
+export const version = '0.2.1'
