@@ -1,5 +1,6 @@
 import type {Constructor} from 'lowclass'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import type {Group} from 'three/src/objects/Group.js'
 
 export class EventTypes {
@@ -34,12 +35,16 @@ export class EventTypes {
 		// This event is fired when an obj-model element, or a node element with an
 		// obj-model behavior, has loaded it's model.
 		public MODEL_LOAD: {format: string; model: Group},
-		// Fired when a gltf-model element has loaded the GLTF model.
-		public GLTF_LOAD: {model: GLTF},
 		// Fired by elements that load resources. See
 		// https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
 		public PROGRESS: ProgressEvent,
+		// XXX Maybe we should combine loader events into one, instead of a new set of events per loader?
+		// Fired when a gltf-model element has loaded the GLTF model.
+		public GLTF_LOAD: {model: GLTF},
 		public GLTF_ERROR: {src: string; dracoDecoderPath: string},
+		// Fired when a collada-model element has loaded the Collada model.
+		public COLLADA_LOAD: {model: Collada},
+		public COLLADA_ERROR: {src: string},
 	) {}
 }
 

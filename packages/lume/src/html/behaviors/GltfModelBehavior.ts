@@ -25,6 +25,9 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 	protected static _observedProperties = ['src', 'dracoPath', ...(RenderableBehavior._observedProperties || [])]
 
+	// This is incremented any time we need a pending load() to cancel (f.e. on
+	// src change, or unloadGL cycle), so that the loader will ignore the
+	// result when a version change has happened.
 	private __version = 0
 
 	private __stopFns: StopFunction[] = []
@@ -50,7 +53,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 				this.src
 				this.dracoDecoder
 
-				if (!firstRun) this.__cleanupModel()
+				this.__cleanupModel()
 
 				// TODO We can update only the material or model specifically
 				// instead of reloading the whole object.
@@ -75,6 +78,9 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 		this.__cleanupModel()
 
+		// Increment this in case the loader is still loading, so it will ignore the result.
+		this.__version++
+
 		return true
 	}
 
@@ -88,7 +94,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
-		// In the followinggltfLoader.load() callbacks, if __version doesn't
+		// In the following gltfLoader.load() callbacks, if __version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
@@ -103,7 +109,8 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 	private __onError(src: string, dracoDecoder: string, error: ErrorEvent) {
 		const message =
-			error?.message ?? `Failed to load <gltf-model> with src "${src}" and dracoDecoder "${dracoDecoder}"`
+			error?.message ??
+			`Failed to load ${this.element.tagName.toLowerCase()} with src "${src}" and dracoDecoder "${dracoDecoder}".`
 		console.warn(message)
 		this.element.emit(Events.GLTF_ERROR, {src, dracoDecoder})
 	}

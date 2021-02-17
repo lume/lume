@@ -18,6 +18,8 @@ export * from './Sizeable.js'
 export * from './Sphere.js'
 export * from './Transformable.js'
 export * from './TreeNode.js'
+export * from './GltfModel.js'
+export * from './ColladaModel.js'
 import * as Utility from './Utility.js'
 export {Utility}
 export * from './WebGLRendererThree.js'
