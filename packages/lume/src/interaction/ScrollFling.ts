@@ -55,17 +55,27 @@ export class ScrollFling {
 		})
 	}
 
+	private __isStarted = false
+
 	// TODO switch to Pointer Events
 
-	start() {
+	start(): this {
+		if (this.__isStarted) return this
+		this.__isStarted = true
+
 		// @ts-ignore, whyyyyy TypeScript
 		this.target.addEventListener('wheel', this.__onWheel)
+
 		return this
 	}
 
-	stop() {
+	stop(): this {
+		if (!this.__isStarted) return this
+		this.__isStarted = false
+
 		// @ts-ignore, whyyyyy TypeScript
 		this.target.removeEventListener('wheel', this.__onWheel)
+
 		return this
 	}
 }

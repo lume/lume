@@ -1,8 +1,8 @@
-import {element, numberAttribute, untrack, autorun, booleanAttribute} from '@lume/element'
+import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Node} from '../core/Node.js'
-import {flingRotation, ScrollFling} from '../interaction/index.js'
+import {FlingRotation, ScrollFling} from '../interaction/index.js'
 
 import type {PerspectiveCamera, NodeAttributes} from '../core/index.js'
 
@@ -41,20 +41,22 @@ export class CameraRig extends Node {
 			<lume-perspective-camera
 				ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
 				active=${() => this.active}
-				position=${() => untrack(() => [0, 0, this.initialDistance])}
+				position=${[0, 0, this.initialDistance]}
 				align-point="0.5 0.5 0.5"
 				far="10000"
 			></lume-perspective-camera>
 		</lume-node>
 	`
 
+	flingRotation?: FlingRotation
 	scrollFling?: ScrollFling
+	stopAutorun?: StopFunction
 
 	connectedCallback() {
 		super.connectedCallback()
 
 		// Uses initial attribute values only, changes not tracked at the moment.
-		flingRotation({
+		this.flingRotation = new FlingRotation({
 			interactionInitiator: this.scene,
 			rotationYTarget: this,
 			minFlingRotationX: this.minPolarAngle,
@@ -69,18 +71,19 @@ export class CameraRig extends Node {
 			scrollFactor: this.dollySpeed,
 		}).start()
 
-		autorun(() => {
+		this.stopAutorun = autorun(() => {
 			this.scrollFling!.y
 
-			untrack(() => {
-				this.cam!.getPosition().z = this.scrollFling!.y
-			})
+			untrack(() => (this.cam!.getPosition().z = this.scrollFling!.y))
 		})
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback()
+
+		this.flingRotation?.stop()
 		this.scrollFling?.stop()
+		this.stopAutorun?.()
 	}
 }
 
