@@ -73,8 +73,6 @@
 
   lights.rotation = (x, y, z, t) => [x, y + 0.2, z]
 
-  // setTimeout(() => cam.active = true, 3000)
-
   // Custom handling of the underlying Three.js tree.
   model.on('GLTF_LOAD', () => {
     model.three.traverse(n => {
