@@ -11,25 +11,28 @@
 	}
 </style>
 
-<lume-scene
-	id="scene"
-	perspective="800"
-	webgl
-	Xbackground="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-	Xequirectangular-background="true"
-	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
->
+<lume-scene id="scene" perspective="800" webgl>
 	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
-	<lume-camera-rig initial-distance="1000" active></lume-camera-rig>
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<!-- background -->
+	<lume-sphere
+		has="basic-material"
+		color="white"
+		sidedness="double"
+		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+		size="4000"
+		mount-point="0.5 0.5 0.5"
+	></lume-sphere>
 
 	<lume-fbx-model
 		id="model"
 		rotation="0 45 0"
 		size="0 0 0"
 		src="./models/mando-helmet.fbx"
-		scale="5 5 5"
+		scale="1 1 1"
 		style="background: blue"
 	>
 	</lume-fbx-model>
