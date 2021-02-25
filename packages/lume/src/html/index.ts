@@ -3,6 +3,8 @@ export * from './HTMLNode.js'
 export * from './HTMLScene.js'
 // export HTMLPushPaneLayout from './HTMLPushPaneLayout.js'
 
+export * from './behaviors/index.js'
+
 // TODO replace the non-DRY code here with the same pattern as with the defineElements() call below.
 import Scene from '../core/Scene.js'
 import Node from '../core/Node.js'
@@ -21,8 +23,6 @@ import GltfModel from '../core/GltfModel.js'
 import {ColladaModel} from '../core/ColladaModel.js'
 // import PushPaneLayout from '../components/PushPaneLayout.js'
 import RoundedRectangle from '../core/RoundedRectangle.js'
-
-export * from './behaviors/index.js'
 
 import {defineElements} from '../defineElements.js'
 
@@ -47,9 +47,13 @@ export function useDefaultNames() {
 		RoundedRectangle,
 	]
 
+	// The old way.
 	for (const constructor of classes) {
 		if (!customElements.get(constructor.defaultElementName)) constructor.define()
 	}
 
+	// The new way.
 	defineElements()
+
+	// TODO convert everything to the new way.
 }
