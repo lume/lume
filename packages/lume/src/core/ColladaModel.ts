@@ -27,12 +27,10 @@ export type ColladaModelAttributes = NodeAttributes
  * scene.add(model)
  * ```
  */
-export default class ColladaModel extends Node {
+export class ColladaModel extends Node {
 	static defaultElementName = 'lume-collada-model'
 	static defaultBehaviors = ['collada-model']
 }
-
-export {ColladaModel}
 
 import type {ElementAttributes} from '@lume/element'
 

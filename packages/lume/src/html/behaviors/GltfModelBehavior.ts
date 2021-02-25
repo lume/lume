@@ -16,7 +16,12 @@ export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder'
 export default class GltfModelBehavior extends RenderableBehavior {
 	/** Path to a .gltf or .glb file. */
 	@attribute src = ''
-	/** Path to the draco decoder for the GLTF src file. */
+
+	/**
+	 * Path to the draco decoder that will unpack decode compressed assets of
+	 * the GLTF file. This does not need to be supplied unless you explicitly
+	 * know you need it.
+	 */
 	@attribute dracoDecoder = ''
 
 	dracoLoader?: DRACOLoader
@@ -55,8 +60,6 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 				this.__cleanupModel()
 
-				// TODO We can update only the material or model specifically
-				// instead of reloading the whole object.
 				this.__version++
 				this.__loadObj()
 			}),
@@ -90,7 +93,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 	}
 
 	private __loadObj() {
-		const {src, dracoDecoder, __version} = this
+		const {src, __version} = this
 
 		if (!src) return
 
@@ -103,23 +106,25 @@ export default class GltfModelBehavior extends RenderableBehavior {
 			src,
 			model => __version == this.__version && this.__setModel(model),
 			progress => __version == this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version == this.__version && this.__onError(src, dracoDecoder, error),
+			error => __version == this.__version && this.__onError(error),
 		)
 	}
 
-	private __onError(src: string, dracoDecoder: string, error: ErrorEvent) {
+	private __onError(error: ErrorEvent) {
 		const message =
 			error?.message ??
-			`Failed to load ${this.element.tagName.toLowerCase()} with src "${src}" and dracoDecoder "${dracoDecoder}".`
+			`Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${
+				this.dracoDecoder
+			}".`
 		console.warn(message)
-		this.element.emit(Events.GLTF_ERROR, {src, dracoDecoder})
+		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
 	private __setModel(model: GLTF) {
 		this.model = model
 		model.scene = model.scene || new Scene().add(...model.scenes)
 		this.element.three.add(model.scene)
-		this.element.emit(Events.GLTF_LOAD, {model})
+		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
 		this.element.needsUpdate()
 	}
 }

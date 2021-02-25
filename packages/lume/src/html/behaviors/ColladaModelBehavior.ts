@@ -16,7 +16,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	@stringAttribute('') src = ''
 
 	colladaLoader?: ColladaLoader
-	model: Collada | null = null
+	model?: Collada
 
 	protected static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
 
@@ -38,8 +38,6 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 				this.__cleanupModel()
 
-				// TODO We can update only the material or model specifically
-				// instead of reloading the whole object.
 				this.__version++
 				this.__loadObj()
 			}),
@@ -65,7 +63,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 	private __cleanupModel() {
 		if (this.model) disposeObjectTree(this.model.scene)
-		this.model = null
+		this.model = undefined
 	}
 
 	private __loadObj() {
@@ -80,22 +78,22 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 		this.colladaLoader!.load(
 			src,
-			model => __version == this.__version && this.__setModel(model),
-			progress => __version == this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version == this.__version && this.__onError(src, error),
+			model => __version === this.__version && this.__setModel(model),
+			progress => __version === this.__version && this.element.emit(Events.PROGRESS, progress),
+			error => __version === this.__version && this.__onError(error),
 		)
 	}
 
-	private __onError(src: string, error: ErrorEvent) {
-		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${src}".`
+	private __onError(error: ErrorEvent) {
+		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
-		this.element.emit(Events.COLLADA_ERROR, {src})
+		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
 	private __setModel(model: Collada) {
 		this.model = model
 		this.element.three.add(model.scene)
-		this.element.emit(Events.COLLADA_LOAD, {model})
+		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
 		this.element.needsUpdate()
 	}
 }
