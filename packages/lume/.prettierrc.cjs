@@ -1,5 +1,4 @@
 module.exports = {
-	tabWidth: 4,
 	useTabs: true,
 	semi: false,
 	singleQuote: true,
@@ -12,6 +11,7 @@ module.exports = {
 			files: '*.md',
 			options: {
 				tabWidth: 2,
+				useTabs: false,
 			},
 		},
 	],
