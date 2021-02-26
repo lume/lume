@@ -117,6 +117,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 				this.dracoDecoder
 			}".`
 		console.warn(message)
+		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 

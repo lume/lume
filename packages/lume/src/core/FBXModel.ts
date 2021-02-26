@@ -9,7 +9,7 @@ export type FBXModelAttributes = NodeAttributes
 /**
  * @element lume-fbx-model
  * @class FBXModel - Defines the `<lume-fbx-model>` element, for loading 3D
- * models in the FBX format (.dae files). It is similar to an `<img>` tag, but for 3D.
+ * models in the FBX format (.fbx files). It is similar to an `<img>` tag, but for 3D.
  *
  * HTML Example:
  *

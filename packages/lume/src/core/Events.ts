@@ -2,6 +2,7 @@ import type {Constructor} from 'lowclass'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import type {Group} from 'three/src/objects/Group.js'
+import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 export class EventTypes {
 	constructor(
@@ -34,7 +35,10 @@ export class EventTypes {
 		public BEHAVIOR_GL_UNLOAD: undefined,
 		// This event is fired when a *-model element, or a node element with a
 		// *-model behavior, has loaded it's model.
-		public MODEL_LOAD: {format: 'obj' | 'gltf' | 'collada' | 'fbx'; model: Group | GLTF | Collada},
+		public MODEL_LOAD: {
+			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply'
+			model: Group | GLTF | Collada | BufferGeometry
+		},
 		// Fired if a *-model element, or node element with *-model behavior,
 		// has an error during load.
 		public MODEL_ERROR: Error,

@@ -5,6 +5,7 @@ import Mesh from '../../core/Mesh.js'
 
 import type {Material} from 'three/src/materials/Material.js'
 import type {Geometry} from 'three/src/core/Geometry.js'
+import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 export type MeshComponentType = 'geometry' | 'material'
 
@@ -65,7 +66,7 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 		return (this.element.three[name] as unknown) as T
 	}
 
-	protected _createComponent(): Geometry | Material {
+	protected _createComponent(): BufferGeometry | Geometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
@@ -80,7 +81,11 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 		if (element.three[name]) (element.three[name] as Geometry | Material).dispose()
 	}
 
-	private __setMeshComponent(element: Mesh, name: 'geometry' | 'material', newComponent: Geometry | Material) {
+	private __setMeshComponent(
+		element: Mesh,
+		name: 'geometry' | 'material',
+		newComponent: BufferGeometry | Geometry | Material,
+	) {
 		this.__disposeMeshComponent(element, name)
 
 		// the following type casting is not type safe, but shows what we intend

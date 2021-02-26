@@ -18,6 +18,7 @@ import '../html/behaviors/SphereGeometryBehavior.js'
 import '../html/behaviors/PlaneGeometryBehavior.js'
 import '../html/behaviors/DOMNodeGeometryBehavior.js'
 import '../html/behaviors/RoundedRectangleGeometryBehavior.js'
+import '../html/behaviors/PLYGeometryBehavior.js'
 
 // TODO:
 // - [ ] API for registering new behaviors as they pertain to our API, built on

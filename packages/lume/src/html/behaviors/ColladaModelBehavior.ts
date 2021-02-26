@@ -15,7 +15,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	/** Path to a .dae file. */
 	@stringAttribute('') src = ''
 
-	colladaLoader?: ColladaLoader
+	loader?: ColladaLoader
 	model?: Collada
 
 	protected static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
@@ -30,7 +30,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		this.colladaLoader = new ColladaLoader()
+		this.loader = new ColladaLoader()
 
 		this.__stopFns.push(
 			autorun(() => {
@@ -51,7 +51,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 		for (const stop of this.__stopFns) stop()
 
-		this.colladaLoader = undefined
+		this.loader = undefined
 
 		this.__cleanupModel()
 
@@ -76,7 +76,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
-		this.colladaLoader!.load(
+		this.loader!.load(
 			src,
 			model => __version === this.__version && this.__setModel(model),
 			progress => __version === this.__version && this.element.emit(Events.PROGRESS, progress),
@@ -87,6 +87,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	private __onError(error: ErrorEvent) {
 		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
+		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 

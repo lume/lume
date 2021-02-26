@@ -1,0 +1,36 @@
+<title>&lt;lume-gltf-model&gt;</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<lume-points
+		id="model"
+		has="ply-geometry"
+		Xsrc="./models/succulent.ply"
+		src="./models/shelby-gt350.ply"
+		rotation="90 0 0"
+		position="-250 0 0"
+		size="0 0 0"
+		scale="50 50 50"
+	></lume-points>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+</script>

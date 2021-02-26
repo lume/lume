@@ -12,10 +12,10 @@ export type FBXModelBehaviorAttributes = 'src'
 
 @reactive
 export class FBXModelBehavior extends RenderableBehavior {
-	/** Path to a .dae file. */
+	/** Path to a .fbx file. */
 	@stringAttribute('') src = ''
 
-	fbxLoader?: FBXLoader
+	loader?: FBXLoader
 	model?: Group
 
 	protected static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
@@ -30,7 +30,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		this.fbxLoader = new FBXLoader()
+		this.loader = new FBXLoader()
 
 		this.__stopFns.push(
 			autorun(() => {
@@ -51,7 +51,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 
 		for (const stop of this.__stopFns) stop()
 
-		this.fbxLoader = undefined
+		this.loader = undefined
 
 		this.__cleanupModel()
 
@@ -76,7 +76,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
-		this.fbxLoader!.load(
+		this.loader!.load(
 			src,
 			model => __version === this.__version && this.__setModel(model),
 			progress => __version === this.__version && this.element.emit(Events.PROGRESS, progress),
@@ -87,6 +87,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 	private __onError(error: ErrorEvent) {
 		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
+		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
