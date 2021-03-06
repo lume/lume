@@ -6,13 +6,6 @@ module.exports = {
 	bracketSpacing: false,
 	printWidth: 120,
 	arrowParens: 'avoid',
-	overrides: [
-		{
-			files: '*.md',
-			options: {
-				tabWidth: 2,
-				useTabs: false,
-			},
-		},
-	],
+
+	overrides: [{files: '*.md', options: {tabWidth: 2}}],
 }
