@@ -19,7 +19,7 @@
 		"reset": "npm run purge && npm run bootstrap && npm run build",
 		"docs": "npm run build && cd packages/lume && npm run docs",
 		"build": "npm run clean && lerna run build",
-		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful}'",
+		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
 		"// ^ test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
 		"dev": "echo ' --- TODO: dev script for running everything in dev mode. For now, cd into each packages and run dev manually.'"
