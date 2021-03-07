@@ -83,7 +83,7 @@ const _Node = Mixin(NodeMixin)
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
  *     data: {
  *       code:
- * `<script src="${location.origin+location.pathname}/global.js"><\/script>
+ * `<script src="${location.origin+location.pathname}global.js"><\/script>
  *
  * <lume-scene id="scene">
  *   <lume-node

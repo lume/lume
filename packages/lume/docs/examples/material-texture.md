@@ -10,7 +10,7 @@
 `
 <body touch-action="none">
 
-<script src="${location.origin+location.pathname}/global.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
 <!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 <script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
 
@@ -49,7 +49,7 @@
         mount-point="0.5 0.5 0.5"
         size="100 100 100"
         color="white"
-        texture="${location.origin+location.pathname}/textures/cement.jpg"
+        texture="${location.origin+location.pathname}textures/cement.jpg"
     >
     </lume-box>
 </lume-scene>
@@ -118,8 +118,8 @@
     enableTex.addEventListener('click', event => {
       // TODO FIXME Make sure ForwardProps sets initial values. Currently el.texture
       // starts as 'undefined' althought the attribute value is not.
-      // el.texture = el.texture ? '' : '${location.origin+location.pathname}/textures/cement.jpg'
-      el.setAttribute('texture', el.getAttribute('texture') ? '' : '${location.origin+location.pathname}/textures/cement.jpg')
+      // el.texture = el.texture ? '' : '${location.origin+location.pathname}textures/cement.jpg'
+      el.setAttribute('texture', el.getAttribute('texture') ? '' : '${location.origin+location.pathname}textures/cement.jpg')
     })
 
     perspectiveVal.innerHTML = '('+scene.perspective.toString().padStart(3).replace(' ', '&nbsp;')+'px)'

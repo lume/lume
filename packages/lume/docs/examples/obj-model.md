@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin+location.pathname}/global.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
 <!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 <script src="https://code.jquery.com/pep/0.4.3/pep.js"><\/script>
 
@@ -61,8 +61,8 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             size="0 0 0 "
             scale="200 200 200"
             position="0 -30 100"
-            obj="${location.origin + location.pathname}/models/spaceship/ship.obj"
-            mtl="${location.origin + location.pathname}/models/spaceship/ship.mtl"
+            obj="${location.origin + location.pathname}models/spaceship/ship.obj"
+            mtl="${location.origin + location.pathname}models/spaceship/ship.mtl"
         >
         </lume-node>
     </lume-node>
@@ -75,7 +75,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             size="0 0 0"
             scale="200 200 200"
             position="0 30 210"
-            obj="${location.origin+location.pathname}/models/spaceship/ship.obj"
+            obj="${location.origin+location.pathname}models/spaceship/ship.obj"
         >
         </lume-obj-model>
     </lume-node>
@@ -153,13 +153,13 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
     objToggle.addEventListener('click', () => {
         objBehavior = ship1.behaviors.get('obj-model')
         if (objBehavior.obj) objBehavior.obj = ''
-        else objBehavior.obj = '${location.origin + location.pathname}/models/spaceship/ship.obj'
+        else objBehavior.obj = '${location.origin + location.pathname}models/spaceship/ship.obj'
     })
 
     matToggle.addEventListener('click', () => {
         objBehavior = ship2.behaviors.get('obj-model')
         if (objBehavior.mtl) objBehavior.mtl = ''
-        else objBehavior.mtl = '${location.origin + location.pathname}/models/spaceship/ship.mtl'
+        else objBehavior.mtl = '${location.origin + location.pathname}models/spaceship/ship.mtl'
     })
 <\/script>
 

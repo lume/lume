@@ -10,7 +10,7 @@
 `
 <body touch-action="none">
 
-<script src="${location.origin+location.pathname}/global.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
 
 <style>
     html, body {

@@ -8,9 +8,9 @@
     data: {
       code:
 `
-<script src="${location.origin+location.pathname}/global.js"><\/script>
-<script src="${location.origin+location.pathname}/node_modules/tinycolor2/tinycolor.js"><\/script>
-<script src="${location.origin+location.pathname}/node_modules/tween.js/src/Tween.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
+<script src="${location.origin+location.pathname}node_modules/tinycolor2/tinycolor.js"><\/script>
+<script src="${location.origin+location.pathname}node_modules/tween.js/src/Tween.js"><\/script>
 
 <style>
   html, body {

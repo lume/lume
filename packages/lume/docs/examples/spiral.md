@@ -7,8 +7,8 @@
     template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="1000" />',
     data: {
       code: `
-<script src="${location.origin+location.pathname}/global.js"><\/script>
-<script src="${location.origin+location.pathname}/node_modules/vue/dist/vue.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
+<script src="${location.origin+location.pathname}node_modules/vue/dist/vue.js"><\/script>
 
 <body>
 
