@@ -27,6 +27,7 @@
     <lume-camera-rig active id="rig" rotation="0 30 0" min-polar-angle="-11"></lume-camera-rig>
     <lume-perspective-camera active id="cam" position="0 0 1000"></lume-perspective-camera>
 
+    <!-- See src/examples/FlickeringOrbs.ts -->
     <flickering-orbs id="lights" rotation="0 30 0"></flickering-orbs>
 
     <lume-gltf-model
@@ -87,12 +88,8 @@
   const rig = document.getElementById('rig')
 
   rigActive.addEventListener('input', () => {
-    // Toggle between the rig being active or not (recommended).
+    // Toggle between the rig being active or not.
     rig.active = rigActive.checked
-
-    // Alternatively toggle the rig by adding/removing the rig to/from DOM (less ideal, more CPU usage).
-    // if (rigActive.checked) scene.append(rig)
-    // else rig.remove()
   })
 <\/script>
 `

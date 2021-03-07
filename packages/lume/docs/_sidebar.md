@@ -14,8 +14,11 @@
 
 - **Examples**
 
+  <!-- - [Hello 3D world!](/examples/hello3d.md ':class=no-sublist') -->
+
+  - [Hello world!](/examples/hello-world/ ':class=no-sublist')
+  - [NASA Astrobee Robot](/examples/nasa-astrobee-robot/ ':class=no-sublist')
   - [Disco Helmet](/examples/disco-helmet.md ':class=no-sublist')
-  - [Hello 3D world!](/examples/hello3d.md ':class=no-sublist')
   - [Parent transforms](/examples/parent-transforms.md ':class=no-sublist')
   - [Reactivity](/examples/reactivity.md ':class=no-sublist')
   - [Load 3D models](/examples/obj-model.md ':class=no-sublist')
