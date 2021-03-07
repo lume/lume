@@ -212,13 +212,6 @@ const _Node = Mixin(NodeMixin)
  *   })
  * </script>
  *
- * NOTE, as opposed to the above example, Nodes can also be used as parents
- * nodes merely for transformation, but they do not have to render anything.
- * The only things that will appear on screen are other traditional
- * HTML elements or more advanced LUME elements that are placed inside of
- * the `<lume-node>` elements.  See an [example of that](/examples/hello3d-parent-transforms).
- *
- *
  * @extends ImperativeBase
  * @extends HTMLNode
  */
