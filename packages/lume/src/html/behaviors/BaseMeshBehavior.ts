@@ -1,7 +1,8 @@
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {RenderableBehavior} from './RenderableBehavior.js'
-import Mesh from '../../core/Mesh.js'
+import {Mesh} from '../../core/Mesh.js'
+import {Points} from '../../core/Points.js'
 
 import type {Material} from 'three/src/materials/Material.js'
 import type {Geometry} from 'three/src/core/Geometry.js'
@@ -19,17 +20,10 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 	abstract type: MeshComponentType
 
 	requiredElementType() {
-		return Mesh
-	}
-
-	element!: Mesh
-
-	get glLoaded() {
-		return this._glLoaded
-	}
-
-	get cssLoaded() {
-		return this._cssLoaded
+		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
+		// XXX Instead of using arrays with multiple types, we could branch the class
+		// hierarchy to avoid arrays/unions.
+		return [Mesh, Points]
 	}
 
 	loadGL() {
@@ -76,13 +70,13 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 	// TODO
 	// private __initialSize: null,
 
-	private __disposeMeshComponent(element: Mesh, name: 'geometry' | 'material') {
+	private __disposeMeshComponent(element: Mesh | Points, name: 'geometry' | 'material') {
 		// TODO handle material arrays
 		if (element.three[name]) (element.three[name] as Geometry | Material).dispose()
 	}
 
 	private __setMeshComponent(
-		element: Mesh,
+		element: Mesh | Points,
 		name: 'geometry' | 'material',
 		newComponent: BufferGeometry | Geometry | Material,
 	) {
@@ -94,11 +88,11 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 		// or element.three[name as 'material'] = newComponent as Material
 	}
 
-	private __setDefaultComponent(element: Mesh, name: 'geometry' | 'material') {
+	private __setDefaultComponent(element: Mesh | Points, name: 'geometry' | 'material') {
 		this.__setMeshComponent(element, name, this.__makeDefaultComponent(element, name))
 	}
 
-	private __makeDefaultComponent(element: Mesh, name: 'geometry' | 'material'): Geometry | Material {
+	private __makeDefaultComponent(element: Mesh | Points, name: 'geometry' | 'material'): Geometry | Material {
 		switch (name) {
 			case 'geometry':
 				return new BoxGeometry(element.calculatedSize.x, element.calculatedSize.y, element.calculatedSize.z)

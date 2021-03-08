@@ -179,5 +179,6 @@ see the result.
 
 # What's next?
 
-Now that you're up and running, learn more in the [Guide](#) (coming soon...) and [API
+Now that you're up and running, learn more in the [Guide](#) (:construction:
+:hammer: Under construction! :hammer: :construction:) and [API
 reference](./api/core/Node).

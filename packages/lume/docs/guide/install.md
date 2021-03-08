@@ -139,11 +139,13 @@ window, and gives the web page a background color.
 
 ## ES module install
 
-> **STUB** This section is TODO.
+> :construction: :hammer: Under construction! :hammer: :construction:
 
 ## Local install
 
-> **NOTE!** This section is work-in-progress, but people with more knowledge of common JavaScript tooling should get the idea.
+> :construction: :hammer: Under construction! :hammer: :construction:
+>
+> This section is work-in-progress, but people with knowledge of common JavaScript tooling should get the idea.
 
 More advanced users can install LUME from NPM:
 

@@ -3,19 +3,10 @@ import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Node} from './Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {NodeAttributes} from './Node.js'
-
 // register behaviors that can be used on this element
-import '../html/behaviors/BasicMaterialBehavior.js'
-import '../html/behaviors/PhongMaterialBehavior.js'
-import '../html/behaviors/ShaderMaterialBehavior.js'
-import '../html/behaviors/DOMNodeMaterialBehavior.js'
-import '../html/behaviors/BoxGeometryBehavior.js'
-import '../html/behaviors/SphereGeometryBehavior.js'
-import '../html/behaviors/PlaneGeometryBehavior.js'
-import '../html/behaviors/DOMNodeGeometryBehavior.js'
-import '../html/behaviors/RoundedRectangleGeometryBehavior.js'
-import '../html/behaviors/PLYGeometryBehavior.js'
+import './mesh-behaviors.js'
+
+import type {NodeAttributes} from './Node.js'
 
 export type PointsAttributes = NodeAttributes
 

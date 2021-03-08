@@ -3,15 +3,20 @@ import {autorun, reactive, StopFunction, stringAttribute} from '@lume/element'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import BaseGeometryBehavior from './BaseGeometryBehavior.js'
-import {Events} from '../../core/index.js'
+import {Events} from '../../core/Events.js'
+import {Points} from '../../core/Points.js'
 
 @reactive
-export class BoxGeometryBehavior extends BaseGeometryBehavior {
+export class PLYGeometryBehavior extends BaseGeometryBehavior {
 	/** Path to a .ply file. */
 	@stringAttribute('') src = ''
 
 	loader?: PLYLoader
 	model?: BufferGeometry
+
+	requiredElementType() {
+		return [Points]
+	}
 
 	protected static _observedProperties = ['src', ...(BaseGeometryBehavior._observedProperties || [])]
 
@@ -90,7 +95,6 @@ export class BoxGeometryBehavior extends BaseGeometryBehavior {
 	private __onError(error: ErrorEvent) {
 		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
-		debugger
 		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
@@ -104,4 +108,4 @@ export class BoxGeometryBehavior extends BaseGeometryBehavior {
 	}
 }
 
-elementBehaviors.define('ply-geometry', BoxGeometryBehavior)
+elementBehaviors.define('ply-geometry', PLYGeometryBehavior)

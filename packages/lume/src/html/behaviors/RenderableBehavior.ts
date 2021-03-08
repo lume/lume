@@ -3,11 +3,11 @@ import {Events} from '../../core/Events.js'
 import Node from '../../core/Node.js'
 
 /**
- * Base class for behaviors relating to rendering
+ * Base class for behaviors relating to rendering. This is for any behavior that renders with CSS or WebGL rendering.
  */
 export abstract class RenderableBehavior extends Behavior {
 	requiredElementType() {
-		return Node
+		return [Node]
 	}
 
 	connectedCallback() {
@@ -28,6 +28,18 @@ export abstract class RenderableBehavior extends Behavior {
 		this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
 	}
 
+	get glLoaded() {
+		return this._glLoaded
+	}
+
+	protected _glLoaded = false
+
+	get cssLoaded() {
+		return this._cssLoaded
+	}
+
+	protected _cssLoaded = false
+
 	loadGL(): boolean {
 		if (!this.element.three) return false
 
@@ -43,7 +55,4 @@ export abstract class RenderableBehavior extends Behavior {
 
 		return true
 	}
-
-	protected _glLoaded = false
-	protected _cssLoaded = false
 }

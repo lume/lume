@@ -5,7 +5,6 @@ import {reactive, autorun, StopFunction, stringAttribute} from '@lume/element'
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import type BaseMeshBehavior from './BaseMeshBehavior.js'
 import type {MeshComponentType} from './BaseMeshBehavior.js'
-import type {Mesh} from '../../core/Mesh.js'
 
 export type MaterialTextureAttributes = 'texture' | 'bumpMap' | 'specularMap'
 
@@ -18,7 +17,6 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 	@reactive
 	class MaterialTexture extends Parent {
 		type: MeshComponentType = 'material'
-		element!: Mesh
 
 		@stringAttribute('') texture = ''
 		@stringAttribute('') bumpMap = ''
