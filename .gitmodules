@@ -3,7 +3,7 @@
 	url = https://github.com/lume/readem.git
 [submodule "packages/docsifyjs+docsify"]
 	path = packages/docsifyjs+docsify
-	url = https://github.com/trusktr/docsify.git
+	url = https://github.com/lume/docsify.git
 [submodule "packages/cli"]
 	path = packages/cli
 	url = https://github.com/lume/cli.git
@@ -39,4 +39,4 @@
 	url = https://github.com/lume/basicss.git
 [submodule "packages/custom-attributes"]
 	path = packages/custom-attributes
-	url = git@github.com:lume/custom-attributes.git
+	url = https://github.com/lume/custom-attributes.git
