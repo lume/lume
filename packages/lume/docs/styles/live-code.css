@@ -30,9 +30,17 @@
      * appears to go beyond the boundaries of the container.
      */
 	overflow: hidden;
+
+	background: #f7f7f7;
+	border: none;
 }
 
 .vuep-editor,
 .vuep-preview {
 	height: auto;
+}
+
+.vuep-rerun {
+	top: 10px;
+	right: 10px;
 }
