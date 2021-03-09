@@ -29,7 +29,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 			...(Parent._observedProperties || []),
 		]
 
-		private stopFns: StopFunction[] = []
+		private __stopFns: StopFunction[] = []
 
 		loadGL() {
 			if (!super.loadGL()) return false
@@ -69,7 +69,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 				this.element.needsUpdate() // Lume needs to re-render
 			}
 
-			this.stopFns.push(
+			this.__stopFns.push(
 				autorun(() => handleTexture('texture', 'map')),
 				autorun(() => handleTexture('bumpMap', 'bumpMap')),
 				autorun(() => handleTexture('specularMap', 'specularMap')),
@@ -81,7 +81,8 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		unloadGL() {
 			if (!super.unloadGL()) return false
 
-			for (const stop of this.stopFns) stop()
+			for (const stop of this.__stopFns) stop()
+			this.__stopFns.length = 0
 
 			const mat = this.element.three.material as MeshPhongMaterial
 			if (mat.map) mat.map.dispose()

@@ -152,7 +152,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			super.connectedCallback()
 
 			// For example, subclasses should push autoruns in connectedCallback.
-			this._stopFns.push(/* autorun(...) */)
+			// this._stopFns.push(autorun(...))
 		}
 
 		disconnectedCallback() {
@@ -163,6 +163,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			super.disconnectedCallback()
 
 			for (const stop of this._stopFns) stop()
+			this._stopFns.length = 0
 		}
 
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance

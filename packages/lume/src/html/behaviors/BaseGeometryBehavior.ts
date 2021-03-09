@@ -53,6 +53,7 @@ export default abstract class BaseGeometryBehavior extends BaseMeshBehavior {
 		if (!super.unloadGL()) return false
 
 		for (const stop of this._stopFns) stop()
+		this._stopFns.length = 0
 
 		return true
 	}

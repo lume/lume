@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {autorun, reactive, StopFunction, stringAttribute} from '@lume/element'
+import {autorun, reactive, stringAttribute} from '@lume/element'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import BaseGeometryBehavior from './BaseGeometryBehavior.js'
@@ -31,14 +31,12 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 	// result when a version change has happened.
 	private __version = 0
 
-	private __stopFns: StopFunction[] = []
-
 	loadGL() {
 		if (!super.loadGL()) return false
 
 		this.loader = new PLYLoader()
 
-		this.__stopFns.push(
+		this._stopFns.push(
 			autorun(() => {
 				this.src
 
@@ -54,8 +52,6 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 
 	unloadGL() {
 		if (!super.unloadGL()) return false
-
-		for (const stop of this.__stopFns) stop()
 
 		this.loader = undefined
 

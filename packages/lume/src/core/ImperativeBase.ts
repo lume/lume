@@ -597,6 +597,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this._glLoaded = false
 
 			for (const stop of this._glStopFns) stop()
+			this._glStopFns.length = 0
 
 			this.__three && disposeObject(this.__three)
 			this.__three = undefined
@@ -640,6 +641,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this._cssLoaded = false
 
 			for (const stop of this._cssStopFns) stop()
+			this._cssStopFns.length = 0
 
 			this.__threeCSS && disposeObject(this.__threeCSS)
 			this.__threeCSS = undefined

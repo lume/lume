@@ -50,6 +50,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 		if (!super.unloadGL()) return false
 
 		for (const stop of this.__stopFns) stop()
+		this.__stopFns.length = 0
 
 		this.loader = undefined
 
