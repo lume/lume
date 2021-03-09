@@ -96,6 +96,7 @@ export type SceneAttributes =
 	| 'background'
 	| 'equirectangularBackground'
 	| 'environment'
+	| 'perspective'
 
 function SceneMixin<T extends Constructor>(Base: T) {
 	// NOTE For now, we assume Scene is mixed with its HTMLInterface.
@@ -168,11 +169,24 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		 */
 		@emits('propertychange') @attribute environment = ''
 
-		@reactive private __threeCamera!: ThreePerspectiveCamera
+		@numberAttribute(400)
+		set perspective(value) {
+			this.__perspective = value
+			this._updateCameraPerspective()
+			this._updateCameraProjection()
+			this.needsUpdate()
+		}
+		get perspective() {
+			return this.__perspective
+		}
+
+		private __perspective = 400
 
 		get threeCamera(): ThreePerspectiveCamera {
 			return this.__threeCamera
 		}
+
+		@reactive private __threeCamera!: ThreePerspectiveCamera
 
 		// Used by the `scene` getter in ImperativeBase
 		protected _scene: this | null = this
@@ -224,19 +238,6 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		drawScene() {
 			this.__glRenderer && this.__glRenderer.drawScene(this)
 			this.__cssRenderer && this.__cssRenderer.drawScene(this)
-		}
-
-		private __perspective = 400
-
-		@numberAttribute(400)
-		set perspective(value) {
-			this.__perspective = value
-			this._updateCameraPerspective()
-			this._updateCameraProjection()
-			this.needsUpdate()
-		}
-		get perspective() {
-			return this.__perspective
 		}
 
 		/**
