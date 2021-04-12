@@ -20,7 +20,7 @@
 		"// ^ purge": "'lerna clean --yes' removes all node_modules while 'lerna run clean' runs each project's particular 'clean' script.",
 		"reset": "npm run purge && npm run bootstrap && npm run build",
 		"docs": "npm run build && cd packages/lume && npm run docs",
-		"docs:publish": "git push && ssh infamous@trusktr.io \"cd ~/lume+lume && npm run update\"",
+		"docs:publish": "git push && ssh infamous@trusktr.io \"bash --login -c 'cd ~/lume+lume && npm run update'\"",
 		"build": "npm run clean && lerna run build",
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
