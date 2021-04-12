@@ -125,6 +125,8 @@ export class FlingRotation {
 		)
 	}
 
+	private onDragStart = (event: DragEvent) => event.preventDefault()
+
 	private __isStarted = false
 
 	start(): this {
@@ -136,7 +138,8 @@ export class FlingRotation {
 		// Hack needed for Chrome (works fine in Firefox) otherwise
 		// pointercancel breaks the drag handling. See
 		// https://crbug.com/1166044
-		this.interactionInitiator.addEventListener('dragstart', event => event.preventDefault())
+		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
+		this.interactionInitiator.addEventListener('dragstart', this.onDragStart)
 		this.interactionInitiator.addEventListener('pointercancel', () => {
 			throw new Error('Pointercancel should not be happening. If so, please open a bug report.')
 		})
@@ -149,6 +152,8 @@ export class FlingRotation {
 		this.__isStarted = false
 
 		this.interactionInitiator.removeEventListener('pointerdown', this.onPointerDown)
+		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
+		this.interactionInitiator.addEventListener('dragstart', this.onDragStart)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
 		if (this.onMove) this.interactionContainer.removeEventListener('pointermove', this.onMove)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
