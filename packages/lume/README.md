@@ -14,7 +14,7 @@ powered by both CSS and WebGL.
 
 ## About
 
-Lume gives you general-purpose HTML Elements for defining 2D or 3D scenes
+LUME gives you general-purpose HTML Elements for defining 2D or 3D scenes
 rendered with CSS3D, WebGL, or both mixed together.
 
 Find out more on [lume.io](//lume.io)!

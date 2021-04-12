@@ -13,10 +13,10 @@
   <a href="//github.com/lume/lume">Source</a>
 </h3>
 
-Lume gives you general-purpose HTML Elements for defining 2D or 3D scenes
+LUME gives you general-purpose HTML Elements for defining 2D or 3D scenes
 rendered with CSS3D, WebGL, or both mixed together.
 
-Lume's "mixed mode" let's us combine traditional HTML elements styled with
+LUME's "mixed mode" let's us combine traditional HTML elements styled with
 CSS with new elements that render with WebGL, which means we can render both
 traditional HTML content and 3D models together in the same 3D space, with
 lighting and shadow effects on both.
@@ -25,12 +25,12 @@ As an example, consider traditional CSS `box-shadow` which is flat and static:
 
 <div id="traditional"></div>
 
-With Lume we can give traditional HTML content **_real and dynamic_** shadow and lighting! See
+With LUME we can give traditional HTML content **_real and dynamic_** shadow and lighting! See
 for yourself!
 
 <div id="dynamic"></div>
 
-Lume is built on the [Web Component
+LUME is built on [Web Component
 standards](https://www.w3.org/standards/techs/components#w3c_all), making it
 possible to write 3D scenes declaratively using custom HTML elements,
 regardless of which view layer you prefer. This makes it possible for you write

@@ -1,19 +1,23 @@
 # Install
 
-There following describes ways to install and start using Lume with or
+The following describes ways to install and start using LUME with or
 without build tools.
 
 If you're a new to development and are not yet familiar with [how to use a
 terminal command
 line](https://www.davidbaumgold.com/tutorials/command-line/), then the
-following [Global install](#global-install-easiest) will be the easiest way
-for you to get started.
+following [Global install](#global-install-easiest) method will be the easiest way
+for you to get started with the most minimal knowledge required.
 
-The non-global installation requires basic understanding of the command line
+The non-global install methods require basic understanding of the command line
 and command line tools for managing code, and is better suited for bigger or
 longer-term applications that require modular code organization.
 
-## Global install (easiest)
+## Install methods
+
+First you will want to get the LUME code into your project using one of the following methods.
+
+### Global install (easiest)
 
 The easiest way to get started is by placing a `<script>` tag into an HTML
 page in order to load `LUME` as a global variable. This requires no build
@@ -137,11 +141,11 @@ window, and gives the web page a background color.
 
 <!-- TODO: Add a tip here regarding CSS, link to a tutorial. -->
 
-## ES module install
+### ES module install
 
 > :construction: :hammer: Under construction! :hammer: :construction:
 
-## Local install
+### Local install
 
 > :construction: :hammer: Under construction! :hammer: :construction:
 >
@@ -160,14 +164,15 @@ LUME.useDefaultNames()
 
 ## Define the HTML elements
 
-You must register the Lume HTML elements with your browser, using either the
-default element names (which is easier), or custom element names. Using
-custom names for the elements may be useful for solving a naming collision if
-one arrises.
+Now that you've imported the code into your project, you must register the LUME
+HTML elements with your browser, using either the default element names
+(easier), or custom element names. Using custom names for the elements may be
+useful for solving naming collisions if any arrise, or if you simply prefer to
+use different names.
 
-<h3> with default names </h3>
+### with default names
 
-The fastest way to get up and running is to tell Lume to use default naming
+The fastest way to get up and running is to tell LUME to use default naming
 for all of its HTML elements:
 
 ```js
@@ -197,7 +202,7 @@ names, like so:
 > elements that are in your web page. Here's an [introduction to the
 > DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
 
-<h3> with custom names </h3>
+### with custom names
 
 Sometimes you might like to use different element names (f.e. to avoid a
 naming conflict, or just because you feel like it). You can do this using the

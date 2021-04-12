@@ -66,7 +66,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 				}
 
 				mat.needsUpdate = true // Three.js needs to update the material in the GPU
-				this.element.needsUpdate() // Lume needs to re-render
+				this.element.needsUpdate() // LUME needs to re-render
 			}
 
 			this.__stopFns.push(
