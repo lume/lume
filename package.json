@@ -8,7 +8,9 @@
 	},
 	"scripts": {
 		"clean": "lerna run clean",
-		"install": "npm run bootstrap && npm run build",
+		"install": "npm run update-modules && npm run bootstrap && npm run build",
+		"update": "git pull && npm install",
+		"update-modules": "git submodule update --init --recursive",
 		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem}' --ignore-scripts --loglevel notice -- --loglevel notice && lerna bootstrap --no-ci --scope '{,readem}' --ignore-scripts",
 		"// ^ bootstrap": "Bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume).",
 		"// ^ bootstrap 2": "TODO bootstrap readem along with cli, so that cli is linked into it. Maybe the scope would be {readem,cli}",
@@ -18,6 +20,7 @@
 		"// ^ purge": "'lerna clean --yes' removes all node_modules while 'lerna run clean' runs each project's particular 'clean' script.",
 		"reset": "npm run purge && npm run bootstrap && npm run build",
 		"docs": "npm run build && cd packages/lume && npm run docs",
+		"docs:publish": "git push && ssh infamous@trusktr.io \"cd ~/lume+lume && npm run update\"",
 		"build": "npm run clean && lerna run build",
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
