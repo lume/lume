@@ -47,7 +47,7 @@ it. You should see the same visual as in the following example:
 Let's go over what this does. The first line,
 
 ```html
-<script src="https://unpkg.com/lume@0.0.0/dist/global.js"></script>
+<script src="https://unpkg.com/lume@0.2.2/dist/global.js"></script>
 ```
 
 is an HTML `<script>` element that tells the browser where to get LUME code from.
@@ -77,10 +77,17 @@ of a 3D scene on the screen:
 ```html
 <lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	<lume-point-light
+		color="white"
+		align-point="0.5 0.5"
+		position="0 0 300"
+		size="0 0 0"
+		cast-shadow="true"
+		intensity="0.65"
+	>
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 ```
 
@@ -223,7 +230,7 @@ new Vue({
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <script type=module>
     LUME.useDefaultNames()
@@ -233,10 +240,10 @@ new Vue({
 cube in the middle of the view: -->
 <lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	<lume-point-light color="white" align-point="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 
 <!-- Now we give the cube a basic rotation around the Y axis: -->
@@ -276,7 +283,7 @@ el: '#defaultNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <script type=module>
   LUME.useDefaultNames()
@@ -314,7 +321,7 @@ el: '#defaultNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <lume-scene>
   <lume-node id="node" position="50 50" size="100 100"></lume-node>
@@ -338,7 +345,7 @@ el: '#customNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <script type=module>
   const {Scene, Node} = LUME
@@ -379,7 +386,7 @@ el: '#customNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <x-scene>
   <x-node id="node" position="50 50" size="100 100"></x-node>
