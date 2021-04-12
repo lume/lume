@@ -63,7 +63,7 @@ website that allows us to get code for any JavaScript projects that are
 hosted on http://npmjs.com), we wrote
 
 ```html
-<script>
+<script type="module">
 	LUME.useDefaultNames()
 </script>
 ```
@@ -75,19 +75,12 @@ Next we wrote some HTML code using the LUME elements to define the structure
 of a 3D scene on the screen:
 
 ```html
-<lume-scene experimental-webgl>
+<lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light
-		color="white"
-		align-point="0.5 0.5"
-		position="0 0 300"
-		size="0 0 0"
-		cast-shadow="true"
-		intensity="0.65"
-	>
+	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 ```
 
@@ -103,7 +96,7 @@ Now that we've defined a scene, we made a `<script>` tag containing some code
 to make our cube rotate:
 
 ```html
-<script>
+<script type="module">
 	box.rotation = (x, y, z) => [x, y + 1, z]
 </script>
 ```
@@ -232,22 +225,22 @@ new Vue({
     code:
 `<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
-<script>
+<script type=module>
     LUME.useDefaultNames()
 <\/script>
 
 <!-- This defines the structure of a 3D scene with some lighting, and a 3D
 cube in the middle of the view: -->
-<lume-scene experimental-webgl>
+<lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
-	<lume-point-light color="white" align-point="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
+	<lume-point-light color="white" align="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
 
-	<lume-box id="box" size="100 100 100" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
+	<lume-box id="box" size="100 100 100" align="0.5 0.5 0.5" mount-point="0.5 0.5 0.5"> </lume-box>
 </lume-scene>
 
 <!-- Now we give the cube a basic rotation around the Y axis: -->
-<script>
+<script type=module>
 	box.rotation = (x, y, z) => [x, y + 1, z]
 <\/script>
 
@@ -285,13 +278,13 @@ data: {
 code:
 `<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
-<script>
+<script type=module>
   LUME.useDefaultNames()
 
   const {Scene, Node} = LUME
   const scene = new Scene()
 
-  const node = new Node({
+  const node = new Node().set({
     position: [50, 50, 0], // X, Y, and Z position
     size: [100, 100, 0], // X, Y, and Z size
   })
@@ -327,7 +320,7 @@ code:
   <lume-node id="node" position="50 50" size="100 100"></lume-node>
 </lume-scene>
 
-<script>
+<script type=module>
   LUME.useDefaultNames()
   document.getElementById('node').rotation = (x, y, z) => [x, y + 1, z]
 <\/script>
@@ -347,7 +340,7 @@ data: {
 code:
 `<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
 
-<script>
+<script type=module>
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:
@@ -356,7 +349,7 @@ code:
 
   const scene = new Scene()
 
-  const node = new Node({
+  const node = new Node().set({
     position: [50, 50, 0], // X, Y, and Z position
     size: [100, 100, 0], // X, Y, and Z size
   })
@@ -392,7 +385,7 @@ code:
   <x-node id="node" position="50 50" size="100 100"></x-node>
 </x-scene>
 
-<script>
+<script type=module>
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:
