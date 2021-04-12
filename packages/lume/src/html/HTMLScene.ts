@@ -1,8 +1,5 @@
-import {html as _html} from '@lume/element/dist/html.js'
+import {html} from '@lume/element/dist/html.js'
 import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase.js'
-
-// TODO This type cast not needed on the next lit-dom-expressions release after v0.19.10.
-const html = _html as any
 
 initDeclarativeBase()
 
@@ -61,24 +58,36 @@ export default class HTMLScene extends DeclarativeBase {
 		.lume-scene-MiscellaneousLayer {
 			pointer-events: none;
 		}
+
+		/*
+		 * This trick is needed in Firefox to remove pointer events from the
+		 * transparent cameraElement from interfering with pointer events on the
+		 * scene objects. We do not wish to interact with this element anyway, as
+		 * it serves only for positioning the view.
+		 */
+		.cameraElement {
+			pointer-events: none;
+		}
+		.cameraElement > * {
+			pointer-events: auto;
+		}
 	`
 
 	template = () => html`
-		<div class="lume-scene-inner">
-			<div ref=${(el: any) => (this._cssLayer = el)} class="lume-scene-CSS3DLayer">
-				${
-					/* WebGLRendererThree places the CSS3DRendererNested domElement
+		<div ref=${(el: any) => (this._cssLayer = el)} class="lume-scene-CSS3DLayer">
+			${
+				/* WebGLRendererThree places the CSS3DRendererNested domElement
 				here, which contains a <slot> element that child elements of
 				a Scene are distributed into (rendered relative to).
 				*/ ''
-				}
-			</div>
-			<div ref=${(el: any) => (this._glLayer = el)} class="lume-scene-WebGLLayer">
-				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
-			</div>
-			<div class="lume-scene-MiscellaneousLayer">
-				<slot name="misc"></slot>
-			</div>
+			}
+		</div>
+		<div ref=${(el: any) => (this._glLayer = el)} class="lume-scene-WebGLLayer">
+			${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+		</div>
+		<div class="lume-scene-MiscellaneousLayer">
+			${/* This layer is used by WebVR to insert some UI like the Enter VR button. */ ''}
+			<slot name="misc"></slot>
 		</div>
 	`
 
@@ -94,25 +103,6 @@ export default class HTMLScene extends DeclarativeBase {
 
 		// When the HTMLScene gets addded to the DOM, make it be "mounted".
 		if (!this._mounted) this.mount!(this.parentNode as Element)
-
-		const root = this._cssLayer!.attachShadow({mode: 'open'})
-		root.append(html`
-			<style>
-				.lume-scene-CSS3DLayer-inner {
-					/*
-					 * make sure CSS3D rendering is contained inside of the
-					 * CSS3DLayer (all 3D elements have position:absolute,
-					 * which will be relative to this container)
-					 */
-					position: relative;
-				}
-			</style>
-		`)
-		root.append(html`
-			<div class="lume-scene-CSS3DLayer-inner">
-				<slot></slot>
-			</div>
-		`)
 	}
 
 	disconnectedCallback() {
@@ -121,7 +111,10 @@ export default class HTMLScene extends DeclarativeBase {
 		this.unmount!()
 	}
 
+	// WebGLRendererThree appends its content into here.
 	protected _glLayer: HTMLDivElement | null = null
+
+	// CSS3DRendererThree appends its content into here.
 	protected _cssLayer: HTMLDivElement | null = null
 }
 
