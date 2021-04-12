@@ -133,6 +133,14 @@ export class FlingRotation {
 
 		this.interactionInitiator.addEventListener('pointerdown', this.onPointerDown)
 
+		// Hack needed for Chrome (works fine in Firefox) otherwise
+		// pointercancel breaks the drag handling. See
+		// https://crbug.com/1166044
+		this.interactionInitiator.addEventListener('dragstart', event => event.preventDefault())
+		this.interactionInitiator.addEventListener('pointercancel', () => {
+			throw new Error('Pointercancel should not be happening. If so, please open a bug report.')
+		})
+
 		return this
 	}
 
