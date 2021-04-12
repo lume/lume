@@ -10,7 +10,18 @@ type ScrollFlingOptions = Partial<
 
 @reactive
 export class ScrollFling {
+	/**
+	 * During scroll, this value will change. It is reactive so that it can be
+	 * observed. Set this value initially if you want to start at a certain
+	 * value.
+	 */
 	@reactive x = 0
+
+	/**
+	 * During scroll, this value will change. It is reactive so that it can be
+	 * observed. Set this value initially if you want to start at a certain
+	 * value.
+	 */
 	@reactive y = 0
 
 	minX = -Infinity

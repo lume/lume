@@ -38,7 +38,7 @@
 		"docs": "npm run build && npm run docs:build && npm run docs:serve",
 		"add-contributor": "all-contributors add",
 		"generate-contributors": "all-contributors generate",
-		"examples": "live-server --watch=global.js,examples",
+		"examples": "live-server --watch=dist/global.js,examples",
 		"/////////////////////// TODO": "Move some of the below scripts into the js-package archetype.",
 		"lint-format": "npm run lint-all && npm run prettier:check && npm run build && echo 'implement tests'",
 		"lint": "esw --format codeframe --config ./.eslintrc.js",

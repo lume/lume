@@ -48,7 +48,7 @@
   -->
   <lume-points
     id="model"
-    has="ply-geometry"
+    has="ply-geometry phong-material"
     src="${location.origin+location.pathname}examples/shelby-gt350-points/shelby-gt350.ply"
     rotation="90 0 0"
     position="-250 0 0"

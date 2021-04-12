@@ -24,7 +24,7 @@
   -->
   <lume-points
     id="model"
-    has="ply-geometry"
+    has="ply-geometry phong-material"
     src="${location.origin+location.pathname}examples/velodyne-lidar-scan/shelby-scene.ply"
     rotation="90 0 0"
     position="0 0 60"
@@ -60,8 +60,8 @@
 </style>
 
 <script>
-	LUME.useDefaultNames()
-	light.position = (x, y, z, t) => [500 * Math.sin(t * 0.001), 500 * Math.cos(t * 0.001), z]
+  LUME.useDefaultNames()
+  light.position = (x, y, z, t) => [500 * Math.sin(t * 0.001), 500 * Math.cos(t * 0.001), z]
   model.on('MODEL_LOAD', () => {
     scene.classList.remove('hidden')
     loading.classList.add('hidden')

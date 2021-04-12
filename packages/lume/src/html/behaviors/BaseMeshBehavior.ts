@@ -21,7 +21,7 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 
 	requiredElementType() {
 		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
-		// XXX Instead of using arrays with multiple types, we could branch the class
+		// XXX An alternative to using arrays with multiple types is we could branch the class
 		// hierarchy to avoid arrays/unions.
 		return [Mesh, Points]
 	}

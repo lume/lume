@@ -16,10 +16,7 @@ export class Points extends Node {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},
-		// TODO replace this with a new default points-material
-		// (PointsMaterialBehavior that uses THREE.PointsMaterial), which
-		// includes features like point size attenuation, etc.
-		'phong-material': (initialBehaviors: any) => {
+		'points-material': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
 		},
 	}

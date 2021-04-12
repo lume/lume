@@ -67,6 +67,7 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 			autorun(() => {
 				this.opacity
 				this.updateMaterial('opacity')
+				// @ts-ignore see FIXME regarding F-Bounded Types in PointsMaterialBehavior.
 				this.updateMaterial('transparent')
 			}),
 			autorun(() => {
@@ -106,7 +107,7 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		return true
 	}
 
-	updateMaterial<Prop extends 'color' | 'opacity' | 'transparent' | 'wireframe'>(propName: Prop) {
+	updateMaterial<Prop extends BaseMaterialBehaviorAttributes>(propName: Prop, thisProp: keyof this = propName) {
 		const mat = this.element.three.material as any
 
 		// TODO Better taxonomy organization. F.e. ShaderMaterial doesn't have
@@ -115,11 +116,11 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		if (Array.isArray(mat)) {
 			for (const m of mat) {
 				// @ts-ignore
-				m[propName] = this[propName]
+				m[propName] = this[thisProp]
 			}
 		} else {
 			// @ts-ignore
-			mat[propName] = this[propName]
+			mat[propName] = this[thisProp]
 		}
 
 		this.element.needsUpdate()
