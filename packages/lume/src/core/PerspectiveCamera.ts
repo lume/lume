@@ -119,19 +119,11 @@ export default class PerspectiveCamera extends Node {
 			// TODO: unset might be triggered before the scene was mounted, so
 			// there might not be a last known scene. We won't need this check
 			// when we add unmountedCallback. #150
-			if (this.__lastKnownScene)
-				this.__lastKnownScene
-					// @ts-ignore: call protected method
-					._removeCamera(this)
+			if (this.__lastKnownScene) this.__lastKnownScene._removeCamera(this)
 		} else {
 			if (!this.scene || !this.isConnected) return
 
-			this.scene
-				// @ts-ignore: call protected method
-				._addCamera(
-					//
-					this,
-				)
+			this.scene._addCamera(this)
 		}
 	}
 }

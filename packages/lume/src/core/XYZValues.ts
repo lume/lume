@@ -29,7 +29,7 @@ export default abstract class XYZValues<T = any> extends Eventful {
 		this.__from(x, y, z)
 	}
 
-	protected abstract get default(): XYZValuesObject<T>
+	abstract get default(): XYZValuesObject<T>
 
 	private get _default(): XYZValuesObject<T> {
 		return this.default || defaultValues
@@ -140,7 +140,7 @@ export default abstract class XYZValues<T = any> extends Eventful {
 	 * @param prop
 	 * @param value
 	 */
-	protected checkValue(_prop: string, _value: T): boolean {
+	checkValue(_prop: string, _value: T): boolean {
 		return true
 	}
 

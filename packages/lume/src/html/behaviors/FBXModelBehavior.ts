@@ -18,7 +18,7 @@ export class FBXModelBehavior extends RenderableBehavior {
 	loader?: FBXLoader
 	model?: Group
 
-	protected static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
+	static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
 
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the

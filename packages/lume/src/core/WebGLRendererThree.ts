@@ -84,10 +84,7 @@ export class WebGLRendererThree {
 
 		// TODO? Maybe the html/scene.js element should be responsible for
 		// making this, so that DOM logic is encapsulated there?
-		// @ts-ignore: access protected member
-		scene._glLayer
-			//
-			.appendChild(renderer.domElement)
+		scene._glLayer.appendChild(renderer.domElement)
 	}
 
 	uninitialize(scene: Scene) {
@@ -97,10 +94,7 @@ export class WebGLRendererThree {
 
 		scene.off('sizechange', sceneState.sizeChangeHandler)
 
-		// @ts-ignore: access protected member
-		scene._glLayer
-			//
-			.removeChild(sceneState.renderer.domElement)
+		scene._glLayer.removeChild(sceneState.renderer.domElement)
 
 		sceneState.renderer.dispose()
 		sceneState.pmremgen?.dispose()
@@ -128,11 +122,8 @@ export class WebGLRendererThree {
 
 		if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
-		// @ts-ignore: access protected member
 		scene._updateCameraAspect()
-		// @ts-ignore: access protected member
 		scene._updateCameraPerspective()
-		// @ts-ignore: access protected member
 		scene._updateCameraProjection()
 
 		const {x, y} = scene.calculatedSize

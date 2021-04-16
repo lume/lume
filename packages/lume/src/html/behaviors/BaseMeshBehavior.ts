@@ -60,7 +60,7 @@ export default abstract class BaseMeshBehavior extends RenderableBehavior {
 		return (this.element.three[name] as unknown) as T
 	}
 
-	protected _createComponent(): BufferGeometry | Geometry | Material {
+	_createComponent(): BufferGeometry | Geometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 

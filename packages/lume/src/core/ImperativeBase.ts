@@ -56,10 +56,10 @@ declare class PossiblyWebComponent extends HTMLElement {
 	// TODO re-organize properties from WebComponent/DeclarativeBase
 	childConnectedCallback?(child: Element): void
 	childDisconnectedCallback?(child: Element): void
-	protected _isPossiblyDistributedToShadowRoot?: boolean
-	protected _distributedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
-	protected _shadowRootParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
-	protected _composedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+	_isPossiblyDistributedToShadowRoot?: boolean
+	_distributedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+	_shadowRootParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
+	_composedParent?: TreeNode // ImperativeBase causes "is referenced directly or indirectly" error
 }
 
 const threeJsPostAdjustment = [0, 0, 0]
@@ -454,23 +454,23 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			Motor.setNodeToBeRendered(this)
 		}
 
-		protected _glLoaded = false
-		@reactive protected _cssLoaded = false
-		protected _willBeRendered = false
+		_glLoaded = false
+		@reactive _cssLoaded = false
+		_willBeRendered = false
 
 		private __elOps?: ElementOperations
 
 		// TODO Remove this type cast, see all the errors, then figure out how
 		// to polyfill the APIs for use in a non-DOM environment (most likely in
 		// the TreeNode base class).
-		protected get _elementOperations(): ElementOperations {
+		get _elementOperations(): ElementOperations {
 			if (!this.__elOps) this.__elOps = new ElementOperations((this as unknown) as HTMLElement)
 			return this.__elOps
 		}
 
 		// stores a ref to this Node's root Scene when/if this Node is
 		// in a scene.
-		@reactive protected _scene: Scene | null = null
+		@reactive _scene: Scene | null = null
 
 		/**
 		 * @protected
@@ -491,7 +491,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return new CSS3DObjectNested(this)
 		}
 
-		protected _connectThree(): void {
+		_connectThree(): void {
 			if (
 				this._isPossiblyDistributedToShadowRoot &&
 				// check parent isn't a Scene because Scenes always
@@ -527,7 +527,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this.needsUpdate()
 		}
 
-		protected _connectThreeCSS(): void {
+		_connectThreeCSS(): void {
 			// @ts-ignore
 			if (
 				this._isPossiblyDistributedToShadowRoot &&
@@ -563,9 +563,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this.needsUpdate()
 		}
 
-		protected _glStopFns: StopFunction[] = []
+		_glStopFns: StopFunction[] = []
 
-		protected _loadGL(): boolean {
+		_loadGL(): boolean {
 			if (!(this.scene && this.scene.webgl)) return false
 
 			if (this._glLoaded) return false
@@ -591,7 +591,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _unloadGL(): boolean {
+		_unloadGL(): boolean {
 			if (!this._glLoaded) return false
 
 			this._glLoaded = false
@@ -607,9 +607,9 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _cssStopFns: StopFunction[] = []
+		_cssStopFns: StopFunction[] = []
 
-		protected _loadCSS(): boolean {
+		_loadCSS(): boolean {
 			const cssIsEnabled = this.scene && this.scene.enableCss
 
 			if (!cssIsEnabled) return false
@@ -635,7 +635,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _unloadCSS(): boolean {
+		_unloadCSS(): boolean {
 			if (!this._cssLoaded) return false
 
 			this._cssLoaded = false
@@ -651,7 +651,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _triggerLoadGL(): void {
+		_triggerLoadGL(): void {
 			if (!this._loadGL()) return
 
 			this.emit(Events.BEHAVIOR_GL_LOAD, this)
@@ -674,20 +674,20 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadGL()
 		}
 
-		protected _triggerUnloadGL(): void {
+		_triggerUnloadGL(): void {
 			this._unloadGL()
 			this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
 			defer(() => this.emit(Events.GL_UNLOAD, this))
 		}
 
-		protected _triggerLoadCSS(): void {
+		_triggerLoadCSS(): void {
 			if (!this._loadCSS()) return
 
 			this.emit(Events.CSS_LOAD, this)
 			for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadCSS()
 		}
 
-		protected _triggerUnloadCSS(): void {
+		_triggerUnloadCSS(): void {
 			this._unloadCSS()
 			this.emit(Events.CSS_UNLOAD, this)
 		}
@@ -704,7 +704,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		 * TODO #66: make sure this is called after size calculations when we
 		 * move _calcSize to a render task.
 		 */
-		protected _calculateMatrix(): void {
+		_calculateMatrix(): void {
 			const align = this.getAlignPoint()
 			const mountPoint = this.getMountPoint()
 			const position = this.getPosition()
@@ -818,7 +818,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			this.threeCSS.updateMatrix()
 		}
 
-		protected _updateRotation(): void {
+		_updateRotation(): void {
 			const {x, y, z} = this.getRotation()
 
 			// Currently rotation is left-handed as far as values inputted into
@@ -853,13 +853,13 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 			)
 		}
 
-		protected _updateScale(): void {
+		_updateScale(): void {
 			const {x, y, z} = this.getScale()
 			this.three.scale.set(x, y, z)
 			this.threeCSS.scale.set(x, y, z)
 		}
 
-		protected _calculateWorldMatricesInSubtree(): void {
+		_calculateWorldMatricesInSubtree(): void {
 			this.three.updateMatrixWorld()
 			this.threeCSS.updateMatrixWorld()
 			this.emit('worldMatrixUpdate')
@@ -867,7 +867,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 
 		/** This is called by Motor on each update before the GL or CSS renderers will re-render. */
 		// TODO rename "render" to "update". "render" is more for the renderer classes.
-		protected _render(_timestamp: number): void {
+		_render(_timestamp: number): void {
 			// TODO: only run this when necessary (f.e. not if only opacity
 			// changed, only if position/align/mountPoint changed, etc)
 			this._calculateMatrix()
@@ -880,7 +880,7 @@ function ImperativeBaseMixin<T extends Constructor>(Base: T) {
 		}
 
 		// This method is used by Motor._renderNodes().
-		protected _getNearestAncestorThatShouldBeRendered(): ImperativeBase | false {
+		_getNearestAncestorThatShouldBeRendered(): ImperativeBase | false {
 			let parent = this.parent
 
 			while (parent) {

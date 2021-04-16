@@ -28,7 +28,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null
 
-	protected static _observedProperties = ['src', 'dracoPath', ...(RenderableBehavior._observedProperties || [])]
+	static _observedProperties = ['src', 'dracoPath', ...(RenderableBehavior._observedProperties || [])]
 
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the

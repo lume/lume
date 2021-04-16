@@ -18,9 +18,9 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 		return [Points]
 	}
 
-	protected static _observedProperties = ['src', ...(BaseGeometryBehavior._observedProperties || [])]
+	static _observedProperties = ['src', ...(BaseGeometryBehavior._observedProperties || [])]
 
-	protected _createComponent() {
+	_createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.
 		if (!this.model) return new BufferGeometry()
 		return this.model

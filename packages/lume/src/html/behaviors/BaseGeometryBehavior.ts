@@ -25,7 +25,7 @@ export default abstract class BaseGeometryBehavior extends BaseMeshBehavior {
 		this.element.sizeMode = val
 	}
 
-	protected _stopFns: StopFunction[] = []
+	_stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false

@@ -19,7 +19,7 @@ export default class PhongMaterialBehavior extends ((MaterialTexture.mixin(
 	//     super(el)
 	//     // CONTINUE: The multiple() helper runs, but there's a runtime error "Cannot read property 'nodeName' of undefined"
 	// }
-	protected _createComponent() {
+	_createComponent() {
 		return new MeshPhongMaterial({color: 0x00ff00})
 	}
 }

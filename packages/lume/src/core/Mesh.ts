@@ -30,7 +30,7 @@ export default class Mesh extends Node {
 	@booleanAttribute(true) @emits('propertychange') castShadow = true
 	@booleanAttribute(true) @emits('propertychange') receiveShadow = true
 
-	protected _loadGL() {
+	_loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(

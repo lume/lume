@@ -31,7 +31,7 @@ export default class PointLight extends LightBase {
 	@numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
 	@numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
 
-	protected _loadGL() {
+	_loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(

@@ -33,7 +33,7 @@ function makeDeclarativeBase() {
 		static define(name?: string) {
 			name = name || this.defaultElementName
 			customElements.define(name, this)
-			this._definedElementName = name // TODO static protected members in lowclass
+			this._definedElementName = name
 		}
 
 		static get definedElementName() {
@@ -195,29 +195,29 @@ function makeDeclarativeBase() {
 			super.setAttribute(attr, value)
 		}
 
-		protected get _hasShadowRoot() {
+		get _hasShadowRoot() {
 			return !!this.__shadowRoot
 		}
 
-		protected get _isPossiblyDistributedToShadowRoot() {
+		get _isPossiblyDistributedToShadowRoot() {
 			return this.__isPossiblyDistributedToShadowRoot
 		}
 
-		protected get _shadowRootParent() {
+		get _shadowRootParent() {
 			return this.__shadowRootParent
 		}
 
-		protected get _distributedParent() {
+		get _distributedParent() {
 			return this.__distributedParent
 		}
 
-		protected get _distributedChildren() {
+		get _distributedChildren() {
 			return this.__distributedChildren ? [...this.__distributedChildren] : null
 		}
 
 		// The composed parent is the parent that this node renders relative
 		// to in the flat tree (composed tree).
-		protected get _composedParent() {
+		get _composedParent() {
 			return this.__distributedParent || this.__shadowRootParent || this.parentElement
 		}
 
@@ -225,7 +225,7 @@ function makeDeclarativeBase() {
 		// node in the flat tree (composed tree), whether as children of a
 		// shadow root, or distributed children (assigned nodes) of a <slot>
 		// element.
-		protected get _composedChildren() {
+		get _composedChildren() {
 			if (this.__shadowRoot) {
 				return [...Array.prototype.filter.call(this.__shadowRoot.children, n => n instanceof DeclarativeBase)]
 			} else {

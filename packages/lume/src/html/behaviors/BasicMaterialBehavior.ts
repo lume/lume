@@ -9,7 +9,7 @@ export default class BasicMaterialBehavior extends MaterialTexture.mixin(BaseMat
 	// constructor(el: Element) {
 	//     super(el)
 	// }
-	protected _createComponent() {
+	_createComponent() {
 		return new MeshBasicMaterial({color: 0x00ff00})
 	}
 }

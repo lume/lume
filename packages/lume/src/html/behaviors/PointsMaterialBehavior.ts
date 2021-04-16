@@ -19,7 +19,7 @@ export type PointsMaterialBehaviorAttributes =
 export default class PointsMaterialBehavior extends ((MaterialTexture.mixin(
 	BaseMaterialBehavior,
 ) as unknown) as Constructor<MaterialTexture & BaseMaterialBehavior>) {
-	protected static _observedProperties = ['sizeAttenuation', 'pointSize', ...BaseMaterialBehavior._observedProperties]
+	static _observedProperties = ['sizeAttenuation', 'pointSize', ...BaseMaterialBehavior._observedProperties]
 
 	@booleanAttribute(true) sizeAttenuation = true
 	@numberAttribute(1) pointSize = 1
@@ -49,7 +49,7 @@ export default class PointsMaterialBehavior extends ((MaterialTexture.mixin(
 		super.updateMaterial(propName as BaseMaterialBehaviorAttributes, thisProp as BaseMaterialBehaviorAttributes)
 	}
 
-	protected _createComponent() {
+	_createComponent() {
 		return new PointsMaterial({color: 0x00ff00})
 	}
 }

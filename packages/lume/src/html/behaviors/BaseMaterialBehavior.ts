@@ -12,7 +12,7 @@ export type BaseMaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidednes
 export default class BaseMaterialBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'material'
 
-	protected static _observedProperties = [
+	static _observedProperties = [
 		'wireframe',
 		'opacity',
 		'sidedness',
@@ -54,7 +54,7 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		else return false
 	}
 
-	protected _stopFns: StopFunction[] = []
+	_stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false

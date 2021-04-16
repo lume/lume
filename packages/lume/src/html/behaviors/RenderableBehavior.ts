@@ -32,13 +32,13 @@ export abstract class RenderableBehavior extends Behavior {
 		return this._glLoaded
 	}
 
-	protected _glLoaded = false
+	_glLoaded = false
 
 	get cssLoaded() {
 		return this._cssLoaded
 	}
 
-	protected _cssLoaded = false
+	_cssLoaded = false
 
 	loadGL(): boolean {
 		if (!this.element.three) return false

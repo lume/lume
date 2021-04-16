@@ -52,10 +52,7 @@ export class CSS3DRendererThree {
 
 		scene.on('sizechange', sceneState.sizeChangeHandler)
 
-		// @ts-ignore: access protected property
-		scene._cssLayer
-			//
-			.appendChild(renderer.domElement)
+		scene._cssLayer.appendChild(renderer.domElement)
 	}
 
 	uninitialize(scene: Scene) {
@@ -65,10 +62,7 @@ export class CSS3DRendererThree {
 
 		scene.off('sizechange', sceneState.sizeChangeHandler)
 
-		// @ts-ignore: access protected property
-		scene._cssLayer
-			//
-			.removeChild(sceneState.renderer.domElement)
+		scene._cssLayer.removeChild(sceneState.renderer.domElement)
 
 		sceneStates.delete(scene)
 	}
@@ -88,11 +82,8 @@ export class CSS3DRendererThree {
 
 		if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
-		// @ts-ignore: call protected method
 		scene._updateCameraAspect()
-		// @ts-ignore: call protected method
 		scene._updateCameraPerspective()
-		// @ts-ignore: call protected method
 		scene._updateCameraProjection()
 
 		const {x, y} = scene.calculatedSize

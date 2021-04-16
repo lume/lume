@@ -60,7 +60,7 @@ export default abstract class Behavior extends ForwardProps {
 	}
 
 	// used by ForwardProps. See ForwardProps.ts
-	protected get _observedObject() {
+	get _observedObject() {
 		return this.element
 	}
 
@@ -68,7 +68,7 @@ export default abstract class Behavior extends ForwardProps {
 	private __whenDefined: Promise<void> = null! as Promise<void>
 	private __elementDefined = false
 
-	protected _forwardInitialProps() {
+	_forwardInitialProps() {
 		super._forwardInitialProps()
 		this.__fowardPreUpgradeValues()
 	}
@@ -86,7 +86,6 @@ export default abstract class Behavior extends ForwardProps {
 		this.__preUpgradeValuesHandled = true
 
 		for (const prop of this._forwardedProps()) {
-			// @ts-ignore, protected access of _preUpgradeValues
 			const value = el._preUpgradeValues.get(prop)
 
 			if (value !== undefined) this._propChangedCallback(prop, value)

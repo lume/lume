@@ -292,7 +292,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 			}
 		}
 
-		protected _loadCSS() {
+		_loadCSS() {
 			if (!super._loadCSS()) return false
 
 			this._cssStopFns.push(
@@ -305,7 +305,7 @@ function NodeMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _loadGL() {
+		_loadGL() {
 			if (!super._loadGL()) return false
 
 			this._glStopFns.push(

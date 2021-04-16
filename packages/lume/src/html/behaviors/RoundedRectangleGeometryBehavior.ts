@@ -33,7 +33,7 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 		else this.__quadraticCorners = true
 	}
 
-	protected static _observedProperties = [
+	static _observedProperties = [
 		'cornerRadius',
 		'thickness',
 		'quadraticCorners',
@@ -63,7 +63,7 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 		return true
 	}
 
-	protected _createComponent() {
+	_createComponent() {
 		let thickness = this.thickness
 		let geom: Geometry
 

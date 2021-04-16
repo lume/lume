@@ -189,7 +189,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		@reactive private __threeCamera!: ThreePerspectiveCamera
 
 		// Used by the `scene` getter in ImperativeBase
-		protected _scene: this | null = this
+		_scene: this | null = this
 
 		constructor(...args: any[]) {
 			super(...args)
@@ -392,8 +392,8 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			this.__stopParentSizeObservation()
 		}
 
-		protected _mounted = false
-		protected _elementParentSize: XYZValuesObject<number>
+		_mounted = false
+		_elementParentSize: XYZValuesObject<number>
 
 		makeThreeObject3d() {
 			return new ThreeScene()
@@ -403,7 +403,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			return new ThreeScene()
 		}
 
-		protected _cameraSetup() {
+		_cameraSetup() {
 			// this.__threeCamera holds the active camera. There can be many
 			// cameras in the scene tree, but the last one with active="true"
 			// will be the one referenced here.
@@ -414,7 +414,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			this._createDefaultCamera()
 		}
 
-		protected _createDefaultCamera() {
+		_createDefaultCamera() {
 			// Use untrack so this method is non-reactive.
 			untrack(() => {
 				const size = this.calculatedSize
@@ -430,17 +430,17 @@ function SceneMixin<T extends Constructor>(Base: T) {
 
 		// TODO can this be moved to a render task like _calcSize? It depends
 		// on size values.
-		protected _updateCameraPerspective() {
+		_updateCameraPerspective() {
 			const perspective = this.__perspective
 			this.__threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
 			this.__threeCamera.position.z = perspective
 		}
 
-		protected _updateCameraAspect() {
+		_updateCameraAspect() {
 			this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
 		}
 
-		protected _updateCameraProjection() {
+		_updateCameraProjection() {
 			this.__threeCamera.updateProjectionMatrix()
 		}
 
@@ -450,12 +450,12 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		// are rendered with when no camera elements exist).
 		private __activeCameras: Set<PerspectiveCamera> = new Set()
 
-		protected _addCamera(camera: PerspectiveCamera) {
+		_addCamera(camera: PerspectiveCamera) {
 			this.__activeCameras.add(camera)
 			this.__setCamera(camera)
 		}
 
-		protected _removeCamera(camera: PerspectiveCamera) {
+		_removeCamera(camera: PerspectiveCamera) {
 			this.__activeCameras.delete(camera)
 
 			if (this.__activeCameras.size) {
@@ -468,14 +468,14 @@ function SceneMixin<T extends Constructor>(Base: T) {
 		}
 
 		/** @override */
-		protected _getParentSize(): XYZValuesObject<number> {
+		_getParentSize(): XYZValuesObject<number> {
 			return this.parent ? (this.parent as Sizeable).calculatedSize : this._elementParentSize
 		}
 
 		// For now, use the same program (with shaders) for all objects.
 		// Basically it has position, frag colors, point light, directional
 		// light, and ambient light.
-		protected _loadGL() {
+		_loadGL() {
 			// THREE
 			// maybe keep this in sceneState in WebGLRendererThree
 			if (!super._loadGL()) return false
@@ -524,15 +524,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				// skip `this`, we already handled it above
 				if (node === this) return
 
-				if (isImperativeBase(node))
-					// @ts-ignore: access protected member
-					node._triggerLoadGL()
+				if (isImperativeBase(node)) node._triggerLoadGL()
 			})
 
 			return true
 		}
 
-		protected _unloadGL() {
+		_unloadGL() {
 			if (!super._unloadGL()) return false
 
 			if (this.__glRenderer) {
@@ -544,9 +542,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				// skip `this`, we already handled it above
 				if (node === this) return
 
-				if (isImperativeBase(node))
-					// @ts-ignore: access protected member
-					node._triggerUnloadGL()
+				if (isImperativeBase(node)) node._triggerUnloadGL()
 			})
 
 			// Not all things are loaded in _loadGL (they may be loaded
@@ -560,7 +556,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 			return true
 		}
 
-		protected _loadCSS() {
+		_loadCSS() {
 			if (!super._loadCSS()) return false
 
 			this.__cssRenderer = this.__getCSSRenderer('three')
@@ -569,15 +565,13 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				// skip `this`, we already handled it above
 				if (node === this) return
 
-				if (isImperativeBase(node))
-					// @ts-ignore: access protected member
-					node._loadCSS()
+				if (isImperativeBase(node)) node._loadCSS()
 			})
 
 			return true
 		}
 
-		protected _unloadCSS() {
+		_unloadCSS() {
 			if (!super._unloadCSS()) return false
 
 			if (this.__cssRenderer) {
@@ -589,9 +583,7 @@ function SceneMixin<T extends Constructor>(Base: T) {
 				// skip `this`, we already handled it above
 				if (node === this) return
 
-				if (isImperativeBase(node))
-					// @ts-ignore: access protected member
-					node._unloadCSS()
+				if (isImperativeBase(node)) node._unloadCSS()
 			})
 
 			return true

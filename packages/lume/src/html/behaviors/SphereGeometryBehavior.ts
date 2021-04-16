@@ -3,7 +3,7 @@ import {SphereGeometry} from 'three/src/geometries/SphereGeometry.js'
 import BaseGeometryBehavior from './BaseGeometryBehavior.js'
 
 export default class SphereGeometryBehavior extends BaseGeometryBehavior {
-	protected _createComponent() {
+	_createComponent() {
 		return new SphereGeometry(this.element.calculatedSize.x / 2, 32, 32)
 	}
 }

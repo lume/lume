@@ -10,7 +10,7 @@ import MaterialTexture from './MaterialTexture.js'
 
 @reactive
 export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {
-	protected static _observedProperties = [
+	static _observedProperties = [
 		'uniforms',
 		'vertexShader',
 		'fragmentShader',
@@ -44,7 +44,7 @@ export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBe
 	@attribute vertexShader = default_vertex
 	@attribute fragmentShader = default_fragment
 
-	protected _createComponent() {
+	_createComponent() {
 		return new ShaderMaterial({
 			uniforms: this.uniforms as Record<string, any>,
 			vertexShader: this.vertexShader || default_vertex,

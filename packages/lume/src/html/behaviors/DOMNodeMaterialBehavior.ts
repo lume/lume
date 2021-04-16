@@ -6,7 +6,7 @@ import BaseMaterialBehavior from './BaseMaterialBehavior.js'
 import MaterialTexture from './MaterialTexture.js'
 
 export default class DOMNodeMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {
-	protected _createComponent() {
+	_createComponent() {
 		// TODO PERFORMANCE we can re-use a single material for
 		// all the DOM planes rather than a new material per
 		// plane.

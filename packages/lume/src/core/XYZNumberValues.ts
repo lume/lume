@@ -1,7 +1,7 @@
 import XYZValues from './XYZValues.js'
 
 export default class XYZNumberValues extends XYZValues<number> {
-	protected get default() {
+	get default() {
 		return {x: 0, y: 0, z: 0}
 	}
 

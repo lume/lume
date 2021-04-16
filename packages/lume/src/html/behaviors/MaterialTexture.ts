@@ -22,12 +22,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		@stringAttribute('') bumpMap = ''
 		@stringAttribute('') specularMap = ''
 
-		protected static _observedProperties = [
-			'texture',
-			'bumpMap',
-			'specularMap',
-			...(Parent._observedProperties || []),
-		]
+		static _observedProperties = ['texture', 'bumpMap', 'specularMap', ...(Parent._observedProperties || [])]
 
 		private __stopFns: StopFunction[] = []
 

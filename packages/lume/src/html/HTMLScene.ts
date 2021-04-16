@@ -94,7 +94,7 @@ export default class HTMLScene extends DeclarativeBase {
 	// from Scene
 	// TODO PossiblyScene type, or perhaps a mixin that can be applied to the
 	// Scene class to make it gain the HTML interface
-	protected _mounted = false
+	_mounted = false
 	mount?(f?: string | Element | null): void
 	unmount?(): void
 
@@ -112,10 +112,10 @@ export default class HTMLScene extends DeclarativeBase {
 	}
 
 	// WebGLRendererThree appends its content into here.
-	protected _glLayer: HTMLDivElement | null = null
+	_glLayer: HTMLDivElement | null = null
 
 	// CSS3DRendererThree appends its content into here.
-	protected _cssLayer: HTMLDivElement | null = null
+	_cssLayer: HTMLDivElement | null = null
 }
 
 export {HTMLScene}

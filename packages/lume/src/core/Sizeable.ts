@@ -142,7 +142,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		 * automatically clean them up.
 		 */
 		// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
-		protected _stopFns: Array<StopFunction> = []
+		_stopFns: Array<StopFunction> = []
 
 		connectedCallback() {
 			// TODO remove ts-ignore when we figure how to make this work in a
@@ -168,10 +168,10 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
 		hasHtmlApi?: boolean
-		protected _composedParent?: Sizeable
-		protected _composedChildren?: Sizeable
+		_composedParent?: Sizeable
+		_composedChildren?: Sizeable
 
-		protected get _renderParent(): Sizeable {
+		get _renderParent(): Sizeable {
 			if (this.hasHtmlApi) {
 				return this._composedParent as Sizeable
 			} else {
@@ -179,7 +179,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			}
 		}
 
-		protected get _renderChildren() {
+		get _renderChildren() {
 			if (this.hasHtmlApi) {
 				return this._composedChildren
 			} else {
@@ -187,11 +187,11 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			}
 		}
 
-		protected _getParentSize() {
+		_getParentSize() {
 			return this._renderParent?.__calculatedSize ?? {x: 0, y: 0, z: 0}
 		}
 
-		protected _calcSize() {
+		_calcSize() {
 			const calculatedSize = this.__calculatedSize
 
 			Object.assign(previousSize, calculatedSize)
@@ -235,11 +235,11 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 
 		private __isSettingProperty = false
 
-		protected get _isSettingProperty() {
+		get _isSettingProperty() {
 			return this.__isSettingProperty
 		}
 
-		protected _setPropertyXYZ<K extends keyof this>(name: K, newValue: this[K]) {
+		_setPropertyXYZ<K extends keyof this>(name: K, newValue: this[K]) {
 			if (newValue === (this as any)['__' + name]) return
 
 			this.__isSettingProperty = true
@@ -263,7 +263,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			this.__isSettingProperty = false
 		}
 
-		protected _setPropertySingle<K extends keyof this>(name: K, newValue: this[K]) {
+		_setPropertySingle<K extends keyof this>(name: K, newValue: this[K]) {
 			this.__isSettingProperty = true
 
 			if (isSinglePropertyFunction(newValue)) {

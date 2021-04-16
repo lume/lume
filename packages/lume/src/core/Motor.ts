@@ -142,20 +142,12 @@ class _Motor {
 			// read this.scene which would then set this.scene.
 			if (!node.scene) continue
 
-			// @ts-ignore: call protected method
-			node._render(
-				//
-				timestamp,
-			)
+			node._render(timestamp)
 
 			// if there is no ancestor of the current node that should be
 			// rendered, then the current node is a root node of a subtree
 			// that needs to be updated
-			if (
-				// @ts-ignore: call protected method
-				!node._getNearestAncestorThatShouldBeRendered() &&
-				!this.__treesToUpdate.includes(node)
-			) {
+			if (!node._getNearestAncestorThatShouldBeRendered() && !this.__treesToUpdate.includes(node)) {
 				this.__treesToUpdate.push(node)
 			}
 
@@ -167,9 +159,7 @@ class _Motor {
 		// Update world matrices of the subtrees.
 		const treesToUpdate = this.__treesToUpdate
 		for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
-			treesToUpdate[i]
-				// @ts-ignore: call protected method
-				._calculateWorldMatricesInSubtree()
+			treesToUpdate[i]._calculateWorldMatricesInSubtree()
 		}
 		treesToUpdate.length = 0
 
@@ -182,10 +172,7 @@ class _Motor {
 
 		const nodesToUpdate = this.__nodesToUpdate
 		for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
-			// prettier-ignore
-			nodesToUpdate[i]
-                // @ts-ignore: access protected property
-                ._willBeRendered = false
+			nodesToUpdate[i]._willBeRendered = false
 		}
 		nodesToUpdate.length = 0
 	}

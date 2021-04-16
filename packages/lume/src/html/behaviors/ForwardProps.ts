@@ -25,7 +25,7 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			this.__unobserveProps()
 		}
 
-		protected get _observedObject(): object {
+		get _observedObject(): object {
 			throw new TypeError(`
                 The subclass using ForwardProps must define a protected
                 _observedObject property defining the object from which props
@@ -33,7 +33,7 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
             `)
 		}
 
-		protected _propChangedCallback(propName: string, value: any) {
+		_propChangedCallback(propName: string, value: any) {
 			;(this as any)[propName] = value
 		}
 
@@ -47,9 +47,9 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			unobserve(this._observedObject, this._forwardedProps(), this._propChangedCallback)
 		}
 
-		protected static _observedProperties?: string[]
+		static _observedProperties?: string[]
 
-		protected _forwardedProps(): string[] {
+		_forwardedProps(): string[] {
 			const props = (this.constructor as typeof ForwardProps)._observedProperties || []
 			// @prod-prune
 			if (!Array.isArray(props))
@@ -57,7 +57,7 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			return props
 		}
 
-		protected _forwardInitialProps() {
+		_forwardInitialProps() {
 			const observed = this._observedObject
 
 			for (const prop of this._forwardedProps()) {

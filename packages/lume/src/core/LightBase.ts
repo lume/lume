@@ -26,7 +26,7 @@ export default class LightBase extends Node {
 		return new ThreeLight()
 	}
 
-	protected _loadGL() {
+	_loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
