@@ -217,7 +217,7 @@ function makeDeclarativeBase() {
 
 		// The composed parent is the parent that this node renders relative
 		// to in the flat tree (composed tree).
-		get _composedParent() {
+		get _composedParent(): HTMLElement | DeclarativeBase | null {
 			return this.__distributedParent || this.__shadowRootParent || this.parentElement
 		}
 
@@ -225,13 +225,17 @@ function makeDeclarativeBase() {
 		// node in the flat tree (composed tree), whether as children of a
 		// shadow root, or distributed children (assigned nodes) of a <slot>
 		// element.
-		get _composedChildren() {
+		get _composedChildren(): DeclarativeBase[] {
 			if (this.__shadowRoot) {
+				// We only care about DeclarativeBase nodes.
+				// TODO move this composed stuff to a separate class that has
+				// no limitation on which types of noeds it observes, then use
+				// it here and apply the restriction.
 				return [...Array.prototype.filter.call(this.__shadowRoot.children, n => n instanceof DeclarativeBase)]
 			} else {
 				return [
 					...(this.__distributedChildren || []), // TODO perhaps use slot.assignedNodes instead?
-					...Array.from(this.children),
+					...(Array.from(this.children).filter(n => n instanceof DeclarativeBase) as DeclarativeBase[]),
 				]
 			}
 		}

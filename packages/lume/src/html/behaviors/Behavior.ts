@@ -86,7 +86,11 @@ export default abstract class Behavior extends ForwardProps {
 		this.__preUpgradeValuesHandled = true
 
 		for (const prop of this._forwardedProps()) {
-			const value = el._preUpgradeValues.get(prop)
+			// prettier-ignore
+			const value = el.
+				// @ts-ignore protected access is ok here
+				_preUpgradeValues
+				.get(prop)
 
 			if (value !== undefined) this._propChangedCallback(prop, value)
 		}

@@ -52,7 +52,7 @@ export class CSS3DRendererThree {
 
 		scene.on('sizechange', sceneState.sizeChangeHandler)
 
-		scene._cssLayer.appendChild(renderer.domElement)
+		scene._cssLayer!.appendChild(renderer.domElement)
 	}
 
 	uninitialize(scene: Scene) {
@@ -62,7 +62,7 @@ export class CSS3DRendererThree {
 
 		scene.off('sizechange', sceneState.sizeChangeHandler)
 
-		scene._cssLayer.removeChild(sceneState.renderer.domElement)
+		scene._cssLayer?.removeChild(sceneState.renderer.domElement)
 
 		sceneStates.delete(scene)
 	}

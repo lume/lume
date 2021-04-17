@@ -84,7 +84,7 @@ export class WebGLRendererThree {
 
 		// TODO? Maybe the html/scene.js element should be responsible for
 		// making this, so that DOM logic is encapsulated there?
-		scene._glLayer.appendChild(renderer.domElement)
+		scene._glLayer!.appendChild(renderer.domElement)
 	}
 
 	uninitialize(scene: Scene) {
@@ -94,7 +94,7 @@ export class WebGLRendererThree {
 
 		scene.off('sizechange', sceneState.sizeChangeHandler)
 
-		scene._glLayer.removeChild(sceneState.renderer.domElement)
+		scene._glLayer?.removeChild(sceneState.renderer.domElement)
 
 		sceneState.renderer.dispose()
 		sceneState.pmremgen?.dispose()

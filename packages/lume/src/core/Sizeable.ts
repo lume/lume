@@ -169,7 +169,7 @@ function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
 		hasHtmlApi?: boolean
 		_composedParent?: Sizeable
-		_composedChildren?: Sizeable
+		_composedChildren?: Sizeable[]
 
 		get _renderParent(): Sizeable {
 			if (this.hasHtmlApi) {
