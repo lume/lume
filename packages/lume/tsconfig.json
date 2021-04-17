@@ -3,6 +3,14 @@
 	"compilerOptions": {
 		// TODO, set back to true after removing class-factory mixins
 		"declaration": false,
-		"declarationMap": false
-	}
+		"declarationMap": false,
+
+		// Good practice: start with these empty, add types as needed. This
+		// prevents unwanted global types from polluting our space by default.
+		// XXX Should we move this into the CLI's types?
+		"types": [],
+		"typeRoots": []
+	},
+	"include": ["./src/**/*"],
+	"exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
 }

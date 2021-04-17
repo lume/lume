@@ -687,9 +687,10 @@ function SceneMixin<T extends Constructor>(Base: T) {
 						// TODO If the Scene is used as display:inline{-block},
 						// ensure that it is the size of the column in which it
 						// is located.
+						// TODO fix ResizeObserver types in TypeScript lib.dom
 						const {inlineSize, blockSize} = Array.isArray(change.contentBoxSize)
 							? (change.contentBoxSize[0] as ResizeObserverEntryBoxSize)
-							: change.contentBoxSize
+							: ((change.contentBoxSize as unknown) as ResizeObserverEntryBoxSize)
 
 						const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
 
