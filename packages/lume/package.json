@@ -64,7 +64,7 @@
 	},
 	"// TODO devDependencies": "Move eslint stuff into lume cli.",
 	"devDependencies": {
-		"@lume/cli": "^0.5.0",
+		"@lume/cli": "^0.5.1",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
 		"@lume/live-code": "^0.1.2",
 		"@types/mkdirp": "^0.5.2",
