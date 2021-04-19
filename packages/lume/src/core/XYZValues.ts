@@ -19,7 +19,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 @reactive
-export default abstract class XYZValues<T = any> extends Eventful {
+export default abstract class XYZValues<T = any> extends Eventful() {
 	private __x: T = undefined!
 	private __y: T = undefined!
 	private __z: T = undefined!

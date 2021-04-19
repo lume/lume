@@ -20,7 +20,7 @@ export type SizeableAttributes = 'sizeMode' | 'size'
 
 function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
 	const _Base = Constructor<HTMLElement>(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
-	const Parent = Eventful.mixin(TreeNode.mixin(_Base))
+	const Parent = TreeNode.mixin(Eventful(_Base))
 
 	// Sizeable extends TreeNode because Sizeable knows about its `parent` when
 	// calculating proportional sizes. Also Transformable knows about it's parent
