@@ -1,28 +1,19 @@
-/* TODO move whatever necessary into the live-code package */
-
-.vuep {
-	/* TODO height:auto; doesn't work well, because it makes content below it appear higher than the bottom edge of the box. How can we make that work? */
-	height: auto;
-	max-height: 400px;
-	/* height: 400px; */
-}
-
-.vuep.full {
+.live-code.full {
 	max-height: unset;
 }
 @media (min-width: 768px) {
-	.vuep.full {
+	.live-code.full {
 		height: calc(100vh - 340px); /* TODO we need a technique so we don't hard code this value 340px value. */
 	}
 }
 @media (max-width: 767px) {
-	.vuep.full {
+	.live-code.full {
 		display: flex;
 		flex-direction: column-reverse;
 	}
 }
 
-.vuep-preview {
+.live-code-preview {
 	padding: 0 !important;
 
 	/*
@@ -35,12 +26,12 @@
 	border: none;
 }
 
-.vuep-editor,
-.vuep-preview {
+.live-code-editor,
+.live-code-preview {
 	height: auto;
 }
 
-.vuep-rerun {
+.live-code-rerun {
 	top: 10px;
 	right: 10px;
 }
