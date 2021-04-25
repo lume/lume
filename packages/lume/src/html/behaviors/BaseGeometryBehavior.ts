@@ -1,10 +1,10 @@
 import {autorun} from '@lume/element'
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior.js'
+import {BaseMeshBehavior, MeshComponentType} from './BaseMeshBehavior.js'
 
 import type {StopFunction} from '@lume/element'
 
 // base class for geometry behaviors
-export default abstract class BaseGeometryBehavior extends BaseMeshBehavior {
+export abstract class BaseGeometryBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'geometry'
 
 	// We don't use @reactive or @attribute in this class because the values
@@ -58,5 +58,3 @@ export default abstract class BaseGeometryBehavior extends BaseMeshBehavior {
 		return true
 	}
 }
-
-export {BaseGeometryBehavior}

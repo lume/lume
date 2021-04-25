@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
-import BaseGeometryBehavior from './BaseGeometryBehavior.js'
+import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
 
-export default class DOMNodeGeometryBehavior extends BaseGeometryBehavior {
+export class DOMNodeGeometryBehavior extends BaseGeometryBehavior {
 	_createComponent() {
 		// We have to use a BoxGeometry instead of a
 		// PlaneGeometry because Three.js is not capable of
@@ -15,5 +15,3 @@ export default class DOMNodeGeometryBehavior extends BaseGeometryBehavior {
 }
 
 elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
-
-export {DOMNodeGeometryBehavior}

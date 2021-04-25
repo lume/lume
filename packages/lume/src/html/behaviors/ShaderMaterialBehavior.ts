@@ -5,11 +5,11 @@ import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
-import BaseMaterialBehavior from './BaseMaterialBehavior.js'
-import MaterialTexture from './MaterialTexture.js'
+import {BaseMaterialBehavior} from './BaseMaterialBehavior.js'
+import {MaterialTexture} from './MaterialTexture.js'
 
 @reactive
-export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBehavior) {
+export class ShaderMaterialBehavior extends MaterialTexture(BaseMaterialBehavior) {
 	static _observedProperties = [
 		'uniforms',
 		'vertexShader',
@@ -24,22 +24,22 @@ export class ShaderMaterialBehavior extends MaterialTexture.mixin(BaseMaterialBe
 	// whole object each time.
 	@attribute
 	get uniforms(): string | Record<string, any> | null {
-		return this.__uniforms
+		return this.#uniforms
 	}
 	set uniforms(u: string | Record<string, any> | null) {
 		if (!u) {
-			this.__uniforms = {}
+			this.#uniforms = {}
 			return
 		}
 
 		if (typeof u === 'string') {
-			this.__uniforms = JSON.parse(u)
+			this.#uniforms = JSON.parse(u)
 		} else {
-			this.__uniforms = u
+			this.#uniforms = u
 		}
 	}
 
-	private __uniforms: Record<string, any> = {}
+	#uniforms: Record<string, any> = {}
 
 	@attribute vertexShader = default_vertex
 	@attribute fragmentShader = default_fragment

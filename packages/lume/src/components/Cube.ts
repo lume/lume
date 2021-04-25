@@ -1,5 +1,6 @@
-import forLength from 'army-knife/forLength.js'
-import Node from '../core/Node.js'
+import {Node} from '../core/Node.js'
+import {XYZNonNegativeValues} from '../core/XYZNonNegativeValues.js'
+import {XYZNumberValues} from '../core/XYZNumberValues.js'
 
 // !! WIP under construction
 
@@ -10,7 +11,7 @@ import Node from '../core/Node.js'
  * TODO: extend from lume-mesh, using a Cube geometry? Or perhaps this is a CubeLayout, not necessarily a Cube mesh.
  * TODO: this is written imperatively. How would it be declaratively?
  */
-export default class Cube extends Node {
+export class Cube extends Node {
 	/**
 	 * @property {Node[]} sides - An array of the cube's side nodes. Each side is a node in the scene graph tree.
 	 */
@@ -22,14 +23,16 @@ export default class Cube extends Node {
 	 */
 	constructor(size: number, options: object) {
 		// cubes, the same size on all sides
-		super({size: [size, size, size], ...options})
+		super()
+
+		this.set({size: new XYZNonNegativeValues(size, size, size), ...options})
 
 		//GenericSync.register({
 		//mouse: MouseSync,
 		//touch: TouchSync
 		//});
 
-		forLength(6, n => this._createCubeSide(n))
+		for (let n = 0; n < 6; n += 1) this._createCubeSide(n)
 	}
 
 	/**
@@ -39,14 +42,14 @@ export default class Cube extends Node {
 	 */
 	_createCubeSide(index: number) {
 		const rotator = new Node().set({
-			alignPoint: [0.5, 0.5],
-			mountPoint: [0.5, 0.5],
+			alignPoint: new XYZNumberValues(0.5, 0.5),
+			mountPoint: new XYZNumberValues(0.5, 0.5),
 		})
 
 		const side = new Node().set({
-			alignPoint: [0.5, 0.5],
-			mountPoint: [0.5, 0.5],
-			size: [this.getSize().x, this.getSize().x],
+			alignPoint: new XYZNumberValues(0.5, 0.5),
+			mountPoint: new XYZNumberValues(0.5, 0.5),
+			size: new XYZNonNegativeValues(this.getSize().x, this.getSize().x),
 		})
 
 		this.sides.push(side)
@@ -78,12 +81,10 @@ export default class Cube extends Node {
 	 * @returns {this}
 	 */
 	setContent(content: Node[]) {
-		forLength(6, index => {
+		for (let index = 0; index < 6; index += 1) {
 			//this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
 			this.sides[index].add(content[index])
-		})
+		}
 		return this
 	}
 }
-
-export {Cube}

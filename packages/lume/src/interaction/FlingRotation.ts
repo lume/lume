@@ -67,17 +67,17 @@ export class FlingRotation {
 		this.start()
 	}
 
-	private onMove?: (event: PointerEvent) => void
-	private onPointerUp?: (event: PointerEvent) => void
+	#onMove?: (event: PointerEvent) => void
+	#onPointerUp?: (event: PointerEvent) => void
 
-	private onPointerDown = () => {
+	#onPointerDown = () => {
 		// Stop rotation if any.
 		this.rotationYTarget.rotation = () => false
 
 		let deltaX = 0
 		let deltaY = 0
 
-		this.onMove = (event: PointerEvent) => {
+		this.#onMove = (event: PointerEvent) => {
 			deltaX = event.movementY * 0.2
 			this.rotationXTarget.getRotation().x = clamp(
 				this.rotationXTarget.getRotation().x + deltaX,
@@ -89,14 +89,14 @@ export class FlingRotation {
 		}
 
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionContainer.addEventListener('pointermove', this.onMove)
+		this.interactionContainer.addEventListener('pointermove', this.#onMove)
 
 		this.interactionContainer.addEventListener(
 			'pointerup',
-			(this.onPointerUp = () => {
+			(this.#onPointerUp = () => {
 				// stop dragging
 				// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-				this.interactionContainer.removeEventListener('pointermove', this.onMove)
+				this.interactionContainer.removeEventListener('pointermove', this.#onMove)
 
 				if (deltaX === 0 && deltaY === 0) return
 
@@ -125,21 +125,21 @@ export class FlingRotation {
 		)
 	}
 
-	private onDragStart = (event: DragEvent) => event.preventDefault()
+	#onDragStart = (event: DragEvent) => event.preventDefault()
 
-	private __isStarted = false
+	#isStarted = false
 
 	start(): this {
-		if (this.__isStarted) return this
-		this.__isStarted = true
+		if (this.#isStarted) return this
+		this.#isStarted = true
 
-		this.interactionInitiator.addEventListener('pointerdown', this.onPointerDown)
+		this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown)
 
 		// Hack needed for Chrome (works fine in Firefox) otherwise
 		// pointercancel breaks the drag handling. See
 		// https://crbug.com/1166044
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('dragstart', this.onDragStart)
+		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart)
 		this.interactionInitiator.addEventListener('pointercancel', () => {
 			throw new Error('Pointercancel should not be happening. If so, please open a bug report.')
 		})
@@ -148,16 +148,16 @@ export class FlingRotation {
 	}
 
 	stop(): this {
-		if (!this.__isStarted) return this
-		this.__isStarted = false
+		if (!this.#isStarted) return this
+		this.#isStarted = false
 
-		this.interactionInitiator.removeEventListener('pointerdown', this.onPointerDown)
+		this.interactionInitiator.removeEventListener('pointerdown', this.#onPointerDown)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('dragstart', this.onDragStart)
+		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		if (this.onMove) this.interactionContainer.removeEventListener('pointermove', this.onMove)
+		if (this.#onMove) this.interactionContainer.removeEventListener('pointermove', this.#onMove)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		if (this.onPointerUp) this.interactionContainer.addEventListener('pointerup', this.onPointerUp)
+		if (this.#onPointerUp) this.interactionContainer.addEventListener('pointerup', this.#onPointerUp)
 
 		return this
 	}

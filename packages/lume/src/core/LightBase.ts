@@ -2,7 +2,7 @@ import {Color} from 'three/src/math/Color.js'
 import {Light as ThreeLight} from 'three/src/lights/Light.js'
 import {attribute, autorun, element, numberAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from './Node.js'
+import {Node} from './Node.js'
 
 import type {TColor} from '../utils/three.js'
 import type {NodeAttributes} from './Node.js'
@@ -15,7 +15,7 @@ export type LightAttributes = NodeAttributes | 'color' | 'intensity'
  * @extends Node
  */
 @element
-export default class LightBase extends Node {
+export class LightBase extends Node {
 	@attribute @emits('propertychange') color: TColor = 'white'
 	@numberAttribute(1) @emits('propertychange') intensity: number = 1
 
@@ -44,5 +44,3 @@ export default class LightBase extends Node {
 		return true
 	}
 }
-
-export {LightBase}

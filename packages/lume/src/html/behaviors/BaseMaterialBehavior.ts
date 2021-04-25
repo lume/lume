@@ -1,7 +1,7 @@
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
 import {reactive, autorun, numberAttribute, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
-import BaseMeshBehavior, {MeshComponentType} from './BaseMeshBehavior.js'
+import {BaseMeshBehavior, MeshComponentType} from './BaseMeshBehavior.js'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 
@@ -9,7 +9,7 @@ export type BaseMaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidednes
 
 /** @class BaseMaterialBehavior - Base class for material behaviors. */
 @reactive
-export default class BaseMaterialBehavior extends BaseMeshBehavior {
+export class BaseMaterialBehavior extends BaseMeshBehavior {
 	type: MeshComponentType = 'material'
 
 	static _observedProperties = [
@@ -38,16 +38,16 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 
 	@stringAttribute('deeppink')
 	get color(): string | number | Color {
-		return this.__color
+		return this.#color
 	}
 	set color(val: string | number | Color) {
 		val = val ?? ''
-		if (typeof val === 'string') this.__color.set(val)
-		else if (typeof val === 'number') this.__color.set(val)
-		else this.__color = val
+		if (typeof val === 'string') this.#color.set(val)
+		else if (typeof val === 'number') this.#color.set(val)
+		else this.#color = val
 	}
 
-	private __color = new Color('deeppink')
+	#color = new Color('deeppink')
 
 	get transparent(): boolean {
 		if (this.opacity < 1) return true
@@ -126,5 +126,3 @@ export default class BaseMaterialBehavior extends BaseMeshBehavior {
 		this.element.needsUpdate()
 	}
 }
-
-export {BaseMaterialBehavior}

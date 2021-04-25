@@ -1,10 +1,10 @@
-import XYZStringValues from './XYZStringValues.js'
+import {XYZStringValues} from './XYZStringValues.js'
 
 export type SizeModeValue = 'literal' | 'proportional'
 
 // TODO it would be cool if we can have compiletime type errors when the values
 // aren't SizeModeValues. At the moment we'll get only runtime errors.
-export default class XYZSizeModeValues extends XYZStringValues {
+export class XYZSizeModeValues extends XYZStringValues {
 	get default() {
 		return {x: 'literal', y: 'literal', z: 'literal'}
 	}
@@ -20,5 +20,3 @@ export default class XYZSizeModeValues extends XYZStringValues {
 		return true
 	}
 }
-
-export {XYZSizeModeValues}

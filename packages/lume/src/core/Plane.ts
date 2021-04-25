@@ -1,10 +1,10 @@
-import Mesh, {MeshAttributes} from './Mesh.js'
+import {Mesh, MeshAttributes} from './Mesh.js'
 
 import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../html/index.js'
 
 export type PlaneAttributes = MeshAttributes
 
-export default class Plane extends Mesh {
+export class Plane extends Mesh {
 	static defaultElementName = 'lume-plane'
 
 	static defaultBehaviors = {
@@ -16,8 +16,6 @@ export default class Plane extends Mesh {
 		},
 	}
 }
-
-export {Plane}
 
 import type {ElementAttributes} from '@lume/element'
 

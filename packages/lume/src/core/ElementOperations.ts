@@ -18,9 +18,14 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * Manages the some DOM operations. This is used by ImperativeBase to keep
  * DOM-manipulation code co-located in this separate place. Consider this
  * internal API, not intended for end users.
+ * @private
  */
-export default class ElementOperations {
-	constructor(private __element: HTMLElement) {}
+export class ElementOperations {
+	#element: HTMLElement
+
+	constructor(element: HTMLElement) {
+		this.#element = element
+	}
 
 	connectChildElement(child: HTMLElement) {
 		if (
@@ -34,7 +39,7 @@ export default class ElementOperations {
 			// imperative Node can be gotten and used to add the
 			// node to another imperative Node. In this case, the
 			// HTML-API node will be added to the proper HTMLparent.
-			(child.parentElement && child.parentElement !== this.__element)
+			(child.parentElement && child.parentElement !== this.#element)
 
 			// When an HTML-API node is already child of the
 			// relevant parent, or it is child of a shadow root of
@@ -42,7 +47,7 @@ export default class ElementOperations {
 			// everything is already as expected, so the following
 			// conditional body is skipped.
 		) {
-			this.__add(child)
+			this.#add(child)
 		}
 	}
 
@@ -51,55 +56,55 @@ export default class ElementOperations {
 		// call this again.
 		if (!child.parentNode) return
 
-		this.__remove(child)
+		this.#remove(child)
 	}
 
-	private __shouldRender = false
+	#shouldRender = false
 
 	applyImperativeNodeProperties() {
-		if (!this.__shouldRender) return
+		if (!this.#shouldRender) return
 
-		this.__applyOpacity()
-		this.__applySize()
+		this.#applyOpacity()
+		this.#applySize()
 	}
 
 	set shouldRender(shouldRender: boolean) {
-		this.__shouldRender = shouldRender
+		this.#shouldRender = shouldRender
 
 		// TODO replace this with Motor.once() (might cause a circular dependency)
 		requestAnimationFrame(() => {
-			this.__applyStyle('display', shouldRender ? 'block' : 'none')
+			this.#applyStyle('display', shouldRender ? 'block' : 'none')
 		})
 	}
 	get shouldRender(): boolean {
-		return this.__shouldRender
+		return this.#shouldRender
 	}
 
-	private __add(child: HTMLElement) {
-		this.__element.appendChild(child)
+	#add(child: HTMLElement) {
+		this.#element.appendChild(child)
 	}
 
-	private __remove(child: HTMLElement) {
+	#remove(child: HTMLElement) {
 		// This conditional check is needed incase the element was already
 		// removed from the HTML-API side.
-		if (child.parentNode === this.__element) this.__element.removeChild(child)
+		if (child.parentNode === this.#element) this.#element.removeChild(child)
 	}
 
-	private __applySize() {
+	#applySize() {
 		// TODO remove this any, the refactor code so non-HTMLElement stuff is
 		// moved outside of this class.
-		const {x, y} = (this.__element as any).calculatedSize
+		const {x, y} = (this.#element as any).calculatedSize
 
-		this.__applyStyle('width', `${x}px`)
-		this.__applyStyle('height', `${y}px`)
+		this.#applyStyle('width', `${x}px`)
+		this.#applyStyle('height', `${y}px`)
 
 		// NOTE: we ignore the Z axis on elements, since they are flat.
 	}
 
-	private __applyOpacity() {
+	#applyOpacity() {
 		// TODO remove this any, the refactor code so non-HTMLElement stuff is
 		// moved outside of this class.
-		this.__applyStyle('opacity', (this.__element as any).opacity.toString())
+		this.#applyStyle('opacity', (this.#element as any).opacity.toString())
 	}
 
 	/**
@@ -108,9 +113,7 @@ export default class ElementOperations {
 	 * @param  {string} property The CSS property we will a apply.
 	 * @param  {string} value    The value the CSS property wil have.
 	 */
-	private __applyStyle(property: string, value: string) {
-		this.__element.style.setProperty(property, value)
+	#applyStyle(property: string, value: string) {
+		this.#element.style.setProperty(property, value)
 	}
 }
-
-export {ElementOperations}

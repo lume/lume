@@ -1,14 +1,13 @@
 import {observe, unobserve} from 'james-bond'
-import {Mixin, MixinResult, Constructor} from 'lowclass'
 
-import type {PossibleCustomElement} from '../PossibleCustomElement.js'
+import type {Constructor} from 'lowclass'
 
-function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
+export function ForwardProps<T extends Constructor<CustomElementLike>>(Base: T = Object as any) {
 	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
 	// from PossibleCustomElement), and we can have a separate mixin for that.
 
 	// TODO Use abstract with TS 4.2
-	class ForwardProps extends Constructor<PossibleCustomElement>(Base) {
+	return class ForwardProps extends Base {
 		constructor(...args: any[]) {
 			super(...args)
 			this._propChangedCallback = this._propChangedCallback.bind(this)
@@ -17,12 +16,12 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 		connectedCallback() {
 			super.connectedCallback && super.connectedCallback()
 			this._forwardInitialProps()
-			this.__observeProps()
+			this.#observeProps()
 		}
 
 		disconnectedCallback() {
 			super.disconnectedCallback && super.disconnectedCallback()
-			this.__unobserveProps()
+			this.#unobserveProps()
 		}
 
 		get _observedObject(): object {
@@ -37,13 +36,13 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			;(this as any)[propName] = value
 		}
 
-		private __observeProps() {
+		#observeProps() {
 			observe(this._observedObject, this._forwardedProps(), this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
 		}
 
-		private __unobserveProps() {
+		#unobserveProps() {
 			unobserve(this._observedObject, this._forwardedProps(), this._propChangedCallback)
 		}
 
@@ -65,10 +64,11 @@ function ForwardPropsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			}
 		}
 	}
-
-	return ForwardProps as MixinResult<typeof ForwardProps, T>
 }
 
-export const ForwardProps = Mixin(ForwardPropsMixin)
-export interface ForwardProps extends InstanceType<typeof ForwardProps> {}
-export default ForwardProps
+export interface CustomElementLike {
+	connectedCallback?(): void
+	disconnectedCallback?(): void
+	adoptedCallback?(): void
+	attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
+}

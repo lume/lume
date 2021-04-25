@@ -1,6 +1,6 @@
 import {Behavior} from './Behavior.js'
 import {Events} from '../../core/Events.js'
-import Node from '../../core/Node.js'
+import {Node} from '../../core/Node.js'
 
 /**
  * Base class for behaviors relating to rendering. This is for any behavior that renders with CSS or WebGL rendering.

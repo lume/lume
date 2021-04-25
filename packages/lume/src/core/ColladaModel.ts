@@ -1,4 +1,4 @@
-import Node, {NodeAttributes} from './Node.js'
+import {Node, NodeAttributes} from './Node.js'
 
 import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../html/index.js'
 

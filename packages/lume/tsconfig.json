@@ -1,10 +1,6 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
-		// TODO, set back to true after removing class-factory mixins
-		"declaration": false,
-		"declarationMap": false,
-
 		// Good practice: start with these empty, add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
 		// XXX Should we move this into the CLI's types?

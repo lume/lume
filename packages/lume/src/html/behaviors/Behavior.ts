@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import ForwardProps from './ForwardProps.js'
+import {ForwardProps} from './ForwardProps.js'
 import {defer} from '../../core/Utility.js'
 
 import type {Element as LumeElement} from '@lume/element'
@@ -22,7 +22,7 @@ type ElementTypes<T extends Constructor[]> = ArrayValues<ElementTypeArrayToInstA
  * - Calls a subclass's requiredElementType method which should return the type (constructor) of allowed elements that the behavior can be hosted on. If the element is not instanceof the requiredElementType(), then an error is shown in console. For TypeScript users, it enforces the type `element` in subclass code.
  * - Forwards the properties specified in `_observedProperties` from `_observedObject` to `this` any time `_observedProperties` on `_observedObject` change. Useful for forwarding JS properties from the host element to the behavior.
  */
-export default abstract class Behavior extends ForwardProps {
+export abstract class Behavior extends ForwardProps() {
 	// If true, elementBehaviors will wait for a custom element to be defined
 	// before running "connectedCallback" or "disconnectedCallback" on the
 	// behavior. This guarantees that the host element is already upgraded
@@ -36,7 +36,7 @@ export default abstract class Behavior extends ForwardProps {
 
 		// Ensure this.element is the type specified by a subclass's requiredElementType.
 		// @prod-prune
-		this.__checkElementIsLibraryElement(element)
+		this.#checkElementIsLibraryElement(element)
 
 		this.element = element as ElementTypes<ReturnType<this['requiredElementType']>>
 	}
@@ -65,25 +65,25 @@ export default abstract class Behavior extends ForwardProps {
 	}
 
 	// a promise resolved when an element is upgraded
-	private __whenDefined: Promise<void> = null! as Promise<void>
-	private __elementDefined = false
+	#whenDefined: Promise<void> = null! as Promise<void>
+	#elementDefined = false
 
 	_forwardInitialProps() {
 		super._forwardInitialProps()
-		this.__fowardPreUpgradeValues()
+		this.#fowardPreUpgradeValues()
 	}
 
-	private __preUpgradeValuesHandled = false
+	#preUpgradeValuesHandled = false
 
 	// TODO Write a test to ensure that pre-upgrade values are handled.
-	private __fowardPreUpgradeValues() {
-		if (this.__preUpgradeValuesHandled) return
+	#fowardPreUpgradeValues() {
+		if (this.#preUpgradeValuesHandled) return
 
 		const el = this._observedObject
 
 		if (!isLumeElement(el)) return
 
-		this.__preUpgradeValuesHandled = true
+		this.#preUpgradeValuesHandled = true
 
 		for (const prop of this._forwardedProps()) {
 			// prettier-ignore
@@ -98,21 +98,21 @@ export default abstract class Behavior extends ForwardProps {
 
 	// TODO add a test to make sure this check works
 	// @prod-prune
-	private async __checkElementIsLibraryElement(element: Element) {
+	async #checkElementIsLibraryElement(element: Element) {
 		const classes = this.requiredElementType()
 
 		if (element.nodeName.includes('-')) {
-			this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+			this.#whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
 
-			this.__whenDefined.then(() => {
-				this.__elementDefined = classes.some(Class => element instanceof Class)
+			this.#whenDefined.then(() => {
+				this.#elementDefined = classes.some(Class => element instanceof Class)
 
-				this.__fowardPreUpgradeValues()
+				this.#fowardPreUpgradeValues()
 			})
 
-			await Promise.race([this.__whenDefined, new Promise(r => setTimeout(r, 1000))])
+			await Promise.race([this.#whenDefined, new Promise(r => setTimeout(r, 1000))])
 
-			if (!this.__elementDefined) {
+			if (!this.#elementDefined) {
 				const errorMessage = `
 					Either the element you're using the behavior on
 					(<${element.tagName.toLowerCase()}>) is not an instance of one
@@ -139,8 +139,6 @@ export default abstract class Behavior extends ForwardProps {
 		}
 	}
 }
-
-export {Behavior}
 
 function isLumeElement(el: Element): el is LumeElement {
 	return '_preUpgradeValues' in el

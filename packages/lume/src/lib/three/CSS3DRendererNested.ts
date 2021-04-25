@@ -9,7 +9,7 @@ import type {Scene} from 'three/src/scenes/Scene.js'
 import type {Camera} from 'three/src/cameras/Camera.js'
 
 export class CSS3DObjectNested extends Object3DWithPivot {
-	private __initialFrame = requestAnimationFrame(() => {
+	#initialFrame = requestAnimationFrame(() => {
 		// delay to the next frame because attributes are not allowed be set
 		// inside Custom Element (i.e. Web Component) constructors, otherwise
 		// this can throw an error if called inside a Custom Element
@@ -23,7 +23,7 @@ export class CSS3DObjectNested extends Object3DWithPivot {
 	}
 
 	dispose() {
-		cancelAnimationFrame(this.__initialFrame)
+		cancelAnimationFrame(this.#initialFrame)
 	}
 }
 
@@ -34,18 +34,18 @@ export class CSS3DNestedSprite extends CSS3DObjectNested {}
 
 export class CSS3DRendererNested {
 	domElement: HTMLDivElement
-	private matrix = new Matrix4()
+	#matrix = new Matrix4()
 
-	private cache = {
+	#cache = {
 		camera: {fov: 0, style: ''},
 		objects: new WeakMap(),
 	}
 
-	private _width = 0
-	private _height = 0
-	private _widthHalf = 0
-	private _heightHalf = 0
-	private __cameraElement: HTMLDivElement
+	#width = 0
+	#height = 0
+	#widthHalf = 0
+	#heightHalf = 0
+	#cameraElement: HTMLDivElement
 
 	constructor() {
 		const domElement = document.createElement('div')
@@ -62,53 +62,53 @@ export class CSS3DRendererNested {
 
 		domElement.appendChild(cameraElement)
 
-		this.__cameraElement = cameraElement
+		this.#cameraElement = cameraElement
 	}
 
 	getSize() {
 		return {
-			width: this._width,
-			height: this._height,
+			width: this.#width,
+			height: this.#height,
 		}
 	}
 
 	setSize(width: number, height: number) {
-		this._width = width
-		this._height = height
-		this._widthHalf = width / 2
-		this._heightHalf = height / 2
+		this.#width = width
+		this.#height = height
+		this.#widthHalf = width / 2
+		this.#heightHalf = height / 2
 
 		this.domElement.style.width = width + 'px'
 		this.domElement.style.height = height + 'px'
 
-		this.__cameraElement.style.width = width + 'px'
-		this.__cameraElement.style.height = height + 'px'
+		this.#cameraElement.style.width = width + 'px'
+		this.#cameraElement.style.height = height + 'px'
 	}
 
-	private __renderObject(object: Object3D, camera: Camera) {
+	#renderObject(object: Object3D, camera: Camera) {
 		if (object instanceof CSS3DObjectNested) {
 			let style: string = ''
 
 			if (object instanceof CSS3DNestedSprite) {
 				// http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
 
-				this.matrix.copy(camera.matrixWorldInverse)
-				this.matrix.transpose()
-				this.matrix.copyPosition(object.matrixWorld)
-				this.matrix.scale(object.scale)
+				this.#matrix.copy(camera.matrixWorldInverse)
+				this.#matrix.transpose()
+				this.#matrix.copyPosition(object.matrixWorld)
+				this.#matrix.scale(object.scale)
 
-				this.matrix.elements[3] = 0
-				this.matrix.elements[7] = 0
-				this.matrix.elements[11] = 0
-				this.matrix.elements[15] = 1
+				this.#matrix.elements[3] = 0
+				this.#matrix.elements[7] = 0
+				this.#matrix.elements[11] = 0
+				this.#matrix.elements[15] = 1
 
-				style = getObjectCSSMatrix(object, this.matrix)
+				style = getObjectCSSMatrix(object, this.#matrix)
 			} else {
 				style = getObjectCSSMatrix(object, object.matrix)
 			}
 
 			const element = object.element
-			const cachedStyle = this.cache.objects.get(object)
+			const cachedStyle = this.#cache.objects.get(object)
 
 			// if ( cachedStyle === undefined || cachedStyle !== style ) { // BUG, https://github.com/mrdoob/three.js/pull/15470
 			if (cachedStyle === undefined || cachedStyle.style !== style) {
@@ -116,24 +116,24 @@ export class CSS3DRendererNested {
 
 				const objectData = {style: style}
 
-				this.cache.objects.set(object, objectData)
+				this.#cache.objects.set(object, objectData)
 			}
 		}
 
 		for (let i = 0, l = object.children.length; i < l; i++) {
-			this.__renderObject(object.children[i], camera)
+			this.#renderObject(object.children[i], camera)
 		}
 	}
 
 	render(scene: Scene, camera: Camera) {
-		const fov = camera.projectionMatrix.elements[5] * this._heightHalf
+		const fov = camera.projectionMatrix.elements[5] * this.#heightHalf
 
-		if (this.cache.camera.fov !== fov) {
+		if (this.#cache.camera.fov !== fov) {
 			if (isPerspectiveCamera(camera)) {
 				this.domElement.style.perspective = fov + 'px'
 			}
 
-			this.cache.camera.fov = fov
+			this.#cache.camera.fov = fov
 		}
 
 		scene.updateMatrixWorld()
@@ -152,15 +152,15 @@ export class CSS3DRendererNested {
             ? 'scale(' + fov + ')' + 'translate(' + epsilon(tx) + 'px,' + epsilon(ty) + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse)
             : 'translateZ(' + fov + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse)
 
-		const style = cameraCSSMatrix + 'translate(' + this._widthHalf + 'px,' + this._heightHalf + 'px)'
+		const style = cameraCSSMatrix + 'translate(' + this.#widthHalf + 'px,' + this.#heightHalf + 'px)'
 
-		if (this.cache.camera.style !== style) {
-			this.__cameraElement.style.transform = style
+		if (this.#cache.camera.style !== style) {
+			this.#cameraElement.style.transform = style
 
-			this.cache.camera.style = style
+			this.#cache.camera.style = style
 		}
 
-		this.__renderObject(scene, camera)
+		this.#renderObject(scene, camera)
 	}
 }
 

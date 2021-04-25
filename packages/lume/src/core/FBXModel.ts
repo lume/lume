@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import Node, {NodeAttributes} from './Node.js'
+import {Node, NodeAttributes} from './Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {FBXModelBehavior, FBXModelBehaviorAttributes} from '../html/index.js'

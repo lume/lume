@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
-import BaseGeometryBehavior from './BaseGeometryBehavior.js'
+import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
 
-export default class BoxGeometryBehavior extends BaseGeometryBehavior {
+export class BoxGeometryBehavior extends BaseGeometryBehavior {
 	_createComponent() {
 		return new BoxGeometry(
 			this.element.calculatedSize.x,
@@ -13,5 +13,3 @@ export default class BoxGeometryBehavior extends BaseGeometryBehavior {
 }
 
 elementBehaviors.define('box-geometry', BoxGeometryBehavior)
-
-export {BoxGeometryBehavior}

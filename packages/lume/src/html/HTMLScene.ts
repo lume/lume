@@ -1,9 +1,7 @@
 import {html} from '@lume/element/dist/html.js'
-import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase.js'
+import {ImperativeBase} from '../core/ImperativeBase.js'
 
-initDeclarativeBase()
-
-export default class HTMLScene extends DeclarativeBase {
+export class HTMLScene extends ImperativeBase {
 	static css = /*css*/ `
 		:host {
 			/*
@@ -117,5 +115,3 @@ export default class HTMLScene extends DeclarativeBase {
 	// CSS3DRendererThree appends its content into here.
 	_cssLayer: HTMLDivElement | null = null
 }
-
-export {HTMLScene}

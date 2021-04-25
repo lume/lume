@@ -1,9 +1,8 @@
 import {autorun, booleanAttribute, numberAttribute, reactive} from '@lume/element'
 import 'element-behaviors'
-import type {Constructor} from 'lowclass'
 import {PointsMaterial} from 'three/src/materials/PointsMaterial.js'
-import BaseMaterialBehavior, {BaseMaterialBehaviorAttributes} from './BaseMaterialBehavior.js'
-import MaterialTexture, {MaterialTextureAttributes} from './MaterialTexture.js'
+import {BaseMaterialBehavior, BaseMaterialBehaviorAttributes} from './BaseMaterialBehavior.js'
+import {MaterialTexture, MaterialTextureAttributes} from './MaterialTexture.js'
 
 export type PointsMaterialBehaviorAttributes =
 	| MaterialTextureAttributes
@@ -16,9 +15,7 @@ export type PointsMaterialBehaviorAttributes =
 // TypeScript).
 
 @reactive
-export default class PointsMaterialBehavior extends ((MaterialTexture.mixin(
-	BaseMaterialBehavior,
-) as unknown) as Constructor<MaterialTexture & BaseMaterialBehavior>) {
+export class PointsMaterialBehavior extends MaterialTexture(BaseMaterialBehavior) {
 	static _observedProperties = ['sizeAttenuation', 'pointSize', ...BaseMaterialBehavior._observedProperties]
 
 	@booleanAttribute(true) sizeAttenuation = true
@@ -55,5 +52,3 @@ export default class PointsMaterialBehavior extends ((MaterialTexture.mixin(
 }
 
 elementBehaviors.define('points-material', PointsMaterialBehavior)
-
-export {PointsMaterialBehavior}

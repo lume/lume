@@ -1,76 +1,51 @@
-import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {observeChildren} from '../core/Utility.js'
 
+import {Constructor} from 'lowclass'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement.js'
 
-// polyfill for Node.isConnected based on Ryosuke Niwa's
-// https://github.com/w3c/webcomponents/issues/789#issuecomment-459858405
-if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
-	let rootNode: any = null
-
-	if ((Node.prototype as any).getRootNode) rootNode = (node: Node) => node.getRootNode({composed: true})
-	else {
-		rootNode = (node: Node) => {
-			for (let ancestor: Node = node, ancestorParent; ancestor; ancestor = ancestorParent) {
-				ancestorParent = ancestor.parentNode || (ancestor as ShadowRoot).host
-				if (!ancestorParent) return ancestor
-			}
-			return node
-		}
-	}
-
-	Object.defineProperty(Node.prototype, 'isConnected', {
-		get() {
-			return rootNode(this).nodeType === Node.DOCUMENT_NODE
-		},
-		enumerable: true,
-		configurable: true,
-	})
-}
-
-function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
-	class WithChildren extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base) {
+export function WithChildren<T extends Constructor<HTMLElement>>(Base: T) {
+	return class WithChildren extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
 
-			this.__createObserver()
+			this.#createObserver()
 
 			if (!this.isConnected) {
-				this.__handleChildrenWhenConnected = true
+				this.#handleChildrenWhenConnected = true
 				return
 			}
 
-			this.__handleConnectedChildren()
+			this.#handleConnectedChildren()
 		}
 
 		connectedCallback() {
 			super.connectedCallback?.()
 
-			if (this.__handleChildrenWhenConnected) {
-				this.__handleConnectedChildren()
+			if (this.#handleChildrenWhenConnected) {
+				this.#handleConnectedChildren()
 			}
 
-			this.__createObserver()
+			this.#createObserver()
 		}
 
 		disconnectedCallback() {
 			super.disconnectedCallback?.()
 
-			this.__destroyObserver()
-			this.__handleChildrenWhenConnected = true
+			this.#destroyObserver()
+			this.#handleChildrenWhenConnected = true
 		}
 
 		childConnectedCallback?(_child: Element): void
 		childDisconnectedCallback?(_child: Element): void
 
-		private __handleChildrenWhenConnected = false
-		private __observer: MutationObserver | null = null
+		#handleChildrenWhenConnected = false
+		#observer: MutationObserver | null = null
 
-		private __createObserver() {
-			if (this.__observer) return
+		#createObserver() {
+			if (this.#observer) return
 
 			// observeChildren returns a MutationObserver observing childList
-			this.__observer = observeChildren(
+			this.#observer = observeChildren(
 				this,
 				(child: Element) => {
 					if (!this.isConnected) return
@@ -84,21 +59,21 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			)
 		}
 
-		private __destroyObserver() {
-			if (!this.__observer) return
-			this.__observer.disconnect()
-			this.__observer = null
+		#destroyObserver() {
+			if (!this.#observer) return
+			this.#observer.disconnect()
+			this.#observer = null
 		}
 
-		private __handleConnectedChildren() {
+		#handleConnectedChildren() {
 			if (!this.isConnected) return
 
 			for (let element = this.firstElementChild; element; element = element.nextElementSibling) {
-				this.__handleConnectedChild(element)
+				this.#handleConnectedChild(element)
 			}
 		}
 
-		private __handleConnectedChild(element: Element) {
+		#handleConnectedChild(element: Element) {
 			const elementIsUpgraded = element.matches(':defined')
 
 			if (elementIsUpgraded) {
@@ -110,10 +85,4 @@ function WithChildrenMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			}
 		}
 	}
-
-	return WithChildren as MixinResult<typeof WithChildren, T>
 }
-
-export const WithChildren = Mixin(WithChildrenMixin)
-export interface WithChildren extends InstanceType<typeof WithChildren> {}
-export default WithChildren

@@ -2,7 +2,7 @@ import 'element-behaviors'
 import {autorun, reactive, stringAttribute} from '@lume/element'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
-import BaseGeometryBehavior from './BaseGeometryBehavior.js'
+import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
 import {Events} from '../../core/Events.js'
 import {Points} from '../../core/Points.js'
 
@@ -29,7 +29,7 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
-	private __version = 0
+	#version = 0
 
 	loadGL() {
 		if (!super.loadGL()) return false
@@ -40,10 +40,10 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 			autorun(() => {
 				this.src
 
-				this.__cleanupModel()
+				this.#cleanupModel()
 
-				this.__version++
-				this.__loadObj()
+				this.#version++
+				this.#loadObj()
 			}),
 		)
 
@@ -55,25 +55,26 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 
 		this.loader = undefined
 
-		this.__cleanupModel()
+		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.__version++
+		this.#version++
 
 		return true
 	}
 
-	private __cleanupModel() {
+	#cleanupModel() {
 		// if (this.model) disposeObjectTree(this.model)
 		this.model = undefined
 	}
 
-	private __loadObj() {
-		const {src, __version} = this
+	#loadObj() {
+		const {src} = this
+		const version = this.#version
 
 		if (!src) return
 
-		// In the following fbxLoader.load() callbacks, if __version doesn't
+		// In the following fbxLoader.load() callbacks, if #version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
@@ -82,20 +83,20 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 
 		this.loader!.load(
 			src,
-			model => __version === this.__version && this.__setModel(model),
-			progress => __version === this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version === this.__version && this.__onError(error),
+			model => version === this.#version && this.#setModel(model),
+			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			error => version === this.#version && this.#onError(error),
 		)
 	}
 
-	private __onError(error: ErrorEvent) {
+	#onError(error: ErrorEvent) {
 		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
 		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
-	private __setModel(model: BufferGeometry) {
+	#setModel(model: BufferGeometry) {
 		this.model = model
 		this.model.computeVertexNormals()
 		this.resetMeshComponent()

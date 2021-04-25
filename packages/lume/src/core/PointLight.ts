@@ -1,7 +1,7 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import LightBase from './LightBase.js'
+import {LightBase} from './LightBase.js'
 
 import type {LightAttributes} from './LightBase.js'
 
@@ -18,7 +18,7 @@ export type PointLightAttributes =
 	| 'shadowCameraFar'
 
 @element
-export default class PointLight extends LightBase {
+export class PointLight extends LightBase {
 	static defaultElementName = 'lume-point-light'
 
 	@numberAttribute(0) @emits('propertychange') distance = 0
@@ -65,8 +65,6 @@ export default class PointLight extends LightBase {
 		return new ThreePointLight()
 	}
 }
-
-export {PointLight}
 
 import type {ElementAttributes} from '@lume/element'
 

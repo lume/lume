@@ -29,26 +29,26 @@ class _Motor {
 	addRenderTask(fn: RenderTask) {
 		if (typeof fn != 'function') throw new Error('Render task must be a function.')
 
-		if (this.__allRenderTasks.includes(fn)) return fn
+		if (this.#allRenderTasks.includes(fn)) return fn
 
-		this.__allRenderTasks.push(fn)
-		this.__numberOfTasks += 1
+		this.#allRenderTasks.push(fn)
+		this.#numberOfTasks += 1
 
 		// If the render loop isn't started, start it.
-		if (!this.__loopStarted) this.__startAnimationLoop()
+		if (!this.#loopStarted) this.#startAnimationLoop()
 
 		return fn
 	}
 
 	removeRenderTask(fn: RenderTask) {
-		const taskIndex = this.__allRenderTasks.indexOf(fn)
+		const taskIndex = this.#allRenderTasks.indexOf(fn)
 
 		if (taskIndex == -1) return
 
-		this.__allRenderTasks.splice(taskIndex, 1)
-		this.__numberOfTasks -= 1
+		this.#allRenderTasks.splice(taskIndex, 1)
+		this.#numberOfTasks -= 1
 
-		if (taskIndex <= this.__taskIterationIndex) this.__taskIterationIndex -= 1
+		if (taskIndex <= this.#taskIterationIndex) this.#taskIterationIndex -= 1
 	}
 
 	/** Adds a render task that executes only once instead of repeatedly. */
@@ -59,32 +59,32 @@ class _Motor {
 
 	// A Node calls this any time its properties have been modified (f.e. by the end user).
 	setNodeToBeRendered(node: ImperativeBase) {
-		if (this.__nodesToUpdate.includes(node)) return
-		this.__nodesToUpdate.push(node)
+		if (this.#nodesToUpdate.includes(node)) return
+		this.#nodesToUpdate.push(node)
 
 		// noop if the loop's already started
-		this.__startAnimationLoop()
+		this.#startAnimationLoop()
 	}
 
 	// TODO better typing for fn
 	setFrameRequester(requester: (fn: FrameRequestCallback) => any) {
-		this.__requestFrame = requester
+		this.#requestFrame = requester
 	}
 
-	private __loopStarted = false
-	private __taskIterationIndex = 0
-	private __numberOfTasks = 0
+	#loopStarted = false
+	#taskIterationIndex = 0
+	#numberOfTasks = 0
 
-	private __allRenderTasks = [] as RenderTask[]
-	private __nodesToUpdate = [] as ImperativeBase[]
-	private __modifiedScenes = [] as Scene[]
+	#allRenderTasks = [] as RenderTask[]
+	#nodesToUpdate = [] as ImperativeBase[]
+	#modifiedScenes = [] as Scene[]
 
 	// A set of nodes that are the root nodes of subtrees where all nodes
 	// in each subtree need to have their world matrices updated.
-	private __treesToUpdate = [] as ImperativeBase[]
+	#treesToUpdate = [] as ImperativeBase[]
 
 	// default to requestAnimationFrame for regular non-VR/AR scenes.
-	private __requestFrame = window.requestAnimationFrame.bind(window)
+	#requestFrame = window.requestAnimationFrame.bind(window)
 
 	/**
 	 * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
@@ -93,47 +93,47 @@ class _Motor {
 	 * requestAnimationFrame loop stops and the app sits there doing nothing
 	 * -- silence, crickets.
 	 */
-	private async __startAnimationLoop() {
+	async #startAnimationLoop() {
 		if (document.readyState === 'loading') await new Promise(resolve => setTimeout(resolve))
 
-		if (this.__loopStarted) return
+		if (this.#loopStarted) return
 
-		this.__loopStarted = true
+		this.#loopStarted = true
 
 		let timestamp: number = null!
 
-		while (this.__loopStarted) {
-			timestamp = await this.__animationFrame()
+		while (this.#loopStarted) {
+			timestamp = await this.#animationFrame()
 
-			this.__runRenderTasks(timestamp)
-			this.__renderNodes(timestamp)
+			this.#runRenderTasks(timestamp)
+			this.#renderNodes(timestamp)
 
 			// If no tasks are left, stop the animation loop.
-			if (!this.__allRenderTasks.length) this.__loopStarted = false
+			if (!this.#allRenderTasks.length) this.#loopStarted = false
 		}
 	}
 
-	private __animationFrame(): Promise<number> {
-		return new Promise(r => this.__requestFrame(r))
+	#animationFrame(): Promise<number> {
+		return new Promise(r => this.#requestFrame(r))
 	}
 
-	private __runRenderTasks(timestamp: number) {
+	#runRenderTasks(timestamp: number) {
 		for (
-			this.__taskIterationIndex = 0;
-			this.__taskIterationIndex < this.__numberOfTasks;
-			this.__taskIterationIndex += 1
+			this.#taskIterationIndex = 0;
+			this.#taskIterationIndex < this.#numberOfTasks;
+			this.#taskIterationIndex += 1
 		) {
-			const task = this.__allRenderTasks[this.__taskIterationIndex]
+			const task = this.#allRenderTasks[this.#taskIterationIndex]
 
 			if (task(timestamp) === false) this.removeRenderTask(task)
 		}
 	}
 
-	private __renderNodes(timestamp: number) {
-		if (!this.__nodesToUpdate.length) return
+	#renderNodes(timestamp: number) {
+		if (!this.#nodesToUpdate.length) return
 
-		for (let i = 0, l = this.__nodesToUpdate.length; i < l; i += 1) {
-			const node = this.__nodesToUpdate[i]
+		for (let i = 0, l = this.#nodesToUpdate.length; i < l; i += 1) {
+			const node = this.#nodesToUpdate[i]
 
 			// We removed the early return in ImperativeBase and replaced it
 			// with this early continue, because otherwise
@@ -147,30 +147,30 @@ class _Motor {
 			// if there is no ancestor of the current node that should be
 			// rendered, then the current node is a root node of a subtree
 			// that needs to be updated
-			if (!node._getNearestAncestorThatShouldBeRendered() && !this.__treesToUpdate.includes(node)) {
-				this.__treesToUpdate.push(node)
+			if (!node._getNearestAncestorThatShouldBeRendered() && !this.#treesToUpdate.includes(node)) {
+				this.#treesToUpdate.push(node)
 			}
 
 			// keep track of which scenes are modified so we can render webgl
 			// only for those scenes.
-			if (!this.__modifiedScenes.includes(node.scene)) this.__modifiedScenes.push(node.scene)
+			if (!this.#modifiedScenes.includes(node.scene)) this.#modifiedScenes.push(node.scene)
 		}
 
 		// Update world matrices of the subtrees.
-		const treesToUpdate = this.__treesToUpdate
+		const treesToUpdate = this.#treesToUpdate
 		for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
 			treesToUpdate[i]._calculateWorldMatricesInSubtree()
 		}
 		treesToUpdate.length = 0
 
 		// render webgl of modified scenes.
-		const modifiedScenes = this.__modifiedScenes
+		const modifiedScenes = this.#modifiedScenes
 		for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
 			modifiedScenes[i].drawScene()
 		}
 		modifiedScenes.length = 0
 
-		const nodesToUpdate = this.__nodesToUpdate
+		const nodesToUpdate = this.#nodesToUpdate
 		for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
 			nodesToUpdate[i]._willBeRendered = false
 		}
@@ -180,4 +180,3 @@ class _Motor {
 
 // export a singleton instance rather than the class directly.
 export const Motor = new _Motor()
-export default Motor

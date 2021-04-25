@@ -1,6 +1,6 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {numberAttribute, booleanAttribute, autorun, untrack, element} from '@lume/element'
-import Node, {NodeAttributes} from './Node.js'
+import {Node, NodeAttributes} from './Node.js'
 import {defer} from './Utility.js'
 
 import type {Scene} from './Scene.js'
@@ -9,7 +9,7 @@ export type PerspectiveCameraAttributes = NodeAttributes | 'fov' | 'aspect' | 'n
 // | 'lookAt' // TODO
 
 @element
-export default class PerspectiveCamera extends Node {
+export class PerspectiveCamera extends Node {
 	static defaultElementName = 'lume-perspective-camera'
 
 	@numberAttribute(50) fov = 50
@@ -32,8 +32,8 @@ export default class PerspectiveCamera extends Node {
 		const stop = autorun(_ => {
 			if (this.scene) {
 				untrack(() => {
-					this.__lastKnownScene = this.scene
-					this.__setSceneCamera(this.active ? undefined : 'unset')
+					this.#lastKnownScene = this.scene
+					this.#setSceneCamera(this.active ? undefined : 'unset')
 					defer(() => stop())
 				})
 			}
@@ -89,7 +89,7 @@ export default class PerspectiveCamera extends Node {
 			autorun(_ => {
 				const active = this.active
 				untrack(() => {
-					this.__setSceneCamera(active ? undefined : 'unset')
+					this.#setSceneCamera(active ? undefined : 'unset')
 				})
 				this.needsUpdate() // TODO need this? Cameras don't render as anything, maybe they don't need an update in this case.
 			}),
@@ -108,18 +108,18 @@ export default class PerspectiveCamera extends Node {
 		// TODO we want to call this in the upcoming
 		// unmountedCallback, but for now it's harmless but
 		// will run unnecessary logic. #150
-		this.__setSceneCamera('unset')
-		this.__lastKnownScene = null
+		this.#setSceneCamera('unset')
+		this.#lastKnownScene = null
 	}
 
-	private __lastKnownScene: Scene | null = null
+	#lastKnownScene: Scene | null = null
 
-	private __setSceneCamera(unset?: 'unset') {
+	#setSceneCamera(unset?: 'unset') {
 		if (unset) {
 			// TODO: unset might be triggered before the scene was mounted, so
 			// there might not be a last known scene. We won't need this check
 			// when we add unmountedCallback. #150
-			if (this.__lastKnownScene) this.__lastKnownScene._removeCamera(this)
+			if (this.#lastKnownScene) this.#lastKnownScene._removeCamera(this)
 		} else {
 			if (!this.scene || !this.isConnected) return
 
@@ -127,8 +127,6 @@ export default class PerspectiveCamera extends Node {
 		}
 	}
 }
-
-export {PerspectiveCamera}
 
 import type {ElementAttributes} from '@lume/element'
 

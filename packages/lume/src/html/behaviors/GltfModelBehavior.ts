@@ -13,7 +13,7 @@ import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder'
 
 @reactive
-export default class GltfModelBehavior extends RenderableBehavior {
+export class GltfModelBehavior extends RenderableBehavior {
 	/** Path to a .gltf or .glb file. */
 	@attribute src = ''
 
@@ -33,9 +33,9 @@ export default class GltfModelBehavior extends RenderableBehavior {
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
-	private __version = 0
+	#version = 0
 
-	private __stopFns: StopFunction[] = []
+	#stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false
@@ -46,7 +46,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 
 		let firstRun = true
 
-		this.__stopFns.push(
+		this.#stopFns.push(
 			autorun(() => {
 				this.src
 				if (this.dracoDecoder) {
@@ -58,10 +58,10 @@ export default class GltfModelBehavior extends RenderableBehavior {
 				this.src
 				this.dracoDecoder
 
-				this.__cleanupModel()
+				this.#cleanupModel()
 
-				this.__version++
-				this.__loadObj()
+				this.#version++
+				this.#loadObj()
 			}),
 		)
 
@@ -73,45 +73,46 @@ export default class GltfModelBehavior extends RenderableBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		for (const stop of this.__stopFns) stop()
-		this.__stopFns.length = 0
+		for (const stop of this.#stopFns) stop()
+		this.#stopFns.length = 0
 
 		this.gltfLoader = undefined
 		this.dracoLoader?.dispose()
 		this.dracoLoader = undefined
 
-		this.__cleanupModel()
+		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.__version++
+		this.#version++
 
 		return true
 	}
 
-	private __cleanupModel() {
+	#cleanupModel() {
 		if (this.model) disposeObjectTree(this.model.scene)
 		this.model = null
 	}
 
-	private __loadObj() {
-		const {src, __version} = this
+	#loadObj() {
+		const {src} = this
+		const version = this.#version
 
 		if (!src) return
 
-		// In the following gltfLoader.load() callbacks, if __version doesn't
+		// In the following gltfLoader.load() callbacks, if #version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
 		this.gltfLoader!.load(
 			src,
-			model => __version == this.__version && this.__setModel(model),
-			progress => __version == this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version == this.__version && this.__onError(error),
+			model => version == this.#version && this.#setModel(model),
+			progress => version == this.#version && this.element.emit(Events.PROGRESS, progress),
+			error => version == this.#version && this.#onError(error),
 		)
 	}
 
-	private __onError(error: ErrorEvent) {
+	#onError(error: ErrorEvent) {
 		const message =
 			error?.message ??
 			`Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${
@@ -122,7 +123,7 @@ export default class GltfModelBehavior extends RenderableBehavior {
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
-	private __setModel(model: GLTF) {
+	#setModel(model: GLTF) {
 		this.model = model
 		model.scene = model.scene || new Scene().add(...model.scenes)
 		this.element.three.add(model.scene)
@@ -132,5 +133,3 @@ export default class GltfModelBehavior extends RenderableBehavior {
 }
 
 elementBehaviors.define('gltf-model', GltfModelBehavior)
-
-export {GltfModelBehavior}

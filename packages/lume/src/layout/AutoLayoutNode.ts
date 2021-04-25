@@ -22,8 +22,8 @@
 import * as AutoLayout from 'autolayout'
 import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node, {NodeAttributes} from '../core/Node.js'
-import Motor from '../core/Motor.js'
+import {Node, NodeAttributes} from '../core/Node.js'
+import {Motor} from '../core/Motor.js'
 
 import type {XYZPartialValuesArray} from '../core/XYZValues.js'
 
@@ -46,7 +46,7 @@ export type AutoLayoutNodeAttributes = NodeAttributes | 'visualFormat'
  * description.
  */
 @element
-export default class AutoLayoutNode extends Node {
+export class AutoLayoutNode extends Node {
 	static defaultElementName = 'lume-autolayout-node'
 
 	static DEFAULT_PARSE_OPTIONS = {
@@ -61,21 +61,18 @@ export default class AutoLayoutNode extends Node {
 	 *
 	 * @param {Object} [options] options to set.
 	 * @param {String|Array} [options.visualFormat] String or array of strings containing VFL.
-	 * @param {Object} [options.layoutOptions] Options such as viewport, spacing, etc...
+	 * @param {Object} [options.layoutOptions] Options such as viewport, spacing, etc... TODO make this a reactive property.
 	 * @return {AutoLayoutNode} this
 	 */
 	constructor(options: any) {
-		super(options)
-
-		this._layoutOptions = {}
-		this._idToNode = {}
+		super()
 
 		// PORTED {
-		this._layout = this._layout.bind(this)
-		this.on('sizechange', this._layout)
-		this.on('reflow', this._layout)
+		this.on('sizechange', this.#layout)
+		this.on('reflow', this.#layout)
 		// }
 
+		// TODO use Settable.set instead.
 		if (options) {
 			if (options.visualFormat) {
 				this.setVisualFormat(options.visualFormat)
@@ -96,27 +93,27 @@ export default class AutoLayoutNode extends Node {
 		)
 	}
 
-	private _autoLayoutView?: any | undefined
+	#autoLayoutView?: any | undefined
 
 	childConnected(child: Node) {
 		super.childConnected(child)
 
-		if (!this._autoLayoutView) return
-		this._checkNodes()
+		if (!this.#autoLayoutView) return
+		this.#checkNodes()
 	}
 
 	childDisconnected(child: Node) {
 		super.childDisconnected(child)
 
-		if (!this._autoLayoutView) return
-		const _idToNode = this._idToNode
+		if (!this.#autoLayoutView) return
+		const _idToNode = this.#idToNode
 		for (const id in _idToNode) {
 			if (_idToNode[id] === child) {
 				delete _idToNode[id]
 				break
 			}
 		}
-		this._checkNodes()
+		this.#checkNodes()
 	}
 
 	/**
@@ -125,8 +122,8 @@ export default class AutoLayoutNode extends Node {
 	 * @return {AutoLayoutNode} this
 	 */
 	reflowLayout() {
-		if (!this._reflowLayout) {
-			this._reflowLayout = true
+		if (!this.#reflowLayout) {
+			this.#reflowLayout = true
 			Motor.once(() => this.emit('reflow')) // PORTED
 		}
 		return this
@@ -146,11 +143,11 @@ export default class AutoLayoutNode extends Node {
 			visualFormat,
 			parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS,
 		)
-		this._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
-		this._autoLayoutView = new AutoLayout.View({
+		this.#metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
+		this.#autoLayoutView = new AutoLayout.View({
 			constraints: constraints,
 		})
-		this._checkNodes()
+		this.#checkNodes()
 		this.reflowLayout()
 		return this
 	}
@@ -162,7 +159,7 @@ export default class AutoLayoutNode extends Node {
 	 * @return {AutoLayoutNode} this
 	 */
 	setLayoutOptions(options: any) {
-		this._layoutOptions = options || {}
+		this.#layoutOptions = options || {}
 		this.reflowLayout()
 		return this
 	}
@@ -186,7 +183,7 @@ export default class AutoLayoutNode extends Node {
 		super.add(child) // PORTED
 		// TODO instead of handling nodes here, we should handle them in
 		// childComposedCallback, to support ShadowDOM.
-		if (id) this._idToNode[id] = child
+		if (id) this.#idToNode[id] = child
 		this.reflowLayout()
 		return child
 	}
@@ -207,48 +204,48 @@ export default class AutoLayoutNode extends Node {
 		// PORTED
 		if (child && id) {
 			super.removeNode(child) // PORTED
-			delete this._idToNode[id]
+			delete this.#idToNode[id]
 		} else if (child) {
-			for (id in this._idToNode) {
-				if (this._idToNode[id] === child) {
-					delete this._idToNode[id]
+			for (id in this.#idToNode) {
+				if (this.#idToNode[id] === child) {
+					delete this.#idToNode[id]
 					break
 				}
 			}
 			super.removeNode(child) // PORTED
 		} else if (id) {
-			super.removeNode(this._idToNode[id]) // PORTED
-			delete this._idToNode[id]
+			super.removeNode(this.#idToNode[id]) // PORTED
+			delete this.#idToNode[id]
 		}
 		this.reflowLayout()
 	}
 
-	private _layoutOptions: any
-	private _idToNode: any
-	private _reflowLayout = false
-	private _metaInfo?: any
+	#layoutOptions: any = {}
+	#idToNode: any = {}
+	#reflowLayout = false
+	#metaInfo?: any
 
-	private _setIntrinsicWidths(widths: any) {
+	#setIntrinsicWidths(widths: any) {
 		for (var key in widths) {
-			var subView = this._autoLayoutView.subViews[key]
-			var node = this._idToNode[key]
+			var subView = this.#autoLayoutView.subViews[key]
+			var node = this.#idToNode[key]
 			if (subView && node) {
 				subView.intrinsicWidth = node.calculatedSize.x // PORTED
 			}
 		}
 	}
 
-	private _setIntrinsicHeights(heights: any) {
+	#setIntrinsicHeights(heights: any) {
 		for (var key in heights) {
-			var subView = this._autoLayoutView.subViews[key]
-			var node = this._idToNode[key]
+			var subView = this.#autoLayoutView.subViews[key]
+			var node = this.#idToNode[key]
 			if (subView && node) {
 				subView.intrinsicHeight = node.calculatedSize.y // PORTED
 			}
 		}
 	}
 
-	private _setViewPortSize(size: XYZPartialValuesArray<number>, vp: Viewport) {
+	#setViewPortSize(size: XYZPartialValuesArray<number>, vp: Viewport) {
 		size = [
 			vp.width !== undefined && vp.width !== true
 				? vp.width
@@ -258,67 +255,67 @@ export default class AutoLayoutNode extends Node {
 				: Math.max(Math.min(size[1]! /*TODO no !*/, vp['max-height'] || size[1]), vp['min-height'] || 0),
 		]
 		if (vp.width === true && vp.height === true) {
-			size[0] = this._autoLayoutView.fittingWidth
-			size[1] = this._autoLayoutView.fittingHeight
+			size[0] = this.#autoLayoutView.fittingWidth
+			size[1] = this.#autoLayoutView.fittingHeight
 		} else if (vp.width === true) {
-			this._autoLayoutView.setSize(undefined, size[1])
-			size[0] = this._autoLayoutView.fittingWidth
+			this.#autoLayoutView.setSize(undefined, size[1])
+			size[0] = this.#autoLayoutView.fittingWidth
 			// TODO ASPECT RATIO?
 		} else if (vp.height === true) {
-			this._autoLayoutView.setSize(size[0], undefined)
-			size[1] = this._autoLayoutView.fittingHeight
+			this.#autoLayoutView.setSize(size[0], undefined)
+			size[1] = this.#autoLayoutView.fittingHeight
 			// TODO ASPECT RATIO?
 		} else {
 			size = vp['aspect-ratio']
 				? [Math.min(size[0], size[1] * vp['aspect-ratio']), Math.min(size[1], size[0] / vp['aspect-ratio'])]
 				: size
-			this._autoLayoutView.setSize(size[0], size[1])
+			this.#autoLayoutView.setSize(size[0], size[1])
 		}
 		return size
 	}
 
-	private _layout() {
-		if (!this._autoLayoutView) {
+	#layout = () => {
+		if (!this.#autoLayoutView) {
 			return
 		}
 		var x
 		var y
 		var size = this.getSize().toArray()
-		if (this._layoutOptions.spacing || this._metaInfo.spacing) {
-			this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing)
+		if (this.#layoutOptions.spacing || this.#metaInfo.spacing) {
+			this.#autoLayoutView.setSpacing(this.#layoutOptions.spacing || this.#metaInfo.spacing)
 		}
-		var widths = this._layoutOptions.widths || this._metaInfo.widths
+		var widths = this.#layoutOptions.widths || this.#metaInfo.widths
 		if (widths) {
-			this._setIntrinsicWidths(widths)
+			this.#setIntrinsicWidths(widths)
 		}
-		var heights = this._layoutOptions.heights || this._metaInfo.heights
+		var heights = this.#layoutOptions.heights || this.#metaInfo.heights
 		if (heights) {
-			this._setIntrinsicHeights(heights)
+			this.#setIntrinsicHeights(heights)
 		}
-		if (this._layoutOptions.viewport || this._metaInfo.viewport) {
-			var restrainedSize = this._setViewPortSize(size, this._layoutOptions.viewport || this._metaInfo.viewport)
+		if (this.#layoutOptions.viewport || this.#metaInfo.viewport) {
+			var restrainedSize = this.#setViewPortSize(size, this.#layoutOptions.viewport || this.#metaInfo.viewport)
 			x = (size[0] - restrainedSize[0]) / 2
 			y = (size[1] - restrainedSize[1]) / 2
 		} else {
-			this._autoLayoutView.setSize(size[0], size[1])
+			this.#autoLayoutView.setSize(size[0], size[1])
 			x = 0
 			y = 0
 		}
-		for (var key in this._autoLayoutView.subViews) {
-			var subView = this._autoLayoutView.subViews[key]
+		for (var key in this.#autoLayoutView.subViews) {
+			var subView = this.#autoLayoutView.subViews[key]
 			if (key.indexOf('_') !== 0 && subView.type !== 'stack') {
-				var node = this._idToNode[key]
+				var node = this.#idToNode[key]
 				if (node) {
-					this._updateNode(node, subView, x, y, widths, heights)
+					this.#updateNode(node, subView, x, y, widths, heights)
 				}
 			}
 		}
-		if (this._reflowLayout) {
-			this._reflowLayout = false
+		if (this.#reflowLayout) {
+			this.#reflowLayout = false
 		}
 	}
 
-	private _updateNode(node: Node, subView: any, x: number, y: number, widths: any, heights: any) {
+	#updateNode(node: Node, subView: any, x: number, y: number, widths: any, heights: any) {
 		// NOTE The following sizeMode, size, and position functions are no-ops,
 		// they only perform type casting for use in TypeScript code. Without
 		// them there will be type errors.
@@ -345,10 +342,10 @@ export default class AutoLayoutNode extends Node {
 		]
 	}
 
-	private _checkNodes() {
-		const subViews = this._autoLayoutView.subViews
+	#checkNodes() {
+		const subViews = this.#autoLayoutView.subViews
 		const subViewKeys = Object.keys(subViews)
-		const _idToNode = this._idToNode
+		const _idToNode = this.#idToNode
 
 		// If a node is not found for a subview key, see if exists in this's DOM children by className
 		// XXX Should we use a `data-*` attribute instead of a class name?
@@ -363,13 +360,13 @@ export default class AutoLayoutNode extends Node {
 			}
 		}
 
-		this._showOrHideNodes()
+		this.#showOrHideNodes()
 	}
 
-	private _showOrHideNodes() {
-		const subViews = this._autoLayoutView.subViews
+	#showOrHideNodes() {
+		const subViews = this.#autoLayoutView.subViews
 		const subViewKeys = Object.keys(subViews)
-		const _idToNode = this._idToNode
+		const _idToNode = this.#idToNode
 		const nodeIds = Object.keys(_idToNode)
 
 		// hide the child nodes that are should not be visible for the current subview.
@@ -379,8 +376,6 @@ export default class AutoLayoutNode extends Node {
 		}
 	}
 }
-
-export {AutoLayoutNode}
 
 import type {ElementAttributes} from '@lume/element'
 

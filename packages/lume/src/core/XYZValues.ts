@@ -19,23 +19,23 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 @reactive
-export default abstract class XYZValues<T = any> extends Eventful() {
-	private __x: T = undefined!
-	private __y: T = undefined!
-	private __z: T = undefined!
+export abstract class XYZValues<T = any> extends Eventful() {
+	#x: T = undefined!
+	#y: T = undefined!
+	#z: T = undefined!
 
 	constructor(x?: XYZValuesParameters<T>, y?: T, z?: T) {
 		super()
-		this.__from(x, y, z)
+		this.#from(x, y, z)
 	}
 
 	abstract get default(): XYZValuesObject<T>
 
-	private get _default(): XYZValuesObject<T> {
+	get #default(): XYZValuesObject<T> {
 		return this.default || defaultValues
 	}
 
-	private __from(x?: XYZValuesParameters<T>, y?: T, z?: T): this {
+	#from(x?: XYZValuesParameters<T>, y?: T, z?: T): this {
 		if (x === undefined && y === undefined && z === undefined) {
 			this.fromDefault()
 		} else if (Array.isArray(x)) {
@@ -51,7 +51,7 @@ export default abstract class XYZValues<T = any> extends Eventful() {
 	}
 
 	from(x: XYZValuesParameters<T>, y?: T, z?: T): this {
-		return this.__from(x, y, z)
+		return this.#from(x, y, z)
 	}
 
 	set(x: T, y: T, z: T): this {
@@ -105,7 +105,7 @@ export default abstract class XYZValues<T = any> extends Eventful() {
 
 	// XXX This grows but never shrinks. Can we make the cache collectable? Maybe we
 	// need to use WeakRef along with a list of XYZValues instances.
-	private static __stringArrayRegexCache: {[k: string]: RegExp} = {}
+	static __stringArrayRegexCache: {[k: string]: RegExp} = {}
 
 	stringToArray(string: string, separator: string = ','): XYZPartialValuesArray<T> {
 		separator = separator || ',' // prevent empty string
@@ -124,7 +124,7 @@ export default abstract class XYZValues<T = any> extends Eventful() {
 	}
 
 	fromDefault(): this {
-		this.set(this._default.x as any, this._default.y as any, this._default.z as any)
+		this.set(this.#default.x as any, this.#default.y as any, this.#default.z as any)
 		return this
 	}
 
@@ -147,35 +147,33 @@ export default abstract class XYZValues<T = any> extends Eventful() {
 	@reactive
 	set x(value: T) {
 		if (!this.checkValue('x', value)) return
-		this.__x = value
+		this.#x = value
 		this.emit('valuechanged', 'x')
 	}
 
 	get x(): T {
-		return this.__x
+		return this.#x
 	}
 
 	@reactive
 	set y(value: T) {
 		if (!this.checkValue('y', value)) return
-		this.__y = value
+		this.#y = value
 		this.emit('valuechanged', 'y')
 	}
 
 	get y(): T {
-		return this.__y
+		return this.#y
 	}
 
 	@reactive
 	set z(value: T) {
 		if (!this.checkValue('z', value)) return
-		this.__z = value
+		this.#z = value
 		this.emit('valuechanged', 'z')
 	}
 
 	get z(): T {
-		return this.__z
+		return this.#z
 	}
 }
-
-export {XYZValues}

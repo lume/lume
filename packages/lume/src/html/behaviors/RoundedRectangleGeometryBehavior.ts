@@ -3,7 +3,7 @@ import {reactive, attribute, autorun} from '@lume/element'
 import {Shape} from 'three/src/extras/core/Shape.js'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
-import BaseGeometryBehavior from './BaseGeometryBehavior.js'
+import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
 
 import type {Geometry} from 'three/src/core/Geometry.js'
 
@@ -21,16 +21,16 @@ export class RoundedRectangleGeometryBehavior extends BaseGeometryBehavior {
 
 	// @attribute({from: BoolAttribute}) quadraticCorners = false
 
-	private __quadraticCorners = false
+	#quadraticCorners = false
 
 	@attribute
 	get quadraticCorners() {
-		return this.__quadraticCorners
+		return this.#quadraticCorners
 	}
 	set quadraticCorners(val: boolean) {
 		// @ts-ignore handle incoming attribute values
-		if (val === null || val === 'false') this.__quadraticCorners = false
-		else this.__quadraticCorners = true
+		if (val === null || val === 'false') this.#quadraticCorners = false
+		else this.#quadraticCorners = true
 	}
 
 	static _observedProperties = [

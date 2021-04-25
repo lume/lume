@@ -1,10 +1,10 @@
-import Mesh, {MeshAttributes} from './Mesh.js'
+import {Mesh, MeshAttributes} from './Mesh.js'
 
 import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../html/index.js'
 
 export type SphereAttributes = MeshAttributes
 
-export default class Sphere extends Mesh {
+export class Sphere extends Mesh {
 	static defaultElementName = 'lume-sphere'
 
 	static defaultBehaviors = {
@@ -16,8 +16,6 @@ export default class Sphere extends Mesh {
 		},
 	}
 }
-
-export {Sphere}
 
 import type {ElementAttributes} from '@lume/element'
 

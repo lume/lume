@@ -1,12 +1,11 @@
-import {Mixin, MixinResult, Constructor} from 'lowclass'
-
+import {Constructor} from 'lowclass'
 import type {PossibleCustomElement} from '../PossibleCustomElement.js'
 
-function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
+export function DefaultBehaviors<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO This is here for now. Make it an extension to
 	// element-behaviors so that it can be applied to any element
 	// generically.
-	class DefaultBehaviors extends Constructor<PossibleCustomElement & HTMLElement>(Base) {
+	return class DefaultBehaviors extends Constructor<PossibleCustomElement & HTMLElement>(Base) {
 		// override in subclasses
 		static defaultBehaviors: any = []
 
@@ -14,10 +13,10 @@ function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			super.connectedCallback && super.connectedCallback()
 
 			// If no geometry or material behavior is detected, add default ones.
-			this.__setDefaultBehaviorsIfNeeded()
+			this.#setDefaultBehaviorsIfNeeded()
 		}
 
-		private __setDefaultBehaviorsIfNeeded() {
+		#setDefaultBehaviorsIfNeeded() {
 			let defaultBehaviors = (this.constructor as typeof DefaultBehaviors).defaultBehaviors
 
 			// do nothing if there's no defaults
@@ -97,10 +96,4 @@ function DefaultBehaviorsMixin<T extends Constructor<HTMLElement>>(Base: T) {
 			}
 		}
 	}
-
-	return DefaultBehaviors as MixinResult<typeof DefaultBehaviors, T>
 }
-
-export const DefaultBehaviors = Mixin(DefaultBehaviorsMixin)
-export interface DefaultBehaviors extends InstanceType<typeof DefaultBehaviors> {}
-export default DefaultBehaviors

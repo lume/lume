@@ -1,6 +1,6 @@
-import XYZValues from './XYZValues.js'
+import {XYZValues} from './XYZValues.js'
 
-export default class XYZStringValues extends XYZValues<string> {
+export class XYZStringValues extends XYZValues<string> {
 	get default() {
 		return {x: '', y: '', z: ''}
 	}
@@ -17,5 +17,3 @@ export default class XYZStringValues extends XYZValues<string> {
 		return true
 	}
 }
-
-export {XYZStringValues}

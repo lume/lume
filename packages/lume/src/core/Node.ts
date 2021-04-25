@@ -1,8 +1,6 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {Mixin, MixinResult, Constructor} from 'lowclass'
-import ImperativeBase, {initImperativeBase} from './ImperativeBase.js'
-import {default as HTMLInterface} from '../html/HTMLNode.js'
+import {HTMLNode as HTMLInterface} from '../html/HTMLNode.js'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior.js'
@@ -11,12 +9,10 @@ import '../html/behaviors/ColladaModelBehavior.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
 
-initImperativeBase()
-
-const _Node = Mixin(NodeMixin)
-
 // TODO Make a way to link to examples that are in separate source files so as
 // not to clutter the inline-documentation when viewing source files.
+
+export type NodeAttributes = BaseAttributes | 'visible'
 
 /**
  * @element lume-node
@@ -215,111 +211,98 @@ const _Node = Mixin(NodeMixin)
  * @extends ImperativeBase
  * @extends HTMLNode
  */
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-export const Node = _Node.mixin(HTMLInterface)
-export interface Node extends InstanceType<typeof Node> {}
-export default Node
+// NOTE for now, we assume Node is mixed with its HTMLInterface.
+@element
+export class Node extends HTMLInterface {
+	static defaultElementName = 'lume-node'
 
-export type NodeAttributes = BaseAttributes | 'visible'
+	/**
+	 * @property {boolean} visible - Whether or not the node will be
+	 * visible (if it renders anything). For `<lume-node>` elements, this
+	 * only applies if the element has CSS styling or traditional HTML
+	 * content inside of it (children), otherwise `<lume-node>`
+	 * element's don't have any visual output by default.  Other nodes that
+	 * have default visual output like `<lume-box>` or `<lume-sphere>` will
+	 * not be visible if this is false, and their rendering mechanics will
+	 * be skipped.
+	 *
+	 * If a `Node` is not visible, its children are also not visible.
+	 */
+	@booleanAttribute(true) @emits('propertychange') visible = true
 
-function NodeMixin<T extends Constructor>(Base: T) {
-	// NOTE for now, we assume Node is mixed with its HTMLInterface.
-	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
+	/**
+	 * @readonly
+	 * @property {true} isNode - Always true for things that are or inherit from `Node`.
+	 */
+	isNode = true
 
-	@element
-	class Node extends Parent {
-		static defaultElementName = 'lume-node'
+	/**
+	 * @constructor - Create a Node instance.
+	 *
+	 * The following examples calls `.set()` to set initial properties. Any
+	 * properties passed into .set() are applied to the instance. For
+	 * example, writing
+	 *
+	 * ```js
+	 * var node = new Node().set({
+	 *   size: {x:100, y:100, z:100},
+	 *   rotation: {x:30, y:20, z:25}
+	 * })
+	 * ```
+	 *
+	 * is the same as writing
+	 *
+	 * ```js
+	 * var node = new Node()
+	 * node.size = {x:100, y:100, z:100}
+	 * node.rotation = {x:30, y:20, z:25}
+	 * ```
+	 *
+	 * @param {Object} props - An object with initial property values for the Node instance.@
+	 * TODO describe the overall format and reactivity of the properties.
+	 *
+	 * @example
+	 * // TODO handle @example blocks
+	 */
+	constructor() {
+		super()
 
-		/**
-		 * @property {boolean} visible - Whether or not the node will be
-		 * visible (if it renders anything). For `<lume-node>` elements, this
-		 * only applies if the element has CSS styling or traditional HTML
-		 * content inside of it (children), otherwise `<lume-node>`
-		 * element's don't have any visual output by default.  Other nodes that
-		 * have default visual output like `<lume-box>` or `<lume-sphere>` will
-		 * not be visible if this is false, and their rendering mechanics will
-		 * be skipped.
-		 *
-		 * If a `Node` is not visible, its children are also not visible.
-		 */
-		@booleanAttribute(true) @emits('propertychange') visible = true
-
-		/**
-		 * @readonly
-		 * @property {true} isNode - Always true for things that are or inherit from `Node`.
-		 */
-		isNode = true
-
-		/**
-		 * @constructor - Create a Node instance.
-		 *
-		 * The following examples calls `.set()` to set initial properties. Any
-		 * properties passed into .set() are applied to the instance. For
-		 * example, writing
-		 *
-		 * ```js
-		 * var node = new Node().set({
-		 *   size: {x:100, y:100, z:100},
-		 *   rotation: {x:30, y:20, z:25}
-		 * })
-		 * ```
-		 *
-		 * is the same as writing
-		 *
-		 * ```js
-		 * var node = new Node()
-		 * node.size = {x:100, y:100, z:100}
-		 * node.rotation = {x:30, y:20, z:25}
-		 * ```
-		 *
-		 * @param {Object} props - An object with initial property values for the Node instance.@
-		 * TODO describe the overall format and reactivity of the properties.
-		 *
-		 * @example
-		 * // TODO handle @example blocks
-		 */
-		constructor(...args: any[]) {
-			super(...args)
-
-			// The `parent` property can already be set if this instance is
-			// already in the DOM and wwhile being upgraded into a custom
-			// element.
-			// TODO Remove this after we make it lazy and deferred this to a
-			// render task.
-			if (this.parent) {
-				this._calcSize()
-				this.needsUpdate()
-			}
-		}
-
-		_loadCSS() {
-			if (!super._loadCSS()) return false
-
-			this._cssStopFns.push(
-				autorun(() => {
-					this._elementOperations.shouldRender = this.visible
-					this.needsUpdate()
-				}),
-			)
-
-			return true
-		}
-
-		_loadGL() {
-			if (!super._loadGL()) return false
-
-			this._glStopFns.push(
-				autorun(() => {
-					this.three.visible = this.visible
-					this.needsUpdate()
-				}),
-			)
-
-			return true
+		// The `parent` property can already be set if this instance is
+		// already in the DOM and wwhile being upgraded into a custom
+		// element.
+		// TODO Remove this after we make it lazy and deferred this to a
+		// render task.
+		if (this.parent) {
+			this._calcSize()
+			this.needsUpdate()
 		}
 	}
 
-	return Node as MixinResult<typeof Node, T>
+	_loadCSS() {
+		if (!super._loadCSS()) return false
+
+		this._cssStopFns.push(
+			autorun(() => {
+				this._elementOperations.shouldRender = this.visible
+				this.needsUpdate()
+			}),
+		)
+
+		return true
+	}
+
+	_loadGL() {
+		if (!super._loadGL()) return false
+
+		this._glStopFns.push(
+			autorun(() => {
+				this.three.visible = this.visible
+				this.needsUpdate()
+			}),
+		)
+
+		return true
+	}
 }
 
 import type {ElementAttributes} from '@lume/element'

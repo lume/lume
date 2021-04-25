@@ -23,23 +23,23 @@ export class FBXModelBehavior extends RenderableBehavior {
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
-	private __version = 0
+	#version = 0
 
-	private __stopFns: StopFunction[] = []
+	#stopFns: StopFunction[] = []
 
 	loadGL() {
 		if (!super.loadGL()) return false
 
 		this.loader = new FBXLoader()
 
-		this.__stopFns.push(
+		this.#stopFns.push(
 			autorun(() => {
 				this.src
 
-				this.__cleanupModel()
+				this.#cleanupModel()
 
-				this.__version++
-				this.__loadObj()
+				this.#version++
+				this.#loadObj()
 			}),
 		)
 
@@ -49,26 +49,27 @@ export class FBXModelBehavior extends RenderableBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		for (const stop of this.__stopFns) stop()
-		this.__stopFns.length = 0
+		for (const stop of this.#stopFns) stop()
+		this.#stopFns.length = 0
 
 		this.loader = undefined
 
-		this.__cleanupModel()
+		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.__version++
+		this.#version++
 
 		return true
 	}
 
-	private __cleanupModel() {
+	#cleanupModel() {
 		if (this.model) disposeObjectTree(this.model)
 		this.model = undefined
 	}
 
-	private __loadObj() {
-		const {src, __version} = this
+	#loadObj() {
+		const {src} = this
+		const version = this.#version
 
 		if (!src) return
 
@@ -79,20 +80,20 @@ export class FBXModelBehavior extends RenderableBehavior {
 
 		this.loader!.load(
 			src,
-			model => __version === this.__version && this.__setModel(model),
-			progress => __version === this.__version && this.element.emit(Events.PROGRESS, progress),
-			error => __version === this.__version && this.__onError(error),
+			model => version === this.#version && this.#setModel(model),
+			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			error => version === this.#version && this.#onError(error),
 		)
 	}
 
-	private __onError(error: ErrorEvent) {
+	#onError(error: ErrorEvent) {
 		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
 		console.warn(message)
 		if (error.error) console.error(error.error)
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
-	private __setModel(model: Group) {
+	#setModel(model: Group) {
 		this.model = model
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})

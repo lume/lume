@@ -1,10 +1,10 @@
-import Mesh, {MeshAttributes} from './Mesh.js'
+import {Mesh, MeshAttributes} from './Mesh.js'
 
 // TODO Is this accurate? Or do we have different attributes from the behaviors?
 export type DOMPlaneAttributes = MeshAttributes
 
 /** See DOMNodeGeometryBehavior and DOMNodeMaterialBehavior for available properties. */
-export default class DOMPlane extends Mesh {
+export class DOMPlane extends Mesh {
 	static defaultElementName = 'lume-dom-plane'
 
 	static defaultBehaviors = {
@@ -20,8 +20,6 @@ export default class DOMPlane extends Mesh {
 		return true
 	}
 }
-
-export {DOMPlane}
 
 import type {ElementAttributes} from '@lume/element'
 

@@ -33,13 +33,13 @@ export class ScrollFling {
 
 	scrollFactor = 1
 
-	__task!: RenderTask
+	#task?: RenderTask
 
 	constructor(options: ScrollFlingOptions) {
 		Object.assign(this, options)
 	}
 
-	__onWheel = (event: WheelEvent) => {
+	#onWheel = (event: WheelEvent) => {
 		event.preventDefault()
 
 		let dx = event.deltaX * this.scrollFactor
@@ -50,10 +50,10 @@ export class ScrollFling {
 
 		if (dx === 0 && dy === 0) return
 
-		if (this.__task) Motor.removeRenderTask(this.__task)
+		if (this.#task) Motor.removeRenderTask(this.#task)
 
 		// slow the rotation down based on former drag speed
-		this.__task = Motor.addRenderTask((): false | void => {
+		this.#task = Motor.addRenderTask((): false | void => {
 			dx = dx * 0.95
 			dy = dy * 0.95
 
@@ -66,26 +66,26 @@ export class ScrollFling {
 		})
 	}
 
-	private __isStarted = false
+	#isStarted = false
 
 	// TODO switch to Pointer Events
 
 	start(): this {
-		if (this.__isStarted) return this
-		this.__isStarted = true
+		if (this.#isStarted) return this
+		this.#isStarted = true
 
 		// @ts-ignore, whyyyyy TypeScript
-		this.target.addEventListener('wheel', this.__onWheel)
+		this.target.addEventListener('wheel', this.#onWheel)
 
 		return this
 	}
 
 	stop(): this {
-		if (!this.__isStarted) return this
-		this.__isStarted = false
+		if (!this.#isStarted) return this
+		this.#isStarted = false
 
 		// @ts-ignore, whyyyyy TypeScript
-		this.target.removeEventListener('wheel', this.__onWheel)
+		this.target.removeEventListener('wheel', this.#onWheel)
 
 		return this
 	}

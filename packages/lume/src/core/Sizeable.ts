@@ -1,12 +1,10 @@
-import {Mixin, Constructor} from 'lowclass'
-import {Eventful, emits} from '@lume/eventful'
-import {reactive, attribute, untrack, element} from '@lume/element'
-import TreeNode from './TreeNode.js'
-import XYZSizeModeValues from './XYZSizeModeValues.js'
-import XYZNonNegativeValues from './XYZNonNegativeValues.js'
-import Motor from './Motor.js'
+import {emits} from '@lume/eventful'
+import {attribute, untrack, element, variable, Variable} from '@lume/element'
+import {TreeNode} from './TreeNode.js'
+import {XYZSizeModeValues} from './XYZSizeModeValues.js'
+import {XYZNonNegativeValues} from './XYZNonNegativeValues.js'
+import {Motor} from './Motor.js'
 
-import type {MixinResult} from 'lowclass'
 import type {StopFunction} from '@lume/element'
 import type {XYZValues, XYZValuesObject, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
 import type {SizeModeValue} from './XYZSizeModeValues.js'
@@ -18,355 +16,348 @@ const previousSize: Partial<XYZValuesObject<number>> = {}
 
 export type SizeableAttributes = 'sizeMode' | 'size'
 
-function SizeableMixin<T extends Constructor<HTMLElement>>(Base: T) {
-	const _Base = Constructor<HTMLElement>(Base) // this needs to be in a new variable due to https://github.com/microsoft/TypeScript/issues/35339
-	const Parent = TreeNode.mixin(Eventful(_Base))
+const sizeMode = new WeakMap<Sizeable, XYZSizeModeValues>()
+const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 
-	// Sizeable extends TreeNode because Sizeable knows about its `parent` when
-	// calculating proportional sizes. Also Transformable knows about it's parent
-	// in order to calculate it's world matrix based on it's parent's.
-	@element
-	class Sizeable extends Parent {
-		// TODO handle ctor arg types
-		constructor(...args: any[]) {
-			super(...args)
+// No decorators for private fields (yet), so we implement reactivity manually.
+// const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>()
+const calculatedSize = new WeakMap<Sizeable, Variable<{x: number; y: number; z: number}>>()
 
-			// TODO: Once TS lands the upcoming feature to have getters with
-			// different types than setters, we can fix the ugly type casting
-			// in the following constructor lines.
-			// Tracking issues: https://github.com/microsoft/TypeScript/issues/2521 and https://github.com/microsoft/TypeScript/pull/42425
-			this.getSizeMode().on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
-			this.getSize().on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
-		}
+// Sizeable and its subclass Transformable extend TreeNode because they know
+// about their `parent` when calculating proportional sizes or world matrices
+// based on parent values.
+@element
+export class Sizeable extends TreeNode {
+	// TODO handle ctor arg types
+	constructor() {
+		super()
 
-		/**
-		 * @property {XYZSizeModeValues} sizeMode - Set the size mode for each
-		 * axis. Possible size modes are "literal" and "proportional". The
-		 * default values are "literal" for all axes. The size mode speicified
-		 * for an axis dictates how the respective value of the same axis in
-		 * the [`size`](TODO) property will behave.  A value of
-		 * "literal" for the X axis of `sizeMode` means the value for the X axis
-		 * of `size` will be a literal value.  A value of "proportional" for
-		 * the X axis of `sizeMode` means the value for the X axis of
-		 * `size` is a proportion of whatever the current size of
-		 * this node's parent node is.
-		 */
-		@attribute
-		@emits('propertychange')
-		set sizeMode(newValue: XYZSizeModeValuesProperty) {
-			if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
-			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
-			this._setPropertyXYZ('sizeMode', newValue)
-		}
-		get sizeMode(): XYZSizeModeValuesProperty {
-			if (!this.__sizeMode) this.__sizeMode = new XYZSizeModeValues('literal', 'literal', 'literal')
-			return this.__sizeMode
-		}
+		calculatedSize.set(
+			this,
+			// variable<XYZValuesObject<number>>({x: 0, y: 0, z: 0}),
+			variable({x: 0, y: 0, z: 0}),
+		)
 
-		private declare __sizeMode?: XYZSizeModeValues
+		this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
+		this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
+	}
 
-		// prettier-ignore
-		getSizeMode(): XYZSizeModeValues { return this.sizeMode as XYZSizeModeValues }
+	/**
+	 * @property {XYZSizeModeValues} sizeMode - Set the size mode for each
+	 * axis. Possible size modes are "literal" and "proportional". The
+	 * default values are "literal" for all axes. The size mode speicified
+	 * for an axis dictates how the respective value of the same axis in
+	 * the [`size`](TODO) property will behave.  A value of
+	 * "literal" for the X axis of `sizeMode` means the value for the X axis
+	 * of `size` will be a literal value.  A value of "proportional" for
+	 * the X axis of `sizeMode` means the value for the X axis of
+	 * `size` is a proportion of whatever the current size of
+	 * this node's parent node is.
+	 */
+	@attribute
+	@emits('propertychange')
+	set sizeMode(newValue: XYZSizeModeValuesProperty) {
+		if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
+		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
+		this._setPropertyXYZ('sizeMode', sizeMode.get(this)!, newValue)
+	}
+	get sizeMode(): XYZSizeModeValues {
+		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
+		return sizeMode.get(this)!
+	}
 
-		// TODO: A "differential" size would be cool. Good for padding,
-		// borders, etc. Inspired from Famous' differential sizing.
-		//
-		// TODO: A "target" size where sizing can be relative to another node.
-		// This would be tricky though, because there could be circular size
-		// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
+	// prettier-ignore
+	getSizeMode(): XYZSizeModeValues { return this.sizeMode as XYZSizeModeValues }
+	// TODO ^: Now that TS 4.3 landed the ability to have separate types for
+	// setters than for getters, we can remove methods like getSizeMode,
+	// etc.
 
-		/**
-		 * Set the size of each axis. The size for each axis depends on the
-		 * sizeMode for each axis. For example, if node.sizeMode is set to
-		 * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
-		 * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
-		 * Y size is 0.5 of it's parent Y size, and Z size is a literal value
-		 * of 30. It is easy this way to mix literal and proportional sizes for
-		 * the different axes.
-		 *
-		 * Literal sizes can be any value (the literal size that you want) and
-		 * proportional sizes are a number between 0 and 1 representing a
-		 * proportion of the parent node size. 0 means 0% of the parent size,
-		 * and 1.0 means 100% of the parent size.
-		 *
-		 * All size values must be positive numbers.
-		 *
-		 * @param {Object} newValue
-		 * @param {number} [newValue.x] The x-axis size to apply.
-		 * @param {number} [newValue.y] The y-axis size to apply.
-		 * @param {number} [newValue.z] The z-axis size to apply.
-		 */
-		@attribute
-		@emits('propertychange')
-		set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
-			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
-			this._setPropertyXYZ('size', newValue)
-		}
-		get size(): XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction {
-			if (!this.__size) this.__size = new XYZNonNegativeValues(0, 0, 0)
-			return this.__size
-		}
+	// TODO: A "differential" size would be cool. Good for padding,
+	// borders, etc. Inspired from Famous' differential sizing.
+	//
+	// TODO: A "target" size where sizing can be relative to another node.
+	// This would be tricky though, because there could be circular size
+	// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
 
-		private declare __size?: XYZNonNegativeValues
+	/**
+	 * Set the size of each axis. The size for each axis depends on the
+	 * sizeMode for each axis. For example, if node.sizeMode is set to
+	 * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
+	 * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
+	 * Y size is 0.5 of it's parent Y size, and Z size is a literal value
+	 * of 30. It is easy this way to mix literal and proportional sizes for
+	 * the different axes.
+	 *
+	 * Literal sizes can be any value (the literal size that you want) and
+	 * proportional sizes are a number between 0 and 1 representing a
+	 * proportion of the parent node size. 0 means 0% of the parent size,
+	 * and 1.0 means 100% of the parent size.
+	 *
+	 * All size values must be positive numbers.
+	 *
+	 * @param {Object} newValue
+	 * @param {number} [newValue.x] The x-axis size to apply.
+	 * @param {number} [newValue.y] The y-axis size to apply.
+	 * @param {number} [newValue.z] The z-axis size to apply.
+	 */
+	@attribute
+	@emits('propertychange')
+	set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
+		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
+		this._setPropertyXYZ('size', size.get(this)!, newValue)
+	}
+	get size(): XYZNonNegativeValues {
+		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
+		return size.get(this)!
+	}
 
-		// prettier-ignore
-		getSize(): XYZNonNegativeValues { return this.size as XYZNonNegativeValues }
+	// prettier-ignore
+	getSize(): XYZNonNegativeValues { return this.size as XYZNonNegativeValues }
 
-		/**
-		 * Get the actual size of the Node. This can be useful when size is
-		 * proportional, as the actual size of the Node depends on the size of
-		 * it's parent.
-		 *
-		 * @readonly
-		 *
-		 * @return {Array.number} An Oject with x, y, and z properties, each
-		 * property representing the computed size of the x, y, and z axes
-		 * respectively.
-		 *
-		 * @reactive
-		 */
-		get calculatedSize() {
-			// TODO we can re-calculate the actual size lazily, this way it can
-			// normally be deferred to a Motor render task, unless a user
-			// explicitly needs it and reads the value.
-			// if (this.__sizeDirty) this._calcSize
+	/**
+	 * Get the actual size of the Node. This can be useful when size is
+	 * proportional, as the actual size of the Node depends on the size of
+	 * it's parent.
+	 *
+	 * @readonly
+	 *
+	 * @return {Array.number} An Oject with x, y, and z properties, each
+	 * property representing the computed size of the x, y, and z axes
+	 * respectively.
+	 *
+	 * @reactive
+	 */
+	get calculatedSize() {
+		// TODO we can re-calculate the actual size lazily, this way it can
+		// normally be deferred to a Motor render task, unless a user
+		// explicitly needs it and reads the value.
+		// if (this.__sizeDirty) this._calcSize
 
-			// TODO make __calculatedSize properties readonly and don't clone it
-			// each time.
-			return {...this.__calculatedSize}
-		}
+		// TODO make __calculatedSize properties readonly and don't clone it
+		// each time.
+		return {...(calculatedSize.get(this)?.get() ?? {x: 0, y: 0, z: 0})}
+	}
 
-		/**
-		 * Subclasses should push stop functions returned by autorun() into this
-		 * array in connectedCallback, then disconnectedCallback will
-		 * automatically clean them up.
-		 */
-		// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
-		_stopFns: Array<StopFunction> = []
+	/**
+	 * Subclasses should push stop functions returned by autorun() into this
+	 * array in connectedCallback, then disconnectedCallback will
+	 * automatically clean them up.
+	 */
+	// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
+	_stopFns: Array<StopFunction> = []
 
-		connectedCallback() {
-			// TODO remove ts-ignore when we figure how to make this work in a
-			// non-DOM env. It doesn't recognize the method existing, we
-			// probably need to define it in TreeNode.
-			// @ts-ignore
-			super.connectedCallback()
+	connectedCallback() {
+		super.connectedCallback()
 
-			// For example, subclasses should push autoruns in connectedCallback.
-			// this._stopFns.push(autorun(...))
-		}
+		// For example, subclasses should push autoruns in connectedCallback.
+		// this._stopFns.push(autorun(...))
+	}
 
-		disconnectedCallback() {
-			// TODO remove ts-ignore when we figure how to make this work in a
-			// non-DOM env. It doesn't recognize the method existing, we
-			// probably need to define it in TreeNode.
-			// @ts-ignore
-			super.disconnectedCallback()
+	disconnectedCallback() {
+		super.disconnectedCallback?.()
 
-			for (const stop of this._stopFns) stop()
-			this._stopFns.length = 0
-		}
+		for (const stop of this._stopFns) stop()
+		this._stopFns.length = 0
+	}
 
-		// TODO, refactor, this is from DeclarativeBase, but doesn't make sense in TypeScript inheritance
-		hasHtmlApi?: boolean
-		_composedParent?: Sizeable
-		_composedChildren?: Sizeable[]
-
-		get _renderParent(): Sizeable {
-			if (this.hasHtmlApi) {
-				return this._composedParent as Sizeable
-			} else {
-				return this.parent as Sizeable
-			}
-		}
-
-		get _renderChildren() {
-			if (this.hasHtmlApi) {
-				return this._composedChildren
-			} else {
-				return this.subnodes
-			}
-		}
-
-		_getParentSize() {
-			return this._renderParent?.__calculatedSize ?? {x: 0, y: 0, z: 0}
-		}
-
-		_calcSize() {
-			const calculatedSize = this.__calculatedSize
-
-			Object.assign(previousSize, calculatedSize)
-
-			const size = this.getSize()
-			const sizeMode = this.getSizeMode()
-			const parentSize = this._getParentSize()
-
-			if (sizeMode.x == 'literal') {
-				calculatedSize.x = size.x
-			} else {
-				// proportional
-				calculatedSize.x = parentSize.x * size.x
-			}
-
-			if (sizeMode.y == 'literal') {
-				calculatedSize.y = size.y
-			} else {
-				// proportional
-				calculatedSize.y = parentSize.y * size.y
-			}
-
-			if (sizeMode.z == 'literal') {
-				calculatedSize.z = size.z
-			} else {
-				// proportional
-				calculatedSize.z = parentSize.z * size.z
-			}
-
-			// trigger reactive updates (although we set it to the same value)
-			this.__calculatedSize = calculatedSize
-
-			if (
-				previousSize.x !== calculatedSize.x ||
-				previousSize.y !== calculatedSize.y ||
-				previousSize.z !== calculatedSize.z
-			) {
-				this.emit('sizechange', {...calculatedSize})
-			}
-		}
-
-		private __isSettingProperty = false
-
-		get _isSettingProperty() {
-			return this.__isSettingProperty
-		}
-
-		_setPropertyXYZ<K extends keyof this>(name: K, newValue: this[K]) {
-			if (newValue === (this as any)['__' + name]) return
-
-			this.__isSettingProperty = true
-
-			if (isXYZPropertyFunction(newValue)) {
-				this.__handleXYZPropertyFunction(newValue, name)
-			} else {
-				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
-				else this.__settingValueFromPropFunction = false
-
-				// If we're in a computation, we don't want the valuechanged
-				// event that will be emitted to trigger reactivity (see
-				// valuechanged listeners above). If we've reached this logic,
-				// it is because a property is being set, which will already
-				// trigger reactivity.
-				untrack(() => {
-					;(this as any)['__' + name].from(newValue)
-				})
-			}
-
-			this.__isSettingProperty = false
-		}
-
-		_setPropertySingle<K extends keyof this>(name: K, newValue: this[K]) {
-			this.__isSettingProperty = true
-
-			if (isSinglePropertyFunction(newValue)) {
-				this.__handleSinglePropertyFunction(newValue, name)
-			} else {
-				if (!this.__settingValueFromPropFunction) this.__removePropertyFunction(name)
-				else this.__settingValueFromPropFunction = false
-
-				// Same note about this untrack() call as the one in _setPropertyXYZ.
-				untrack(() => {
-					;(this as any)['__' + name] = newValue
-				})
-			}
-
-			this.__isSettingProperty = false
-		}
-
-		@reactive private __calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
-		private __propertyFunctions: Map<string, RenderTask> | null = null
-		private __settingValueFromPropFunction = false
-
-		private __handleXYZPropertyFunction(fn: XYZNumberValuesPropertyFunction, name: keyof this) {
-			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
-
-			const propFunction = this.__propertyFunctions.get(name as string)
-
-			if (propFunction) Motor.removeRenderTask(propFunction)
-
-			this.__propertyFunctions.set(
-				name as string,
-				Motor.addRenderTask(time => {
-					const result = fn(
-						(this as any)['__' + name].x,
-						(this as any)['__' + name].y,
-						(this as any)['__' + name].z,
-						time,
-					)
-
-					if (result === false) {
-						this.__propertyFunctions!.delete(name as string)
-						return false
-					}
-
-					// mark this true, so that the following set of this[name]
-					// doesn't override the prop function (normally a
-					// user can set this[name] to a value that isn't a function
-					// to disable the prop function).
-					this.__settingValueFromPropFunction = true
-					;(this as any)[name] = result
-
-					return
-				}),
-			)
-		}
-
-		private __handleSinglePropertyFunction(fn: SinglePropertyFunction, name: keyof this) {
-			if (!this.__propertyFunctions) this.__propertyFunctions = new Map()
-
-			const propFunction = this.__propertyFunctions.get(name as string)
-
-			if (propFunction) Motor.removeRenderTask(propFunction)
-
-			this.__propertyFunctions.set(
-				name as string,
-				Motor.addRenderTask(time => {
-					const result = fn((this as any)['__' + name], time)
-
-					if (result === false) {
-						this.__propertyFunctions!.delete(name as string)
-						return false
-					}
-
-					this.__settingValueFromPropFunction = true
-					;(this as any)[name] = result
-
-					// TODO The RenderTask return type is `false | void`, so why
-					// does the noImplicitReturns TS option require a return
-					// here? Open bug on TypeScript.
-					return
-				}),
-			)
-		}
-
-		// remove property function (render task) if any.
-		private __removePropertyFunction(name: keyof this) {
-			if (!this.__propertyFunctions) return
-
-			const propFunction = this.__propertyFunctions.get(name as string)
-
-			if (propFunction) {
-				Motor.removeRenderTask(propFunction)
-				this.__propertyFunctions.delete(name as string)
-				if (!this.__propertyFunctions.size) this.__propertyFunctions = null
-			}
+	get _renderParent(): Sizeable | null {
+		if (this.hasHtmlApi) {
+			return this._composedParent as Sizeable | null
+		} else {
+			return this.parent as Sizeable | null
 		}
 	}
 
-	return Sizeable as MixinResult<typeof Sizeable, T>
-}
+	get _renderChildren() {
+		if (this.hasHtmlApi) {
+			return this._composedChildren
+		} else {
+			return this.subnodes
+		}
+	}
 
-export const Sizeable = Mixin(SizeableMixin)
-export interface Sizeable extends InstanceType<typeof Sizeable> {}
-export default Sizeable
+	_getParentSize() {
+		return (this._renderParent && calculatedSize.get(this._renderParent)?.get()) ?? {x: 0, y: 0, z: 0}
+	}
+
+	_calcSize() {
+		const _calculatedSize = calculatedSize.get(this)!.get()
+
+		Object.assign(previousSize, _calculatedSize)
+
+		const size = this.getSize()
+		const sizeMode = this.getSizeMode()
+		const parentSize = this._getParentSize()
+
+		if (sizeMode.x == 'literal') {
+			_calculatedSize.x = size.x
+		} else {
+			// proportional
+			_calculatedSize.x = parentSize.x * size.x
+		}
+
+		if (sizeMode.y == 'literal') {
+			_calculatedSize.y = size.y
+		} else {
+			// proportional
+			_calculatedSize.y = parentSize.y * size.y
+		}
+
+		if (sizeMode.z == 'literal') {
+			_calculatedSize.z = size.z
+		} else {
+			// proportional
+			_calculatedSize.z = parentSize.z * size.z
+		}
+
+		// trigger reactive updates (although we set it to the same value)
+		calculatedSize.get(this)!.set(_calculatedSize)
+
+		if (
+			previousSize.x !== _calculatedSize.x ||
+			previousSize.y !== _calculatedSize.y ||
+			previousSize.z !== _calculatedSize.z
+		) {
+			this.emit('sizechange', {..._calculatedSize})
+		}
+	}
+
+	#isSettingProperty = false
+
+	get _isSettingProperty() {
+		return this.#isSettingProperty
+	}
+
+	_setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V) {
+		// if (newValue === (this as any)['__' + name]) return
+		// @ts-ignore
+		if (newValue === xyz) return
+
+		this.#isSettingProperty = true
+
+		if (isXYZPropertyFunction(newValue)) {
+			this.#handleXYZPropertyFunction(newValue, name, xyz)
+		} else {
+			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
+			else this.#settingValueFromPropFunction = false
+
+			// If we're in a computation, we don't want the valuechanged
+			// event that will be emitted to trigger reactivity (see
+			// valuechanged listeners above). If we've reached this logic,
+			// it is because a property is being set, which will already
+			// trigger reactivity.
+			untrack(() => {
+				// ;(this as any)['__' + name].from(newValue)
+				xyz.from(newValue)
+			})
+		}
+
+		this.#isSettingProperty = false
+	}
+
+	_setPropertySingle<K extends keyof this, V>(name: K, setter: (newValue: this[K]) => void, newValue: V) {
+		this.#isSettingProperty = true
+
+		if (isSinglePropertyFunction(newValue)) {
+			this.#handleSinglePropertyFunction(newValue, name)
+		} else {
+			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
+			else this.#settingValueFromPropFunction = false
+
+			// Same note about this untrack() call as the one in _setPropertyXYZ.
+			untrack(() => {
+				// ;(this as any)['__' + name] = newValue
+				setter(newValue as any) // FIXME no any
+			})
+		}
+
+		this.#isSettingProperty = false
+	}
+
+	#propertyFunctions: Map<string, RenderTask> | null = null
+	#settingValueFromPropFunction = false
+
+	#handleXYZPropertyFunction(fn: XYZNumberValuesPropertyFunction, name: keyof this, xyz: XYZValues) {
+		if (!this.#propertyFunctions) this.#propertyFunctions = new Map()
+
+		const propFunction = this.#propertyFunctions.get(name as string)
+
+		if (propFunction) Motor.removeRenderTask(propFunction)
+
+		this.#propertyFunctions.set(
+			name as string,
+			Motor.addRenderTask(time => {
+				const result = fn(
+					// (this as any)['__' + name].x,
+					// (this as any)['__' + name].y,
+					// (this as any)['__' + name].z,
+					xyz.x,
+					xyz.y,
+					xyz.z,
+					time,
+				)
+
+				if (result === false) {
+					this.#propertyFunctions!.delete(name as string)
+					return false
+				}
+
+				// mark this true, so that the following set of this[name]
+				// doesn't override the prop function (normally a
+				// user can set this[name] to a value that isn't a function
+				// to disable the prop function).
+				this.#settingValueFromPropFunction = true
+
+				// ;(this as any)[name] = result
+				xyz.from(result)
+
+				return
+			}),
+		)
+	}
+
+	#handleSinglePropertyFunction(fn: SinglePropertyFunction, name: keyof this) {
+		if (!this.#propertyFunctions) this.#propertyFunctions = new Map()
+
+		const propFunction = this.#propertyFunctions.get(name as string)
+
+		if (propFunction) Motor.removeRenderTask(propFunction)
+
+		this.#propertyFunctions.set(
+			name as string,
+			Motor.addRenderTask(time => {
+				// const result = fn((this as any)['__' + name], time)
+				const result = fn((this as any)[name], time)
+
+				if (result === false) {
+					this.#propertyFunctions!.delete(name as string)
+					return false
+				}
+
+				this.#settingValueFromPropFunction = true
+				;(this as any)[name] = result
+
+				// TODO The RenderTask return type is `false | void`, so why
+				// does the noImplicitReturns TS option require a return
+				// here? Open bug on TypeScript.
+				return
+			}),
+		)
+	}
+
+	// remove property function (render task) if any.
+	#removePropertyFunction(name: keyof this) {
+		if (!this.#propertyFunctions) return
+
+		const propFunction = this.#propertyFunctions.get(name as string)
+
+		if (propFunction) {
+			Motor.removeRenderTask(propFunction)
+			this.#propertyFunctions.delete(name as string)
+			if (!this.#propertyFunctions.size) this.#propertyFunctions = null
+		}
+	}
+}
 
 // the following type guards are used above just to satisfy the type system,
 // though the actual runtime check does not guarantee that the functions are of

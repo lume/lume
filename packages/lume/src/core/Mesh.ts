@@ -1,7 +1,7 @@
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import Node from './Node.js'
+import {Node} from './Node.js'
 
 // register behaviors that can be used on this element
 import './mesh-behaviors.js'
@@ -12,7 +12,7 @@ import type {NodeAttributes} from './Node.js'
 export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
 
 @element
-export default class Mesh extends Node {
+export class Mesh extends Node {
 	static defaultElementName = 'lume-mesh'
 
 	// TODO NAMING: It would be neat to be able to return an array of classes
@@ -53,8 +53,6 @@ export default class Mesh extends Node {
 		return new ThreeMesh()
 	}
 }
-
-export {Mesh}
 
 import type {ElementAttributes} from '@lume/element'
 

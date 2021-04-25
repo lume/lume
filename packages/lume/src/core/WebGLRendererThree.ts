@@ -162,7 +162,7 @@ export class WebGLRendererThree {
 		}
 	}
 
-	private __bgVersion = 0
+	#bgVersion = 0
 
 	/**
 	 * @method enableBackground - Enable background texture handling for the given scene.
@@ -176,7 +176,7 @@ export class WebGLRendererThree {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.__bgVersion += 1
+		this.#bgVersion += 1
 		state.backgroundIsEquirectangular = isEquirectangular
 
 		if (isEquirectangular) {
@@ -188,7 +188,7 @@ export class WebGLRendererThree {
 		}
 
 		state.hasBackground = true
-		this.__loadBackgroundTexture(scene, cb)
+		this.#loadBackgroundTexture(scene, cb)
 	}
 
 	/**
@@ -199,7 +199,7 @@ export class WebGLRendererThree {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.__bgVersion += 1
+		this.#bgVersion += 1
 
 		if (!state.hasBackground && !state.hasEnvironment) {
 			state.pmremgen?.dispose()
@@ -208,22 +208,23 @@ export class WebGLRendererThree {
 	}
 
 	/**
-	 * @method __loadBackgroundTexture - Load the background texture for the given scene.
+	 * @private
+	 * @method #loadBackgroundTexture - Load the background texture for the given scene.
 	 * @param {Scene} scene - The given scene.
 	 * @param {(t: Texture | undefined) => void} cb - Callback called when the
 	 * texture is done loading. It receives the Texture, or undefined if loading
 	 * was canceled or if other issues.
 	 */
-	private __loadBackgroundTexture(scene: Scene, cb: (texture: Texture) => void): void {
+	#loadBackgroundTexture(scene: Scene, cb: (texture: Texture) => void): void {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		const version = this.__bgVersion
+		const version = this.#bgVersion
 
 		new TextureLoader().load(scene.background, tex => {
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
-			if (version !== this.__bgVersion) return
+			if (version !== this.#bgVersion) return
 
 			if (state.backgroundIsEquirectangular) {
 				cb(state.pmremgen!.fromEquirectangular(tex).texture)
@@ -233,7 +234,7 @@ export class WebGLRendererThree {
 		})
 	}
 
-	private __envVersion = 0
+	#envVersion = 0
 
 	/**
 	 * @method enableEnvironment - Enable environment texture handling for the given scene.
@@ -246,7 +247,7 @@ export class WebGLRendererThree {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.__envVersion += 1
+		this.#envVersion += 1
 
 		// Load the PMREM machinery only if needed.
 		if (!state.pmremgen) {
@@ -255,7 +256,7 @@ export class WebGLRendererThree {
 		}
 
 		state.hasEnvironment = true
-		this.__loadEnvironmentTexture(scene, cb)
+		this.#loadEnvironmentTexture(scene, cb)
 	}
 
 	/**
@@ -266,7 +267,7 @@ export class WebGLRendererThree {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.__envVersion += 1
+		this.#envVersion += 1
 
 		if (!state.hasBackground && !state.hasEnvironment) {
 			state.pmremgen?.dispose()
@@ -275,21 +276,22 @@ export class WebGLRendererThree {
 	}
 
 	/**
-	 * @method __loadEnvironmentTexture - Load the environment texture for the given scene.
+	 * @private
+	 * @method #loadEnvironmentTexture - Load the environment texture for the given scene.
 	 * @param {Scene} scene - The given scene.
 	 * @param {(t: Texture | undefined) => void} cb - Callback called when the
 	 * texture is done loading. It receives the Texture.
 	 */
-	private __loadEnvironmentTexture(scene: Scene, cb: (texture: Texture) => void): void {
+	#loadEnvironmentTexture(scene: Scene, cb: (texture: Texture) => void): void {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		const version = this.__envVersion
+		const version = this.#envVersion
 
 		new TextureLoader().load(scene.environment, tex => {
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
-			if (version !== this.__envVersion) return
+			if (version !== this.#envVersion) return
 
 			cb(state.pmremgen!.fromEquirectangular(tex).texture)
 			tex.dispose() // Three.js demos do this. Not sure if it is really needed.
@@ -302,12 +304,12 @@ export class WebGLRendererThree {
 
 		const {renderer} = state
 
-		if (renderer.animate)
-			// < r94
-			renderer.animate(fn)
-		else if (renderer.setAnimationLoop)
+		if (renderer.setAnimationLoop)
 			// >= r94
 			renderer.setAnimationLoop(fn)
+		else if (renderer.animate)
+			// < r94
+			renderer.animate(fn)
 	}
 
 	// TODO: at the moment this has only been tested toggling it on

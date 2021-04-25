@@ -1,9 +1,9 @@
-import {Mixin, MixinResult, Constructor} from 'lowclass'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {reactive, autorun, StopFunction, stringAttribute} from '@lume/element'
 
+import type {Constructor} from 'lowclass'
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
-import type BaseMeshBehavior from './BaseMeshBehavior.js'
+import type {BaseMeshBehavior} from './BaseMeshBehavior.js'
 import type {MeshComponentType} from './BaseMeshBehavior.js'
 
 export type MaterialTextureAttributes = 'texture' | 'bumpMap' | 'specularMap'
@@ -11,11 +11,11 @@ export type MaterialTextureAttributes = 'texture' | 'bumpMap' | 'specularMap'
 /**
  * Mixin class for adding textures to a mesh behavior
  */
-function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) {
-	const Parent = Constructor<BaseMeshBehavior, typeof BaseMeshBehavior>(Base)
+export function MaterialTexture<T extends Constructor<BaseMeshBehavior>>(Base: T) {
+	const Parent = Base as typeof BaseMeshBehavior
 
 	@reactive
-	class MaterialTexture extends Parent {
+	class MaterialTexture extends Base {
 		type: MeshComponentType = 'material'
 
 		@stringAttribute('') texture = ''
@@ -24,7 +24,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 
 		static _observedProperties = ['texture', 'bumpMap', 'specularMap', ...(Parent._observedProperties || [])]
 
-		private __stopFns: StopFunction[] = []
+		#stopFns: StopFunction[] = []
 
 		loadGL() {
 			if (!super.loadGL()) return false
@@ -64,7 +64,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 				this.element.needsUpdate() // LUME needs to re-render
 			}
 
-			this.__stopFns.push(
+			this.#stopFns.push(
 				autorun(() => handleTexture('texture', 'map')),
 				autorun(() => handleTexture('bumpMap', 'bumpMap')),
 				autorun(() => handleTexture('specularMap', 'specularMap')),
@@ -76,8 +76,8 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		unloadGL() {
 			if (!super.unloadGL()) return false
 
-			for (const stop of this.__stopFns) stop()
-			this.__stopFns.length = 0
+			for (const stop of this.#stopFns) stop()
+			this.#stopFns.length = 0
 
 			const mat = this.element.three.material as MeshPhongMaterial
 			if (mat.map) mat.map.dispose()
@@ -86,9 +86,7 @@ function MaterialTextureMixin<T extends Constructor<BaseMeshBehavior>>(Base: T) 
 		}
 	}
 
-	return MaterialTexture as MixinResult<typeof MaterialTexture, T>
+	return MaterialTexture
 }
 
-export const MaterialTexture = Mixin(MaterialTextureMixin)
-export interface MaterialTexture extends InstanceType<typeof MaterialTexture> {}
-export default MaterialTexture
+export type MaterialTextureInstance = InstanceType<ReturnType<typeof MaterialTexture>>

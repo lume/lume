@@ -1,4 +1,4 @@
-import Node, {NodeAttributes} from './Node.js'
+import {Node, NodeAttributes} from './Node.js'
 
 import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../html/index.js'
 
@@ -27,12 +27,10 @@ export type ObjModelAttributes = NodeAttributes
  * scene.add(model)
  * ```
  */
-export default class ObjModel extends Node {
+export class ObjModel extends Node {
 	static defaultElementName = 'lume-obj-model'
 	static defaultBehaviors = ['obj-model']
 }
-
-export {ObjModel}
 
 import type {ElementAttributes} from '@lume/element'
 

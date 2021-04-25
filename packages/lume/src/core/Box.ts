@@ -1,10 +1,10 @@
-import Mesh from './Mesh.js'
+import {Mesh} from './Mesh.js'
 
 import type {MeshAttributes} from './Mesh.js'
 
 export type BoxAttributes = MeshAttributes
 
-export default class Box extends Mesh {
+export class Box extends Mesh {
 	static defaultElementName = 'lume-box'
 
 	static defaultBehaviors = {
@@ -16,8 +16,6 @@ export default class Box extends Mesh {
 		},
 	}
 }
-
-export {Box}
 
 import type {ElementAttributes} from '@lume/element'
 

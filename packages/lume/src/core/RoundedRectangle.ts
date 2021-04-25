@@ -4,7 +4,7 @@ import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../ht
 
 export type RoundedRectangleAttributes = MeshAttributes
 
-export default class RoundedRectangle extends Mesh {
+export class RoundedRectangle extends Mesh {
 	static defaultElementName = 'lume-rounded-rectangle'
 
 	static defaultBehaviors = {
@@ -16,8 +16,6 @@ export default class RoundedRectangle extends Mesh {
 		},
 	}
 }
-
-export {RoundedRectangle}
 
 import type {ElementAttributes} from '@lume/element'
 

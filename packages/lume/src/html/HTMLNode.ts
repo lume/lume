@@ -1,8 +1,6 @@
-import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase.js'
+import {ImperativeBase} from '../core/ImperativeBase.js'
 
-initDeclarativeBase()
-
-export default class HTMLNode extends DeclarativeBase {
+export class HTMLNode extends ImperativeBase {
 	// prettier-ignore
 	get root() { return this }
 	set root(_v) {}
@@ -33,5 +31,3 @@ export default class HTMLNode extends DeclarativeBase {
 		}
 	`
 }
-
-export {HTMLNode}

@@ -9,7 +9,7 @@
 //  * Based on @tojiro's vr-samples-utils.js
 //  */
 
-// var WEBVR = {
+// export var WEBVR = {
 // 	createButton: function (renderer: WebGLRenderer) {
 // 		function showEnterVR(display: VRDisplay) {
 // 			button.style.display = ''
@@ -141,5 +141,3 @@
 // 		console.warn('WEBVR.getVRDisplay has been deprecated.')
 // 	},
 // }
-
-// export default WEBVR
