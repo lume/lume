@@ -62,11 +62,11 @@
         "
         style="background: rgba(0,0,0,0.3)"
     >
-        <lume-dom-plane size="1 1 0" color="deeppink" class="child1">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
-        <lume-dom-plane size="1 1 0" color="deeppink" class="child2">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
-        <lume-dom-plane size="1 1 0" color="deeppink" class="child3">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
-        <lume-dom-plane size="1 1 0" color="deeppink" class="child4">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
-        <lume-dom-plane size="1 1 0" color="deeppink" class="child5">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-dom-plane>
+        <lume-mixed-plane size="1 1 0" color="deeppink" class="child1">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-mixed-plane>
+        <lume-mixed-plane size="1 1 0" color="deeppink" class="child2">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-mixed-plane>
+        <lume-mixed-plane size="1 1 0" color="deeppink" class="child3">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-mixed-plane>
+        <lume-mixed-plane size="1 1 0" color="deeppink" class="child4">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-mixed-plane>
+        <lume-mixed-plane size="1 1 0" color="deeppink" class="child5">This is a paragraph of text to show that it reflows when the size of the layout changes size so that the awesomeness can be observed in its fullness.</lume-mixed-plane>
     </lume-autolayout-node>
 </lume-scene>
 
@@ -110,7 +110,7 @@
         lastSize = size
     })
 
-    Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(plane => {
+    Array.from( document.querySelectorAll('lume-mixed-plane') ).forEach(plane => {
         plane.three.material.opacity = 0.3
         plane.needsUpdate()
     })

@@ -63,7 +63,7 @@
         shadowmap-type="pcfsoft" NOTE="one of basic, pcf, pcfsoft"
     >
         <lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
-        <lume-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
+        <lume-mixed-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
             <lume-node
                 id="button-container"
                 position="0 0 20"
@@ -71,7 +71,7 @@
                 align-point="0.5 0.5 0"
                 mount-point="0.5 0.5 0"
             >
-                <lume-dom-plane
+                <lume-mixed-plane
                     v-for="n in [0,1,2,3,4]"
                     ref="btn"
                     :key="n"
@@ -82,7 +82,7 @@
                     color="#444"
                 >
                     <button>button {{n+1}}</button>
-                </lume-dom-plane>
+                </lume-mixed-plane>
             </lume-node>
             <lume-node id="lightContainer" size="0 0 0" position="0 0 300">
                 <lume-point-light
@@ -103,7 +103,7 @@
                     </lume-mesh>
                 </lume-point-light>
             </lume-node>
-        </lume-dom-plane>
+        </lume-mixed-plane>
     </lume-scene>
 </template>
 
@@ -131,7 +131,7 @@
             // The following is a temporary hack because material opacity
             // isn't exposed through the HTML API yet. work-in-progress...
             // TODO this stuff should be doable via the HTML
-            Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(function(n) {
+            Array.from( document.querySelectorAll('lume-mixed-plane') ).forEach(function(n) {
                 n.on(Events.GL_LOAD, async () => {
                     n.three.material.opacity = 0.3
                     n.needsUpdate()

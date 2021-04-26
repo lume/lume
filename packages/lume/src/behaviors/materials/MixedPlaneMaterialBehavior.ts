@@ -5,7 +5,7 @@ import {NoBlending /*, DoubleSide*/} from 'three/src/constants.js'
 import {MaterialBehavior} from './MaterialBehavior.js'
 import {MaterialTexture} from './MaterialTexture.js'
 
-export class DOMNodeMaterialBehavior extends MaterialTexture(MaterialBehavior) {
+export class MixedPlaneMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	_createComponent() {
 		// TODO PERFORMANCE we can re-use a single material for
 		// all the DOM planes rather than a new material per
@@ -19,4 +19,5 @@ export class DOMNodeMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	}
 }
 
-if (!elementBehaviors.has('domnode-material')) elementBehaviors.define('domnode-material', DOMNodeMaterialBehavior)
+if (!elementBehaviors.has('mixedplane-material'))
+	elementBehaviors.define('mixedplane-material', MixedPlaneMaterialBehavior)

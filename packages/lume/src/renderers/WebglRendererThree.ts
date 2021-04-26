@@ -19,7 +19,7 @@ interface SceneState {
 
 const sceneStates = new WeakMap<Scene, SceneState>()
 
-let instance: WebGLRendererThree | null = null
+let instance: WebglRendererThree | null = null
 let isCreatingSingleton = false
 
 /** @typedef {'pcf' | 'pcfsoft' | 'basic'} ShadowMapTypeString */
@@ -30,13 +30,13 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * @class WebGLRendererThree - A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
-export class WebGLRendererThree {
+export class WebglRendererThree {
 	static singleton() {
 		if (instance) return instance
 		else {
 			try {
 				isCreatingSingleton = true
-				return (instance = new WebGLRendererThree())
+				return (instance = new WebglRendererThree())
 			} catch (e) {
 				throw e
 			} finally {

@@ -2,7 +2,7 @@ import 'element-behaviors'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
-export class DOMNodeGeometryBehavior extends GeometryBehavior {
+export class MixedPlaneGeometryBehavior extends GeometryBehavior {
 	_createComponent() {
 		// We have to use a BoxGeometry instead of a
 		// PlaneGeometry because Three.js is not capable of
@@ -14,4 +14,5 @@ export class DOMNodeGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('domnode-geometry')) elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
+if (!elementBehaviors.has('mixedplane-geometry'))
+	elementBehaviors.define('mixedplane-geometry', MixedPlaneGeometryBehavior)

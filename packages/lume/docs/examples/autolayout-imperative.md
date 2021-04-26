@@ -28,7 +28,7 @@
         Scene,
         AmbientLight,
         PointLight,
-        DOMPlane,
+        MixedPlane,
         Sphere
     } = LUME
 
@@ -96,35 +96,35 @@
         observed in its fullness.
     \`
 
-    const child1 = new DOMPlane().set({
+    const child1 = new MixedPlane().set({
         color: 'deeppink'
     })
 
     child1.textContent = text
     layout.add(child1, 'child1')
 
-    const child2 = new DOMPlane().set({
+    const child2 = new MixedPlane().set({
         color: 'deeppink'
     })
 
     child2.textContent = text
     layout.add(child2, 'child2')
 
-    const child3 = new DOMPlane().set({
+    const child3 = new MixedPlane().set({
         color: 'deeppink'
     })
 
     child3.textContent = text
     layout.add(child3, 'child3')
 
-    const child4 = new DOMPlane().set({
+    const child4 = new MixedPlane().set({
         color: 'deeppink'
     })
 
     child4.textContent = text
     layout.add(child4, 'child4')
 
-    const child5 = new DOMPlane().set({
+    const child5 = new MixedPlane().set({
         color: 'deeppink'
     })
 
@@ -156,7 +156,7 @@
         lastSize = size
     })
 
-    Array.from( document.querySelectorAll('lume-dom-plane') ).forEach(plane => {
+    Array.from( document.querySelectorAll('lume-mixed-plane') ).forEach(plane => {
         // Because we have just created the elements and placed them into
         // the DOM, we have to wait for their GL objects to be loaded before
         // we can work with those underlying objects.

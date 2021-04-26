@@ -1,7 +1,7 @@
 import {html} from '@lume/element/dist/html.js'
-import {ImperativeBase} from '../core/ImperativeBase.js'
+import {ImperativeBase} from './ImperativeBase.js'
 
-export class HTMLScene extends ImperativeBase {
+export class HtmlScene extends ImperativeBase {
 	static css = /*css*/ `
 		:host {
 			/*

@@ -7,7 +7,7 @@ import {Points} from '../../meshes/Points.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 @reactive
-export class PLYGeometryBehavior extends GeometryBehavior {
+export class PlyGeometryBehavior extends GeometryBehavior {
 	/** Path to a .ply file. */
 	@stringAttribute('') src = ''
 
@@ -105,4 +105,4 @@ export class PLYGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('ply-geometry')) elementBehaviors.define('ply-geometry', PLYGeometryBehavior)
+if (!elementBehaviors.has('ply-geometry')) elementBehaviors.define('ply-geometry', PlyGeometryBehavior)

@@ -1,6 +1,5 @@
 export * from './Box.js'
-export * from './DOMNode.js'
-export * from './DOMPlane.js'
+export * from './MixedPlane.js'
 export * from './Mesh.js'
 export * from './Plane.js'
 export * from './Points.js'

@@ -1,2 +1,2 @@
-export * from './CSS3DRendererThree.js'
-export * from './WebGLRendererThree.js'
+export * from './Css3dRendererThree.js'
+export * from './WebglRendererThree.js'

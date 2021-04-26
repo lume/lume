@@ -18,8 +18,7 @@ import {Box} from './meshes/Box.js'
 import {Sphere} from './meshes/Sphere.js'
 import {Plane} from './meshes/Plane.js'
 import {PointLight} from './lights/PointLight.js'
-import {DOMNode} from './meshes/DOMNode.js'
-import {DOMPlane} from './meshes/DOMPlane.js'
+import {MixedPlane} from './meshes/MixedPlane.js'
 import {AmbientLight} from './lights/AmbientLight.js'
 import {PerspectiveCamera} from './cameras/PerspectiveCamera.js'
 import {AutoLayoutNode} from './layouts/AutoLayoutNode.js'
@@ -38,8 +37,7 @@ export function useDefaultNames() {
 		Sphere,
 		Plane,
 		PointLight,
-		DOMNode,
-		DOMPlane,
+		MixedPlane,
 		AmbientLight,
 		PerspectiveCamera,
 		AutoLayoutNode,

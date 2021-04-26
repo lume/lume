@@ -81,7 +81,7 @@
 				...html`
 					<lume-box size="50 50 50" position="-100 -100 -100" color="royalblue"></lume-box>
 					<lume-node position="10 10 10">
-						<lume-dom-node
+						<lume-mixed-plane
 							ref=${el => (slotContainer = el)}
 							position="50 50 50"
 							rotation="30 30 30"
@@ -92,7 +92,7 @@
 							<slot ref=${el => (slot = el)}>
 								<!-- The sphere inside the lume-box renders relative to here. -->
 							</slot>
-						</lume-dom-node>
+						</lume-mixed-plane>
 					</lume-node>
 				`,
 			)

@@ -3,7 +3,7 @@ import {observeChildren} from '../core/utils.js'
 import {WithChildren} from './WithChildren.js'
 import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
 
-import type {HTMLNode} from './HTMLNode.js'
+import type {HtmlNode} from './HtmlNode.js'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 
@@ -12,7 +12,7 @@ const observers = new WeakMap()
 // using isNode instead of instanceof HTMLNode to avoid runtime reference,
 // thus prevent circular dependency between this module and HTMLNode
 // TODO consolidate with one in ImperativeBase
-function isNode(n: any): n is HTMLNode {
+function isNode(n: any): n is HtmlNode {
 	return n.isNode
 }
 

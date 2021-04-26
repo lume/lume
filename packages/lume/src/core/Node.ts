@@ -1,6 +1,6 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {HTMLNode as HTMLInterface} from './HTMLNode.js'
+import {HtmlNode as HtmlInterface} from './HtmlNode.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
 
@@ -206,9 +206,9 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * @extends ImperativeBase
  * @extends HTMLNode
  */
-// NOTE for now, we assume Node is mixed with its HTMLInterface.
+// NOTE for now, we assume Node is mixed with its HtmlInterface.
 @element
-export class Node extends HTMLInterface {
+export class Node extends HtmlInterface {
 	static defaultElementName = 'lume-node'
 
 	/**

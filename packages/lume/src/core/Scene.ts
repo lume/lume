@@ -8,9 +8,9 @@ import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
 import {Color} from 'three/src/math/Color.js'
-import {WebGLRendererThree, ShadowMapTypeString} from '../renderers/WebGLRendererThree.js'
-import {CSS3DRendererThree} from '../renderers/CSS3DRendererThree.js'
-import {HTMLScene as HTMLInterface} from './HTMLScene.js'
+import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
+import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
+import {HtmlScene as HTMLInterface} from './HtmlScene.js'
 import {documentBody, thro, trim} from './utils.js'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver.js'
 import {isDisposable} from '../utils/three.js'
@@ -573,19 +573,19 @@ export class Scene extends HTMLInterface {
 		return true
 	}
 
-	#glRenderer: WebGLRendererThree | null = null
-	#cssRenderer: CSS3DRendererThree | null = null
+	#glRenderer: WebglRendererThree | null = null
+	#cssRenderer: Css3dRendererThree | null = null
 
 	// The idea here is that in the future we might have "babylon",
 	// "playcanvas", etc, on a per scene basis. We'd needed to abstract the
 	// renderer more, have abstract base classes to define the common
 	// interfaces.
-	#getGLRenderer(type: 'three'): WebGLRendererThree {
+	#getGLRenderer(type: 'three'): WebglRendererThree {
 		if (this.#glRenderer) return this.#glRenderer
 
-		let renderer: WebGLRendererThree
+		let renderer: WebglRendererThree
 
-		if (type === 'three') renderer = WebGLRendererThree.singleton()
+		if (type === 'three') renderer = WebglRendererThree.singleton()
 		else throw new Error('invalid WebGL renderer')
 
 		renderer.initialize(this)
@@ -596,9 +596,9 @@ export class Scene extends HTMLInterface {
 	#getCSSRenderer(type: 'three') {
 		if (this.#cssRenderer) return this.#cssRenderer
 
-		let renderer: CSS3DRendererThree
+		let renderer: Css3dRendererThree
 
-		if (type === 'three') renderer = CSS3DRendererThree.singleton()
+		if (type === 'three') renderer = Css3dRendererThree.singleton()
 		else throw new Error('invalid CSS renderer. The only type supported is currently "three" (i.e. Three.js).')
 
 		renderer.initialize(this)

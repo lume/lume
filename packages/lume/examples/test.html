@@ -35,7 +35,7 @@
 		<!-- WORKS ======================================================== -->
 
 		<style>
-			lume-dom-node {
+			lume-mixed-plane {
 				text-align: center;
 			}
 			lume-node {
@@ -67,7 +67,7 @@
 		>
 			<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-			<lume-dom-node
+			<lume-mixed-plane
 				size-mode="proportional proportional"
 				size="1 1 0"
 				style="background: #0e99d9"
@@ -75,7 +75,7 @@
 			>
 				<h1>HTML content, with lighting and shadows!</h1>
 
-				<lume-dom-node
+				<lume-mixed-plane
 					position="0 100 10"
 					size="70 21 0"
 					align-point="0.5 0 0"
@@ -83,13 +83,18 @@
 					color="#333333"
 				>
 					<button>A button!</button>
-				</lume-dom-node>
-			</lume-dom-node>
+				</lume-mixed-plane>
+			</lume-mixed-plane>
 
 			<lume-node id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
-				<lume-dom-node size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
+				<lume-mixed-plane
+					size="200 200 0"
+					mount-point="0.5 0.5 0.5"
+					style="background: #a1d490"
+					color="#444444"
+				>
 					<h1>Hello</h1>
-				</lume-dom-node>
+				</lume-mixed-plane>
 
 				<lume-sphere
 					size="50 50 50"
@@ -107,7 +112,7 @@
 					rotation="0 0 0"
 				></lume-plane>
 
-				<lume-dom-node
+				<lume-mixed-plane
 					id="little"
 					size="50 50 50"
 					mount-point="0.5 0.5 0.5"
@@ -119,7 +124,7 @@
 				>
 					3D!
 
-					<lume-dom-node
+					<lume-mixed-plane
 						id="little2"
 						size="50 50 50"
 						position="20 30 110"
@@ -128,8 +133,8 @@
 						TODO-material-opacity="0.3"
 					>
 						Yeah!
-					</lume-dom-node>
-				</lume-dom-node>
+					</lume-mixed-plane>
+				</lume-mixed-plane>
 
 				<lume-box
 					id="cube"
@@ -179,7 +184,7 @@
 				little2.rotation.x += 1
 			})
 
-			Array.from(document.querySelectorAll('lume-dom-node')).forEach(plane => {
+			Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(plane => {
 				// if already loaded, run intial logic
 				if (plane.glLoaded) onGLLoad(plane)
 				plane.on(Events.GL_LOAD, onGLLoad)
@@ -195,7 +200,7 @@
 			// This setInterval shows that
 			//
 			// - the above GL_LOAD event handler re-establishes the material
-			// opacity of the lume-dom-node elements every couple of seconds.
+			// opacity of the lume-mixed-plane elements every couple of seconds.
 			//
 			// - that turning GL rendering off and on makes the animation
 			// stutter for a small moment, because destroying and re-creating

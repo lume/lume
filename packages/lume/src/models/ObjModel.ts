@@ -1,6 +1,6 @@
 import {Node, NodeAttributes} from '../core/Node.js'
 
-import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/ObjModelBehavior.js'
+import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/models/ObjModelBehavior.js'
 
 export type ObjModelAttributes = NodeAttributes
 

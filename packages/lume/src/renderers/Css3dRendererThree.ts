@@ -9,16 +9,16 @@ interface SceneState {
 
 const sceneStates = new WeakMap<Scene, SceneState>()
 
-let instance: CSS3DRendererThree | null = null
+let instance: Css3dRendererThree | null = null
 let isCreatingSingleton = false
 
-export class CSS3DRendererThree {
+export class Css3dRendererThree {
 	static singleton() {
 		if (instance) return instance
 		else {
 			try {
 				isCreatingSingleton = true
-				return (instance = new CSS3DRendererThree())
+				return (instance = new Css3dRendererThree())
 			} catch (e) {
 				throw e
 			} finally {

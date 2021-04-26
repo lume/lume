@@ -1,6 +1,6 @@
-import {ImperativeBase} from '../core/ImperativeBase.js'
+import {ImperativeBase} from './ImperativeBase.js'
 
-export class HTMLNode extends ImperativeBase {
+export class HtmlNode extends ImperativeBase {
 	// prettier-ignore
 	get root() { return this }
 	set root(_v) {}
