@@ -1,6 +1,6 @@
 import {Node, NodeAttributes} from '../core/Node.js'
 
-import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../behaviors/GltfModelBehavior.js'
+import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../behaviors/models/GltfModelBehavior.js'
 
 export type GltfModelAttributes = NodeAttributes
 

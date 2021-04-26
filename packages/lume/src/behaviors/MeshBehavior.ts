@@ -16,7 +16,7 @@ export type MeshComponentType = 'geometry' | 'material'
  * Subclasses should implement:
  * _createComponent() - return a geometry or material instance.
  */
-export abstract class BaseMeshBehavior extends RenderableBehavior {
+export abstract class MeshBehavior extends RenderableBehavior {
 	abstract type: MeshComponentType
 
 	requiredElementType() {

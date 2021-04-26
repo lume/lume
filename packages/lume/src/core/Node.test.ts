@@ -1,6 +1,6 @@
-import Node from './Node.js'
-import Scene from './Scene.js'
-import {useDefaultNames} from '../html/index.js'
+import {Node} from './Node.js'
+import {Scene} from './Scene.js'
+import {useDefaultNames} from '../index.js'
 
 useDefaultNames()
 

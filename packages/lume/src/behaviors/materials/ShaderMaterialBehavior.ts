@@ -5,17 +5,12 @@ import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
-import {BaseMaterialBehavior} from './BaseMaterialBehavior.js'
+import {MaterialBehavior} from './MaterialBehavior.js'
 import {MaterialTexture} from './MaterialTexture.js'
 
 @reactive
-export class ShaderMaterialBehavior extends MaterialTexture(BaseMaterialBehavior) {
-	static _observedProperties = [
-		'uniforms',
-		'vertexShader',
-		'fragmentShader',
-		...BaseMaterialBehavior._observedProperties,
-	]
+export class ShaderMaterialBehavior extends MaterialTexture(MaterialBehavior) {
+	static _observedProperties = ['uniforms', 'vertexShader', 'fragmentShader', ...MaterialBehavior._observedProperties]
 
 	// TODO: Perhaps instead of accepting string objects for HTML attributes,
 	// we can create specific uniform-foo attributes for each uniform, and have

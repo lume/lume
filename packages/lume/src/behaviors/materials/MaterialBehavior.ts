@@ -1,7 +1,7 @@
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
 import {reactive, autorun, numberAttribute, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
-import {BaseMeshBehavior, MeshComponentType} from './BaseMeshBehavior.js'
+import {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 
@@ -9,7 +9,7 @@ export type BaseMaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidednes
 
 /** @class BaseMaterialBehavior - Base class for material behaviors. */
 @reactive
-export class BaseMaterialBehavior extends BaseMeshBehavior {
+export class MaterialBehavior extends MeshBehavior {
 	type: MeshComponentType = 'material'
 
 	static _observedProperties = [
@@ -17,7 +17,7 @@ export class BaseMaterialBehavior extends BaseMeshBehavior {
 		'opacity',
 		'sidedness',
 		'color',
-		...(BaseMeshBehavior._observedProperties || []),
+		...(MeshBehavior._observedProperties || []),
 	]
 
 	// TODO wireframe works with -geometry behaviors, but not with obj-model

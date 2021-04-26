@@ -2,12 +2,12 @@ import 'element-behaviors'
 import {autorun, reactive, stringAttribute} from '@lume/element'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
-import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
-import {Events} from '../core/Events.js'
-import {Points} from '../meshes/Points.js'
+import {Events} from '../../core/Events.js'
+import {Points} from '../../meshes/Points.js'
+import {GeometryBehavior} from './GeometryBehavior.js'
 
 @reactive
-export class PLYGeometryBehavior extends BaseGeometryBehavior {
+export class PLYGeometryBehavior extends GeometryBehavior {
 	/** Path to a .ply file. */
 	@stringAttribute('') src = ''
 
@@ -18,7 +18,7 @@ export class PLYGeometryBehavior extends BaseGeometryBehavior {
 		return [Points]
 	}
 
-	static _observedProperties = ['src', ...(BaseGeometryBehavior._observedProperties || [])]
+	static _observedProperties = ['src', ...(GeometryBehavior._observedProperties || [])]
 
 	_createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.

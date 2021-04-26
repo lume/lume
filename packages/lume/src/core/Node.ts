@@ -2,11 +2,6 @@ import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {HTMLNode as HTMLInterface} from './HTMLNode.js'
 
-// register behaviors that can be used on this element
-import '../html/behaviors/ObjModelBehavior.js'
-import '../html/behaviors/GltfModelBehavior.js'
-import '../html/behaviors/ColladaModelBehavior.js'
-
 import type {BaseAttributes} from './ImperativeBase.js'
 
 // TODO Make a way to link to examples that are in separate source files so as

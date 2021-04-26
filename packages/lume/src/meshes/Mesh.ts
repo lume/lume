@@ -3,9 +3,6 @@ import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Node} from '../core/Node.js'
 
-// register behaviors that can be used on this element
-import './mesh-behaviors.js'
-
 import type {Material} from 'three/src/materials/Material.js'
 import type {NodeAttributes} from '../core/Node.js'
 

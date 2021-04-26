@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {PlaneGeometry} from 'three/src/geometries/PlaneGeometry.js'
-import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
+import {GeometryBehavior} from './GeometryBehavior.js'
 
-export class PlaneGeometryBehavior extends BaseGeometryBehavior {
+export class PlaneGeometryBehavior extends GeometryBehavior {
 	_createComponent() {
 		return new PlaneGeometry(this.element.calculatedSize.x, this.element.calculatedSize.y)
 	}

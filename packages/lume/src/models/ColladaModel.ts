@@ -1,6 +1,6 @@
 import {Node, NodeAttributes} from '../core/Node.js'
 
-import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/ColladaModelBehavior.js'
+import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/models/ColladaModelBehavior.js'
 
 export type ColladaModelAttributes = NodeAttributes
 

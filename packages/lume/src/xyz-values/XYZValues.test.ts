@@ -1,4 +1,4 @@
-import XYZAnyValues from './XYZAnyValues.js'
+import {XYZAnyValues} from './XYZAnyValues.js'
 import {checkValues, testWithSeparator} from './XYZValues.test.common.js'
 
 describe('XYZAnyValues', () => {

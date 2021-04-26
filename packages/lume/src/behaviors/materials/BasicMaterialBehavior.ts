@@ -1,11 +1,11 @@
 import 'element-behaviors'
 import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial.js'
 // import {multiple} from 'lowclass'
-import {BaseMaterialBehavior} from './BaseMaterialBehavior.js'
+import {MaterialBehavior} from './MaterialBehavior.js'
 import {MaterialTexture} from './MaterialTexture.js'
 
 // export class BasicMaterialBehavior extends multiple(BaseMaterialBehavior, MaterialTexture) {
-export class BasicMaterialBehavior extends MaterialTexture(BaseMaterialBehavior) {
+export class BasicMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	// constructor(el: Element) {
 	//     super(el)
 	// }

@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {SphereGeometry} from 'three/src/geometries/SphereGeometry.js'
-import {BaseGeometryBehavior} from './BaseGeometryBehavior.js'
+import {GeometryBehavior} from './GeometryBehavior.js'
 
-export class SphereGeometryBehavior extends BaseGeometryBehavior {
+export class SphereGeometryBehavior extends GeometryBehavior {
 	_createComponent() {
 		return new SphereGeometry(this.element.calculatedSize.x / 2, 32, 32)
 	}

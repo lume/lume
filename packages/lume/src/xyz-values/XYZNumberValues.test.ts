@@ -1,4 +1,4 @@
-import XYZNumberValues from './XYZNumberValues.js'
+import {XYZNumberValues} from './XYZNumberValues.js'
 import {checkValues, testWithSeparator} from './XYZValues.test.common.js'
 
 import type {XYZValuesArray, XYZValuesObject} from './XYZValues.js'

@@ -1,22 +1,22 @@
 import 'element-behaviors'
 import {reactive, autorun, stringAttribute} from '@lume/element'
-import {ColladaLoader} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import {disposeObjectTree} from '../utils/three.js'
-import {Events} from '../core/Events.js'
-import {RenderableBehavior} from './RenderableBehavior.js'
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
+import {disposeObjectTree} from '../../utils/three.js'
+import {Events} from '../../core/Events.js'
+import {RenderableBehavior} from '../RenderableBehavior.js'
 
 import type {StopFunction} from '@lume/element'
-import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
+import type {Group} from 'three/src/objects/Group.js'
 
-export type ColladaModelBehaviorAttributes = 'src'
+export type FbxModelBehaviorAttributes = 'src'
 
 @reactive
-export class ColladaModelBehavior extends RenderableBehavior {
-	/** Path to a .dae file. */
+export class FbxModelBehavior extends RenderableBehavior {
+	/** Path to a .fbx file. */
 	@stringAttribute('') src = ''
 
-	loader?: ColladaLoader
-	model?: Collada
+	loader?: FBXLoader
+	model?: Group
 
 	static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
 
@@ -30,7 +30,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		this.loader = new ColladaLoader()
+		this.loader = new FBXLoader()
 
 		this.#stopFns.push(
 			autorun(() => {
@@ -50,6 +50,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		if (!super.unloadGL()) return false
 
 		for (const stop of this.#stopFns) stop()
+		this.#stopFns.length = 0
 
 		this.loader = undefined
 
@@ -62,7 +63,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	}
 
 	#cleanupModel() {
-		if (this.model) disposeObjectTree(this.model.scene)
+		if (this.model) disposeObjectTree(this.model)
 		this.model = undefined
 	}
 
@@ -72,7 +73,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
-		// In the following colladaLoader.load() callbacks, if version doesn't
+		// In the following fbxLoader.load() callbacks, if __version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
@@ -92,12 +93,12 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		this.element.emit(Events.MODEL_ERROR, error.error)
 	}
 
-	#setModel(model: Collada) {
+	#setModel(model: Group) {
 		this.model = model
-		this.element.three.add(model.scene)
-		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
+		this.element.three.add(model)
+		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
 		this.element.needsUpdate()
 	}
 }
 
-if (!elementBehaviors.has('collada-model')) elementBehaviors.define('collada-model', ColladaModelBehavior)
+if (!elementBehaviors.has('fbx-model')) elementBehaviors.define('fbx-model', FbxModelBehavior)

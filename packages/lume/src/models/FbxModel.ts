@@ -2,7 +2,7 @@ import {element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {FbxModelBehavior, FbxModelBehaviorAttributes} from '../behaviors/FBXModelBehavior.js'
+import type {FbxModelBehavior, FbxModelBehaviorAttributes} from '../behaviors/models/FBXModelBehavior.js'
 
 export type FbxModelAttributes = NodeAttributes
 

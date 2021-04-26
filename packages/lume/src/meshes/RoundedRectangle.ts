@@ -1,6 +1,9 @@
 import {Mesh, MeshAttributes} from './Mesh.js'
 
-import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../behaviors/PhongMaterialBehavior.js'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+} from '../behaviors/materials/PhongMaterialBehavior.js'
 
 export type RoundedRectangleAttributes = MeshAttributes
 

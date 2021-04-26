@@ -3,9 +3,6 @@ import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Node} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-// register behaviors that can be used on this element
-import './mesh-behaviors.js'
-
 import type {NodeAttributes} from '../core/Node.js'
 
 export type PointsAttributes = NodeAttributes
