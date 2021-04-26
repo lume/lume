@@ -1,7 +1,7 @@
 import {reactive} from '@lume/element'
 import {Eventful} from '@lume/eventful'
-import {DeclarativeBase} from '../html/DeclarativeBase.js'
-import {defer} from './Utility.js'
+import {DeclarativeBase} from './DeclarativeBase.js'
+import {defer} from './utils.js'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected

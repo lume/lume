@@ -1,6 +1,6 @@
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {Color} from 'three/src/math/Color.js'
-import {defer} from '../core/Utility.js'
+import {defer} from '../core/utils.js'
 
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {Material} from 'three/src/materials/Material.js'

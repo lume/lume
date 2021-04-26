@@ -1,6 +1,6 @@
 import {attribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {XYZNumberValues} from './XYZNumberValues.js'
+import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
 import type {SizeableAttributes} from './Sizeable.js'

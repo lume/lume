@@ -1,15 +1,19 @@
 import {emits} from '@lume/eventful'
 import {attribute, untrack, element, variable, Variable} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
-import {XYZSizeModeValues} from './XYZSizeModeValues.js'
-import {XYZNonNegativeValues} from './XYZNonNegativeValues.js'
+import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
+import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {Motor} from './Motor.js'
 
 import type {StopFunction} from '@lume/element'
-import type {XYZValues, XYZValuesObject, XYZPartialValuesArray, XYZPartialValuesObject} from './XYZValues.js'
-import type {SizeModeValue} from './XYZSizeModeValues.js'
+import type {
+	XYZValues,
+	XYZValuesObject,
+	XYZPartialValuesArray,
+	XYZPartialValuesObject,
+} from '../xyz-values/XYZValues.js'
 import type {RenderTask} from './Motor.js'
-import type {XYZNumberValues} from './XYZNumberValues.js'
+import type {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
 // Cache variables to avoid making new variables in repeatedly-called methods.
 const previousSize: Partial<XYZValuesObject<number>> = {}

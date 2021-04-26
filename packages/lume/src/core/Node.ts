@@ -1,6 +1,6 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {HTMLNode as HTMLInterface} from '../html/HTMLNode.js'
+import {HTMLNode as HTMLInterface} from './HTMLNode.js'
 
 // register behaviors that can be used on this element
 import '../html/behaviors/ObjModelBehavior.js'

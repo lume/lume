@@ -7,11 +7,11 @@ import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested.js'
 import {disposeObject} from '../utils/three.js'
 import {Events} from './Events.js'
 import {Settable} from '../utils/Settable.js'
-import {defer, toRadians} from './Utility.js'
+import {defer, toRadians} from './utils.js'
 
 import type {Node} from './Node.js'
 import type {Scene} from './Scene.js'
-import type {ConnectionType} from '../html/DeclarativeBase.js'
+import type {ConnectionType} from './DeclarativeBase.js'
 import type {TransformableAttributes} from './Transformable.js'
 
 // The following isScene and isNode functions are used in order to avoid using
