@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"rootDir": "./",
+		"strict": true,
+		"jsx": "preserve",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+
+		"target": "es2019",
+		"moduleResolution": "node",
+		"lib": ["dom"],
+
+		"skipLibCheck": true // hmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+	},
+	"include": ["./src/**/*"]
+}
