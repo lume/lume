@@ -19,41 +19,42 @@ export class HtmlScene extends ImperativeBase {
 			left: 0;
 
 			/*
-			// Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
-			// but will for 3D objects in WebGL.)
+				Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
+				but will for 3D objects in WebGL.)
 			*/
 			transform-origin: 50% 50% 0; /* default */
 
 			transform-style: preserve-3d;
 		}
 
-		.lume-scene-inner {
+		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
+		.container {
 			position: relative
 		}
 
-		.lume-scene-inner,
-		.lume-scene-CSS3DLayer,
-		.lume-scene-MiscellaneousLayer,
-		.lume-scene-WebGLLayer,
-		.lume-scene-WebGLLayer > canvas  {
+		.container,
+		.CSS3DLayer,
+		.MiscellaneousLayer,
+		.WebGLLayer,
+		.WebGLLayer > canvas  {
 			margin: 0; padding: 0;
 			width: 100%; height: 100%;
 			display: block;
 		}
 
-		.lume-scene-CSS3DLayer,
-		.lume-scene-MiscellaneousLayer,
-		.lume-scene-WebGLLayer {
+		.CSS3DLayer,
+		.MiscellaneousLayer,
+		.WebGLLayer {
 			/* make sure all layers are stacked on top of each other */
 			position: absolute; top: 0; left: 0;
 		}
 
-		.lume-scene-CSS3DLayer {
+		.CSS3DLayer {
 			transform-style: preserve-3d;
 		}
 
-		.lume-scene-WebGLLayer,
-		.lume-scene-MiscellaneousLayer {
+		.WebGLLayer,
+		.MiscellaneousLayer {
 			pointer-events: none;
 		}
 
@@ -72,20 +73,22 @@ export class HtmlScene extends ImperativeBase {
 	`
 
 	template = () => html`
-		<div ref=${(el: any) => (this._cssLayer = el)} class="lume-scene-CSS3DLayer">
-			${
-				/* WebGLRendererThree places the CSS3DRendererNested domElement
-				here, which contains a <slot> element that child elements of
-				a Scene are distributed into (rendered relative to).
-				*/ ''
-			}
-		</div>
-		<div ref=${(el: any) => (this._glLayer = el)} class="lume-scene-WebGLLayer">
-			${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
-		</div>
-		<div class="lume-scene-MiscellaneousLayer">
-			${/* This layer is used by WebVR to insert some UI like the Enter VR button. */ ''}
-			<slot name="misc"></slot>
+		<div class="container">
+			<div ref=${(el: any) => (this._cssLayer = el)} class="CSS3DLayer">
+				${
+					/* WebGLRendererThree places the CSS3DRendererNested domElement
+					here, which contains a <slot> element that child elements of
+					a Scene are distributed into (rendered relative to).
+					*/ ''
+				}
+			</div>
+			<div ref=${(el: any) => (this._glLayer = el)} class="WebGLLayer">
+				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+			</div>
+			<div class="MiscellaneousLayer">
+				${/* This layer is used by WebVR to insert some UI like the Enter VR button. */ ''}
+				<slot name="misc"></slot>
+			</div>
 		</div>
 	`
 
