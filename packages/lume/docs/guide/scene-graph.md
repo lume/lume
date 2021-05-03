@@ -32,6 +32,7 @@ concept of a tree.
 	lume-node:not(.line) {
 		font-family: sans-serif;
 		background: skyblue;
+		border-radius: 3px;
 	}
 
 	lume-node div {
@@ -120,50 +121,50 @@ of its parent.
 		}
 	})
 
-  new Vue({
-    el: '#parentTransforms',
-    template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
-    data: {
-      code:
-`<script src="${location.origin+location.pathname}global.js"><\/script>
+	new Vue({
+		el: '#parentTransforms',
+		template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
+		data: {
+			code: stripIndent(`
+				<script src="${location.origin+location.pathname}global.js"><\/script>
 
-<lume-scene>
-  <lume-node id="one" position="50 50" size="10 10">
-    <lume-node id="two" position="50 50" size="10 10">
-      <lume-node id="three" position="50 50" size="10 10">
-        <lume-node id="four" position="50 50" size="100 100">
-          Positioning is relative to parents!
-        </lume-node>
-      </lume-node>
-    </lume-node>
-  </lume-node>
-</lume-scene>
+				<lume-scene>
+					<lume-node id="one" position="50 50" size="10 10">
+						<lume-node id="two" position="50 50" size="10 10">
+							<lume-node id="three" position="50 50" size="10 10">
+								<lume-node id="four" position="50 50" size="100 100">
+									Positioning is relative to parents!
+								</lume-node>
+							</lume-node>
+						</lume-node>
+					</lume-node>
+				</lume-scene>
 
-<script>
-  LUME.useDefaultNames()
-  const rotationFunction = (x, y, z, t) => [x, y, 10 * Math.sin(t * 0.002)]
+				<style>
+					html, body {
+						margin: 0; padding: 0;
+						height: 100%; width: 100%;
+						background: #333; color: white;
+					}
+					lume-node { padding: 5px; }
+					#one { background: coral; }
+					#two { background: yellowgreen; }
+					#three { background: deeppink; }
+					#four { background: royalblue; }
+				</style>
 
-  // Give all nodes the same rotation. Note that each node rotates "inside" of the parent space.
-  one.rotation = rotationFunction
-  two.rotation = rotationFunction
-  three.rotation = rotationFunction
-  three.rotation = rotationFunction
-<\/script>
+    			<script>
+    				LUME.useDefaultNames()
+    				const rotationFunction = (x, y, z, t) => [x, y, 10 * Math.sin(t * 0.002)]
 
-<style>
-  html, body {
-    margin: 0; padding: 0;
-    height: 100%; width: 100%;
-    background: #333; color: white;
-  }
-  lume-node { padding: 5px; }
-  #one { background: coral; }
-  #two { background: yellowgreen; }
-  #three { background: deeppink; }
-  #four { background: royalblue; }
-</style>
+    				// Give all nodes the same rotation. Note that each node rotates "inside" of the parent space.
+    				one.rotation = rotationFunction
+    				two.rotation = rotationFunction
+    				three.rotation = rotationFunction
+    				three.rotation = rotationFunction
+    			<\/script>
+    		`).trim()
+    	},
+    })
 
-`
-},
-})
 </script>
