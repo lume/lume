@@ -315,3 +315,13 @@ declare global {
 		'lume-node': Node
 	}
 }
+
+// TODO move this to the elemet-behaviors package.
+declare module '@lume/element' {
+	namespace JSX {
+		// Attributes for all elements.
+		interface CustomAttributes<T> {
+			has?: string
+		}
+	}
+}

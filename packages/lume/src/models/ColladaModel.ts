@@ -2,6 +2,9 @@ import {Node, NodeAttributes} from '../core/Node.js'
 
 import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/models/ColladaModelBehavior.js'
 
+// TODO FIXME Type error because this property comes from a behavior.
+// new ColladaModel().src
+
 export type ColladaModelAttributes = NodeAttributes
 
 /**

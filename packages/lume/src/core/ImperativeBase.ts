@@ -860,16 +860,6 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 }
 
-// TODO move this to the elemet-behaviors package.
-declare module '@lume/element' {
-	namespace JSX {
-		// Attributes for all elements.
-		interface CustomAttributes<T> {
-			has?: string
-		}
-	}
-}
-
 window.addEventListener('error', event => {
 	const error = event.error
 

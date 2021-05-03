@@ -1,21 +1,18 @@
 import {useDefaultNames, Node, XYZNumberValuesPropertyFunction} from 'lume'
-import type {} from 'lume/src/index.react-jsx'
 
 import * as React from 'react'
 import {Component, createRef, CSSProperties, ChangeEvent} from 'react'
 
-// import bodyModelUrl from './models/body.dae'
-// import pmcModelUrl from './models/pmc.dae'
-// import pmcSkinModelUrl from './models/pmc_skin_.dae'
-// import pmcBumperModelUrl from './models/pmc_bumper.dae'
 import bodyModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/body.dae'
 import pmcModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc.dae'
 import pmcSkinModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc_skin_.dae'
 import pmcBumperModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc_bumper.dae'
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
-// import lunaStation from './materials/luna-station.jpg'
 import lunaStation from '../../../docs/examples/nasa-astrobee-robot/luna-station.jpg'
+
+// Import all the React JSX type defs.
+import type {} from 'lume/src/index.react-jsx'
 
 useDefaultNames()
 
@@ -51,7 +48,7 @@ export class App extends Component<{}, State> {
 						dolly-speed="0.002"
 						initial-distance="1"
 					/>
-					<lume-node rotation={[this.state.view === 'top' ? -90 : 0, 0, 0]}>
+					<lume-node rotation={[this.state.view === 'top' ? -90 : 0, 0, 0].toString()}>
 						<lume-perspective-camera active={this.state.view !== 'free'} position="0 0 0.7" />
 					</lume-node>
 				</lume-node>

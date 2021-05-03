@@ -52,11 +52,19 @@ export class Mesh extends Node {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+} from '../behaviors/materials/PhongMaterialBehavior.js'
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-mesh': ElementAttributes<Mesh, MeshAttributes>
+			'lume-mesh': ElementAttributes<
+				Mesh,
+				MeshAttributes,
+				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+			>
 		}
 	}
 }

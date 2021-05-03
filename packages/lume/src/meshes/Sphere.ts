@@ -1,10 +1,5 @@
 import {Mesh, MeshAttributes} from './Mesh.js'
 
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
-
 export type SphereAttributes = MeshAttributes
 
 export class Sphere extends Mesh {
@@ -21,15 +16,19 @@ export class Sphere extends Mesh {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+} from '../behaviors/materials/PhongMaterialBehavior.js'
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
 			// TODO finish swapping ElementAttributes orderings for elements with behaviors
 			'lume-sphere': ElementAttributes<
-				PhongMaterialBehavior,
-				PhongMaterialBehaviorAttributes,
-				ElementAttributes<Sphere, SphereAttributes>
+				Sphere,
+				SphereAttributes,
+				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
 			>
 		}
 	}

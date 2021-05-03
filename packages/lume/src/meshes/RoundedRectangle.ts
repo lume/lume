@@ -1,10 +1,5 @@
 import {Mesh, MeshAttributes} from './Mesh.js'
 
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
-
 export type RoundedRectangleAttributes = MeshAttributes
 
 export class RoundedRectangle extends Mesh {
@@ -21,6 +16,10 @@ export class RoundedRectangle extends Mesh {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+} from '../behaviors/materials/PhongMaterialBehavior.js'
 
 declare module '@lume/element' {
 	namespace JSX {

@@ -22,11 +22,19 @@ export class MixedPlane extends Mesh {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+} from '../behaviors/materials/PhongMaterialBehavior.js'
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-mixed-plane': ElementAttributes<MixedPlane, MixedPlaneAttributes>
+			'lume-mixed-plane': ElementAttributes<
+				MixedPlane,
+				MixedPlaneAttributes,
+				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+			>
 		}
 	}
 }
