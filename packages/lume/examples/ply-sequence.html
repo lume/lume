@@ -1,0 +1,63 @@
+<title>ply-geometry</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-camera-rig active initial-distance="100" max-distance="700" min-distance="20"></lume-camera-rig>
+	<lume-node id="container" rotation="0 15 0"></lume-node>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+
+	const {html, For, autorun, variable} = LUME
+	const start = 388
+	const end = 418
+	const length = end - start
+
+	// Increment a counter every to play each frame.
+	const count = variable(0)
+	setInterval(() => count(count() + 1), 88)
+
+	function visibleIndex() {
+		return count() % length
+	}
+
+	function isVisible(index) {
+		return index === visibleIndex()
+	}
+
+	const points = html`
+		<template>
+			<${For} each=${Array.from({length})}>
+				${(n, i) => html`
+					<lume-points
+						has="ply-geometry"
+						src=${() =>
+							`./models/Rolling-KickFlip_PLY/Velodyne-VLP-32C-Data (Frame 0${i() + 388}) - Cloud.ply`}
+						point-size="2"
+						rotation=${() => [90, 0, (20 / length) * i() - 20 / 2]}
+						Xrotation="90 0 0"
+						position="0 0 0"
+						size="0 0 0"
+						scale="50 50 50"
+						visible=${() => isVisible(i())}
+					></lume-points>
+				`}
+			<//>
+		</template>
+	`.children
+
+	container.append(...points)
+</script>

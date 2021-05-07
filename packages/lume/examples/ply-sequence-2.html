@@ -1,0 +1,62 @@
+<title>ply-geometry</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+	<lume-node id="container" rotation="0 25 0"></lume-node>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+
+	const {html, For, autorun, variable} = LUME
+	const start = 30
+	const end = 86
+	const length = end - start
+
+	// Increment a counter every second.
+	const count = variable(0)
+	setInterval(() => count(count() + 1), 88)
+
+	function visibleIndex() {
+		return count() % length
+	}
+
+	function isVisible(index) {
+		return index === visibleIndex()
+	}
+
+	const points = html`
+		<template>
+			<${For} each=${Array.from({length})}>
+				${(n, i) => html`
+					<lume-points
+						has="ply-geometry"
+						src=${() => `./models/Static-KickFlip_PLY/Static-KickFlip_01 (Frame 00${i() + 30}) - Cloud.ply`}
+						point-size="2"
+						Xrotation=${() => [90, 0, (200 / length) * i() - 200 / 2]}
+						rotation="90 0 0"
+						position="-115 0 305"
+						size="0 0 0"
+						scale="50 50 50"
+						visible=${() => isVisible(i())}
+					></lume-points>
+				`}
+			<//>
+		</template>
+	`.children
+
+	container.append(...points)
+</script>
