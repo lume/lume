@@ -1,3 +1,8 @@
+.live-code {
+	margin-top: 20px;
+	margin-bottom: 50px;
+}
+
 .live-code.full {
 	max-height: unset;
 }
@@ -13,25 +18,32 @@
 	}
 }
 
-.live-code-preview {
-	padding: 0 !important;
-
-	/*
-     * TODO FIXME for some reason, without this, scroll bars appear, though nothing
-     * appears to go beyond the boundaries of the container.
-     */
-	overflow: hidden;
-
-	background: #f7f7f7;
-	border: none;
-}
-
-.live-code-editor,
-.live-code-preview {
-	height: auto;
-}
-
+.live-code-reset,
 .live-code-rerun {
-	top: 10px;
-	right: 10px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-end;
+}
+
+.live-code-reset button,
+.live-code-rerun button {
+	border: none;
+	border-bottom: 1px solid black;
+	background: none;
+	font-family: var(--heading-font-family);
+	cursor: pointer;
+	outline: none;
+}
+
+.live-code-reset button:hover,
+.live-code-rerun button:hover,
+.live-code-reset button:focus,
+.live-code-rerun button:focus {
+	background: rgba(0, 0, 0, 0.05);
+	border-bottom-width: 2px;
+}
+
+.live-code-reset button:active,
+.live-code-rerun button:active {
+	background: rgba(0, 0, 0, 0.1);
 }

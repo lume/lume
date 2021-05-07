@@ -157,10 +157,14 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 
                 // In case the model's shading looks flat on each polygon, this is a trick to
                 // make it look smooth. See https://discourse.threejs.org/t/5531
+                // TODO, when we upgrade to Three.js r125 or higher, use this
+                // approach instead: https://discourse.threejs.org/t/5531/10
                 const tempGeometry = new THREE.Geometry().fromBufferGeometry( node.geometry );
                 tempGeometry.mergeVertices();
                 tempGeometry.computeVertexNormals();
                 node.geometry = new THREE.BufferGeometry().fromGeometry( tempGeometry );
+
+                // IDEA: perhaps scale the geometry so it fits within the `size` of the node.
 
             }
 

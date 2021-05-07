@@ -1,5 +1,8 @@
 import {useDefaultNames, Node, XYZNumberValuesPropertyFunction} from 'lume'
 
+// For React TypeScript users, import the React JSX type defs.
+import type {} from 'lume/src/index.react-jsx'
+
 import * as React from 'react'
 import {Component, createRef, CSSProperties, ChangeEvent} from 'react'
 
@@ -10,9 +13,6 @@ import pmcBumperModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrob
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
 import lunaStation from '../../../docs/examples/nasa-astrobee-robot/luna-station.jpg'
-
-// Import all the React JSX type defs.
-import type {} from 'lume/src/index.react-jsx'
 
 useDefaultNames()
 
