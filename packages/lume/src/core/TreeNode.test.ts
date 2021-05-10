@@ -1,5 +1,10 @@
 import {TreeNode} from './TreeNode.js'
 
+// TreeNode is not normally used as an element, but we define it for these
+// tests so that `new` works (otherwise it'll have an IllegalConstructor error
+// on the LumeElement base class)
+customElements.define('tree-node', TreeNode)
+
 describe('TreeNode', () => {
 	it('.constructor', () => {
 		expect(typeof TreeNode).toBe('function')

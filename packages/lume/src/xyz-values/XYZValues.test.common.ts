@@ -1,4 +1,4 @@
-import type XYZValues from './XYZValues.js'
+import type {XYZValues} from './XYZValues.js'
 import type {XYZValuesArray} from './XYZValues.js'
 
 export function testWithSeparator<T>(a: XYZValues, separator: string, ...values: XYZValuesArray<T>) {

@@ -4,9 +4,20 @@
 		// Good practice: start with these empty, add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
 		// XXX Should we move this into the CLI's types?
-		"types": [],
+
+		// This is needed for Jasmine types inside test files.
+		// TODO how to split co-located test files from source files so that
+		// test globals (f.e. describe) to not leak into source files. Maybe using
+		// Project References?
+		"types": ["@lume/cli/node_modules/@types/jasmine"],
+
 		"typeRoots": []
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
+
+	// TODO this causes tests to be skipped (because lume cli runs tests from the dist folder)
+	// "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
+
+	// So for now we do not exclude tests.
+	"exclude": ["./src/**/*.react-jsx.d.ts"]
 }
