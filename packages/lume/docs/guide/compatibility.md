@@ -82,4 +82,4 @@ ReactDOM.render(<MyReactComponent />, document.body)
 
 ### Example
 
-See the [react-typescript](https://github.com/lume/lume/tree/develop/packages/lume/examples/react-typescript) example.
+Take the [react-typescript](https://github.com/lume/lume/tree/develop/packages/lume/examples/react-typescript) example for a spin.

@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"outDir": ".tmp/",
 		"rootDir": "./",
 
 		"strict": true,
