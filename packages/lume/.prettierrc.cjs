@@ -1,11 +1,3 @@
-module.exports = {
-	useTabs: true,
-	semi: false,
-	singleQuote: true,
-	trailingComma: 'all',
-	bracketSpacing: false,
-	printWidth: 120,
-	arrowParens: 'avoid',
-
-	overrides: [{files: '*.md', options: {tabWidth: 2}}],
-}
+// This file is not required (lume CLI will use its own prettierrc file), but
+// without this, tools like VS Code will not find the Prettier config by default.
+module.exports = require('@lume/cli/.prettierrc.js')
