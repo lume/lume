@@ -1,7 +1,7 @@
 import {useDefaultNames, Node, XYZNumberValuesPropertyFunction} from 'lume'
 
 // For React TypeScript users, import the React JSX type defs.
-import type {} from 'lume/src/index.react-jsx'
+import type {} from 'lume/dist/index.react-jsx'
 
 import * as React from 'react'
 import {Component, createRef, CSSProperties, ChangeEvent} from 'react'

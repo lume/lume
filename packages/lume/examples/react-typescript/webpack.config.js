@@ -51,6 +51,5 @@ module.exports = {
 	plugins: [
 		// Copies index.html to dist (in dev mode with dev server copies it to memory instead)
 		new HtmlPlugin({template: './src/index.html', hash: true}),
-		new CopyPlugin({patterns: [{from: 'src/materials/*.png', to: './'}]}),
 	],
 }

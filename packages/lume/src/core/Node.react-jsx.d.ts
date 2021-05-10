@@ -1,7 +1,5 @@
 import type {Node, NodeAttributes} from './Node'
 import type {ReactElementAttributes} from '@lume/element'
-import type {} from './ImperativeBase.react-jsx'
-import type * as React from 'react'
 
 // React users can import this to have appropriate types for the element in their JSX markup.
 declare global {

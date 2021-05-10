@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"homepage": "http://lume.io",
 	"main": "./dist/index.js",
-	"types": "./src/index.ts",
+	"types": "./dist/index.d.ts",
 	"type": "module",
 	"exports COMMENT:": "This removes 'dist' from import statements, as well as replaces the 'main' field. See https://github.com/nodejs/node/issues/14970#issuecomment-571887546",
 	"exports": {
@@ -62,7 +62,7 @@
 	},
 	"// TODO devDependencies": "Move eslint stuff into lume cli.",
 	"devDependencies": {
-		"@lume/cli": "^0.5.1",
+		"@lume/cli": "^0.5.2",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
 		"@lume/live-code": "^0.2.0",
 		"@types/mkdirp": "^0.5.2",

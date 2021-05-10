@@ -1,17 +1,26 @@
 {
 	"compilerOptions": {
 		"rootDir": "./",
+
 		"strict": true,
 		"jsx": "preserve",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
 
+		"experimentalDecorators": true,
 		"target": "es2019",
 		"moduleResolution": "node",
 		"lib": ["dom"],
 
-		"skipLibCheck": true // hmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+		"types": [],
+		"typeRoots": [],
+
+		// TODO, disable this, and see the type error with Behavior and
+		// ForwardProps regarding declaration output (Behavior's getter override a
+		// readonly property, which is wrong). Report the bug to TypeScript if
+		// it still exists.
+		"skipLibCheck": true
 	},
 	"include": ["./src/**/*"]
 }
