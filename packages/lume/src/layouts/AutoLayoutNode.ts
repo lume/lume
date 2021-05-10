@@ -173,14 +173,9 @@ export class AutoLayoutNode extends Node {
 	 * @param {String} id Unique id of the node which matches the id used in the Visual format.
 	 * @return {Node} the appended node.
 	 */
-	// @ts-ignore: strictFunctionTypes requires same signature methods in subclasses
-	add(
-		// prettier-ignore
-		child: Node,
-		id: string,
-	) {
+	addToLayout(child: Node, id: string) {
 		// PORTED
-		super.add(child) // PORTED
+		this.add(child) // PORTED
 		// TODO instead of handling nodes here, we should handle them in
 		// childComposedCallback, to support ShadowDOM.
 		if (id) this.#idToNode[id] = child
@@ -195,15 +190,10 @@ export class AutoLayoutNode extends Node {
 	 * @param {Node} [child] node to be removed
 	 * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
 	 */
-	// @ts-ignore: strictFunctionTypes requires same signature methods in subclasses
-	removeNode(
-		// prettier-ignore
-		child: Node,
-		id: string,
-	) {
+	removeFromLayout(child: Node, id: string) {
 		// PORTED
 		if (child && id) {
-			super.removeNode(child) // PORTED
+			this.removeNode(child) // PORTED
 			delete this.#idToNode[id]
 		} else if (child) {
 			for (id in this.#idToNode) {
@@ -212,9 +202,9 @@ export class AutoLayoutNode extends Node {
 					break
 				}
 			}
-			super.removeNode(child) // PORTED
+			this.removeNode(child) // PORTED
 		} else if (id) {
-			super.removeNode(this.#idToNode[id]) // PORTED
+			this.removeNode(this.#idToNode[id]) // PORTED
 			delete this.#idToNode[id]
 		}
 		this.reflowLayout()
