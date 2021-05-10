@@ -676,7 +676,7 @@ export class Scene extends HTMLInterface {
 					// TODO fix ResizeObserver types in TypeScript lib.dom
 					const {inlineSize, blockSize} = Array.isArray(change.contentBoxSize)
 						? (change.contentBoxSize[0] as ResizeObserverEntryBoxSize)
-						: ((change.contentBoxSize as unknown) as ResizeObserverEntryBoxSize)
+						: (change.contentBoxSize as unknown as ResizeObserverEntryBoxSize)
 
 					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
 

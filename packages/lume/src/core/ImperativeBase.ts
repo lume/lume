@@ -396,7 +396,7 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		// FIXME remove the type cast here and modify it so it is
 		// DOM-agnostic for when we run thsi in a non-DOM environment.
-		if (__updateDOMConnection) this._elementOperations.connectChildElement((childNode as unknown) as HTMLElement)
+		if (__updateDOMConnection) this._elementOperations.connectChildElement(childNode as unknown as HTMLElement)
 
 		return this
 	}

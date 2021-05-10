@@ -57,7 +57,7 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	}
 
 	getMeshComponent<T>(name: 'geometry' | 'material'): T {
-		return (this.element.three[name] as unknown) as T
+		return this.element.three[name] as unknown as T
 	}
 
 	_createComponent(): BufferGeometry | Geometry | Material {

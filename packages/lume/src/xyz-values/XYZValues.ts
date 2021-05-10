@@ -100,7 +100,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 * @param value The value to be deserialized
 	 */
 	deserializeValue(_prop: string, value: string): T {
-		return (value as unknown) as T
+		return value as unknown as T
 	}
 
 	// XXX This grows but never shrinks. Can we make the cache collectable? Maybe we
@@ -115,7 +115,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 			;(this.constructor as typeof XYZValues).__stringArrayRegexCache[separator] = re
 		}
 		const values = string.trim().split(re)
-		const result = ([] as unknown) as XYZPartialValuesArray<T>
+		const result = [] as unknown as XYZPartialValuesArray<T>
 		const length = values.length
 		if (length > 0) result[0] = this.deserializeValue('x', values[0])
 		if (length > 1) result[1] = this.deserializeValue('y', values[1])
