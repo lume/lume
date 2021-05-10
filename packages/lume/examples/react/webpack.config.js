@@ -4,11 +4,11 @@ const HtmlPlugin = require('html-webpack-plugin')
 const outputPath = 'dist'
 
 module.exports = {
-	entry: './src/index.tsx',
+	entry: './src/index.jsx',
 	output: {path: path.resolve(outputPath), filename: 'index.js'},
 	devServer: {contentBase: outputPath},
 	resolve: {
-		extensions: ['.js', '.ts', '.tsx'],
+		extensions: ['.js', '.jsx'],
 		alias: {
 			// Prevent duplicates of these libraries from being included in the output bundle.
 			react: path.resolve('node_modules', 'react'),
@@ -23,17 +23,20 @@ module.exports = {
 			{test: /\.js$/, use: ['source-map-loader'], enforce: 'pre'},
 
 			/**
-			 * TypeScript
-			 */
-			{test: /\.ts$/, exclude: /node_modules/, use: [{loader: 'ts-loader'}]},
-
-			/**
-			 * TypeScript with React-flavored JSX
+			 * JavaScript with React-flavored JSX
 			 */
 			{
-				test: /\.tsx$/,
+				test: /\.jsx$/,
 				exclude: /node_modules/,
-				use: [{loader: 'babel-loader', options: {presets: ['@babel/preset-react']}}, {loader: 'ts-loader'}],
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: ['@babel/preset-react'],
+							plugins: ['@babel/plugin-proposal-class-properties'],
+						},
+					},
+				],
 			},
 
 			/**

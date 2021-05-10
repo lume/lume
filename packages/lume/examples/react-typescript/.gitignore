@@ -1,3 +1,7 @@
 node_modules
+
+# build output
 dist/
+
+# output folder for temporary TypeScript output during Webpack build
 .tmp/
