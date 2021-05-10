@@ -11,7 +11,10 @@ export type NodeAttributes = BaseAttributes | 'visible'
 
 /**
  * @element lume-node
- * @class Node - `Node` is the backing class for `<lume-node>` elements, which are the most
+ * @class Node -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * `Node` is the backing class for `<lume-node>` elements, which are the most
  * primitive of the LUME elements.
  *
  * Node contains the basics that all objects in

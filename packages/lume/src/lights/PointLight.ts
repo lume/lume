@@ -1,9 +1,9 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {LightBase} from './LightBase.js'
+import {Light} from './Light.js'
 
-import type {LightAttributes} from './LightBase.js'
+import type {LightAttributes} from './Light.js'
 
 export type PointLightAttributes =
 	| LightAttributes
@@ -17,8 +17,19 @@ export type PointLightAttributes =
 	| 'shadowCameraNear'
 	| 'shadowCameraFar'
 
+/**
+ * @class PointLight -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * The PointLight class is the implementation behind
+ * `<lume-point-light>` elements.
+ *
+ * This light illuminates objects near it, casting shadows in any direction away from the light.
+ *
+ * @extends Light
+ */
 @element
-export class PointLight extends LightBase {
+export class PointLight extends Light {
 	static defaultElementName = 'lume-point-light'
 
 	@numberAttribute(0) @emits('propertychange') distance = 0

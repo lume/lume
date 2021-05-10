@@ -3,32 +3,49 @@ import type {Constructor} from 'lowclass'
 const isInstance = Symbol()
 
 /**
- * @mixin
+ * @mixin - TODO make this @mixin tag do something in the docs.
  * @class Settable - This class provides a simple `set()` method that can be used
  * to set multiple properties of an instance at once. See `set()` method
  * description.
+ *
+ * This class is a mixin. Use it like so:
+ *
+ * ```js
+ * class MyClass extends Settable() {
+ *   // ...
+ * }
+ * ```
+ *
+ * or
+ *
+ * ```js
+ * class MyClass extends Settable(SomeBaseClass) {
+ *   // ...
+ * }
+ * ```
  */
-export function Settable<T extends Constructor>(Base: T) {
+export function Settable<T extends Constructor>(Base: T = Object as any) {
 	class Settable extends Base {
 		// @ts-ignore, prevent downstream "has or is using private name" errors.
 		[isInstance as any] = true
 
 		/**
 		 * @method set - Convenience method for setting all (or some)
-		 * properties of a Settable at once.
-		 *
-		 * @param {this} props - An object containing all properties to set. For example:
+		 * properties of a Settable at once. For example:
 		 *
 		 * ```js
 		 * class Foo extends Settable {
 		 *   a = 1
 		 *   b = 2
 		 * }
+		 *
 		 * const obj = new Foo().set({
 		 *   a: 3,
 		 *   b: 4
 		 * })
 		 * ```
+		 *
+		 * @param {this} props - An object containing all properties to set. For example:
 		 */
 		// prettier-ignore
 		// set(props: Partial<this>) { // This doesn't work

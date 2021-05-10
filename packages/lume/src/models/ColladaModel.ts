@@ -9,7 +9,10 @@ export type ColladaModelAttributes = NodeAttributes
 
 /**
  * @element lume-collada-model
- * @class ColladaModel - Defines the `<lume-collada-model>` element, for loading 3D
+ * @class ColladaModel -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * Defines the `<lume-collada-model>` element, for loading 3D
  * models in the Collada format (.dae files). It is similar to an `<img>` tag, but for 3D.
  *
  * HTML Example:

@@ -38,7 +38,10 @@ export type SceneAttributes =
 	| 'perspective'
 
 /**
- * @class Scene - This is the backing class for `<lume-scene>` elements. All
+ * @class Scene -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * This is the backing class for `<lume-scene>` elements. All
  * [`Node`](TODO) elements must be inside of a `<lume-scene>` element. A `Scene`
  * establishes a visual area in a web application where a 3D scene will be
  * rendered.

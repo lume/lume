@@ -11,11 +11,15 @@ export type LightAttributes = NodeAttributes | 'color' | 'intensity'
 
 /**
  * @abstract
- * @class LightBase - An abstract base class for light elements.
+ * @class Light -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * An abstract base class for light elements.
+ *
  * @extends Node
  */
 @element
-export class LightBase extends Node {
+export class Light extends Node {
 	@attribute @emits('propertychange') color: TColor = 'white'
 	@numberAttribute(1) @emits('propertychange') intensity: number = 1
 

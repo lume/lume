@@ -45,7 +45,7 @@ export type BaseAttributes = TransformableAttributes
  * @abstract
  * @class ImperativeBase - This is an abstract base class that makes up the
  * foundation for the APIs and functionalities provided by the non-abstract
- * classes.
+ * custom element classes.
  *
  * This class generally is not intended for use by the library end user. Normal
  * users will want to extend from [`Scene`](./Scene.md) or [`Node`](./Node.md)
@@ -54,20 +54,12 @@ export type BaseAttributes = TransformableAttributes
  * For purposes of documentation it is still useful to know what properties and
  * methods subclasses inherit from here.
  *
- * <details><summary>
- *
- * **Internal details (end users skip this):**
- *
- * </summary>
- *
  * Generally anything that extends from this class becomes a backing class of a
  * LUME HTML element such as `<lume-scene>` and `<lume-node>`, the most basic
  * of the elements.
  *
  * There are two branches of subclasses of ImperativeBase that ImperativeBase
  * is intentionally aware of: `Scene` and `Node`.
- *
- * </details>
  *
  * @extends Settable
  * @extends Transformable
@@ -93,6 +85,20 @@ export class ImperativeBase extends Settable(Transformable) {
 	/**
 	 * @readonly
 	 * @property {boolean} glLoaded
+	 * Returns a boolean indicating whether or not the WebGL rendering features
+	 * of a LUME element are loaded and ready.
+	 *
+	 * All nodes in a `<lume-scene>` element have WebGL rendering disabled by
+	 * default.
+	 *
+	 * If a `<lume-scene>` element has the `webgl` attribute set to
+	 * `"false"` (the default), then `glLoaded` will always return `false` for any LUME
+	 * elements in the scene.
+	 *
+	 * If a `<lume-scene>` element has the `webgl` attribute set to
+	 * `"true"`, then `glLoaded` will always return `true` for any LUME
+	 * elements in the scene only *after* WebGL APIs have been loaded
+	 * (otherwise `false` up until then).
 	 */
 	get glLoaded(): boolean {
 		return this._glLoaded
@@ -101,6 +107,20 @@ export class ImperativeBase extends Settable(Transformable) {
 	/**
 	 * @readonly
 	 * @property {boolean} cssLoaded
+	 * Returns a boolean indicating whether or not the CSS rendering features
+	 * of a LUME element are loaded and ready.
+	 *
+	 * All nodes in a `<lume-scene>` element have CSS rendering enabled by
+	 * default.
+	 *
+	 * If a `<lume-scene>` element has the `enableCss` attribute set to
+	 * `"false"`, then `cssLoaded` will always return `false` for any LUME
+	 * elements in the scene.
+	 *
+	 * If a `<lume-scene>` element has the `enableCss` attribute set to
+	 * `"true"` (the default), then `cssLoaded` will always return `true` for
+	 * any LUME elements in the scene only after CSS APIs have been loaded
+	 * (otherwise 'false' up until then).
 	 */
 	get cssLoaded(): boolean {
 		return this._cssLoaded
@@ -232,7 +252,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		)
 	}
 
-	possiblyLoadThree(child: ImperativeBase): void {
+	__possiblyLoadThree(child: ImperativeBase): void {
 		// children can be non-lib DOM nodes (f.e. div, h1, etc)
 		if (isNode(child)) {
 			child._triggerLoadGL()
@@ -240,7 +260,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		}
 	}
 
-	possiblyUnloadThree(child: ImperativeBase): void {
+	__possiblyUnloadThree(child: ImperativeBase): void {
 		// children can be non-lib DOM nodes (f.e. div, h1, etc)
 		// TODO, this check is redundant because call site already checks
 		// for ImperativeBase? Or do we not want to run this on Scene
@@ -279,7 +299,7 @@ export class ImperativeBase extends Settable(Transformable) {
 			child._calcSize()
 			child.needsUpdate()
 
-			this.possiblyLoadThree(child)
+			this.__possiblyLoadThree(child)
 		}
 	}
 
@@ -293,18 +313,19 @@ export class ImperativeBase extends Settable(Transformable) {
 				this.removeNode(child, __updateDOMConnection)
 			}
 
-			this.possiblyUnloadThree(child)
+			this.__possiblyUnloadThree(child)
 		}
 	}
 
 	/**
 	 * @readonly
-	 * @property {THREE.Scene} scene - Get the Scene that this element is a
-	 * child of, null if no Scene exists (the element is not in a tree that
-	 * is connected into a Scene). This traverses recursively upward at
-	 * first, then the value is cached on subsequent reads.
+	 * @property {THREE.Scene} scene - The `<lume-scene>` that the element is a
+	 * child or grandchild of, or `null` if the element is not.
 	 */
 	get scene(): Scene {
+		// This traverses recursively upward at first, then the value is cached on
+		// subsequent reads.
+
 		// NOTE: this._scene is initally null.
 
 		const parent = this.parent
@@ -334,8 +355,8 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * @property {ImperativeBase | null} parent - The parent of this node,
-	 * if it has one, must be a Node or a Scene.
+	 * This overrides the `parent` property of the `TreeNode` class to restrict
+	 * parents to being `ImperativeBase` (`Node` or `Scene`) instances.
 	 */
 	// This override serves mainly to change the type of `parent` for
 	// subclasses of ImperativeBase.
@@ -354,12 +375,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	/**
 	 * @override
 	 */
-	// @ts-ignore: strict function types normally prevent differing subclass method signatures.
-	add(
-		// prettier-ignore
-		childNode: ImperativeBase,
-		__updateDOMConnection = true,
-	): this {
+	add(childNode: ImperativeBase, /* private */ __updateDOMConnection = true): this {
 		if (!(childNode instanceof ImperativeBase)) return this
 
 		// We cannot add Scenes to Nodes, for now.
@@ -438,7 +454,10 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	/**
 	 * @protected
-	 * @method makeThreeObject3d
+	 * @method makeThreeObject3d - Creates a LUME element's Three.js object for
+	 * WebGL rendering. `<lume-mesh>` elements overrides this to create and return
+	 * [THREE.Mesh](https://threejs.org/docs/index.html?q=mesh#api/en/objects/Mesh) instances,
+	 * for example.
 	 */
 	makeThreeObject3d(): Object3D {
 		return new Object3D()
@@ -446,10 +465,16 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	/**
 	 * @protected
-	 * @method makeThreeCSSObject
+	 * @method makeThreeCSSObject - Creates a LUME element's Three.js object
+	 * for CSS rendering. At the moment this is not overriden by any
+	 * subclasses, and always creates `CSS3DObjectNested` instances for CSS
+	 * rendering, which is a modified version of
+	 * [THREE.CSS3DObject](https://github.com/mrdoob/three.js/blob/b13eccc8bf1b6aeecf6e5652ba18d2425f6ec22f/examples/js/renderers/CSS3DRenderer.js#L7).
 	 */
 	makeThreeCSSObject(): Object3D {
-		// @prod-prune
+		// @prod-prune, this will be only allowed in a DOM environment with CSS
+		// rendering. WebGL APIs will eventually work outside a DOM
+		// environment.
 		if (!(this instanceof HTMLElement)) throw 'API available only in DOM environment.'
 
 		return new CSS3DObjectNested(this)

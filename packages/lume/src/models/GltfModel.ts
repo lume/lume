@@ -6,7 +6,10 @@ export type GltfModelAttributes = NodeAttributes
 
 /**
  * @element lume-gltf-model
- * @class GltfModel - Defines the `<lume-gltf-model>` element, for loading 3D
+ * @class GltfModel -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * Defines the `<lume-gltf-model>` element, for loading 3D
  * models in the glTF format. It is similar to an `<img>` tag, but for 3D.
  *
  * HTML Example:

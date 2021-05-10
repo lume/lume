@@ -6,12 +6,15 @@ import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
 /**
  * @extends Node
- * @class Cube - A scenegraph tree that lays things out in a cube form.@
+ * @class Cube -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * TODO: extend from lume-mesh, using a Cube geometry? Or perhaps this is a CubeLayout, not necessarily a Cube mesh.
- * TODO: this is written imperatively. How would it be declaratively?
+ * A scenegraph tree that lays things out in a cube form.@
+ *
  */
-export class Cube extends Node {
+// TODO: This is written imperatively. How would it be declaratively?
+// TODO: Make an example.
+export class CubeLayout extends Node {
 	/**
 	 * @property {Node[]} sides - An array of the cube's side nodes. Each side is a node in the scene graph tree.
 	 */

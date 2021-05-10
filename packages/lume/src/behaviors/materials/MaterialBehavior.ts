@@ -5,9 +5,14 @@ import {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
 
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 
-export type BaseMaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidedness' | 'color'
+export type MaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidedness' | 'color'
 
-/** @class BaseMaterialBehavior - Base class for material behaviors. */
+/**
+ * @class MaterialBehavior -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * Base class for material behaviors.
+ */
 @reactive
 export class MaterialBehavior extends MeshBehavior {
 	type: MeshComponentType = 'material'
@@ -107,7 +112,7 @@ export class MaterialBehavior extends MeshBehavior {
 		return true
 	}
 
-	updateMaterial<Prop extends BaseMaterialBehaviorAttributes>(propName: Prop, thisProp: keyof this = propName) {
+	updateMaterial<Prop extends MaterialBehaviorAttributes>(propName: Prop, thisProp: keyof this = propName) {
 		const mat = this.element.three.material as any
 
 		// TODO Better taxonomy organization. F.e. ShaderMaterial doesn't have

@@ -1,12 +1,12 @@
 import 'element-behaviors'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 // import {multiple} from 'lowclass'
-import {MaterialBehavior, BaseMaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 import {MaterialTexture, MaterialTextureAttributes} from './MaterialTexture.js'
 
-export type PhongMaterialBehaviorAttributes = MaterialTextureAttributes | BaseMaterialBehaviorAttributes
+export type PhongMaterialBehaviorAttributes = MaterialTextureAttributes | MaterialBehaviorAttributes
 
-// export class PhongMaterialBehavior extends multiple(BaseMaterialBehavior, MaterialTexture) {
+// export class PhongMaterialBehavior extends multiple(MaterialBehavior, MaterialTexture) {
 export class PhongMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	// constructor(el: Element) {
 	//     super(el)

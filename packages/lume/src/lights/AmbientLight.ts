@@ -1,7 +1,7 @@
-import {LightBase} from './LightBase.js'
+import {Light} from './Light.js'
 import {AmbientLight as ThreeAmbientLight} from 'three/src/lights/AmbientLight.js'
 
-import type {LightAttributes} from './LightBase.js'
+import type {LightAttributes} from './Light.js'
 
 export type AmbientLightAttributes = LightAttributes
 
@@ -11,8 +11,10 @@ export type AmbientLightAttributes = LightAttributes
  *
  * This light globally illuminates all objects in the scene equally.  It does
  * not cast shadows as it does not have a direction.
+ *
+ * @extends Light
  */
-export class AmbientLight extends LightBase {
+export class AmbientLight extends Light {
 	static defaultElementName = 'lume-ambient-light'
 
 	makeThreeObject3d() {

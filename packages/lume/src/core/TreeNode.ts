@@ -7,6 +7,8 @@ import {defer} from './utils.js'
  * @class TreeNode - The `TreeNode` class represents objects that are connected
  * to each other in parent-child relationships in a tree structure. A parent
  * can have multiple children, and a child can have only one parent.
+ * @extends Eventful
+ * @extends DeclarativeBase
  */
 @reactive
 export class TreeNode extends Eventful(DeclarativeBase) {
@@ -23,9 +25,9 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	__children: TreeNode[] = []
 
 	/**
-	 * @property {TreeNode} parent - The parent of the current TreeNode.
-	 * Each node in a tree can have only one parent.
 	 * @readonly
+	 * @property {TreeNode | null} parent - The parent of the current TreeNode.
+	 * Each node in a tree can have only one parent. `null` if no parent when not connected into a tree.
 	 */
 	get parent() {
 		// In case we're in the DOM when this is called and the parent has
@@ -45,7 +47,7 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	 * TreeNode. Use [TreeNode.add(child)](#addchild) and
 	 * [TreeNode.removeNode(child)](#removenode) to modify a TreeNode's
 	 * list of children.
-	 * This is named `subnodes` to avoid conflict with HTML's Element.children property.
+	 * This is named `subnodes` to avoid conflict with HTML's `Element.children` property.
 	 * @readonly
 	 */
 	get subnodes() {
@@ -54,11 +56,10 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 		return [...this.__children]
 	}
 
-	// @ts-ignore
 	__isConnected = false
 
 	/** @readonly */
-	override get isConnected(): boolean {
+	get isConnected(): boolean {
 		if (this instanceof Element) {
 			// TODO Report this to TypeScript
 			// @ts-ignore TS doesn't know that super.isConnected would work here.
@@ -101,9 +102,9 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	}
 
 	/**
-	 * Add all the child nodes in the given array to this node.
-	 *
-	 * @param {Array.TreeNode} nodes The nodes to add.
+	 * @method addChildren - Add all the child nodes in the given array to this node.
+	 * @param {Array<TreeNode>} nodes - The nodes to add.
+	 * @returns {this}
 	 */
 	addChildren(nodes: TreeNode[]) {
 		nodes.forEach(node => this.add(node))
@@ -142,9 +143,9 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	}
 
 	/**
-	 * Remove all the child nodes in the given array from this node.
-	 *
-	 * @param {Array.TreeNode} nodes The nodes to remove.
+	 * @method removeChildren - Remove all the child nodes in the given array from this node.
+	 * @param {Array<TreeNode>} nodes - The nodes to remove.
+	 * @returns {this}
 	 */
 	removeChildren(nodes: TreeNode[]) {
 		for (let i = nodes.length - 1; i >= 0; i -= 1) {
@@ -154,7 +155,8 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	}
 
 	/**
-	 * Shortcut to remove all children.
+	 * @method removeAllChildren - Remove all children.
+	 * @returns {this}
 	 */
 	removeAllChildren() {
 		if (!this.__children.length) throw new ReferenceError('This node has no children.')
@@ -163,8 +165,8 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	}
 
 	/**
-	 * How many children this TreeNode has.
 	 * @readonly
+	 * @property {number} childCount - How many children this TreeNode has.
 	 */
 	get childCount() {
 		return this.__children.length
@@ -176,7 +178,11 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	childConnected(_child: TreeNode) {}
 	childDisconnected(_child: TreeNode) {}
 
-	// traverse the tree at this node
+	/**
+	 * @method traverse - Traverse this node and it's tree of subnodes in pre-order.
+	 * @param {(n: TreeNode) => void} fn - A callback called on each node,
+	 * receiving as first arg the current node in the traversal.
+	 */
 	traverse(fn: (n: TreeNode) => void) {
 		fn(this)
 

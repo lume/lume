@@ -27,7 +27,7 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
 
 /**
  * @internal
- * @class WebGLRendererThree - A singleton responsible for setting up and
+ * A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
 export class WebglRendererThree {
