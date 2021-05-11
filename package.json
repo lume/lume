@@ -28,10 +28,12 @@
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,readem,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
 		"// ^ test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
-		"dev": "echo ' --- TODO: dev script for running everything in dev mode. For now, cd into each packages and run dev manually.'"
+		"dev": "echo ' --- TODO: dev script for running everything in dev mode. For now, cd into each packages and run dev manually.'",
+		"prettier": "prettier . --write",
+		"prettier:check": "prettier . --check"
 	},
 	"devDependencies": {
 		"lerna": "^3.20.2",
-		"prettier": "^1.19.1"
+		"prettier": "^2.0.0"
 	}
 }

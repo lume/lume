@@ -54,11 +54,11 @@ that an unlimited number of behaviors can be associated with an element.
 
 There's various ways to get involved!
 
--   Visit the [documentation](//lume.io/docs) and make something awesome!
--   Submit fixes or new features to any packages or the website! See the
-    [contributing](./CONTRIBUTING.md) guide.
--   Discuss LUME, get help, or help others in the [forums](//lume.community) or
-    on our Discord [chat server](//discord.gg/PgeyevP).
+- Visit the [documentation](//lume.io/docs) and make something awesome!
+- Submit fixes or new features to any packages or the website! See the
+  [contributing](./CONTRIBUTING.md) guide.
+- Discuss LUME, get help, or help others in the [forums](//lume.community) or
+  on our Discord [chat server](//discord.gg/PgeyevP).
 
 ## Status
 
