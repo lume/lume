@@ -9,12 +9,10 @@ jobs:
         strategy:
             matrix:
                 node-version: [14.x]
-                operating-system: [
-					ubuntu-latest,
-					macos-latest,
-					# TODO get tests working in Windows once tests work in Windows for all packages separately
-					# windows-latest
-				]
+                # TODO get tests working in Windows and macOS (help wanted!)
+                # windows-latest
+                # macos-latest
+                operating-system: [ubuntu-latest]
 
         steps:
             - uses: actions/checkout@v1
