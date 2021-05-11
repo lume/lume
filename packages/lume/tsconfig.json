@@ -1,9 +1,8 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
-		// Good practice: start with these empty, add types as needed. This
+		// Good practice: start with 'types' and 'typeRoots' empty, then add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
-		// XXX Should we move this into the CLI's types?
 
 		// This is needed for Jasmine types inside test files.
 		// TODO how to split co-located test files from source files so that
