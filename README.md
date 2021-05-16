@@ -29,9 +29,8 @@ This package uses and re-exports features from the below packages.
 
 ### [`glas`](//github.com/lume/glas) - WebGL engine written in AssemblyScript
 
-LUME glas is a WebGL engine with the consistent performance of WebAssembly, written
-in AssemblyScript (a TypeScript-to-WebAssembly compiler). Currently LUME's 3D elements
-use Three.js, but eventually we will switch to LUME glas once it is ready.
+This is a WebGL engine with the consistent performance of WebAssembly, written
+in [AssemblyScript](http://assemblyscript.org/) (a TypeScript-to-WebAssembly compiler).
 
 ### [`@lume/element`](//github.com/lume/element) - System for defining HTML elements
 
