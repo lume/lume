@@ -29,8 +29,9 @@ This package uses and re-exports features from the below packages.
 
 ### [`glas`](//github.com/lume/glas) - WebGL engine written in AssemblyScript
 
-This is a port of Three.js to AssemblyScript (TypeScript that compiles to
-WebAssembly) for running WebGL graphics with consistent performance.
+LUME glas is a WebGL engine with the consistent performance of WebAssembly, written
+in AssemblyScript (a TypeScript-to-WebAssembly compiler). Currently LUME's 3D elements
+use Three.js, but eventually we will switch to LUME glas once it is ready.
 
 ### [`@lume/element`](//github.com/lume/element) - System for defining HTML elements
 
@@ -39,9 +40,10 @@ performant HTML elements in a simple way. It provides the foundation for
 LUME's HTML elements, and a standard pattern for building new elements that
 extend the features of LUME.
 
-### [`@lume/variable`](//github.com/lume/variable) - Reactivity system
+### [`@lume/variable`](//github.com/lume/variable) - Reactive variables
 
-Create variables that are easy to react to when their values change.
+Create reactive variables and observe their changes in a simple and concise way with
+less code and less coupling.
 
 ### [`element-behaviors`](//github.com/lume/element-behaviors) - Mix functionalities onto HTML elements
 
