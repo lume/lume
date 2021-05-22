@@ -40,3 +40,6 @@
 [submodule "packages/custom-attributes"]
 	path = packages/custom-attributes
 	url = https://github.com/lume/custom-attributes.git
+[submodule "packages/autolayout"]
+	path = packages/autolayout
+	url = https://github.com/lume/autolayout.git
