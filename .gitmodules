@@ -43,3 +43,6 @@
 [submodule "packages/autolayout"]
 	path = packages/autolayout
 	url = https://github.com/lume/autolayout.git
+[submodule "packages/kiwi"]
+	path = packages/kiwi
+	url = https://github.com/lume/kiwi.git
