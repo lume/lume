@@ -58,7 +58,7 @@
 		"lint-ts": "npm run lint -- 'src/**/*.{ts,tsx}'"
 	},
 	"dependencies": {
-		"@lume/autolayout": "^0.7.0",
+		"@lume/autolayout": "^0.8.0",
 		"@lume/element": "^0.5.4",
 		"@lume/eventful": "^0.2.2",
 		"element-behaviors": "^2.2.9",
