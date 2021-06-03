@@ -42,12 +42,12 @@
   - [Node](/api/core/Node.md)
   - [Scene](/api/core/Scene.md)
   - [TreeNode](/api/core/TreeNode.md)
-  - layouts/
-  - [Cube](/api/layouts/Cube.md)
   - lights/
   - [AmbientLight](/api/lights/AmbientLight.md)
   - [Light](/api/lights/Light.md)
   - [PointLight](/api/lights/PointLight.md)
+  - layouts/
+  - [Cube](/api/layouts/Cube.md)
   - models/
   - [ColladaModel](/api/models/ColladaModel.md)
   - [FbxModel](/api/models/FbxModel.md)
