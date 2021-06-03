@@ -695,18 +695,18 @@ export class Scene extends HTMLInterface {
 					// If change.contentBoxSize is an array with more than
 					// one item, it means the observed element is split
 					// across multiple CSS columns.
+					//
 					// TODO If the Scene is used as display:inline{-block},
-					// ensure that it is the size of the column in which it
-					// is located.
-					// TODO fix ResizeObserver types in TypeScript lib.dom
-					const {inlineSize, blockSize} = Array.isArray(change.contentBoxSize)
-						? (change.contentBoxSize[0] as ResizeObserverEntryBoxSize)
-						: (change.contentBoxSize as unknown as ResizeObserverEntryBoxSize)
+					// ensure that it is the size of the column in which it is
+					// located. For now, we only grab the first item in the
+					// array, assuming that the Scene in not used inside a
+					// layout with columns.
+					const {inlineSize, blockSize} = change.contentBoxSize[0]
 
 					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
 
 					// If the text writing mode is horizontal, then inlinSize is
-					// the width, otherwise in vertical modes it is the height.
+					// the width, otherwise in vertical writing mode it is the height.
 					// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize#Syntax
 					if (isHorizontal) this.#checkSize(inlineSize, blockSize)
 					else this.#checkSize(blockSize, inlineSize)
