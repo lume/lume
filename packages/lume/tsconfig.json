@@ -14,9 +14,12 @@
 	},
 	"include": ["./src/**/*"],
 
-	// TODO this causes tests to be skipped (because lume cli runs tests from the dist folder)
+	// TODO Ideally we don't want test API type defs showing up in source code,
+	// but disabling this otherwise causes tests to be skipped (because lume
+	// cli runs tests from the dist folder so we need to not exclude test
+	// files so that they get built to dist)...
 	// "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
 
-	// So for now we do not exclude tests.
+	// ...so for now we do not exclude tests.
 	"exclude": ["./src/**/*.react-jsx.d.ts"]
 }
