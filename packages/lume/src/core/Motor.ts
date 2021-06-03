@@ -66,8 +66,13 @@ class _Motor {
 		this.#startAnimationLoop()
 	}
 
-	// TODO better typing for fn
-	setFrameRequester(requester: (fn: FrameRequestCallback) => any) {
+	/**
+	 * Set the function that is used for requesting animation frames. The
+	 * default is `globalThis.requestAnimationFrame`. A Scene with WebXR enabled
+	 * will pass in the XRSession's requester that controls animation frames for
+	 * the XR headset.
+	 */
+	setFrameRequester(requester: (fn: FrameRequestCallback) => number) {
 		this.#requestFrame = requester
 	}
 

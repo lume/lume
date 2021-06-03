@@ -29,6 +29,7 @@
   - [Morphing spiral](/examples/spiral.md ':class=no-sublist')
   - [Autolayout (declarative)](/examples/autolayout-declarative.md ':class=no-sublist')
   - [Autolayout (imperative)](/examples/autolayout-imperative.md ':class=no-sublist')
+  - [Hello VR](/examples/hello-vr.md ':class=no-sublist')
     <!-- Uncomment these for testing. -->
     <!-- - [Shadow DOM](/examples/shadow-dom.md ':class=no-sublist') -->
     <!-- - [Shadow DOM](/examples/shadow-dom-2.md ':class=no-sublist') -->

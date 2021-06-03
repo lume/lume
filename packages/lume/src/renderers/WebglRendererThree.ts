@@ -1,9 +1,10 @@
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
-import {TextureLoader} from 'three'
-// TODO update to WebXR
-// import WEBVR from '../lib/three/WebVR.js'
+import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
+
+import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
+// TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
 
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/textures/Texture.js'
@@ -55,28 +56,31 @@ export class WebglRendererThree {
 
 		if (sceneState) return
 
-		sceneStates.set(
-			scene,
-			(sceneState = {
-				// TODO: options controlled by HTML attributes on scene elements.
-				renderer: new WebGLRenderer({
-					// TODO: how do we change alpha:true to alpha:false after the
-					// fact?
-					alpha: true,
+		// TODO: options controlled by HTML attributes on scene elements.
+		const renderer = new WebGLRenderer({
+			// TODO: how do we change alpha:true to alpha:false after the fact?
+			alpha: true,
 
-					antialias: true,
-				}),
+			antialias: true,
+		})
 
-				sizeChangeHandler: () => this.updateResolution(scene),
-			}),
-		)
+		// TODO: make some of the renderer options configurable by property/attribute.
 
-		const {renderer} = sceneState
+		// Needs to be enabled first for it to work? If so, we need to destroy
+		// and reinitialize renderes to toggle between XR or non-XR scenes.
+		renderer.xr.enabled = true
 
-		// TODO: make configurable by property/attribute
 		renderer.setPixelRatio(window.devicePixelRatio)
 		renderer.shadowMap.enabled = true
 		renderer.shadowMap.type = PCFSoftShadowMap // default PCFShadowMap
+
+		sceneStates.set(
+			scene,
+			(sceneState = {
+				renderer,
+				sizeChangeHandler: () => this.updateResolution(scene),
+			}),
+		)
 
 		this.updateResolution(scene)
 
@@ -314,58 +318,24 @@ export class WebglRendererThree {
 
 	// TODO: at the moment this has only been tested toggling it on
 	// once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
-	// TODO Update to WebXR
-	// enableVR(scene: Scene, enable: boolean) {
-	// 	const state = sceneStates.get(scene)
-	// 	if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
+	// TODO Update to WebXR (WebXRManager in Three)
+	enableVR(scene: Scene, enable: boolean) {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
 
-	// 	const {renderer} = state
-
-	// 	// TODO TESTME updated from .vr.enabled to .xr.enabled, ensure it works the same.
-	// 	renderer.xr.enabled = enable
-	// }
+		const {renderer} = state
+		renderer.xr.enabled = enable
+	}
 
 	// TODO the UI here should be configurable via HTML
 	// TODO Update to WebXR
-	// createDefaultWebVREntryUI(scene: Scene) {
-	// 	const state = sceneStates.get(scene)
-	// 	if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
+	createDefaultVRButton(scene: Scene): HTMLElement {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
 
-	// 	const {renderer} = state
-
-	// 	window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false)
-	// 	window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false)
-
-	// 	function onPointerRestricted() {
-	// 		var pointerLockElement = renderer.domElement
-	// 		if (pointerLockElement && typeof pointerLockElement.requestPointerLock === 'function') {
-	// 			pointerLockElement.requestPointerLock()
-	// 		}
-	// 	}
-
-	// 	function onPointerUnrestricted() {
-	// 		var currentPointerLockElement = document.pointerLockElement
-	// 		var expectedPointerLockElement = renderer.domElement
-	// 		if (
-	// 			currentPointerLockElement &&
-	// 			currentPointerLockElement === expectedPointerLockElement &&
-	// 			typeof document.exitPointerLock === 'function'
-	// 		) {
-	// 			document.exitPointerLock()
-	// 		}
-	// 	}
-
-	// 	const button = WEBVR.createButton(renderer)
-
-	// 	button.setAttribute('id', 'vrButton')
-	// 	button.style.color = 'black'
-	// 	button.style.setProperty('border-color', 'black')
-
-	// 	button.setAttribute('slot', 'misc')
-	// 	scene.appendChild(button)
-
-	// 	return button
-	// }
+		const {renderer} = state
+		return VRButton.createButton(renderer)
+	}
 }
 
 export function releaseWebGLRendererThree() {

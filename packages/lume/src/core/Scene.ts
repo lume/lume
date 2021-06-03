@@ -14,6 +14,7 @@ import {HtmlScene as HTMLInterface} from './HtmlScene.js'
 import {documentBody, thro, trim} from './utils.js'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver.js'
 import {isDisposable} from '../utils/three.js'
+import {Motor} from './Motor.js'
 
 import type {ImperativeBase} from './ImperativeBase.js'
 import type {TColor} from '../utils/three.js'
@@ -480,10 +481,11 @@ export class Scene extends HTMLInterface {
 
 		this.#glRenderer = this.#getGLRenderer('three')
 
+		// If _loadGL is firing, then this.webgl must be true, therefore
+		// this.#glRenderer must be defined in any of the below autoruns.
+
 		this._glStopFns.push(
 			autorun(() => {
-				// if this.webgl is true, then _loadGL will have fired,
-				// therefore this.__glRenderer must be defined.
 				this.#glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
 				this.needsUpdate()
 			}),
@@ -496,14 +498,29 @@ export class Scene extends HTMLInterface {
 				this.needsUpdate()
 			}),
 			autorun(() => {
-				// TODO Update to WebXR
-				// this.__glRenderer!.enableVR(this, this.vr)
-				// if (this.vr) {
-				// 	Motor.setFrameRequester(fn => this.__glRenderer!.requestFrame(this, fn))
-				// 	this.__glRenderer!.createDefaultWebVREntryUI(this)
-				// } else {
-				// 	// TODO else return back to normal requestAnimationFrame
-				// }
+				console.log('enable vr', this.vr)
+
+				this.#glRenderer!.enableVR(this, this.vr)
+
+				if (this.vr) {
+					console.log('set vr frame requester!')
+
+					Motor.setFrameRequester(fn => {
+						this.#glRenderer!.requestFrame(this, fn)
+
+						// Mock rAF return value for Motor.setFrameRequester.
+						return 0
+					})
+
+					const button = this.#glRenderer!.createDefaultVRButton(this)
+					button.classList.add('vrButton')
+
+					this._miscLayer!.appendChild(button)
+				} else if ((this as any).xr) {
+					// TODO
+				} else {
+					// TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
+				}
 			}),
 		)
 
@@ -516,6 +533,14 @@ export class Scene extends HTMLInterface {
 
 		return true
 	}
+
+	static css = /*css*/ `
+		${HTMLInterface.css}
+		.vrButton {
+			color: black;
+			border-color: black;
+		}
+	`
 
 	_unloadGL() {
 		if (!super._unloadGL()) return false

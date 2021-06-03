@@ -58,6 +58,11 @@ export class HtmlScene extends ImperativeBase {
 			pointer-events: none;
 		}
 
+		.MiscellaneousLayer > * {
+			/* Allow children of the Misc layer to have pointer events.	Needed for the WebXR button, for example */
+			pointer-events: auto;
+		}
+
 		/*
 		 * This trick is needed in Firefox to remove pointer events from the
 		 * transparent cameraElement from interfering with pointer events on the
@@ -85,8 +90,8 @@ export class HtmlScene extends ImperativeBase {
 			<div ref=${(el: any) => (this._glLayer = el)} class="WebGLLayer">
 				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
 			</div>
-			<div class="MiscellaneousLayer">
-				${/* This layer is used by WebVR to insert some UI like the Enter VR button. */ ''}
+			<div ref=${(el: any) => (this._miscLayer = el)} class="MiscellaneousLayer">
+				${/* This layer is used by WebXR to insert UI like the Enter VR/AR button. */ ''}
 				<slot name="misc"></slot>
 			</div>
 		</div>
@@ -117,4 +122,7 @@ export class HtmlScene extends ImperativeBase {
 
 	// CSS3DRendererThree appends its content into here.
 	_cssLayer: HTMLDivElement | null = null
+
+	// Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
+	_miscLayer: HTMLDivElement | null = null
 }
