@@ -10,6 +10,7 @@
 		"clean": "lerna run clean",
 		"install": "npm run update-modules && npm run bootstrap && npm run build && npm run docs:build",
 		"update": "git pull && npm install",
+		"update:clear": "git reset && git checkout . && npm run update",
 		"update-modules": "git submodule update --init --recursive",
 		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem,glas}' --ignore-scripts --loglevel notice -- --loglevel notice && lerna bootstrap --no-ci --scope '{,readem,glas}'",
 		"// ^ bootstrap": "Bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume).",
