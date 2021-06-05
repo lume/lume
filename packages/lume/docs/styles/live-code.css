@@ -1,6 +1,13 @@
 .live-code {
 	margin-top: 20px;
 	margin-bottom: 50px;
+
+	--tab-color: #0043fa;
+}
+
+/*TODO temporary, fix live-code so it doesn't left-align code, only the tab labels.*/
+.live-code-edit-area {
+	text-align: left;
 }
 
 .live-code.full {
