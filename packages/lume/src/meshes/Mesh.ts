@@ -8,6 +8,34 @@ import type {NodeAttributes} from '../core/Node.js'
 
 export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
 
+/**
+ * @element lume-mesh
+ * @class Mesh -
+ * An element that renders a particular 3D shape (geometry) along with a
+ * particular style (material). This is a generic element with no particular
+ * shape. Elements like `<lume-box>` set particular defaults. For example a
+ * `<lume-box>` element (backed by the [`Box`](./Box) class) extends from
+ * this class and applies two default behaviors: `box-geometry` and
+ * `phong-material`.
+ *
+ * For the sake of simplicity, `<lume-mesh>` also has a box-geometry and
+ * phone-material by default as well.
+ *
+ * ## Example
+ *
+ * <div id="example"></div>
+ *
+ * <script type="application/javascript">
+ *   new Vue({
+ *     el: '#example',
+ *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
+ *     data: { code: meshExample() },
+ *   })
+ * </script>
+ *
+ * @extends Node
+ *
+ */
 @element
 export class Mesh extends Node {
 	static defaultElementName = 'lume-mesh'

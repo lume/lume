@@ -4,13 +4,12 @@ import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
 // !! WIP under construction
 
-/**
+/* TODO
  * @extends Node
  * @class Cube -
  * > :construction: :hammer: Under construction! :hammer: :construction:
  *
  * A scenegraph tree that lays things out in a cube form.@
- *
  */
 // TODO: This is written imperatively. How would it be declaratively?
 // TODO: Make an example.

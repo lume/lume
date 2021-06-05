@@ -259,3 +259,248 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 		</script>
 	`)
 }
+
+function miniGalaxyDemo() {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+
+		<lume-scene id="scene">
+			<lume-node id="container" size="78 78" align-point="0.5 0.5" mount-point="0.5 0.5">
+				<lume-node
+					class="sun"
+					size-mode="proportional proportional"
+					size="0.8 0.8"
+					position="0 0 10"
+					align-point="0.5 0.5"
+					mount-point="0.5 0.5"
+				>
+					<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+				</lume-node>
+				<lume-node class="rotator A" size="60 60" align-point="1 1">
+					<lume-node
+						class="sun"
+						size-mode="proportional proportional"
+						size="0.8 0.8"
+						position="0 0 10"
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+					>
+						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+					</lume-node>
+					<lume-node class="rotator" size="45 45" align-point="1 1">
+						<lume-node
+							class="sun"
+							size-mode="proportional proportional"
+							size="0.8 0.8"
+							position="0 0 10"
+							align-point="0.5 0.5"
+							mount-point="0.5 0.5"
+						>
+							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+						</lume-node>
+						<lume-node class="rotator" size="28 28" align-point="1 1">
+							<lume-node
+								class="sun"
+								size-mode="proportional proportional"
+								size="0.8 0.8"
+								position="0 0 10"
+								align-point="0.5 0.5"
+								mount-point="0.5 0.5"
+							>
+								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+							</lume-node>
+						</lume-node>
+					</lume-node>
+				</lume-node>
+				<lume-node class="rotator A" size="60 60" mount-point="1 1">
+					<lume-node
+						class="sun"
+						size-mode="proportional proportional"
+						size="0.8 0.8"
+						position="0 0 10"
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+					>
+						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+					</lume-node>
+					<lume-node class="rotator" size="45 45" mount-point="1 1">
+						<lume-node
+							class="sun"
+							size-mode="proportional proportional"
+							size="0.8 0.8"
+							position="0 0 10"
+							align-point="0.5 0.5"
+							mount-point="0.5 0.5"
+						>
+							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+						</lume-node>
+						<lume-node class="rotator" size="28 28" mount-point="1 1">
+							<lume-node
+								class="sun"
+								size-mode="proportional proportional"
+								size="0.8 0.8"
+								position="0 0 10"
+								align-point="0.5 0.5"
+								mount-point="0.5 0.5"
+							>
+								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+							</lume-node>
+						</lume-node>
+					</lume-node>
+				</lume-node>
+				<lume-node class="rotator B" size="60 60" align-point="0 1" mount-point="1 0">
+					<lume-node
+						class="sun"
+						size-mode="proportional proportional"
+						size="0.8 0.8"
+						position="0 0 10"
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+					>
+						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+					</lume-node>
+					<lume-node class="rotator" size="45 45" align-point="0 1" mount-point="1 0">
+						<lume-node
+							class="sun"
+							size-mode="proportional proportional"
+							size="0.8 0.8"
+							position="0 0 10"
+							align-point="0.5 0.5"
+							mount-point="0.5 0.5"
+						>
+							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+						</lume-node>
+						<lume-node class="rotator" size="28 28" align-point="0 1" mount-point="1 0">
+							<lume-node
+								class="sun"
+								size-mode="proportional proportional"
+								size="0.8 0.8"
+								position="0 0 10"
+								align-point="0.5 0.5"
+								mount-point="0.5 0.5"
+							>
+								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+							</lume-node>
+						</lume-node>
+					</lume-node>
+				</lume-node>
+				<lume-node class="B" size="60 60" align-point="1 0" mount-point="0 1">
+					<lume-node
+						class="sun"
+						size-mode="proportional proportional"
+						size="0.8 0.8"
+						position="0 0 10"
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+					>
+						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+					</lume-node>
+					<lume-node class="rotator" size="45 45" align-point="1 0" mount-point="0 1">
+						<lume-node
+							class="sun"
+							size-mode="proportional proportional"
+							size="0.8 0.8"
+							position="0 0 10"
+							align-point="0.5 0.5"
+							mount-point="0.5 0.5"
+						>
+							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+						</lume-node>
+						<lume-node class="rotator" size="28 28" align-point="1 0" mount-point="0 1">
+							<lume-node
+								class="sun"
+								size-mode="proportional proportional"
+								size="0.8 0.8"
+								position="0 0 10"
+								align-point="0.5 0.5"
+								mount-point="0.5 0.5"
+							>
+								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
+							</lume-node>
+						</lume-node>
+					</lume-node>
+				</lume-node>
+			</lume-node>
+		</lume-scene>
+
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				width: 100%;
+			}
+			lume-scene {
+				background: #fefefe;
+			}
+			lume-node {
+				border-radius: 100%;
+				color: white;
+				font-family: sans-serif;
+				font-weight: bold;
+			}
+			lume-node:not(.sun) {
+				background: rgba(0, 0, 0, 0.1);
+			}
+			img {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		</style>
+
+		<script>
+			LUME.useDefaultNames()
+
+			document.querySelectorAll('.A, .A .rotator').forEach(n => {
+				n.rotation = (x, y, z, t) => [-65 * Math.sin(t * 0.0005), y, -65 * Math.sin(t * 0.0005)]
+			})
+
+			document.querySelectorAll('.B, .B .rotator').forEach(n => {
+				n.rotation = (x, y, z, t) => [65 * Math.sin(t * 0.0005), 65 * Math.sin(t * 0.0005), z]
+			})
+
+			const rotationAmount = 35
+
+			// Add some interaction so we can see the shine from the light!
+			scene.addEventListener('pointermove', event => {
+				// Rotate the image a little bit too.
+				container.rotation.y = (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount
+				container.rotation.x = -((event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount)
+			})
+		</script>
+	`)
+}
+
+function sceneExample() {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+
+		<lume-scene id="scene">
+			<lume-node size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
+				I am centered in the scene, and I am rotated a bit.
+			</lume-node>
+		</lume-scene>
+
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				width: 100%;
+			}
+			lume-node {
+				padding: 5px;
+				border: 1px solid skyblue;
+			}
+		</style>
+
+		<script>
+			// Make sure you register LUME's custom elements with the
+			// browser, or nothing will happen.
+			LUME.useDefaultNames()
+		</script>
+	`)
+}

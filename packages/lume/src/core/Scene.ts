@@ -52,38 +52,13 @@ export type SceneAttributes =
  * The following example shows how to begin making a LUME scene within an HTML
  * file. To learn more about how to get started, see the [install guide](TODO).
  *
- * <div id="example1"></div> <script type="application/javascript">
+ * <div id="example"></div>
+ *
+ * <script type="application/javascript">
  *   new Vue({
- *     el: '#example1',
+ *     el: '#example',
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: {
- *       code:
- * `<script src="${location.origin+location.pathname}global.js"><\/script>
- *
- * <lume-scene id="scene">
- *   <lume-node size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
- *   	I am centered in the scene, and I am rotated a bit.
- *   </lume-node>
- * </lume-scene>
- *
- * <style>
- *   html, body {
- *     margin: 0; padding: 0;
- *     height: 100%; width: 100%;
- *   }
- *   lume-node {
- *     padding: 5px;
- *     border: 1px solid skyblue;
- *   }
- * </style>
- *
- * <script>
- *   // Make sure you register LUME's custom elements with the
- *   // browser, or nothing will happen.
- *   LUME.useDefaultNames()
- * <\/script>
- * `
- *     },
+ *     data: { code: sceneExample() },
  *   })
  * </script>
  *
