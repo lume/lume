@@ -215,3 +215,47 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 		})
 	</script>
 `)
+
+function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+		${
+			'' /*
+			TODO: The behaviors don't load if the global script is loaded after the
+			scene markup instead of before and there is more than one behavior specified with has="".
+			*/
+		}
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				background: #222;
+			}
+		</style>
+
+		<lume-scene id="scene" perspective="800" webgl>
+			<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+			<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+			<lume-camera-rig active initial-distance="400" max-distance="700" min-distance="100"></lume-camera-rig>
+
+			<lume-mesh
+				id="mesh"
+				has="${geometry}-geometry ${material}-material"
+				color="${color}"
+				rotation="90 0 0"
+				size="100 100 100"
+				mount-point="0.5 0.5 0.5"
+			></lume-mesh>
+		</lume-scene>
+
+		<script>
+			// Define all the LUME elements with their default names.
+			LUME.useDefaultNames()
+
+			mesh.rotation = (x, y, z) => [++x, ++y, z]
+		</script>
+	`)
+}

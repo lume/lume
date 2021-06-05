@@ -5,6 +5,10 @@ import type {Constructor} from 'lowclass'
 import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import type {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
 
+// FIXME, Refactor: This class is not accurate at the moment: For example, it is used on
+// MeshLambertMaterialBehavior although THREE.MeshLambertMaterial does not
+// support bumpMap, which this class implements.
+
 export type MaterialTextureAttributes = 'texture' | 'bumpMap' | 'specularMap'
 
 /**

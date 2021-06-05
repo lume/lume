@@ -56,14 +56,23 @@ import type {
 	PhongMaterialBehavior,
 	PhongMaterialBehaviorAttributes,
 } from '../behaviors/materials/PhongMaterialBehavior.js'
+import type {
+	LambertMaterialBehavior,
+	LambertMaterialBehaviorAttributes,
+} from '../behaviors/materials/LambertMaterialBehavior'
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
+			// TODO Can we improve ElementAttributes so we don't have to nest them when we want to mix more properties in?
 			'lume-mesh': ElementAttributes<
 				Mesh,
 				MeshAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+				ElementAttributes<
+					PhongMaterialBehavior,
+					PhongMaterialBehaviorAttributes,
+					ElementAttributes<LambertMaterialBehavior, LambertMaterialBehaviorAttributes>
+				>
 			>
 		}
 	}
