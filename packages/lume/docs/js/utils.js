@@ -252,7 +252,6 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 		</lume-scene>
 
 		<script>
-			// Define all the LUME elements with their default names.
 			LUME.useDefaultNames()
 
 			mesh.rotation = (x, y, z) => [++x, ++y, z]
@@ -498,8 +497,6 @@ function sceneExample() {
 		</style>
 
 		<script>
-			// Make sure you register LUME's custom elements with the
-			// browser, or nothing will happen.
 			LUME.useDefaultNames()
 		</script>
 	`)
@@ -540,8 +537,6 @@ function pointLightExample() {
 		</style>
 
 		<script>
-			// Make sure you register LUME's custom elements with the
-			// browser, or nothing will happen.
 			LUME.useDefaultNames()
 
 			box.rotation = (x, y, z) => [x, y, ++z]
@@ -589,8 +584,6 @@ function directionalLightExample() {
 		</style>
 
 		<script>
-			// Make sure you register LUME's custom elements with the
-			// browser, or nothing will happen.
 			LUME.useDefaultNames()
 
 			box.rotation = (x, y, z) => [x, y, ++z]
