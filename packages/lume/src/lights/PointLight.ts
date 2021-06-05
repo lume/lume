@@ -18,6 +18,7 @@ export type PointLightAttributes =
 	| 'shadowCameraFar'
 
 /**
+ * @element lume-point-light
  * @class PointLight -
  * > :construction: :hammer: Under construction! :hammer: :construction:
  *
@@ -25,6 +26,18 @@ export type PointLightAttributes =
  * `<lume-point-light>` elements.
  *
  * This light illuminates objects near it, casting shadows in any direction away from the light.
+ *
+ * ## Example
+ *
+ * <div id="example"></div>
+ *
+ * <script type="application/javascript">
+ *   new Vue({
+ *     el: '#example',
+ *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
+ *     data: { code: pointLightExample() },
+ *   })
+ * </script>
  *
  * @extends Light
  */
@@ -35,6 +48,10 @@ export class PointLight extends Light {
 	@numberAttribute(0) @emits('propertychange') distance = 0
 	@numberAttribute(1) @emits('propertychange') decay = 1
 	@booleanAttribute(true) @emits('propertychange') castShadow = true
+	// TODO @numberAttribute(1) power = computed(() => this.intensity * 4 * Math.PI) // see https://threejs.org/docs/index.html?q=light#api/en/lights/PointLight.power
+
+	// These map to THREE.PointLightShadow properties.
+	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
 	@numberAttribute(512) @emits('propertychange') shadowMapWidth = 512
 	@numberAttribute(512) @emits('propertychange') shadowMapHeight = 512
 	@numberAttribute(3) @emits('propertychange') shadowRadius = 3

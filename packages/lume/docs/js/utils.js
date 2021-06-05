@@ -504,3 +504,96 @@ function sceneExample() {
 		</script>
 	`)
 }
+
+function pointLightExample() {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+
+		<lume-scene webgl shadowmap-type="soft">
+			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
+
+			<!-- We need a plane onto which shadows will land (the "floor"). -->
+			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
+				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
+
+					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
+
+					<!-- A point in space where light emanates from. -->
+					<lume-point-light
+						color="white"
+						position="500 -500 500"
+						intensity="1"
+						shadow-map-width="1024"
+						shadow-map-height="1024"
+					></lume-point-light>
+
+					<!-- A box that will cast a shadow onto the floor. -->
+					<lume-box id="box" color="skyblue" size="50 50 50" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0" rotation="0 0 10"></lume-box>
+
+				</lume-plane>
+
+			</lume-node>
+		</lume-scene>
+
+		<style>
+			html, body { margin: 0; height: 100%; width: 100%; background: white; }
+		</style>
+
+		<script>
+			// Make sure you register LUME's custom elements with the
+			// browser, or nothing will happen.
+			LUME.useDefaultNames()
+
+			box.rotation = (x, y, z) => [x, y, ++z]
+		</script>
+	`)
+}
+
+function directionalLightExample() {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+
+		<lume-scene webgl shadowmap-type="soft">
+			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
+
+			<!-- We need a plane onto which shadows will land (the "floor"). -->
+			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
+				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
+
+					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
+
+					<!-- A point in space that determines direction of an infinitely-far source of light. -->
+					<lume-directional-light
+						color="white"
+						position="500 -500 500"
+						intensity="1"
+						shadow-map-width="1024"
+						shadow-map-height="1024"
+					></lume-directional-light>
+
+					<!-- A box that will cast a shadow onto the floor. -->
+					<lume-box id="box" color="skyblue" size="50 50 50" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0" rotation="0 0 10"></lume-box>
+
+					<!-- Add an interactive camera viewpoint. -->
+					<lume-node align-point="0.5 0.5" rotation="-90 0 0">
+						<lume-camera-rig initial-polar-angle="30" min-polar-angle="5" initial-distance="500"></lume-camera-rig>
+					</lume-node>
+
+				</lume-plane>
+
+			</lume-node>
+		</lume-scene>
+
+		<style>
+			html, body { margin: 0; height: 100%; width: 100%; background: white; }
+		</style>
+
+		<script>
+			// Make sure you register LUME's custom elements with the
+			// browser, or nothing will happen.
+			LUME.useDefaultNames()
+
+			box.rotation = (x, y, z) => [x, y, ++z]
+		</script>
+	`)
+}
