@@ -122,6 +122,6 @@
 	--content-side-padding-size: 60px;
 
 	/* This could go in docsify-themeable's Content category of variables. */
-	--content-padding: 2rem var(--content-side-padding-size);
+	--content-padding: 2rem 7%;
 	--content-margin: 100px 0 0 0;
 }
