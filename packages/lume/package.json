@@ -72,7 +72,7 @@
 	"devDependencies": {
 		"@lume/cli": "^0.5.9",
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
-		"@lume/live-code": "^0.3.2",
+		"@lume/live-code": "^0.3.3",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",
 		"all-contributors-cli": "^4.4.0",

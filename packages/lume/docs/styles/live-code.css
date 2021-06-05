@@ -5,11 +5,6 @@
 	--tab-color: #0043fa;
 }
 
-/*TODO temporary, fix live-code so it doesn't left-align code, only the tab labels.*/
-.live-code-edit-area {
-	text-align: left;
-}
-
 .live-code.full {
 	max-height: unset;
 }
@@ -25,8 +20,8 @@
 	}
 }
 
-.live-code-reset,
-.live-code-rerun {
+.live-code-reset:not(.live-code-smaller *),
+.live-code-rerun:not(.live-code-smaller *) {
 	display: flex;
 	align-items: flex-start;
 	justify-content: flex-end;
