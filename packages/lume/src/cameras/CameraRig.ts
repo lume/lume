@@ -61,7 +61,7 @@ export class CameraRig extends Node {
 			rotationYTarget: this,
 			minFlingRotationX: this.minPolarAngle,
 			maxFlingRotationX: this.maxPolarAngle,
-		})
+		}).start()
 
 		this.scrollFling = new ScrollFling({
 			target: this.scene,

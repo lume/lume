@@ -63,8 +63,6 @@ export class FlingRotation {
 		// specified by the input options), at least for now.
 		if (!this.rotationXTarget) this.rotationXTarget = this.rotationYTarget.children[0] as Node
 		if (!this.interactionInitiator) this.interactionInitiator = this.rotationXTarget
-
-		this.start()
 	}
 
 	#onMove?: (event: PointerEvent) => void
