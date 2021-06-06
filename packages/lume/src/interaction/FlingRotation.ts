@@ -15,7 +15,7 @@ type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 	>
 
 export class FlingRotation {
-	/** The object that will be rotated on Y. */
+	/** The object that will be rotated on Y. Required. */
 	readonly rotationYTarget!: Node
 
 	/**
@@ -49,14 +49,7 @@ export class FlingRotation {
 	 */
 	readonly interactionContainer: Document | ShadowRoot | Element = document
 
-	constructor(
-		// {
-		// rotationYTarget,
-		// rotationXTarget = rotationYTarget.children[0] as Node,
-		// interactionInitiator = rotationXTarget,
-		// }
-		options: FlingRotationOptions,
-	) {
+	constructor(options: FlingRotationOptions) {
 		Object.assign(this, options)
 
 		// FlingRotation is dependent on tree structure (unless otherwise
@@ -70,6 +63,7 @@ export class FlingRotation {
 
 	#onPointerDown = () => {
 		// Stop rotation if any.
+		this.rotationXTarget.rotation = () => false
 		this.rotationYTarget.rotation = () => false
 
 		let deltaX = 0
@@ -77,13 +71,13 @@ export class FlingRotation {
 
 		this.#onMove = (event: PointerEvent) => {
 			deltaX = event.movementY * 0.2
-			this.rotationXTarget.getRotation().x = clamp(
-				this.rotationXTarget.getRotation().x + deltaX,
+			this.rotationXTarget.rotation.x = clamp(
+				this.rotationXTarget.rotation.x + deltaX,
 				this.minFlingRotationX,
 				this.maxFlingRotationX,
 			)
 			deltaY = -event.movementX * 0.2
-			this.rotationYTarget.getRotation().y += deltaY
+			this.rotationYTarget.rotation.y += deltaY
 		}
 
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
@@ -149,13 +143,17 @@ export class FlingRotation {
 		if (!this.#isStarted) return this
 		this.#isStarted = false
 
+		// Stop any current animation.
+		this.rotationXTarget.rotation = () => false
+		this.rotationYTarget.rotation = () => false
+
 		this.interactionInitiator.removeEventListener('pointerdown', this.#onPointerDown)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart)
+		this.interactionInitiator.removeEventListener('dragstart', this.#onDragStart)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
 		if (this.#onMove) this.interactionContainer.removeEventListener('pointermove', this.#onMove)
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		if (this.#onPointerUp) this.interactionContainer.addEventListener('pointerup', this.#onPointerUp)
+		if (this.#onPointerUp) this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp)
 
 		return this
 	}

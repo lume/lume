@@ -84,6 +84,9 @@ export class ScrollFling {
 		if (!this.#isStarted) return this
 		this.#isStarted = false
 
+		// Stop any current animation, if any.
+		if (this.#task) Motor.removeRenderTask(this.#task)
+
 		// @ts-ignore, whyyyyy TypeScript
 		this.target.removeEventListener('wheel', this.#onWheel)
 
