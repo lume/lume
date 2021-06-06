@@ -2,12 +2,14 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {autorun, booleanAttribute, attribute, numberAttribute, untrack, element} from '@lume/element'
+import {autorun, booleanAttribute, attribute, numberAttribute, untrack, element, stringAttribute} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
 import {Color} from 'three/src/math/Color.js'
+import {Fog} from 'three/src/scenes/Fog'
+import {FogExp2} from 'three/src/scenes/FogExp2'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {HtmlScene as HTMLInterface} from './HtmlScene.js'
@@ -36,6 +38,10 @@ export type SceneAttributes =
 	| 'background'
 	| 'equirectangularBackground'
 	| 'environment'
+	| 'fogMode'
+	| 'fogNear'
+	| 'fogFar'
+	| 'fogColor'
 	| 'perspective'
 
 /**
@@ -88,9 +94,12 @@ export class Scene extends HTMLInterface {
 	@emits('propertychange') @booleanAttribute(true) enableCss = true
 
 	/**
-	 * @property {Color | string | number} backgroundColor - The color of
-	 * the scene's background when WebGL rendering is enabled. If the
-	 * [`background`](TODO) property is set also, then `backgroundColor` is ignored.
+	 * @property {Color | string | number} backgroundColor - The color of the
+	 * scene's background when WebGL rendering is enabled. If the
+	 * [`background`](TODO) property is set also, then `backgroundColor` is
+	 * ignored. Make sure to set `backgroundOpacity` to a higher value than the
+	 * default of `0` or the color won't be visible but the CSS color of
+	 * whatever is behind the `<lume-scene>` will be.
 	 */
 	@emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
 
@@ -106,7 +115,7 @@ export class Scene extends HTMLInterface {
 	/**
 	 * @property {string} background - Set an image as the scene's
 	 * background. If the image is an [equirectangular environment
-	 * map](TODO), then set the value of
+	 * map](https://coeleveld.com/spherical-equirectangular-environment-textures-and-hdri), then set the value of
 	 * [`equirectangularBackground`](TODO) to `true`, otherwise the image
 	 * will be treated as a 2D background image. The value should be a path
 	 * to a jpeg, jpg, or png. Other types not supported yet. This value
@@ -131,6 +140,36 @@ export class Scene extends HTMLInterface {
 	 * reflections on metallic objects in the scene.
 	 */
 	@emits('propertychange') @attribute environment = ''
+
+	/**
+	 * @property {'none' | 'linear' | 'expo2'} fogMode - The fog mode to render
+	 * the scene with. A value of `'none'` means no fog. A value of `'linear'`
+	 * makes a fog that gets linearly denser with distance from the camera. See
+	 * the `fogNear` and `fogFar` properties for tweaking linear fog. A value of
+	 * `'expo2'` create an exponential squared fog whose density cannot be
+	 * configured.
+	 */
+	@stringAttribute('none') fogMode: FogMode = 'none'
+
+	/**
+	 * @property {number} fogNear - When `fogMode` is `'linear'`, this controls
+	 * the distance from the camera where fog starts to appear and objects start
+	 * to be less visible.
+	 */
+	@numberAttribute(0) fogNear = 0
+
+	/**
+	 * @property {number} fogFar - When `fogMode` is `'linear'`, this controls
+	 * the distance from the camera where fog reaches maximum density and
+	 * objects are no longer visible.
+	 */
+	@numberAttribute(1000) fogFar = 1000
+
+	/**
+	 * @property {string} fogColor - If `fogMode` is not `'none`', this
+	 * configures the fog color. The value should be any valid CSS color string.
+	 */
+	@stringAttribute('gray') fogColor: string = 'gray'
 
 	@numberAttribute(400)
 	set perspective(value) {
@@ -461,6 +500,30 @@ export class Scene extends HTMLInterface {
 
 		this._glStopFns.push(
 			autorun(() => {
+				if (this.fogMode === 'none') {
+					this.three.fog = null
+				} else if (this.fogMode === 'linear') {
+					this.three.fog = new Fog('deeppink')
+				} else if (this.fogMode === 'expo2') {
+					this.three.fog = new FogExp2(new Color('deeppink').getHex())
+				}
+
+				this.needsUpdate()
+			}),
+			autorun(() => {
+				if (this.fogMode === 'none') {
+					// Nothing to do.
+				} else if (this.fogMode === 'linear') {
+					const fog = this.three.fog! as Fog
+					fog.near = this.fogNear
+					fog.far = this.fogFar
+					fog.color.set(this.fogColor)
+				} else if (this.fogMode === 'expo2') {
+					const fog = this.three.fog!
+					fog.color.set(this.fogColor)
+				}
+			}),
+			autorun(() => {
 				this.#glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
 				this.needsUpdate()
 			}),
@@ -761,3 +824,5 @@ function documentReady() {
 
 	return Promise.resolve()
 }
+
+type FogMode = 'none' | 'linear' | 'expo2'
