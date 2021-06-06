@@ -14,15 +14,16 @@ export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder'
 
 @reactive
 export class GltfModelBehavior extends RenderableBehavior {
-	/** Path to a .gltf or .glb file. */
-	@attribute src = ''
+	/** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
+	@attribute src: string | null = ''
 
 	/**
-	 * Path to the draco decoder that will unpack decode compressed assets of
-	 * the GLTF file. This does not need to be supplied unless you explicitly
-	 * know you need it.
+	 * @attribute
+	 * @property {string | null} dracoDecoder - Path to the draco decoder that
+	 * will unpack decode compressed assets of the GLTF file. This does not need
+	 * to be supplied unless you explicitly know you need it.
 	 */
-	@attribute dracoDecoder = ''
+	@attribute dracoDecoder: string | null = ''
 
 	dracoLoader?: DRACOLoader
 	gltfLoader?: GLTFLoader
