@@ -1,0 +1,66 @@
+<script src="../../dist/global.js"></script>
+
+<lume-scene
+	id="scene"
+	webgl
+	fog-mode="linear"
+	fog-far="10000"
+	fog-color="skyblue"
+	background-color="skyblue"
+	background-opacity="1"
+>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+	<lume-point-light color="white" intensity="0.6" position="500 -500 -500"></lume-point-light>
+
+	<lume-node id="bison">
+		<lume-gltf-model src="./bison.gltf" scale="50 50 50" center-geometry></lume-gltf-model>
+		<lume-camera-rig
+			interactive="false"
+			min-polar-angle="5"
+			max-polar-angle="90"
+			initial-polar-angle="40"
+			position="0 0 -300"
+		></lume-camera-rig>
+	</lume-node>
+
+	<lume-node id="terrain" position="0 0 -5400">
+		<lume-gltf-model
+			src="./terrain.gltf"
+			scale="1 1 1"
+			center-geometry
+			position="-900 -1010 -10300"
+		></lume-gltf-model>
+		<lume-gltf-model src="./terrain.gltf" scale="1 1 1" center-geometry position="-900 -1010 0"></lume-gltf-model>
+		<lume-gltf-model
+			src="./terrain.gltf"
+			scale="1 1 1"
+			center-geometry
+			position="-900 -1010 10300"
+		></lume-gltf-model>
+	</lume-node>
+</lume-scene>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+	lume-scene {
+		background: #222;
+		touch-action: none;
+	}
+</style>
+
+<script>
+	LUME.useDefaultNames()
+
+	for (let child = terrain.firstChild; child; child = child.nextSibling) {
+		child.position = (x, y, z) => {
+			z += 40
+			if (z >= 10300) z = -10300
+			return [x, y, z]
+		}
+	}
+</script>
