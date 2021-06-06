@@ -16,6 +16,7 @@ export type CameraRigAttributes =
 	| 'maxDistance'
 	| 'active'
 	| 'dollySpeed'
+	| 'interactive'
 
 // TODO allow overriding the camera props, or when ShadowDOM is complete make the default camera overridable via <slot>
 
@@ -29,6 +30,13 @@ export class CameraRig extends Node {
 	@numberAttribute(2000) maxDistance = 2000
 	@booleanAttribute(true) active = true
 	@numberAttribute(1) dollySpeed = 1
+
+	/**
+	 * @property {boolean} interactive - When false, the user can zoom or
+	 * rotate the camera, useful for static positioning of the camera
+	 * programmatically.
+	 */
+	@booleanAttribute(true) interactive = true
 
 	cam?: PerspectiveCamera
 
@@ -50,7 +58,7 @@ export class CameraRig extends Node {
 
 	flingRotation?: FlingRotation
 	scrollFling?: ScrollFling
-	stopAutorun?: StopFunction
+	autorunStoppers?: StopFunction[]
 
 	connectedCallback() {
 		super.connectedCallback()
@@ -71,11 +79,26 @@ export class CameraRig extends Node {
 			scrollFactor: this.dollySpeed,
 		}).start()
 
-		this.stopAutorun = autorun(() => {
-			this.scrollFling!.y
+		this.autorunStoppers = []
 
-			untrack(() => (this.cam!.getPosition().z = this.scrollFling!.y))
-		})
+		this.autorunStoppers.push(
+			autorun(() => {
+				this.scrollFling!.y
+
+				untrack(() => (this.cam!.position.z = this.scrollFling!.y))
+			}),
+			autorun(() => {
+				if (this.interactive) {
+					console.log('interactive, start rotation and scroll flings')
+					this.flingRotation!.start()
+					this.scrollFling!.start()
+				} else {
+					console.log('not interactive, stop rotation and scroll flings')
+					this.flingRotation!.stop()
+					this.scrollFling!.stop()
+				}
+			}),
+		)
 	}
 
 	disconnectedCallback() {
@@ -83,7 +106,7 @@ export class CameraRig extends Node {
 
 		this.flingRotation?.stop()
 		this.scrollFling?.stop()
-		this.stopAutorun?.()
+		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
 	}
 }
 
