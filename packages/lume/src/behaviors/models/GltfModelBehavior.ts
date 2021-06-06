@@ -1,8 +1,10 @@
 import 'element-behaviors'
-import {reactive, attribute, autorun} from '@lume/element'
+import {reactive, attribute, autorun, booleanAttribute} from '@lume/element'
 import {Scene} from 'three/src/scenes/Scene.js'
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {Box3} from 'three/src/math/Box3.js'
+import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../utils/three.js'
 import {Events} from '../../core/Events.js'
 import {RenderableBehavior} from '../RenderableBehavior.js'
@@ -10,7 +12,7 @@ import {RenderableBehavior} from '../RenderableBehavior.js'
 import type {StopFunction} from '@lume/element'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder'
+export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
 @reactive
 export class GltfModelBehavior extends RenderableBehavior {
@@ -25,11 +27,23 @@ export class GltfModelBehavior extends RenderableBehavior {
 	 */
 	@attribute dracoDecoder: string | null = ''
 
+	/**
+	 * @attribute
+	 * @property {boolean} centerGeometry - When `true`, all geometry of the
+	 * loaded model will be centered at the local origin.
+	 */
+	@booleanAttribute(false) centerGeometry = false
+
 	dracoLoader?: DRACOLoader
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null
 
-	static _observedProperties = ['src', 'dracoPath', ...(RenderableBehavior._observedProperties || [])]
+	static _observedProperties = [
+		'src',
+		'dracoPath',
+		'centerGeometry',
+		...(RenderableBehavior._observedProperties || []),
+	]
 
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
@@ -49,15 +63,15 @@ export class GltfModelBehavior extends RenderableBehavior {
 
 		this.#stopFns.push(
 			autorun(() => {
-				this.src
 				if (this.dracoDecoder) {
-					if (!firstRun) this.dracoLoader?.dispose()
+					if (!firstRun) this.dracoLoader!.dispose()
 					this.dracoLoader!.setDecoderPath(this.dracoDecoder)
 				}
 			}),
 			autorun(() => {
 				this.src
 				this.dracoDecoder
+				this.centerGeometry
 
 				this.#cleanupModel()
 
@@ -127,6 +141,15 @@ export class GltfModelBehavior extends RenderableBehavior {
 	#setModel(model: GLTF) {
 		this.model = model
 		model.scene = model.scene || new Scene().add(...model.scenes)
+
+		if (this.centerGeometry) {
+			const box = new Box3()
+			box.setFromObject(model.scene)
+			const center = new Vector3()
+			box.getCenter(center)
+			model.scene.position.copy(center.negate())
+		}
+
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
 		this.element.needsUpdate()
