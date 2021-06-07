@@ -84,7 +84,6 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * @extends ImperativeBase
  * @extends HTMLNode
  */
-// NOTE for now, we assume Node is mixed with its HtmlInterface.
 @element
 export class Node extends HtmlInterface {
 	static defaultElementName = 'lume-node'

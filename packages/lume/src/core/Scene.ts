@@ -8,8 +8,8 @@ import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
 import {Color} from 'three/src/math/Color.js'
-import {Fog} from 'three/src/scenes/Fog'
-import {FogExp2} from 'three/src/scenes/FogExp2'
+import {Fog} from 'three/src/scenes/Fog.js'
+import {FogExp2} from 'three/src/scenes/FogExp2.js'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {HtmlScene as HTMLInterface} from './HtmlScene.js'
@@ -70,7 +70,6 @@ export type SceneAttributes =
  *
  * @extends HTMLScene
  */
-// NOTE For now, we assume Scene is mixed with its HTMLInterface.
 @element
 export class Scene extends HTMLInterface {
 	static defaultElementName = 'lume-scene'
@@ -81,25 +80,52 @@ export class Scene extends HTMLInterface {
 	 */
 	readonly isScene = true
 
-	/** @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType */
-	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+	/**
+	 * @property {boolean} enableCss - When `true`, CSS transforms are applied
+	 * to all LUME elements. This allows regular HTML content placed inside LUME
+	 * elements to be positioned in the scene's 3D space. Set this to `false` if
+	 * you will render only WebGL content and do not need to listen to
+	 * pointer events on the elements; the elements will have the CSS property
+	 * `display:none`. When rendering only WebGL content, leaving this enabled is useful for
+	 * debugging, as the elements are placed in the same locations in 3D
+	 * space as the WebGL graphics, and thus devtools will highlight the
+	 * positions of WebGL objects on the screen when hovering on them in the element inspector.
+	 * Defaults to `true`.
+	 */
+	@emits('propertychange') @booleanAttribute(true) enableCss = true
 
-	/** @property {boolean} vr */
-	@emits('propertychange') @booleanAttribute(false) vr = false
-
-	/** @property {boolean} webgl */
+	/** @property {boolean} webgl - When `true`, enables WebGL rendering. Defaults to `false`. */
 	@emits('propertychange') @booleanAttribute(false) webgl = false
 
-	/** @property {boolean} enableCss */
-	@emits('propertychange') @booleanAttribute(true) enableCss = true
+	/**
+	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType - Specifies the
+	 * type of shadows to use. Defaults to `'basic'`.
+	 *
+	 * Applies only if `webgl` is `true`.
+	 */
+	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+
+	/**
+	 * @property {boolean} vr - When `true`, enables VR capabilities. The user
+	 * can click a button to enter VR mode.
+	 *
+	 * Applies only if `webgl` is `true`. CSS content can not be natively
+	 * rendered with the browser's WebXR. There exist some tricks to import CSS
+	 * rendering in the form of an SVG image to use as a texture in WebGL and
+	 * hence WebXR, but it has some limitations including low performance if
+	 * animating CSS features; we may add this feature later.
+	 */
+	@emits('propertychange') @booleanAttribute(false) vr = false
 
 	/**
 	 * @property {Color | string | number} backgroundColor - The color of the
 	 * scene's background when WebGL rendering is enabled. If the
-	 * [`background`](TODO) property is set also, then `backgroundColor` is
+	 * [`background`](TODO) property is also set, then `backgroundColor` is
 	 * ignored. Make sure to set `backgroundOpacity` to a higher value than the
-	 * default of `0` or the color won't be visible but the CSS color of
-	 * whatever is behind the `<lume-scene>` will be.
+	 * default of `0` or the color won't be visible and instead only the color of
+	 * whatever is behind the `<lume-scene>` will be visible.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
 
@@ -109,6 +135,8 @@ export class Scene extends HTMLInterface {
 	 * If the value is less than 1, it means that any DOM contend behind
 	 * the `<lume-scene>` element will be visible. This is ignored if the
 	 * [`background`](TODO) property is set.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
 
@@ -123,6 +151,8 @@ export class Scene extends HTMLInterface {
 	 * [`backgroundOpacity`](TODO) properties; those properties will be
 	 * ignored. Any transparent parts of the image will be rendered
 	 * as color white.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@emits('propertychange') @attribute background = ''
 
@@ -130,6 +160,8 @@ export class Scene extends HTMLInterface {
 	 * @property {string} equirectangularBackground - If the `background`
 	 * is equirectangular, set this to `true` so use it like a skybox,
 	 * otherwise the image will be used as a regular 2D background image.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
 
@@ -138,6 +170,8 @@ export class Scene extends HTMLInterface {
 	 * jpeg, jpg, or png (other format not yet supported). It is assumed to
 	 * be an equirectangular image used for env maps for things like
 	 * reflections on metallic objects in the scene.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@emits('propertychange') @attribute environment = ''
 
@@ -148,6 +182,8 @@ export class Scene extends HTMLInterface {
 	 * the `fogNear` and `fogFar` properties for tweaking linear fog. A value of
 	 * `'expo2'` create an exponential squared fog whose density cannot be
 	 * configured.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@stringAttribute('none') fogMode: FogMode = 'none'
 
@@ -155,6 +191,8 @@ export class Scene extends HTMLInterface {
 	 * @property {number} fogNear - When `fogMode` is `'linear'`, this controls
 	 * the distance from the camera where fog starts to appear and objects start
 	 * to be less visible.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@numberAttribute(0) fogNear = 0
 
@@ -162,15 +200,40 @@ export class Scene extends HTMLInterface {
 	 * @property {number} fogFar - When `fogMode` is `'linear'`, this controls
 	 * the distance from the camera where fog reaches maximum density and
 	 * objects are no longer visible.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@numberAttribute(1000) fogFar = 1000
 
 	/**
 	 * @property {string} fogColor - If `fogMode` is not `'none`', this
 	 * configures the fog color. The value should be any valid CSS color string.
+	 *
+	 * Defaults to `'gray'`, but you will likely want to change the value to
+	 * match that of your scene's `backgroundColor`.
+	 *
+	 * Applies only if `webgl` is `true`.
 	 */
 	@stringAttribute('gray') fogColor: string = 'gray'
 
+	/**
+	 * @property {number} perspective - This property behaves just like CSS perspective
+	 * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
+	 * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
+	 * value does not (currently) have any effect.
+	 *
+	 * The value sets the default camera's Z position to the given value (relative to the world
+	 * origin, 0,0,0). Note that the default camera points in the -z direction, therefore a value
+	 * of 800 means the camera is at position 0,0,800 looking directly at the world origin
+	 * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and zoom
+	 * will be adjusted such that if there were a plane positioned at 0,0,0, perpendicular
+	 * to the camera's line of sight, and having the same dimensions as the scene's viewport
+	 * in screen pixels, then the plane would fit perfectly in the view, and one unit on that
+	 * plane would coincide with one pixel on the screen; essentially that plane would be lined
+	 * up perfectly with the screen surface. This is the same meaning that CSS perspective has.
+	 *
+	 * Applies only if `webgl` is `true`.
+	 */
 	@numberAttribute(400)
 	set perspective(value) {
 		this.#perspective = value
@@ -184,10 +247,28 @@ export class Scene extends HTMLInterface {
 
 	#perspective = 400
 
+	/**
+	 * @readonly
+	 * @property {THREE.Camera} threeCamera - The current active THREE.Camera being
+	 * used by the scene. It will be a default camera if no camera was manually
+	 * specified by a camera element such as `<lume-perspective-camera>`, in
+	 * which case the scene's `perspective` property is used for configuring the
+	 * default camera. If a manual camera element is set active with an
+	 * `active` attribute, then this property will return the currently
+	 * active THREE.Camera represented by the active camera element.
+	 *
+	 * Applies with both CSS and WebGL rendering.
+	 */
 	get threeCamera(): ThreePerspectiveCamera {
 		return this.#threeCamera
 	}
 
+	// this.#threeCamera holds the active camera. There can be many
+	// cameras in the scene tree, but the last one with active="true"
+	// will be the one referenced here.
+	// If there are no cameras in the tree, a virtual default camera is
+	// referenced here, who's perspective is that of the scene's
+	// perspective attribute.
 	#threeCamera!: ThreePerspectiveCamera
 
 	// Used by the `scene` getter in ImperativeBase
@@ -197,9 +278,9 @@ export class Scene extends HTMLInterface {
 		super()
 
 		// this.sizeMode and this.size have to be overriden here inside the
-		// constructor in TS 4. This is because class properties on a
+		// constructor in TS 4. This is because class fields on a
 		// subclass are no longer allowed to be defined outside the
-		// constructor if a base class has the same properties as
+		// constructor if a base class has the same properties already defined as
 		// accessors.
 
 		/**
@@ -208,7 +289,7 @@ export class Scene extends HTMLInterface {
 		 * [`Sizeable.sizeMode`](TODO) property to make the default values for the X and
 		 * Y axes both "proportional".
 		 */
-		this.getSizeMode().set('proportional', 'proportional', 'literal')
+		this.sizeMode.set('proportional', 'proportional', 'literal')
 
 		/**
 		 * @override
@@ -217,7 +298,7 @@ export class Scene extends HTMLInterface {
 		 * [`Sizeable.size`](TODO) property to make the default values for the
 		 * X and Y axes both `1`.
 		 */
-		this.getSize().set(1, 1, 0)
+		this.size.set(1, 1, 0)
 
 		// The scene should always render CSS properties (it needs to always
 		// be rendered or resized, for example, because it contains the
@@ -231,7 +312,7 @@ export class Scene extends HTMLInterface {
 		// NOTE: z size is always 0, since native DOM elements are always flat.
 		this._elementParentSize = {x: 0, y: 0, z: 0}
 
-		this._cameraSetup()
+		this._createDefaultCamera()
 
 		this._calcSize()
 		this.needsUpdate()
@@ -243,44 +324,42 @@ export class Scene extends HTMLInterface {
 	}
 
 	/**
-	 * Mount the scene into the given target.
-	 * Resolves the Scene's mountPromise, which can be use to do something once
-	 * the scene is mounted.
+	 * @method mount - Mount the scene into the given target.
 	 *
 	 * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
 	 * the mount point will be selected from the DOM. If an HTMLElement is
 	 * provided, that will be the mount point. If no mount point is provided,
-	 * the scene will be mounted into document.body.
+	 * the scene will be mounted into document.body (possibly waiting for the body to
+	 * exist if it does not yet exist).
 	 */
-	// TODO move some mount/unmount logic to connected/disconnectedCallback.
-	// mount() is just a tool for specifying where to connect the scene
-	// element to.
-	async mount(mountPoint?: string | Element | null) {
+	async mount(mountPoint?: string | HTMLElement) {
+		let _mountPoint: string | Element | null | undefined = mountPoint
+
 		// if no mountPoint was provided, just mount onto the <body> element.
-		if (mountPoint === undefined) {
+		if (_mountPoint === undefined) {
 			if (!document.body) await documentBody()
-			mountPoint = document.body
+			_mountPoint = document.body
 		}
 
 		// if the user supplied a selector, mount there.
-		else if (typeof mountPoint === 'string') {
-			const selector = mountPoint
+		else if (typeof _mountPoint === 'string') {
+			const selector = _mountPoint
 
-			mountPoint = document.querySelector(selector)
-			if (!mountPoint && document.readyState === 'loading') {
+			_mountPoint = document.querySelector(selector)
+			if (!_mountPoint && document.readyState === 'loading') {
 				// maybe the element wasn't parsed yet, check again when the
 				// document is ready.
 				await documentReady()
-				mountPoint = document.querySelector(selector)
+				_mountPoint = document.querySelector(selector)
 			}
 		}
 
 		// At this point we should have an actual mount point (the user may have passed it in)
-		if (!(mountPoint instanceof HTMLElement || mountPoint instanceof ShadowRoot)) {
+		if (!(_mountPoint instanceof HTMLElement || _mountPoint instanceof ShadowRoot)) {
 			throw new Error(
 				trim(`
 						Invalid mount point specified in Scene.mount() call
-						(${mountPoint}). Pass a selector or an HTMLElement. Not
+						(${_mountPoint}). Pass a selector or an HTMLElement. Not
 						passing any argument will cause the Scene to be mounted
 						to the <body>.
 					`),
@@ -291,21 +370,18 @@ export class Scene extends HTMLInterface {
 		// first. Call it automatically in that case.
 		if (this._mounted) this.unmount()
 
-		if (mountPoint !== this.parentNode) mountPoint.appendChild(this)
+		if (_mountPoint !== this.parentNode) _mountPoint.appendChild(this)
 
 		this._mounted = true
-
-		// this.__startOrStopParentSizeObservation()
 	}
 
 	/**
-	 * Unmount the scene from it's mount point. Resets the Scene's
-	 * mountPromise.
+	 * @method unmount - Unmount the scene from it's mount point. Use this when you are done using a scene.
 	 */
+	// TODO we can remove this. Use standard DOM APIs like `remove()` and
+	// replace use of `_mounted` with the standard `isConnected` property.
 	unmount() {
 		if (!this._mounted) return
-
-		this.#stopParentSizeObservation()
 
 		if (this.parentNode) this.parentNode.removeChild(this)
 
@@ -405,17 +481,6 @@ export class Scene extends HTMLInterface {
 		return new ThreeScene()
 	}
 
-	_cameraSetup() {
-		// this.__threeCamera holds the active camera. There can be many
-		// cameras in the scene tree, but the last one with active="true"
-		// will be the one referenced here.
-		// If there are no cameras in the tree, a virtual default camera is
-		// referenced here, who's perspective is that of the scene's
-		// perspective attribute.
-		// this.__threeCamera = null
-		this._createDefaultCamera()
-	}
-
 	_createDefaultCamera() {
 		// Use untrack so this method is non-reactive.
 		untrack(() => {
@@ -447,7 +512,7 @@ export class Scene extends HTMLInterface {
 	}
 
 	// holds active cameras found in the DOM tree (if this is empty, it
-	// means no camera elements are in the DOM, but this.__threeCamera
+	// means no camera elements are in the DOM, but this.#threeCamera
 	// will still have a reference to the default camera that scenes
 	// are rendered with when no camera elements exist).
 	#activeCameras: Set<PerspectiveCamera> = new Set()
@@ -696,7 +761,7 @@ export class Scene extends HTMLInterface {
 			// If we will be rendering something...
 			(this.enableCss || this.webgl) &&
 			// ...and if one size dimension is proportional...
-			(this.getSizeMode().x == 'proportional' || this.getSizeMode().y == 'proportional')
+			(this.sizeMode.x == 'proportional' || this.sizeMode.y == 'proportional')
 			// Note, we don't care about the Z dimension, because Scenes are flat surfaces.
 		) {
 			// ...then observe the parent element size (it may not be a LUME
