@@ -42,6 +42,7 @@ export type SceneAttributes =
 	| 'fogNear'
 	| 'fogFar'
 	| 'fogColor'
+	| 'fogDensity'
 	| 'perspective'
 
 /**
@@ -177,11 +178,20 @@ export class Scene extends HTMLInterface {
 
 	/**
 	 * @property {'none' | 'linear' | 'expo2'} fogMode - The fog mode to render
-	 * the scene with. A value of `'none'` means no fog. A value of `'linear'`
-	 * makes a fog that gets linearly denser with distance from the camera. See
-	 * the `fogNear` and `fogFar` properties for tweaking linear fog. A value of
-	 * `'expo2'` create an exponential squared fog whose density cannot be
-	 * configured.
+	 * the scene with.
+	 *
+	 * A value of `'none'` means no fog.
+	 *
+	 * A value of `'linear'`
+	 * makes a fog that gets reduces visibility of objects with distance from the camera.
+	 * The `fogNear` and `fogFar` properties specify the distance from the camera when
+	 * linear fog starts being applied to objects and when objects are fully invisible,
+	 * respectively. Any objects before the near point will be fully visible, and any
+	 * objects beyond the far point will be fully invisible.
+	 *
+	 * A value of `'expo2'` creates an exponential squared fog. Unlike linear fog, the near
+	 * and far cannot be configured. Instead, expo2 fog is more realistic, and only it's
+	 * overall "physical" density can be configured with the `fogDensity` property.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
@@ -206,7 +216,7 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(1000) fogFar = 1000
 
 	/**
-	 * @property {string} fogColor - If `fogMode` is not `'none`', this
+	 * @property {string} fogColor - If `fogMode` is not `'none'`, this
 	 * configures the fog color. The value should be any valid CSS color string.
 	 *
 	 * Defaults to `'gray'`, but you will likely want to change the value to
@@ -215,6 +225,14 @@ export class Scene extends HTMLInterface {
 	 * Applies only if `webgl` is `true`.
 	 */
 	@stringAttribute('gray') fogColor: string = 'gray'
+
+	/**
+	 * @property {number} fogDensity - If `fogMode` is set to `'expo2'`, this
+	 * configures the fog density. Defaults to `0.0025`.
+	 *
+	 * Applies only if `webgl` is `true`.
+	 */
+	@numberAttribute(0.0025) fogDensity = 0.0025
 
 	/**
 	 * @property {number} perspective - This property behaves just like CSS perspective
@@ -495,11 +513,18 @@ export class Scene extends HTMLInterface {
 		})
 	}
 
-	// TODO can this be moved to a render task like _calcSize? It depends
-	// on size values.
+	// TODO can this be moved to a render task like _calcSize should also be?
+	// It depends on size values.
 	_updateCameraPerspective() {
 		const perspective = this.#perspective
+
+		// This math is what sets the FOV of the default camera so that a
+		// viewport-sized plane will fit exactly within the view when it is
+		// positioned at the world origin, as described for in the
+		// `perspective` property's description.
+		// For more details: https://discourse.threejs.org/t/269/28
 		this.#threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
+
 		this.#threeCamera.position.z = perspective
 	}
 
@@ -584,8 +609,9 @@ export class Scene extends HTMLInterface {
 					fog.far = this.fogFar
 					fog.color.set(this.fogColor)
 				} else if (this.fogMode === 'expo2') {
-					const fog = this.three.fog!
+					const fog = this.three.fog! as FogExp2
 					fog.color.set(this.fogColor)
+					fog.density = this.fogDensity
 				}
 			}),
 			autorun(() => {
