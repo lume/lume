@@ -27,6 +27,10 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>()
 const calculatedSize = new WeakMap<Sizeable, Variable<{x: number; y: number; z: number}>>()
 
+/**
+ * @class Sizeable - A class that contains the `sizeMode` and `size` features LUME's elements.
+ * @extends TreeNode
+ */
 // Sizeable and its subclass Transformable extend TreeNode because they know
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
@@ -84,6 +88,7 @@ export class Sizeable extends TreeNode {
 	// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
 
 	/**
+	 * @property {XYZNonNegativeValues} size -
 	 * Set the size of each axis. The size for each axis depends on the
 	 * sizeMode for each axis. For example, if node.sizeMode is set to
 	 * `sizeMode = ['literal', 'proportional', 'literal']`, then setting

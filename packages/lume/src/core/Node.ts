@@ -26,7 +26,7 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * is an element that renders a sphere on the screen and is backed by the
  * [`Sphere`](./Sphere) class which extends from `Node`.
  *
- * All Nodes must be a child of a [`Scene`](./Scene) node (`<lume-scene>`
+ * All Nodes must be a child of a [`Scene`](/api/core/Scene) node (`<lume-scene>`
  * elements) or another `Node` (or anything that extends from `Node`).
  * If a `<lume-node>` element is a child of anything else, it will not do
  * anything currently.
@@ -42,7 +42,7 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * - Extend the Node class to make new types of 3D objects relying on the basic
  *   features that Node provides. Other classes that extend from Node may, for
  *   example, create [layouts](/examples/autolayout-declarative), or render
- *   [WebGL content](/examples/material-texture).
+ *   [WebGL content](/examples/hello-world/).
  *
  * ## Example
  *
@@ -71,11 +71,11 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * rotation to the root node based on the current mouse or finger position.
  * See the [events guide](TODO) for how the event system works.
  *
- * <div id="example"></div>
+ * <div id="example1"></div>
  *
  * <script type="application/javascript">
  *   new Vue({
- *     el: '#example',
+ *     el: '#example1',
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
  *     data: { code: miniGalaxyDemo() },
  *   })

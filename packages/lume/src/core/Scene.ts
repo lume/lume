@@ -43,6 +43,8 @@ export type SceneAttributes =
 	| 'fogFar'
 	| 'fogColor'
 	| 'fogDensity'
+	| 'cameraNear'
+	| 'cameraFar'
 	| 'perspective'
 
 /**
@@ -50,20 +52,25 @@ export type SceneAttributes =
  * > :construction: :hammer: Under construction! :hammer: :construction:
  *
  * This is the backing class for `<lume-scene>` elements. All
- * [`Node`](TODO) elements must be inside of a `<lume-scene>` element. A `Scene`
+ * [`Node`](/api/core/Node.md) elements must be inside of a `<lume-scene>` element. A `Scene`
  * establishes a visual area in a web application where a 3D scene will be
  * rendered.
  *
- * A Scene has some properties that apply to the scene as a whole and will have an effect on all LUME elements in the scene.
+ * A Scene has some properties that apply to the scene as a whole and will have
+ * an effect on all LUME elements in the scene. For example, `fog-mode` defines fog
+ * rendering that changes the color of all WebGL objects in the scene to make them
+ * have the appearance of being obscured by a haze.
+ *
+ * ## Example
  *
  * The following example shows how to begin making a LUME scene within an HTML
- * file. To learn more about how to get started, see the [install guide](TODO).
+ * file. To learn more about how to get started, see the [install guide](../../guide/install.md).
  *
- * <div id="example"></div>
+ * <div id="example1"></div>
  *
  * <script type="application/javascript">
  *   new Vue({
- *     el: '#example',
+ *     el: '#example1',
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
  *     data: { code: sceneExample() },
  *   })
@@ -121,7 +128,7 @@ export class Scene extends HTMLInterface {
 	/**
 	 * @property {Color | string | number} backgroundColor - The color of the
 	 * scene's background when WebGL rendering is enabled. If the
-	 * [`background`](TODO) property is also set, then `backgroundColor` is
+	 * [`background`](#background) property is also set, then `backgroundColor` is
 	 * ignored. Make sure to set `backgroundOpacity` to a higher value than the
 	 * default of `0` or the color won't be visible and instead only the color of
 	 * whatever is behind the `<lume-scene>` will be visible.
@@ -135,7 +142,7 @@ export class Scene extends HTMLInterface {
 	 * that defines the opacity of the `backgroundColor` WebGL is enabled.
 	 * If the value is less than 1, it means that any DOM contend behind
 	 * the `<lume-scene>` element will be visible. This is ignored if the
-	 * [`background`](TODO) property is set.
+	 * [`background`](#background) property is set.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
@@ -145,11 +152,11 @@ export class Scene extends HTMLInterface {
 	 * @property {string} background - Set an image as the scene's
 	 * background. If the image is an [equirectangular environment
 	 * map](https://coeleveld.com/spherical-equirectangular-environment-textures-and-hdri), then set the value of
-	 * [`equirectangularBackground`](TODO) to `true`, otherwise the image
+	 * [`equirectangularBackground`](#equirectangularbackground) to `true`, otherwise the image
 	 * will be treated as a 2D background image. The value should be a path
 	 * to a jpeg, jpg, or png. Other types not supported yet. This value
-	 * takes priority over the [`backgroundColor`](TODO) and
-	 * [`backgroundOpacity`](TODO) properties; those properties will be
+	 * takes priority over the [`backgroundColor`](#backgroundcolor) and
+	 * [`backgroundOpacity`](#backgroundopacity) properties; those properties will be
 	 * ignored. Any transparent parts of the image will be rendered
 	 * as color white.
 	 *
@@ -235,6 +242,34 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(0.0025) fogDensity = 0.0025
 
 	/**
+	 * @property {number} cameraNear - When not using a custom camera, this
+	 * configures the distance from the default camera of a plane perpendicular
+	 * to the camera's line of sight after which objects objects are visible. Anything between
+	 * the plane and the camera will not be visible. This should be smaller than `cameraFar`. Also see `cameraFar`.
+	 *
+	 * Defaults to `0.1`.
+	 *
+	 * Applies in both CSS and WebGL rendering. Note that the near and far
+	 * values apply only to WebGL rendering and are otherwise infinitely small and
+	 * infinitely big (respectively) when it comes to CSS rendering.
+	 */
+	@numberAttribute(0.1) cameraNear = 0.1
+
+	/**
+	 * @property {number} cameraFar - When not using a custom camera, this
+	 * configures the distance from the default camera of a plane perpendicular
+	 * to the camera's line of sight before which objects are visible. Anything further than
+	 * the plane will not be visible. This should be bigger than `cameraNear`. Also see `cameraNear`.
+	 *
+	 * Defaults to `10000`.
+	 *
+	 * Applies in both CSS and WebGL rendering. Note that the near and far
+	 * values apply only to WebGL rendering and are otherwise infinitely small and
+	 * infinitely big (respectively) when it comes to CSS rendering.
+	 */
+	@numberAttribute(10000) cameraFar = 10000
+
+	/**
 	 * @property {number} perspective - This property behaves just like CSS perspective
 	 * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
 	 * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
@@ -250,7 +285,7 @@ export class Scene extends HTMLInterface {
 	 * plane would coincide with one pixel on the screen; essentially that plane would be lined
 	 * up perfectly with the screen surface. This is the same meaning that CSS perspective has.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies with both CSS and WebGL rendering.
 	 */
 	@numberAttribute(400)
 	set perspective(value) {
@@ -304,7 +339,7 @@ export class Scene extends HTMLInterface {
 		/**
 		 * @override
 		 * @property {XYZSizeModeValues} sizeMode - This overrides the
-		 * [`Sizeable.sizeMode`](TODO) property to make the default values for the X and
+		 * [`Sizeable.sizeMode`](/api/core/Sizeable.md#sizeMode) property to make the default values for the X and
 		 * Y axes both "proportional".
 		 */
 		this.sizeMode.set('proportional', 'proportional', 'literal')
@@ -313,7 +348,7 @@ export class Scene extends HTMLInterface {
 		 * @override
 		 *
 		 * @property {XYZNonNegativeValues} size - This overrides the
-		 * [`Sizeable.size`](TODO) property to make the default values for the
+		 * [`Sizeable.size`](/api/core/Sizeable.md#size) property to make the default values for the
 		 * X and Y axes both `1`.
 		 */
 		this.size.set(1, 1, 0)
@@ -650,6 +685,11 @@ export class Scene extends HTMLInterface {
 				} else {
 					// TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
 				}
+			}),
+			autorun(() => {
+				this.#threeCamera.near = this.cameraNear
+				this.#threeCamera.far = this.cameraFar
+				this.needsUpdate()
 			}),
 		)
 

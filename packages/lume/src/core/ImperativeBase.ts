@@ -48,7 +48,7 @@ export type BaseAttributes = TransformableAttributes
  * custom element classes.
  *
  * This class generally is not intended for use by the library end user. Normal
- * users will want to extend from [`Scene`](./Scene.md) or [`Node`](./Node.md)
+ * users will want to extend from [`Scene`](/api/core/Scene) or [`Node`](/api/core/Node)
  * (or their subclasses) instead of this class.
  *
  * For purposes of documentation it is still useful to know what properties and
