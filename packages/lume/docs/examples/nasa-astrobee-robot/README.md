@@ -46,9 +46,8 @@
 
   // Long live HTML elements!
 
-  element('astrobee-app')(
+  element('astrobee-app')((() => {
     class App extends Element {
-
       constructor() {
         this.rotationDirection = 1 // clockwise
         this.rotationAmount = 0.2 // degrees
@@ -243,7 +242,9 @@
       rotationEnabled: attribute.boolean(true),
       view: attribute.string('free'),
     }
-  )
+
+    return App
+  })())
 <\/script>
 `
 },
