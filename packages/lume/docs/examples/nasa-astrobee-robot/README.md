@@ -49,6 +49,8 @@
   element('astrobee-app')((() => {
     class App extends Element {
       constructor() {
+        super()
+
         this.rotationDirection = 1 // clockwise
         this.rotationAmount = 0.2 // degrees
 
