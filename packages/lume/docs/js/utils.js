@@ -233,6 +233,7 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 				margin: 0;
 				padding: 0;
 				background: #222;
+				touch-action: none;
 			}
 		</style>
 
@@ -432,6 +433,7 @@ function miniGalaxyDemo() {
 			}
 			lume-scene {
 				background: #fefefe;
+				touch-action: none;
 			}
 			lume-node {
 				border-radius: 100%;
@@ -580,7 +582,7 @@ function directionalLightExample() {
 		</lume-scene>
 
 		<style>
-			html, body { margin: 0; height: 100%; width: 100%; background: white; }
+			html, body { margin: 0; height: 100%; width: 100%; background: white; touch-action: none;}
 		</style>
 
 		<script>

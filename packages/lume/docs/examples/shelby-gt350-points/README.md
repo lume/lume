@@ -19,6 +19,7 @@
     background: #222;
     --color: 135, 206, 235; /*skyblue*/
     color: rgb(var(--color)); font-family: sans-serif;
+    touch-action: none;
   }
   loading-icon {
     --loading-icon-color: var(--color);
