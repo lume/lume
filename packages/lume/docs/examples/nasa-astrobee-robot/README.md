@@ -48,23 +48,25 @@
 
   element('astrobee-app')(
     class App extends Element {
-      static observedAttributes = {
+      static get observedAttributes() { return {
         rotationDirection: attribute.number(1),
         rotationAmount: attribute.number(1),
         rotationEnabled: attribute.boolean(true),
         view: attribute.string('free'),
+      }}
+
+      constructor() {
+        this.rotationDirection = 1 // clockwise
+        this.rotationAmount = 0.2 // degrees
+
+        this.rotationEnabled = true
+        this.view = 'free'
+
+        this.astrobee
+        this.sceneContainer
+        this.loading
+        this.models = []
       }
-
-      rotationDirection = 1 // clockwise
-      rotationAmount = 0.2 // degrees
-
-      rotationEnabled = true
-      view = 'free'
-
-      astrobee
-      sceneContainer
-      loading
-      models = []
 
       template = () => html\`
         <>
