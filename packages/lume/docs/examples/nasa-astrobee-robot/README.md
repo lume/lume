@@ -48,12 +48,6 @@
 
   element('astrobee-app')(
     class App extends Element {
-      static get observedAttributes() { return {
-        rotationDirection: attribute.number(1),
-        rotationAmount: attribute.number(1),
-        rotationEnabled: attribute.boolean(true),
-        view: attribute.string('free'),
-      }}
 
       constructor() {
         this.rotationDirection = 1 // clockwise
@@ -241,6 +235,13 @@
         this.sceneContainer.classList.remove('hidden')
         this.loading.classList.add('hidden')
       }
+    }
+
+    App.observedAttributes = {
+      rotationDirection: attribute.number(1),
+      rotationAmount: attribute.number(1),
+      rotationEnabled: attribute.boolean(true),
+      view: attribute.string('free'),
     }
   )
 <\/script>
