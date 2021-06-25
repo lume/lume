@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc> https://lume.io/docs/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/install </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/scene-graph </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/positioning </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/sizing </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/rendering-modes </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/reactivity </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/cameras </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/external-assets </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/element-behaviors </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/making-elements </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/making-elements </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/compatibility </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/guide/contributing </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/hello-world/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/nasa-astrobee-robot/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/velodyne-lidar-scan/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/shelby-gt350-points/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/disco-helmet/ </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/buttons-with-shadow </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/rounded-rectangle </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/ripple-flip </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/spiral </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/autolayout-declarative </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/autolayout-imperative </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/examples/hello-vr </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/core/ImperativeBase </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/core/Node </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/core/Scene </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/core/Sizeable </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/core/TreeNode </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/lights/AmbientLight </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/lights/DirectionalLight </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/lights/PointLight </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/lights/Light </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/meshes/Mesh </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/models/ColladaModel </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/models/FbxModel </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/models/GltfModel </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/utils/Settable </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/behaviors/materials/LambertMaterialBehavior </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+	<url>
+		<loc> https://lume.io/docs/#/api/behaviors/materials/MaterialBehavior </loc>
+		<lastmod>2021-06-24</lastmod>
+	</url>
+</urlset>
