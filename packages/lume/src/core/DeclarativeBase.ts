@@ -119,7 +119,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	childDisconnectedCallback(child: HTMLElement) {
 		// mirror the connection in the imperative API's virtual scene graph.
 		if (isNode(child)) {
-			if (this.__shadowRoot) {
+			if (!this.isScene && this.__shadowRoot) {
 				child.__isPossiblyDistributedToShadowRoot = false
 			} else {
 				// If there's no shadow root, call the
