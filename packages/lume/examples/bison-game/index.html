@@ -9,13 +9,17 @@
 	background-color="skyblue"
 	background-opacity="1"
 >
+	<!-- /// LIGHTS //////////////////////////////////////////////////////////////// -->
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 	<lume-point-light color="white" intensity="0.6" position="500 -500 -500"></lume-point-light>
 
-	<lume-node id="bison">
-		<lume-gltf-model src="./bison.gltf" scale="50 50 50" center-geometry></lume-gltf-model>
+	<!-- /// BISON ///////////////////////////////////////////////////////////////// -->
+	<lume-node>
+		<lume-gltf-model id="bison" src="./bison.gltf" scale="50 50 50" center-geometry></lume-gltf-model>
+
+		<!-- /// CAMERA //////////////////////////////////////////////////////////////// -->
 		<lume-camera-rig
-			interactive="false"
+			interactive="true"
 			min-polar-angle="5"
 			max-polar-angle="90"
 			initial-polar-angle="40"
@@ -23,6 +27,16 @@
 		></lume-camera-rig>
 	</lume-node>
 
+	<!-- /// ROCKS ///////////////////////////////////////////////////////////////// -->
+	<lume-box
+		id="rockProto"
+		visible="false"
+		size="100 100 100"
+		position="0 100 -400"
+		mount-point="0.5 1 0.5"
+	></lume-box>
+
+	<!-- /// TERRAIN /////////////////////////////////////////////////////////////// -->
 	<lume-node id="terrain" position="0 0 -5400">
 		<lume-gltf-model
 			src="./terrain.gltf"
@@ -56,11 +70,79 @@
 <script>
 	LUME.useDefaultNames()
 
-	for (let child = terrain.firstChild; child; child = child.nextSibling) {
-		child.position = (x, y, z) => {
-			z += 40
-			if (z >= 10300) z = -10300
-			return [x, y, z]
+	const speed = 40
+	const numberOfLanesOnEachSideOfMiddle = 1
+	const laneOffset = 300
+
+	// Infinite terrain animation
+	{
+		let lastTime = performance.now()
+
+		for (let child = terrain.firstChild; child; child = child.nextSibling) {
+			child.position = (x, y, z, t) => {
+				const dt = t - lastTime
+				z += speed * (dt / 1000)
+				if (z >= 10300) z = -10300
+				lastTime = t
+				return [x, y, z]
+			}
 		}
+	}
+
+	// Rock obstacle placement
+	{
+		let lastTime = performance.now()
+		const rockInterval = 2000
+
+		setTimeout(function randomRocks() {
+			const rock = rockProto.cloneNode()
+			scene.append(rock)
+
+			rock.id = ''
+			rock.setAttribute('visible', true)
+
+			const lane = Math.round(2 * Math.random())
+
+			rock.setAttribute(
+				'position',
+				(lane == 0
+					? -laneOffset * numberOfLanesOnEachSideOfMiddle
+					: lane == 1
+					? 0
+					: laneOffset * numberOfLanesOnEachSideOfMiddle) + ' 100 -4000',
+			)
+
+			rock.position = (x, y, z, t) => {
+				const dt = t - lastTime
+				// z += speed * dt
+				z += speed
+				if (z >= 1000) {
+					// debugger
+					rock.parentElement.removeChild(rock)
+					return false
+				}
+				lastTime = t
+				return [x, y, z]
+			}
+
+			setTimeout(randomRocks, rockInterval * Math.random())
+		}, rockInterval * Math.random())
+	}
+
+	// Bison lane switching
+	{
+		let targetPos = 0
+
+		document.addEventListener('keydown', event => {
+			const key = event.key
+
+			if (['ArrowRight', 'd', 'D'].includes(key)) {
+				targetPos = Math.min(laneOffset * numberOfLanesOnEachSideOfMiddle, (targetPos += laneOffset))
+			} else if (['ArrowLeft', 'a', 'A'].includes(key)) {
+				targetPos = Math.max(-laneOffset * numberOfLanesOnEachSideOfMiddle, (targetPos += -laneOffset))
+			}
+		})
+
+		bison.position = (x, y, z) => [x + 0.2 * (targetPos - x), y, z]
 	}
 </script>
