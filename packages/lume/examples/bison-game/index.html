@@ -28,13 +28,15 @@
 	</lume-node>
 
 	<!-- /// ROCKS ///////////////////////////////////////////////////////////////// -->
-	<lume-box
-		id="rockProto"
-		visible="false"
-		size="100 100 100"
-		position="0 100 -400"
-		mount-point="0.5 1 0.5"
-	></lume-box>
+	<lume-node id="rocks">
+		<lume-box
+			id="rockProto"
+			visible="false"
+			size="100 100 100"
+			position="0 100 -400"
+			mount-point="0.5 1 0.5"
+		></lume-box>
+	</lume-node>
 
 	<!-- /// TERRAIN /////////////////////////////////////////////////////////////// -->
 	<lume-node id="terrain" position="0 0 -5400">
@@ -70,7 +72,14 @@
 <script>
 	LUME.useDefaultNames()
 
-	const speed = 40
+	const speedMultiplier = LUME.variable(1.5)
+
+	setInterval(() => speedMultiplier(speedMultiplier() + 0.025), 1000)
+
+	const speed = LUME.variable(0)
+
+	LUME.autorun(() => speed(2000 * speedMultiplier()))
+
 	const numberOfLanesOnEachSideOfMiddle = 1
 	const laneOffset = 300
 
@@ -78,30 +87,40 @@
 	{
 		let lastTime = performance.now()
 
-		for (let child = terrain.firstChild; child; child = child.nextSibling) {
-			child.position = (x, y, z, t) => {
-				const dt = t - lastTime
-				z += speed * (dt / 1000)
+		LUME.Motor.addRenderTask(t => {
+			const dt = t - lastTime
+
+			for (let child = terrain.firstElementChild; child; child = child.nextElementSibling) {
+				let z = child.position.z
+				z += speed() * (dt / 1000)
+
 				if (z >= 10300) z = -10300
-				lastTime = t
-				return [x, y, z]
+
+				child.position.z = z
 			}
-		}
+
+			lastTime = t
+		})
 	}
 
 	// Rock obstacle placement
 	{
-		let lastTime = performance.now()
-		const rockInterval = 2000
+		const rockInterval = LUME.variable(0)
 
-		setTimeout(function randomRocks() {
+		LUME.autorun(() => rockInterval(1500 / speedMultiplier()))
+
+		function randomRocks() {
+			let lastTime = performance.now()
+
 			const rock = rockProto.cloneNode()
-			scene.append(rock)
+			rocks.append(rock)
 
 			rock.id = ''
 			rock.setAttribute('visible', true)
 
-			const lane = Math.round(2 * Math.random())
+			const numberOfLanes = numberOfLanesOnEachSideOfMiddle * 2 + 1
+
+			const lane = Math.floor((numberOfLanes - 0.0000001) * Math.random())
 
 			rock.setAttribute(
 				'position',
@@ -109,24 +128,28 @@
 					? -laneOffset * numberOfLanesOnEachSideOfMiddle
 					: lane == 1
 					? 0
-					: laneOffset * numberOfLanesOnEachSideOfMiddle) + ' 100 -4000',
+					: laneOffset * numberOfLanesOnEachSideOfMiddle) + ' 100 -10000',
 			)
 
 			rock.position = (x, y, z, t) => {
 				const dt = t - lastTime
-				// z += speed * dt
-				z += speed
+
+				z += speed() * (dt / 1000)
+
 				if (z >= 1000) {
-					// debugger
-					rock.parentElement.removeChild(rock)
+					rock.remove()
 					return false
 				}
+
 				lastTime = t
+
 				return [x, y, z]
 			}
 
-			setTimeout(randomRocks, rockInterval * Math.random())
-		}, rockInterval * Math.random())
+			setTimeout(randomRocks, Math.max(rockInterval() * Math.random(), rockInterval() * 0.25))
+		}
+
+		randomRocks()
 	}
 
 	// Bison lane switching
@@ -144,5 +167,27 @@
 		})
 
 		bison.position = (x, y, z) => [x + 0.2 * (targetPos - x), y, z]
+	}
+
+	// Collision detection
+	{
+		bison.on('MODEL_LOAD', () => {
+			const bisonBox = new LUME.THREE.Box3()
+
+			scene.three.add(new LUME.THREE.BoxHelper(bison.three, 0xffff00))
+
+			LUME.Motor.addRenderTask(() => {
+				for (let rock = rocks.firstElementChild; rock; rock = rock.nextElementSibling) {
+					const boxGeom = rock.three.geometry
+
+					boxGeom.computeBoundingBox()
+					bisonBox.setFromObject(bison.three)
+
+					if (boxGeom.boundingBox.intersectsBox(bisonBox)) {
+						console.log('COLLISION!!!!!!!!!!!!!!')
+					}
+				}
+			})
+		})
 	}
 </script>
