@@ -190,4 +190,18 @@
 			})
 		})
 	}
+
+	// Bison animation
+	{
+		bison.on('MODEL_LOAD', event => {
+			const mixer = new LUME.THREE.AnimationMixer(event.model.scene)
+			const runAnimation = mixer.clipAction(event.model.animations[0])
+			runAnimation.play()
+
+			LUME.Motor.addRenderTask((time, delta) => {
+				// Three's AnimationMixer uses time units of seconds
+				mixer.update(delta / 1000)
+			})
+		})
+	}
 </script>
