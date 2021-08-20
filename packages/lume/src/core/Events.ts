@@ -26,12 +26,12 @@ export class EventTypes {
 		// Listen to this event on an element to run custom logic after the
 		// element's GL objects have been initialized. This is for use by element
 		// behaviors. Code that is outside of a given element and outside of the
-		// given element's behaviors should listen to GL_LOADED instead.
+		// given element's behaviors should listen to GL_LOAD instead.
 		public BEHAVIOR_GL_LOAD: undefined,
 		// Listen to this event on an element to clean up after the element's GL
 		// objects have been initialized. This is for use by element behaviors. Code
 		// that is outside of a given element and outside of the given element's
-		// behaviors should listen to GL_LOADED instead.
+		// behaviors should listen to GL_LOAD instead.
 		public BEHAVIOR_GL_UNLOAD: undefined,
 		// This event is fired when a *-model element, or a node element with a
 		// *-model behavior, has loaded it's model.

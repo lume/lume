@@ -856,7 +856,7 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	/** This is called by Motor on each update before the GL or CSS renderers will re-render. */
 	// TODO rename "render" to "update". "render" is more for the renderer classes.
-	_render(_timestamp: number): void {
+	_render(_timestamp: number, _deltaTime: number): void {
 		// TODO: only run this when necessary (f.e. not if only opacity
 		// changed, only if position/align/mountPoint changed, etc)
 		this._calculateMatrix()

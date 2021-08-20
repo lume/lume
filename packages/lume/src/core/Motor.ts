@@ -3,7 +3,7 @@
 import type {ImperativeBase} from './ImperativeBase.js'
 import type {Scene} from './Scene.js'
 
-export type RenderTask = (timestamp: number) => false | void
+export type RenderTask = (timestamp: number, deltaTime: number) => false | void
 
 class _Motor {
 	/**
@@ -54,7 +54,7 @@ class _Motor {
 	/** Adds a render task that executes only once instead of repeatedly. */
 	once(fn: RenderTask) {
 		// The `false` return value of the task tells Motor not to re-run it.
-		return this.addRenderTask(time => (fn(time), false))
+		return this.addRenderTask((time, dt) => (fn(time, dt), false))
 	}
 
 	// A Node calls this any time its properties have been modified (f.e. by the end user).
@@ -105,16 +105,19 @@ class _Motor {
 
 		this.#loopStarted = true
 
-		let timestamp: number = null!
+		let lastTime: number = performance.now()
 
 		while (this.#loopStarted) {
-			timestamp = await this.#animationFrame()
+			const timestamp: number = await this.#animationFrame()
+			const deltaTime: number = timestamp - lastTime
 
-			this.#runRenderTasks(timestamp)
-			this.#renderNodes(timestamp)
+			this.#runRenderTasks(timestamp, deltaTime)
+			this.#renderNodes(timestamp, deltaTime)
 
 			// If no tasks are left, stop the animation loop.
 			if (!this.#allRenderTasks.length) this.#loopStarted = false
+
+			lastTime = timestamp
 		}
 	}
 
@@ -122,7 +125,7 @@ class _Motor {
 		return new Promise(r => this.#requestFrame(r))
 	}
 
-	#runRenderTasks(timestamp: number) {
+	#runRenderTasks(timestamp: number, deltaTime: number) {
 		for (
 			this.#taskIterationIndex = 0;
 			this.#taskIterationIndex < this.#numberOfTasks;
@@ -130,11 +133,11 @@ class _Motor {
 		) {
 			const task = this.#allRenderTasks[this.#taskIterationIndex]
 
-			if (task(timestamp) === false) this.removeRenderTask(task)
+			if (task(timestamp, deltaTime) === false) this.removeRenderTask(task)
 		}
 	}
 
-	#renderNodes(timestamp: number) {
+	#renderNodes(timestamp: number, deltaTime: number) {
 		if (!this.#nodesToUpdate.length) return
 
 		for (let i = 0, l = this.#nodesToUpdate.length; i < l; i += 1) {
@@ -147,7 +150,7 @@ class _Motor {
 			// read this.scene which would then set this.scene.
 			if (!node.scene) continue
 
-			node._render(timestamp)
+			node._render(timestamp, deltaTime)
 
 			// if there is no ancestor of the current node that should be
 			// rendered, then the current node is a root node of a subtree
