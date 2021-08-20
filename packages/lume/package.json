@@ -40,7 +40,7 @@
 		"prepare": "npm run build",
 		"docs TODO": "build docs into a separate folder instead of moving files in.",
 		"docs:build": "npm run docs:clean && npm run docs:link && node --input-type module < ./scripts/build-docs.js",
-		"docs:link": "ln -sf ../node_modules docs/node_modules && ln -sf ../dist/global.js docs/global.js && ln -sf ../dist/global.js.map docs/global.js.map",
+		"docs:link": "ln -sf ../node_modules docs/node_modules && ln -sf ../dist/global.js docs/global.js && ln -sf ../dist/global.js.map docs/global.js.map && ln -sf ../../../../element-behaviors/README.md docs/guide/includes/element-behaviors.md && ln -sf ../../../../element/README.md docs/guide/includes/lume-element.md && ln -sf ../../../../variable/README.md docs/guide/includes/lume-variable.md && ln -sf ../../../../autolayout/README.md docs/guide/includes/lume-autolayout.md",
 		"docs:clean": "rm -f docs/src && rm -f docs/node_modules && rm -f docs/global.js && rm -f docs/global.js.map && rm -rf docs/api/",
 		"docs:serve": "live-server --host=0.0.0.0 --port=54321 --watch=global.js,docs --cors ./docs",
 		"docs": "npm run build && npm run docs:build && npm run docs:serve",

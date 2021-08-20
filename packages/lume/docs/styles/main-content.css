@@ -57,6 +57,9 @@
 .markdown-section h4 {
 	text-transform: uppercase;
 }
+.markdown-section h4 code {
+	text-transform: none;
+}
 
 .markdown-section h1 > :first-child code,
 .markdown-section h1 > code:first-child,

@@ -1,7 +1,5 @@
 # Reactivity
 
-> :construction: :hammer: Under construction! :hammer: :construction:
-
 LUME has a reactivity system that makes it easy to react to changes in
 variables, or to update rendering, in a concise and simple way.
 
@@ -94,3 +92,5 @@ value changes.
     },
   })
 </script>
+
+[variable](./includes/lume-variable.md ':include')
