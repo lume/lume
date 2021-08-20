@@ -861,16 +861,18 @@ export class Scene extends HTMLInterface {
 				// borderBoxSize) because the content box is the area in
 				// which we're rendering visuals.
 				if (change.contentBoxSize) {
-					// If change.contentBoxSize is an array with more than
-					// one item, it means the observed element is split
-					// across multiple CSS columns.
-					//
+					// If change.contentBoxSize is an array with more than one
+					// item, it means the observed element is split across
+					// multiple CSS columns. But not all browsers support the Array
+					// form yet (f.e. Firefox) so fallback in that case:
+					const contentBoxSize = change.contentBoxSize[0] || change.contentBoxSize
+
 					// TODO If the Scene is used as display:inline{-block},
 					// ensure that it is the size of the column in which it is
 					// located. For now, we only grab the first item in the
 					// array, assuming that the Scene in not used inside a
 					// layout with columns.
-					const {inlineSize, blockSize} = change.contentBoxSize[0]
+					const {inlineSize, blockSize} = contentBoxSize
 
 					const isHorizontal = getComputedStyle(parent).writingMode.includes('horizontal')
 
