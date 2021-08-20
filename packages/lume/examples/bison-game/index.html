@@ -173,15 +173,19 @@
 	{
 		bison.on('MODEL_LOAD', () => {
 			const bisonBox = new LUME.THREE.Box3()
+			const helper = new LUME.THREE.BoxHelper(bison.three, 0xffff00)
 
-			scene.three.add(new LUME.THREE.BoxHelper(bison.three, 0xffff00))
+			scene.three.add(helper)
 
-			LUME.Motor.addRenderTask(() => {
+			LUME.Motor.addRenderTask((t, dt) => {
+				// For each object, see if it intersects with the bison.
 				for (let rock = rocks.firstElementChild; rock; rock = rock.nextElementSibling) {
 					const boxGeom = rock.three.geometry
 
 					boxGeom.computeBoundingBox()
 					bisonBox.setFromObject(bison.three)
+
+					helper.update()
 
 					if (boxGeom.boundingBox.intersectsBox(bisonBox)) {
 						console.log('COLLISION!!!!!!!!!!!!!!')
