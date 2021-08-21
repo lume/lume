@@ -60,7 +60,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 			this.#version++
 			// TODO We can update only the material or model specifically
 			// instead of reloading the whole object.
-			this.#loadObj()
+			this.#loadModel()
 		})
 
 		firstRun = false
@@ -98,7 +98,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 		this.model = undefined
 	}
 
-	#loadObj() {
+	#loadModel() {
 		const {obj, mtl, mtlLoader, objLoader} = this
 		const version = this.#version
 
@@ -107,71 +107,72 @@ export class ObjModelBehavior extends RenderableBehavior {
 		if (mtl) {
 			mtlLoader!.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
 
+			console.log('load mtl')
 			mtlLoader!.load(mtl, materials => {
 				if (version !== this.#version) return
+
+				console.log('loaded mtl:', materials)
 
 				materials.preload()
 
 				objLoader!.setMaterials(materials)
-				objLoader!.load(obj, model => {
-					if (version !== this.#version) return
-
-					this.#setModel(model)
-				})
+				this.#loadObj(version, true)
 			})
 		} else {
-			objLoader!.load(
-				obj,
-				model => {
-					if (version !== this.#version) return
-
-					// TODO Simplify this by getting based on type.
-					let materialBehavior = this.element.behaviors.get('basic-material') as MaterialBehavior
-					if (!materialBehavior)
-						materialBehavior = this.element.behaviors.get('phong-material') as MaterialBehavior
-					if (!materialBehavior)
-						materialBehavior = this.element.behaviors.get('standard-material') as MaterialBehavior
-					if (!materialBehavior)
-						materialBehavior = this.element.behaviors.get('lambert-material') as MaterialBehavior
-
-					if (materialBehavior) {
-						this.#materialIsFromMaterialBehavior = true
-
-						// TODO this part only works on Mesh elements at the
-						// moment. We will update the geometry and material
-						// behaviors to work in tandem with or without a mesh
-						// behavior, and other behaviors can use the geometry or
-						// material features.
-						model.traverse((child: Object3D) => {
-							if (isRenderItem(child)) {
-								child.material = materialBehavior.getMeshComponent('material')
-							}
-						})
-					} else {
-						// if no material, make a default one with random color
-						setRandomColorPhongMaterial(model)
-					}
-
-					this.#setModel(model)
-				},
-				progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
-				error => version === this.#version && this.#onError(error),
-			)
+			this.#loadObj(version, false)
 		}
 	}
 
-	#onError(error: ErrorEvent) {
-		const message =
-			error?.message ??
-			`Failed to load ${this.element.tagName.toLowerCase()} with obj value "${this.obj}" and mtl value "${
-				this.mtl
-			}".`
-
-		console.warn(message)
-		this.element.emit(Events.MODEL_ERROR, error.error)
+	#loadObj(version: number, hasMtl: boolean) {
+		this.objLoader!.load(
+			this.obj,
+			model => version == this.#version && this.#setModel(model, hasMtl),
+			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			error => version === this.#version && this.#onError(error),
+		)
 	}
 
-	#setModel(model: Group) {
+	#onError(error: ErrorEvent) {
+		const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${
+			this.obj
+		}" and mtl value "${this.mtl}". See the following error.`
+		console.warn(message)
+		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		console.error(err)
+		this.element.emit(Events.MODEL_ERROR, err)
+	}
+
+	#setModel(model: Group, hasMtl: boolean) {
+		// If the OBJ model does not have an MTL, then use the material behavior if any.
+		if (!hasMtl) {
+			// TODO Simplify this by getting based on type.
+			let materialBehavior = this.element.behaviors.get('basic-material') as MaterialBehavior
+			if (!materialBehavior) materialBehavior = this.element.behaviors.get('phong-material') as MaterialBehavior
+			if (!materialBehavior)
+				materialBehavior = this.element.behaviors.get('standard-material') as MaterialBehavior
+			if (!materialBehavior) materialBehavior = this.element.behaviors.get('lambert-material') as MaterialBehavior
+
+			if (materialBehavior) {
+				this.#materialIsFromMaterialBehavior = true
+
+				// TODO this part only works on Mesh elements at the
+				// moment. We will update the geometry and material
+				// behaviors to work in tandem with or without a mesh
+				// behavior, and other behaviors can use the geometry or
+				// material features.
+				model.traverse((child: Object3D) => {
+					console.log('isRenderItem?', isRenderItem(child))
+					if (isRenderItem(child)) {
+						child.material = materialBehavior.getMeshComponent('material')
+					}
+				})
+			} else {
+				console.log('Set random material')
+				// if no material, make a default one with random color
+				setRandomColorPhongMaterial(model)
+			}
+		}
+
 		this.model = model
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'obj', model})

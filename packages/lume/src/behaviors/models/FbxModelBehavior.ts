@@ -39,7 +39,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 				this.#cleanupModel()
 
 				this.#version++
-				this.#loadObj()
+				this.#loadModel()
 			}),
 		)
 
@@ -67,7 +67,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 		this.model = undefined
 	}
 
-	#loadObj() {
+	#loadModel() {
 		const {src} = this
 		const version = this.#version
 
@@ -87,10 +87,13 @@ export class FbxModelBehavior extends RenderableBehavior {
 	}
 
 	#onError(error: ErrorEvent) {
-		const message = error?.message ?? `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}".`
+		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
+			this.src
+		}". See the following error.`
 		console.warn(message)
-		if (error.error) console.error(error.error)
-		this.element.emit(Events.MODEL_ERROR, error.error)
+		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		console.error(err)
+		this.element.emit(Events.MODEL_ERROR, err)
 	}
 
 	#setModel(model: Group) {
