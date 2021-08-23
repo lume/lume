@@ -592,3 +592,96 @@ function directionalLightExample() {
 		</script>
 	`)
 }
+
+function indianBoombox() {
+	return stripIndent(/*html*/ `
+		<script src="${location.origin + location.pathname}global.js"></script>
+
+		<lume-scene id="scene" touch-action="none" webgl>
+			<lume-point-light
+				align-point="0.5 0.5"
+				position="0 0 500"
+				distance="800"
+				shadow-radius="2"
+				shadow-bias="-0.001"
+			></lume-point-light>
+
+			<lume-node
+				id="container"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				size-mode="proportional proportional"
+				size="1 1"
+			>
+				<lume-mixed-plane
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 -50"
+					color="#444"
+					TODO-material-opacity="0.3"
+				>
+					<img src="${location.origin + location.pathname}/examples/indian-boombox/bg.jpg" />
+				</lume-mixed-plane>
+				<lume-mixed-plane
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 50"
+					color="#444"
+					TODO-material-opacity="0.3"
+				>
+					<img src="${location.origin + location.pathname}/examples/indian-boombox/fg.png" />
+				</lume-mixed-plane>
+			</lume-node>
+		</lume-scene>
+
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				width: 100%;
+			}
+			lume-scene {
+				background: #fefefe;
+				touch-action: none;
+			}
+			img {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		</style>
+
+		<script>
+			LUME.useDefaultNames()
+
+			const rotationAmount = 10
+			const targetRotation = {
+				x: 0,
+				y: 0,
+			}
+
+			const setTargetRotation = event => {
+				targetRotation.y = (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount
+				targetRotation.x = -((event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount)
+			}
+
+			// Rotate the image a little bit based on pointer position.
+			scene.addEventListener('pointermove', setTargetRotation)
+			scene.addEventListener('pointerdown', setTargetRotation)
+
+			// Rotate the container towards the targetRotation over time to make it smooth.
+			LUME.Motor.addRenderTask(() => {
+				container.rotation.x += (targetRotation.x - container.rotation.x) * 0.05
+				container.rotation.y += (targetRotation.y - container.rotation.y) * 0.05
+			})
+
+			scene.on('GL_LOAD', () => {
+				Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(n => {
+					n.three.material.opacity = 0.3
+				})
+			})
+		</script>
+	`)
+}
