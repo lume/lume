@@ -593,7 +593,7 @@ function directionalLightExample() {
 	`)
 }
 
-function indianBoombox() {
+function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 	return stripIndent(/*html*/ `
 		<script src="${location.origin + location.pathname}global.js"></script>
 
@@ -612,15 +612,16 @@ function indianBoombox() {
 				mount-point="0.5 0.5"
 				size-mode="proportional proportional"
 				size="1 1"
+				scale="1.2 1.2 1.2"
 			>
 				<lume-mixed-plane
 					size-mode="proportional proportional"
 					size="1 1"
-					position="0 0 -50"
+					position="${bgPosition.x || 0} ${bgPosition.y || 0} -50"
 					color="#444"
 					TODO-material-opacity="0.3"
 				>
-					<img src="${location.origin + location.pathname}/examples/indian-boombox/bg.jpg" />
+					<img src="${location.origin + location.pathname}${bg}" />
 				</lume-mixed-plane>
 				<lume-mixed-plane
 					size-mode="proportional proportional"
@@ -629,7 +630,7 @@ function indianBoombox() {
 					color="#444"
 					TODO-material-opacity="0.3"
 				>
-					<img src="${location.origin + location.pathname}/examples/indian-boombox/fg.png" />
+					<img src="${location.origin + location.pathname}${fg}" />
 				</lume-mixed-plane>
 			</lume-node>
 		</lume-scene>
