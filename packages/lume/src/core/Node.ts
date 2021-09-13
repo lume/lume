@@ -142,12 +142,59 @@ export class Node extends HtmlInterface {
 		// The `parent` property can already be set if this instance is
 		// already in the DOM and wwhile being upgraded into a custom
 		// element.
-		// TODO Remove this after we make it lazy and deferred this to a
+		// TODO Remove this after we make _calcSize lazy and deferred to a
 		// render task.
-		if (this.parent) {
+		if (this.composedLumeParent) {
 			this._calcSize()
 			this.needsUpdate()
 		}
+	}
+
+	get composedLumeChildren(): Node[] {
+		const result: Node[] = []
+		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
+		return result
+	}
+
+	/**
+	 * @method traverseSceneGraph - This traverses the the composed tree of
+	 * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+	 * @param {(node: Node) => void} visitor - A function called for each
+	 * LUME node in the scene graph (the composed tree).
+	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
+	 * the traversal will wait for custom elements to be defined (with
+	 * customElements.whenDefined) before traversing to them.
+	 * @returns {void | Promise<void>} - If `waitForUpgrade` is `false`,
+	 * the traversal will complete synchronously, and the return value will be
+	 * `undefined`. If `waitForUpgrade` is `true`, then traversal completes
+	 * asynchronously as soon as all custom elements are defined, and a Promise is
+	 * returned so that it is possible to wait for the traversal to complete.
+	 */
+	traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+		visitor(this)
+
+		if (!waitForUpgrade) {
+			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
+			return
+		}
+
+		// if waitForUpgrade is true, we make a promise chain so that
+		// traversal order is still the same as when waitForUpgrade is false.
+		let promise: Promise<any> = Promise.resolve()
+
+		for (const child of this.composedLumeChildren) {
+			const isUpgraded = child.matches(':defined')
+
+			if (isUpgraded) {
+				promise = promise!.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			} else {
+				promise = promise!
+					.then(() => customElements.whenDefined(child.tagName.toLowerCase()))
+					.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			}
+		}
+
+		return promise
 	}
 
 	_loadCSS() {
@@ -201,4 +248,8 @@ declare module '@lume/element' {
 			has?: string
 		}
 	}
+}
+
+function isNode(n: any): n is Node {
+	return n.isNode
 }

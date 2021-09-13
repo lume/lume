@@ -1,5 +1,3 @@
-import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {RenderableBehavior} from './RenderableBehavior.js'
 import {Mesh} from '../meshes/Mesh.js'
 import {Points} from '../meshes/Points.js'
@@ -38,11 +36,7 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
-		// if the behavior is being disconnected, but the element still has GL
-		// mode (.three), then leave the element with a default mesh GL
-		// component to be rendered.
-		if (this.element.three) this.#setDefaultComponent(this.element, this.type)
-		else this.#disposeMeshComponent(this.element, this.type)
+		this.#disposeMeshComponent(this.type)
 		this.element.needsUpdate()
 
 		return true
@@ -50,9 +44,9 @@ export abstract class MeshBehavior extends RenderableBehavior {
 
 	resetMeshComponent() {
 		// TODO We might have to defer so that calculatedSize is already calculated
-		// (note, resetMeshComponent is only called when the size prop has
+		// (note, this method is called when the size or sizeMode prop of subclasses has
 		// changed)
-		this.#setMeshComponent(this.element, this.type, this._createComponent())
+		this.#setMeshComponent(this.type, this._createComponent())
 		this.element.needsUpdate()
 	}
 
@@ -70,34 +64,17 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	// TODO
 	// #initialSize: null,
 
-	#disposeMeshComponent(element: Mesh | Points, name: 'geometry' | 'material') {
+	#disposeMeshComponent(name: 'geometry' | 'material') {
 		// TODO handle material arrays
-		if (element.three[name]) (element.three[name] as Geometry | Material).dispose()
+		if (this.element.three[name]) (this.element.three[name] as Geometry | Material).dispose()
 	}
 
-	#setMeshComponent(
-		element: Mesh | Points,
-		name: 'geometry' | 'material',
-		newComponent: BufferGeometry | Geometry | Material,
-	) {
-		this.#disposeMeshComponent(element, name)
+	#setMeshComponent(name: 'geometry' | 'material', newComponent: BufferGeometry | Geometry | Material) {
+		this.#disposeMeshComponent(name)
 
 		// the following type casting is not type safe, but shows what we intend
 		// (we can't type this sort of JavaScript in TypeScript)
-		element.three[name as 'geometry'] = newComponent as Geometry
+		this.element.three[name as 'geometry'] = newComponent as Geometry
 		// or element.three[name as 'material'] = newComponent as Material
-	}
-
-	#setDefaultComponent(element: Mesh | Points, name: 'geometry' | 'material') {
-		this.#setMeshComponent(element, name, this.#makeDefaultComponent(element, name))
-	}
-
-	#makeDefaultComponent(element: Mesh | Points, name: 'geometry' | 'material'): Geometry | Material {
-		switch (name) {
-			case 'geometry':
-				return new BoxGeometry(element.calculatedSize.x, element.calculatedSize.y, element.calculatedSize.z)
-			case 'material':
-				return new MeshPhongMaterial({color: 0xff6600})
-		}
 	}
 }

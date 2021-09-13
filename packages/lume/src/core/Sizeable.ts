@@ -169,24 +169,18 @@ export class Sizeable extends TreeNode {
 		this._stopFns.length = 0
 	}
 
-	get _renderParent(): Sizeable | null {
-		if (this.hasHtmlApi) {
-			return this._composedParent as Sizeable | null
-		} else {
-			return this.parent as Sizeable | null
-		}
+	get composedLumeParent(): Sizeable | null {
+		const result = super._composedParent
+		if (!(result instanceof Sizeable)) return null
+		return result
 	}
 
-	get _renderChildren() {
-		if (this.hasHtmlApi) {
-			return this._composedChildren
-		} else {
-			return this.subnodes
-		}
+	get composedLumeChildren(): Sizeable[] {
+		return super._composedChildren as Sizeable[]
 	}
 
 	_getParentSize() {
-		return (this._renderParent && calculatedSize.get(this._renderParent)?.get()) ?? {x: 0, y: 0, z: 0}
+		return (this.composedLumeParent && calculatedSize.get(this.composedLumeParent)?.get()) ?? {x: 0, y: 0, z: 0}
 	}
 
 	_calcSize() {

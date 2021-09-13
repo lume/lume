@@ -150,12 +150,12 @@ class _Motor {
 			// read this.scene which would then set this.scene.
 			if (!node.scene) continue
 
-			node._render(timestamp, deltaTime)
+			node.update(timestamp, deltaTime)
 
 			// if there is no ancestor of the current node that should be
 			// rendered, then the current node is a root node of a subtree
 			// that needs to be updated
-			if (!node._getNearestAncestorThatShouldBeRendered() && !this.#treesToUpdate.includes(node)) {
+			if (!node.getNearestAncestorThatShouldBeRendered() && !this.#treesToUpdate.includes(node)) {
 				this.#treesToUpdate.push(node)
 			}
 
@@ -167,7 +167,7 @@ class _Motor {
 		// Update world matrices of the subtrees.
 		const treesToUpdate = this.#treesToUpdate
 		for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
-			treesToUpdate[i]._calculateWorldMatricesInSubtree()
+			treesToUpdate[i].updateWorldMatrices()
 		}
 		treesToUpdate.length = 0
 
@@ -180,7 +180,7 @@ class _Motor {
 
 		const nodesToUpdate = this.#nodesToUpdate
 		for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
-			nodesToUpdate[i]._willBeRendered = false
+			nodesToUpdate[i].__willBeRendered = false
 		}
 		nodesToUpdate.length = 0
 	}

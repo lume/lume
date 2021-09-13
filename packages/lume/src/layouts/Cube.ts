@@ -56,7 +56,7 @@ export class CubeLayout extends Node {
 
 		this.sides.push(side)
 
-		rotator.add(side)
+		rotator.append(side)
 
 		// TODO: make a new GenericSync-like thing based on Famous?
 		//const sync = new GenericSync(['mouse','touch']);
@@ -72,7 +72,7 @@ export class CubeLayout extends Node {
 
 		side.getPosition().z = this.getSize().x / 2
 
-		this.add(rotator)
+		this.append(rotator)
 	}
 
 	/**
@@ -85,7 +85,7 @@ export class CubeLayout extends Node {
 	setContent(content: Node[]) {
 		for (let index = 0; index < 6; index += 1) {
 			//this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
-			this.sides[index].add(content[index])
+			this.sides[index].append(content[index])
 		}
 		return this
 	}

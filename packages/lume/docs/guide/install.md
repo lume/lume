@@ -302,8 +302,8 @@ code:
   })
 
   node.style.background = 'cornflowerblue'
-  scene.add(node)
-  scene.mount(document.body)
+  scene.append(node)
+  document.body.append(scene)
   node.rotation = (x, y, z) => [x, y + 1, z]
 
   // The code outputs these elements to the DOM:
@@ -367,8 +367,8 @@ code:
   })
 
   node.style.background = 'cornflowerblue'
-  scene.add(node)
-  scene.mount(document.body)
+  scene.append(node)
+  document.body.append(scene)
   node.rotation = (x, y, z) => [x, y + 1, z]
 
   // The code outputs these elements to the DOM:

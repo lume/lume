@@ -61,7 +61,7 @@
       perspective: 800
     })
 
-    scene.mount('body')
+    document.body.append(scene)
 
     const gridSizeX = 13
     const gridSizeY = 13
@@ -75,7 +75,7 @@
       position: {z: -600},
     })
 
-    scene.add(grid)
+    scene.append(grid)
 
     console.log('grid size', grid.calculatedSize)
 
@@ -100,7 +100,7 @@
         node.style.background = ''+mainColor.clone().darken(10)
         node.style.border = '1px solid ' + mainColor.clone().darken(35)
 
-        grid.add(node)
+        grid.append(node)
       }
     }
 

@@ -131,8 +131,8 @@ const node = new Node({
 
 node.innerHTML = '<div>Hello 3D</div>'
 
-scene.add(node)
-scene.mount(document.body)
+scene.append(node)
+document.body.append(scene)
 
 node.rotation = (x, y, z) => [x, ++y, z]
 ```

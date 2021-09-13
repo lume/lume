@@ -97,26 +97,6 @@ export class HtmlScene extends ImperativeBase {
 		</div>
 	`
 
-	// from Scene
-	// TODO PossiblyScene type, or perhaps a mixin that can be applied to the
-	// Scene class to make it gain the HTML interface
-	_mounted = false
-	mount?(f?: string | Element | null): void
-	unmount?(): void
-
-	connectedCallback() {
-		super.connectedCallback()
-
-		// When the HTMLScene gets addded to the DOM, make it be "mounted".
-		if (!this._mounted) this.mount!(this.parentNode as Element)
-	}
-
-	disconnectedCallback() {
-		super.disconnectedCallback()
-
-		this.unmount!()
-	}
-
 	// WebGLRendererThree appends its content into here.
 	_glLayer: HTMLDivElement | null = null
 

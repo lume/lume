@@ -69,10 +69,6 @@ export type BaseAttributes = TransformableAttributes
 // TODO switch to @element('element-name', false) and use defineElement in html/index.ts
 @element
 export class ImperativeBase extends Settable(Transformable) {
-	// we don't need this, keep for backward compatibility (mainly
-	// all my demos at trusktr.io).
-	imperativeCounterpart = this
-
 	// TODO re-organize variables like isScene and isNode, so they come from
 	// one place. f.e. isScene is currently also used in DeclarativeBase.
 
@@ -192,14 +188,6 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		this._stopFns.push(
 			autorun(() => {
-				this.rotation
-				this._updateRotation()
-			}),
-			autorun(() => {
-				this.scale
-				this._updateScale()
-			}),
-			autorun(() => {
 				this.sizeMode
 				this.size
 
@@ -218,9 +206,11 @@ export class ImperativeBase extends Settable(Transformable) {
 				})
 			}),
 			autorun(() => {
-				if (!this.parent) return
+				const composedParent = this.composedSceneGraphParent
 
-				this.parent.calculatedSize
+				if (!composedParent) return
+
+				composedParent.calculatedSize
 
 				untrack(() => {
 					if (
@@ -272,28 +262,20 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * Called whenever a node is connected, but this is called with
+	 * Called whenever a node is connected. This is called with
 	 * a connectionType that tells us how the node is connected
 	 * (relative to the "flat tree" or "composed tree").
 	 *
-	 * @param  {"root" | "slot" | "actual"} connectionType - If the
-	 * value is "root", then the child was connected as a child of a
-	 * shadow root of the current node. If the value is "slot", then
-	 * the child was distributed to the current node via a slot. If
-	 * the value is "actual", then the child was connect to the
-	 * current node as a regular child ("actual" is the same as
-	 * childConnectedCallback).
+	 * @param  {"root" | "slot" | "actual"} connectionType - If the value is
+	 * "root", then the child was connected as a child of a shadow root of the
+	 * current node. If the value is "slot", then the child was distributed to
+	 * the current node via a slot. If the value is "actual", then the
+	 * child was connected to the current node as a regular child
+	 * (childComposedCallback with "actual" being passed in is essentially the
+	 * same as childConnectedCallback).
 	 */
-	childComposedCallback(child: Element, connectionType: ConnectionType): void {
+	childComposedCallback(child: Element, _connectionType: ConnectionType): void {
 		if (child instanceof ImperativeBase) {
-			// If ImperativeBase#add was called first, child's
-			// `parent` will already be set, so prevent recursion.
-			if (!child.parent) {
-				// mirror the DOM connections in the imperative API's virtual scene graph.
-				const __updateDOMConnection = connectionType === 'actual'
-				this.add(child, __updateDOMConnection)
-			}
-
 			// Calculate sizing because proportional size might depend on
 			// the new parent.
 			child._calcSize()
@@ -303,18 +285,8 @@ export class ImperativeBase extends Settable(Transformable) {
 		}
 	}
 
-	childUncomposedCallback(child: Element, connectionType: ConnectionType): void {
-		if (child instanceof ImperativeBase) {
-			// If ImperativeBase#removeNode was called first, child's
-			// `parent` will already be null, so prevent recursion.
-			if (child.parent) {
-				// mirror the connection in the imperative API's virtual scene graph.
-				const __updateDOMConnection = connectionType === 'actual'
-				this.removeNode(child, __updateDOMConnection)
-			}
-
-			this.__possiblyUnloadThree(child)
-		}
+	childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
+		if (child instanceof ImperativeBase) this.__possiblyUnloadThree(child)
 	}
 
 	/**
@@ -326,15 +298,14 @@ export class ImperativeBase extends Settable(Transformable) {
 		// This traverses recursively upward at first, then the value is cached on
 		// subsequent reads.
 
-		// NOTE: this._scene is initally null.
-
-		const parent = this.parent
-		// const parent = this.parent || this._composedParent
+		const parent = this.composedSceneGraphParent
 
 		// if already cached, return it. Or if no parent, return it (it'll be null).
 		// Additionally, Scenes have this._scene already set to themselves.
+		// NOTE: this._scene is initally null.
 		if (this._scene || !parent) return this._scene!
 
+		// @prod-prune
 		if (!(parent instanceof ImperativeBase)) throw new Error('Expected instance of ImperativeBase')
 
 		// if the parent node already has a ref to the scene, use that.
@@ -355,60 +326,21 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * This overrides the `parent` property of the `TreeNode` class to restrict
-	 * parents to being `ImperativeBase` (`Node` or `Scene`) instances.
+	 * Overrides [`TreeNode.lumeParent`](./TreeNode?id=lumeparent) to assert
+	 * that parents are `ImperativeBase` (`Node` or `Scene`) instances.
 	 */
-	// This override serves mainly to change the type of `parent` for
+	// This override serves to change the type of `lumeParent` for
 	// subclasses of ImperativeBase.
 	// Nodes (f.e. Mesh, Sphere, etc) and Scenes should always have parents
-	// that are Nodes or Scenes (at least for now). The overridden add()
-	// method below enforces this.
+	// that are Nodes or Scenes (at least for now).
 	// @prod-prune
-	get parent(): ImperativeBase | null {
-		const parent = super.parent
+	override get lumeParent(): ImperativeBase | null {
+		const parent = super.lumeParent
 
+		// @prod-prune
 		if (parent && !(parent instanceof ImperativeBase)) throw new TypeError('Parent must be type ImperativeBase.')
 
 		return parent
-	}
-
-	/**
-	 * @override
-	 */
-	add(childNode: ImperativeBase, /* private */ __updateDOMConnection = true): this {
-		if (!(childNode instanceof ImperativeBase)) return this
-
-		// We cannot add Scenes to Nodes, for now.
-		if (isScene(childNode)) {
-			return this
-
-			// TODO Figure how to handle nested scenes. We were throwing
-			// this error, but it has been harmless not to throw in the
-			// existing demos.
-			// throw new TypeError(`
-			//     A Scene cannot be added to another Node or Scene (at
-			//     least for now). To place a Scene in a Node, just mount
-			//     a new Scene onto an HTMLNode with Scene.mount().
-			// `)
-		}
-
-		super.add(childNode)
-
-		// FIXME remove the type cast here and modify it so it is
-		// DOM-agnostic for when we run thsi in a non-DOM environment.
-		if (__updateDOMConnection) this._elementOperations.connectChildElement(childNode as unknown as HTMLElement)
-
-		return this
-	}
-
-	removeNode(childNode: ImperativeBase, /* private */ __updateDOMConnection = true): this {
-		if (!isNode(childNode)) return this
-
-		super.removeNode(childNode)
-
-		if (__updateDOMConnection) this._elementOperations.disconnectChildElement(childNode)
-
-		return this
 	}
 
 	/**
@@ -434,14 +366,17 @@ export class ImperativeBase extends Settable(Transformable) {
 		// if (!this.scene || !this.isConnected) return
 		// TODO make sure we render when connected into a tree with a scene
 
-		this._willBeRendered = true
+		// TODO, we already call Motor.setNodeToBeRendered(node), so instead
+		// of having a __willBeRendered property, we can have a
+		// Motor.nodeWillBeRendered(node) method.
+		this.__willBeRendered = true
 
 		Motor.setNodeToBeRendered(this)
 	}
 
 	_glLoaded = false
 	@reactive _cssLoaded = false
-	_willBeRendered = false
+	__willBeRendered = false
 
 	get _elementOperations(): ElementOperations {
 		if (!elOps.has(this)) elOps.set(this, new ElementOperations(this))
@@ -481,75 +416,34 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	_connectThree(): void {
-		if (
-			this._isPossiblyDistributedToShadowRoot &&
-			// check parent isn't a Scene because Scenes always
-			// have shadow roots, and we treat distribution into
-			// the Scene shacow root different than with all
-			// other Nodes.
-			this.parent !== this.scene
-		) {
-			if (this._distributedParent) {
-				// TODO make sure this check works.
-				// @prod-prune
-				// if (!(this._distributedParent instanceof ImperativeBase))
-				// 	throw new Error('expected _distributedParent to be ImperativeBase')
-
-				;(this._distributedParent as ImperativeBase).three.add(this.three)
-			}
-		} else if (this._shadowRootParent) {
-			// TODO make sure this check works.
-			// @prod-prune
-			// if (!(this._shadowRootParent instanceof ImperativeBase))
-			// 	throw new Error('expected _distributedParent to be ImperativeBase')
-
-			;(this._shadowRootParent as ImperativeBase).three.add(this.three)
-		} else {
-			// TODO make sure this check works.
-			// @prod-prune
-			// TODO instanceof check doesn't work here. Investigate Symbol.hasInstance feature in Mixin.
-			// if (!(this.parent instanceof ImperativeBase)) throw new Error('expected parent to be ImperativeBase')
-
-			this.parent && (this.parent as ImperativeBase).three.add(this.three)
-		}
-
+		this.composedSceneGraphParent?.three.add(this.three)
 		this.needsUpdate()
 	}
 
 	_connectThreeCSS(): void {
-		// @ts-ignore
-		if (
-			this._isPossiblyDistributedToShadowRoot &&
-			// check parent isn't a Scene because Scenes always
-			// have shadow roots, and we treat distribution into
-			// the Scene shacow root different than with all
-			// other Nodes.
-			this.parent !== this.scene
-		) {
-			if (this._distributedParent) {
-				// TODO make sure this check works.
-				// @prod-prune
-				// if (!(this._distributedParent instanceof ImperativeBase))
-				// 	throw new Error('Expected _distributedParent to be a LUME Node.')
-
-				;(this._distributedParent as ImperativeBase).threeCSS.add(this.threeCSS)
-			}
-		} else if (this._shadowRootParent) {
-			// TODO make sure this check works.
-			// @prod-prune
-			// if (!(this._shadowRootParent instanceof ImperativeBase))
-			// 	throw new Error('Expected _distributedParent to be a LUME Node.')
-
-			;(this._shadowRootParent as ImperativeBase).threeCSS.add(this.threeCSS)
-		} else {
-			// TODO make sure this check works.
-			// @prod-prune
-			// if (!(this.parent instanceof ImperativeBase)) throw new Error('Expected parent to be a LUME Node.')
-
-			this.parent && (this.parent as ImperativeBase).threeCSS.add(this.threeCSS)
-		}
-
+		this.composedSceneGraphParent?.threeCSS.add(this.threeCSS)
 		this.needsUpdate()
+	}
+
+	get composedLumeParent(): ImperativeBase | null {
+		const result = super.composedLumeParent
+		if (!(result instanceof ImperativeBase)) return null
+		return result
+	}
+
+	get composedSceneGraphParent(): ImperativeBase | null {
+		// check if lumeParent is a Scene because Scenes always have shadow
+		// roots as part of their implementation (users will not be adding
+		// shadow roots to them), and we treat distribution into a Scene shadow
+		// root different than with all other Nodes (users can add shadow roots
+		// to those). Otherwise _distributedParent for a lume-node that is
+		// child of a lume-scene will be a non-LUME element that is inside of
+		// the lume-scene's ShadowRoot, and things will not work in that case
+		// because the top-level Node elements will seem to not be composed to
+		// any Scene element.
+		if (this.lumeParent?.isScene) return this.lumeParent
+
+		return this.composedLumeParent
 	}
 
 	_glStopFns: StopFunction[] = []
@@ -562,17 +456,9 @@ export class ImperativeBase extends Settable(Transformable) {
 		this._glLoaded = true
 
 		// we don't let Three update local matrices automatically, we do
-		// it ourselves in Transformable._calculateMatrix and
-		// Transformable._calculateWorldMatricesInSubtree
+		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
 		this.three.matrixAutoUpdate = false
 
-		// NOTE, this.parent works here because _loadGL
-		// is called by childConnectedCallback (or when
-		// distributed to a shadow root) at which point a child
-		// is already upgraded and thus has this.parent
-		// API ready. Only a Scene has no parent.
-		//
-		// this.parent && this.parent.three.add(this.three)
 		this._connectThree()
 
 		this.needsUpdate()
@@ -606,17 +492,10 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (this._cssLoaded) return false
 		this._cssLoaded = true
 
-		// we don't let Three update local matrices automatically, we do
-		// it ourselves in Transformable._calculateMatrix and
-		// Transformable._calculateWorldMatricesInSubtree
+		// We don't let Three update local matrices automatically, we do
+		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree.
 		this.threeCSS.matrixAutoUpdate = false
 
-		// NOTE, this.parent works here because _loadCSS
-		// is called by childConnectedCallback (or when
-		// distributed to a shadow root) at which point a child
-		// is already upgraded and thus has this.parent
-		// API ready. Only a Scene has no parent.
-		// this.parent && this.parent.threeCSS.add(this.threeCSS)
 		this._connectThreeCSS()
 
 		this.needsUpdate()
@@ -659,8 +538,6 @@ export class ImperativeBase extends Settable(Transformable) {
 
 			this.emit(Events.GL_LOAD, this)
 		})
-
-		for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadGL()
 	}
 
 	_triggerUnloadGL(): void {
@@ -673,7 +550,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (!this._loadCSS()) return
 
 		this.emit(Events.CSS_LOAD, this)
-		for (const child of this.subnodes) (child as ImperativeBase)._triggerLoadCSS()
 	}
 
 	_triggerUnloadCSS(): void {
@@ -708,11 +584,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		threeJsPostAdjustment[1] = size.y / 2
 		threeJsPostAdjustment[2] = size.z / 2
 
-		// TODO If a Scene has a `parent`, it is not mounted directly into a
-		// regular DOM element but rather it is child of a Node. In this
-		// case we don't want the scene size to be based on observed size
-		// of a regular DOM element, but relative to a parent Node just
-		// like for all other Nodes.
 		const parentSize = this._getParentSize()
 
 		// THREE-COORDS-TO-DOM-COORDS
@@ -830,7 +701,8 @@ export class ImperativeBase extends Settable(Transformable) {
 		// in _calculateMatrix so that it has the same effect.
 		this.three.rotation.set(-toRadians(x), toRadians(y), -toRadians(z))
 
-		const childOfScene = this.parent?.isScene
+		// @ts-ignore duck typing with use of isScene
+		const childOfScene = this.composedSceneGraphParent?.isScene
 
 		// TODO write a comment as to why we needed the childOfScne check to
 		// alternate rotation directions here. It's been a while, I forgot
@@ -848,15 +720,26 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.threeCSS.scale.set(x, y, z)
 	}
 
-	_calculateWorldMatricesInSubtree(): void {
+	updateWorldMatrices(): void {
 		this.three.updateMatrixWorld()
 		this.threeCSS.updateMatrixWorld()
 		this.emit('worldMatrixUpdate')
 	}
 
-	/** This is called by Motor on each update before the GL or CSS renderers will re-render. */
-	// TODO rename "render" to "update". "render" is more for the renderer classes.
-	_render(_timestamp: number, _deltaTime: number): void {
+	/**
+	 * This is called by Motor on each update before the GL or CSS renderers
+	 * will re-render.  This ultimately fires as a response to updating any of a
+	 * node's reactive properties.  It does not fire repeatedly, it only fires
+	 * as a response to modifying any of a node's properties/attributes
+	 * (modifying a property enqueues a render task which calls update).  This
+	 * is called only once per browser animation frame (essentially "batched").
+	 * You can modify many properties, then this will finally fire once in the
+	 * next animation frame.
+	 */
+	update(_timestamp: number, _deltaTime: number): void {
+		this._updateRotation()
+		this._updateScale()
+
 		// TODO: only run this when necessary (f.e. not if only opacity
 		// changed, only if position/align/mountPoint changed, etc)
 		this._calculateMatrix()
@@ -869,19 +752,15 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	// This method is used by Motor._renderNodes().
-	_getNearestAncestorThatShouldBeRendered(): ImperativeBase | false {
-		let parent = this.parent
+	getNearestAncestorThatShouldBeRendered(): ImperativeBase | null {
+		let composedParent = this.composedSceneGraphParent
 
-		while (parent) {
-			// TODO it'd be nice to have a way to prune away runtime type checks in prod mode.
-			// @prod-prune
-			if (!(parent instanceof ImperativeBase)) throw new Error('expected ImperativeBase')
-
-			if (parent._willBeRendered) return parent
-			parent = parent.parent
+		while (composedParent) {
+			if (composedParent.__willBeRendered) return composedParent
+			composedParent = composedParent.composedSceneGraphParent
 		}
 
-		return false
+		return null
 	}
 }
 

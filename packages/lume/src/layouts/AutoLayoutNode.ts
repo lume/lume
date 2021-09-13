@@ -95,15 +95,23 @@ export class AutoLayoutNode extends Node {
 
 	#autoLayoutView?: any | undefined
 
-	childConnected(child: Node) {
-		super.childConnected(child)
+	childConnectedCallback(child: Node) {
+		// @prod-prune
+		if (!(child instanceof Node))
+			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
+
+		super.childConnectedCallback(child)
 
 		if (!this.#autoLayoutView) return
 		this.#checkNodes()
 	}
 
-	childDisconnected(child: Node) {
-		super.childDisconnected(child)
+	childDisconnectedCallback(child: Node) {
+		// @prod-prune
+		if (!(child instanceof Node))
+			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
+
+		super.childDisconnectedCallback(child)
 
 		if (!this.#autoLayoutView) return
 		const _idToNode = this.#idToNode
@@ -175,7 +183,7 @@ export class AutoLayoutNode extends Node {
 	 */
 	addToLayout(child: Node, id: string) {
 		// PORTED
-		this.add(child) // PORTED
+		this.append(child) // PORTED
 		// TODO instead of handling nodes here, we should handle them in
 		// childComposedCallback, to support ShadowDOM.
 		if (id) this.#idToNode[id] = child
@@ -193,7 +201,7 @@ export class AutoLayoutNode extends Node {
 	removeFromLayout(child: Node, id: string) {
 		// PORTED
 		if (child && id) {
-			this.removeNode(child) // PORTED
+			this.removeChild(child) // PORTED
 			delete this.#idToNode[id]
 		} else if (child) {
 			for (id in this.#idToNode) {
@@ -202,9 +210,9 @@ export class AutoLayoutNode extends Node {
 					break
 				}
 			}
-			this.removeNode(child) // PORTED
+			this.removeChild(child) // PORTED
 		} else if (id) {
-			this.removeNode(this.#idToNode[id]) // PORTED
+			this.removeChild(this.#idToNode[id]) // PORTED
 			delete this.#idToNode[id]
 		}
 		this.reflowLayout()

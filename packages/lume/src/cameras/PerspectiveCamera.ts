@@ -105,9 +105,6 @@ export class PerspectiveCamera extends Node {
 	disconnectedCallback() {
 		super.disconnectedCallback()
 
-		// TODO we want to call this in the upcoming
-		// unmountedCallback, but for now it's harmless but
-		// will run unnecessary logic. #150
 		this.#setSceneCamera('unset')
 		this.#lastKnownScene = null
 	}
@@ -116,9 +113,6 @@ export class PerspectiveCamera extends Node {
 
 	#setSceneCamera(unset?: 'unset') {
 		if (unset) {
-			// TODO: unset might be triggered before the scene was mounted, so
-			// there might not be a last known scene. We won't need this check
-			// when we add unmountedCallback. #150
 			if (this.#lastKnownScene) this.#lastKnownScene._removeCamera(this)
 		} else {
 			if (!this.scene || !this.isConnected) return

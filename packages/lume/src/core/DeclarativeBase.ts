@@ -1,5 +1,5 @@
 import {Element as LumeElement} from '@lume/element'
-import {observeChildren} from '../core/utils.js'
+import {defer, observeChildren} from '../core/utils.js'
 import {WithChildren} from './WithChildren.js'
 import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
 
@@ -9,8 +9,8 @@ export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
 
-// using isNode instead of instanceof HTMLNode to avoid runtime reference,
-// thus prevent circular dependency between this module and HTMLNode
+// We're using isNode instead of instanceof HtmlNode to avoid a runtime reference HtmlNode here,
+// thus prevent a circular dependency between this module and HtmlNode
 // TODO consolidate with one in ImperativeBase
 function isNode(n: any): n is HtmlNode {
 	return n.isNode
@@ -37,11 +37,20 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		super()
 	}
 
-	// We use this to Override HTMLElement.prototype.attachShadow in v1 so
-	// that we can make the connection between parent and child on the
-	// imperative side when the HTML side is using shadow roots.
+	// COMPOSED TREE TRACKING:
+	// Overriding HTMLElement.prototype.attachShadow here is part of our
+	// implementation for tracking the composed tree and connecting THREE
+	// objects in the same structure as the DOM composed tree so that it will
+	// render as expected when end users compose elements with ShadowDOM and
+	// slots.
 	attachShadow(options: ShadowRootInit): ShadowRoot {
 		const root = super.attachShadow(options)
+
+		// Skip ShadowRoot observation for Scene instances. Only Scene actual
+		// children or distributed children are considered in the LUME scene
+		// graph because Scene's ShadowRoot already exists and serves in the
+		// rendering implementation and is not the user's.
+		if (this.isScene) return root
 
 		this.__shadowRoot = root
 
@@ -60,7 +69,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		for (const child of children) {
 			if (!(child instanceof DeclarativeBase)) continue
 			child.__isPossiblyDistributedToShadowRoot = true
-			this.__childUncomposedCallback(child, 'slot')
+			this.__triggerChildUncomposedCallback(child, 'actual')
 		}
 
 		return root
@@ -73,10 +82,6 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	isNode = false
 
 	childConnectedCallback(child: HTMLElement) {
-		// TODO Another case to handle is default slot content: when there
-		// are no nodes distributed to a slot, then connect the <slot>
-		// element's children to the <slot> parent.
-
 		// This code handles two cases: the element has a ShadowRoot
 		// ("composed children" are children of the ShadowRoot), or it has a
 		// <slot> child ("composed children" are nodes that may be
@@ -89,7 +94,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 			if (!this.isScene && this.__shadowRoot) {
 				child.__isPossiblyDistributedToShadowRoot = true
 
-				// We don't call #childComposedCallback here because that
+				// We don't call childComposedCallback here because that
 				// will be called indirectly due to a slotchange event on a
 				// <slot> element if the added child will be distributed to
 				// a slot.
@@ -99,25 +104,47 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 				// regular parent-child composition (no distribution, no
 				// children of a ShadowRoot).
 
-				this.__childComposedCallback(child, 'actual')
+				this.__triggerChildComposedCallback(child, 'actual')
 			}
 		} else if (child instanceof HTMLSlotElement) {
-			if (!this.__slots) this.__slots = []
-			this.__slots.push(child)
+			// COMPOSED TREE TRACKING: Detecting slots here is part of composed
+			// tree tracking (detecting when a child is distributed to an element).
 
 			child.addEventListener('slotchange', this.__onChildSlotChange)
 
-			// TODO do we need #handleDistributedChildren for initial
-			// slotted nodes? Or does `slotchange` conver that? Also, does
-			// `slotchange` fire for distributed slots? Or do we need to
-			// also look at assigned nodes of distributed slots in the
-			// initial #handleDistributedChildren call?
-			this.__handleDistributedChildren(child /*, true*/)
+			// XXX Do we need __handleDistributedChildren for initial slotted
+			// nodes? The answer seems to be "yes, sometimes". When slots are
+			// appended, their slotchange events will fire. However, this
+			// `childConnectedCallback` is fired later from when a child is
+			// actually connected, in a MutationObserver task. Because of this,
+			// an appended slot's slotchange event *may* have already fired,
+			// and we will not have had the chance to add a slotchange event
+			// handler yet, therefore we need to fire
+			// __handleDistributedChildren here to handle that missed
+			// opportunity.
+			//
+			// Also we need to defer() here because otherwise, this
+			// childConnectedCallback will fire once for when a child is
+			// connected into the light DOM and run the logic in the `if
+			// (isNode(child))` branch *after* childConnectedCallback is fired
+			// and executes this __handleDistributedChildren call for a shadow
+			// DOM slot, and in that case the distribution will not be detected
+			// (why is that?).  By deferring, this __handleDistributedChildren
+			// call correctly happens *after* the above `if (isNode(child))`
+			// branch and then things will work as expected. This is all due to
+			// using MutationObserver, which fires event in a later task than
+			// when child connections actually happen.
+			//
+			// TODO ^, Can we make WithChildren call this callback right when
+			// children are added, synchronously?  If so then we could rely on
+			// a slot's slotchange event upon it being connected without having
+			// to call __handleDistributedChildren here (which means also not
+			// having to use defer for anything).
+			defer(() => this.__handleDistributedChildren(child))
 		}
 	}
 
 	childDisconnectedCallback(child: HTMLElement) {
-		// mirror the connection in the imperative API's virtual scene graph.
 		if (isNode(child)) {
 			if (!this.isScene && this.__shadowRoot) {
 				child.__isPossiblyDistributedToShadowRoot = false
@@ -125,57 +152,14 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 				// If there's no shadow root, call the
 				// childUncomposedCallback with connection type "actual".
 				// This is effectively similar to childDisconnectedCallback.
-				this.__childUncomposedCallback(child, 'actual')
+				this.__triggerChildUncomposedCallback(child, 'actual')
 			}
 		} else if (child instanceof HTMLSlotElement) {
-			child.removeEventListener('slotchange', this.__onChildSlotChange)
+			// COMPOSED TREE TRACKING:
+			child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
 
-			this.__slots!.splice(this.__slots!.indexOf(child), 1)
-			if (!this.__slots!.length) this.__slots = undefined
 			this.__handleDistributedChildren(child)
 			this.__previousSlotAssignedNodes.delete(child)
-		}
-	}
-
-	// TODO use this to detect when we should render only to WebGL in a
-	// non-DOM environment.
-	get hasHtmlApi() {
-		// @prod-prune
-		if (this instanceof HTMLElement) return true
-		return false
-	}
-
-	// Traverses a tree while considering ShadowDOM disribution.
-	//
-	// This isn't used for anything at the moment. It was going to be used
-	// to traverse the composed tree and render using our own WebGL
-	// renderer, but at the moment we're using Three.js nodes and composing
-	// them in the structured of the composed tree, then Three.js handles
-	// the traversal for rendering the WebGL.
-	traverseComposed(cb: (n: Node) => void) {
-		// In the future, the user will be use a pure-JS API with no HTML
-		// DOM API.
-		const hasHtmlApi = this.hasHtmlApi
-
-		const {children} = this
-		for (let l = children.length, i = 0; i < l; i += 1) {
-			const child = children[i]
-
-			if (!(child instanceof DeclarativeBase)) continue
-
-			// skip nodes that are possiblyDistributed, i.e. they have a parent
-			// that has a ShadowRoot.
-			if (!hasHtmlApi || !child.__isPossiblyDistributedToShadowRoot) child.traverseComposed(cb)
-
-			cb(child)
-		}
-
-		const distributedChildren = this.__distributedChildren
-		if (hasHtmlApi && distributedChildren) {
-			for (const shadowChild of distributedChildren) {
-				shadowChild.traverseComposed(cb)
-				cb(shadowChild)
-			}
 		}
 	}
 
@@ -184,145 +168,213 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		super.setAttribute(attr, value)
 	}
 
-	get _hasShadowRoot() {
+	// TODO move the following ShadowDOM stuff into a more generic place like LUME Element.
+
+	// COMPOSED TREE TRACKING:
+	get _hasShadowRoot(): boolean {
 		return !!this.__shadowRoot
 	}
 
-	get _isPossiblyDistributedToShadowRoot() {
+	// COMPOSED TREE TRACKING:
+	get _isPossiblyDistributedToShadowRoot(): boolean {
 		return this.__isPossiblyDistributedToShadowRoot
 	}
 
-	get _shadowRootParent() {
+	// COMPOSED TREE TRACKING:
+	get _shadowRootParent(): DeclarativeBase | null {
 		return this.__shadowRootParent
 	}
 
-	get _distributedParent() {
+	get _shadowRootChildren(): DeclarativeBase[] {
+		if (!this.__shadowRoot) return []
+
+		return Array.from(this.__shadowRoot.children).filter((n): n is DeclarativeBase => n instanceof DeclarativeBase)
+	}
+
+	// COMPOSED TREE TRACKING: Elements that are distributed to a slot that is
+	// child of a ShadowRoot of this element.
+	get _distributedShadowRootChildren(): DeclarativeBase[] {
+		const result: DeclarativeBase[] = []
+
+		for (const child of Array.from(this.__shadowRoot?.children || [])) {
+			if (child instanceof HTMLSlotElement && !child.assignedSlot) {
+				for (const distributed of child.assignedElements({flatten: true})) {
+					if (isNode(distributed)) result.push(distributed)
+				}
+			}
+		}
+
+		return result
+	}
+
+	// COMPOSED TREE TRACKING:
+	get _distributedParent(): DeclarativeBase | null {
 		return this.__distributedParent
 	}
 
-	get _distributedChildren() {
+	// COMPOSED TREE TRACKING:
+	get _distributedChildren(): DeclarativeBase[] | null {
 		return this.__distributedChildren ? [...this.__distributedChildren] : null
 	}
 
-	// The composed parent is the parent that this node renders relative
+	// COMPOSED TREE TRACKING: The composed parent is the parent that this element renders relative
 	// to in the flat tree (composed tree).
 	get _composedParent(): HTMLElement | DeclarativeBase | null {
-		return this.__distributedParent || this.__shadowRootParent || this.parentElement
+		const parent = this.__distributedParent || this.__shadowRootParent || this.parentElement
+
+		if (parent instanceof HTMLSlotElement) {
+			// If this element is a child of a <slot> element (i.e. this
+			// element is a slot's default content), then return null if the
+			// slot has anything slotted to it in which case default content
+			// does not participate in the composed tree.
+			if (parent.assignedElements({flatten: true}).length) return null
+			else return parent.parentElement
+		}
+
+		return parent
 	}
 
-	// Composed children are the children that render relative to this
-	// node in the flat tree (composed tree), whether as children of a
+	// COMPOSED TREE TRACKING: Composed children are the children that render relative to this
+	// element in the flat tree (composed tree), whether as children of a
 	// shadow root, or distributed children (assigned nodes) of a <slot>
 	// element.
 	get _composedChildren(): DeclarativeBase[] {
-		if (this.__shadowRoot) {
-			// We only care about DeclarativeBase nodes.
+		if (!this.isScene && this.__shadowRoot) {
 			// TODO move this composed stuff to a separate class that has
-			// no limitation on which types of noeds it observes, then use
+			// no limitation on which types of nodes it observes, then use
 			// it here and apply the restriction.
-			return [...Array.prototype.filter.call(this.__shadowRoot.children, n => n instanceof DeclarativeBase)]
+			return [...this._distributedShadowRootChildren, ...this._shadowRootChildren]
 		} else {
 			return [
-				...(this.__distributedChildren || []), // TODO perhaps use slot.assignedNodes instead?
-				...(Array.from(this.children).filter(n => n instanceof DeclarativeBase) as DeclarativeBase[]),
+				...(this.__distributedChildren || []), // TODO perhaps use slot.assignedElements instead?
+				// We only care about DeclarativeBase nodes.
+				...Array.from(this.children).filter((n): n is DeclarativeBase => n instanceof DeclarativeBase),
 			]
 		}
 	}
 
-	// This node's shadow root, if any. This always points to the shadow
+	// COMPOSED TREE TRACKING: This element's shadow root, if any. This always points to the shadow
 	// root, even if it is a closed root, unlike the public shadowRoot
 	// property.
 	__shadowRoot?: ShadowRoot
 
-	// All <slot> elements of this node, if any.
-	__slots?: HTMLSlotElement[]
-
-	// True when this node has a parent that has a shadow root. When
-	// using the HTML API, Imperative API can look at this to determine
-	// whether to render this node or not, in the case of WebGL.
+	// COMPOSED TREE TRACKING: True when this element has a parent that has a shadow root.
 	__isPossiblyDistributedToShadowRoot = false
 
-	__prevAssignedNodes?: WeakMap<HTMLSlotElement, Node[]>
+	__prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>
 
-	// A map of the slot elements that are children of this node and
-	// their last-known assigned nodes. When a slotchange happens while
-	// this node is in a shadow root and has a slot child, we can
-	// detect what the difference is between the last known and the new
-	// assignments, and notate the new distribution of child nodes. See
-	// issue #40 for background on why we do this.
+	// COMPOSED TREE TRACKING:
+	// A map of the slot elements that are children of this element and
+	// their last-known assigned elements. When a slotchange happens while
+	// this element is in a shadow root and has a slot child, we can
+	// detect what the difference is between the last known assigned elements and the new
+	// ones.
 	get __previousSlotAssignedNodes() {
 		if (!this.__prevAssignedNodes) this.__prevAssignedNodes = new WeakMap()
 		return this.__prevAssignedNodes
 	}
 
-	// If this node is distributed into a shadow tree, this will
-	// reference the parent of the <slot> element where this node is
-	// distributed to. Basically, this node will render as a child of
-	// that parent node in the flat tree (composed tree).
+	// COMPOSED TREE TRACKING:
+	// If this element is distributed into a shadow tree, this will
+	// reference the parent element of the <slot> element where this element is
+	// distributed to. This element will render as a child of
+	// that parent element in the flat tree (composed tree).
 	__distributedParent: DeclarativeBase | null = null
 
-	// If this node is a top-level child of a shadow root, then this
+	// COMPOSED TREE TRACKING:
+	// If this element is a top-level child of a shadow root, then this
 	// points to the parent of the shadow root. The shadow root parent
-	// is the node that this node renders relative to in the flat tree
+	// is the element that this element renders relative to in the flat tree
 	// (composed tree).
 	__shadowRootParent: DeclarativeBase | null = null
 
-	__isComposed = false
-
+	// COMPOSED TREE TRACKING:
 	// If this element has a child <slot> element while in
 	// a shadow root, then this will be a Set of the nodes distributed
 	// into the <slot>, and those nodes render relatively
-	// to this node in the flat tree. We instantiate this later, only
+	// to this element in the flat tree. We instantiate this later, only
 	// when/if needed.
 	__distributedChildren?: Set<DeclarativeBase>
 
+	// COMPOSED TREE TRACKING: Called when a child is added to the ShadowRoot of this element.
+	// This does not run for Scene instances, which already have a root for their rendering implementation.
 	__shadowRootChildAdded(child: HTMLElement) {
 		// NOTE Logic here is similar to childConnectedCallback
 
 		if (child instanceof DeclarativeBase) {
 			child.__shadowRootParent = this
-			this.__childComposedCallback(child, 'root')
+			this.__triggerChildComposedCallback(child, 'root')
 		} else if (child instanceof HTMLSlotElement) {
 			child.addEventListener('slotchange', this.__onChildSlotChange)
-			this.__handleDistributedChildren(child /*, true*/)
+			this.__handleDistributedChildren(child)
 		}
 	}
 
+	// COMPOSED TREE TRACKING: Called when a child is removed from the ShadowRoot of this element.
+	// This does not run for Scene instances, which already have a root for their rendering implementation.
 	__shadowRootChildRemoved(child: HTMLElement) {
 		// NOTE Logic here is similar to childDisconnectedCallback
 
 		if (child instanceof DeclarativeBase) {
 			child.__shadowRootParent = null
-			this.__childUncomposedCallback(child, 'root')
+			this.__triggerChildUncomposedCallback(child, 'root')
 		} else if (child instanceof HTMLSlotElement) {
-			child.removeEventListener('slotchange', this.__onChildSlotChange)
+			child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
 			this.__handleDistributedChildren(child)
 			this.__previousSlotAssignedNodes.delete(child)
 		}
 	}
 
-	__onChildSlotChange = (event: Event) => {
-		const slot = event.target as HTMLSlotElement // must be a <slot> element, if the event is slotchange
-		this.__handleDistributedChildren(slot)
+	// COMPOSED TREE TRACKING: Called when a slot child of this element emits a slotchange event.
+	// TODO we need an @lazy decorator instead of making this a getter manually.
+	get __onChildSlotChange(): (event: Event) => void {
+		if (this.__onChildSlotChange__) return this.__onChildSlotChange__
+
+		this.__onChildSlotChange__ = (event: Event) => {
+			// event.currentTarget is the slot that this event handler is on,
+			// while event.target is always the slot from the ancestor-most
+			// tree if that slot is assigned to this slot or another slot that
+			// ultimate distributes to this slot.
+			const slot = event.currentTarget as HTMLSlotElement
+
+			this.__handleDistributedChildren(slot)
+		}
+
+		return this.__onChildSlotChange__
 	}
 
+	__onChildSlotChange__?: (event: Event) => void
+
+	// COMPOSED TREE TRACKING: Life cycle methods for use by subclasses to run
+	// logic when children are composed or uncomposed to them in the composed
+	// tree.
+	// TODO: enable composition tracking only if a sublass instance has one of
+	// these methods in place, otherwise don't waste the resources.
 	childComposedCallback?(child: Element, connectionType: ConnectionType): void
 	childUncomposedCallback?(child: Element, connectionType: ConnectionType): void
 
-	__childComposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
-		if (child.__isComposed) return
-		child.__isComposed = true
+	__triggerChildComposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
+		if (!this.childComposedCallback) return
 
-		this.childComposedCallback && this.childComposedCallback(child, connectionType)
+		const isUpgraded = child.matches(':defined')
+
+		if (isUpgraded) {
+			this.childComposedCallback(child, connectionType)
+		} else {
+			customElements.whenDefined(child.tagName.toLowerCase()).then(() => {
+				this.childComposedCallback!(child, connectionType)
+			})
+		}
 	}
 
-	__childUncomposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
-		if (!child.__isComposed) return
-		child.__isComposed = false
-
+	__triggerChildUncomposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
 		this.childUncomposedCallback && this.childUncomposedCallback(child, connectionType)
 	}
 
+	// COMPOSED TREE TRACKING: This is called in certain cases when distributed
+	// children may have changed, f.e. when a slot was added to this element, or
+	// when a child slot of this element has had assigned nodes changed
+	// (slotchange).
 	__handleDistributedChildren(slot: HTMLSlotElement) {
 		const diff = this.__getDistributedChildDifference(slot)
 
@@ -356,7 +408,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 			if (!this.__distributedChildren) this.__distributedChildren = new Set()
 			this.__distributedChildren.add(addedNode)
 
-			this.__childComposedCallback(addedNode, 'slot')
+			this.__triggerChildComposedCallback(addedNode, 'slot')
 		}
 
 		const {removed} = diff
@@ -369,17 +421,29 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 			this.__distributedChildren!.delete(removedNode)
 			if (!this.__distributedChildren!.size) this.__distributedChildren = undefined
 
-			this.__childUncomposedCallback(removedNode, 'slot')
+			this.__triggerChildUncomposedCallback(removedNode, 'slot')
 		}
 	}
 
+	// COMPOSED TREE TRACKING: Get the difference between the last assigned
+	// elements and current assigned elements of a child slot of this element.
 	__getDistributedChildDifference(slot: HTMLSlotElement) {
-		let previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
+		const previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
 
-		const newNodes = slot.assignedNodes({flatten: true})
+		// If this slot is assigned to another slot, then we don't consider any
+		// of the slot's assigned nodes as being distributed to the current element,
+		// because instead they are distributed to an element further down in the
+		// composed tree where this slot is assigned to.
+		// Special case for Scenes: we don't care if slot children of a Scene
+		// distribute to a deeper slot, because a Scene's ShadowRoot is for the rendering
+		// implementation and not the user's distribution, so we only want to detect
+		// elements slotted directly to the Scene in that case.
+		const newNodes = !this.isScene && slot.assignedSlot ? [] : slot.assignedElements({flatten: true})
 
-		// save the newNodes to be used as the previousNodes for next time.
-		this.__previousSlotAssignedNodes.set(slot, newNodes)
+		// Save the newNodes to be used as the previousNodes for next time
+		// (clone it so the following in-place modification doesn't ruin any
+		// assumptions in the next round).
+		this.__previousSlotAssignedNodes.set(slot, [...newNodes])
 
 		const diff: {added: Node[]; removed: Node[]} = {
 			added: newNodes,

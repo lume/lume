@@ -38,13 +38,13 @@
                   webgl: true,
               })
 
-              scene.mount(document.body)
+              document.body.append(scene)
 
               const ambientLight = new AmbientLight().set({
                   intensity: 0.1,
               })
 
-              scene.add(ambientLight)
+              scene.append(ambientLight)
 
               const pointLight = new PointLight().set({
                   color: "white",
@@ -54,7 +54,7 @@
                   intensity: "0.5",
               })
 
-              scene.add(pointLight)
+              scene.append(pointLight)
 
               const sphere = new Sphere().set({
                   size: [10, 10, 10],
@@ -66,7 +66,7 @@
               })
 
               sphere.setAttribute('has', 'basic-material')
-              pointLight.add(sphere)
+              pointLight.append(sphere)
 
               const vfl1 = \`
                   //viewport aspect-ratio:3/1 max-height:300
@@ -131,7 +131,7 @@
               child5.textContent = text
               layout.addToLayout(child5, 'child5')
 
-              scene.add(layout); // add layout to the scene
+              scene.append(layout);
 
               layout.size = (x,y,z,t) => [ 600+200*Math.sin(t/1000), 400+200*Math.sin(t/1000), z ]
 

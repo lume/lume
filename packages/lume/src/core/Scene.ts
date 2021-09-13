@@ -13,18 +13,18 @@ import {FogExp2} from 'three/src/scenes/FogExp2.js'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {HtmlScene as HTMLInterface} from './HtmlScene.js'
-import {documentBody, thro, trim} from './utils.js'
+import {defer, thro} from './utils.js'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 
-import type {ImperativeBase} from './ImperativeBase.js'
+import type {DeclarativeBase} from './DeclarativeBase.js'
 import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {Sizeable} from './Sizeable.js'
 import type {SizeableAttributes} from './Sizeable.js'
-import type {TreeNode} from './TreeNode.js'
+import type {Node} from './Node.js'
 
 export type SceneAttributes =
 	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
@@ -361,84 +361,27 @@ export class Scene extends HTMLInterface {
 		// "literal".
 		this._elementOperations.shouldRender = true
 
-		// size of the element where the Scene is mounted
-		// NOTE: z size is always 0, since native DOM elements are always flat.
-		this._elementParentSize = {x: 0, y: 0, z: 0}
-
 		this._createDefaultCamera()
 
 		this._calcSize()
 		this.needsUpdate()
 	}
 
+	// size of the element where the Scene is mounted
+	// NOTE: z size is always 0, since native DOM elements are always flat.
+	_elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+
+	static css = /*css*/ `
+		${HTMLInterface.css}
+		.vrButton {
+			color: black;
+			border-color: black;
+		}
+	`
+
 	drawScene() {
 		this.#glRenderer && this.#glRenderer.drawScene(this)
 		this.#cssRenderer && this.#cssRenderer.drawScene(this)
-	}
-
-	/**
-	 * @method mount - Mount the scene into the given target.
-	 *
-	 * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
-	 * the mount point will be selected from the DOM. If an HTMLElement is
-	 * provided, that will be the mount point. If no mount point is provided,
-	 * the scene will be mounted into document.body (possibly waiting for the body to
-	 * exist if it does not yet exist).
-	 */
-	async mount(mountPoint?: string | HTMLElement) {
-		let _mountPoint: string | Element | null | undefined = mountPoint
-
-		// if no mountPoint was provided, just mount onto the <body> element.
-		if (_mountPoint === undefined) {
-			if (!document.body) await documentBody()
-			_mountPoint = document.body
-		}
-
-		// if the user supplied a selector, mount there.
-		else if (typeof _mountPoint === 'string') {
-			const selector = _mountPoint
-
-			_mountPoint = document.querySelector(selector)
-			if (!_mountPoint && document.readyState === 'loading') {
-				// maybe the element wasn't parsed yet, check again when the
-				// document is ready.
-				await documentReady()
-				_mountPoint = document.querySelector(selector)
-			}
-		}
-
-		// At this point we should have an actual mount point (the user may have passed it in)
-		if (!(_mountPoint instanceof HTMLElement || _mountPoint instanceof ShadowRoot)) {
-			throw new Error(
-				trim(`
-						Invalid mount point specified in Scene.mount() call
-						(${_mountPoint}). Pass a selector or an HTMLElement. Not
-						passing any argument will cause the Scene to be mounted
-						to the <body>.
-					`),
-			)
-		}
-
-		// The user can mount to a new location without calling unmount
-		// first. Call it automatically in that case.
-		if (this._mounted) this.unmount()
-
-		if (_mountPoint !== this.parentNode) _mountPoint.appendChild(this)
-
-		this._mounted = true
-	}
-
-	/**
-	 * @method unmount - Unmount the scene from it's mount point. Use this when you are done using a scene.
-	 */
-	// TODO we can remove this. Use standard DOM APIs like `remove()` and
-	// replace use of `_mounted` with the standard `isConnected` property.
-	unmount() {
-		if (!this._mounted) return
-
-		if (this.parentNode) this.parentNode.removeChild(this)
-
-		this._mounted = false
 	}
 
 	connectedCallback() {
@@ -523,8 +466,19 @@ export class Scene extends HTMLInterface {
 		this.#stopParentSizeObservation()
 	}
 
-	_mounted = false
-	_elementParentSize: XYZValuesObject<number>
+	static observedAttributes = ['slot']
+
+	attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
+		super.attributeChangedCallback!(name, oldV, newV)
+
+		if (name === 'slot') {
+			defer(() => {
+				throw new Error(
+					'Assigning a <lume-scene> to a slot is not currently supported and may not work as expected. Instead, wrap the <lume-scene> in another element like a <div>, then assign the wrapper to the slot.',
+				)
+			})
+		}
+	}
 
 	makeThreeObject3d() {
 		return new ThreeScene()
@@ -532,6 +486,52 @@ export class Scene extends HTMLInterface {
 
 	makeThreeCSSObject() {
 		return new ThreeScene()
+	}
+
+	get composedLumeChildren(): Node[] {
+		const result: Node[] = []
+		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
+		return result
+	}
+
+	/**
+	 * @method traverseSceneGraph - This traverses the the composed tree of
+	 * LUME 3D elements (the scene graph) not including this element, in pre-order. It skips non-LUME elements.
+	 * @param {(node: Node) => void} visitor - A function called for each
+	 * LUME node in the scene graph (the composed tree).
+	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
+	 * the traversal will wait for custom elements to be defined (with
+	 * customElements.whenDefined) before traversing to them.
+	 * @returns {void | Promise<void>} - If `waitForUpgrade` is `false`,
+	 * the traversal will complete synchronously, and the return value will be
+	 * `undefined`. If `waitForUpgrade` is `true`, then traversal completes
+	 * asynchronously once all custom elements are defined, and a Promise is
+	 * returned so that it is possible to wait for the traversal to complete.
+	 */
+	traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+		if (!waitForUpgrade) {
+			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
+
+			return
+		}
+
+		// if waitForUpgrade is true, we make a promise chain so that
+		// traversal order is still the same as when waitForUpgrade is false.
+		let promise: Promise<any> = Promise.resolve()
+
+		for (const child of this.composedLumeChildren) {
+			const isUpgraded = child.matches(':defined')
+
+			if (isUpgraded) {
+				promise = promise!.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			} else {
+				promise = promise!
+					.then(() => customElements.whenDefined(child.tagName.toLowerCase()))
+					.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			}
+		}
+
+		return promise
 	}
 
 	_createDefaultCamera() {
@@ -596,7 +596,7 @@ export class Scene extends HTMLInterface {
 
 	/** @override */
 	_getParentSize(): XYZValuesObject<number> {
-		return this.parent ? (this.parent as Sizeable).calculatedSize : this._elementParentSize
+		return this.composedLumeParent ? (this.composedLumeParent as Sizeable).calculatedSize : this._elementParentSize
 	}
 
 	// For now, use the same program (with shaders) for all objects.
@@ -606,8 +606,6 @@ export class Scene extends HTMLInterface {
 		// THREE
 		// maybe keep this in sceneState in WebGLRendererThree
 		if (!super._loadGL()) return false
-
-		this._composedChildren
 
 		// We don't let Three update any matrices, we supply our own world
 		// matrices.
@@ -693,23 +691,10 @@ export class Scene extends HTMLInterface {
 			}),
 		)
 
-		this.traverse((node: TreeNode) => {
-			// skip `this`, we already handled it above
-			if (node === this) return
-
-			if (isImperativeBase(node)) node._triggerLoadGL()
-		})
+		this.traverseSceneGraph((node: Node) => node._triggerLoadGL(), true)
 
 		return true
 	}
-
-	static css = /*css*/ `
-		${HTMLInterface.css}
-		.vrButton {
-			color: black;
-			border-color: black;
-		}
-	`
 
 	_unloadGL() {
 		if (!super._unloadGL()) return false
@@ -719,12 +704,7 @@ export class Scene extends HTMLInterface {
 			this.#glRenderer = null
 		}
 
-		this.traverse((node: TreeNode) => {
-			// skip `this`, we already handled it above
-			if (node === this) return
-
-			if (isImperativeBase(node)) node._triggerUnloadGL()
-		})
+		this.traverseSceneGraph((node: Node) => node._triggerUnloadGL())
 
 		// Not all things are loaded in _loadGL (they may be loaded
 		// depending on property/attribute values), but all things, if any, should
@@ -742,12 +722,7 @@ export class Scene extends HTMLInterface {
 
 		this.#cssRenderer = this.#getCSSRenderer('three')
 
-		this.traverse((node: TreeNode) => {
-			// skip `this`, we already handled it above
-			if (node === this) return
-
-			if (isImperativeBase(node)) node._loadCSS()
-		})
+		this.traverseSceneGraph((node: Node) => node._loadCSS(), true)
 
 		return true
 	}
@@ -760,12 +735,7 @@ export class Scene extends HTMLInterface {
 			this.#cssRenderer = null
 		}
 
-		this.traverse((node: TreeNode) => {
-			// skip `this`, we already handled it above
-			if (node === this) return
-
-			if (isImperativeBase(node)) node._unloadCSS()
-		})
+		this.traverseSceneGraph((node: Node) => node._unloadCSS())
 
 		return true
 	}
@@ -821,7 +791,6 @@ export class Scene extends HTMLInterface {
 
 	#parentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
-	// HTM-API
 	#startOrStopParentSizeObservation() {
 		if (
 			// If we will be rendering something...
@@ -840,15 +809,22 @@ export class Scene extends HTMLInterface {
 
 	#resizeObserver: ResizeObserver | null = null
 
-	// observe size changes on the scene element.
-	// HTM-API
+	// observe size changes on the scene's parent.
 	#startParentSizeObservation() {
-		const parent =
-			this.parentNode instanceof HTMLElement
-				? this.parentNode
-				: this.parentNode instanceof ShadowRoot
-				? this.parentNode.host
-				: thro('A Scene can only be child of an HTMLElement or ShadowRoot (and f.e. not an SVGElement).')
+		const parentError = 'A Scene can only be child of HTMLElement or ShadowRoot (f.e. not an SVGElement).'
+
+		// TODO SLOTS use of _composedParent here won't fully work until we
+		// detect composed parent changes when the parent is not one of our own
+		// elements (f.e. when a scene is distributed via slot to a div). The only way
+		// to do this without polling is with a combination of monkey patching
+		// attachShadow and using MutationObserver in all trees to observe slot
+		// elements for slotchange.
+		// https://github.com/WICG/webcomponents/issues/941
+		const parent = this._composedParent
+
+		// This shouldn't be possible.
+		// @prod-prune
+		if (!parent) thro(parentError)
 
 		// TODO use a single ResizeObserver for all scenes.
 
@@ -893,7 +869,6 @@ export class Scene extends HTMLInterface {
 		this.#resizeObserver.observe(parent)
 	}
 
-	// HTM-API
 	#stopParentSizeObservation() {
 		this.#resizeObserver?.disconnect()
 		this.#resizeObserver = null
@@ -901,11 +876,10 @@ export class Scene extends HTMLInterface {
 
 	// NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
 	// we haven't taken that into consideration here.
-	// HTM-API
 	#checkSize(x: number, y: number) {
 		const parentSize = this.#parentSize
 
-		// if we have a size change, emit parentsizechange
+		// if we have a size change
 		if (parentSize.x != x || parentSize.y != y) {
 			parentSize.x = x
 			parentSize.y = y
@@ -914,7 +888,6 @@ export class Scene extends HTMLInterface {
 		}
 	}
 
-	// HTM-API
 	#onElementParentSizeChange(newSize: XYZValuesObject<number>) {
 		this._elementParentSize = newSize
 		// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
@@ -923,13 +896,6 @@ export class Scene extends HTMLInterface {
 		this._calcSize()
 		this.needsUpdate()
 	}
-}
-
-function isImperativeBase(_n: TreeNode): _n is ImperativeBase {
-	// TODO make sure instanceof works. For all intents and purposes, we assume
-	// to always have an ImperativeNode where we use this.
-	// return n instanceof ImperativeBase
-	return true
 }
 
 import type {ElementAttributes} from '@lume/element'
@@ -948,14 +914,8 @@ declare global {
 	}
 }
 
-function documentReady() {
-	if (document.readyState === 'loading') {
-		return new Promise<void>(resolve => {
-			document.addEventListener('DOMContentLoaded', () => resolve())
-		})
-	}
-
-	return Promise.resolve()
-}
-
 type FogMode = 'none' | 'linear' | 'expo2'
+
+function isNode(n: DeclarativeBase): n is Node {
+	return n.isNode
+}

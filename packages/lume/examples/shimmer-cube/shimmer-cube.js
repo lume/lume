@@ -34,6 +34,7 @@ const ShimmerSurface = element('shimmer-surface')(
 				background-size: 100% 100%;
 				width: 400%; height: 400%;
 
+				/* TODO Report Chrome bug: the animation has to be disabled then re-enabled in devtools to make the yellow gradient appear. */
 				animation: ShimmerEffect 1.8s cubic-bezier(0.75, 0.000, 0.25, 1.000) infinite;
 			}
 		`
@@ -74,7 +75,7 @@ const ShimmerCube = element('shimmer-cube')(
 				>
 					<slot></slot>
 				</lume-box>
-
+				<!-- <lume-node size-mode="proportional proportional proportional" size="1 1 1"> -->
 				${cubeFaceOrientations.map(
 					orientation => html`
 						<shimmer-surface
@@ -89,6 +90,7 @@ const ShimmerCube = element('shimmer-cube')(
 						</shimmer-surface>
 					`,
 				)}
+				<!-- </lume-node> -->
 			`
 
 			// root.querySelector('lume-box').three.material.opacity = 0.2
