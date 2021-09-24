@@ -25,7 +25,7 @@
 		"website:publish": "git push && ssh infamous@trusktr.io \"bash --login -c 'cd ~/lume+lume && npm run update:clean' && echo 'Enter root password to restart web server:' && su -c 'systemctl restart lume-website.service'\"",
 		"website:landing": "cd apps/website && meteor",
 		"website": "(npm run docs:serve & p1=$!; npm run website:landing & p2=$!; wait $p1 $p2)",
-		"build": "npm run clean && lerna run build",
+		"build": "npm run clean && lerna run build && lerna run rebuild",
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
 		"// ^ test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
