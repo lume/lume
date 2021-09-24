@@ -65,7 +65,7 @@ export abstract class Behavior extends ForwardProps() {
 	}
 
 	// a promise resolved when an element is upgraded
-	#whenDefined: Promise<void> = null! as Promise<void>
+	#whenDefined: Promise<unknown> = null! as Promise<unknown>
 	#elementDefined = false
 
 	_forwardInitialProps() {
