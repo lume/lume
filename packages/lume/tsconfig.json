@@ -10,7 +10,13 @@
 		// Project References?
 		"types": ["@lume/cli/node_modules/@types/jasmine"],
 
-		"typeRoots": []
+		"typeRoots": [],
+
+		// TypeScript 4.4 broke many applications because they removed or
+		// modified a ton of interfaces from lib.dom.d.ts, so skip type errors in
+		// node_modules. :(
+		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
+		"skipLibCheck": true
 	},
 	"include": ["./src/**/*"],
 
