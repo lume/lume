@@ -1,4 +1,4 @@
-import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight'
+import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {Light} from './Light.js'
 
