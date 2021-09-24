@@ -71,7 +71,7 @@ describe('TreeNode', () => {
 		expect(t.lumeChildren).toEqual([b, a, c])
 
 		t.removeChild(b)
-		expect(() => t.removeChild(b)).toThrowError(ReferenceError, 'childNode is not a child of this parent.')
+		expect(() => t.removeChild(b)).toThrowError(DOMException)
 
 		expect(t.lumeChildCount).toBe(2)
 		expect(t.lumeChildren).toEqual([a, c])

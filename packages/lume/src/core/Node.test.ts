@@ -6,7 +6,8 @@ useDefaultNames()
 
 describe('Node', () => {
 	let scene = new Scene()
-	const body = document.body
+	const body = document.createElement('div')
+	document.body.append(body)
 
 	afterEach(() => {
 		scene.remove()

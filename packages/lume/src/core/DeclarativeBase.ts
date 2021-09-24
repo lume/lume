@@ -219,19 +219,45 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 
 	// COMPOSED TREE TRACKING: The composed parent is the parent that this element renders relative
 	// to in the flat tree (composed tree).
-	get _composedParent(): HTMLElement | DeclarativeBase | null {
-		const parent = this.__distributedParent || this.__shadowRootParent || this.parentElement
+	get _composedParent(): HTMLElement | null {
+		let parent: Node | null = this.__distributedParent || this.__shadowRootParent
+
+		// Shortcut in case we have already detect distributed or shadowRoot parent.
+		if (parent) return parent as HTMLElement
+
+		parent = this.parentNode as HTMLElement | ShadowRoot | null
 
 		if (parent instanceof HTMLSlotElement) {
+			const slot = parent
+
 			// If this element is a child of a <slot> element (i.e. this
 			// element is a slot's default content), then return null if the
 			// slot has anything slotted to it in which case default content
 			// does not participate in the composed tree.
-			if (parent.assignedElements({flatten: true}).length) return null
-			else return parent.parentElement
+			if (slot.assignedElements({flatten: true}).length) return null
+
+			const slotParent = slot.parentNode
+
+			if (slotParent instanceof ShadowRoot) return slotParent.host as HTMLElement
+			else return slot.parentElement
+		} else if (parent instanceof ShadowRoot) {
+			return parent.host as HTMLElement
+		} else if (parent instanceof HTMLElement) {
+			if (!hasShadow(parent)) return parent
+
+			// a child of a host with a shadow has a composed parent if the child is slotted
+
+			const slot = this.assignedSlot
+
+			if (!slot) return null
+
+			const slotParent = slot.parentNode
+
+			if (slotParent instanceof ShadowRoot) return slotParent.host as HTMLElement
+			else return slot.parentElement
 		}
 
-		return parent
+		return null
 	}
 
 	// COMPOSED TREE TRACKING: Composed children are the children that render relative to this
@@ -434,6 +460,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		// of the slot's assigned nodes as being distributed to the current element,
 		// because instead they are distributed to an element further down in the
 		// composed tree where this slot is assigned to.
+		//
 		// Special case for Scenes: we don't care if slot children of a Scene
 		// distribute to a deeper slot, because a Scene's ShadowRoot is for the rendering
 		// implementation and not the user's distribution, so we only want to detect
@@ -470,4 +497,22 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 
 		return diff
 	}
+}
+
+const shadowHosts: WeakSet<Element> = new WeakSet()
+
+{
+	const original = Element.prototype.attachShadow
+
+	Element.prototype.attachShadow = function attachShadow(...args) {
+		const result = original.apply(this, args)
+
+		shadowHosts.add(this)
+
+		return result
+	}
+}
+
+export function hasShadow(el: Element): boolean {
+	return shadowHosts.has(el)
 }

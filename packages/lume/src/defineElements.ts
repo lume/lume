@@ -10,7 +10,12 @@ export function defineElements() {
 	}
 }
 
+let defined = false
+
 export function useDefaultNames() {
+	if (defined) return
+	defined = true
+
 	// The old way
 	_useDefaultNames()
 

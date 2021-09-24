@@ -243,22 +243,21 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	__possiblyLoadThree(child: ImperativeBase): void {
-		// children can be non-lib DOM nodes (f.e. div, h1, etc)
-		if (isNode(child)) {
-			child._triggerLoadGL()
-			child._triggerLoadCSS()
-		}
+		// Skip scenes because scenes call their own _trigger* methods based on
+		// values of their webgl or enabled-css attributes.
+		if (!isNode(child)) return
+
+		child._triggerLoadGL()
+		child._triggerLoadCSS()
 	}
 
 	__possiblyUnloadThree(child: ImperativeBase): void {
-		// children can be non-lib DOM nodes (f.e. div, h1, etc)
-		// TODO, this check is redundant because call site already checks
-		// for ImperativeBase? Or do we not want to run this on Scene
-		// instances?
-		if (isNode(child)) {
-			child._triggerUnloadGL()
-			child._triggerUnloadCSS()
-		}
+		// Skip scenes because scenes call their own _trigger* methods based on
+		// values of their webgl or enabled-css attributes.
+		if (!isNode(child)) return
+
+		child._triggerUnloadGL()
+		child._triggerUnloadCSS()
 	}
 
 	/**
@@ -275,18 +274,19 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * same as childConnectedCallback).
 	 */
 	childComposedCallback(child: Element, _connectionType: ConnectionType): void {
-		if (child instanceof ImperativeBase) {
-			// Calculate sizing because proportional size might depend on
-			// the new parent.
-			child._calcSize()
-			child.needsUpdate()
+		if (!(child instanceof ImperativeBase)) return
 
-			this.__possiblyLoadThree(child)
-		}
+		// Calculate sizing because proportional size might depend on
+		// the new parent.
+		child._calcSize()
+		child.needsUpdate()
+
+		this.__possiblyLoadThree(child)
 	}
 
 	childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
-		if (child instanceof ImperativeBase) this.__possiblyUnloadThree(child)
+		if (!(child instanceof ImperativeBase)) return
+		this.__possiblyUnloadThree(child)
 	}
 
 	/**
