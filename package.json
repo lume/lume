@@ -4,7 +4,7 @@
 	"private": true,
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"engines": {
-		"node": ">=13 <15"
+		"node": ">=14"
 	},
 	"scripts": {
 		"clean": "lerna run clean",
@@ -12,7 +12,7 @@
 		"update": "git pull && npm install",
 		"update:clean": "git reset --hard && git submodule foreach git reset --hard && npm run update",
 		"update-modules": "git submodule update --init --recursive",
-		"bootstrap": "lerna bootstrap --no-ci --ignore '{,readem,glas}' --ignore-scripts --loglevel notice -- --loglevel notice && lerna bootstrap --ignore-scripts --no-ci --scope '{,readem}' && lerna bootstrap --no-ci --scope '{,glas}'",
+		"bootstrap": "lerna bootstrap --ignore '{,readem,glas}' --no-ci --ignore-scripts --loglevel notice -- --loglevel notice && lerna bootstrap --scope '{,readem}' --no-ci --ignore-scripts && lerna bootstrap --scope '{,glas}' --no-ci && rimraf './packages/**/node_modules/electron/'",
 		"// ^ bootstrap": "Bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume).",
 		"// ^ bootstrap 2": "TODO bootstrap readem along with cli (somehow?), so that cli is linked into it. Maybe the scope would be {,readem,cli}?",
 		"// ^ bootstrap 3": "We use --ignore-scripts so that the bootstrap doesn't run prepare scripts (except with the glas package which requires a postinstall step for webgl-raub). We want it to only put dependencies in place. A subsequent lerna build step builds everything in correct order. Otherwise some packages will try to build themselves before dependencies are in place.",
@@ -25,7 +25,7 @@
 		"website:publish": "git push && ssh infamous@trusktr.io \"bash --login -c 'cd ~/lume+lume && npm run update:clean' && echo 'Enter root password to restart web server:' && su -c 'systemctl restart lume-website.service'\"",
 		"website:landing": "cd apps/website && meteor",
 		"website": "(npm run docs:serve & p1=$!; npm run website:landing & p2=$!; wait $p1 $p2)",
-		"build": "npm run clean && lerna run build && lerna run rebuild",
+		"build": "npm run clean && lerna run build",
 		"test": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,variable,glas,eventful,custom-attributes}'",
 		"test:ci": "npm run test -- --concurrency 1",
 		"// ^ test:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
@@ -34,7 +34,9 @@
 		"prettier:check": "prettier . --check"
 	},
 	"devDependencies": {
+		"electron": "14.0.1",
 		"lerna": "^3.20.2",
-		"prettier": "^2.0.0"
+		"prettier": "^2.0.0",
+		"rimraf": "^2.7.1"
 	}
 }
