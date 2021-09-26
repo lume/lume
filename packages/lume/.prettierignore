@@ -8,3 +8,6 @@ docs/global.js
 
 # ignore _sidebar.md because part of it is auto-generated.
 docs/_sidebar.md
+
+# ignore auto-linked files
+docs/guide/includes/*.md
