@@ -35,7 +35,7 @@
 		"release:alpha": "lume releaseAlpha",
 		"release:beta": "lume releaseBeta",
 		"version": "lume versionHook",
-		"postversion": "lume postVersionHook",
+		"postversion": "lume postVersionHook && echo && echo DON'T FORGET TO COMMIT AND TAG MANUALLY, FOR NOW && echo",
 		"OTHER SCRIPTS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"prepare": "npm run build",
 		"docs TODO": "build docs into a separate folder instead of moving files in.",
