@@ -36,6 +36,7 @@
 		"release:beta": "lume releaseBeta",
 		"version": "lume versionHook",
 		"postversion": "lume postVersionHook && echo && echo DON'T FORGET TO COMMIT AND TAG MANUALLY, FOR NOW && echo",
+		"// ^ postversion": "We commit and tag manually right now because 'npm version' doesn't do it if we're not at the root of the repo. https://github.com/npm/cli/issues/3803",
 		"OTHER SCRIPTS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"prepare": "npm run build",
 		"docs TODO": "build docs into a separate folder instead of moving files in.",
