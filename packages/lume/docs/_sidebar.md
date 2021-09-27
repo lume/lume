@@ -42,18 +42,19 @@
   - [ImperativeBase](/api/core/ImperativeBase.md)
   - [Node](/api/core/Node.md)
   - [Scene](/api/core/Scene.md)
+  - [Sizeable](/api/core/Sizeable.md)
   - [TreeNode](/api/core/TreeNode.md)
   - lights/
   - [AmbientLight](/api/lights/AmbientLight.md)
   - [DirectionalLight](/api/lights/DirectionalLight.md)
   - [Light](/api/lights/Light.md)
   - [PointLight](/api/lights/PointLight.md)
+  - meshes/
+  - [Mesh](/api/meshes/Mesh.md)
   - models/
   - [ColladaModel](/api/models/ColladaModel.md)
   - [FbxModel](/api/models/FbxModel.md)
   - [GltfModel](/api/models/GltfModel.md)
-  - meshes/
-  - [Mesh](/api/meshes/Mesh.md)
   - utils/
   - [Settable](/api/utils/Settable.md)
   - behaviors/
