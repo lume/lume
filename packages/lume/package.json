@@ -35,7 +35,7 @@
 		"release:alpha": "lume releaseAlpha",
 		"release:beta": "lume releaseBeta",
 		"version": "lume versionHook",
-		"postversion": "lume postVersionHook && echo && echo DON'T FORGET TO COMMIT AND TAG MANUALLY, FOR NOW && echo",
+		"postversion": "v=npm_package_version lume postVersionHook && echo && echo 'COMMITTING AND TAGGING MANUALLY, FOR NOW' && echo && git commit -a -m \"v$v\" && git tag \"v$v\"",
 		"// ^ postversion": "We commit and tag manually right now because 'npm version' doesn't do it if we're not at the root of the repo. https://github.com/npm/cli/issues/3803",
 		"OTHER SCRIPTS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"prepare": "npm run build",
