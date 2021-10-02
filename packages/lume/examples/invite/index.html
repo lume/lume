@@ -1,0 +1,260 @@
+<title>Игорь & Анна</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		/* background: #c9d9d1; */
+		background-image: linear-gradient(
+			159deg,
+			rgb(228, 236, 232) 0%,
+			rgb(220, 231, 226) 35%,
+			rgb(201, 217, 209) 64%,
+			rgb(127, 164, 145) 100%
+		);
+		touch-action: none;
+		user-select: none;
+	}
+	#fitted {
+		background: #fbfaf4;
+	}
+
+	img,
+	div {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
+	div {
+		overflow: hidden;
+	}
+	img {
+		transform: scale(1.01);
+	}
+
+	.particle {
+		background-color: #8db497;
+		border-radius: 100%;
+	}
+</style>
+
+<body>
+	<!-- <script src="../../dist/global.js"></script> -->
+	<script src="https://unpkg.com/lume@0.3.0-alpha.7/dist/global.js"></script>
+	<script>
+		// Define all the LUME elements with their default names.
+		LUME.useDefaultNames()
+	</script>
+
+	<lume-scene id="scene" perspective="800" webgl>
+		<!-- <lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light> -->
+
+		<lume-node
+			id="fitter"
+			size-mode="proportional proportional"
+			size="0.9 0.9"
+			align-point="0.5 0.5"
+			mount-point="0.5 0.5"
+		>
+			<lume-node id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150">
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
+					<div>
+						<img src="https://assets.codepen.io/191583/background-01.png" />
+					</div>
+				</lume-node>
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
+					<div>
+						<img src="https://assets.codepen.io/191583/text-01.2.svg" />
+					</div>
+				</lume-node>
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
+					<div>
+						<img src="https://assets.codepen.io/191583/anna.svg" />
+					</div>
+				</lume-node>
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
+					<div>
+						<img src="https://assets.codepen.io/191583/and.svg" />
+					</div>
+				</lume-node>
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
+					<div>
+						<img src="https://assets.codepen.io/191583/igor.svg" />
+					</div>
+				</lume-node>
+				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
+					<div>
+						<img src="https://assets.codepen.io/191583/numbers.svg" />
+					</div>
+				</lume-node>
+
+				<lume-node id="particles" align-point="0.5 0.5"></lume-node>
+			</lume-node>
+		</lume-node>
+	</lume-scene>
+
+	<script>
+		const {autorun, variable, untrack, Motor} = LUME
+
+		///// FIT CARD IN VIEWPORT /////////////////////////////////////////
+
+		//////// SCALE MODE ///////////////////////////////////
+
+		// let queued = null
+
+		// autorun(() => {
+		// 	// fitter.calculatedSize
+		// 	// fitted.calculatedSize
+		// 	// if (queued) return
+		// 	// queued = Promise.resolve().then(() => {
+		// 	// 	queued = null
+
+		// 	const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
+		// 	const innerAspect = fitted.calculatedSize.x / fitted.calculatedSize.y
+
+		// 	let ratio = 1
+
+		// 	if (innerAspect <= outerAspect) {
+		// 		// inner should fit vertically
+		// 		const outerSize = fitter.calculatedSize.y
+		// 		const innerSize = fitted.calculatedSize.y
+
+		// 		ratio = outerSize / innerSize
+		// 	} else {
+		// 		// inner should fit horizontally
+		// 		const outerSize = fitter.calculatedSize.x
+		// 		const innerSize = fitted.calculatedSize.x
+
+		// 		ratio = outerSize / innerSize
+		// 	}
+
+		// 	fitted.scale = [ratio, ratio]
+
+		// 	// })
+		// })
+
+		//////// RESIZE MODE ///////////////////////////////////
+
+		// Requires literal sizing
+		// Use a given aspect, or calculate it based on initial size.
+		const innerSize = fitted.size
+		const innerAspect = innerSize.x / innerSize.y
+
+		const outerAspect = variable(1)
+		autorun(() => outerAspect(fitter.calculatedSize.x / fitter.calculatedSize.y))
+
+		autorun(() => {
+			// const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
+
+			if (innerAspect <= outerAspect()) {
+				untrack(() => {
+					// inner should fit vertically
+					innerSize.y = fitter.calculatedSize.y
+					innerSize.x = innerSize.y * innerAspect
+					// fitted.size = [innerSize.y * innerAspect, fitter.calculatedSize.y]
+				})
+			} else {
+				untrack(() => {
+					// inner should fit horizontally
+					innerSize.x = fitter.calculatedSize.x
+					innerSize.y = innerSize.x / innerAspect
+					// fitted.size = [fitter.calculatedSize.x, innerSize.x / innerAspect]
+				})
+			}
+		})
+
+		// let running = 0
+
+		// Motor.addRenderTask((t, dt) => {
+		// 	// requestAnimationFrame(function loop(t) {
+		// 	// 	requestAnimationFrame(loop)
+
+		// 	running += dt
+		// 	if (running > 2000) return false
+
+		// 	fitter.size.y = 100 * Math.abs(Math.sin(t * 0.001))
+		// })
+
+		///// ROTATION ON POINTER MOVE ///////////////////////////////////////////////
+
+		const rotationAmount = 10
+		const targetRotation = {
+			x: 0,
+			y: 0,
+		}
+
+		const setTargetRotation = event => {
+			targetRotation.y = (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount
+			targetRotation.x = -((event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount)
+		}
+
+		// Rotate the image a little bit based on pointer position.
+		scene.addEventListener('pointermove', setTargetRotation)
+		scene.addEventListener('pointerdown', setTargetRotation)
+
+		// Rotate the container towards the targetRotation over time to make it smooth.
+		Motor.addRenderTask(() => {
+			fitter.rotation.x += (targetRotation.x - fitter.rotation.x) * 0.05
+			fitter.rotation.y += (targetRotation.y - fitter.rotation.y) * 0.05
+		})
+
+		/////// CHANGE DEPTH ON SMALLER DEVICES /////////////////////////////////////////////////
+
+		// const layers = Array.from(document.querySelectorAll('#fitted > lume-node'))
+
+		// let smaller = false
+
+		// window.addEventListener('resize', () => {
+		// 	if (window.innerWidth < 1024) {
+		// 		if (smaller) return
+		// 		smaller = true
+
+		// 		for (const layer of layers) {
+		// 			layer.position.z *= 1.5
+		// 		}
+		// 	} else {
+		// 		if (!smaller) return
+		// 		smaller = false
+
+		// 		for (const layer of layers) {
+		// 			layer.position.z /= 1.5
+		// 		}
+		// 	}
+		// })
+
+		////// ADD PARTICLES /////////////////////////////////////////////////////////
+		for (let i = 0, l = 300; i < l; i += 1) {
+			const particle = document.createElement('lume-node')
+			// const star = document.createElement('div')
+			// star.classList.add('star')
+			// particle.append(star)
+			particle.classList.add('particle')
+			particle.alignPoint = [0.5, 0.5]
+			particle.mountPoint = [0.5, 0.5]
+			const r = Math.random() * 10
+			particle.size = [r, r]
+			particle.opacity = 0.4
+
+			particle.position = [Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.random() * 1000 - 500]
+
+			particles.append(particle)
+
+			const initialOpacity = 0.7
+
+			// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
+			const flickerFunction = () => {
+				const flicker = (Math.random() - 1) * 0.4
+				particle.opacity = initialOpacity + flicker
+
+				setTimeout(() => Motor.once(flickerFunction), Math.random() * 100)
+			}
+
+			Motor.once(flickerFunction)
+		}
+	</script>
+</body>
