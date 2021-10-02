@@ -26,6 +26,35 @@ describe('Scene', () => {
 			})
 		})
 
+		it("always treats children of a Scene as composed children, disregarding a Scene's special ShadowDOM", async () => {
+			const scene = html`
+				<lume-scene webgl>
+					<lume-node></lume-node>
+				</lume-scene>
+			` as Scene
+
+			const node = scene.querySelector('lume-node') as Node
+
+			container.append(scene)
+
+			// TODO get it work without a timeout (ths is difficult considering
+			// that the implementation currently relies on MutationObserver
+			// which triggers reactions deferred).
+			await new Promise(r => setTimeout(r, 10))
+
+			expect(node.parentNode).toBe(scene)
+			expect(node.lumeParent).toBe(scene)
+
+			// Although a Scene has ShadowDOM, child Nodes are considered
+			// composed to the Scene instead of the ShadowDOM for our 3D
+			// rendering purposes.
+			expect(node._composedParent).withContext('_composedParent').toBe(scene)
+			expect(node.composedLumeParent).withContext('composedLumeParent').toBe(scene)
+
+			expect(node.three.parent).withContext('three.parent').toBe(scene.three)
+			expect(node.threeCSS.parent).withContext('threeCSS.parent').toBe(scene.threeCSS)
+		})
+
 		it('composes outer tree Nodes to a ShadowRoot Scene via slotted slot', async () => {
 			const node = html`<lume-node slot="scene">hello</lume-node>` as Node
 			container.append(node)
@@ -485,5 +514,9 @@ describe('Scene', () => {
 			expect(scene._composedParent).toBe(distributedParent)
 			expect(scene.composedLumeParent).toBe(null)
 		})
+
+		// TODO tests for features that rely on the composed tree
+		xit('produces the correct calculated size for a Node based on its composed parent', () => {})
+		xit('produces the correct transform for a Node based on its composed parent', () => {})
 	})
 })

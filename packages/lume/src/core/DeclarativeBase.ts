@@ -4,6 +4,7 @@ import {WithChildren} from './WithChildren.js'
 import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
 
 import type {HtmlNode} from './HtmlNode.js'
+import type {Scene} from './Scene.js'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 
@@ -220,9 +221,14 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	// COMPOSED TREE TRACKING: The composed parent is the parent that this element renders relative
 	// to in the flat tree (composed tree).
 	get _composedParent(): HTMLElement | null {
-		let parent: Node | null = this.__distributedParent || this.__shadowRootParent
+		let parent: Node | null = this.parentElement
 
-		// Shortcut in case we have already detect distributed or shadowRoot parent.
+		// Special case only for Nodes that are children of a Scene.
+		if (parent && isScene(parent)) return parent
+
+		parent = this.__distributedParent || this.__shadowRootParent
+
+		// Shortcut in case we have already detected distributed or shadowRoot parent.
 		if (parent) return parent as HTMLElement
 
 		parent = this.parentNode as HTMLElement | ShadowRoot | null
@@ -515,4 +521,9 @@ const shadowHosts: WeakSet<Element> = new WeakSet()
 
 export function hasShadow(el: Element): boolean {
 	return shadowHosts.has(el)
+}
+
+function isScene(o: object): o is Scene {
+	// @ts-ignore
+	return o.isScene
 }

@@ -488,6 +488,7 @@ export class Scene extends HTMLInterface {
 		return new ThreeScene()
 	}
 
+	// Overrides to filter out any non-Nodes (f.e. Scenes).
 	get composedLumeChildren(): Node[] {
 		const result: Node[] = []
 		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
