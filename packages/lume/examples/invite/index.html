@@ -86,7 +86,7 @@
 		LUME.useDefaultNames()
 	</script>
 
-	<lume-scene id="scene" perspective="800" webgl>
+	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="800" fog-far="1300" fog-color="#ccdbd4">
 		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 		<lume-point-light
@@ -282,22 +282,29 @@
 
 		async function makeParticles() {
 			const particleSpace = 1000
-			const numberOfParticles = 300
-			const starMarkup = await fetch('./star.svg').then(r => r.text())
+			const numberOfParticles = 120
+			const initialOpacity = 0.4
+
+			const starMarkup = await fetch('https://assets.codepen.io/191583/star.svg').then(r => r.text())
 			const starTmpl = document.createElement('template')
 			starTmpl.innerHTML = starMarkup
 
 			const particles = []
 
 			for (let i = 0, l = numberOfParticles; i < l; i += 1) {
-				const particle = document.createElement('lume-node')
+				// const particle = document.createElement('lume-node')
+				const particle = document.createElement('lume-plane')
 				particle.classList.add('particle')
 				particle.alignPoint = [0.5, 0.5]
 				particle.mountPoint = [0.5, 0.5]
 				// const r = 5 + Math.random() * 5
 				const r = 10
 				particle.size = [r, r]
-				particle.opacity = 0.4
+				particle.opacity = initialOpacity
+
+				// particle.append(starTmpl.content.firstChild.cloneNode(true))
+				particle.texture = 'https://assets.codepen.io/191583/star.svg'
+				particle.color = 'white'
 
 				particle.position.set(
 					Math.random() * particleSpace - particleSpace / 2,
@@ -305,13 +312,9 @@
 					Math.random() * particleSpace - particleSpace / 2,
 				)
 
-				particle.append(starTmpl.content.firstChild.cloneNode(true))
-
 				particleContainer.append(particle)
 				particles.push(particle)
 			}
-
-			const initialOpacity = 0.7
 
 			// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
 			const flickerFunction = () => {
