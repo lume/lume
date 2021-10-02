@@ -9,6 +9,11 @@
 		height: 100%;
 		margin: 0;
 		padding: 0;
+		touch-action: none;
+		user-select: none;
+	}
+
+	html {
 		/* background: #c9d9d1; */
 		background-image: linear-gradient(
 			159deg,
@@ -17,9 +22,12 @@
 			rgb(201, 217, 209) 64%,
 			rgb(127, 164, 145) 100%
 		);
-		touch-action: none;
-		user-select: none;
 	}
+
+	body {
+		background-image: repeating-conic-gradient(hsla(0, 0%, 100%, 0.1) 0 15deg, hsla(0, 0%, 100%, 0) 0 30deg);
+	}
+
 	#fitted {
 		background: #fbfaf4;
 	}
@@ -44,7 +52,7 @@
 	}
 </style>
 
-<body>
+<body touch-action="none">
 	<!-- <script src="../../dist/global.js"></script> -->
 	<script src="https://unpkg.com/lume@0.3.0-alpha.7/dist/global.js"></script>
 	<script>
@@ -259,4 +267,6 @@
 			Motor.once(flickerFunction)
 		}
 	</script>
+
+	<!-- <script src="https://projects.verou.me/conic-gradient/conic-gradient.js"></script> -->
 </body>
