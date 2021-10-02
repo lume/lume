@@ -25,7 +25,24 @@
 	}
 
 	body {
-		background-image: repeating-conic-gradient(hsla(0, 0%, 100%, 0.1) 0 15deg, hsla(0, 0%, 100%, 0) 0 30deg);
+		/* background-image: repeating-conic-gradient(hsla(0, 0%, 100%, 0.1) 0 15deg, hsla(0, 0%, 100%, 0) 0 30deg); */
+	}
+
+	lume-scene {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	.rays {
+		position: absolute;
+		top: -100%;
+		left: -100%;
+		width: 200%;
+		height: 200%;
+		pointer-events: none;
+
+		background-image: repeating-conic-gradient(hsla(0, 0%, 100%, 0.3) 0 5deg, hsla(0, 0%, 100%, 0) 0 15deg);
 	}
 
 	#fitted {
@@ -107,6 +124,8 @@
 			</lume-node>
 		</lume-node>
 	</lume-scene>
+
+	<div class="rays"></div>
 
 	<script>
 		const {autorun, variable, untrack, Motor} = LUME
