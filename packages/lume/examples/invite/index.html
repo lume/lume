@@ -65,8 +65,16 @@
 	}
 
 	.particle {
-		background-color: #8db497;
-		border-radius: 100%;
+		/* background-color: #8db497; */
+		/* border-radius: 100%; */
+		/* border: 0.5px solid teal; */
+	}
+
+	.star {
+		width: 100%;
+		height: 100%;
+		display: block;
+		fill: #8db497;
 	}
 </style>
 
@@ -79,8 +87,16 @@
 	</script>
 
 	<lume-scene id="scene" perspective="800" webgl>
-		<!-- <lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
-		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light> -->
+		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+		<lume-point-light
+			id="light"
+			position="0 0 400"
+			intensity="0.6"
+			color="white"
+			shadow-radius="2"
+			shadow-bias="-0.002"
+		></lume-point-light>
 
 		<lume-node
 			id="fitter"
@@ -89,7 +105,7 @@
 			align-point="0.5 0.5"
 			mount-point="0.5 0.5"
 		>
-			<lume-node id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150">
+			<lume-mixed-plane id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#444">
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
 					<div>
 						<img src="https://assets.codepen.io/191583/background-01.png" />
@@ -120,16 +136,18 @@
 						<img src="https://assets.codepen.io/191583/numbers.svg" />
 					</div>
 				</lume-node>
-
-				<lume-node id="particles" align-point="0.5 0.5"></lume-node>
-			</lume-node>
+			</lume-mixed-plane>
 		</lume-node>
+
+		<lume-node id="particleContainer" align-point="0.5 0.5" rotation="0 0 0"></lume-node>
 	</lume-scene>
 
 	<div class="rays"></div>
 
 	<script>
 		const {autorun, variable, untrack, Motor} = LUME
+
+		fitted.three.material.opacity = 0.3
 
 		///// FIT CARD IN VIEWPORT /////////////////////////////////////////
 
@@ -233,6 +251,8 @@
 			fitter.rotation.y += (targetRotation.y - fitter.rotation.y) * 0.05
 		})
 
+		autorun(() => (particleContainer.rotation = fitter.rotation))
+
 		/////// CHANGE DEPTH ON SMALLER DEVICES /////////////////////////////////////////////////
 
 		// const layers = Array.from(document.querySelectorAll('#fitted > lume-node'))
@@ -258,35 +278,71 @@
 		// })
 
 		////// ADD PARTICLES /////////////////////////////////////////////////////////
-		for (let i = 0, l = 300; i < l; i += 1) {
-			const particle = document.createElement('lume-node')
-			// const star = document.createElement('div')
-			// star.classList.add('star')
-			// particle.append(star)
-			particle.classList.add('particle')
-			particle.alignPoint = [0.5, 0.5]
-			particle.mountPoint = [0.5, 0.5]
-			const r = Math.random() * 10
-			particle.size = [r, r]
-			particle.opacity = 0.4
+		makeParticles()
 
-			particle.position = [Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.random() * 1000 - 500]
+		async function makeParticles() {
+			const particleSpace = 1000
+			const numberOfParticles = 300
+			const starMarkup = await fetch('./star.svg').then(r => r.text())
+			const starTmpl = document.createElement('template')
+			starTmpl.innerHTML = starMarkup
 
-			particles.append(particle)
+			const particles = []
+
+			for (let i = 0, l = numberOfParticles; i < l; i += 1) {
+				const particle = document.createElement('lume-node')
+				particle.classList.add('particle')
+				particle.alignPoint = [0.5, 0.5]
+				particle.mountPoint = [0.5, 0.5]
+				// const r = 5 + Math.random() * 5
+				const r = 10
+				particle.size = [r, r]
+				particle.opacity = 0.4
+
+				particle.position.set(
+					Math.random() * particleSpace - particleSpace / 2,
+					Math.random() * particleSpace - particleSpace / 2,
+					Math.random() * particleSpace - particleSpace / 2,
+				)
+
+				particle.append(starTmpl.content.firstChild.cloneNode(true))
+
+				particleContainer.append(particle)
+				particles.push(particle)
+			}
 
 			const initialOpacity = 0.7
 
 			// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
 			const flickerFunction = () => {
-				const flicker = (Math.random() - 1) * 0.4
-				particle.opacity = initialOpacity + flicker
+				return
+				for (let i = 0, l = numberOfParticles; i < l; i += 1) {
+					const particle = particles[i]
+
+					const flicker = (Math.random() - 1) * 0.4
+					particle.opacity = initialOpacity + flicker
+				}
 
 				setTimeout(() => Motor.once(flickerFunction), Math.random() * 100)
 			}
 
 			Motor.once(flickerFunction)
+
+			Motor.addRenderTask(() => {
+				for (let i = 0, l = numberOfParticles; i < l; i += 1) {
+					const particle = particles[i]
+
+					particle.position.x += 0.5
+					particle.position.y++
+
+					if (particle.position.x > particleSpace / 2) {
+						particle.position.x = -particleSpace / 2
+					}
+					if (particle.position.y > particleSpace / 2) {
+						particle.position.y = -particleSpace / 2
+					}
+				}
+			})
 		}
 	</script>
-
-	<!-- <script src="https://projects.verou.me/conic-gradient/conic-gradient.js"></script> -->
 </body>
