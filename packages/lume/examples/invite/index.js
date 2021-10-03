@@ -338,9 +338,11 @@ audio.onpause = () => {
 const playFn = () => audio.play()
 scene.addEventListener('pointerdown', playFn, {once: true})
 
-play.onclick = () => {
+play.onpointerdown = () => {
 	scene.removeEventListener('pointerdown', playFn, {once: true})
+}
 
+play.onclick = () => {
 	if (audio.paused) audio.play()
 	else audio.pause()
 }
