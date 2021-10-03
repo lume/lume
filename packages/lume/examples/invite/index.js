@@ -6,83 +6,84 @@ const {autorun, variable, untrack, Motor} = LUME
 // fitted.three.material.opacity = 0.3
 
 ///// FIT CARD IN VIEWPORT /////////////////////////////////////////
+{
+	//////// SCALE MODE ///////////////////////////////////
 
-//////// SCALE MODE ///////////////////////////////////
+	// let queued = null
 
-// let queued = null
+	// autorun(() => {
+	// 	// fitter.calculatedSize
+	// 	// fitted.calculatedSize
+	// 	// if (queued) return
+	// 	// queued = Promise.resolve().then(() => {
+	// 	// 	queued = null
 
-// autorun(() => {
-// 	// fitter.calculatedSize
-// 	// fitted.calculatedSize
-// 	// if (queued) return
-// 	// queued = Promise.resolve().then(() => {
-// 	// 	queued = null
+	// 	const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
+	// 	const innerAspect = fitted.calculatedSize.x / fitted.calculatedSize.y
 
-// 	const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
-// 	const innerAspect = fitted.calculatedSize.x / fitted.calculatedSize.y
+	// 	let ratio = 1
 
-// 	let ratio = 1
+	// 	if (innerAspect <= outerAspect) {
+	// 		// inner should fit vertically
+	// 		const outerSize = fitter.calculatedSize.y
+	// 		const innerSize = fitted.calculatedSize.y
 
-// 	if (innerAspect <= outerAspect) {
-// 		// inner should fit vertically
-// 		const outerSize = fitter.calculatedSize.y
-// 		const innerSize = fitted.calculatedSize.y
+	// 		ratio = outerSize / innerSize
+	// 	} else {
+	// 		// inner should fit horizontally
+	// 		const outerSize = fitter.calculatedSize.x
+	// 		const innerSize = fitted.calculatedSize.x
 
-// 		ratio = outerSize / innerSize
-// 	} else {
-// 		// inner should fit horizontally
-// 		const outerSize = fitter.calculatedSize.x
-// 		const innerSize = fitted.calculatedSize.x
+	// 		ratio = outerSize / innerSize
+	// 	}
 
-// 		ratio = outerSize / innerSize
-// 	}
+	// 	fitted.scale = [ratio, ratio]
 
-// 	fitted.scale = [ratio, ratio]
+	// 	// })
+	// })
 
-// 	// })
-// })
+	//////// RESIZE MODE ///////////////////////////////////
 
-//////// RESIZE MODE ///////////////////////////////////
+	// Requires literal sizing
+	// Use a given aspect, or calculate it based on initial size.
+	const innerSize = fitted.size
+	const innerAspect = innerSize.x / innerSize.y
 
-// Requires literal sizing
-// Use a given aspect, or calculate it based on initial size.
-const innerSize = fitted.size
-const innerAspect = innerSize.x / innerSize.y
+	const outerAspect = variable(1)
+	autorun(() => outerAspect(fitter.calculatedSize.x / fitter.calculatedSize.y))
 
-const outerAspect = variable(1)
-autorun(() => outerAspect(fitter.calculatedSize.x / fitter.calculatedSize.y))
+	autorun(() => {
+		// const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
 
-autorun(() => {
-	// const outerAspect = fitter.calculatedSize.x / fitter.calculatedSize.y
+		if (innerAspect <= outerAspect()) {
+			untrack(() => {
+				// inner should fit vertically
+				innerSize.y = fitter.calculatedSize.y
+				innerSize.x = innerSize.y * innerAspect
+				// fitted.size = [innerSize.y * innerAspect, fitter.calculatedSize.y]
+			})
+		} else {
+			untrack(() => {
+				// inner should fit horizontally
+				innerSize.x = fitter.calculatedSize.x
+				innerSize.y = innerSize.x / innerAspect
+				// fitted.size = [fitter.calculatedSize.x, innerSize.x / innerAspect]
+			})
+		}
+	})
 
-	if (innerAspect <= outerAspect()) {
-		untrack(() => {
-			// inner should fit vertically
-			innerSize.y = fitter.calculatedSize.y
-			innerSize.x = innerSize.y * innerAspect
-			// fitted.size = [innerSize.y * innerAspect, fitter.calculatedSize.y]
-		})
-	} else {
-		untrack(() => {
-			// inner should fit horizontally
-			innerSize.x = fitter.calculatedSize.x
-			innerSize.y = innerSize.x / innerAspect
-			// fitted.size = [fitter.calculatedSize.x, innerSize.x / innerAspect]
-		})
-	}
-})
+	// let running = 0
 
-// let running = 0
+	// Motor.addRenderTask((t, dt) => {
+	// 	// requestAnimationFrame(function loop(t) {
+	// 	// 	requestAnimationFrame(loop)
 
-// Motor.addRenderTask((t, dt) => {
-// 	// requestAnimationFrame(function loop(t) {
-// 	// 	requestAnimationFrame(loop)
+	// 	running += dt
+	// 	if (running > 2000) return false
 
-// 	running += dt
-// 	if (running > 2000) return false
-
-// 	fitter.size.y = 100 * Math.abs(Math.sin(t * 0.001))
-// })
+	// 	fitter.size.y = 100 * Math.abs(Math.sin(t * 0.001))
+	// })
+}
 
 ///// ROTATION ON POINTER MOVE ///////////////////////////////////////////////
 
@@ -321,6 +322,21 @@ element('lume-svg')(Svg)
 
 ////// AUDIO ///////////////////////////////////////////////////////////////////
 
-audio.play()
+if (!audio.paused) play.classList.remove('paused')
 
-document.body.addEventListener('pointerdown', () => audio.play())
+audio.onplay = () => {
+	play.classList.remove('paused')
+}
+audio.onpause = () => {
+	play.classList.add('paused')
+}
+
+const playFn = () => audio.play()
+scene.addEventListener('pointerdown', playFn, {once: true})
+
+play.onclick = () => {
+	scene.removeEventListener('pointerdown', playFn, {once: true})
+
+	if (audio.paused) audio.play()
+	else audio.pause()
+}
