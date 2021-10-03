@@ -74,7 +74,7 @@
 		width: 100%;
 		height: 100%;
 		display: block;
-		fill: #8db497;
+		/* fill: #8db497; */
 	}
 </style>
 
@@ -86,12 +86,14 @@
 		LUME.useDefaultNames()
 	</script>
 
-	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="800" fog-far="1300" fog-color="#ccdbd4">
-		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="800" fog-far="1300" fog-color="#c3d5cc">
+		<lume-ambient-light color="white" intensity="0.8"></lume-ambient-light>
 
 		<lume-point-light
 			id="light"
-			position="0 0 400"
+			position="-960 -335 400"
+			Xposition="0 0 400"
+			align-point="0.5 0.5"
 			intensity="0.6"
 			color="white"
 			shadow-radius="2"
@@ -283,9 +285,13 @@
 		async function makeParticles() {
 			const particleSpace = 1000
 			const numberOfParticles = 120
-			const initialOpacity = 0.4
+			// const initialOpacity = 0.4
+			const initialOpacity = 0.8
 
-			const starMarkup = await fetch('https://assets.codepen.io/191583/star.svg').then(r => r.text())
+			// const starUrl = 'https://assets.codepen.io/191583/star.svg'
+			const starUrl = './star.svg'
+
+			const starMarkup = await fetch(starUrl).then(r => r.text())
 			const starTmpl = document.createElement('template')
 			starTmpl.innerHTML = starMarkup
 
@@ -303,7 +309,7 @@
 				particle.opacity = initialOpacity
 
 				// particle.append(starTmpl.content.firstChild.cloneNode(true))
-				particle.texture = 'https://assets.codepen.io/191583/star.svg'
+				particle.texture = starUrl
 				particle.color = 'white'
 
 				particle.position.set(
