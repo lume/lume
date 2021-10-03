@@ -33,6 +33,7 @@ export type SceneAttributes =
 	| 'vr'
 	| 'webgl'
 	| 'enableCss'
+	| 'swapLayers'
 	| 'backgroundColor'
 	| 'backgroundOpacity'
 	| 'background'
@@ -104,6 +105,9 @@ export class Scene extends HTMLInterface {
 
 	/** @property {boolean} webgl - When `true`, enables WebGL rendering. Defaults to `false`. */
 	@emits('propertychange') @booleanAttribute(false) webgl = false
+
+	/** @property {boolean} swapLayers - When `true`, the CSS layer will render on top of the WebGL layer instead of below. */
+	@emits('propertychange') @booleanAttribute(false) swapLayers = false
 
 	/**
 	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType - Specifies the
