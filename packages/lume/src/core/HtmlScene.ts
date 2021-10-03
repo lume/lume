@@ -77,9 +77,16 @@ export class HtmlScene extends ImperativeBase {
 		}
 	`
 
+	// It's in the Scene class
+	declare swapLayers: boolean
+
 	template = () => html`
 		<div class="container">
-			<div ref=${(el: any) => (this._cssLayer = el)} class="CSS3DLayer">
+			<div
+				ref=${(el: any) => (this._cssLayer = el)}
+				class="CSS3DLayer"
+				style=${() => (this.swapLayers ? 'z-index: 1' : '')}
+			>
 				${
 					/* WebGLRendererThree places the CSS3DRendererNested domElement
 					here, which contains a <slot> element that child elements of
@@ -87,9 +94,11 @@ export class HtmlScene extends ImperativeBase {
 					*/ ''
 				}
 			</div>
+
 			<div ref=${(el: any) => (this._glLayer = el)} class="WebGLLayer">
 				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
 			</div>
+
 			<div ref=${(el: any) => (this._miscLayer = el)} class="MiscellaneousLayer">
 				${/* This layer is used by WebXR to insert UI like the Enter VR/AR button. */ ''}
 				<slot name="misc"></slot>

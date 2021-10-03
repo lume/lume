@@ -15,7 +15,6 @@
 
 	html {
 		overflow: hidden;
-		/* background: #c9d9d1; */
 		background-image: linear-gradient(
 			159deg,
 			rgb(228, 236, 232) 0%,
@@ -23,10 +22,6 @@
 			rgb(201, 217, 209) 64%,
 			rgb(127, 164, 145) 100%
 		);
-	}
-
-	body {
-		/* background-image: repeating-conic-gradient(hsla(0, 0%, 100%, 0.1) 0 15deg, hsla(0, 0%, 100%, 0) 0 30deg); */
 	}
 
 	lume-scene {
@@ -47,7 +42,7 @@
 	}
 
 	#fitted {
-		background: #fbfaf4;
+		/* background: #fbfaf4; */
 	}
 
 	img,
@@ -66,14 +61,22 @@
 </style>
 
 <body touch-action="none">
-	<!-- <script src="../../dist/global.js"></script> -->
-	<script src="https://unpkg.com/lume@0.3.0-alpha.7/dist/global.js"></script>
+	<script src="../../dist/global.js"></script>
 	<script>
 		// Define all the LUME elements with their default names.
 		LUME.useDefaultNames()
 	</script>
 
-	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="800" fog-far="1300" fog-color="#c3d5cc">
+	<lume-scene
+		id="scene"
+		perspective="800"
+		webgl
+		fog-mode="linear"
+		fog-near="800"
+		fog-far="1300"
+		fog-color="#c3d5cc"
+		swap-layers="true"
+	>
 		<lume-ambient-light color="white" intensity="0.8"></lume-ambient-light>
 
 		<lume-point-light
@@ -94,56 +97,56 @@
 			align-point="0.5 0.5"
 			mount-point="0.5 0.5"
 		>
-			<lume-mixed-plane id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#444">
+			<lume-plane id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#eee">
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
 					<!-- <lume-plane
-						texture="https://assets.codepen.io/191583/background-01.png"
+						texture="./background-01.png"
 						size-mode="proportional proportional"
 						size="1 1"
 						color="white"
 					></lume-plane> -->
 					<div>
-						<img src="https://assets.codepen.io/191583/background-01.png" />
+						<img src="./background-01.png" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
 					<!-- <lume-plane
-						texture="https://assets.codepen.io/191583/text-01.2.svg"
+						texture="./text-01.2.svg"
 						size-mode="proportional proportional"
 						size="1 1"
 						color="white"
 					></lume-plane> -->
 					<div>
-						<img src="https://assets.codepen.io/191583/text-01.2.svg" />
+						<img src="./text-01.2.svg" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
 					<!-- <lume-plane
-						texture="https://assets.codepen.io/191583/anna.svg"
+						texture="./anna.svg"
 						size-mode="proportional proportional"
 						size="1 1"
 						color="white"
 					></lume-plane> -->
 					<div>
-						<img src="https://assets.codepen.io/191583/anna.svg" />
+						<img src="./anna.svg" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
 					<div>
-						<img src="https://assets.codepen.io/191583/and.svg" />
+						<img src="./and.svg" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
 					<div>
-						<img src="https://assets.codepen.io/191583/igor.svg" />
+						<img src="./igor.svg" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
 					<div>
-						<img src="https://assets.codepen.io/191583/numbers.svg" />
+						<img src="./numbers.svg" />
 					</div>
 				</lume-node>
-			</lume-mixed-plane>
+			</lume-plane>
 		</lume-node>
 
 		<lume-node id="particleContainer" align-point="0.5 0.5" rotation="0 0 0"></lume-node>

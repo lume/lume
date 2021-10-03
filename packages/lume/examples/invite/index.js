@@ -3,7 +3,7 @@ const LUME = window.LUME
 
 const {autorun, variable, untrack, Motor} = LUME
 
-fitted.three.material.opacity = 0.3
+// fitted.three.material.opacity = 0.3
 
 ///// FIT CARD IN VIEWPORT /////////////////////////////////////////
 
@@ -142,7 +142,6 @@ async function makeParticles() {
 	const initialOpacity = 0.99
 	const radius = 10
 
-	// const starUrl = 'https://assets.codepen.io/191583/star.svg'
 	const goldStarUrl = './star-gold.svg'
 	const greenStarUrl = './star-green.svg'
 
@@ -236,82 +235,84 @@ async function makeParticles() {
 
 const {element} = LUME
 
-element('lume-svg')(
-	class Svg extends LUME.Node {
-		static get observedAttributes() {
-			return {
-				src: LUME.attribute.string,
-			}
-		}
+class Svg extends LUME.Node {
+	_loadGL() {
+		if (!super._loadGL()) return false
 
-		_loadGL() {
-			if (!super._loadGL()) return false
+		this.loader = new THREE.SVGLoader()
 
-			const loader = new THREE.SVGLoader()
+		this._glStopFns.push(
+			autorun(() => {
+				this.loader.load(this.src, data => {
+					const paths = data.paths
 
-			loader.load(this.src, data => {
-				const paths = data.paths
+					const group = new THREE.Group()
+					// group.scale.multiplyScalar(0.25)
+					// group.position.x = -70
+					// group.position.y = 70
+					// group.scale.y *= -1
 
-				const group = new THREE.Group()
-				// group.scale.multiplyScalar(0.25)
-				// group.position.x = -70
-				// group.position.y = 70
-				// group.scale.y *= -1
+					for (let i = 0; i < paths.length; i++) {
+						const path = paths[i]
 
-				for (let i = 0; i < paths.length; i++) {
-					const path = paths[i]
+						const fillColor = path.userData.style.fill
+						if (fillColor !== undefined && fillColor !== 'none') {
+							const material = new THREE.MeshBasicMaterial({
+								color: new THREE.Color().setStyle(fillColor),
+								opacity: path.userData.style.fillOpacity,
+								transparent: path.userData.style.fillOpacity < 1,
+								side: THREE.DoubleSide,
+								depthWrite: false,
+							})
 
-					const fillColor = path.userData.style.fill
-					if (fillColor !== undefined && fillColor !== 'none') {
-						const material = new THREE.MeshBasicMaterial({
-							color: new THREE.Color().setStyle(fillColor),
-							opacity: path.userData.style.fillOpacity,
-							transparent: path.userData.style.fillOpacity < 1,
-							side: THREE.DoubleSide,
-							depthWrite: false,
-						})
+							const shapes = SVGLoader.createShapes(path)
 
-						const shapes = SVGLoader.createShapes(path)
+							for (let j = 0; j < shapes.length; j++) {
+								const shape = shapes[j]
 
-						for (let j = 0; j < shapes.length; j++) {
-							const shape = shapes[j]
-
-							const geometry = new THREE.ShapeGeometry(shape)
-							const mesh = new THREE.Mesh(geometry, material)
-
-							group.add(mesh)
-						}
-					}
-
-					const strokeColor = path.userData.style.stroke
-
-					if (strokeColor !== undefined && strokeColor !== 'none') {
-						const material = new THREE.MeshBasicMaterial({
-							color: new THREE.Color().setStyle(strokeColor),
-							opacity: path.userData.style.strokeOpacity,
-							transparent: path.userData.style.strokeOpacity < 1,
-							side: THREE.DoubleSide,
-							depthWrite: false,
-						})
-
-						for (let j = 0, jl = path.subPaths.length; j < jl; j++) {
-							const subPath = path.subPaths[j]
-
-							const geometry = SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style)
-
-							if (geometry) {
+								const geometry = new THREE.ShapeGeometry(shape)
 								const mesh = new THREE.Mesh(geometry, material)
 
 								group.add(mesh)
 							}
 						}
+
+						const strokeColor = path.userData.style.stroke
+
+						if (strokeColor !== undefined && strokeColor !== 'none') {
+							const material = new THREE.MeshBasicMaterial({
+								color: new THREE.Color().setStyle(strokeColor),
+								opacity: path.userData.style.strokeOpacity,
+								transparent: path.userData.style.strokeOpacity < 1,
+								side: THREE.DoubleSide,
+								depthWrite: false,
+							})
+
+							for (let j = 0, jl = path.subPaths.length; j < jl; j++) {
+								const subPath = path.subPaths[j]
+
+								const geometry = SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style)
+
+								if (geometry) {
+									const mesh = new THREE.Mesh(geometry, material)
+
+									group.add(mesh)
+								}
+							}
+						}
 					}
-				}
 
-				this.three.add(group)
-			})
+					this.three.add(group)
+				})
+			}),
+		)
 
-			return true
-		}
-	},
-)
+		return true
+	}
+}
+
+Svg.observedAttributes = {
+	src: LUME.attribute.string,
+}
+
+element('lume-svg')(Svg)
