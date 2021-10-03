@@ -233,6 +233,8 @@ async function makeParticles() {
 	})
 }
 
+/////// <lume-svg> element (WIP) /////////////////////////////////////////////////////////////////////////
+
 const {element} = LUME
 
 class Svg extends LUME.Node {
@@ -316,3 +318,9 @@ Svg.observedAttributes = {
 }
 
 element('lume-svg')(Svg)
+
+////// AUDIO ///////////////////////////////////////////////////////////////////
+
+audio.play()
+
+document.body.addEventListener('pointerdown', () => audio.play())
