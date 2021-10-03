@@ -10,10 +10,15 @@
 	Xstyle="dfill: #8db497; fill: deeppink"
 >
 	<defs>
-		<linearGradient spreadMethod="pad" id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+		<!-- <linearGradient spreadMethod="pad" id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
 			<stop offset="0%" style="stop-color: rgb(181, 129, 54); stop-opacity: 1" />
 			<stop offset="50%" style="stop-color: rgb(253, 201, 1); stop-opacity: 1" />
 			<stop offset="100%" style="stop-color: rgb(181, 129, 54); stop-opacity: 1" />
+		</linearGradient> -->
+		<linearGradient spreadMethod="pad" id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+			<stop offset="0%" style="stop-color: rgb(216, 166, 92); stop-opacity: 1" />
+			<stop offset="50%" style="stop-color: rgb(255, 234, 154); stop-opacity: 1" />
+			<stop offset="100%" style="stop-color: rgb(216, 166, 92); stop-opacity: 1" />
 		</linearGradient>
 	</defs>
 	<polygon
