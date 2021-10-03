@@ -322,13 +322,16 @@ element('lume-svg')(Svg)
 
 ////// AUDIO ///////////////////////////////////////////////////////////////////
 
-if (!audio.paused) play.classList.remove('paused')
+const isPlaying = !audio.paused
+if (isPlaying) play.classList.add('showPause')
 
 audio.onplay = () => {
-	play.classList.remove('paused')
+	// Show pause button while playing.
+	play.classList.add('showPause')
 }
 audio.onpause = () => {
-	play.classList.add('paused')
+	// Show play button while paused.
+	play.classList.remove('showPause')
 }
 
 const playFn = () => audio.play()

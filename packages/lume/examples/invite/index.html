@@ -105,10 +105,10 @@
 		left: 70%;
 	}
 
-	.paused .pause {
+	.showPause .pause {
 		display: block;
 	}
-	.paused .triangle {
+	.showPause .triangle {
 		display: none;
 	}
 </style>
@@ -204,7 +204,7 @@
 
 		<lume-node id="particleContainer" align-point="0.5 0.5" rotation="0 0 0"></lume-node>
 
-		<lume-node id="play" class="paused" size="60 60" align-point="1 0" mount-point="1 0">
+		<lume-node id="play" size="60 60" align-point="1 0" mount-point="1 0">
 			<lume-node size="20 20" align-point="1 0" mount-point="1 0" position="-10 10 0">
 				<div class="triangle"></div>
 				<div class="pause"></div>
