@@ -322,8 +322,9 @@ element('lume-svg')(Svg)
 
 ////// AUDIO ///////////////////////////////////////////////////////////////////
 
-const isPlaying = !audio.paused
-if (isPlaying) play.classList.add('showPause')
+// In case autoplay worked.
+if (audio.paused) play.classList.remove('showPause')
+else play.classList.add('showPause')
 
 audio.onplay = () => {
 	// Show pause button while playing.
