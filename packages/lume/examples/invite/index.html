@@ -285,13 +285,13 @@
 		async function makeParticles() {
 			const particleSpace = 1000
 			const numberOfParticles = 120
-			// const initialOpacity = 0.4
-			const initialOpacity = 0.8
+			const initialOpacity = 0.99
 
 			// const starUrl = 'https://assets.codepen.io/191583/star.svg'
-			const starUrl = './star.svg'
+			const goldStarUrl = './star-gold.svg'
+			const greenStarUrl = './star-green.svg'
 
-			const starMarkup = await fetch(starUrl).then(r => r.text())
+			const starMarkup = await fetch(goldStarUrl).then(r => r.text())
 			const starTmpl = document.createElement('template')
 			starTmpl.innerHTML = starMarkup
 
@@ -306,11 +306,17 @@
 				// const r = 5 + Math.random() * 5
 				const r = 10
 				particle.size = [r, r]
-				particle.opacity = initialOpacity
 
 				// particle.append(starTmpl.content.firstChild.cloneNode(true))
-				particle.texture = starUrl
-				particle.color = 'yellow'
+				if (Math.random() < 0.3) {
+					particle.texture = goldStarUrl
+					particle.color = 'yellow'
+					particle.opacity = initialOpacity
+				} else {
+					particle.texture = greenStarUrl
+					particle.color = 'white'
+					particle.opacity = 0.4
+				}
 
 				particle.position.set(
 					Math.random() * particleSpace - particleSpace / 2,
@@ -327,6 +333,9 @@
 				return
 				for (let i = 0, l = numberOfParticles; i < l; i += 1) {
 					const particle = particles[i]
+
+					// flicker only gold stars
+					if (particle.color != 'yellow') continue
 
 					const flicker = (Math.random() - 1) * 0.4
 					particle.opacity = initialOpacity + flicker
