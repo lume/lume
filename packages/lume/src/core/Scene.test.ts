@@ -6,19 +6,19 @@ import type {Scene} from './Scene.js'
 useDefaultNames()
 
 describe('Scene', () => {
+	let container: HTMLDivElement = document.createElement('div')
+	const body = document.createElement('div')
+	document.body.append(body)
+
+	beforeEach(() => {
+		body.append((container = document.createElement('div')))
+	})
+
+	afterEach(() => {
+		body.innerHTML = ''
+	})
+
 	describe('swapLayers', () => {
-		let container: HTMLDivElement = document.createElement('div')
-		const body = document.createElement('div')
-		document.body.append(body)
-
-		beforeEach(() => {
-			body.append((container = document.createElement('div')))
-		})
-
-		afterEach(() => {
-			body.innerHTML = ''
-		})
-
 		it('allows us to swap the layer order of the CSS and WebGL layers', () => {
 			const scene = document.createElement('lume-scene')
 			container.append(scene)
@@ -34,18 +34,6 @@ describe('Scene', () => {
 	})
 
 	describe('ShadowDOM support', () => {
-		let container: HTMLDivElement = document.createElement('div')
-		const body = document.createElement('div')
-		document.body.append(body)
-
-		beforeEach(() => {
-			body.append((container = document.createElement('div')))
-		})
-
-		afterEach(() => {
-			body.innerHTML = ''
-		})
-
 		describe('hasShadow', () => {
 			it('detects if an element has a ShadowRoot even if the root is closed', () => {
 				container.attachShadow({mode: 'closed'})
