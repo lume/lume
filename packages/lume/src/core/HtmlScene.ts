@@ -53,8 +53,7 @@ export class HtmlScene extends ImperativeBase {
 			transform-style: preserve-3d;
 		}
 
-		.WebGLLayer,
-		.MiscellaneousLayer {
+		.container {
 			pointer-events: none;
 		}
 
@@ -69,9 +68,6 @@ export class HtmlScene extends ImperativeBase {
 		 * scene objects. We do not wish to interact with this element anyway, as
 		 * it serves only for positioning the view.
 		 */
-		.cameraElement {
-			pointer-events: none;
-		}
 		.cameraElement > * {
 			pointer-events: auto;
 		}
