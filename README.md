@@ -2,7 +2,7 @@
 
 # <a href="//lume.io"><img src="./logo.svg" width="200" alt="LUME" title="LUME" /></a>
 
-#### **A toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.**
+#### **A toolkit that simplifies the creation of rich and interactive 2D or 3D experiences.**
 
 <h3>
   <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;
@@ -23,7 +23,7 @@ together as a whole:
 ### [`lume`](./packages/lume/README.md) - HTML elements for rich graphics
 
 HTML elements for easily defining rich and interactive 2D or 3D applications
-powered by both CSS and WebGL.
+powered by CSS3D, WebGL, or both mixed together.
 
 This package uses and re-exports features from the below packages.
 
