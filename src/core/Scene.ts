@@ -110,6 +110,13 @@ export class Scene extends HTMLInterface {
 	@emits('propertychange') @booleanAttribute(false) swapLayers = false
 
 	/**
+	 * @property {boolean} swapLayers - This is only useful when both CSS and
+	 * WebGL render modes are enabled. When `true`, the CSS layer will render on
+	 * top of the WebGL layer instead of below.
+	 */
+	@emits('propertychange') @booleanAttribute(false) swapLayers = false
+
+	/**
 	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType - Specifies the
 	 * type of shadows to use. Defaults to `'basic'`.
 	 *
