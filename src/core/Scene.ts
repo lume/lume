@@ -106,7 +106,11 @@ export class Scene extends HTMLInterface {
 	/** @property {boolean} webgl - When `true`, enables WebGL rendering. Defaults to `false`. */
 	@emits('propertychange') @booleanAttribute(false) webgl = false
 
-	/** @property {boolean} swapLayers - When `true`, the CSS layer will render on top of the WebGL layer. */
+	/**
+	 * @property {boolean} swapLayers - When `true`, the CSS layer will render
+	 * on top of the WebGL layer instead of below.  This is only useful when
+	 * both CSS and WebGL render modes are enabled.
+	 */
 	@emits('propertychange') @booleanAttribute(false) swapLayers = false
 
 	/**
