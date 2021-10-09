@@ -236,10 +236,18 @@ async function makeParticles() {
 
 /////// <lume-svg> element (WIP) /////////////////////////////////////////////////////////////////////////
 
-const {element} = LUME
+const {element, THREE} = LUME
 
 class Svg extends LUME.Node {
+	connectedCallback() {
+		super.connectedCallback()
+		debugger
+
+		CONTINUE: Why is _loadGL not being called automatically like it should be? Why we need to call it manually?
+		this._loadGL()
+	}
 	_loadGL() {
+		debugger
 		if (!super._loadGL()) return false
 
 		this.loader = new THREE.SVGLoader()
@@ -259,6 +267,7 @@ class Svg extends LUME.Node {
 						const path = paths[i]
 
 						const fillColor = path.userData.style.fill
+						debugger
 						if (fillColor !== undefined && fillColor !== 'none') {
 							const material = new THREE.MeshBasicMaterial({
 								color: new THREE.Color().setStyle(fillColor),
@@ -268,7 +277,7 @@ class Svg extends LUME.Node {
 								depthWrite: false,
 							})
 
-							const shapes = SVGLoader.createShapes(path)
+							const shapes = THREE.SVGLoader.createShapes(path)
 
 							for (let j = 0; j < shapes.length; j++) {
 								const shape = shapes[j]
@@ -281,6 +290,7 @@ class Svg extends LUME.Node {
 						}
 
 						const strokeColor = path.userData.style.stroke
+						debugger
 
 						if (strokeColor !== undefined && strokeColor !== 'none') {
 							const material = new THREE.MeshBasicMaterial({
@@ -294,7 +304,10 @@ class Svg extends LUME.Node {
 							for (let j = 0, jl = path.subPaths.length; j < jl; j++) {
 								const subPath = path.subPaths[j]
 
-								const geometry = SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style)
+								const geometry = THREE.SVGLoader.pointsToStroke(
+									subPath.getPoints(),
+									path.userData.style,
+								)
 
 								if (geometry) {
 									const mesh = new THREE.Mesh(geometry, material)

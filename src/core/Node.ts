@@ -211,6 +211,7 @@ export class Node extends HtmlInterface {
 	}
 
 	_loadGL() {
+		if (this.tagName == 'LUME-SVG') debugger
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(

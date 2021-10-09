@@ -245,6 +245,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	__possiblyLoadThree(child: ImperativeBase): void {
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
+		if (child.tagName === 'LUME-SVG') debugger
 		if (!isNode(child)) return
 
 		child._triggerLoadGL()
@@ -274,6 +275,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * same as childConnectedCallback).
 	 */
 	childComposedCallback(child: Element, _connectionType: ConnectionType): void {
+		if (child.tagName === 'LUME-SVG') debugger
 		if (!(child instanceof ImperativeBase)) return
 
 		// Calculate sizing because proportional size might depend on
