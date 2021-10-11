@@ -32,13 +32,13 @@ export class Object3DWithPivot extends Object3D {
 	updateMatrix() {
 		this.matrix.compose(this.position, this.quaternion, this.scale)
 
-		var pivot = this.pivot
+		const pivot = this.pivot
 
 		if (pivot.x !== 0 || pivot.y !== 0 || pivot.z !== 0) {
-			var px = pivot.x,
+			const px = pivot.x,
 				py = pivot.y,
 				pz = pivot.z
-			var te = this.matrix.elements
+			const te = this.matrix.elements
 
 			te[12] += px - te[0] * px - te[4] * py - te[8] * pz
 			te[13] += py - te[1] * px - te[5] * py - te[9] * pz

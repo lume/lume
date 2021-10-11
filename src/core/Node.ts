@@ -146,7 +146,12 @@ export class Node extends HtmlInterface {
 		// render task.
 		if (this.composedLumeParent) {
 			this._calcSize()
-			this.needsUpdate()
+
+			// No harm deferring, plus we need to because this may end up
+			// calling a super method of a super class that relies on a private
+			// field that is not initialized yet, causing an error. Welcome to
+			// TC39's vision of inheritance for JavaScript.
+			defer(() => this.needsUpdate())
 		}
 	}
 
@@ -225,6 +230,7 @@ export class Node extends HtmlInterface {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import {defer} from './utils.js'
 
 declare module '@lume/element' {
 	namespace JSX {

@@ -1,0 +1,125 @@
+<title>&lt;lume-gltf-model&gt;</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+		touch-action: none;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+	<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-node>
+
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<!-- <lume-fbx-model
+		id="model"
+		rotation="0 45 0"
+		size="0 0 0"
+		src="./models/mando-helmet.fbx"
+		scale="1 1 1"
+		style="background: blue"
+	>
+	</lume-fbx-model> -->
+
+	<!-- <lume-box size="30 30 30" color="thistle"></lume-box> -->
+
+	<!-- FIXME: this works: -->
+	<!-- <lume-mesh has="sphere-geometry" size="30 30 30"></lume-mesh> -->
+	<!-- but this does not: -->
+	<!-- <lume-mesh has="sphere-geometry phong-material" size="30 30 30"></lume-mesh> -->
+
+	<lume-instanced-mesh id="mesh" color="white" count="4" size="30 30 30"></lume-instanced-mesh>
+</lume-scene>
+
+<script src="../dist/global.js"></script>
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+
+	setInterval(() => {
+		mesh.rotations = [
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+		]
+
+		mesh.positions = [
+			//
+			100 * Math.random(),
+			100 * Math.random(),
+			100 * Math.random(),
+			//
+			100 * Math.random(),
+			100 * Math.random(),
+			100 * Math.random(),
+			//
+			100 * Math.random(),
+			100 * Math.random(),
+			100 * Math.random(),
+			//
+			100 * Math.random(),
+			100 * Math.random(),
+			100 * Math.random(),
+		]
+
+		mesh.scales = [
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+		]
+
+		mesh.colors = [
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+			//
+			Math.random(),
+			Math.random(),
+			Math.random(),
+		]
+	}, 1000)
+</script>
