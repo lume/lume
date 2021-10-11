@@ -137,6 +137,9 @@ export class ImperativeBase extends Settable(Transformable) {
 	// Original documentation on F-Bounded Polymorphism in TypeScript:
 	// https://www.typescriptlang.org/docs/handbook/advanced-types.html#polymorphic-this-types
 
+	// TODO make this reactive, so that if we replace the three object outside
+	// code will know to clean up anything relying on the old object and adapt
+	// to the new object?
 	__three?: ReturnType<this['makeThreeObject3d']>
 
 	/**
@@ -161,6 +164,27 @@ export class ImperativeBase extends Settable(Transformable) {
 		return o
 	}
 
+	__disposeThree() {
+		this.__three && disposeObject(this.__three)
+		this.__three = undefined
+	}
+
+	/**
+	 * @method recreateThree - Replaces the current three object with a new
+	 * one, reconnecting it to the same parent and children. This can be useful
+	 * in scenarios where a property of a three object needs to be updated but the property
+	 * can only be updated via the constructor, requiring us to make a new object.
+	 */
+	recreateThree() {
+		const children = this.__three?.children
+		this.__disposeThree()
+		// The three getter is used here, which makes a new instance
+		this._connectThree()
+
+		// Three.js crashes on arrays of length 0.
+		if (children && children.length) this.three.add(...children)
+	}
+
 	__threeCSS?: ReturnType<this['makeThreeCSSObject']>
 
 	/**
@@ -181,6 +205,25 @@ export class ImperativeBase extends Settable(Transformable) {
 		const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
 		o.name = this.tagName + (this.id ? '#' + this.id : '')
 		return o
+	}
+
+	__disposeThreeCSS() {
+		this.__threeCSS && disposeObject(this.__threeCSS)
+		this.__threeCSS = undefined
+	}
+
+	/**
+	 * @method recreateThreeCSS - Replaces the current threeCSS object with a new
+	 * one, reconnecting it to the same parent and children. This can be useful
+	 * in scenarios where a property of a threeCSS object needs to be updated but the property
+	 * can only be updated via the constructor, requiring us to make a new object.
+	 */
+	recreateThreeCSS() {
+		const children = this.__threeCSS?.children
+		this.__disposeThreeCSS()
+		// The threeCSS getter is used here, which makes a new instance
+		this._connectThreeCSS()
+		if (children) this.threeCSS.add(...children)
 	}
 
 	connectedCallback() {
@@ -454,7 +497,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (!(this.scene && this.scene.webgl)) return false
 
 		if (this._glLoaded) return false
-
 		this._glLoaded = true
 
 		// we don't let Three update local matrices automatically, we do
@@ -462,7 +504,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.three.matrixAutoUpdate = false
 
 		this._connectThree()
-
 		this.needsUpdate()
 
 		return true
@@ -470,15 +511,12 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	_unloadGL(): boolean {
 		if (!this._glLoaded) return false
-
 		this._glLoaded = false
 
 		for (const stop of this._glStopFns) stop()
 		this._glStopFns.length = 0
 
-		this.__three && disposeObject(this.__three)
-		this.__three = undefined
-
+		this.__disposeThree()
 		this.needsUpdate()
 
 		return true
@@ -499,7 +537,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.threeCSS.matrixAutoUpdate = false
 
 		this._connectThreeCSS()
-
 		this.needsUpdate()
 
 		return true
@@ -507,15 +544,12 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	_unloadCSS(): boolean {
 		if (!this._cssLoaded) return false
-
 		this._cssLoaded = false
 
 		for (const stop of this._cssStopFns) stop()
 		this._cssStopFns.length = 0
 
-		this.__threeCSS && disposeObject(this.__threeCSS)
-		this.__threeCSS = undefined
-
+		this.__disposeThreeCSS()
 		this.needsUpdate()
 
 		return true
@@ -750,7 +784,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		// instead of relying on ElementOperations knowing about
 		// non-HTMLElement features. See the TODOs in __applyStyle and
 		// __applyOpacity there.
-		this._elementOperations.applyImperativeNodeProperties()
+		this._elementOperations.applyProperties()
 	}
 
 	// This method is used by Motor._renderNodes().

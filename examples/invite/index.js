@@ -139,7 +139,7 @@ makeParticles()
 
 async function makeParticles() {
 	const particleSpace = 1000
-	const numberOfParticles = 120
+	const numberOfParticles = 240
 	const initialOpacity = 0.99
 	const radius = 10
 
@@ -150,86 +150,90 @@ async function makeParticles() {
 	const starTmpl = document.createElement('template')
 	starTmpl.innerHTML = starMarkup
 
+	const goldStars = particleContainer.children[0]
+	const grayStars = particleContainer.children[1]
+
+	goldStars.count = numberOfParticles * 0.3
+	goldStars.positions = Array(goldStars.count * 3)
+	goldStars.size = [radius, radius]
+	goldStars.texture = goldStarUrl
+	goldStars.color = 'yellow'
+	goldStars.opacity = initialOpacity
+
+	grayStars.count = numberOfParticles * 0.7
+	grayStars.positions = Array(grayStars.count * 3)
+	grayStars.size = [radius, radius]
+	grayStars.texture = greenStarUrl
+	grayStars.color = 'white'
+	grayStars.opacity = 0.4
+
 	const particles = []
 
-	for (let i = 0, l = numberOfParticles; i < l; i += 1) {
-		const particle = document.createElement('lume-plane')
-		particle.alignPoint = [0.5, 0.5]
-		particle.mountPoint = [0.5, 0.5]
-		particle.size = [radius, radius]
+	for (let i = 0, l = goldStars.count; i < l; i += 1) {
+		const j = i * 3
 
-		if (Math.random() < 0.3) {
-			particle.texture = goldStarUrl
-			particle.color = 'yellow'
-			particle.opacity = initialOpacity
-		} else {
-			particle.texture = greenStarUrl
-			particle.color = 'white'
-			particle.opacity = 0.4
-		}
+		goldStars.positions[j + 0] = Math.random() * particleSpace - particleSpace / 2
+		goldStars.positions[j + 1] = Math.random() * particleSpace - particleSpace / 2
+		goldStars.positions[j + 2] = Math.random() * particleSpace - particleSpace / 2
+	}
 
-		particle.position.set(
-			Math.random() * particleSpace - particleSpace / 2,
-			Math.random() * particleSpace - particleSpace / 2,
-			Math.random() * particleSpace - particleSpace / 2,
-		)
-		particleContainer.append(particle)
+	for (let i = 0, l = grayStars.count; i < l; i += 1) {
+		const j = i * 3
 
-		// const {THREE} = LUME
-		// const geom = new THREE.PlaneGeometry(radius, radius)
-		// const mat = new THREE.MeshPhongMaterial()
-		// const particle = new THREE.Mesh(geom, mat)
-
-		// if (Math.random() < 0.3) {
-		// 	particle.map = new THREE.TextureLoader(goldStarUrl)
-		// 	particle.color = 'yellow'
-		// 	particle.opacity = initialOpacity
-		// } else {
-		// 	particle.texture = greenStarUrl
-		// 	particle.color = 'white'
-		// 	particle.opacity = 0.4
-		// }
-
-		// particle.position.set(
-		// 	Math.random() * particleSpace - particleSpace / 2,
-		// 	Math.random() * particleSpace - particleSpace / 2,
-		// 	Math.random() * particleSpace - particleSpace / 2,
-		// )
-
-		particles.push(particle)
+		grayStars.positions[j + 0] = Math.random() * particleSpace - particleSpace / 2
+		grayStars.positions[j + 1] = Math.random() * particleSpace - particleSpace / 2
+		grayStars.positions[j + 2] = Math.random() * particleSpace - particleSpace / 2
 	}
 
 	// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
-	const flickerFunction = () => {
-		return
-		for (let i = 0, l = numberOfParticles; i < l; i += 1) {
-			const particle = particles[i]
+	// const flickerFunction = () => {
+	// 	return
+	// 	for (let i = 0, l = numberOfParticles; i < l; i += 1) {
+	// 		const particle = particles[i]
 
-			// flicker only gold stars
-			if (particle.color != 'yellow') continue
+	// 		// flicker only gold stars
+	// 		if (particle.color != 'yellow') continue
 
-			const flicker = (Math.random() - 1) * 0.4
-			particle.opacity = initialOpacity + flicker
-		}
+	// 		const flicker = (Math.random() - 1) * 0.4
+	// 		particle.opacity = initialOpacity + flicker
+	// 	}
 
-		setTimeout(() => Motor.once(flickerFunction), Math.random() * 100)
-	}
+	// 	setTimeout(() => Motor.once(flickerFunction), Math.random() * 100)
+	// }
 
-	Motor.once(flickerFunction)
+	// Motor.once(flickerFunction)
 
 	Motor.addRenderTask(() => {
-		for (let i = 0, l = numberOfParticles; i < l; i += 1) {
-			const particle = particles[i]
+		for (let i = 0, l = goldStars.count; i < l; i += 1) {
+			const j = i * 3
 
-			particle.position.x += 0.5
-			particle.position.y++
+			goldStars.positions[j + 0] += 0.5
+			goldStars.positions[j + 1]++
 
-			if (particle.position.x > particleSpace / 2) {
-				particle.position.x = -particleSpace / 2
+			if (goldStars.positions[j + 0] > particleSpace / 2) {
+				goldStars.positions[j + 0] = -particleSpace / 2
 			}
-			if (particle.position.y > particleSpace / 2) {
-				particle.position.y = -particleSpace / 2
+			if (goldStars.positions[j + 1] > particleSpace / 2) {
+				goldStars.positions[j + 1] = -particleSpace / 2
 			}
+
+			goldStars.needsUpdate()
+		}
+
+		for (let i = 0, l = grayStars.count; i < l; i += 1) {
+			const j = i * 3
+
+			grayStars.positions[j + 0] += 0.5
+			grayStars.positions[j + 1]++
+
+			if (grayStars.positions[j + 0] > particleSpace / 2) {
+				grayStars.positions[j + 0] = -particleSpace / 2
+			}
+			if (grayStars.positions[j + 1] > particleSpace / 2) {
+				grayStars.positions[j + 1] = -particleSpace / 2
+			}
+
+			grayStars.needsUpdate()
 		}
 	})
 }

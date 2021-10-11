@@ -13,7 +13,7 @@ import type {Group} from 'three/src/objects/Group.js'
 // TODO move this somewhere better.
 declare global {
 	interface Element {
-		behaviors: Map<string, unknown>
+		behaviors: Map<string, object>
 	}
 }
 
