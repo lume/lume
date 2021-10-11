@@ -61,7 +61,7 @@ export class ElementOperations {
 
 	#shouldRender = false
 
-	applyImperativeNodeProperties() {
+	applyProperties() {
 		if (!this.#shouldRender) return
 
 		this.#applyOpacity()

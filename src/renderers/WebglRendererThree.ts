@@ -60,6 +60,7 @@ export class WebglRendererThree {
 		const renderer = new WebGLRenderer({
 			// TODO: how do we change alpha:true to alpha:false after the fact?
 			alpha: true,
+			premultipliedAlpha: true,
 
 			antialias: true,
 		})

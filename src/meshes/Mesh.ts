@@ -18,8 +18,8 @@ export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
  * this class and applies two default behaviors: `box-geometry` and
  * `phong-material`.
  *
- * For the sake of simplicity, `<lume-mesh>` also has a box-geometry and
- * phone-material by default as well.
+ * For sake of simplicity, `<lume-mesh>` has a box-geometry and
+ * phong-material by default.
  *
  * ## Example
  *

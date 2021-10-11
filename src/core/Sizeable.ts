@@ -104,6 +104,8 @@ export class Sizeable extends TreeNode {
 	 *
 	 * All size values must be positive numbers.
 	 *
+	 * Defaults to `0` for each axis.
+	 *
 	 * @param {Object} newValue
 	 * @param {number} [newValue.x] The x-axis size to apply.
 	 * @param {number} [newValue.y] The y-axis size to apply.
