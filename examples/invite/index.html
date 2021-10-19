@@ -31,7 +31,7 @@
 	}
 
 	lume-scene * {
-		pointer-events: none;
+		/* pointer-events: none; */
 	}
 
 	.rays {
@@ -50,7 +50,8 @@
 	}
 
 	img,
-	div {
+	div,
+	div canvas {
 		width: 100%;
 		height: 100%;
 		display: block;
@@ -60,7 +61,12 @@
 		overflow: hidden;
 	}
 	img {
-		transform: scale(1.01);
+		/* transform: scale(1.01); */
+
+		/* tmp */
+		position: absolute;
+		top: 0;
+		left: 105%;
 	}
 
 	#play {
@@ -118,9 +124,13 @@
 	<script>
 		// Define all the LUME elements with their default names.
 		LUME.useDefaultNames()
-
-		CONTINUE: get the <lume-svg> element below working. Don't forget to remove debugger statements from some files
 	</script>
+
+	<!-- FIXME: this works if loaded here, but doesn't work if loaded after the
+	 lume-scene markup. When loaded after the scene markup, _loadGL and similar
+	 methods never fire. Maybe the ShadowDOM composition stuff needs to use
+	 whenDefined() to wait for element definitions? -->
+	<script src="./svg.js"></script>
 
 	<lume-scene
 		id="scene"
@@ -133,8 +143,6 @@
 		swap-layers="true"
 	>
 		<lume-ambient-light color="white" intensity="0.8"></lume-ambient-light>
-
-		<!-- <lume-svg src="./and.svg"></lume-svg> -->
 
 		<lume-point-light
 			id="light"
@@ -154,46 +162,80 @@
 			align-point="0.5 0.5"
 			mount-point="0.5 0.5"
 		>
-			<lume-plane id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#eee">
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
-					<!-- <lume-plane
-						texture="./background-01.png"
-						size-mode="proportional proportional"
-						size="1 1"
-						color="white"
-					></lume-plane> -->
+			<lume-node id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#eee">
+				<!-- <lume-svg size="500 500" src="./and.svg"></lume-svg> -->
+
+				<!-- <lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
 					<div>
 						<img src="./background-01.png" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
-					<!-- <lume-plane
-						texture="./text-01.2.svg"
-						size-mode="proportional proportional"
-						size="1 1"
-						color="white"
-					></lume-plane> -->
 					<div>
 						<img src="./text-01.2.svg" />
 					</div>
 				</lume-node>
 				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
-					<!-- <lume-plane
-						texture="./anna.svg"
-						size-mode="proportional proportional"
-						size="1 1"
-						color="white"
-					></lume-plane> -->
 					<div>
 						<img src="./anna.svg" />
 					</div>
-				</lume-node>
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
+				</lume-node> -->
+
+				<!-- <lume-svg-2
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 60"
+					src="./and.svg"
+				></lume-svg-2> -->
+				<lume-plane
+					id="andPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 60"
+					opacity="0.99"
+					Xtexture="./and.svg"
+					color="white"
+				></lume-plane>
+				<lume-node id="andNode" size-mode="proportional proportional" size="1 1" position="0 0 60">
 					<div>
-						<img src="./and.svg" />
+						<canvas id="andCanvas"></canvas>
+						<img id="andImg" src="./and.svg" width="1294" height="2300" />
 					</div>
 				</lume-node>
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
+				<script>
+					///// Image to canvas then texture //////////////////////////////
+					!(async function () {
+						const ctx = andCanvas.getContext('2d')
+
+						await Promise.all([
+							new Promise(res => (andImg.onload = res)),
+							new Promise(res => {
+								if (andPlane._glLoaded) res()
+								else andPlane.on('GL_LOAD', res)
+							}),
+						])
+
+						console.log('IMAGE LOADED')
+						andCanvas.width = 1294
+						andCanvas.height = 2300
+						ctx.drawImage(andImg, 0, 0, 1294, 2300)
+
+						const tex = new LUME.THREE.CanvasTexture(andCanvas)
+						andPlane.three.material.map = tex
+
+						// Reset Three.js internal state or else sometimes WebGLRenderer does not render the texture.
+						// TODO report Three.js r125 bug. When you see a flash of white and then the texture, that's when the bug normally happens if dispose() is not called, in which case the white material will stay and the texture will not appear.
+						andPlane.three.material.dispose()
+						andPlane.needsUpdate()
+
+						// andPlane.visible = true
+
+						// If we remove the canvas before the above creation of CanvasTexture, the texture will not render. hmmmm.
+						andCanvas.remove()
+					})()
+				</script>
+
+				<!-- <lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
 					<div>
 						<img src="./igor.svg" />
 					</div>
@@ -202,11 +244,11 @@
 					<div>
 						<img src="./numbers.svg" />
 					</div>
-				</lume-node>
-			</lume-plane>
+				</lume-node> -->
+			</lume-node>
 		</lume-node>
 
-		<lume-node id="particleContainer" align-point="0.5 0.5" rotation="0 0 0">
+		<lume-node visible="false" id="particleContainer" align-point="0.5 0.5" rotation="0 0 0">
 			<lume-instanced-mesh
 				has="plane-geometry phong-material"
 				align-point="0.5 0.5"

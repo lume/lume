@@ -1,3 +1,5 @@
+// @ts-check
+
 /** @type {import('../../src/index')} */
 const LUME = window.LUME
 
@@ -237,105 +239,6 @@ async function makeParticles() {
 		}
 	})
 }
-
-/////// <lume-svg> element (WIP) /////////////////////////////////////////////////////////////////////////
-
-const {element, THREE} = LUME
-
-class Svg extends LUME.Node {
-	connectedCallback() {
-		super.connectedCallback()
-		debugger
-
-		CONTINUE: Why is _loadGL not being called automatically like it should be? Why we need to call it manually?
-		this._loadGL()
-	}
-	_loadGL() {
-		debugger
-		if (!super._loadGL()) return false
-
-		this.loader = new THREE.SVGLoader()
-
-		this._glStopFns.push(
-			autorun(() => {
-				this.loader.load(this.src, data => {
-					const paths = data.paths
-
-					const group = new THREE.Group()
-					// group.scale.multiplyScalar(0.25)
-					// group.position.x = -70
-					// group.position.y = 70
-					// group.scale.y *= -1
-
-					for (let i = 0; i < paths.length; i++) {
-						const path = paths[i]
-
-						const fillColor = path.userData.style.fill
-						debugger
-						if (fillColor !== undefined && fillColor !== 'none') {
-							const material = new THREE.MeshBasicMaterial({
-								color: new THREE.Color().setStyle(fillColor),
-								opacity: path.userData.style.fillOpacity,
-								transparent: path.userData.style.fillOpacity < 1,
-								side: THREE.DoubleSide,
-								depthWrite: false,
-							})
-
-							const shapes = THREE.SVGLoader.createShapes(path)
-
-							for (let j = 0; j < shapes.length; j++) {
-								const shape = shapes[j]
-
-								const geometry = new THREE.ShapeGeometry(shape)
-								const mesh = new THREE.Mesh(geometry, material)
-
-								group.add(mesh)
-							}
-						}
-
-						const strokeColor = path.userData.style.stroke
-						debugger
-
-						if (strokeColor !== undefined && strokeColor !== 'none') {
-							const material = new THREE.MeshBasicMaterial({
-								color: new THREE.Color().setStyle(strokeColor),
-								opacity: path.userData.style.strokeOpacity,
-								transparent: path.userData.style.strokeOpacity < 1,
-								side: THREE.DoubleSide,
-								depthWrite: false,
-							})
-
-							for (let j = 0, jl = path.subPaths.length; j < jl; j++) {
-								const subPath = path.subPaths[j]
-
-								const geometry = THREE.SVGLoader.pointsToStroke(
-									subPath.getPoints(),
-									path.userData.style,
-								)
-
-								if (geometry) {
-									const mesh = new THREE.Mesh(geometry, material)
-
-									group.add(mesh)
-								}
-							}
-						}
-					}
-
-					this.three.add(group)
-				})
-			}),
-		)
-
-		return true
-	}
-}
-
-Svg.observedAttributes = {
-	src: LUME.attribute.string,
-}
-
-element('lume-svg')(Svg)
 
 ////// AUDIO ///////////////////////////////////////////////////////////////////
 
