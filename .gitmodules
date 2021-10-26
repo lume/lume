@@ -3,7 +3,7 @@
 	url = https://github.com/lume/readem.git
 [submodule "packages/docsifyjs+docsify"]
 	path = packages/docsifyjs+docsify
-	url = https://github.com/trusktr/docsify.git
+	url = https://github.com/lume/docsify.git
 [submodule "packages/cli"]
 	path = packages/cli
 	url = https://github.com/lume/cli.git
@@ -37,3 +37,12 @@
 [submodule "packages/basicss"]
 	path = packages/basicss
 	url = https://github.com/lume/basicss.git
+[submodule "packages/custom-attributes"]
+	path = packages/custom-attributes
+	url = https://github.com/lume/custom-attributes.git
+[submodule "packages/autolayout"]
+	path = packages/autolayout
+	url = https://github.com/lume/autolayout.git
+[submodule "packages/kiwi"]
+	path = packages/kiwi
+	url = https://github.com/lume/kiwi.git

@@ -59,18 +59,18 @@
 		<!-- axis helpers -->
 		<!-- prettier-ignore -->
 		<lume-node>
-			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-dom-plane>
-			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-dom-plane>
-			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-dom-plane>
-			<lume-dom-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-dom-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-mixed-plane>
 		</lume-node>
 
 		<!-- prettier-ignore -->
 		<lume-box class="cube" mount-point="0.5 0.5 0" align-point="0.5 0.5 0" size="100 100 100">
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 -100"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 0"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 100"></lume-dom-plane>
-			<lume-dom-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 200"></lume-dom-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 -100"></lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 0"></lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 100"></lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 200"></lume-mixed-plane>
 		</lume-box>
 
 		<lume-box origin="0 0 0" align-point="0.5 0.5" mount-point="0.5 0.5 0" size="100 100 100" position="0 -100 0">
@@ -80,7 +80,7 @@
 				mount-point="0.5 0.5 0.5"
 				color="springgreen"
 			></lume-sphere>
-			<lume-dom-node class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-dom-node>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-mixed-plane>
 		</lume-box>
 	</lume-node>
 </lume-scene>

@@ -1,18 +1,19 @@
-import Node from './Node.js'
-import Scene from './Scene.js'
-import {useDefaultNames} from '../html/index.js'
+import {Node} from './Node.js'
+import {Scene} from './Scene.js'
+import {useDefaultNames} from '../index.js'
 
 useDefaultNames()
 
 describe('Node', () => {
 	let scene = new Scene()
-	const body = document.body
+	const body = document.createElement('div')
+	document.body.append(body)
 
 	afterEach(() => {
-		scene.unmount()
+		scene.remove()
 		body.innerHTML = ''
 		scene = new Scene()
-		scene.mount(body)
+		body.append(scene)
 	})
 
 	it('default values', async () => {
@@ -52,7 +53,7 @@ describe('Node', () => {
 	it('element is an instance of Node, created with `new`', async () => {
 		const n = new Node()
 
-		scene.add(n)
+		scene.append(n)
 
 		expect(n instanceof Node).toBe(true)
 		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
@@ -65,7 +66,7 @@ describe('Node', () => {
 		// TODO: is there a better way than casting the result of createElement?
 		const n = document.createElement('lume-node') as Node
 
-		scene.add(n)
+		scene.append(n)
 
 		expect(n instanceof Node).toBe(true)
 		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.

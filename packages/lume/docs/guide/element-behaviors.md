@@ -1,3 +1,0 @@
-# Element Behaviors
-
-Coming soon...

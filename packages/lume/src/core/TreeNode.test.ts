@@ -1,4 +1,9 @@
-import TreeNode from './TreeNode.js'
+import {TreeNode} from './TreeNode.js'
+
+// TreeNode is not normally used as an element, but we define it for these
+// tests so that `new` works (otherwise it'll have an IllegalConstructor error
+// on the LumeElement base class)
+customElements.define('tree-node', TreeNode)
 
 describe('TreeNode', () => {
 	it('.constructor', () => {
@@ -6,127 +11,79 @@ describe('TreeNode', () => {
 
 		const t = new TreeNode()
 
-		expect(t.subnodes).toEqual([])
-		expect(t.parent).toBe(null)
-		expect(t.childCount).toBe(0)
+		expect(t.lumeChildren).toEqual([])
+		expect(t.lumeParent).toBe(null)
+		expect(t.lumeChildCount).toBe(0)
 	})
 
-	it('.add', () => {
+	// The below tests are essentially a placeholder for when the day comes to
+	// ensure that some DOM-like APIs work in non-DOM environments (f.e. we're
+	// planning to bind to OpenGL in Node.js, or in AssemblyScript, without a
+	// DOM).
+
+	it('.append(single)', () => {
 		const t = new TreeNode()
 		const a = new TreeNode()
 		const b = new TreeNode()
 
-		t.add(a)
+		t.append(a)
 
 		// Adding an already-added node is a no-op.
-		expect(() => t.add(a)).not.toThrow()
+		expect(() => t.append(a)).not.toThrow()
 
-		expect(t.subnodes).toEqual([a])
+		expect(t.lumeChildren).toEqual([a])
 
-		t.add(b)
+		t.append(b)
 
-		expect(t.subnodes).toEqual([a, b])
+		expect(t.lumeChildren).toEqual([a, b])
 	})
 
-	it('.addChildren', () => {
+	it('.append(...multiple)', () => {
 		const t = new TreeNode()
 		const a = new TreeNode()
 		const b = new TreeNode()
 		const c = new TreeNode()
 
-		t.addChildren([b, c])
+		t.append(b, c)
 
 		// If children are re-added, it's a no-op.
-		expect(() => t.addChildren([b, c])).not.toThrow()
+		expect(() => t.append(b, c)).not.toThrow()
 
-		expect(t.childCount).toBe(2)
-		expect(t.subnodes).toEqual([b, c])
+		expect(t.lumeChildCount).toBe(2)
+		expect(t.lumeChildren).toEqual([b, c])
 
-		t.addChildren([a])
-		expect(() => t.addChildren([a, b])).not.toThrow()
+		t.append(a)
+		expect(() => t.append(a, b)).not.toThrow()
 
-		expect(t.childCount).toBe(3)
-		expect(t.subnodes).toEqual([b, c, a])
+		expect(t.lumeChildCount).toBe(3)
+		expect(t.lumeChildren).toEqual([b, c, a])
 	})
 
-	it('.removeNode', () => {
+	it('.removeChild', () => {
 		const t = new TreeNode()
 		const a = new TreeNode()
 		const b = new TreeNode()
 		const c = new TreeNode()
 
-		t.addChildren([b, a, c])
+		t.append(b, a, c)
 
-		expect(t.childCount).toBe(3)
-		expect(t.subnodes).toEqual([b, a, c])
+		expect(t.lumeChildCount).toBe(3)
+		expect(t.lumeChildren).toEqual([b, a, c])
 
-		t.removeNode(b)
-		expect(() => t.removeNode(b)).toThrowError(ReferenceError, 'childNode is not a child of this parent.')
+		t.removeChild(b)
+		expect(() => t.removeChild(b)).toThrowError(DOMException)
 
-		expect(t.childCount).toBe(2)
-		expect(t.subnodes).toEqual([a, c])
+		expect(t.lumeChildCount).toBe(2)
+		expect(t.lumeChildren).toEqual([a, c])
 
-		t.removeNode(a)
+		t.removeChild(a)
 
-		expect(t.childCount).toBe(1)
-		expect(t.subnodes).toEqual([c])
+		expect(t.lumeChildCount).toBe(1)
+		expect(t.lumeChildren).toEqual([c])
 
-		t.removeNode(c)
+		t.removeChild(c)
 
-		expect(t.childCount).toBe(0)
-		expect(t.subnodes).toEqual([])
-	})
-
-	it('.removeChildren', () => {
-		const t = new TreeNode()
-		const a = new TreeNode()
-		const b = new TreeNode()
-		const c = new TreeNode()
-		const d = new TreeNode()
-
-		t.addChildren([b, a, c, d])
-
-		expect(t.childCount).toBe(4)
-		expect(t.subnodes).toEqual([b, a, c, d])
-
-		t.removeChildren([c])
-		expect(() => t.removeChildren([c])).toThrowError(ReferenceError, 'childNode is not a child of this parent.')
-
-		expect(t.childCount).toBe(3)
-		expect(t.subnodes).toEqual([b, a, d])
-
-		t.removeChildren([b, d])
-
-		expect(t.childCount).toBe(1)
-		expect(t.subnodes).toEqual([a])
-
-		t.removeChildren([a])
-
-		expect(t.childCount).toBe(0)
-		expect(t.subnodes).toEqual([])
-	})
-
-	it('.removeAllChildren', () => {
-		const t = new TreeNode()
-		const a = new TreeNode()
-		const b = new TreeNode()
-		const c = new TreeNode()
-		const d = new TreeNode()
-
-		t.addChildren([b, a, c, d])
-
-		expect(t.childCount).toBe(4)
-		expect(t.subnodes).toEqual([b, a, c, d])
-
-		t.removeAllChildren()
-		expect(() => t.removeAllChildren()).toThrowError(ReferenceError, 'This node has no children.')
-
-		expect(t.childCount).toBe(0)
-		expect(t.subnodes).toEqual([])
-	})
-
-	xit('lifecycle callbacks', () => {
-		// TODO
-		expect(false).toBe(true)
+		expect(t.lumeChildCount).toBe(0)
+		expect(t.lumeChildren).toEqual([])
 	})
 })

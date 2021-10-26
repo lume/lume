@@ -1,0 +1,28 @@
+{
+	"scripts": {
+		"start": "npm run build && live-server dist",
+		"dev": "webpack serve --mode development --open",
+		"build": "webpack --mode production"
+	},
+	"dependencies": {
+		"lume": "file:../../",
+		"react": "^17.0.1",
+		"react-dom": "^17.0.1"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.12.16",
+		"@babel/plugin-proposal-class-properties": "^7.13.0",
+		"@babel/preset-react": "^7.12.10",
+		"@types/react": "^17.0.0",
+		"@types/react-dom": "^17.0.0",
+		"babel-loader": "^8.2.2",
+		"file-loader": "^6.2.0",
+		"html-webpack-plugin": "^4.5.1",
+		"live-server": "^1.2.1",
+		"source-map-loader": "^2.0.0",
+		"url-loader": "^4.1.1",
+		"webpack": "^5.21.2",
+		"webpack-cli": "^4.5.0",
+		"webpack-dev-server": "^3.11.2"
+	}
+}

@@ -1,19 +1,23 @@
 # Install
 
-There following describes ways to install and start using Lume with or
+The following describes ways to install and start using LUME with or
 without build tools.
 
 If you're a new to development and are not yet familiar with [how to use a
 terminal command
 line](https://www.davidbaumgold.com/tutorials/command-line/), then the
-following [Global install](#global-install-easiest) will be the easiest way
-for you to get started.
+following [Global install](#global-install-easiest) method will be the easiest way
+for you to get started with the most minimal knowledge required.
 
-The non-global installation requires basic understanding of the command line
+The non-global install methods require basic understanding of the command line
 and command line tools for managing code, and is better suited for bigger or
 longer-term applications that require modular code organization.
 
-## Global install (easiest)
+## Install methods
+
+First you will want to get the LUME code into your project using one of the following methods.
+
+### Global install (easiest)
 
 The easiest way to get started is by placing a `<script>` tag into an HTML
 page in order to load `LUME` as a global variable. This requires no build
@@ -47,7 +51,7 @@ it. You should see the same visual as in the following example:
 Let's go over what this does. The first line,
 
 ```html
-<script src="https://unpkg.com/lume@0.0.0/dist/global.js"></script>
+<script src="https://unpkg.com/lume@0.2.2/dist/global.js"></script>
 ```
 
 is an HTML `<script>` element that tells the browser where to get LUME code from.
@@ -63,7 +67,7 @@ website that allows us to get code for any JavaScript projects that are
 hosted on http://npmjs.com), we wrote
 
 ```html
-<script>
+<script type="module">
 	LUME.useDefaultNames()
 </script>
 ```
@@ -75,7 +79,7 @@ Next we wrote some HTML code using the LUME elements to define the structure
 of a 3D scene on the screen:
 
 ```html
-<lume-scene experimental-webgl>
+<lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
 	<lume-point-light
 		color="white"
@@ -103,7 +107,7 @@ Now that we've defined a scene, we made a `<script>` tag containing some code
 to make our cube rotate:
 
 ```html
-<script>
+<script type="module">
 	box.rotation = (x, y, z) => [x, y + 1, z]
 </script>
 ```
@@ -137,13 +141,15 @@ window, and gives the web page a background color.
 
 <!-- TODO: Add a tip here regarding CSS, link to a tutorial. -->
 
-## ES module install
+### ES module install
 
-> **STUB** This section is TODO.
+> :construction: :hammer: Under construction! :hammer: :construction:
 
-## Local install
+### Local install
 
-> **NOTE!** This section is work-in-progress, but people with more knowledge of common JavaScript tooling should get the idea.
+> :construction: :hammer: Under construction! :hammer: :construction:
+>
+> This section is work-in-progress, but people with knowledge of common JavaScript tooling should get the idea.
 
 More advanced users can install LUME from NPM:
 
@@ -158,14 +164,15 @@ LUME.useDefaultNames()
 
 ## Define the HTML elements
 
-You must register the Lume HTML elements with your browser, using either the
-default element names (which is easier), or custom element names. Using
-custom names for the elements may be useful for solving a naming collision if
-one arrises.
+Now that you've imported the code into your project, you must register the LUME
+HTML elements with your browser, using either the default element names
+(easier), or custom element names. Using custom names for the elements may be
+useful for solving naming collisions if any arrise, or if you simply prefer to
+use different names.
 
-<h3> with default names </h3>
+### with default names
 
-The fastest way to get up and running is to tell Lume to use default naming
+The fastest way to get up and running is to tell LUME to use default naming
 for all of its HTML elements:
 
 ```js
@@ -195,7 +202,7 @@ names, like so:
 > elements that are in your web page. Here's an [introduction to the
 > DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction).
 
-<h3> with custom names </h3>
+### with custom names
 
 Sometimes you might like to use different element names (f.e. to avoid a
 naming conflict, or just because you feel like it). You can do this using the
@@ -228,15 +235,15 @@ new Vue({
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
-<script>
+<script type=module>
     LUME.useDefaultNames()
 <\/script>
 
 <!-- This defines the structure of a 3D scene with some lighting, and a 3D
 cube in the middle of the view: -->
-<lume-scene experimental-webgl>
+<lume-scene webgl>
 	<lume-ambient-light intensity="0.5"></lume-ambient-light>
 	<lume-point-light color="white" align-point="0.5 0.5" position="0 0 300" size="0 0 0" cast-shadow="true" intensity="0.65">
 	</lume-point-light>
@@ -245,7 +252,7 @@ cube in the middle of the view: -->
 </lume-scene>
 
 <!-- Now we give the cube a basic rotation around the Y axis: -->
-<script>
+<script type=module>
 	box.rotation = (x, y, z) => [x, y + 1, z]
 <\/script>
 
@@ -281,22 +288,22 @@ el: '#defaultNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
-<script>
+<script type=module>
   LUME.useDefaultNames()
 
   const {Scene, Node} = LUME
   const scene = new Scene()
 
-  const node = new Node({
+  const node = new Node().set({
     position: [50, 50, 0], // X, Y, and Z position
     size: [100, 100, 0], // X, Y, and Z size
   })
 
   node.style.background = 'cornflowerblue'
-  scene.add(node)
-  scene.mount(document.body)
+  scene.append(node)
+  document.body.append(scene)
   node.rotation = (x, y, z) => [x, y + 1, z]
 
   // The code outputs these elements to the DOM:
@@ -319,13 +326,13 @@ el: '#defaultNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <lume-scene>
   <lume-node id="node" position="50 50" size="100 100"></lume-node>
 </lume-scene>
 
-<script>
+<script type=module>
   LUME.useDefaultNames()
   document.getElementById('node').rotation = (x, y, z) => [x, y + 1, z]
 <\/script>
@@ -343,9 +350,9 @@ el: '#customNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
-<script>
+<script type=module>
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:
@@ -354,14 +361,14 @@ code:
 
   const scene = new Scene()
 
-  const node = new Node({
+  const node = new Node().set({
     position: [50, 50, 0], // X, Y, and Z position
     size: [100, 100, 0], // X, Y, and Z size
   })
 
   node.style.background = 'cornflowerblue'
-  scene.add(node)
-  scene.mount(document.body)
+  scene.append(node)
+  document.body.append(scene)
   node.rotation = (x, y, z) => [x, y + 1, z]
 
   // The code outputs these elements to the DOM:
@@ -384,13 +391,13 @@ el: '#customNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.0.0/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
 
 <x-scene>
   <x-node id="node" position="50 50" size="100 100"></x-node>
 </x-scene>
 
-<script>
+<script type=module>
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:

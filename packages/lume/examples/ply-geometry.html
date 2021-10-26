@@ -1,0 +1,39 @@
+<title>ply-geometry</title>
+
+<style>
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background: #222;
+		touch-action: none;
+	}
+</style>
+
+<!-- TODO: The behaviors don't load if the global script is loaded after the
+	scene markup instead of before and there is more than one behavior specified with has="". -->
+<script src="../dist/global.js"></script>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<lume-points
+		id="model"
+		has="ply-geometry"
+		src="./models/shelby-gt350.ply"
+		point-size="0.3"
+		rotation="90 0 0"
+		position="-250 0 0"
+		size="0 0 0"
+		scale="50 50 50"
+	></lume-points>
+</lume-scene>
+
+<script>
+	// Define all the LUME elements with their default names.
+	LUME.useDefaultNames()
+</script>

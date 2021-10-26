@@ -8,7 +8,7 @@
     data: {
       code:
 `
-<script src="${location.origin+location.pathname}/global.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
 
 <div id="div">
 	<lume-point-light intensity="0.6"></lume-point-light>

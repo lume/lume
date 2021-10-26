@@ -45,15 +45,23 @@
 
 		<!-- TODO: Rename '@lume/docsify' to 'docsify' -->
 		<script src="./node_modules/@lume/docsify/lib/docsify.min.js"></script>
+		<!-- TODO FIXME emoji plugin doesn't seem to do anything. -->
+		<!-- <script src="./node_modules/@lume/docsify/lib/plugins/emoji.min.js"></script> -->
 		<script src="./node_modules/@lume/docsify/lib/plugins/search.min.js"></script>
 
 		<!-- TODO Prism line numbers don't work, using vue-prism-editor numbers for now (do the Prism ones work with live editing?) -->
 		<script src="./node_modules/prismjs/plugins/line-numbers/prism-line-numbers.min.js"></script>
 		<script src="./node_modules/prismjs/components/prism-bash.min.js"></script>
+		<script src="./node_modules/prismjs/components/prism-jsx.min.js"></script>
+		<script src="./node_modules/prismjs/components/prism-typescript.min.js"></script>
+		<script src="./node_modules/prismjs/components/prism-tsx.min.js"></script>
+
 		<script src="./node_modules/docsify-themeable/dist/js/docsify-themeable.min.js"></script>
 		<script src="./node_modules/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
 		<script src="./node_modules/docsify-pagination/dist/docsify-pagination.min.js"></script>
 		<script src="./node_modules/docsify-plugin-flexible-alerts/dist/docsify-plugin-flexible-alerts.min.js"></script>
 		<script src="./node_modules/docsify-tabs/dist/docsify-tabs.min.js"></script>
+
+		<script src="./js/utils.js"></script>
 	</body>
 </html>

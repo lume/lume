@@ -4,8 +4,8 @@ import {autoDefineElements} from '../LumeConfig.js'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {Motor} from '../core/Motor.js'
 
-import type {PointLight} from '../core/PointLight.js'
-import type {Sphere} from '../core/Sphere.js'
+import type {PointLight} from '../lights/PointLight.js'
+import type {Sphere} from '../meshes/Sphere.js'
 
 export type FlickeringOrbAttributes = NodeAttributes | 'color' | 'intensity' | 'shadowBias'
 

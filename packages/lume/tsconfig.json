@@ -1,8 +1,31 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
-		// TODO, set back to true after removing class-factory mixins
-		"declaration": false,
-		"declarationMap": false
-	}
+		// Good practice: start with 'types' and 'typeRoots' empty, then add types as needed. This
+		// prevents unwanted global types from polluting our space by default.
+
+		// This is needed for Jasmine types inside test files.
+		// TODO how to split co-located test files from source files so that
+		// test globals (f.e. describe) to not leak into source files. Maybe using
+		// Project References?
+		"types": ["@lume/cli/node_modules/@types/jasmine"],
+
+		"typeRoots": [],
+
+		// TypeScript 4.4 broke many applications because they removed or
+		// modified a ton of interfaces from lib.dom.d.ts, so skip type errors in
+		// node_modules. :(
+		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
+		"skipLibCheck": true
+	},
+	"include": ["./src/**/*"],
+
+	// TODO Ideally we don't want test API type defs showing up in source code,
+	// but disabling this otherwise causes tests to be skipped (because lume
+	// cli runs tests from the dist folder so we need to not exclude test
+	// files so that they get built to dist)...
+	// "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
+
+	// ...so for now we do not exclude tests.
+	"exclude": ["./src/**/*.react-jsx.d.ts"]
 }

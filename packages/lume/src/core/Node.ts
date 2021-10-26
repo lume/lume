@@ -1,26 +1,20 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {Mixin, MixinResult, Constructor} from 'lowclass'
-import ImperativeBase, {initImperativeBase} from './ImperativeBase.js'
-import {default as HTMLInterface} from '../html/HTMLNode.js'
-
-// register behaviors that can be used on this element
-import '../html/behaviors/ObjModelBehavior.js'
-import '../html/behaviors/GltfModelBehavior.js'
-import '../html/behaviors/ColladaModelBehavior.js'
+import {HtmlNode as HtmlInterface} from './HtmlNode.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
-
-initImperativeBase()
-
-const _Node = Mixin(NodeMixin)
 
 // TODO Make a way to link to examples that are in separate source files so as
 // not to clutter the inline-documentation when viewing source files.
 
+export type NodeAttributes = BaseAttributes | 'visible'
+
 /**
  * @element lume-node
- * @class Node - `Node` is the backing class for `<lume-node>` elements, which are the most
+ * @class Node -
+ * > :construction: :hammer: Under construction! :hammer: :construction:
+ *
+ * `Node` is the backing class for `<lume-node>` elements, which are the most
  * primitive of the LUME elements.
  *
  * Node contains the basics that all objects in
@@ -32,7 +26,7 @@ const _Node = Mixin(NodeMixin)
  * is an element that renders a sphere on the screen and is backed by the
  * [`Sphere`](./Sphere) class which extends from `Node`.
  *
- * All Nodes must be a child of a [`Scene`](./Scene) node (`<lume-scene>`
+ * All Nodes must be a child of a [`Scene`](/api/core/Scene) node (`<lume-scene>`
  * elements) or another `Node` (or anything that extends from `Node`).
  * If a `<lume-node>` element is a child of anything else, it will not do
  * anything currently.
@@ -48,7 +42,7 @@ const _Node = Mixin(NodeMixin)
  * - Extend the Node class to make new types of 3D objects relying on the basic
  *   features that Node provides. Other classes that extend from Node may, for
  *   example, create [layouts](/examples/autolayout-declarative), or render
- *   [WebGL content](/examples/material-texture).
+ *   [WebGL content](/examples/hello-world/).
  *
  * ## Example
  *
@@ -77,256 +71,157 @@ const _Node = Mixin(NodeMixin)
  * rotation to the root node based on the current mouse or finger position.
  * See the [events guide](TODO) for how the event system works.
  *
- * <div id="example1"></div> <script type="application/javascript">
+ * <div id="example1"></div>
+ *
+ * <script type="application/javascript">
  *   new Vue({
  *     el: '#example1',
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: {
- *       code:
- * `<script src="${location.origin+location.pathname}/global.js"><\/script>
- *
- * <lume-scene id="scene">
- *   <lume-node
- *     id="container"
- *     size="78 78"
- *     align-point="0.5 0.5"
- *     mount-point="0.5 0.5"
- *   >
- *     <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *       <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *     </lume-node>
- *     <lume-node class="rotator A" size="60 60" align-point="1 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align-point="1 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align-point="1 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *           </lume-node>
- *         </lume-node>
- *       </lume-node>
- *     </lume-node>
- *     <lume-node class="rotator A" size="60 60" mount-point="1 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *       </lume-node>
- *       <lume-node class="rotator" size="45 45" mount-point="1 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *         </lume-node>
- *         <lume-node class="rotator" size="28 28" mount-point="1 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *           </lume-node>
- *         </lume-node>
- *       </lume-node>
- *     </lume-node>
- *     <lume-node class="rotator B" size="60 60" align-point="0 1" mount-point="1 0">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align-point="0 1" mount-point="1 0">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align-point="0 1" mount-point="1 0">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *           </lume-node>
- *         </lume-node>
- *       </lume-node>
- *     </lume-node>
- *     <lume-node class="B" size="60 60" align-point="1 0" mount-point="0 1">
- *       <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *         <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *       </lume-node>
- *       <lume-node class="rotator" size="45 45" align-point="1 0" mount-point="0 1">
- *         <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *           <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *         </lume-node>
- *         <lume-node class="rotator" size="28 28" align-point="1 0" mount-point="0 1">
- *           <lume-node class="sun" size-mode="proportional proportional" size="0.8 0.8" position="0 0 10" align-point="0.5 0.5" mount-point="0.5 0.5">
- *             <img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
- *           </lume-node>
- *         </lume-node>
- *       </lume-node>
- *     </lume-node>
- *   </lume-node>
- * </lume-scene>
- *
- * <style>
- *   html, body {
- *     margin: 0; padding: 0;
- *     height: 100%; width: 100%;
- *   }
- *   lume-scene { background: #fefefe }
- *   lume-node {
- *     border-radius: 100%;
- *     color: white;
- *     font-family: sans-serif;
- *     font-weight: bold;
- *   }
- *   lume-node:not(.sun) {
- *     background: rgba(0, 0, 0, 0.1);
- *   }
- *   img {
- *     width: 100%;
- *     height: 100%;
- *     display: block;
- *   }
- * </style>
- *
- * <script>
- *   LUME.useDefaultNames()
- *
- *   document.querySelectorAll('.A, .A .rotator').forEach(n => {
- *     n.rotation = (x, y, z, t) => [-65*Math.sin(t * 0.0005), y, -65*Math.sin(t * 0.0005)]
- *   })
- *
- *   document.querySelectorAll('.B, .B .rotator').forEach(n => {
- *     n.rotation = (x, y, z, t) => [65*Math.sin(t * 0.0005), 65*Math.sin(t * 0.0005), z]
- *   })
- *
- *   const rotationAmount = 35;
- *
- *   // Add some interaction so we can see the shine from the light!
- *   scene.addEventListener("pointermove", event => {
- *
- *     // Rotate the image a little bit too.
- *     container.rotation.y = (
- *       (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) -
- *       rotationAmount
- *     );
- *     container.rotation.x = -(
- *       (event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) -
- *       rotationAmount
- *      );
- *   });
- * <\/script>
- * `
- *     },
+ *     data: { code: miniGalaxyDemo() },
  *   })
  * </script>
- *
- * NOTE, as opposed to the above example, Nodes can also be used as parents
- * nodes merely for transformation, but they do not have to render anything.
- * The only things that will appear on screen are other traditional
- * HTML elements or more advanced LUME elements that are placed inside of
- * the `<lume-node>` elements.  See an [example of that](/examples/hello3d-parent-transforms).
- *
  *
  * @extends ImperativeBase
  * @extends HTMLNode
  */
-// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-export const Node = _Node.mixin(HTMLInterface)
-export interface Node extends InstanceType<typeof Node> {}
-export default Node
+@element
+export class Node extends HtmlInterface {
+	static defaultElementName = 'lume-node'
 
-export type NodeAttributes = BaseAttributes | 'visible'
+	/**
+	 * @property {boolean} visible - Whether or not the node will be
+	 * visible (if it renders anything). For `<lume-node>` elements, this
+	 * only applies if the element has CSS styling or traditional HTML
+	 * content inside of it (children), otherwise `<lume-node>`
+	 * element's don't have any visual output by default.  Other nodes that
+	 * have default visual output like `<lume-box>` or `<lume-sphere>` will
+	 * not be visible if this is false, and their rendering mechanics will
+	 * be skipped.
+	 *
+	 * If a `Node` is not visible, its children are also not visible.
+	 */
+	@booleanAttribute(true) @emits('propertychange') visible = true
 
-function NodeMixin<T extends Constructor>(Base: T) {
-	// NOTE for now, we assume Node is mixed with its HTMLInterface.
-	const Parent = ImperativeBase.mixin(Constructor<HTMLInterface>(Base))
+	/**
+	 * @readonly
+	 * @property {true} isNode - Always true for things that are or inherit from `Node`.
+	 */
+	isNode = true
 
-	@element
-	class Node extends Parent {
-		static defaultElementName = 'lume-node'
+	/**
+	 * @constructor - Create a Node instance.
+	 *
+	 * The following examples calls `.set()` to set initial properties. Any
+	 * properties passed into .set() are applied to the instance. For
+	 * example, writing
+	 *
+	 * ```js
+	 * var node = new Node().set({
+	 *   size: {x:100, y:100, z:100},
+	 *   rotation: {x:30, y:20, z:25}
+	 * })
+	 * ```
+	 *
+	 * is the same as writing
+	 *
+	 * ```js
+	 * var node = new Node()
+	 * node.size = {x:100, y:100, z:100}
+	 * node.rotation = {x:30, y:20, z:25}
+	 * ```
+	 *
+	 * @param {Object} props - An object with initial property values for the Node instance.@
+	 * TODO describe the overall format and reactivity of the properties.
+	 *
+	 * @example
+	 * // TODO handle @example blocks
+	 */
+	constructor() {
+		super()
 
-		/**
-		 * @property {boolean} visible - Whether or not the node will be
-		 * visible (if it renders anything). For `<lume-node>` elements, this
-		 * only applies if the element has CSS styling or traditional HTML
-		 * content inside of it (children), otherwise `<lume-node>`
-		 * element's don't have any visual output by default.  Other nodes that
-		 * have default visual output like `<lume-box>` or `<lume-sphere>` will
-		 * not be visible if this is false, and their rendering mechanics will
-		 * be skipped.
-		 *
-		 * If a `Node` is not visible, its children are also not visible.
-		 */
-		@booleanAttribute(true) @emits('propertychange') visible = true
-
-		/**
-		 * @readonly
-		 * @property {true} isNode - Always true for things that are or inherit from `Node`.
-		 */
-		isNode = true
-
-		/**
-		 * @constructor - Create a Node instance.
-		 *
-		 * The following examples calls `.set()` to set initial properties. Any
-		 * properties passed into .set() are applied to the instance. For
-		 * example, writing
-		 *
-		 * ```js
-		 * var node = new Node().set({
-		 *   size: {x:100, y:100, z:100},
-		 *   rotation: {x:30, y:20, z:25}
-		 * })
-		 * ```
-		 *
-		 * is the same as writing
-		 *
-		 * ```js
-		 * var node = new Node()
-		 * node.size = {x:100, y:100, z:100}
-		 * node.rotation = {x:30, y:20, z:25}
-		 * ```
-		 *
-		 * @param {Object} props - An object with initial property values for the Node instance.@
-		 * TODO describe the overall format and reactivity of the properties.
-		 *
-		 * @example
-		 * // TODO handle @example blocks
-		 */
-		constructor(...args: any[]) {
-			super(...args)
-
-			// The `parent` property can already be set if this instance is
-			// already in the DOM and wwhile being upgraded into a custom
-			// element.
-			// TODO Remove this after we make it lazy and deferred this to a
-			// render task.
-			if (this.parent) {
-				this._calcSize()
-				this.needsUpdate()
-			}
-		}
-
-		protected _loadCSS() {
-			if (!super._loadCSS()) return false
-
-			this._cssStopFns.push(
-				autorun(() => {
-					this._elementOperations.shouldRender = this.visible
-					this.needsUpdate()
-				}),
-			)
-
-			return true
-		}
-
-		protected _loadGL() {
-			if (!super._loadGL()) return false
-
-			this._glStopFns.push(
-				autorun(() => {
-					this.three.visible = this.visible
-					this.needsUpdate()
-				}),
-			)
-
-			return true
+		// The `parent` property can already be set if this instance is
+		// already in the DOM and wwhile being upgraded into a custom
+		// element.
+		// TODO Remove this after we make _calcSize lazy and deferred to a
+		// render task.
+		if (this.composedLumeParent) {
+			this._calcSize()
+			this.needsUpdate()
 		}
 	}
 
-	return Node as MixinResult<typeof Node, T>
+	get composedLumeChildren(): Node[] {
+		const result: Node[] = []
+		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
+		return result
+	}
+
+	/**
+	 * @method traverseSceneGraph - This traverses the the composed tree of
+	 * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+	 * @param {(node: Node) => void} visitor - A function called for each
+	 * LUME node in the scene graph (the composed tree).
+	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
+	 * the traversal will wait for custom elements to be defined (with
+	 * customElements.whenDefined) before traversing to them.
+	 * @returns {void | Promise<void>} - If `waitForUpgrade` is `false`,
+	 * the traversal will complete synchronously, and the return value will be
+	 * `undefined`. If `waitForUpgrade` is `true`, then traversal completes
+	 * asynchronously as soon as all custom elements are defined, and a Promise is
+	 * returned so that it is possible to wait for the traversal to complete.
+	 */
+	traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+		visitor(this)
+
+		if (!waitForUpgrade) {
+			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
+			return
+		}
+
+		// if waitForUpgrade is true, we make a promise chain so that
+		// traversal order is still the same as when waitForUpgrade is false.
+		let promise: Promise<any> = Promise.resolve()
+
+		for (const child of this.composedLumeChildren) {
+			const isUpgraded = child.matches(':defined')
+
+			if (isUpgraded) {
+				promise = promise!.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			} else {
+				promise = promise!
+					.then(() => customElements.whenDefined(child.tagName.toLowerCase()))
+					.then(() => child.traverseSceneGraph(visitor, waitForUpgrade))
+			}
+		}
+
+		return promise
+	}
+
+	_loadCSS() {
+		if (!super._loadCSS()) return false
+
+		this._cssStopFns.push(
+			autorun(() => {
+				this._elementOperations.shouldRender = this.visible
+				this.needsUpdate()
+			}),
+		)
+
+		return true
+	}
+
+	_loadGL() {
+		if (!super._loadGL()) return false
+
+		this._glStopFns.push(
+			autorun(() => {
+				this.three.visible = this.visible
+				this.needsUpdate()
+			}),
+		)
+
+		return true
+	}
 }
 
 import type {ElementAttributes} from '@lume/element'
@@ -343,4 +238,18 @@ declare global {
 	interface HTMLElementTagNameMap {
 		'lume-node': Node
 	}
+}
+
+// TODO move this to the elemet-behaviors package.
+declare module '@lume/element' {
+	namespace JSX {
+		// Attributes for all elements.
+		interface CustomAttributes<T> {
+			has?: string
+		}
+	}
+}
+
+function isNode(n: any): n is Node {
+	return n.isNode
 }

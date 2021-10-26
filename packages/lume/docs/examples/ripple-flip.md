@@ -8,9 +8,9 @@
     data: {
       code:
 `
-<script src="${location.origin+location.pathname}/global.js"><\/script>
-<script src="${location.origin+location.pathname}/node_modules/tinycolor2/tinycolor.js"><\/script>
-<script src="${location.origin+location.pathname}/node_modules/tween.js/src/Tween.js"><\/script>
+<script src="${location.origin+location.pathname}global.js"><\/script>
+<script src="${location.origin+location.pathname}node_modules/tinycolor2/tinycolor.js"><\/script>
+<script src="${location.origin+location.pathname}node_modules/tween.js/src/Tween.js"><\/script>
 
 <style>
   html, body {
@@ -61,7 +61,7 @@
       perspective: 800
     })
 
-    scene.mount('body')
+    document.body.append(scene)
 
     const gridSizeX = 13
     const gridSizeY = 13
@@ -75,7 +75,7 @@
       position: {z: -600},
     })
 
-    scene.add(grid)
+    scene.append(grid)
 
     console.log('grid size', grid.calculatedSize)
 
@@ -100,7 +100,7 @@
         node.style.background = ''+mainColor.clone().darken(10)
         node.style.border = '1px solid ' + mainColor.clone().darken(35)
 
-        grid.add(node)
+        grid.append(node)
       }
     }
 

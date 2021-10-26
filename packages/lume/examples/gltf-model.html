@@ -8,6 +8,7 @@
 		margin: 0;
 		padding: 0;
 		background: #222;
+		touch-action: none;
 	}
 </style>
 
@@ -15,20 +16,31 @@
 	id="scene"
 	perspective="800"
 	webgl
-	background="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-	equirectangular-background="true"
+	Xbackground="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+	Xequirectangular-background="true"
 	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 >
 	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
-	<lume-perspective-camera size="0 0 0" position="0 0 1000" rotation="0 0 0" active></lume-perspective-camera>
+
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<!-- background -->
+	<lume-sphere
+		has="basic-material"
+		color="white"
+		sidedness="double"
+		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+		size="4000"
+		mount-point="0.5 0.5 0.5"
+	></lume-sphere>
 
 	<lume-gltf-model
 		id="model"
 		rotation="0 45 0"
 		size="2 2 0"
 		src="./models/DamagedHelmet.glb"
-		scale="200 200 200"
+		scale="50 50 50"
 		style="background: blue"
 	>
 	</lume-gltf-model>
@@ -38,13 +50,4 @@
 <script>
 	// Define all the LUME elements with their default names.
 	LUME.useDefaultNames()
-
-	let t0 = performance.now()
-	let dt = 0
-
-	model.rotation = (x, y, z, t) => {
-		dt = t - t0
-		t0 = t
-		return [x, y + dt * 0.05, z]
-	}
 </script>

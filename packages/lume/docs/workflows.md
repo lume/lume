@@ -1,5 +1,7 @@
 # Workflows
 
+**NOTE: This page is deprecated and will be removed soon. See [Install](./guide/install.md) instead.**
+
 ## Global Workflow (easiest)
 
 <!-- TODO: move some info from here to the install.md file, then delete this. -->
@@ -48,11 +50,11 @@ Make a file named `index.html` containing the following:
 	</lume-node>
 </lume-scene>
 
-<!-- Include the global version of Lume in the app. -->
+<!-- Include the global version of LUME in the app. -->
 <script src="https://unpkg.com/lume/dist/global.js"></script>
 
 <script>
-	// Tell Lume to use default names for the elements (f.e. lume-node and lume-scene).
+	// Tell LUME to use default names for the elements (f.e. lume-node and lume-scene).
 	LUME.useDefaultNames()
 
 	// Get a reference to the lume-node element.
@@ -87,7 +89,7 @@ npm install "webpack@^3" --save-dev
 The `--save-dev` option saves webpack as a ["dev
 dependency"](https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file).
 
-Install Lume into your project:
+Install LUME into your project:
 
 ```sh
 npm install lume --save
@@ -110,7 +112,7 @@ Make a file named `app.js` containing the following:
 ```js
 import {Scene, Node, useDefaultNames} from 'lume'
 
-// Tell Lume to use default names for the elements.
+// Tell LUME to use default names for the elements.
 useDefaultNames()
 
 // Create a new 3D scene:
@@ -129,8 +131,8 @@ const node = new Node({
 
 node.innerHTML = '<div>Hello 3D</div>'
 
-scene.add(node)
-scene.mount(document.body)
+scene.append(node)
+document.body.append(scene)
 
 node.rotation = (x, y, z) => [x, ++y, z]
 ```
@@ -172,12 +174,13 @@ npx webpack
 
 The `npx webpack` command runs the Webpack build tool and outputs a bundle to
 the file `output/app.js` within your project, which includes your code as
-well as the Lume code that you imported with the `import` statements.
+well as the LUME code that you imported with the `import` statements.
 
 Now use `File > Open` in your browser to open the `output/index.html` file and
 see the result.
 
 # What's next?
 
-Now that you're up and running, learn more in the [Guide](#) (coming soon...) and [API
+Now that you're up and running, learn more in the [Guide](#) (:construction:
+:hammer: Under construction! :hammer: :construction:) and [API
 reference](./api/core/Node).

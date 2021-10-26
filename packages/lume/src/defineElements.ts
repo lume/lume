@@ -1,15 +1,26 @@
-import * as elementClasses from './components/index.js'
-
-// TODO? Remove element classes from the main bundle, make them separate.
-import * as exampleElementClasses from './examples/index.js'
+import * as elementClasses from './index.js'
+import {useDefaultNames as _useDefaultNames} from './useDefaultNames.js'
 
 import type {Element} from '@lume/element'
 
 export function defineElements() {
-	const allClasses = {...elementClasses, ...exampleElementClasses}
-
-	for (const key in allClasses) {
-		const ElementClass = (allClasses as any)[key] as typeof Element | undefined
+	for (const key in elementClasses) {
+		const ElementClass = (elementClasses as any)[key] as typeof Element | undefined
 		if (ElementClass?.elementName) ElementClass?.defineElement?.()
 	}
+}
+
+let defined = false
+
+export function useDefaultNames() {
+	if (defined) return
+	defined = true
+
+	// The old way
+	_useDefaultNames()
+
+	// The new way.
+	defineElements()
+
+	// TODO convert everything to the new way and delete useDefaultNames.
 }

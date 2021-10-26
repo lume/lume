@@ -8,13 +8,10 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [13.x]
-                operating-system: [
-					ubuntu-latest,
-					macos-latest,
-					# TODO get tests working in Windows
-					# windows-latest
-				]
+                node-version: [14.x]
+                # TODO get tests working in Windows
+                # windows-latest
+                operating-system: [ubuntu-latest, macos-latest]
 
         steps:
             - uses: actions/checkout@v1

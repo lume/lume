@@ -1,7 +1,39 @@
 <!DOCTYPE html>
+
+<!--
+
+This is a comprehensive test of ShadowDOM composition features: it ensures that
+we draw 3D graphics on screen based on the composed tree that is defined by a
+hierarchy of Document and ShadowRoot trees with <slot> elements for element distribution.
+Behind the scenes, the scene graph tree (Three.js tree) will match the shape of
+the composed DOM tree. We test several things:
+
+- [x] LUME Elements that are children of a ShadowRoot render relative to the host
+  of the ShadowRoot.
+- [x] LUME Elements that are children of a shadow host and assigned to a slot in
+  the host's ShadowRoot render relative to the LUME element where they are
+  distributed to.
+- [x] LUME Elements that are children of a shadow host but not assigned to a slot
+  do not participate in rendering.
+- [x] If a LUME element is assigned to a slot that is further assigned to a deeper
+  slot of a deeper ShadowRoot tree, the distributed LUME element should render
+  relative to the slot-containing LUME element in the deeper ShadowRoot tree.
+- [x] If a slot has no content assigned to it, then LUME elements used as fallback
+  content (children of the slot) should render instead.
+- [x] If a slot has content assigned to it, then LUME elements used as fallback
+  content (children of the slot) should not participate in the render outcome.
+- [x] LUME Elements assigned to slots that are direct children of a ShadowRoot
+  should render relative to the shadow host.
+- [x] LUME elements that are children of non-LUME elements but distributed into a
+  LUME Scene element should render.
+
+The code below is commented to describe which parts correlate to the above list of items.
+
+-->
+
 <html>
 	<head>
-		<title>ObjModel</title>
+		<title>ShadowDOM</title>
 
 		<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
 		<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
@@ -9,10 +41,9 @@
 		<!-- the library -->
 		<script src="../dist/global.js"></script>
 
-		<!-- provides the html`` template tag function -->
-		<!-- <script src="./js/html-template-tag.js"></script> -->
-
-		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+		<!-- pep.js provides the pointer events (pointermove, pointerdown,
+		  etc), namely support for touch-action that not all browsers have
+		  supported for the longest time until recently. -->
 		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
 		<style>
@@ -28,83 +59,220 @@
 		</style>
 	</head>
 	<body>
-		<lume-scene id="scene" webgl>
-			<lume-ambient-light intensity="0.3"></lume-ambient-light>
+		<script>
+			// Make sure this one works too, before HTML parsing.
+			// LUME.useDefaultNames()
+		</script>
 
-			<lume-point-light
-				id="light"
-				color="white"
-				position="300 300 400"
-				size="0 0 0"
-				cast-shadow="true"
-				intensity="0.5"
-			>
-			</lume-point-light>
-
-			<lume-box
-				rotation="40 40 0"
-				align-point="0.5 0.5 0"
-				size="100 100 100"
-				color="white"
-				COMMENT-otherwise-the-material-will-be-tinted-random-color
-				texture="../docs/textures/cement.jpg"
-			>
-				<lume-sphere size="100 100 100" rotation="30 30 30" texture="../docs/textures/cement.jpg"></lume-sphere>
-			</lume-box>
-		</lume-scene>
+		<!-- Body will have a ShadowRoot, and this lume-box will be distributed to (render relative to) the following LUME Scene inside the ShadowRoot. -->
+		<lume-box color="purple" slot="outsidenode" size="30 30 30" align-point="0.3 0.3"></lume-box>
 
 		<script>
-			// defines the default names for the HTML elements
 			LUME.useDefaultNames()
 
 			const {html} = LUME
 
-			const light = document.querySelector('#light')
+			const bodyRoot = document.body.attachShadow({mode: 'open'})
+			let innerContainer
 
-			document.addEventListener('pointermove', function (e) {
+			bodyRoot.append(
+				html`
+					<div ref=${el => (innerContainer = el)} style="width: 100%; height: 100%; border: 5px solid blue;">
+						<div
+							style="width: 100%; height: 100%; border: 5px solid pink;"
+							slot="scene"
+							TODO="try without this wrapper div to see that slotting a scene does not work (and try to fix)"
+						>
+							<lume-scene id="scene" webgl style="background: skyblue">
+								<slot name="outsidenode">
+									<!-- The lume-box from the main document should render relative to here. -->
+								</slot>
+
+								<lume-ambient-light intensity="0.7" color="skyblue"></lume-ambient-light>
+
+								<lume-point-light
+									id="light"
+									color="white"
+									position="300 300 400"
+									size="0 0 0"
+									cast-shadow="true"
+									intensity="0.8"
+								>
+								</lume-point-light>
+
+								<lume-box
+									id="lightdom"
+									rotation="40 40 0"
+									align-point="0.5 0.5 0"
+									size="40 40 40"
+									color="white"
+									COMMENT-otherwise-the-material-will-be-tinted-random-color
+									texture="../docs/textures/cement.jpg"
+								>
+									<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
+									<lume-sphere
+										id="sphere"
+										Xslot="box"
+										slot="plane"
+										size="40 40 40"
+										position="-30 -30 -30"
+										texture="../docs/textures/cement.jpg"
+									></lume-sphere>
+								</lume-box>
+							</lume-scene>
+						</div>
+					</div>
+				`,
+			)
+
+			const light = bodyRoot.querySelector('#light')
+			const sphere = bodyRoot.querySelector('#sphere')
+			const scene = bodyRoot.querySelector('#scene')
+
+			setTimeout(() => {})
+
+			const innerRoot = innerContainer.attachShadow({mode: 'open'})
+			innerRoot.append(html`
+				<div style="width: 90%; height: 90%; border: 5px solid green;">
+					<slot name="scene">
+						<!-- The lume-scene is distributed to here. -->
+					</slot>
+				</div>
+			`)
+
+			bodyRoot.addEventListener('pointermove', function (e) {
 				e.preventDefault()
 				light.position.x = e.clientX
 				light.position.y = e.clientY
 			})
 
-			const el = document.querySelector('lume-box')
+			const el = bodyRoot.querySelector('#lightdom')
 
-			const rotate = t => 180 * Math.sin(0.0001 * t)
+			// const rotate = t => 180 * Math.sin(0.0001 * t)
 			// el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]
-
-			const root = el.attachShadow({mode: 'open'})
 
 			let slot
 			let slotContainer
 
-			root.append(
-				...html`
-					<lume-box size="50 50 50" position="-100 -100 -100" color="royalblue"></lume-box>
-					<lume-node position="10 10 10">
-						<lume-dom-node
-							ref=${el => (slotContainer = el)}
-							position="50 50 50"
-							rotation="30 30 30"
-							align-point="1 1 1"
-							size="100 100"
-							style="background: red"
-						>
-							<slot ref=${el => (slot = el)}>
-								<!-- The sphere inside the lume-box renders relative to here. -->
+			// XXX Without the timeout, this should still work!
+			setTimeout(() =>
+				//
+				{
+					const root = el.attachShadow({mode: 'open'})
+
+					root.append(
+						...html`
+							<!-- A slot that is child of a ShadowRoot. Any content (distributed, or fallback) renders relative to the shadow host. -->
+							<slot name="root">
+								<!-- Default content to render when nothing is assigned to this slot. -->
+								<lume-sphere color="orange" size="50 50 50" position="10 10 10"></lume-sphere>
 							</slot>
-						</lume-dom-node>
-					</lume-node>
-				`,
-			)
+							<!-- A LUME element as child of a ShadowRoot renders relative to the shadow host. -->
+							<lume-box id="box" size="50 50 50" position="-100 -100 -100" color="royalblue">
+								<slot name="box">
+									<!-- Default content to render when nothing is assigned to this slot. -->
+									<lume-sphere color="white" size="50 50 50" position="10 10 10"></lume-sphere>
+								</slot>
+							</lume-box>
+							<lume-node position="10 10 10">
+								<lume-mixed-plane
+									id="shadowdom"
+									color="black"
+									ref=${el => (slotContainer = el)}
+									position="50 50 50"
+									rotation="30 30 30"
+									align-point="1 1 1"
+									size="50 50"
+									style="background: skyblue; padding: 5px; font-size: 0.5rem"
+								>
+									<h4>This is DOM content.</h4>
+									<slot name="plane" slot="deeper" ref=${el => (slot = el)}>
+										<!--
+										This slot is further assigned to a deeper slot, so LUME elements assigned here
+										will not render relative to here, but relative to the parent of the deeper slot.
+										FIXME JSX issue: if this comment is outside of the slot, right above it, the JSX
+										toggles the comment instead of the slot element.
+										-->
+										<!-- Default content to render when nothing is assigned to this slot. -->
+										<lume-sphere color="teal" size="50 50 50" position="10 10 10"></lume-sphere>
+									</slot>
+								</lume-mixed-plane>
+							</lume-node>
+						`,
+					)
 
-			// Remove the slot every second to ensure rendering updates as expected (toggles the sphere being visible)
-			// setInterval(() => {
-			setTimeout(() => {
-				if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
-				else slotContainer.appendChild(slot)
-			}, 2000)
+					slotContainer.rotation = (x, y, z) => [x, ++y, z]
+					slotContainer.on('GL_LOAD', () => {
+						// TODO material-opacity attribute or similar instead of having to do this.
+						slotContainer.three.material.opacity = 0.4
+					})
 
-			// slotContainer.rotation = (x, y, z) => [x, ++y, z]
+					const root2 = slotContainer.attachShadow({mode: 'open'})
+					root2.append(
+						...html`
+							<slot>
+								<!--
+									Default content to render when nothing is assigned to this slot.
+									The <h4> from the above ShadowRoot is always distributed here, so
+									this yellow sphere will never render.
+								-->
+								<lume-sphere color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
+							</slot>
+							<lume-box id="deeperbox" size="20 20 20" position="0 0 100">
+								<slot name="deeper">
+									<!-- Default content to render when nothing is assigned to this slot. -->
+									<lume-sphere color="green" size="50 50 50" position="10 10 10"></lume-sphere>
+								</slot>
+							</lume-box>
+						`,
+					)
+
+					// TODO This should ideally work without the timeout.
+					setTimeout(() => {
+						let nodes = []
+						scene.traverseSceneGraph(n => nodes.push(n))
+						if (nodes.length !== 11) throw new Error('Composed tree traversal failed.')
+					})
+
+					let i = 0
+
+					// Alternate which slot the sphere is assigned to to verify
+					// that the sphere moves around to the different distribution
+					// points, including one deeper slot.
+					const toggle1 = () => {
+						i++
+						sphere.setAttribute('slot', i % 3 == 0 ? 'box' : i % 3 == 1 ? 'plane' : 'root')
+					}
+
+					// Add and remove a slot to verify that this changes which
+					// distribution point the sphere renders relative to.
+					const toggle2 = () => {
+						if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
+						else slotContainer.appendChild(slot)
+					}
+
+					// Turn the scene's webgl rendering on and off to
+					// verify that WebGL rendering based on the composed tree
+					// works when turned on and off (this destroys and
+					// recreates the whole scene graph each time, and each
+					// time it should be properly created in the same
+					// structure as the composed DOM tree).
+					const toggle3 = () => {
+						scene.webgl = !scene.webgl
+					}
+
+					// Toggle which deeper slot the higher slot is assigned to, to
+					// verify that the sphere will render in the expected place.
+					const toggle4 = () => {
+						if (slot.hasAttribute('slot')) slot.removeAttribute('slot')
+						else slot.setAttribute('slot', 'deeper')
+					}
+
+					setInterval(toggle1, 2000)
+					// setInterval(toggle2, 2000)
+					// setInterval(toggle3, 2000)
+					// setInterval(toggle4, 2500)
+				}, 2000)
 		</script>
 	</body>
 </html>

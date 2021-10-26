@@ -8,10 +8,10 @@
 
   <details>
 
--   Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
--   The 3D scene is defined with declarative HTML
--   The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue))
--   Rendering: experimental WebGL (earlier version)
+- Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
+- The 3D scene is defined with declarative HTML
+- The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue))
+- Rendering: experimental WebGL (earlier version)
 
   </details>
 
@@ -23,9 +23,9 @@
 
   <details>
 
--   The 3D scene is defined with declarative HTML
--   Minimal JavaScript used for animation
--   Rendering: experimental WebGL
+- The 3D scene is defined with declarative HTML
+- Minimal JavaScript used for animation
+- Rendering: experimental WebGL
 
   </details>
 
@@ -37,9 +37,9 @@
 
   <details>
 
--   The 3D scene is defined with declarative HTML
--   The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js))
--   Rendering: experimental WebGL (earlier version)
+- The 3D scene is defined with declarative HTML
+- The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js))
+- Rendering: experimental WebGL (earlier version)
 
   </details>
 
@@ -51,8 +51,8 @@
 
   <details>
 
--   The 3D scene is defined with declarative HTML
--   The HTML is manipulated with plain JS.
--   Rendering: CSS3D
+- The 3D scene is defined with declarative HTML
+- The HTML is manipulated with plain JS.
+- Rendering: CSS3D
 
   </details>
