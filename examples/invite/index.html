@@ -62,11 +62,6 @@
 	}
 	img {
 		/* transform: scale(1.01); */
-
-		/* tmp */
-		position: absolute;
-		top: 0;
-		left: 105%;
 	}
 
 	#play {
@@ -132,10 +127,45 @@
 	 whenDefined() to wait for element definitions? -->
 	<script src="./svg.js"></script>
 
+	<script>
+		async function svgTexture(plane, img, canvas) {
+			const ctx = canvas.getContext('2d')
+
+			await Promise.all([imgLoaded(img), glLoaded(plane)])
+
+			console.log('IMAGE LOADED')
+			canvas.width = 1294
+			canvas.height = 2300
+			ctx.drawImage(img, 0, 0, 1294, 2300)
+
+			const tex = new LUME.THREE.CanvasTexture(canvas)
+			plane.three.material.map = tex
+			plane.three.material.needsUpdate = true
+			plane.needsUpdate()
+
+			// If we remove the canvas before the above creation of CanvasTexture, the texture will not render. hmmmm.
+			canvas.remove()
+
+			img.remove()
+		}
+
+		function imgLoaded(img) {
+			return new Promise(res => (img.onload = res))
+		}
+
+		function glLoaded(node) {
+			return new Promise(res => {
+				if (node._glLoaded) res()
+				else node.on('GL_LOAD', res)
+			})
+		}
+	</script>
+
 	<lume-scene
 		id="scene"
 		perspective="800"
 		webgl
+		enable-css="false"
 		fog-mode="linear"
 		fog-near="800"
 		fog-far="1300"
@@ -162,31 +192,70 @@
 			align-point="0.5 0.5"
 			mount-point="0.5 0.5"
 		>
-			<lume-node id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#eee">
+			<lume-plane id="fitted" align-point="0.5 0.5" mount-point="0.5 0.5" size="647 1150" color="#eee">
+				<lume-plane
+					id="bgPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 75"
+					opacity="0.99"
+					Xtexture="./bg.png"
+					color="white"
+				>
+					<div>
+						<canvas id="bgCanvas"></canvas>
+						<img id="bgImg" src="./bg.png" width="1294" height="2300" />
+					</div>
+				</lume-plane>
+				<script>
+					svgTexture(bgPlane, bgImg, bgCanvas)
+				</script>
+
+				<lume-plane
+					id="textPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 60"
+					opacity="0.99"
+					Xtexture="./text.svg"
+					color="white"
+				>
+					<div>
+						<canvas id="textCanvas"></canvas>
+						<img id="textImg" src="./text.svg" width="1294" height="2300" />
+					</div>
+				</lume-plane>
+				<script>
+					svgTexture(textPlane, textImg, textCanvas)
+				</script>
+
+				<!-- <lume-svg size="500 500" src="./anna.svg"></lume-svg> -->
+				<lume-plane
+					id="annaPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 90"
+					opacity="0.99"
+					Xtexture="./anna.svg"
+					color="white"
+				>
+					<div>
+						<canvas id="annaCanvas"></canvas>
+						<img id="annaImg" src="./anna.svg" width="1294" height="2300" />
+					</div>
+				</lume-plane>
+				<script>
+					svgTexture(annaPlane, annaImg, annaCanvas)
+				</script>
+
+				<!-- ///////////////////////////////////////////////////////////////////////////////////////// -->
 				<!-- <lume-svg size="500 500" src="./and.svg"></lume-svg> -->
-
-				<!-- <lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
-					<div>
-						<img src="./background-01.png" />
-					</div>
-				</lume-node>
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 60">
-					<div>
-						<img src="./text-01.2.svg" />
-					</div>
-				</lume-node>
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
-					<div>
-						<img src="./anna.svg" />
-					</div>
-				</lume-node> -->
-
-				<!-- <lume-svg-2
+				<lume-svg-2
 					size-mode="proportional proportional"
 					size="1 1"
 					position="0 0 60"
 					src="./and.svg"
-				></lume-svg-2> -->
+				></lume-svg-2>
 				<lume-plane
 					id="andPlane"
 					size-mode="proportional proportional"
@@ -195,67 +264,65 @@
 					opacity="0.99"
 					Xtexture="./and.svg"
 					color="white"
-				></lume-plane>
-				<lume-node id="andNode" size-mode="proportional proportional" size="1 1" position="0 0 60">
+				>
 					<div>
 						<canvas id="andCanvas"></canvas>
 						<img id="andImg" src="./and.svg" width="1294" height="2300" />
 					</div>
-				</lume-node>
+				</lume-plane>
 				<script>
-					///// Image to canvas then texture //////////////////////////////
-					!(async function () {
-						const ctx = andCanvas.getContext('2d')
+					svgTexture(andPlane, andImg, andCanvas)
+				</script>
+				<!-- ///////////////////////////////////////////////////////////////////////////////////////// -->
 
-						await Promise.all([
-							new Promise(res => (andImg.onload = res)),
-							new Promise(res => {
-								if (andPlane._glLoaded) res()
-								else andPlane.on('GL_LOAD', res)
-							}),
-						])
-
-						console.log('IMAGE LOADED')
-						andCanvas.width = 1294
-						andCanvas.height = 2300
-						ctx.drawImage(andImg, 0, 0, 1294, 2300)
-
-						const tex = new LUME.THREE.CanvasTexture(andCanvas)
-						andPlane.three.material.map = tex
-
-						// Reset Three.js internal state or else sometimes WebGLRenderer does not render the texture.
-						// TODO report Three.js r125 bug. When you see a flash of white and then the texture, that's when the bug normally happens if dispose() is not called, in which case the white material will stay and the texture will not appear.
-						andPlane.three.material.dispose()
-						andPlane.needsUpdate()
-
-						// andPlane.visible = true
-
-						// If we remove the canvas before the above creation of CanvasTexture, the texture will not render. hmmmm.
-						andCanvas.remove()
-					})()
+				<lume-plane
+					id="igorPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 90"
+					opacity="0.99"
+					Xtexture="./igor.svg"
+					color="white"
+				>
+					<div>
+						<canvas id="igorCanvas"></canvas>
+						<img id="igorImg" src="./igor.svg" width="1294" height="2300" />
+					</div>
+				</lume-plane>
+				<script>
+					svgTexture(igorPlane, igorImg, igorCanvas)
 				</script>
 
-				<!-- <lume-node size-mode="proportional proportional" size="1 1" position="0 0 90">
+				<lume-plane
+					id="numbersPlane"
+					size-mode="proportional proportional"
+					size="1 1"
+					position="0 0 75"
+					opacity="0.99"
+					Xtexture="./numbers.svg"
+					color="white"
+				>
 					<div>
-						<img src="./igor.svg" />
+						<canvas id="numbersCanvas"></canvas>
+						<img id="numbersImg" src="./numbers.svg" width="1294" height="2300" />
 					</div>
-				</lume-node>
-				<lume-node size-mode="proportional proportional" size="1 1" position="0 0 75">
-					<div>
-						<img src="./numbers.svg" />
-					</div>
-				</lume-node> -->
-			</lume-node>
+				</lume-plane>
+				<script>
+					svgTexture(numbersPlane, numbersImg, numbersCanvas)
+				</script>
+			</lume-plane>
 		</lume-node>
 
-		<lume-node visible="false" id="particleContainer" align-point="0.5 0.5" rotation="0 0 0">
+		<lume-node id="particleContainer" align-point="0.5 0.5" rotation="0 0 0">
 			<lume-instanced-mesh
 				has="plane-geometry phong-material"
+				opacity="0.99"
 				align-point="0.5 0.5"
 				mount-point="0.5 0.5"
 			></lume-instanced-mesh>
 			<lume-instanced-mesh
 				has="plane-geometry phong-material"
+				opacity="0.99"
 				align-point="0.5 0.5"
 				mount-point="0.5 0.5"
 			></lume-instanced-mesh>

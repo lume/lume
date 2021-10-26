@@ -101,11 +101,11 @@
 							}
 						}
 
-						group.traverse(n => {
-							if (n.isMesh) {
-								n.geometry.center()
-							}
-						})
+						// group.traverse(n => {
+						// 	if (n.isMesh) {
+						// 		n.geometry.center()
+						// 	}
+						// })
 
 						this.three.add(group)
 					})
