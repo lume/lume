@@ -20,7 +20,7 @@
 LUME is composed of several packages that can be used individually, or
 together as a whole:
 
-### [`lume`](./packages/lume/README.md) - HTML elements for rich graphics
+### [`lume`](./README.md) - HTML elements for rich graphics
 
 HTML elements for easily defining rich and interactive 2D or 3D applications
 powered by CSS3D, WebGL, or both mixed together.

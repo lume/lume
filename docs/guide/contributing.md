@@ -113,7 +113,9 @@ mode by entering into that project's folder and running the dev process:
 
 ```bash
 # Go into a packages/<project-name> or apps/<project-name> folder.
-cd packages/lume/
+cd packages/foo
+
+# EXCEPT! For the main `lume` package, it is in the root, no need to `cd` in that case.
 
 # Start the dev build.
 npm run dev

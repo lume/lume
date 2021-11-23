@@ -56,7 +56,7 @@ ReactDOM.render(<MyReactComponent />, document.body)
 
 ### Example
 
-Take the [react](https://github.com/lume/lume/tree/develop/packages/lume/examples/react) example for a spin.
+Take the [react](https://github.com/lume/lume/tree/develop/examples/react) example for a spin.
 
 ## React TypeScript
 
@@ -120,8 +120,8 @@ ReactDOM.render(<MyReactComponent />, document.body)
 - The same limitations regarding string and boolean props mentioned in the previous "Limitations" subsection of the "React JavaScript" section apply here too.
   - Likewise, all props are of type `string | undefined` or `boolean | string | undefined`.
 - At the moment `ref={}` props may have type errors. Just put `@ts-ignore` on them if they do, for now. Help wanted!
-- `skipLibCheck` currently needs to be set to `true` in `tsconfig.json` to work around a few issues with TypeScript's declaration output (see the [react-typescript](https://github.com/lume/lume/tree/develop/packages/lume/examples/react-typescript) example). Help wanted!
+- `skipLibCheck` currently needs to be set to `true` in `tsconfig.json` to work around a few issues with TypeScript's declaration output (see the [react-typescript](https://github.com/lume/lume/tree/develop/examples/react-typescript) example). Help wanted!
 
 ### Example
 
-Take the [react-typescript](https://github.com/lume/lume/tree/develop/packages/lume/examples/react-typescript) example for a spin.
+Take the [react-typescript](https://github.com/lume/lume/tree/develop/examples/react-typescript) example for a spin.
