@@ -5,11 +5,12 @@ import {DynamicDrawUsage} from 'three/src/constants.js'
 import {Quaternion} from 'three/src/math/Quaternion.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {Color} from 'three/src/math/Color.js'
+import {Matrix4} from 'three/src/math/Matrix4.js'
+import {Euler} from 'three/src/math/Euler.js'
 import {autorun, element, numberAttribute, stringAttribute, untrack} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Matrix4} from 'three/src/math/Matrix4.js'
-import {Euler} from 'three/src/math/Euler.js'
+import {stringToArray} from '../xyz-values/utils.js'
 
 import type {Geometry, Material} from 'three'
 import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
@@ -76,14 +77,11 @@ export class InstancedMesh extends Mesh {
 	 * rotations are ignored.
 	 */
 	@stringAttribute('')
-	get rotations() {
+	get rotations(): number[] {
 		return this.#rotations
 	}
-	set rotations(v: number[]) {
-		if (typeof v === 'string') {
-			throw new Error('TODO: deserialize attribute string like "12 23 34; 23 34 45; 56 34 12"')
-		}
-		this.#rotations = v
+	set rotations(v: number[] | string) {
+		this.#rotations = InstancedMesh.stringToArray(v, "rotations")
 	}
 
 	#rotations: number[] = []
@@ -102,10 +100,7 @@ export class InstancedMesh extends Mesh {
 		return this.#positions
 	}
 	set positions(v: number[]) {
-		if (typeof v === 'string') {
-			throw new Error('TODO: deserialize attribute string like "12 23 34; 23 34 45; 56 34 12"')
-		}
-		this.#positions = v
+		this.#positions = InstancedMesh.stringToArray(v, "positions")
 	}
 
 	#positions: number[] = []
@@ -124,10 +119,7 @@ export class InstancedMesh extends Mesh {
 		return this.#scales
 	}
 	set scales(v: number[]) {
-		if (typeof v === 'string') {
-			throw new Error('TODO: deserialize attribute string like "12 23 34; 23 34 45; 56 34 12"')
-		}
-		this.#scales = v
+		this.#scales = InstancedMesh.stringToArray(v, 'scales')
 	}
 
 	#scales: number[] = []
@@ -146,10 +138,7 @@ export class InstancedMesh extends Mesh {
 		return this.#colors
 	}
 	set colors(v: number[]) {
-		if (typeof v === 'string') {
-			throw new Error('TODO: deserialize attribute string like "12 23 34; 23 34 45; 56 34 12"')
-		}
-		this.#colors = v
+		this.#colors = InstancedMesh.stringToArray(v, 'colors')
 	}
 
 	#colors: number[] = []
@@ -164,6 +153,20 @@ export class InstancedMesh extends Mesh {
 		'phong-material': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
 		},
+	}
+
+	static stringToArray(v: number[] | string, prop: string): number[] {
+		if (typeof v === 'string') {
+			// Deserialize an attribute string like "12 23 34, 23 34 45, 56 34 12"
+			v = stringToArray(v).map(str => parseFloat(str))
+		}
+
+		// @prod-prune
+		for (let i = 0, l = v.length; i < l; i += 1) {
+			if (isNaN(v[i])) throw new TypeError(`Array for property "${prop}" should have numbers only.`)
+		}
+
+		return v
 	}
 
 	makeThreeObject3d() {
