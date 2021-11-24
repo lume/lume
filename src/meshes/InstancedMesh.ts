@@ -81,7 +81,7 @@ export class InstancedMesh extends Mesh {
 		return this.#rotations
 	}
 	set rotations(v: number[] | string) {
-		this.#rotations = InstancedMesh.stringToArray(v, "rotations")
+		this.#rotations = InstancedMesh.stringToArray(v, 'rotations')
 	}
 
 	#rotations: number[] = []
@@ -100,7 +100,7 @@ export class InstancedMesh extends Mesh {
 		return this.#positions
 	}
 	set positions(v: number[]) {
-		this.#positions = InstancedMesh.stringToArray(v, "positions")
+		this.#positions = InstancedMesh.stringToArray(v, 'positions')
 	}
 
 	#positions: number[] = []
