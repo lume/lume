@@ -8,7 +8,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [14.x]
+                node-version: [16.x, 17.x]
                 # TODO get tests working in Windows and macOS (help wanted!)
                 # windows-latest
                 # macos-latest
