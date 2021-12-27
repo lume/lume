@@ -50,6 +50,7 @@
   - [Light](/api/lights/Light.md)
   - [PointLight](/api/lights/PointLight.md)
   - meshes/
+  - [InstancedMesh](/api/meshes/InstancedMesh.md)
   - [Mesh](/api/meshes/Mesh.md)
   - models/
   - [ColladaModel](/api/models/ColladaModel.md)

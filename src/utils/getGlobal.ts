@@ -1,3 +1,5 @@
+declare const global: any
+
 /**
  * @return {typeof Window} - the global object. We assume it is a `Window`
  * because this lib is designed for the web. In theory it can run in Node.js in
