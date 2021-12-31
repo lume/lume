@@ -9,7 +9,7 @@
   - [Reactivity](/guide/reactivity)
   - [Cameras](/guide/cameras)
   - [External Assets](/guide/external-assets)
-  - [Element Behaviors](/guide/includes/element-behaviors)
+  - [Element Behaviors](/guide/includes/lume-element-behaviors)
   - [Making Elements](/guide/making-elements)
   - [Layouts with Autolayout](/guide/layouts-with-autolayout)
   - [Compatibility](/guide/compatibility)

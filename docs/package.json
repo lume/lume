@@ -1,0 +1,16 @@
+{
+	"dependencies": {
+		"@lume/docsify": "^4.9.4-1d3246a2.0",
+		"@lume/live-code": "^0.3.5",
+		"babel-standalone": "^6.26.0",
+		"docsify-copy-code": "^2.1.0",
+		"docsify-pagination": "^2.4.0",
+		"docsify-plugin-flexible-alerts": "^1.0.3",
+		"docsify-tabs": "^1.1.2",
+		"docsify-themeable": "^0.7.2",
+		"lume": "^0.3.0-alpha.7",
+		"tinycolor2": "^1.4.1",
+		"tween.js": "^16.6.0",
+		"vue": "^2.6.10"
+	}
+}
