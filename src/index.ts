@@ -28,4 +28,4 @@ import {SVGLoader} from 'three/examples/jsm/loaders/SVGLoader.js'
 // Add more objects as needed.
 export const THREE = {..._THREE, OrbitControls, SVGLoader}
 
-export const version = '0.3.0-alpha.7'
+export const version = '0.3.0-alpha.8'
