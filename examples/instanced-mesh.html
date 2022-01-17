@@ -36,8 +36,6 @@
 	<!-- <lume-mesh has="sphere-geometry" size="30 30 30"></lume-mesh> -->
 	<!-- but this does not: -->
 	<!-- <lume-mesh has="sphere-geometry phong-material" size="30 30 30"></lume-mesh> -->
-
-	<lume-instanced-mesh id="mesh" color="white" count="4" size="30 30 30"></lume-instanced-mesh>
 </lume-scene>
 
 <script src="../dist/global.js"></script>
@@ -45,81 +43,33 @@
 	// Define all the LUME elements with their default names.
 	LUME.useDefaultNames()
 
-	setInterval(() => {
-		mesh.rotations = [
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-		]
+	const numberOfObjects = 40000
 
-		mesh.positions = [
-			//
-			100 * Math.random(),
-			100 * Math.random(),
-			100 * Math.random(),
-			//
-			100 * Math.random(),
-			100 * Math.random(),
-			100 * Math.random(),
-			//
-			100 * Math.random(),
-			100 * Math.random(),
-			100 * Math.random(),
-			//
-			100 * Math.random(),
-			100 * Math.random(),
-			100 * Math.random(),
-		]
+	scene.append(LUME.html`
+		<lume-instanced-mesh id="mesh" color="white" count=${numberOfObjects} size="30 30 30"></lume-instanced-mesh>
+	`)
 
-		mesh.scales = [
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-		]
+	mesh.rotations = Array.from({length: numberOfObjects * 3}).fill(0)
+	mesh.positions = Array.from({length: numberOfObjects * 3}).fill(0)
+	mesh.scales = Array.from({length: numberOfObjects * 3}).fill(1)
+	mesh.colors = Array.from({length: numberOfObjects * 3}).fill(0.5)
 
-		mesh.colors = [
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-			//
-			Math.random(),
-			Math.random(),
-			Math.random(),
-		]
+	// FIXME: Comment our the timeout/interval, and there's some serious
+	// rendering bug causing extreme slowdown. It seems that not triggering
+	// reactivity at least once causes a very slow render path all on the GPU,
+	// not CPU.
+
+	// setInterval(() => {
+	setTimeout(() => {
+		mesh.rotations.forEach((_, i, a) => (a[i] = Math.random()))
+		mesh.positions.forEach((_, i, a) => (a[i] = 1000 * Math.random()))
+		mesh.scales.forEach((_, i, a) => (a[i] = Math.random()))
+		mesh.colors.forEach((_, i, a) => (a[i] = Math.random()))
+
+		// Without these, reactivity won't be triggered when using forEach. (the arrays are not reactive)
+		mesh.rotations = mesh.rotations
+		mesh.positions = mesh.positions
+		mesh.scales = mesh.scales
+		mesh.colors = mesh.colors
 	}, 1000)
 </script>

@@ -91,7 +91,7 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.8.0",
-		"@lume/element": "^0.5.4",
+		"@lume/element": "^0.5.7",
 		"@lume/eventful": "^0.2.2",
 		"element-behaviors": "^2.2.9",
 		"james-bond": "^0.4.5",
@@ -101,7 +101,7 @@
 		"three": "^0.124.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.6.0",
+		"@lume/cli": "^0.7.0",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",
 		"at-at": "^1.1.0",
