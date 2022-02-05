@@ -291,7 +291,7 @@ export class Sizeable extends TreeNode {
 
 		this.#propertyFunctions.set(
 			name as string,
-			Motor.addRenderTask(time => {
+			Motor.addRenderTask((time, deltaTime) => {
 				const result = fn(
 					// (this as any)['__' + name].x,
 					// (this as any)['__' + name].y,
@@ -300,6 +300,7 @@ export class Sizeable extends TreeNode {
 					xyz.y,
 					xyz.z,
 					time,
+					deltaTime,
 				)
 
 				if (result === false) {
@@ -395,6 +396,7 @@ export type XYZValuesPropertyFunction<XYZValuesPropertyType, DataType> = (
 	y: DataType,
 	z: DataType,
 	time: number,
+	deltaTime: number,
 ) => XYZValuesPropertyType | false
 
 export type XYZNumberValuesPropertyFunction = XYZValuesPropertyFunction<XYZNumberValuesProperty, number>
