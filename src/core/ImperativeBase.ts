@@ -160,7 +160,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		const o = this.makeThreeObject3d() as ReturnType<this['makeThreeObject3d']>
 		// Helpful for debugging when looking in devtools.
 		// @prod-prune
-		o.name = this.tagName + (this.id ? '#' + this.id : '')
+		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`
 		return o
 	}
 
@@ -203,7 +203,8 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	__makeThreeCSSObject() {
 		const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
-		o.name = this.tagName + (this.id ? '#' + this.id : '')
+		// @prod-prune
+		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`
 		return o
 	}
 

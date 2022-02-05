@@ -15,6 +15,8 @@ declare module 'three/src/core/Object3D.js' {
 }
 
 export class Object3DWithPivot extends Object3D {
+	type = 'Object3DWithPivot'
+
 	__pivot?: Vector3
 
 	get pivot(): Vector3 {
