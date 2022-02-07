@@ -2,16 +2,15 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/Per
 import {numberAttribute, booleanAttribute, autorun, untrack, element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {defer} from '../core/utils.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Scene} from '../core/Scene.js'
 
 export type PerspectiveCameraAttributes = NodeAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active'
 // | 'lookAt' // TODO
 
-@element
+@element('lume-perspective-camera', autoDefineElements)
 export class PerspectiveCamera extends Node {
-	static defaultElementName = 'lume-perspective-camera'
-
 	@numberAttribute(50) fov = 50
 	/** A value of 0 sets the aspect ratio to automatic, based on the scene dimensions. */
 	@numberAttribute(0) aspect = 0

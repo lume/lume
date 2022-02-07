@@ -1,5 +1,7 @@
+import {element} from '@lume/element'
 import {Light} from './Light.js'
 import {AmbientLight as ThreeAmbientLight} from 'three/src/lights/AmbientLight.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {LightAttributes} from './Light.js'
 
@@ -14,9 +16,8 @@ export type AmbientLightAttributes = LightAttributes
  *
  * @extends Light
  */
+@element('lume-ambient-light', autoDefineElements)
 export class AmbientLight extends Light {
-	static defaultElementName = 'lume-ambient-light'
-
 	makeThreeObject3d() {
 		return new ThreeAmbientLight()
 	}

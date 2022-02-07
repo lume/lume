@@ -1,4 +1,6 @@
+import {element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/models/ColladaModelBehavior.js'
 
@@ -33,8 +35,8 @@ export type ColladaModelAttributes = NodeAttributes
  * scene.add(model)
  * ```
  */
+@element('lume-collada-model', autoDefineElements)
 export class ColladaModel extends Node {
-	static defaultElementName = 'lume-collada-model'
 	static defaultBehaviors = ['collada-model']
 }
 

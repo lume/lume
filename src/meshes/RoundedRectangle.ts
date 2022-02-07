@@ -1,10 +1,11 @@
+import {element} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 export type RoundedRectangleAttributes = MeshAttributes
 
+@element('lume-rounded-rectangle', autoDefineElements)
 export class RoundedRectangle extends Mesh {
-	static defaultElementName = 'lume-rounded-rectangle'
-
 	static defaultBehaviors = {
 		'rounded-rectangle-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))

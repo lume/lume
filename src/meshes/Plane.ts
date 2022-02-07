@@ -1,10 +1,11 @@
+import {element} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 export type PlaneAttributes = MeshAttributes
 
+@element('lume-plane', autoDefineElements)
 export class Plane extends Mesh {
-	static defaultElementName = 'lume-plane'
-
 	static defaultBehaviors = {
 		'plane-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))

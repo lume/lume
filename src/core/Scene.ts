@@ -17,6 +17,7 @@ import {defer, thro} from './utils.js'
 import {possiblyPolyfillResizeObserver} from './ResizeObserver.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {DeclarativeBase} from './DeclarativeBase.js'
 import type {TColor} from '../utils/three.js'
@@ -79,10 +80,8 @@ export type SceneAttributes =
  *
  * @extends HTMLScene
  */
-@element
+@element('lume-scene', autoDefineElements)
 export class Scene extends HTMLInterface {
-	static defaultElementName = 'lume-scene'
-
 	/**
 	 * @readonly
 	 * @property {true} isScene - Always true for things that are or inherit from `Scene`.

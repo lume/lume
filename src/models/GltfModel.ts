@@ -1,4 +1,6 @@
+import {element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../behaviors/models/GltfModelBehavior.js'
 
@@ -30,8 +32,8 @@ export type GltfModelAttributes = NodeAttributes
  * scene.add(model)
  * ```
  */
+@element('lume-gltf-model', autoDefineElements)
 export class GltfModel extends Node {
-	static defaultElementName = 'lume-gltf-model'
 	static defaultBehaviors = ['gltf-model']
 }
 

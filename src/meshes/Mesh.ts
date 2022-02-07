@@ -2,6 +2,7 @@ import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Node} from '../core/Node.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Material} from 'three/src/materials/Material.js'
 import type {NodeAttributes} from '../core/Node.js'
@@ -36,10 +37,8 @@ export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
  * @extends Node
  *
  */
-@element
+@element('lume-mesh', autoDefineElements)
 export class Mesh extends Node {
-	static defaultElementName = 'lume-mesh'
-
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.

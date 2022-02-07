@@ -24,6 +24,7 @@ import {attribute, autorun, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {Motor} from '../core/Motor.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {XYZPartialValuesArray} from '../xyz-values/XYZValues.js'
 
@@ -45,10 +46,8 @@ export type AutoLayoutNodeAttributes = NodeAttributes | 'visualFormat'
  * A Node that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
-@element
+@element('lume-autolayout-node', autoDefineElements)
 export class AutoLayoutNode extends Node {
-	static defaultElementName = 'lume-autolayout-node'
-
 	static DEFAULT_PARSE_OPTIONS = {
 		extended: true,
 		strict: false,

@@ -2,6 +2,7 @@ import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {HtmlNode as HtmlInterface} from './HtmlNode.js'
 import {defer} from './utils.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
 
@@ -85,10 +86,8 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * @extends ImperativeBase
  * @extends HTMLNode
  */
-@element
+@element('lume-node', autoDefineElements)
 export class Node extends HtmlInterface {
-	static defaultElementName = 'lume-node'
-
 	/**
 	 * @property {boolean} visible - Whether or not the node will be
 	 * visible (if it renders anything). For `<lume-node>` elements, this

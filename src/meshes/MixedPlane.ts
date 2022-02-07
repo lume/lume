@@ -1,12 +1,13 @@
+import {element} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 // TODO We need attributes from behaviors too.
 export type MixedPlaneAttributes = MeshAttributes
 
 /** See MixedPlaneGeometryBehavior and MixedPlaneMaterialBehavior for available properties. */
+@element('lume-mixed-plane', autoDefineElements)
 export class MixedPlane extends Mesh {
-	static defaultElementName = 'lume-mixed-plane'
-
 	static defaultBehaviors = {
 		'mixedplane-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))

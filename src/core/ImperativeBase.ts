@@ -66,7 +66,6 @@ export type BaseAttributes = TransformableAttributes
  */
 
 // function makeImperativeBase() {
-// TODO switch to @element('element-name', false) and use defineElement in html/index.ts
 @element
 export class ImperativeBase extends Settable(Transformable) {
 	// TODO re-organize variables like isScene and isNode, so they come from

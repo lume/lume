@@ -1,4 +1,6 @@
+import {element} from '@lume/element'
 import {Node} from '../core/Node.js'
+import {autoDefineElements} from '../LumeConfig.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
@@ -13,6 +15,7 @@ import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
  */
 // TODO: This is written imperatively. How would it be declaratively?
 // TODO: Make an example.
+@element('lume-cube-layout', autoDefineElements)
 export class CubeLayout extends Node {
 	/**
 	 * @property {Node[]} sides - An array of the cube's side nodes. Each side is a node in the scene graph tree.

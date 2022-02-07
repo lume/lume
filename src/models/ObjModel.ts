@@ -1,4 +1,6 @@
+import {element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/models/ObjModelBehavior.js'
 
@@ -27,8 +29,8 @@ export type ObjModelAttributes = NodeAttributes
  * scene.add(model)
  * ```
  */
+@element('lume-obj-model', autoDefineElements)
 export class ObjModel extends Node {
-	static defaultElementName = 'lume-obj-model'
 	static defaultBehaviors = ['obj-model']
 }
 

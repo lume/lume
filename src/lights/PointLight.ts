@@ -2,6 +2,7 @@ import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Light} from './Light.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {LightAttributes} from './Light.js'
 
@@ -41,10 +42,8 @@ export type PointLightAttributes =
  *
  * @extends Light
  */
-@element
+@element('lume-point-light', autoDefineElements)
 export class PointLight extends Light {
-	static defaultElementName = 'lume-point-light'
-
 	@numberAttribute(0) @emits('propertychange') distance = 0
 	@numberAttribute(1) @emits('propertychange') decay = 1
 	@booleanAttribute(true) @emits('propertychange') castShadow = true

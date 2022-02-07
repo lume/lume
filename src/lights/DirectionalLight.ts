@@ -1,6 +1,7 @@
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
 import {Light} from './Light.js'
+import {autoDefineElements} from '../LumeConfig.js'
 
 import type {LightAttributes} from './Light.js'
 
@@ -45,10 +46,8 @@ export type DirectionalLightAttributes =
  *
  * @extends Light
  */
-@element
+@element('lume-directional-light', autoDefineElements)
 export class DirectionalLight extends Light {
-	static defaultElementName = 'lume-directional-light'
-
 	@booleanAttribute(true) castShadow = true
 
 	// These map to THREE.DirectionalLightShadow properties.
