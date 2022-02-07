@@ -85,7 +85,7 @@ export class Scene extends HTMLInterface {
 
 	/**
 	 * @readonly
-	 * @property {true} isNode - Always true for things that are or inherit from `Scene`.
+	 * @property {true} isScene - Always true for things that are or inherit from `Scene`.
 	 */
 	readonly isScene = true
 
@@ -321,7 +321,7 @@ export class Scene extends HTMLInterface {
 	 * Applies with both CSS and WebGL rendering.
 	 */
 	get threeCamera(): ThreePerspectiveCamera {
-		return this.#threeCamera
+		return this.__threeCamera
 	}
 
 	// this.#threeCamera holds the active camera. There can be many
@@ -330,13 +330,13 @@ export class Scene extends HTMLInterface {
 	// If there are no cameras in the tree, a virtual default camera is
 	// referenced here, who's perspective is that of the scene's
 	// perspective attribute.
-	#threeCamera!: ThreePerspectiveCamera
-
-	// Used by the `scene` getter in ImperativeBase
-	_scene: this | null = this
+	__threeCamera!: ThreePerspectiveCamera
 
 	constructor() {
 		super()
+
+		// Used by the `scene` getter in ImperativeBase
+		this._scene = this
 
 		// this.sizeMode and this.size have to be overriden here inside the
 		// constructor in TS 4. This is because class fields on a
@@ -504,7 +504,7 @@ export class Scene extends HTMLInterface {
 	}
 
 	/**
-	 * @method traverseSceneGraph - This traverses the the composed tree of
+	 * @method traverseSceneGraph - This traverses the composed tree of
 	 * LUME 3D elements (the scene graph) not including this element, in pre-order. It skips non-LUME elements.
 	 * @param {(node: Node) => void} visitor - A function called for each
 	 * LUME node in the scene graph (the composed tree).
@@ -517,7 +517,7 @@ export class Scene extends HTMLInterface {
 	 * asynchronously once all custom elements are defined, and a Promise is
 	 * returned so that it is possible to wait for the traversal to complete.
 	 */
-	traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+	override traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
 		if (!waitForUpgrade) {
 			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
 
@@ -552,7 +552,7 @@ export class Scene extends HTMLInterface {
 			// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
 			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
 			// TODO update with calculatedSize in autorun
-			this.#threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
+			this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
 			this.perspective = this.perspective
 		})
 	}
@@ -567,39 +567,44 @@ export class Scene extends HTMLInterface {
 		// positioned at the world origin, as described for in the
 		// `perspective` property's description.
 		// For more details: https://discourse.threejs.org/t/269/28
-		this.#threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
+		this.__threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI
 
-		this.#threeCamera.position.z = perspective
+		this.__threeCamera.position.z = perspective
 	}
 
 	_updateCameraAspect() {
-		this.#threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
+		this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
 	}
 
 	_updateCameraProjection() {
-		this.#threeCamera.updateProjectionMatrix()
+		this.__threeCamera.updateProjectionMatrix()
 	}
 
 	// holds active cameras found in the DOM tree (if this is empty, it
 	// means no camera elements are in the DOM, but this.#threeCamera
 	// will still have a reference to the default camera that scenes
 	// are rendered with when no camera elements exist).
-	#activeCameras: Set<PerspectiveCamera> = new Set()
+	__activeCameras?: Set<PerspectiveCamera>
 
 	_addCamera(camera: PerspectiveCamera) {
-		this.#activeCameras.add(camera)
-		this.#setCamera(camera)
+		if (!this.__activeCameras) this.__activeCameras = new Set()
+
+		this.__activeCameras.add(camera)
+		this.__setCamera(camera)
 	}
 
 	_removeCamera(camera: PerspectiveCamera) {
-		this.#activeCameras.delete(camera)
+		if (!this.__activeCameras) return
 
-		if (this.#activeCameras.size) {
+		this.__activeCameras.delete(camera)
+
+		if (this.__activeCameras.size) {
 			// get the last camera in the Set
-			this.#activeCameras.forEach(c => (camera = c))
-			this.#setCamera(camera)
+			this.__activeCameras.forEach(c => (camera = c))
+			this.__setCamera(camera)
 		} else {
-			this.#setCamera()
+			this.__activeCameras = undefined
+			this.__setCamera()
 		}
 	}
 
@@ -669,8 +674,6 @@ export class Scene extends HTMLInterface {
 				this.needsUpdate()
 			}),
 			autorun(() => {
-				console.log('enable vr', this.vr)
-
 				this.#glRenderer!.enableVR(this, this.vr)
 
 				if (this.vr) {
@@ -694,8 +697,8 @@ export class Scene extends HTMLInterface {
 				}
 			}),
 			autorun(() => {
-				this.#threeCamera.near = this.cameraNear
-				this.#threeCamera.far = this.cameraFar
+				this.__threeCamera.near = this.cameraNear
+				this.__threeCamera.far = this.cameraFar
 				this.needsUpdate()
 			}),
 		)
@@ -782,14 +785,14 @@ export class Scene extends HTMLInterface {
 		return renderer
 	}
 
-	#setCamera(camera?: PerspectiveCamera) {
+	__setCamera(camera?: PerspectiveCamera) {
 		if (!camera) {
 			this._createDefaultCamera()
 		} else {
 			// TODO?: implement an changecamera event/method and emit/call
 			// that here, then move this logic to the renderer
 			// handler/method?
-			this.#threeCamera = camera.three
+			this.__threeCamera = camera.three
 			this._updateCameraAspect()
 			this._updateCameraProjection()
 			this.needsUpdate()
@@ -906,6 +909,11 @@ export class Scene extends HTMLInterface {
 		this.needsUpdate()
 	}
 }
+
+// Put initial value on the prototype to make it available during construction
+// in a super() call.
+// @ts-ignore
+Scene.prototype.isScene = true
 
 import type {ElementAttributes} from '@lume/element'
 

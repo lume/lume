@@ -4,7 +4,6 @@ export function epsilon(value: any) {
 
 // TODO padd an options object to make it more clear what the args are.
 export function observeChildren(target: any, onConnect: any, onDisconnect: any, skipTextNodes: any) {
-	// TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
 	const childObserver = createChildObserver(onConnect, onDisconnect, skipTextNodes)
 	childObserver.observe(target, {childList: true})
 	return childObserver

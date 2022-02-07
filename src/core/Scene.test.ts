@@ -7,15 +7,15 @@ useDefaultNames()
 
 describe('Scene', () => {
 	let container: HTMLDivElement = document.createElement('div')
-	const body = document.createElement('div')
-	document.body.append(body)
+	const root = document.createElement('div')
+	document.body.append(root)
 
 	beforeEach(() => {
-		body.append((container = document.createElement('div')))
+		root.append((container = document.createElement('div')))
 	})
 
 	afterEach(() => {
-		body.innerHTML = ''
+		root.innerHTML = ''
 	})
 
 	describe('swapLayers', () => {
@@ -121,28 +121,28 @@ describe('Scene', () => {
 
 			const node = container.querySelector('lume-node') as Node
 
-			const root = node.attachShadow({mode: 'open'})
+			const shadow = node.attachShadow({mode: 'open'})
 			const node2 = html`<lume-node></lume-node>` as Node
-			root.append(node2)
+			shadow.append(node2)
 
 			// TODO get it work without a timeout (ths is difficult considering
 			// that the implementation currently relies on MutationObserver
 			// which triggers reactions deferred).
 			await new Promise(r => setTimeout(r, 10))
 
-			expect(node2.parentNode).toBe(root)
+			expect(node2.parentNode).toBe(shadow)
 			expect(node2.lumeParent).toBe(null)
 			expect(node2._composedParent).toBe(node)
 			expect(node2.composedLumeParent).toBe(node)
-			expect(node2.three.parent).toBe(node.three)
-			expect(node2.threeCSS.parent).toBe(node.threeCSS)
+			expect(node2.three.parent).withContext('three should be connected to parent').toBe(node.three)
+			expect(node2.threeCSS.parent).withContext('threeCSS should be connected to parent').toBe(node.threeCSS)
 
 			expect(node.composedLumeChildren.length).toBe(1)
 			expect(node.composedLumeChildren[0]).toBe(node2)
 			expect(node.three.children.length).toBe(1)
-			expect(node.three.children[0]).toBe(node2.three)
+			expect(node.three.children[0]).withContext('three should have child').toBe(node2.three)
 			expect(node.threeCSS.children.length).toBe(1)
-			expect(node.threeCSS.children[0]).toBe(node2.threeCSS)
+			expect(node.threeCSS.children[0]).withContext('threeCSS should have child').toBe(node2.threeCSS)
 		})
 
 		it('does not compose Nodes that are not distributed to a slot of a Node in a ShadowRoot', async () => {
@@ -371,7 +371,6 @@ describe('Scene', () => {
 			container.append(scene)
 
 			const node = scene.querySelector('lume-node')!
-			if (!node.isNode) debugger
 			const box = scene.querySelector('lume-box')!
 			const sphere = scene.querySelector('lume-sphere')!
 

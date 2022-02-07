@@ -24,12 +24,12 @@ import type {TransformableAttributes} from './Transformable.js'
 // instanceof:
 // https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de
 
-function isScene(s: ImperativeBase): s is Scene {
-	return s.isScene
+function isScene(s: HTMLElement & {isScene?: boolean}): s is Scene {
+	return s.isScene!
 }
 
-function isNode(n: ImperativeBase): n is Node {
-	return n.isNode
+function isNode(n: HTMLElement & {isNode?: boolean}): n is Node {
+	return n.isNode!
 }
 
 const threeJsPostAdjustment = [0, 0, 0]
@@ -120,6 +120,21 @@ export class ImperativeBase extends Settable(Transformable) {
 	 */
 	get cssLoaded(): boolean {
 		return this._cssLoaded
+	}
+
+	// stores a ref to this Node's root Scene when/if this Node is
+	// in a scene.
+	@reactive _scene: Scene | null = null
+
+	/**
+	 * @reactive
+	 * @lazy
+	 * @readonly
+	 * @property {THREE.Scene} scene - The `<lume-scene>` that the element is a
+	 * child or grandchild of, or `null` if the element is not.
+	 */
+	get scene(): Scene | null {
+		return this._scene
 	}
 
 	// We use F-Bounded Polymorphism in the following `three` and `threeCSS`
@@ -286,22 +301,11 @@ export class ImperativeBase extends Settable(Transformable) {
 		)
 	}
 
-	__possiblyLoadThree(child: ImperativeBase): void {
-		// Skip scenes because scenes call their own _trigger* methods based on
-		// values of their webgl or enabled-css attributes.
-		if (!isNode(child)) return
+	disconnectedCallback(): void {
+		super.disconnectedCallback()
 
-		child._triggerLoadGL()
-		child._triggerLoadCSS()
-	}
-
-	__possiblyUnloadThree(child: ImperativeBase): void {
-		// Skip scenes because scenes call their own _trigger* methods based on
-		// values of their webgl or enabled-css attributes.
-		if (!isNode(child)) return
-
-		child._triggerUnloadGL()
-		child._triggerUnloadCSS()
+		this.__possiblyUnloadThree(this)
+		this._scene = null
 	}
 
 	/**
@@ -320,53 +324,55 @@ export class ImperativeBase extends Settable(Transformable) {
 	childComposedCallback(child: Element, _connectionType: ConnectionType): void {
 		if (!(child instanceof ImperativeBase)) return
 
-		// Calculate sizing because proportional size might depend on
-		// the new parent.
-		child._calcSize()
-		child.needsUpdate()
+		// This code may run during a super constructor (f.e. while constructing
+		// a Scene and it calls `super()`), therefore a Scene's _scene property
+		// will not be set yet, hence the use of `isScene(this) && this` here as
+		// an alternative.
+		const scene = this._scene ?? (isScene(this) && this)
 
-		this.__possiblyLoadThree(child)
+		if (scene) this.__giveSceneToChildrenAndMaybeLoadThree(child, scene)
 	}
 
 	childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
 		if (!(child instanceof ImperativeBase)) return
 		this.__possiblyUnloadThree(child)
+		child._scene = null
 	}
 
-	/**
-	 * @readonly
-	 * @property {THREE.Scene} scene - The `<lume-scene>` that the element is a
-	 * child or grandchild of, or `null` if the element is not.
-	 */
-	get scene(): Scene {
-		// This traverses recursively upward at first, then the value is cached on
-		// subsequent reads.
+	__giveSceneToChildrenAndMaybeLoadThree(node: ImperativeBase, scene: Scene) {
+		node.traverseSceneGraph(subnode => {
+			subnode._scene = scene
 
-		const parent = this.composedSceneGraphParent
+			// Calculate sizing because proportional size might depend on
+			// the new parent.
+			subnode._calcSize()
+			subnode.needsUpdate()
 
-		// if already cached, return it. Or if no parent, return it (it'll be null).
-		// Additionally, Scenes have this._scene already set to themselves.
-		// NOTE: this._scene is initally null.
-		if (this._scene || !parent) return this._scene!
+			this.__possiblyLoadThree(subnode)
+		})
+	}
 
-		// @prod-prune
-		if (!(parent instanceof ImperativeBase)) throw new Error('Expected instance of ImperativeBase')
+	/** @abstract */
+	traverseSceneGraph(_visitor: (node: Node) => void, _waitForUpgrade = false): Promise<void> | void {
+		throw 'Node and Scene implement this'
+	}
 
-		// if the parent node already has a ref to the scene, use that.
-		if (parent._scene) {
-			this._scene = parent._scene
-		} else if (isScene(parent)) {
-			// we could use instanceof here, but that causes a circular dependency
-			this._scene = parent
-		}
-		// otherwise call the scene getter on the parent, which triggers
-		// traversal up the scene graph in order to find the root scene (null
-		// if none).
-		else {
-			this._scene = parent.scene
-		}
+	__possiblyLoadThree(node: ImperativeBase): void {
+		// Skip scenes because scenes call their own _trigger* methods based on
+		// values of their webgl or enabled-css attributes.
+		if (!isNode(node)) return
 
-		return this._scene!
+		node._triggerLoadGL()
+		node._triggerLoadCSS()
+	}
+
+	__possiblyUnloadThree(node: ImperativeBase): void {
+		// Skip scenes because scenes call their own _trigger* methods based on
+		// values of their webgl or enabled-css attributes.
+		if (!isNode(node)) return
+
+		node._triggerUnloadGL()
+		node._triggerUnloadCSS()
 	}
 
 	/**
@@ -426,10 +432,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (!elOps.has(this)) elOps.set(this, new ElementOperations(this))
 		return elOps.get(this)!
 	}
-
-	// stores a ref to this Node's root Scene when/if this Node is
-	// in a scene.
-	@reactive _scene: Scene | null = null
 
 	/**
 	 * @protected
@@ -576,7 +578,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	_triggerUnloadGL(): void {
-		this._unloadGL()
+		if (!this._unloadGL()) return
 		this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
 		defer(() => this.emit(Events.GL_UNLOAD, this))
 	}
@@ -588,7 +590,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	_triggerUnloadCSS(): void {
-		this._unloadCSS()
+		if (!this._unloadCSS()) return
 		this.emit(Events.CSS_UNLOAD, this)
 	}
 

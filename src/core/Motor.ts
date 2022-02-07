@@ -143,11 +143,7 @@ class _Motor {
 		for (let i = 0, l = this.#nodesToUpdate.length; i < l; i += 1) {
 			const node = this.#nodesToUpdate[i]
 
-			// We removed the early return in ImperativeBase and replaced it
-			// with this early continue, because otherwise
-			// ImperativeBase.needsUpdate can be called during an autorun in
-			// which case it causes an infinite autorun loop because it would
-			// read this.scene which would then set this.scene.
+			// Skip any Node that no longer participates in rendering of a scene.
 			if (!node.scene) continue
 
 			node.update(timestamp, deltaTime)

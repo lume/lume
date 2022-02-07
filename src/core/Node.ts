@@ -1,6 +1,7 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {HtmlNode as HtmlInterface} from './HtmlNode.js'
+import {defer} from './utils.js'
 
 import type {BaseAttributes} from './ImperativeBase.js'
 
@@ -162,7 +163,7 @@ export class Node extends HtmlInterface {
 	}
 
 	/**
-	 * @method traverseSceneGraph - This traverses the the composed tree of
+	 * @method traverseSceneGraph - This traverses the composed tree of
 	 * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
 	 * @param {(node: Node) => void} visitor - A function called for each
 	 * LUME node in the scene graph (the composed tree).
@@ -175,7 +176,7 @@ export class Node extends HtmlInterface {
 	 * asynchronously as soon as all custom elements are defined, and a Promise is
 	 * returned so that it is possible to wait for the traversal to complete.
 	 */
-	traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+	override traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
 		visitor(this)
 
 		if (!waitForUpgrade) {
@@ -229,8 +230,12 @@ export class Node extends HtmlInterface {
 	}
 }
 
+// Put initial value on the prototype to make it available during construction
+// in a super() call.
+// @ts-ignore
+Node.prototype.isNode = true
+
 import type {ElementAttributes} from '@lume/element'
-import {defer} from './utils.js'
 
 declare module '@lume/element' {
 	namespace JSX {

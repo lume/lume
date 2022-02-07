@@ -1,25 +1,46 @@
 <script src="../dist/global.js"></script>
 
+<script>
+	// FIXME works here, but not down below.
+	LUME.useDefaultNames()
+</script>
+
 <lume-scene id="scene" webgl>
+	<lume-point-light position="500 500 500"></lume-point-light>
 	<lume-plane
 		id="plane"
 		has="shader-material"
+		Xhas="phong-material"
+		Xcolor="pink"
+		receive-shadow="false"
 		size-mode="proportional proportional"
 		size="0.4 0.4"
 		align-point="0.5 0.5"
 		mount-point="0.5 0.5"
 		sidedness="double"
 		uniforms='{
-			"iTime": {"value": 0},
-			"iResolution": {"value": {"x": 0, "y": 0, "z": 0}}
+			"iTime": { "value": 0 },
+			"iResolution": { "value": {"x": 0, "y": 0, "z": 0} }
 		}'
+		this-works
 		fragment-shader="
 			#include <common>
 
 			uniform vec3 iResolution;
 			uniform float iTime;
 
-			// BEGIN SHADERTOY CODE {{
+			void main() {
+				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+			}
+		"
+		FIXME-but-this-does-not-work
+		Xfragment-shader="
+			#include <common>
+
+			uniform vec3 iResolution;
+			uniform float iTime;
+
+			// BEGIN SHADERTOY CODE {
 
 			// This is the default shader when you start a new shadertoy example.
 
@@ -36,7 +57,7 @@
 				fragColor = vec4(col, 1.0);
 			}
 
-			// END SHADERTOY CODE }}
+			// END SHADERTOY CODE }
 
 			void main() {
 			  mainImage(gl_FragColor, gl_FragCoord.xy);
@@ -60,7 +81,8 @@
 
 <script>
 	{
-		LUME.useDefaultNames()
+		// FIXME Doesn't work here, but works above.
+		// LUME.useDefaultNames()
 
 		// Set new values for the shader uniforms when needed.
 		plane.on('GL_LOAD', () => {
@@ -69,11 +91,15 @@
 			LUME.autorun(() => {
 				shaderMaterial.uniforms.iResolution.value.x = plane.calculatedSize.x
 				shaderMaterial.uniforms.iResolution.value.y = plane.calculatedSize.y
+
+				shaderMaterial.getMeshComponent('material').needsUpdate = true
 				plane.needsUpdate()
 			})
 
 			LUME.Motor.addRenderTask(t => {
 				shaderMaterial.uniforms.iTime.value = t * 0.001
+
+				shaderMaterial.getMeshComponent('material').needsUpdate = true
 				plane.needsUpdate()
 			})
 		})

@@ -5,18 +5,22 @@ import {useDefaultNames} from '../index.js'
 useDefaultNames()
 
 describe('Node', () => {
+	const root = document.createElement('div')
+	document.body.append(root)
 	let scene = new Scene()
-	const body = document.createElement('div')
-	document.body.append(body)
+	root.append(scene)
+
+	function newScene() {
+		root.innerHTML = ''
+		scene = new Scene()
+		root.append(scene)
+	}
 
 	afterEach(() => {
-		scene.remove()
-		body.innerHTML = ''
-		scene = new Scene()
-		body.append(scene)
+		newScene()
 	})
 
-	it('default values', async () => {
+	it('has default values', async () => {
 		const n = new Node()
 
 		expect(n.getPosition().x).toEqual(0)

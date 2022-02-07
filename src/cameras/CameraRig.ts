@@ -60,19 +60,22 @@ export class CameraRig extends Node {
 	scrollFling?: ScrollFling
 	autorunStoppers?: StopFunction[]
 
-	connectedCallback() {
-		super.connectedCallback()
+	#startedInteraction = false
+
+	startInteraction() {
+		if (this.#startedInteraction) return
+		this.#startedInteraction = true
 
 		// Uses initial attribute values only, changes not tracked at the moment.
 		this.flingRotation = new FlingRotation({
-			interactionInitiator: this.scene,
+			interactionInitiator: this.scene!,
 			rotationYTarget: this,
 			minFlingRotationX: this.minPolarAngle,
 			maxFlingRotationX: this.maxPolarAngle,
 		}).start()
 
 		this.scrollFling = new ScrollFling({
-			target: this.scene,
+			target: this.scene!,
 			y: this.initialDistance,
 			minY: this.minDistance,
 			maxY: this.maxDistance,
@@ -89,11 +92,9 @@ export class CameraRig extends Node {
 			}),
 			autorun(() => {
 				if (this.interactive) {
-					console.log('interactive, start rotation and scroll flings')
 					this.flingRotation!.start()
 					this.scrollFling!.start()
 				} else {
-					console.log('not interactive, stop rotation and scroll flings')
 					this.flingRotation!.stop()
 					this.scrollFling!.stop()
 				}
@@ -101,12 +102,29 @@ export class CameraRig extends Node {
 		)
 	}
 
-	disconnectedCallback() {
-		super.disconnectedCallback()
+	stopInteraction() {
+		if (!this.#startedInteraction) return
 
 		this.flingRotation?.stop()
 		this.scrollFling?.stop()
 		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
+	}
+
+	_loadGL(): boolean {
+		if (!super._loadGL()) return false
+		this.startInteraction()
+		return true
+	}
+
+	_loadCSS(): boolean {
+		if (!super._loadCSS()) return false
+		this.startInteraction()
+		return true
+	}
+
+	disconnectedCallback() {
+		super.disconnectedCallback()
+		this.stopInteraction()
 	}
 }
 
