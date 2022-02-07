@@ -1,3 +1,4 @@
+import {autorun} from '@lume/element'
 import {Node} from './Node.js'
 import {Scene} from './Scene.js'
 import {useDefaultNames} from '../index.js'
@@ -28,8 +29,19 @@ describe('ImperativeBase', () => {
 			expect(scene.scene).toBe(scene)
 
 			scene.append(n)
+
+			// It is reactive
+			let count = 0
+			const stop = autorun(() => {
+				count++
+				if (count === 1) expect(n.scene).toBe(null)
+				else if (count === 2) expect(n.scene).toBe(scene)
+			})
+
 			await Promise.resolve() // allow MutationObserver to operate first.
 			expect(n.scene).toBe(scene)
+			expect(count).toBe(2)
+			stop()
 
 			n.remove()
 			expect(n.scene).toBe(null)
