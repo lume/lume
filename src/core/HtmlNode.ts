@@ -1,9 +1,7 @@
 import {ImperativeBase} from './ImperativeBase.js'
 
 export class HtmlNode extends ImperativeBase {
-	// prettier-ignore
-	get root() { return this }
-	set root(_v) {}
+	override readonly hasShadow: boolean = false
 
 	static css = /*css*/ `
 		:host {

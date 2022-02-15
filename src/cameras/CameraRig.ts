@@ -22,6 +22,8 @@ export type CameraRigAttributes =
 
 @element('lume-camera-rig', autoDefineElements)
 export class CameraRig extends Node {
+	override readonly hasShadow: boolean = true
+
 	@numberAttribute(0) initialPolarAngle = 0
 	@numberAttribute(-90) minPolarAngle = -90
 	@numberAttribute(90) maxPolarAngle = 90
@@ -40,20 +42,32 @@ export class CameraRig extends Node {
 
 	cam?: PerspectiveCamera
 
+	rotationYTarget?: Node
+
 	template = () => html`
 		<lume-node
 			size="1 1 1"
-			rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
+			ref=${(el: Node) => (this.rotationYTarget = el)}
 			size-mode="proportional proportional proportional"
 		>
-			<lume-perspective-camera
-				ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
-				active=${() => this.active}
-				position=${[0, 0, this.initialDistance]}
-				align-point="0.5 0.5 0.5"
-				far="10000"
-			></lume-perspective-camera>
+			<lume-node
+				size="1 1 1"
+				rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
+				size-mode="proportional proportional proportional"
+			>
+				<lume-perspective-camera
+					ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
+					active=${() => this.active}
+					position=${[0, 0, this.initialDistance]}
+					align-point="0.5 0.5 0.5"
+					far="10000"
+				>
+					<slot name="camera-child"></slot>
+				</lume-perspective-camera>
+			</lume-node>
 		</lume-node>
+
+		<slot></slot>
 	`
 
 	flingRotation?: FlingRotation
@@ -69,7 +83,7 @@ export class CameraRig extends Node {
 		// Uses initial attribute values only, changes not tracked at the moment.
 		this.flingRotation = new FlingRotation({
 			interactionInitiator: this.scene!,
-			rotationYTarget: this,
+			rotationYTarget: this.rotationYTarget!,
 			minFlingRotationX: this.minPolarAngle,
 			maxFlingRotationX: this.maxPolarAngle,
 		}).start()
