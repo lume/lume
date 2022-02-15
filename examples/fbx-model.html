@@ -1,4 +1,4 @@
-<title>&lt;lume-gltf-model&gt;</title>
+<title>&lt;lume-fbx-model&gt;</title>
 
 <style>
 	html,
@@ -39,7 +39,12 @@
 	</lume-fbx-model>
 </lume-scene>
 
-<script src="../dist/global.js"></script>
+<script>
+	// CONTINUE FIXME: auto define changes order of definitions and it breaks.
+	window.$LUME = {autoDefineElements: false}
+	// window.$LUME = {autoDefineElements: true}
+</script>
+<script src="global.js"></script>
 <script>
 	// Define all the LUME elements with their default names.
 	LUME.useDefaultNames()
