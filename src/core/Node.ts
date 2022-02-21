@@ -250,15 +250,8 @@ declare global {
 	}
 }
 
-// TODO move this to the elemet-behaviors package.
-declare module '@lume/element' {
-	namespace JSX {
-		// Attributes for all elements.
-		interface CustomAttributes<T> {
-			has?: string
-		}
-	}
-}
+// Exposes the `has=""` attribute type definition for all elements in TypeScript JSX templates.
+import type {} from 'element-behaviors/src/attribute-types'
 
 function isNode(n: any): n is Node {
 	return n.isNode

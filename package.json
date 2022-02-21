@@ -91,9 +91,9 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.8.0",
-		"@lume/element": "^0.5.8",
+		"@lume/element": "^0.6.0",
 		"@lume/eventful": "^0.2.2",
-		"element-behaviors": "^2.2.9",
+		"element-behaviors": "^2.3.0",
 		"james-bond": "^0.4.5",
 		"lowclass": "^4.9.4",
 		"regexr": "^1.5.1",

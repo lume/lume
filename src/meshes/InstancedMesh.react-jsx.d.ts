@@ -1,4 +1,4 @@
-import type {ReactElementAttributes} from '@lume/element'
+import type {ReactElementAttributes} from '@lume/element/src/react'
 import type {InstancedMesh, InstancedMeshAttributes} from './InstancedMesh.js'
 import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../behaviors/materials/PhongMaterialBehavior'
 import type {

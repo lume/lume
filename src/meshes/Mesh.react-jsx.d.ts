@@ -1,5 +1,5 @@
 import type {Mesh, MeshAttributes} from './Mesh'
-import type {ReactElementAttributes} from '@lume/element'
+import type {ReactElementAttributes} from '@lume/element/src/react'
 import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../behaviors/materials/PhongMaterialBehavior'
 import type {
 	LambertMaterialBehavior,
