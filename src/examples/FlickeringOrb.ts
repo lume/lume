@@ -18,6 +18,7 @@ export class FlickeringOrb extends Node {
 	light?: PointLight
 	sphere?: Sphere
 
+	// FIXME 'attr:' is used to work around an issue with default property behavior
 	template = () => html`
 		<lume-point-light
 			ref=${(l: PointLight) => (this.light = l)}

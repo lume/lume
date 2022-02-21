@@ -16,20 +16,10 @@ export class Plane extends Mesh {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
-
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-plane': ElementAttributes<
-				Plane,
-				PlaneAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
-			>
+			'lume-plane': JSX.IntrinsicElements['lume-mesh']
 		}
 	}
 }

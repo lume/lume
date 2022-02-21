@@ -17,29 +17,25 @@ export class PointsMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	@booleanAttribute(true) sizeAttenuation = true
 	@numberAttribute(1) pointSize = 1
 
+	get material(): PointsMaterial {
+		return super.material as PointsMaterial
+	}
+
 	loadGL() {
 		if (!super.loadGL()) return false
 
 		this._stopFns.push(
 			autorun(() => {
 				this.sizeAttenuation
-				this.updateMaterial('sizeAttenuation')
+				this.updateMaterial('sizeAttenuation', this.sizeAttenuation)
 			}),
 			autorun(() => {
 				this.pointSize
-				// FIXME non-ideal cast. See FIXME in updateMaterial.
-				this.updateMaterial('size' as PointsMaterialBehaviorAttributes, 'pointSize')
+				this.updateMaterial('size', this.pointSize)
 			}),
 		)
 
 		return true
-	}
-
-	updateMaterial<Prop extends PointsMaterialBehaviorAttributes>(propName: Prop, thisProp?: keyof this) {
-		// FIXME This type cast is not ideal, but it works fine. Update it to
-		// use F-Bounded Types to use the properties of the type of material
-		// specified by this subclass.
-		super.updateMaterial(propName as MaterialBehaviorAttributes, thisProp as MaterialBehaviorAttributes)
 	}
 
 	_createComponent() {

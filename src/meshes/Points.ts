@@ -25,17 +25,30 @@ export class Points extends Node {
 
 import type {ElementAttributes} from '@lume/element'
 import type {
+	ElementWithBehaviors,
+	LambertMaterialBehavior,
+	LambertMaterialBehaviorAttributes,
 	PhongMaterialBehavior,
 	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
+	PointsMaterialBehavior,
+	PointsMaterialBehaviorAttributes,
+} from '../index.js'
+
+export interface Points
+	extends ElementWithBehaviors<
+		PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
+		PointsMaterialBehaviorAttributes | PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes
+	> {}
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-points': ElementAttributes<
-				Points,
-				PointsAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+				Points & PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
+				| PointsAttributes
+				| PointsMaterialBehaviorAttributes
+				| PhongMaterialBehaviorAttributes
+				| LambertMaterialBehaviorAttributes
 			>
 		}
 	}

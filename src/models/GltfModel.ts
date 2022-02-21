@@ -38,21 +38,21 @@ export class GltfModel extends Node {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {ElementWithBehaviors} from '../index.js'
 
-declare module '@lume/element' {
-	namespace JSX {
-		interface IntrinsicElements {
-			'lume-gltf-model': ElementAttributes<
-				GltfModel,
-				GltfModelAttributes,
-				ElementAttributes<GltfModelBehavior, GltfModelBehaviorAttributes>
-			>
-		}
-	}
-}
+export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
 		'lume-gltf-model': GltfModel
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-gltf-model': JSX.IntrinsicElements['lume-node'] &
+				ElementAttributes<GltfModelBehavior, GltfModelBehaviorAttributes>
+		}
 	}
 }

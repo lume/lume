@@ -41,21 +41,21 @@ export class ColladaModel extends Node {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {ElementWithBehaviors} from '../index.js'
 
-declare module '@lume/element' {
-	namespace JSX {
-		interface IntrinsicElements {
-			'lume-collada-model': ElementAttributes<
-				ColladaModel,
-				ColladaModelAttributes,
-				ElementAttributes<ColladaModelBehavior, ColladaModelBehaviorAttributes>
-			>
-		}
-	}
-}
+export interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
 		'lume-collada-model': ColladaModel
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-collada-model': JSX.IntrinsicElements['lume-node'] &
+				ElementAttributes<ColladaModelBehavior, ColladaModelBehaviorAttributes>
+		}
 	}
 }

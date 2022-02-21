@@ -16,27 +16,16 @@ export class Sphere extends Mesh {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-sphere': Sphere
+	}
+}
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			// TODO finish swapping ElementAttributes orderings for elements with behaviors
-			'lume-sphere': ElementAttributes<
-				Sphere,
-				SphereAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
-			>
+			'lume-sphere': JSX.IntrinsicElements['lume-mesh']
 		}
-	}
-}
-
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-sphere': Sphere
 	}
 }

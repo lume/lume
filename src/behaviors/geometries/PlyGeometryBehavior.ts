@@ -14,7 +14,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	loader?: PLYLoader
 	model?: BufferGeometry
 
-	requiredElementType() {
+	requiredElementType(): [typeof Points] {
 		return [Points]
 	}
 

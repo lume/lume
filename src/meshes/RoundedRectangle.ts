@@ -18,24 +18,25 @@ export class RoundedRectangle extends Mesh {
 
 import type {ElementAttributes} from '@lume/element'
 import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
+	ElementWithBehaviors,
+	RoundedRectangleGeometryBehavior,
+	RoundedRectangleGeometryBehaviorAttributes,
+} from '../index.js'
 
-declare module '@lume/element' {
-	namespace JSX {
-		interface IntrinsicElements {
-			'lume-rounded-rectangle': ElementAttributes<
-				RoundedRectangle,
-				RoundedRectangleAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
-			>
-		}
-	}
-}
+export interface RoundedRectangle
+	extends ElementWithBehaviors<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
 		'lume-rounded-rectangle': RoundedRectangle
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-rounded-rectangle': JSX.IntrinsicElements['lume-mesh'] &
+				ElementAttributes<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes>
+		}
 	}
 }

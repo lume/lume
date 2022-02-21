@@ -1,11 +1,10 @@
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
-import {reactive, autorun, numberAttribute, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
+import {Material} from 'three/src/materials/Material.js'
+import {reactive, autorun, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
 import {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
 
-import type {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
-
-export type MaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidedness' | 'color'
+export type MaterialBehaviorAttributes = 'wireframe' | 'sidedness' | 'color'
 
 /**
  * @class MaterialBehavior -
@@ -17,20 +16,12 @@ export type MaterialBehaviorAttributes = 'wireframe' | 'opacity' | 'sidedness' |
 export class MaterialBehavior extends MeshBehavior {
 	type: MeshComponentType = 'material'
 
-	static _observedProperties = [
-		'wireframe',
-		'opacity',
-		'sidedness',
-		'color',
-		...(MeshBehavior._observedProperties || []),
-	]
+	static _observedProperties = ['wireframe', 'sidedness', 'color', ...(MeshBehavior._observedProperties || [])]
 
 	// TODO wireframe works with -geometry behaviors, but not with obj-model
 	// because obj-model doesn't inherit from geometry. We should share common
 	// props like wireframe...
 	@booleanAttribute(false) wireframe = false
-
-	@numberAttribute(1) opacity = 1
 
 	/**
 	 * @property {'front' | 'back' | 'double'} sidedness - Whether to render
@@ -42,7 +33,7 @@ export class MaterialBehavior extends MeshBehavior {
 	@stringAttribute('front') sidedness: 'front' | 'back' | 'double' = 'front'
 
 	@stringAttribute('deeppink')
-	get color(): string | number | Color {
+	get color(): Color {
 		return this.#color
 	}
 	set color(val: string | number | Color) {
@@ -55,8 +46,24 @@ export class MaterialBehavior extends MeshBehavior {
 	#color = new Color('deeppink')
 
 	get transparent(): boolean {
-		if (this.opacity < 1) return true
+		if (this.element.opacity < 1) return true
 		else return false
+	}
+
+	// TODO material arrays are not handled. Any LUME elements have one material. If
+	// a user make a subclass or provides a custom three objects with a material
+	// array, we set properties onto each material, assuming they're all the same
+	// type. Perhaps we need an HTML syntax for multiple materials on an element.
+	get material(): Material {
+		const mat = this.element.three.material
+
+		if (Array.isArray(mat)) {
+			throw new Error(
+				'Unexpected material array. Instead of modifying elemeht.three.material, use element.three.add(obj) to add an object with multiple materials.',
+			)
+		}
+
+		return mat
 	}
 
 	_stopFns: StopFunction[] = []
@@ -64,39 +71,62 @@ export class MaterialBehavior extends MeshBehavior {
 	loadGL() {
 		if (!super.loadGL()) return false
 
+		const mat = this.material
+
+		// TODO Better taxonomy organization, no any types, to avoid the below
+		// conditional checks.
+
+		// Only some materials have wireframe.
+		if ('wireframe' in mat) {
+			this._stopFns.push(
+				autorun(() => {
+					this.wireframe
+					this.updateMaterial(
+						'wireframe' as any /* because the material must have wireframe here */,
+						this.wireframe,
+					)
+				}),
+			)
+		}
+
+		if ('side' in mat) {
+			this._stopFns.push(
+				autorun(() => {
+					let side: Side
+
+					switch (this.sidedness) {
+						case 'front':
+							side = FrontSide
+							break
+						case 'back':
+							side = BackSide
+							break
+						case 'double':
+							side = DoubleSide
+							break
+					}
+
+					mat.side = side
+
+					this.element.needsUpdate()
+				}),
+			)
+		}
+
+		if ('color' in mat) {
+			this._stopFns.push(
+				autorun(() => {
+					this.color
+					this.updateMaterial('color' as any, this.color)
+				}),
+			)
+		}
+
 		this._stopFns.push(
 			autorun(() => {
-				this.wireframe
-				this.updateMaterial('wireframe')
-			}),
-			autorun(() => {
-				this.opacity
-				this.updateMaterial('opacity')
-				// @ts-ignore see FIXME regarding F-Bounded Types in PointsMaterialBehavior.
-				this.updateMaterial('transparent')
-			}),
-			autorun(() => {
-				let side: Side
-
-				switch (this.sidedness) {
-					case 'front':
-						side = FrontSide
-						break
-					case 'back':
-						side = BackSide
-						break
-					case 'double':
-						side = DoubleSide
-						break
-				}
-
-				;(this.element.three.material as MeshPhongMaterial).side = side
-
-				this.element.needsUpdate()
-			}),
-			autorun(() => {
-				this.color
-				this.updateMaterial('color')
+				this.element.opacity
+				this.updateMaterial('opacity', this.element.opacity)
+				this.updateMaterial('transparent', this.transparent)
 			}),
 		)
 
@@ -112,22 +142,13 @@ export class MaterialBehavior extends MeshBehavior {
 		return true
 	}
 
-	updateMaterial<Prop extends MaterialBehaviorAttributes>(propName: Prop, thisProp: keyof this = propName) {
-		const mat = this.element.three.material as any
+	override _createComponent(): Material {
+		return new Material()
+	}
 
-		// TODO Better taxonomy organization. F.e. ShaderMaterial doesn't have
-		// a 'color' prop, but it has the others that we've enabled to far.
-
-		if (Array.isArray(mat)) {
-			for (const m of mat) {
-				// @ts-ignore
-				m[propName] = this[thisProp]
-			}
-		} else {
-			// @ts-ignore
-			mat[propName] = this[thisProp]
-		}
-
+	updateMaterial<Prop extends keyof this['material']>(propName: Prop, value: this['material'][Prop]) {
+		const mat = this.material as this['material']
+		mat[propName] = value
 		this.element.needsUpdate()
 	}
 }

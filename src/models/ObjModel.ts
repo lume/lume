@@ -8,7 +8,7 @@ export type ObjModelAttributes = NodeAttributes
 
 /**
  * @element lume-obj-model
- * @class GltfModel - Defines the `<lume-obj-model>` element, which is short for `<lume-node has="obj-model">`.
+ * @class ObjModel - Defines the `<lume-obj-model>` element, which is short for `<lume-node has="obj-model">`.
  *
  * HTML Example:
  *
@@ -23,7 +23,7 @@ export type ObjModelAttributes = NodeAttributes
  * ```js
  * const scene = new Scene
  * document.body.append(scene)
- * const model = new GltfModel
+ * const model = new ObjModel
  * model.obj = 'path/to/model.obj'
  * model.mtl = 'path/to/model.mtl'
  * scene.add(model)
@@ -35,21 +35,21 @@ export class ObjModel extends Node {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {ElementWithBehaviors} from '../index.js'
 
-declare module '@lume/element' {
-	namespace JSX {
-		interface IntrinsicElements {
-			'lume-obj-model': ElementAttributes<
-				ObjModel,
-				ObjModelAttributes,
-				ElementAttributes<ObjModelBehavior, ObjModelBehaviorAttributes>
-			>
-		}
-	}
-}
+export interface ObjModel extends ElementWithBehaviors<ObjModelBehavior, ObjModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
 		'lume-obj-model': ObjModel
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-obj-model': JSX.IntrinsicElements['lume-node'] &
+				ElementAttributes<ObjModelBehavior, ObjModelBehaviorAttributes>
+		}
 	}
 }

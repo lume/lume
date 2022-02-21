@@ -18,7 +18,7 @@ export type MeshComponentType = 'geometry' | 'material'
 export abstract class MeshBehavior extends RenderableBehavior {
 	abstract type: MeshComponentType
 
-	requiredElementType() {
+	requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh)[] {
 		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
 		// XXX An alternative to using arrays with multiple types is we could branch the class
 		// hierarchy to avoid arrays/unions.
@@ -43,7 +43,7 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		return true
 	}
 
-	resetMeshComponent() {
+	resetMeshComponent(): void {
 		// TODO We might have to defer so that calculatedSize is already calculated
 		// (note, this method is called when the size or sizeMode prop of subclasses has
 		// changed)

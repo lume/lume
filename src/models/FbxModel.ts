@@ -38,21 +38,21 @@ export class FbxModel extends Node {
 }
 
 import type {ElementAttributes} from '@lume/element'
+import type {ElementWithBehaviors} from '../index.js'
 
-declare module '@lume/element' {
-	namespace JSX {
-		interface IntrinsicElements {
-			'lume-fbx-model': ElementAttributes<
-				FbxModel,
-				FbxModelAttributes,
-				ElementAttributes<FbxModelBehavior, FbxModelBehaviorAttributes>
-			>
-		}
-	}
-}
+export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
 		'lume-fbx-model': FbxModel
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-fbx-model': JSX.IntrinsicElements['lume-node'] &
+				ElementAttributes<FbxModelBehavior, FbxModelBehaviorAttributes>
+		}
 	}
 }

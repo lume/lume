@@ -16,6 +16,7 @@ export class LoadingIcon extends Element {
 	/** A string with an RGB triplet, comma separated. */
 	@stringAttribute(defaultColor) color = defaultColor
 
+	// TODO convert to JSX.
 	template = () => html`
 		<>
 			<div class="top"></div>
@@ -24,16 +25,6 @@ export class LoadingIcon extends Element {
 			<div class="left"></div>
 		</>
 	`
-
-	// TODO convert to JSX.
-	// template = () => (
-	// 	<>
-	// 		<div class="top"></div>
-	// 		<div class="right"></div>
-	// 		<div class="bottom"></div>
-	// 		<div class="left"></div>
-	// 	</>
-	// )
 
 	css = /*css*/ `
 		:host {

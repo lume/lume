@@ -12,6 +12,8 @@ import type {Geometry} from 'three/src/core/Geometry.js'
 // 	return true
 // }
 
+export type RoundedRectangleGeometryBehaviorAttributes = 'cornerRadius' | 'thickness' | 'quadraticCorners'
+
 @reactive
 export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 	// FIXME We need this because if we pass string numbers to Three.js it

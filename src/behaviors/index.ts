@@ -10,3 +10,5 @@ export * from './DefaultBehaviors.js'
 export * from './geometries/index.js'
 export * from './materials/index.js'
 export * from './models/index.js'
+
+export type {ElementWithBehaviors} from './ElementWithBehaviors'

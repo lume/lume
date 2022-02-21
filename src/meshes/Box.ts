@@ -18,26 +18,16 @@ export class Box extends Mesh {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-} from '../behaviors/materials/PhongMaterialBehavior.js'
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-box': Box
+	}
+}
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-box': ElementAttributes<
-				Box,
-				BoxAttributes,
-				ElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
-			>
+			'lume-box': JSX.IntrinsicElements['lume-mesh']
 		}
-	}
-}
-
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-box': Box
 	}
 }
