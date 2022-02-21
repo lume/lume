@@ -74,7 +74,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 </lume-scene>
 
 <script>
-    LUME.useDefaultNames()
+    LUME.defineElements()
 
     const {html} = LUME
 

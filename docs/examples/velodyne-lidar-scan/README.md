@@ -61,7 +61,7 @@
 </style>
 
 <script>
-  LUME.useDefaultNames()
+  LUME.defineElements()
   light.position = (x, y, z, t) => [500 * Math.sin(t * 0.001), 500 * Math.cos(t * 0.001), z]
   model.on('MODEL_LOAD', () => {
     scene.classList.remove('hidden')

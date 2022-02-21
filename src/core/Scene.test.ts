@@ -1,9 +1,9 @@
-import {useDefaultNames, html} from '../index.js'
+import {defineElements, html} from '../index.js'
 import {hasShadow} from './DeclarativeBase.js'
 import type {Node} from './Node.js'
 import type {Scene} from './Scene.js'
 
-useDefaultNames()
+defineElements()
 
 describe('Scene', () => {
 	let container: HTMLDivElement = document.createElement('div')

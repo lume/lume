@@ -810,7 +810,7 @@ window.addEventListener('error', event => {
 		console.error(`
 			One of the reasons the following error can happen is if a Custom
 			Element is called with 'new' before being defined. Did you forget
-			to call 'LUME.useDefaultNames'?  For other reasons, see:
+			to call 'LUME.defineElements()'?  For other reasons, see:
 			https://www.google.com/search?q=chrome%20illegal%20constructor
         `)
 	}

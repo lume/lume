@@ -55,7 +55,7 @@ Make a file named `index.html` containing the following:
 
 <script>
 	// Tell LUME to use default names for the elements (f.e. lume-node and lume-scene).
-	LUME.useDefaultNames()
+	LUME.defineElements()
 
 	// Get a reference to the lume-node element.
 	const node = document.querySelector('lume-node')
@@ -110,10 +110,10 @@ module.exports = {
 Make a file named `app.js` containing the following:
 
 ```js
-import {Scene, Node, useDefaultNames} from 'lume'
+import {Scene, Node, defineElements} from 'lume'
 
 // Tell LUME to use default names for the elements.
-useDefaultNames()
+defineElements()
 
 // Create a new 3D scene:
 const scene = new Scene()

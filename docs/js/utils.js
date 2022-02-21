@@ -116,7 +116,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 	<div id="buttonsRoot"></div>
 
 	<script>
-		LUME.useDefaultNames()
+		LUME.defineElements()
 
 		new Vue({
 			el: '#buttonsRoot',
@@ -253,7 +253,7 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 		</lume-scene>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			mesh.rotation = (x, y, z) => [++x, ++y, z]
 		</script>
@@ -452,7 +452,7 @@ function miniGalaxyDemo() {
 		</style>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			document.querySelectorAll('.A, .A .rotator').forEach(n => {
 				n.rotation = (x, y, z, t) => [-65 * Math.sin(t * 0.0005), y, -65 * Math.sin(t * 0.0005)]
@@ -499,7 +499,7 @@ function sceneExample() {
 		</style>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 		</script>
 	`)
 }
@@ -539,7 +539,7 @@ function pointLightExample() {
 		</style>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			box.rotation = (x, y, z) => [x, y, ++z]
 		</script>
@@ -586,7 +586,7 @@ function directionalLightExample() {
 		</style>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			box.rotation = (x, y, z) => [x, y, ++z]
 		</script>
@@ -655,7 +655,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 		</style>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			const rotationAmount = 10
 			const targetRotation = {

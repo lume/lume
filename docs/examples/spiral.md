@@ -57,7 +57,7 @@
   </style>
 
   <script>
-    LUME.useDefaultNames()
+    LUME.defineElements()
     var template = document.querySelector('template')
 
     new Vue({

@@ -53,7 +53,7 @@
 
 		<!-- works here -->
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 		</script>
 
 		<lume-scene
@@ -224,7 +224,7 @@
         TODO do we need this test?
         <!~~ works here ~~>
         <script>
-            LUME.useDefaultNames()
+            LUME.defineElements()
         </script>
 
         <style>
@@ -259,7 +259,7 @@
         </lume-scene>
 
         <!~~ <script>
-            LUME.useDefaultNames()
+            LUME.defineElements()
         </script> ~~>
 
         <script>
@@ -284,7 +284,7 @@
             </lume-node>
         </lume-scene>
         <script>
-            LUME.useDefaultNames()
+            LUME.defineElements()
             const n = document.querySelector('#n')
             <!~~ n.rotation = (x, y, z) => [x, y++, z] ~~>
             LUME.Motor.addRenderTask(() => {
@@ -295,7 +295,7 @@
 		<!-- WORKS ======================================================== -->
 		<!--
         <script>
-            LUME.useDefaultNames()
+            LUME.defineElements()
         </script>
 
         <style>
@@ -342,7 +342,7 @@
                -    ></lume-perspective-camera>
                -</lume-scene>
                -<script>
-               -    LUME.useDefaultNames()
+               -    LUME.defineElements()
                -    const scene = document.querySelector('lume-scene')
                -    const cam = document.querySelector('lume-perspective-camera')
                -</script>
@@ -352,7 +352,7 @@
 		<!--
            -<script>
            -    console.log('  ---- define elements ---- ')
-           -    LUME.useDefaultNames()
+           -    LUME.defineElements()
            -</script>
            -<lume-scene>
            -    <lume-node size="100 100 100" rotation="30 30 30">
@@ -372,13 +372,13 @@
 		<!--</lume-scene>-->
 		<!--<script>-->
 		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.useDefaultNames()-->
+		<!--    LUME.defineElements()-->
 		<!--</script>-->
 
 		<!-- WORKS ======================================================== -->
 		<!--<script>-->
 		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.useDefaultNames()-->
+		<!--    LUME.defineElements()-->
 		<!--</script>-->
 		<!--<script>-->
 		<!--document.body.insertAdjacentHTML('beforeend', `-->
@@ -402,14 +402,14 @@
 		<!--</script>-->
 		<!--<script>-->
 		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.useDefaultNames()-->
+		<!--    LUME.defineElements()-->
 		<!--</script>-->
 
 		<!-- WORKS ======================================================== -->
 		<!--<script>-->
 		<!--    setTimeout(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    }, 0)-->
 		<!--</script>-->
 		<!--<lume-scene>-->
@@ -422,7 +422,7 @@
 		<!--<script>-->
 		<!--    setTimeout(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    }, 0)-->
 		<!--</script>-->
 		<!--<script>-->
@@ -439,7 +439,7 @@
 		<!--<script>-->
 		<!--    setTimeout(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    }, 0)-->
 		<!--</script>-->
 		<!--<script>-->
@@ -455,7 +455,7 @@
 		<!-- WORKS ======================================================== -->
 		<!--<script>-->
 		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.useDefaultNames()-->
+		<!--    LUME.defineElements()-->
 		<!--</script>-->
 		<!--<script>-->
 		<!--document.write(`-->
@@ -479,14 +479,14 @@
 		<!--</script>-->
 		<!--<script>-->
 		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.useDefaultNames()-->
+		<!--    LUME.defineElements()-->
 		<!--</script>-->
 
 		<!-- WORKS ======================================================== -->
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 		<!--<script>-->
@@ -512,7 +512,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 
@@ -520,7 +520,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 		<!--<lume-scene>-->
@@ -538,7 +538,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 
@@ -546,7 +546,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 		<!--<script>-->
@@ -572,7 +572,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 
@@ -580,7 +580,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 		<!--<script>-->
@@ -606,7 +606,7 @@
 		<!--<script>-->
 		<!--    Promise.resolve().then(() => {-->
 		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.useDefaultNames()-->
+		<!--        LUME.defineElements()-->
 		<!--    })-->
 		<!--</script>-->
 

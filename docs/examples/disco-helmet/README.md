@@ -82,7 +82,7 @@
 </style>
 
 <script>
-  LUME.useDefaultNames()
+  LUME.defineElements()
 
   lights.rotation = (x, y, z, t) => [x, y + 0.2, z]
 

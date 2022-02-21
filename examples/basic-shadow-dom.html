@@ -61,14 +61,14 @@ The code below is commented to describe which parts correlate to the above list 
 	<body>
 		<script>
 			// Make sure this one works too, before HTML parsing.
-			// LUME.useDefaultNames()
+			// LUME.defineElements()
 		</script>
 
 		<!-- Body will have a ShadowRoot, and this lume-box will be distributed to (render relative to) the following LUME Scene inside the ShadowRoot. -->
 		<lume-box color="purple" slot="outsidenode" size="30 30 30" align-point="0.3 0.3"></lume-box>
 
 		<script>
-			LUME.useDefaultNames()
+			LUME.defineElements()
 
 			const {html} = LUME
 

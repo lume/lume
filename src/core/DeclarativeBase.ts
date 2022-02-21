@@ -18,18 +18,9 @@ function isNode(n: any): n is HtmlNode {
 }
 
 export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement)) {
-	static defaultElementName: string = 'ERROR: Subclass needs to set defaultElementName'
-	// static #definedElementName?: string // doesn't work
-	static __definedElementName?: string // works
-
+	/** @deprecated use `.defineElement()` instead */
 	static define(name?: string) {
-		name = name || this.defaultElementName
-		customElements.define(name, this)
-		this.__definedElementName = name
-	}
-
-	static get definedElementName() {
-		return this.__definedElementName || null
+		this.defineElement(name)
 	}
 
 	// This empty constructor is needed merely to satisfy the type system.

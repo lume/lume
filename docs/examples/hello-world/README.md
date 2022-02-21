@@ -104,7 +104,7 @@
 
 <script>
   // Define LUME's HTML elements with their default names.
-  LUME.useDefaultNames();
+  LUME.defineElements();
 
   // We wrote the rotation function this way so that it would always start
   // at the angle defined in the HTML.

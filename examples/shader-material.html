@@ -2,7 +2,7 @@
 
 <script>
 	// FIXME works here, but not down below.
-	LUME.useDefaultNames()
+	LUME.defineElements()
 </script>
 
 <lume-scene id="scene" webgl>
@@ -82,7 +82,7 @@
 <script>
 	{
 		// FIXME Doesn't work here, but works above.
-		// LUME.useDefaultNames()
+		// LUME.defineElements()
 
 		// Set new values for the shader uniforms when needed.
 		plane.on('GL_LOAD', () => {

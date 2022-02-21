@@ -100,7 +100,7 @@ of its parent.
 <div id="parentTransforms"></div>
 
 <script type="application/javascript">
-	// LUME.useDefaultNames()
+	// LUME.defineElements()
 
 	document.querySelectorAll('lume-scene *').forEach(n => {
 		if (n instanceof LUME.Node) {
@@ -154,7 +154,7 @@ of its parent.
 				</style>
 
     			<script>
-    				LUME.useDefaultNames()
+    				LUME.defineElements()
     				const rotationFunction = (x, y, z, t) => [x, y, 10 * Math.sin(t * 0.002)]
 
     				// Give all nodes the same rotation. Note that each node rotates "inside" of the parent space.

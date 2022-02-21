@@ -28,7 +28,7 @@
 </style>
 
 <script>
-  LUME.useDefaultNames()
+  LUME.defineElements()
 <\/script>
 
 <!--

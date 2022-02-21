@@ -31,7 +31,7 @@
 <astrobee-app id="astrobee">
 
 <script>
-  const {useDefaultNames, booleanAttribute, Element, element, attribute, html} = LUME
+  const {defineElements, booleanAttribute, Element, element, attribute, html} = LUME
 
   const bodyModelUrl = '${location.origin+location.pathname}examples/nasa-astrobee-robot/astrobee/body.dae'
   const pmcModelUrl = '${location.origin+location.pathname}examples/nasa-astrobee-robot/astrobee/pmc.dae'
@@ -42,7 +42,7 @@
   const lunaStation = '${location.origin+location.pathname}examples/nasa-astrobee-robot/luna-station.jpg'
 
   // Registers the LUME elements with their default tag names.
-  useDefaultNames()
+  defineElements()
 
   // Long live HTML elements!
 

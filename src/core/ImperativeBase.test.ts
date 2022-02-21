@@ -1,9 +1,9 @@
 import {autorun} from '@lume/element'
 import {Node} from './Node.js'
 import {Scene} from './Scene.js'
-import {useDefaultNames} from '../index.js'
+import {defineElements} from '../index.js'
 
-useDefaultNames()
+defineElements()
 
 describe('ImperativeBase', () => {
 	const root = document.createElement('div')

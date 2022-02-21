@@ -32,7 +32,7 @@
                   Sphere
               } = LUME
 
-              LUME.useDefaultNames()
+              LUME.defineElements()
 
               const scene = new Scene().set({
                   webgl: true,

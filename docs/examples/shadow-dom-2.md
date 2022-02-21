@@ -38,7 +38,7 @@
 </style>
 
 <script>
-	LUME.useDefaultNames()
+	LUME.defineElements()
 	node.rotation = (x, y, z) => [x, ++y, z]
 	const root = div.attachShadow({
 		mode: 'open'

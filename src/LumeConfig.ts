@@ -12,5 +12,5 @@ declare global {
 
 // TODO WIP not implemented yet. A true value should cause elements to be
 // defined automatically, and true should also be the default. For now,
-// LUME.useDefaultNames() is still required.
+// LUME.defineElements() is still required.
 export const autoDefineElements = window.$LUME?.autoDefineElements ?? false

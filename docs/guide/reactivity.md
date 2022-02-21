@@ -21,7 +21,7 @@ value changes.
 <body>
 
   <script>
-    LUME.useDefaultNames()
+    LUME.defineElements()
 
     const {variable, html, Motor} = LUME
 

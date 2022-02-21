@@ -92,7 +92,7 @@ perspective camera is active we can control its attributes.
 
 <script>
     // defines the default names for the HTML elements
-    LUME.useDefaultNames()
+    LUME.defineElements()
 
     const light = document.querySelector('#light')
 

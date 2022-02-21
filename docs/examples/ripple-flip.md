@@ -21,7 +21,7 @@
 <body>
 
 <script type="module">
-  LUME.useDefaultNames()
+  LUME.defineElements()
 
   const {Motor, Scene, Node} = LUME
   const {Tween, Easing} = TWEEN

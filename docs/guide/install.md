@@ -51,7 +51,7 @@ it. You should see the same visual as in the following example:
 Let's go over what this does. The first line,
 
 ```html
-<script src="https://unpkg.com/lume@0.2.2/dist/global.js"></script>
+<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"></script>
 ```
 
 is an HTML `<script>` element that tells the browser where to get LUME code from.
@@ -68,7 +68,7 @@ hosted on http://npmjs.com), we wrote
 
 ```html
 <script type="module">
-	LUME.useDefaultNames()
+	LUME.defineElements()
 </script>
 ```
 
@@ -159,7 +159,7 @@ npm install lume
 
 ```js
 import * as LUME from 'lume'
-LUME.useDefaultNames()
+LUME.defineElements()
 ```
 
 ## Define the HTML elements
@@ -176,7 +176,7 @@ The fastest way to get up and running is to tell LUME to use default naming
 for all of its HTML elements:
 
 ```js
-LUME.useDefaultNames()
+LUME.defineElements()
 ```
 
 We can write the scene with JavaScript imperatively, without thinking about
@@ -212,11 +212,11 @@ naming conflict, or just because you feel like it). You can do this using the
 const {Scene, Node} = LUME
 
 // Define custom names, only for these two classes:
-Scene.define('x-scene')
-Node.define('x-node')
+Scene.defineElement('x-scene')
+Node.defineElement('x-node')
 ```
 
-> **Note:** If you choose not to use `LUME.useDefaultNames`, you must then
+> **Note:** If you choose not to use `LUME.defineElements()`, you must then
 > define the custom names yourself for each element that you wish to use.
 
 Here's the same imperative JavaScript example as the previous section, but
@@ -235,10 +235,10 @@ new Vue({
   template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
   data: {
     code:
-`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <script type=module>
-    LUME.useDefaultNames()
+    LUME.defineElements()
 <\/script>
 
 <!-- This defines the structure of a 3D scene with some lighting, and a 3D
@@ -288,10 +288,10 @@ el: '#defaultNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <script type=module>
-  LUME.useDefaultNames()
+  LUME.defineElements()
 
   const {Scene, Node} = LUME
   const scene = new Scene()
@@ -326,14 +326,14 @@ el: '#defaultNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <lume-scene>
   <lume-node id="node" position="50 50" size="100 100"></lume-node>
 </lume-scene>
 
 <script type=module>
-  LUME.useDefaultNames()
+  LUME.defineElements()
   document.getElementById('node').rotation = (x, y, z) => [x, y + 1, z]
 <\/script>
 
@@ -350,14 +350,14 @@ el: '#customNamesImperative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <script type=module>
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:
-  Scene.define('x-scene')
-  Node.define('x-node')
+  Scene.defineElement('x-scene')
+  Node.defineElement('x-node')
 
   const scene = new Scene()
 
@@ -391,7 +391,7 @@ el: '#customNamesDeclarative',
 template: '<live-code :template="code" :autorun="true" mode="html>iframe" />',
 data: {
 code:
-`<script src="https://unpkg.com/lume@0.2.2/dist/global.js"><\/script>
+`<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <x-scene>
   <x-node id="node" position="50 50" size="100 100"></x-node>
@@ -401,8 +401,8 @@ code:
   const {Scene, Node} = LUME
 
   // Define custom names, only for these two classes:
-  Scene.define('x-scene')
-  Node.define('x-node')
+  Scene.defineElement('x-scene')
+  Node.defineElement('x-node')
 
   document.getElementById('node').rotation = (x, y, z) => [x, y + 1, z]
 <\/script>

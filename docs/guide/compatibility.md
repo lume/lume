@@ -10,8 +10,8 @@ To import and use LUME elements in your (JavaScript) React project, enable the L
 their default element names.
 
 ```tsx
-import {useDefaultNames} from 'lume'
-useDefaultNames()
+import {defineElements} from 'lume'
+defineElements()
 ```
 
 Then import your React stuff as usual and use the elements in your JSX markup:
@@ -71,8 +71,8 @@ element names. Here we also import the `Box` class for use as a type argument
 with `useRef` further below:
 
 ```tsx
-import {useDefaultNames, Box} from 'lume'
-useDefaultNames()
+import {defineElements, Box} from 'lume'
+defineElements()
 ```
 
 Then import the React JSX type definitions for the elements:

@@ -20,7 +20,7 @@
 </style>
 
 <script>
-  LUME.useDefaultNames()
+  LUME.defineElements()
 
   export default {
     mounted() {
@@ -68,7 +68,7 @@
 </style>
 
 <script>
-  LUME.useDefaultNames()
+  LUME.defineElements()
   node.rotation = (x, y, z) => [x, ++y, z]
 <\/script>
 

@@ -111,7 +111,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 
 <script>
     // defines the default names for the HTML elements
-    LUME.useDefaultNames()
+    LUME.defineElements()
 
     document.addEventListener('pointermove', function(e) {
         e.preventDefault()
@@ -284,7 +284,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 
 <script>
     // defines the default names for the HTML elements
-    LUME.useDefaultNames()
+    LUME.defineElements()
 
     const light = document.querySelector('#light')
 
