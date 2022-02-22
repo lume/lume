@@ -51,7 +51,7 @@ const appliedPosition = [0, 0, 0]
  *   new Vue({
  *     el: '#example',
  *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: { code: meshExample() },
+ *     data: { code: instancedMeshExample },
  *   })
  * </script>
  *

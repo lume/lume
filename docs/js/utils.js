@@ -1083,3 +1083,67 @@ const shapesExample = stripIndent(/*html*/ `
 		}
 	</style>
 `)
+
+const instancedMeshExample = stripIndent(/*html*/ `
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #222;
+			touch-action: none;
+		}
+	</style>
+
+	<lume-scene id="scene" perspective="800" webgl>
+		<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-node>
+
+		<lume-camera-rig active initial-distance="1000" max-distance="2500" min-distance="100" position="500 500 500"></lume-camera-rig>
+	</lume-scene>
+
+	<script src="${location.origin + location.pathname}global.js"></script>
+	<script>
+		// Define all the LUME elements with their default names.
+		LUME.defineElements()
+
+		const numberOfObjects = 10000
+
+		scene.append(LUME.html\`
+			<lume-instanced-mesh id="mesh" color="white" count=\${numberOfObjects} size="30 30 30">
+			</lume-instanced-mesh>
+		\`)
+
+		mesh.rotations = Array.from({length: numberOfObjects * 3}).fill(0)
+		mesh.positions = Array.from({length: numberOfObjects * 3}).fill(0)
+		mesh.scales = Array.from({length: numberOfObjects * 3}).fill(1)
+		mesh.colors = Array.from({length: numberOfObjects * 3}).fill(0.5)
+
+		mesh.rotations.forEach((_, i, a) => (a[i] = Math.random()))
+		mesh.positions.forEach((_, i, a) => (a[i] = 1000 * Math.random()))
+		mesh.scales.forEach((_, i, a) => (a[i] = Math.random()))
+		mesh.colors.forEach((_, i, a) => (a[i] = Math.random()))
+
+		mesh.needsUpdate()
+
+		LUME.Motor.addRenderTask(() => {
+			let i = 0
+			const a = mesh.rotations
+
+			// Note that this will not trigger reactivity of mesh.rotation (arrays are currently not reactive)
+			for (const rot of a) {
+				a[i] += 0.01
+				i++
+			}
+
+			mesh.needsUpdate()
+
+			// If reactivity for mesh.rotations is needed, then do this:
+			// mesh.rotations = mesh.rotations
+		})
+	</script>
+`)
