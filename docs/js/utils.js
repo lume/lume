@@ -1123,17 +1123,10 @@ const instancedMeshExample = stripIndent(/*html*/ `
 			</lume-instanced-mesh>
 		\`)
 
-		mesh.rotations = Array.from({length: numberOfObjects * 3}).fill(0)
-		mesh.positions = Array.from({length: numberOfObjects * 3}).fill(0)
-		mesh.scales = Array.from({length: numberOfObjects * 3}).fill(1)
-		mesh.colors = Array.from({length: numberOfObjects * 3}).fill(0.5)
-
-		mesh.rotations.forEach((_, i, a) => (a[i] = Math.random()))
-		mesh.positions.forEach((_, i, a) => (a[i] = 1000 * Math.random()))
-		mesh.scales.forEach((_, i, a) => (a[i] = Math.random()))
-		mesh.colors.forEach((_, i, a) => (a[i] = Math.random()))
-
-		mesh.needsUpdate()
+		mesh.rotations = Array.from({length: numberOfObjects * 3}).map(() => Math.random())
+		mesh.positions = Array.from({length: numberOfObjects * 3}).map(() => 1000 * Math.random())
+		mesh.scales = Array.from({length: numberOfObjects * 3}).map(() => Math.random())
+		mesh.colors = Array.from({length: numberOfObjects * 3}).map(() => Math.random())
 
 		LUME.Motor.addRenderTask(() => {
 			let i = 0
