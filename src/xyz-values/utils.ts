@@ -1,7 +1,7 @@
 import r from 'regexr'
 
 // XXX This grows but never shrinks. Can we make the cache collectable? Maybe we
-// need to use WeakRef along with a list of XYZValues instances.
+// need to use WeakRef containing the RegExps.
 const stringArrayRegexCache: {[k: string]: RegExp} = {}
 
 export function stringToArray(string: string, separator: string = ','): string[] {

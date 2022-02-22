@@ -686,3 +686,400 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 		</script>
 	`)
 }
+
+const shapesExample = stripIndent(/*html*/ `
+	<script src="${location.origin + location.pathname}global.js"></script>
+
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: white;
+			touch-action: none;
+		}
+	</style>
+
+	<script src="global.js"></script>
+
+	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="100" fog-far="500" fog-color="white">
+		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
+
+		<lume-camera-rig id="cam" active initial-distance="200" max-distance="700" min-distance="100">
+			<lume-point-light position="200 0 200" intensity="0.7" color="white" slot="camera-child"></lume-point-light>
+		</lume-camera-rig>
+
+		<lume-shape
+			size="30 60 15"
+			color="red"
+			position="30 0 0"
+			rotation="0 -30 0"
+			mount-point="0.5 0.5"
+			sidedness="double"
+			receive-shadow="false"
+			fitment="cover"
+		>
+			<lume-box
+				visible="false"
+				has="basic-material"
+				opacity="0.9"
+				size-mode="proportional proportional proportional"
+				size="1 1 1"
+				color="black"
+				wireframe
+			></lume-box>
+		</lume-shape>
+		<lume-shape
+			size="40 25 15"
+			color="red"
+			scale="1.2 1.2 1.2"
+			position="-30 0 0"
+			rotation="0 30 0"
+			mount-point="0.5 0.5"
+			sidedness="double"
+			receive-shadow="false"
+			fitment="cover"
+		>
+			<lume-box
+				visible="false"
+				has="basic-material"
+				opacity="0.9"
+				size-mode="proportional proportional proportional"
+				size="1 1 1"
+				color="black"
+				wireframe
+			></lume-box>
+		</lume-shape>
+
+		<lume-node rotation="0 10 0">
+			<!--
+			FIXME mesh with manual behaviors not working initially. Change the has
+			attribute to something else and back, then it works. Code load order
+			issue.
+			-->
+			<!-- <lume-mesh has="shape-geometry phong-material" size="0 0 5" color="white" position="30 0 0" sidedness="double" receive-shadow="false"> -->
+			<lume-shape
+				size="30 60 5"
+				color="red"
+				position="-10 40"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="30 60 10"
+				color="red"
+				scale="0.75 0.75 0.75"
+				position="30 -60 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="contain"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="30 60 15"
+				color="red"
+				position="50 50 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="10 60 5"
+				color="red"
+				position="-50 -50 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="30 10 5"
+				color="red"
+				position="40 -40 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+		</lume-node>
+
+		<lume-node position="0 0 0">
+			<lume-shape
+				size="40 25 5"
+				color="red"
+				position="-20 50 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="40 25 10"
+				color="red"
+				scale="0.75 0.75 0.75"
+				position="50 -50 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="contain"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="40 25 15"
+				color="red"
+				position="-20 -40 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="40 10 5"
+				color="red"
+				position="80 0 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+
+			<lume-shape
+				size="10 25 5"
+				color="red"
+				position="-70 0 0"
+				mount-point="0.5 0.5"
+				sidedness="double"
+				receive-shadow="false"
+				fitment="scale-down"
+			>
+				<lume-box
+					visible="false"
+					has="basic-material"
+					opacity="0.9"
+					size-mode="proportional proportional proportional"
+					size="1 1 1"
+					color="black"
+					wireframe
+				></lume-box>
+			</lume-shape>
+		</lume-node>
+	</lume-scene>
+
+	<script>
+		// Define all the LUME elements with their default names.
+		LUME.defineElements()
+
+		// Dolly the camera towards the hearts for intro animation.
+
+		const camTargetDistance = 0
+		let camDistance = 700
+
+		LUME.Motor.addRenderTask((t, dt) => {
+			if (camDistance <= 1) {
+				return false
+			}
+
+			camDistance -= 0.03 * (camDistance - camTargetDistance)
+
+			cam.position.z = camDistance
+		})
+	</script>
+
+	<div class="ui">
+		<fieldset>
+			<legend>Options</legend>
+			<label> <input type="checkbox" onchange="updateSize()" />&nbsp; Show size boundaries </label>
+			<br />
+			<label> <input type="checkbox" onchange="updateBevel()" />&nbsp; Bevel </label>
+			<fieldset>
+				<legend>Shape</legend>
+				<label>
+					<input type="radio" name="shape" value="hearts" checked onchange="updateShape(event)" />&nbsp;
+					Hearts
+				</label>
+				<br />
+				<label>
+					<input type="radio" name="shape" value="triangles" onchange="updateShape(event)" />&nbsp; Triangles
+				</label>
+				<br />
+				<label>
+					<input type="radio" name="shape" value="trapezoids" onchange="updateShape(event)" />&nbsp;
+					Trapezoids
+				</label>
+			</fieldset>
+		</fieldset>
+	</div>
+
+	<script>
+		let showSize = false
+		const boxes = Array.from(document.querySelectorAll('lume-box'))
+
+		function updateSize() {
+			showSize = !showSize
+			for (const box of boxes) box.visible = showSize
+		}
+
+		const shapes = Array.from(document.querySelectorAll('lume-shape'))
+
+		let bevel = false
+
+		function updateBevel() {
+			bevel = !bevel
+			for (const shape of shapes) {
+				shape.bevel = bevel
+			}
+		}
+
+		function updateShape(event) {
+			const input = event.target
+
+			// react only to the newly checked radio
+			if (!input.checked) return
+
+			for (const shape of shapes) {
+				if (input.value === 'triangles') {
+					// Set a Shape instance
+					shape.shape = new LUME.THREE.Shape([
+						new LUME.THREE.Vector2(-12, 0),
+						new LUME.THREE.Vector2(12, 0),
+						new LUME.THREE.Vector2(0, 12),
+						new LUME.THREE.Vector2(-12, 0),
+					])
+				} else if (input.value === 'trapezoids') {
+					// Set the 'shape' attribute with a list of points
+					shape.setAttribute('shape', '-5 0, 2 -13,  13 -13,  20 0,  0 0')
+					// shape.setAttribute('shape', '0 0, 5 15,  15 0,  0 0')
+				} else {
+					// Revert back to the default shape
+					shape.shape = null
+				}
+			}
+		}
+	</script>
+
+	<style>
+		.ui {
+			position: absolute;
+			margin: 15px;
+			padding: 10px;
+			top: 0;
+			left: 0;
+			color: white;
+			color: red;
+			font-family: sans-serif;
+			background: rgba(255, 0, 0, 0.8);
+			background: rgba(255, 255, 255, 0.8);
+			border-radius: 7px;
+		}
+
+		fieldset legend {
+			color: white;
+			color: red;
+		}
+		fieldset {
+			border-color: white;
+			border-color: black;
+			border-radius: 4px;
+			border-style: dashed;
+		}
+	</style>
+`)

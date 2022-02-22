@@ -10,7 +10,7 @@ import {Euler} from 'three/src/math/Euler.js'
 import {autorun, element, numberAttribute, stringAttribute, untrack} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {stringToArray} from '../xyz-values/utils.js'
+import {stringToNumberArray} from './utils.js'
 
 import type {Geometry, Material} from 'three'
 import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
@@ -81,7 +81,7 @@ export class InstancedMesh extends Mesh {
 		return this.#rotations
 	}
 	set rotations(v: number[] | string) {
-		this.#rotations = InstancedMesh.stringToArray(v, 'rotations')
+		this.#rotations = stringToNumberArray(v, 'rotations')
 	}
 
 	#rotations: number[] = []
@@ -100,7 +100,7 @@ export class InstancedMesh extends Mesh {
 		return this.#positions
 	}
 	set positions(v: number[]) {
-		this.#positions = InstancedMesh.stringToArray(v, 'positions')
+		this.#positions = stringToNumberArray(v, 'positions')
 	}
 
 	#positions: number[] = []
@@ -119,7 +119,7 @@ export class InstancedMesh extends Mesh {
 		return this.#scales
 	}
 	set scales(v: number[]) {
-		this.#scales = InstancedMesh.stringToArray(v, 'scales')
+		this.#scales = stringToNumberArray(v, 'scales')
 	}
 
 	#scales: number[] = []
@@ -138,7 +138,7 @@ export class InstancedMesh extends Mesh {
 		return this.#colors
 	}
 	set colors(v: number[]) {
-		this.#colors = InstancedMesh.stringToArray(v, 'colors')
+		this.#colors = stringToNumberArray(v, 'colors')
 	}
 
 	#colors: number[] = []
@@ -153,20 +153,6 @@ export class InstancedMesh extends Mesh {
 		'phong-material': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
 		},
-	}
-
-	static stringToArray(v: number[] | string, prop: string): number[] {
-		if (typeof v === 'string') {
-			// Deserialize an attribute string like "12 23 34, 23 34 45, 56 34 12"
-			v = stringToArray(v).map(str => parseFloat(str))
-		}
-
-		// @prod-prune
-		for (let i = 0, l = v.length; i < l; i += 1) {
-			if (isNaN(v[i])) throw new TypeError(`Array for property "${prop}" should have numbers only.`)
-		}
-
-		return v
 	}
 
 	makeThreeObject3d() {
