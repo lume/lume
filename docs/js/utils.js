@@ -1104,6 +1104,11 @@ const instancedMeshExample = stripIndent(/*html*/ `
 		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-node>
 
 		<lume-camera-rig active initial-distance="1000" max-distance="2500" min-distance="100" position="500 500 500"></lume-camera-rig>
+
+		<!-- FIXME: this works: -->
+		<!-- <lume-mesh has="sphere-geometry" size="30 30 30"></lume-mesh> -->
+		<!-- this doesn't: -->
+		<!-- <lume-mesh has="sphere-geometry phong-material" size="30 30 30"></lume-mesh> -->
 	</lume-scene>
 
 	<script src="${location.origin + location.pathname}global.js"></script>
@@ -1134,15 +1139,18 @@ const instancedMeshExample = stripIndent(/*html*/ `
 			let i = 0
 			const a = mesh.rotations
 
-			// Note that this will not trigger reactivity of mesh.rotation (arrays are currently not reactive)
 			for (const rot of a) {
 				a[i] += 0.01
 				i++
 			}
 
+			// Modifying the array in place does not trigger reactivity (arrays
+			// are currently not reactive) so we need to notify that the mesh
+			// needs to be re-rendered.
 			mesh.needsUpdate()
 
-			// If reactivity for mesh.rotations is needed, then do this:
+			// If you wish to trigger reactivity for mesh.rotations in a case
+			// like this one, then do this:
 			// mesh.rotations = mesh.rotations
 		})
 	</script>
