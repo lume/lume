@@ -10,6 +10,11 @@ export type ShapeAttributes = MeshAttributes
 @element lume-shape
 @class Shape - Allows creating a 2D shape that can be extruded.
 
+Default behaviors:
+
+- [`shape-geometry`](../behaviors/geometries/ShapeGeometryBehavior.md)
+- [`phong-material`](../behaviors/materials/PhongMaterialBehavior.md)
+
 <div id="example"></div>
 <script>
   new Vue({
@@ -18,6 +23,10 @@ export type ShapeAttributes = MeshAttributes
     data: { code: shapesExample },
   })
 </script>
+
+Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geometries/ShapeGeometryBehavior.md).
+
+@extends Mesh
 */
 @element('lume-shape', autoDefineElements)
 export class Shape extends Mesh {

@@ -30,6 +30,30 @@ export type ShapeGeometryBehaviorAttributes =
 	| 'centerGeometry'
 	| 'fitment'
 
+/**
+@class ShapeGeometryBehavior -
+
+Provides a 2D extrudable shape geometry for mesh
+elements. The [`<lume-shape>`](../../meshes/Shape.md) element has this behavior
+on it by default.
+
+The shape defined by the [`shape`](#shape) attribute property will be centered within the
+size space defined by the host element's `size` and `sizeMode` attribute
+properties.
+
+To extrude the shape, set the host element's Z size to the amount of desired
+extrusion. If the host element Z size is zero, the shape will be flat and 2D
+only.
+
+<div id="exampleContainer"></div>
+<script>
+  new Vue({
+    el: '#exampleContainer',
+    template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
+    data: { code: shapesExample },
+  })
+</script>
+*/
 @reactive
 export class ShapeGeometryBehavior extends GeometryBehavior {
 	static _observedProperties = [
@@ -45,27 +69,67 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 
 	__shape = new Shape().copy(defaultShape)
 
+	/**
+	 * @property {string | number[] | THREE.Shape | null} shape - Defines the 2D shape to render.
+	 *
+	 * Reading the property always returns an underlying
+	 * [THREE.Shape](https://threejs.org/docs/index.html?q=shape#api/en/extras/core/Shape)
+	 * object.
+	 *
+	 * Setting the property accepts `string`, `number[]`, `null`, or
+	 * `THREE.Shape` values. All values are mapped to a single `THREE.Shape`
+	 * property (the one returned by the getter).
+	 *
+	 * While setting the property triggers reactivity, modifying the
+	 * `THREE.Shape` returned by the getter does not. In such a case, we can
+	 * execute `el.shape = el.shape` to trigger reactivity.
+	 * <!-- TODO investigate using Solid createMutable to make the THREE.Shape reactive. -->
+	 *
+	 * A string value should be a list of numbers separated by any amount space
+	 * (commas are optional, for organizational use), every two numbers forming
+	 * one point in the 2D shape. Similar to the rest of LUME's coordinate
+	 * system, +X goes rightward, and +Y goes downward.
+	 *
+	 * An array of numbers is similar to the string value: every two numbers
+	 * form a point in the shape.
+	 * <!-- TODO investigate reacting to reactive arrays -->
+	 *
+	 * If the string or number array have no points, the default shape is rendered.
+	 *
+	 * A `THREE.Shape` value will have its data copied to the underlying
+	 * `THREE.Shape` returned by the getter, and does not replace the underlying
+	 * `THREE.Shape` object.
+	 * <!-- TODO perhaps the getter should always return the value the user set, and not expose the internal `THREE.Shape` -->
+	 *
+	 * A value of `null` (or when the attribute is removed) causes the
+	 * default shape to be rendered.
+	 */
 	@attribute
 	get shape(): Shape {
 		return this.__shape
 	}
-	set shape(shape: string | null | Shape) {
+	set shape(shape: string | number[] | Shape | null) {
 		if (!shape) {
 			this.__shape.copy(defaultShape)
-		} else if (typeof shape === 'string') {
-			const points = stringToNumberArray(shape, 'shape')
+		} else if (typeof shape === 'string' || Array.isArray(shape)) {
+			const points: number[] = typeof shape === 'string' ? stringToNumberArray(shape, 'shape') : shape
 
-			if (points.length % 2 !== 0)
-				throw new Error('shape path must have an even number of numbers, each pair of numbers being a point.')
+			if (!points.length) {
+				this.__shape.copy(defaultShape)
+			} else {
+				if (points.length % 2 !== 0)
+					throw new Error(
+						'shape path must have an even number of numbers, each pair of numbers being a point.',
+					)
 
-			this.__shape.copy(emptyShape)
+				this.__shape.copy(emptyShape)
+				this.__shape.moveTo(points[0], points[1])
 
-			this.__shape.moveTo(points[0], points[1])
-
-			if (points.length > 2)
-				for (let i = 2; i < points.length; i += 2) this.__shape.lineTo(points[i], points[i + 1])
+				if (points.length > 2)
+					for (let i = 2; i < points.length; i += 2) this.__shape.lineTo(points[i], points[i + 1])
+			}
 		} else {
-			// Three.js bug: Copying a shape from itself breaks, causes
+			// Three.js bug: Copying a shape from itself breaks, causing
 			// its `curves` array to be empty. Without this, `<lume-shape>` will
 			// not draw anything on screen initially until its `shape` is
 			// modified.
@@ -77,10 +141,38 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		this.__shape.updateArcLengths()
 	}
 
+	/**
+	 * @property {number} curveSegments - The number of lines per curve withing
+	 * the shape. The higher the number, the smoother the shape at the cost of
+	 * render time.
+	 * @default 8
+	 */
 	@numberAttribute(8) curveSegments = 8
+	/**
+	 * @property {boolean} bevel - When the shape is extruded, enables rounding
+	 * of the shape edges.
+	 * @default false
+	 */
 	@booleanAttribute(false) bevel = false
+	/**
+	 * @property {number} bevelSegments - When the shape is extruded, determines
+	 * the number of sections for the bevel. A higher number makes the model
+	 * look smoother, but cost more time to render.
+	 * @default 4
+	 */
 	@numberAttribute(4) bevelSegments = 4
+	/**
+	 * @property {number} bevelThickness - When the shape is extruded,
+	 * determines the thickness of the bevel. Roughly like the amount of
+	 * radius for the rounded edges.
+	 * @default 4
+	 */
 	@numberAttribute(4) bevelThickness = 4
+	/**
+	 * @property {boolean} centerGeometry - When true, centers the shape geometry
+	 * within the host element's size space.
+	 * @default true
+	 */
 	@booleanAttribute(true) centerGeometry = true
 
 	/**

@@ -16,17 +16,18 @@
 LUME gives you general-purpose HTML Elements for defining 2D or 3D scenes
 rendered with CSS3D, WebGL, or both mixed together.
 
-LUME's "mixed mode" let's us combine traditional HTML elements styled with
+LUME's allows us to combine traditional HTML elements styled with
 CSS with new elements that render with WebGL, which means we can render both
 traditional HTML content and 3D models together in the same 3D space, with
-lighting and shadow effects on both.
+lighting and shadow effects on both types of content.
 
 As an example, consider traditional CSS `box-shadow` which is flat and static:
 
 <div id="traditional"></div>
 
-With LUME we can give traditional HTML content **_real and dynamic_** shadow and lighting! See
-for yourself!
+With LUME we can give traditional HTML content **_real and dynamic_** shadow and
+lighting! The following demo shows traditional `<button>` elements decorated
+with LUME elements to give them WebGL-powered lighting and shadow.
 
 <div id="dynamic"></div>
 

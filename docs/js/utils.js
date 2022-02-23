@@ -1047,7 +1047,6 @@ const shapesExample = stripIndent(/*html*/ `
 				} else if (input.value === 'trapezoids') {
 					// Set the 'shape' attribute with a list of points
 					shape.setAttribute('shape', '-5 0, 2 -13,  13 -13,  20 0,  0 0')
-					// shape.setAttribute('shape', '0 0, 5 15,  15 0,  0 0')
 				} else {
 					// Revert back to the default shape
 					shape.shape = null
