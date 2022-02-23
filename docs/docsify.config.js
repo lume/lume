@@ -21,8 +21,7 @@
 			externalLinkTarget: '_self',
 			executeScript: true, // defaults to false unless Vue is present in which case defaults to true.
 			auto2top: true,
-			// relativePath: true,
-			relativePath: false,
+			relativePath: true,
 
 			plugins: ((window.$docsify && window.$docsify.plugins) || []).concat([
 				function (hook, vm) {
