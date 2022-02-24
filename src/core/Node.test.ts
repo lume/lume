@@ -24,35 +24,36 @@ describe('Node', () => {
 	it('has default values', async () => {
 		const n = new Node()
 
-		expect(n.getPosition().x).toEqual(0)
-		expect(n.getPosition().y).toEqual(0)
-		expect(n.getPosition().z).toEqual(0)
+		expect(n.position.x).toEqual(0)
+		expect(n.position.x).toEqual(0)
+		expect(n.position.y).toEqual(0)
+		expect(n.position.z).toEqual(0)
 
-		expect(n.getRotation().x).toEqual(0)
-		expect(n.getRotation().y).toEqual(0)
-		expect(n.getRotation().z).toEqual(0)
+		expect(n.rotation.x).toEqual(0)
+		expect(n.rotation.y).toEqual(0)
+		expect(n.rotation.z).toEqual(0)
 
-		expect(n.getScale().x).toEqual(1)
-		expect(n.getScale().y).toEqual(1)
-		expect(n.getScale().z).toEqual(1)
+		expect(n.scale.x).toEqual(1)
+		expect(n.scale.y).toEqual(1)
+		expect(n.scale.z).toEqual(1)
 
-		expect(n.getAlignPoint().x).toEqual(0)
-		expect(n.getAlignPoint().y).toEqual(0)
-		expect(n.getAlignPoint().z).toEqual(0)
+		expect(n.alignPoint.x).toEqual(0)
+		expect(n.alignPoint.y).toEqual(0)
+		expect(n.alignPoint.z).toEqual(0)
 
-		expect(n.getMountPoint().x).toEqual(0)
-		expect(n.getMountPoint().y).toEqual(0)
-		expect(n.getMountPoint().z).toEqual(0)
+		expect(n.mountPoint.x).toEqual(0)
+		expect(n.mountPoint.y).toEqual(0)
+		expect(n.mountPoint.z).toEqual(0)
 
-		expect(n.getOpacity()).toEqual(1)
+		expect(n.opacity).toEqual(1)
 
-		expect(n.getSize().x).toEqual(0, 'default size value not as expected')
-		expect(n.getSize().y).toEqual(0, 'default size value not as expected')
-		expect(n.getSize().z).toEqual(0, 'default size value not as expected')
+		expect(n.size.x).toEqual(0, 'default size value not as expected')
+		expect(n.size.y).toEqual(0, 'default size value not as expected')
+		expect(n.size.z).toEqual(0, 'default size value not as expected')
 
-		expect(n.getSizeMode().x).toEqual('literal')
-		expect(n.getSizeMode().y).toEqual('literal')
-		expect(n.getSizeMode().z).toEqual('literal')
+		expect(n.sizeMode.x).toEqual('literal')
+		expect(n.sizeMode.y).toEqual('literal')
+		expect(n.sizeMode.z).toEqual('literal')
 	})
 
 	it('element is an instance of Node, created with `new`', async () => {

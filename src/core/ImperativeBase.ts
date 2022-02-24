@@ -272,12 +272,12 @@ export class ImperativeBase extends Settable(Transformable) {
 
 				untrack(() => {
 					if (
-						this.getSizeMode().x === 'proportional' ||
-						this.getSizeMode().y === 'proportional' ||
-						this.getSizeMode().z === 'proportional' ||
-						this.getAlignPoint().x !== 0 ||
-						this.getAlignPoint().y !== 0 ||
-						this.getAlignPoint().z !== 0
+						this.sizeMode.x === 'proportional' ||
+						this.sizeMode.y === 'proportional' ||
+						this.sizeMode.z === 'proportional' ||
+						this.alignPoint.x !== 0 ||
+						this.alignPoint.y !== 0 ||
+						this.alignPoint.z !== 0
 					) {
 						this._calcSize()
 						this.needsUpdate()
@@ -606,10 +606,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * move _calcSize to a render task.
 	 */
 	_calculateMatrix(): void {
-		const align = this.getAlignPoint()
-		const mountPoint = this.getMountPoint()
-		const position = this.getPosition()
-		const origin = this.getOrigin()
+		const align = this.alignPoint
+		const mountPoint = this.mountPoint
+		const position = this.position
+		const origin = this.origin
 
 		const size = this.calculatedSize
 
@@ -715,7 +715,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	_updateRotation(): void {
-		const {x, y, z} = this.getRotation()
+		const {x, y, z} = this.rotation
 
 		// Currently rotation is left-handed as far as values inputted into
 		// the LUME APIs. This method converts them to Three's right-handed
@@ -751,7 +751,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	_updateScale(): void {
-		const {x, y, z} = this.getScale()
+		const {x, y, z} = this.scale
 		this.three.scale.set(x, y, z)
 		this.threeCSS.scale.set(x, y, z)
 	}

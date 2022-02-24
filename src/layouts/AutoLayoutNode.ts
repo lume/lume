@@ -277,7 +277,7 @@ export class AutoLayoutNode extends Node {
 		}
 		var x
 		var y
-		var size = this.getSize().toArray()
+		var size = this.size.toArray()
 		if (this.#layoutOptions.spacing || this.#metaInfo.spacing) {
 			this.#autoLayoutView.setSpacing(this.#layoutOptions.spacing || this.#metaInfo.spacing)
 		}

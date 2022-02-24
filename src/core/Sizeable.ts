@@ -74,12 +74,6 @@ export class Sizeable extends TreeNode {
 		return sizeMode.get(this)!
 	}
 
-	// prettier-ignore
-	getSizeMode(): XYZSizeModeValues { return this.sizeMode as XYZSizeModeValues }
-	// TODO ^: Now that TS 4.3 landed the ability to have separate types for
-	// setters than for getters, we can remove methods like getSizeMode,
-	// etc.
-
 	// TODO: A "differential" size would be cool. Good for padding,
 	// borders, etc. Inspired from Famous' differential sizing.
 	//
@@ -121,9 +115,6 @@ export class Sizeable extends TreeNode {
 		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
 		return size.get(this)!
 	}
-
-	// prettier-ignore
-	getSize(): XYZNonNegativeValues { return this.size as XYZNonNegativeValues }
 
 	/**
 	 * Get the actual size of the Node. This can be useful when size is
@@ -190,8 +181,8 @@ export class Sizeable extends TreeNode {
 
 		Object.assign(previousSize, _calculatedSize)
 
-		const size = this.getSize()
-		const sizeMode = this.getSizeMode()
+		const size = this.size
+		const sizeMode = this.sizeMode
 		const parentSize = this._getParentSize()
 
 		if (sizeMode.x == 'literal') {

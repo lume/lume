@@ -44,7 +44,7 @@ export class FlickeringOrb extends Node {
 		super.connectedCallback()
 
 		const initialIntensity = this.intensity
-		const initialOpacity = this.getOpacity()
+		const initialOpacity = this.opacity
 
 		// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
 		const flickerFunction = () => {

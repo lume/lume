@@ -54,7 +54,7 @@ export class CubeLayout extends Node {
 		const side = new Node().set({
 			alignPoint: new XYZNumberValues(0.5, 0.5),
 			mountPoint: new XYZNumberValues(0.5, 0.5),
-			size: new XYZNonNegativeValues(this.getSize().x, this.getSize().x),
+			size: new XYZNonNegativeValues(this.size.x, this.size.x),
 		})
 
 		this.sides.push(side)
@@ -69,11 +69,11 @@ export class CubeLayout extends Node {
 		// rotate and place each side.
 		if (index < 4)
 			// 4 sides
-			rotator.getRotation().y = 90 * index
+			rotator.rotation.y = 90 * index
 		// top/bottom
-		else rotator.getRotation().x = 90 * (index % 2 ? -1 : 1)
+		else rotator.rotation.x = 90 * (index % 2 ? -1 : 1)
 
-		side.getPosition().z = this.getSize().x / 2
+		side.position.z = this.size.x / 2
 
 		this.append(rotator)
 	}

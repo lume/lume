@@ -57,9 +57,6 @@ export class Transformable extends Sizeable {
 		return position.get(this)!
 	}
 
-	// prettier-ignore
-	getPosition(): XYZNumberValues { return this.position as XYZNumberValues }
-
 	/**
 	 * @param {Object} newValue
 	 * @param {number} [newValue.x] The x-axis rotation to apply.
@@ -76,9 +73,6 @@ export class Transformable extends Sizeable {
 		if (!rotation.has(this)) rotation.set(this, new XYZNumberValues(0, 0, 0))
 		return rotation.get(this)!
 	}
-
-	// prettier-ignore
-	getRotation(): XYZNumberValues { return this.rotation as XYZNumberValues }
 
 	/**
 	 * @param {Object} newValue
@@ -97,9 +91,6 @@ export class Transformable extends Sizeable {
 		return scale.get(this)!
 	}
 
-	// prettier-ignore
-	getScale(): XYZNumberValues { return this.scale as XYZNumberValues }
-
 	/**
 	 * @param {Object} newValue
 	 * @param {number} [newValue.x] The x-axis origin to apply.
@@ -116,9 +107,6 @@ export class Transformable extends Sizeable {
 		if (!origin.has(this)) origin.set(this, new XYZNumberValues(0.5, 0.5, 0.5))
 		return origin.get(this)!
 	}
-
-	// prettier-ignore
-	getOrigin(): XYZNumberValues { return this.origin as XYZNumberValues }
 
 	/**
 	 * Set the alignment of the Node. This determines at which point in this
@@ -140,9 +128,6 @@ export class Transformable extends Sizeable {
 		return alignPoint.get(this)!
 	}
 
-	// prettier-ignore
-	getAlignPoint(): XYZNumberValues { return this.alignPoint as XYZNumberValues }
-
 	/**
 	 * Set the mount point of the Node.
 	 *
@@ -162,9 +147,6 @@ export class Transformable extends Sizeable {
 		return mountPoint.get(this)!
 	}
 
-	// prettier-ignore
-	getMountPoint(): XYZNumberValues { return this.mountPoint as XYZNumberValues }
-
 	/**
 	 * Set this Node's opacity.
 	 *
@@ -182,7 +164,4 @@ export class Transformable extends Sizeable {
 		if (!opacity.has(this)) opacity.set(this, 1)
 		return opacity.get(this)!
 	}
-
-	// prettier-ignore
-	getOpacity(): number { return this.opacity as number }
 }
