@@ -1,7 +1,6 @@
 import {Node} from './Node.js'
 import {Scene} from './Scene.js'
 import {defineElements} from '../index.js'
-import {Object3D} from 'three/src/core/Object3D.js'
 
 defineElements()
 
