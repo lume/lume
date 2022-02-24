@@ -5,10 +5,6 @@ import type {XYZValuesArray, XYZValuesObject} from './XYZValues.js'
 
 describe('XYZNumberValues', () => {
 	describe('.constructor', () => {
-		it('is a function', () => {
-			expect(typeof XYZNumberValues).toBe('function')
-		})
-
 		it('has default args', () => {
 			const a = new XYZNumberValues()
 			checkValues(a, 0, 0, 0)

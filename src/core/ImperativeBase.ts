@@ -43,27 +43,21 @@ export type BaseAttributes = TransformableAttributes
 
 /**
  * @abstract
- * @class ImperativeBase - This is an abstract base class that makes up the
- * foundation for the APIs and functionalities provided by the non-abstract
- * custom element classes.
+ * @class ImperativeBase - This is an abstract base class that provides common
+ * properties and methods for the non-abstract [`Node`](./Node) and
+ * [`Scene`](./Scene) custom element classes.
  *
- * This class generally is not intended for use by the library end user. Normal
- * users will want to extend from [`Scene`](/api/core/Scene) or [`Node`](/api/core/Node)
- * (or their subclasses) instead of this class.
+ * This class is not intended for extension by end users. You'll want to extend
+ * from [`Scene`](/api/core/Scene) or [`Node`](/api/core/Node) (or their
+ * subclasses) instead of this class.
  *
  * For purposes of documentation it is still useful to know what properties and
  * methods subclasses inherit from here.
  *
- * Generally anything that extends from this class becomes a backing class of a
- * LUME HTML element such as `<lume-scene>` and `<lume-node>`, the most basic
- * of the elements.
- *
- * There are two branches of subclasses of ImperativeBase that ImperativeBase
- * is intentionally aware of: `Scene` and `Node`.
- *
  * @extends Settable
  * @extends Transformable
  */
+// TODO @abstract jsdoc tag
 
 // function makeImperativeBase() {
 @element
@@ -78,8 +72,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	isNode = false
 
 	/**
-	 * @readonly
 	 * @property {boolean} glLoaded
+	 *
+	 * *readonly*
+	 *
 	 * Returns a boolean indicating whether or not the WebGL rendering features
 	 * of a LUME element are loaded and ready.
 	 *
@@ -100,8 +96,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * @readonly
 	 * @property {boolean} cssLoaded
+	 *
+	 * *readonly*
+	 *
 	 * Returns a boolean indicating whether or not the CSS rendering features
 	 * of a LUME element are loaded and ready.
 	 *
@@ -126,11 +124,16 @@ export class ImperativeBase extends Settable(Transformable) {
 	@reactive _scene: Scene | null = null
 
 	/**
-	 * @reactive
-	 * @lazy
-	 * @readonly
-	 * @property {THREE.Scene} scene - The `<lume-scene>` that the element is a
-	 * child or grandchild of, or `null` if the element is not.
+	 * @property {THREE.Scene} scene -
+	 *
+	 * *reactive*, *readonly*
+	 *
+	 * The `<lume-scene>` that the element is a child or grandchild of, `null`
+	 * if the element is not a descendant of a Scene, `null` if the child is a
+	 * descendant of a Scene that is not connected into the DOM, or `null` if
+	 * the element is a descendant of a connected Scene but the element is not
+	 * participating in the composed tree (i.e. the element is not distributed
+	 * to a `<slot>` element of a ShadowRoot of the element's parent).
 	 */
 	get scene(): Scene | null {
 		return this._scene
@@ -157,14 +160,15 @@ export class ImperativeBase extends Settable(Transformable) {
 	__three?: ReturnType<this['makeThreeObject3d']>
 
 	/**
-	 * @readonly
-	 * @property {Object3D} three - The WebGL rendering content of this
-	 * element. Useful if you know Three.js APIs. See
+	 * @property {Object3D} three -
+	 *
+	 * *readonly*
+	 *
+	 * The WebGL rendering content of this element. Useful if you know Three.js
+	 * APIs. See
 	 * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
 	 */
 	get three(): ReturnType<this['makeThreeObject3d']> {
-		// if (!(this.scene && this.scene.webgl)) return null
-
 		if (!this.__three) this.__three = this.__makeThreeObject3d()
 
 		return this.__three
@@ -202,14 +206,15 @@ export class ImperativeBase extends Settable(Transformable) {
 	__threeCSS?: ReturnType<this['makeThreeCSSObject']>
 
 	/**
-	 * @readonly
-	 * @property {Object3D} threeCSS - The CSS rendering content of this
-	 * element. Useful if you know Three.js APIs. See
+	 * @property {Object3D} threeCSS -
+	 *
+	 * *readonly*
+	 *
+	 * The CSS rendering content of this element. Useful if you know Three.js
+	 * APIs. See
 	 * [`THREE.Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
 	 */
 	get threeCSS(): ReturnType<this['makeThreeCSSObject']> {
-		// if (!(this.scene && !this.scene.disableCss)) return null
-
 		if (!this.__threeCSS) this.__threeCSS = this.__makeThreeCSSObject()
 
 		return this.__threeCSS
@@ -393,20 +398,26 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * @method needsUpdate - Schedules a rendering update for the element. Usually you don't need to call this when using the outer APIs.
+	 * @method needsUpdate - Schedules a rendering update for the element.
+	 * Usually you don't need to call this when using the outer APIs, as setting
+	 * attributes or properties will queue an update.
 	 *
 	 * But if you're doing something special to a Node or a Scene, f.e.
-	 * modifying the [`.three`](#three) or [`.threeCSS`](#threeCSS)
-	 * properties whose updates are not tracked, you should call this so
+	 * modifying the [`.three`](#three) or [`.threeCSS`](#threeCSS) properties
+	 * whose updates are not tracked (are not reactive), you should call this so
 	 * that LUME will know to re-render the visuals for the element.
 	 *
 	 * Example:
 	 *
 	 * ```js
 	 * const mesh = document.querySelector('lume-mesh')
+	 *
+	 * // Custom modification of underlying Three.js objects:
 	 * mesh.three.material.transparent = true
 	 * mesh.three.material.opacity = 0.4
 	 * mesh.three.add(new THREE.Mesh(...))
+	 *
+	 * // Tell LUME the elements needs to be re-rendered.
 	 * mesh.needsUpdate()
 	 * ```
 	 */
@@ -433,19 +444,26 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * @protected
-	 * @method makeThreeObject3d - Creates a LUME element's Three.js object for
-	 * WebGL rendering. `<lume-mesh>` elements overrides this to create and return
+	 * @method makeThreeObject3d -
+	 *
+	 * *protected*
+	 *
+	 * Creates a LUME element's Three.js object for
+	 * WebGL rendering. `<lume-mesh>` elements override this to create and return
 	 * [THREE.Mesh](https://threejs.org/docs/index.html?q=mesh#api/en/objects/Mesh) instances,
 	 * for example.
 	 */
+	// TODO @protected jsdoc tag
 	makeThreeObject3d(): Object3D {
 		return new Object3D()
 	}
 
 	/**
-	 * @protected
-	 * @method makeThreeCSSObject - Creates a LUME element's Three.js object
+	 * @method makeThreeCSSObject -
+	 *
+	 * *protected*
+	 *
+	 * Creates a LUME element's Three.js object
 	 * for CSS rendering. At the moment this is not overriden by any
 	 * subclasses, and always creates `CSS3DObjectNested` instances for CSS
 	 * rendering, which is a modified version of
@@ -764,13 +782,10 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	/**
 	 * This is called by Motor on each update before the GL or CSS renderers
-	 * will re-render.  This ultimately fires as a response to updating any of a
-	 * node's reactive properties.  It does not fire repeatedly, it only fires
-	 * as a response to modifying any of a node's properties/attributes
-	 * (modifying a property enqueues a render task which calls update).  This
-	 * is called only once per browser animation frame (essentially "batched").
-	 * You can modify many properties, then this will finally fire once in the
-	 * next animation frame.
+	 * will re-render. This does not fire repeatedly endlessly, it only fires
+	 * (in the next animation frame) as a response to modifying any of a node's
+	 * properties/attributes (modifying a property enqueues a render task which
+	 * calls update).
 	 */
 	update(_timestamp: number, _deltaTime: number): void {
 		this._updateRotation()

@@ -1,16 +1,47 @@
 import {XYZValues} from './XYZValues.js'
 
+/**
+ * @class XYZNumberValues - Extends [`XYZValues`](./XYZValues) to enforce that
+ * values are numbers. Additionally, values of `undefined` are ignored instead
+ * of throwing errors, which allows us to handle values like `{y: 123}` to set
+ * only one axis.
+ *
+ * @extends XYZValues
+ */
 export class XYZNumberValues extends XYZValues<number> {
-	get default() {
+	/**
+	 * @property {{x: 0, y: 0, z: 0}} default -
+	 *
+	 * *override*
+	 *
+	 * Defines the default XYZ values to be the numbers 0,0,0.
+	 */
+	override get default(): {x: 0; y: 0; z: 0} {
 		return {x: 0, y: 0, z: 0}
 	}
 
-	deserializeValue(_prop: string, value: string): number {
+	/**
+	 * @method deserializeValue -
+	 *
+	 * *override*
+	 *
+	 * Coerces a string value into a number.
+	 */
+	override deserializeValue(_prop: 'x' | 'y' | 'z', value: string): number {
 		return Number(value)
 	}
 
-	// XYZValues also accepts numbers in the form of strings.
-	checkValue(prop: string, value: number) {
+	/**
+	 * @method checkValue -
+	 *
+	 * *override*
+	 *
+	 * Check that a value is a number.
+	 */
+	// TODO XYZNumberValues also accepts numbers in the form of strings, but let's
+	// remove this ability. All strings should be coerced and checked for type
+	// safety.
+	override checkValue(prop: 'x' | 'y' | 'z', value: number) {
 		if (!super.checkValue(prop, value)) return false
 
 		// Skip setting undefined values...

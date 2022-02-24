@@ -13,7 +13,7 @@ export class XYZSizeModeValues extends XYZStringValues {
 		return ['literal', 'proportional']
 	}
 
-	checkValue(prop: string, value: SizeModeValue) {
+	checkValue(prop: 'x' | 'y' | 'z', value: SizeModeValue) {
 		if (!super.checkValue(prop, value)) return false
 		if (!this.allowedValues.includes(value))
 			throw new TypeError(`Expected ${prop} to be one of 'literal' or 'proportional'. Received: '${value}'`)

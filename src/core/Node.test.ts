@@ -1,6 +1,7 @@
 import {Node} from './Node.js'
 import {Scene} from './Scene.js'
 import {defineElements} from '../index.js'
+import {Object3D} from 'three/src/core/Object3D.js'
 
 defineElements()
 
@@ -61,22 +62,17 @@ describe('Node', () => {
 		scene.append(n)
 
 		expect(n instanceof Node).toBe(true)
-		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
-		expect(n.three).not.toBeUndefined()
+		expect(n.three).toBeInstanceOf(Object3D)
 		expect(n.scene).not.toBeUndefined()
-		// expect(n.scene.constructor.name).toBe('Scene') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 	})
 
 	it('element is an instance of Node, created with `document.createElement`', async () => {
-		// TODO: is there a better way than casting the result of createElement?
-		const n = document.createElement('lume-node') as Node
+		const n = document.createElement('lume-node')
 
 		scene.append(n)
 
 		expect(n instanceof Node).toBe(true)
-		// expect(n.constructor.name).toBe('Node') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
-		expect(n.three).not.toBeUndefined()
+		expect(n.three).toBeInstanceOf(Object3D)
 		expect(n.scene).not.toBeUndefined()
-		// expect(n.scene.constructor.name).toBe('Scene') // Not reliable, minification can mangle the names, or decorators can inject constructors with differing names.
 	})
 })

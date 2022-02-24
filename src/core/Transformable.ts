@@ -23,6 +23,15 @@ const alignPoint = new WeakMap<Transformable, XYZNumberValues>()
 const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
 const opacity = new WeakMap<Transformable, number>()
 
+/**
+ * @class Transformable - A class containing transform-related features for all
+ * `Node` and `Scene` elements: rotation, position, scale, mount-point,
+ * align-point, and origin. Note that Transforms have no effect on Scene
+ * elements, but Scenes still use the features from Sizeable (the base class of
+ * Transformable) for sizing.
+ *
+ * @extends Sizeable
+ */
 // Transformable extends TreeNode (indirectly through Sizeable) because it
 // needs to be aware of its `parent` when calculating align adjustments.
 @element
@@ -38,14 +47,41 @@ export class Transformable extends Sizeable {
 		this.mountPoint.on('valuechanged', () => !this._isSettingProperty && (this.mountPoint = this.mountPoint))
 	}
 
+	// TODO readem's JSDoc parser can not handle the following type if it is
+	// split onto multiple lines.
+
 	/**
-	 * Set the position of the Transformable.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} position -
 	 *
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis position to apply.
-	 * @param {number} [newValue.y] The y-axis position to apply.
-	 * @param {number} [newValue.z] The z-axis position to apply.
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(0, 0, 0)`
+	 *
+	 * Set the position of the Transformable in 3D space, relative to its
+	 * parent, by specifying X, Y, and Z coordinates.
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
+	// TODO evalute being able to set reactive arrays or objects and
+	// re-rendering based on updates to those arrays.
 	@attribute
 	@emits('propertychange')
 	set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
@@ -58,10 +94,40 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis rotation to apply.
-	 * @param {number} [newValue.y] The y-axis rotation to apply.
-	 * @param {number} [newValue.z] The z-axis rotation to apply.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} rotation -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(0, 0, 0)`
+	 *
+	 * Set the orientation of the Transformable in 3D space, relative to its
+	 * parent, by specifying rotation in degrees around the X, Y, and Z axes.
+	 * Rotation direction is left-handed, meaning that if you point your thumb
+	 * along the positive direction of an axis, your other four fingers wrap
+	 * around that axis in the direction of positive rotation. A value of `[0,
+	 * 30, 0]` will rotate the object 30 degrees around the Y axis. The rotation
+	 * order is X, Y, Z, meaning that an X rotation rotates the object's Y and Z
+	 * axes, and a Y rotation rotates the object's Z axis.
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -75,10 +141,34 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis scale to apply.
-	 * @param {number} [newValue.y] The y-axis scale to apply.
-	 * @param {number} [newValue.z] The z-axis scale to apply.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} scale -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(1, 1, 1)`
+	 *
+	 * Set the scale of the Transformable in 3D space, relative to its parent,
+	 * by specifying scale along the X, Y, and Z axes.
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -92,10 +182,58 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis origin to apply.
-	 * @param {number} [newValue.y] The y-axis origin to apply.
-	 * @param {number} [newValue.z] The z-axis origin to apply.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} origin -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(0, 0, 0)`
+	 *
+	 * Set the rotational origin of the Transformable in 3D space, relative to
+	 * itself, by specifying origin along the X, Y, and Z axes.
+	 *
+	 * The origin is the point within the object's [`size`](./Sizeable#size)
+	 * space about which it rotates when a [`rotation`](#rotation) is specified.
+	 * No matter what rotation the object has, this point does not move.
+	 *
+	 * The value for each axis is a portion of the object's size on the same
+	 * axis. For example, a value of `0 0 0` places the origin at top/left/rear
+	 * corner of the object's size space, a value of `0.5 0.5 0.5` places the
+	 * origin in the center of the object's size space, and a value of `1 1 1`
+	 * places the origin at the bottom/right/front of the object's size space.
+	 *
+	 * This example shows different values of origin. The pink dots are placed
+	 * at each origin point on each cube. All cubes are initially oriented the
+	 * same, but as you move the sliders, each cube rotates around their
+	 * specific origin.
+	 *
+	 * <div id="originExample"></div>
+	 * <script type="application/javascript">
+	 *   new Vue({
+	 *     el: '#originExample',
+	 *     template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="200" />',
+	 *     data: { code: originExample },
+	 *   })
+	 * </script>
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -109,13 +247,44 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * Set the alignment of the Node. This determines at which point in this
-	 * Node's parent that this Node is mounted.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} alignPoint -
 	 *
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis align to apply.
-	 * @param {number} [newValue.y] The y-axis align to apply.
-	 * @param {number} [newValue.z] The z-axis align to apply.
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(0, 0, 0)`
+	 *
+	 * Set the align point of the Transformable in 3D space, relative to its
+	 * parent, by specifying values along the X, Y, and Z axes.
+	 *
+	 * The align point is the point within the object's parent's
+	 * [`size`](./Sizeable#size) space at which the object's position is 0,0,0.
+	 *
+	 * The value for each axis is a portion of the object's parent size on the
+	 * same axis. For example, a value of `0 0 0` places the align point at
+	 * top/left/rear corner of the object's parent's size space, a value of `0.5
+	 * 0.5 0.5` places the align point in the center of the parent's size space,
+	 * and a value of `1 1 1` places the origin at the bottom/right/front of the
+	 * parent's size space.
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -129,12 +298,45 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * Set the mount point of the Node.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} mountPoint -
 	 *
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis mountPoint to apply.
-	 * @param {number} [newValue.y] The y-axis mountPoint to apply.
-	 * @param {number} [newValue.z] The z-axis mountPoint to apply.
+	 * *attribute*
+	 *
+	 * Default: `new XYZNumberValues(0, 0, 0)`
+	 *
+	 * Set the mount point of the Transformable in 3D space, relative to itself,
+	 * by specifying values along the X, Y, and Z axes.
+	 *
+	 * The mount point is the point within the object's
+	 * [`size`](./Sizeable#size) space that is placed at the location specified
+	 * by [`position`](#position).
+	 *
+	 * The value for each axis is a portion of the object's size on the
+	 * same axis. For example, a value of `0 0 0` places the align point at
+	 * top/left/rear corner of the object's size space, a value of `0.5
+	 * 0.5 0.5` places the align point in the center of the object's size space,
+	 * and a value of `1 1 1` places the origin at the bottom/right/front of the
+	 * object's size space.
+	 *
+	 * The getter always returns the same
+	 * [`XYZNumberValues`](../xyz-values/XYZNumberValues) object.
+	 *
+	 * The setter can accept a string containing one to three numbers for the X,
+	 * Y, and Z coordinates, an array with one to three numbers for the X, Y,
+	 * and Z coordinates, an object with optional `x`, `y`, and `z` properties,
+	 * or an `XYZNumberValues` object. Setting a new `XYZNumberValues` object
+	 * does not replace the underlying `XYZNumberValues` object, but copies data
+	 * to it.
+	 *
+	 * When a string or number array value is set, if the list of numbers has
+	 * one, two, or three values, then the respective coordinates of the
+	 * underlying `XYZNumberValues` object will not be modified. For example
+	 * `[1]` will modify only the X axis value, while `[1, 2, 3]` will modify
+	 * all three axis values. Similarly, if an object value is set, if any of
+	 * the `x`, `y`, or `z` properties are missing then the respective
+	 * coordinates in the underlying `XYZNumberValues` object will not be
+	 * modified. For example, `{y: 2}` will set only the Y axis value, while
+	 * `{x: 1, z: 3}` will set the X and Z axis values.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -148,10 +350,15 @@ export class Transformable extends Sizeable {
 	}
 
 	/**
-	 * Set this Node's opacity.
+	 * @property {string | number | null} opacity -
 	 *
-	 * @param {number} opacity A floating point number clamped between 0 and
-	 * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
+	 * *attribute*
+	 *
+	 * Default: `1`
+	 *
+	 * Set the object's opacity.
+	 *
+	 * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
 	 */
 	// TODO opacity doesn't belong in Transformable
 	@attribute

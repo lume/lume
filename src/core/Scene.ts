@@ -53,6 +53,8 @@ export type SceneAttributes =
  * @class Scene -
  * > :construction: :hammer: Under construction! :hammer: :construction:
  *
+ * Element: `<lume-node>`
+ *
  * This is the backing class for `<lume-scene>` elements. All
  * [`Node`](/api/core/Node.md) elements must be inside of a `<lume-scene>` element. A `Scene`
  * establishes a visual area in a web application where a 3D scene will be
@@ -80,16 +82,27 @@ export type SceneAttributes =
  *
  * @extends HTMLScene
  */
+// TODO @element jsdoc tag
 @element('lume-scene', autoDefineElements)
 export class Scene extends HTMLInterface {
 	/**
-	 * @readonly
-	 * @property {true} isScene - Always true for things that are or inherit from `Scene`.
+	 * @property {true} isScene -
+	 *
+	 * *readonly*
+	 *
+	 * Always `true` for things that are or inherit from `Scene`.
 	 */
+	// TODO @readonly jsdoc tag
 	readonly isScene = true
 
 	/**
-	 * @property {boolean} enableCss - When `true`, CSS transforms are applied
+	 * @property {boolean} enableCss -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `true`
+	 *
+	 * When `true`, CSS transforms are applied
 	 * to all LUME elements. This allows regular HTML content placed inside LUME
 	 * elements to be positioned in the scene's 3D space. Set this to `false` if
 	 * you will render only WebGL content and do not need to listen to
@@ -98,30 +111,59 @@ export class Scene extends HTMLInterface {
 	 * debugging, as the elements are placed in the same locations in 3D
 	 * space as the WebGL graphics, and thus devtools will highlight the
 	 * positions of WebGL objects on the screen when hovering on them in the element inspector.
-	 * Defaults to `true`.
 	 */
+	// TODO @attribute jsdoc tag
+	// TODO @default jsdoc tag
 	@emits('propertychange') @booleanAttribute(true) enableCss = true
 
-	/** @property {boolean} webgl - When `true`, enables WebGL rendering. Defaults to `false`. */
+	/**
+	 * @property {boolean} webgl -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * When `true`, enables WebGL rendering.
+	 */
 	@emits('propertychange') @booleanAttribute(false) webgl = false
 
 	/**
-	 * @property {boolean} swapLayers - This is only useful when both CSS and
+	 * @property {boolean} swapLayers -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * This is only useful when both CSS and
 	 * WebGL render modes are enabled. When `true`, the CSS layer will render on
 	 * top of the WebGL layer instead of below.
 	 */
 	@emits('propertychange') @booleanAttribute(false) swapLayers = false
 
 	/**
-	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType - Specifies the
-	 * type of shadows to use. Defaults to `'basic'`.
+	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `'basic'`
+	 *
+	 * Specifies the type of shadows to use. The value can be 'pcf', 'pcfsoft',
+	 * or 'basic'. See the "Shadow Types" section in Three.js [Renderer
+	 * Constants](https://threejs.org/docs/#api/en/constants/Renderer) for
+	 * descriptions.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString = 'basic'
+	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString | null = 'basic'
 
 	/**
-	 * @property {boolean} vr - When `true`, enables VR capabilities. The user
+	 * @property {boolean} vr -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * When `true`, enables VR capabilities. The user
 	 * can click a button to enter VR mode.
 	 *
 	 * Applies only if `webgl` is `true`. CSS content can not be natively
@@ -133,7 +175,13 @@ export class Scene extends HTMLInterface {
 	@emits('propertychange') @booleanAttribute(false) vr = false
 
 	/**
-	 * @property {Color | string | number} backgroundColor - The color of the
+	 * @property {Color | string | number | null} backgroundColor -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `'white'`
+	 *
+	 * The color of the
 	 * scene's background when WebGL rendering is enabled. If the
 	 * [`background`](#background) property is also set, then `backgroundColor` is
 	 * ignored. Make sure to set `backgroundOpacity` to a higher value than the
@@ -142,13 +190,20 @@ export class Scene extends HTMLInterface {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute backgroundColor: TColor = new Color('white')
+	@emits('propertychange') @attribute backgroundColor: TColor | null = new Color('white')
 
 	/**
-	 * @property {number} backgroundOpacity - A number between `0` and `1`
-	 * that defines the opacity of the `backgroundColor` WebGL is enabled.
-	 * If the value is less than 1, it means that any DOM contend behind
-	 * the `<lume-scene>` element will be visible. This is ignored if the
+	 * @property {number} backgroundOpacity -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0`
+	 *
+	 * A number between `0` and `1` that
+	 * defines the opacity (opposite of transparency) of the `backgroundColor`
+	 * when WebGL is enabled. If the value is less than 1, it means that any DOM
+	 * contend behind the `<lume-scene>` element will be visible. A value of `0`
+	 * means the background is fully transparent. This is ignored if the
 	 * [`background`](#background) property is set.
 	 *
 	 * Applies only if `webgl` is `true`.
@@ -156,7 +211,13 @@ export class Scene extends HTMLInterface {
 	@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
 
 	/**
-	 * @property {string} background - Set an image as the scene's
+	 * @property {string | null} background -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `null`
+	 *
+	 * Set an image as the scene's
 	 * background. If the image is an [equirectangular environment
 	 * map](https://coeleveld.com/spherical-equirectangular-environment-textures-and-hdri), then set the value of
 	 * [`equirectangularBackground`](#equirectangularbackground) to `true`, otherwise the image
@@ -169,10 +230,16 @@ export class Scene extends HTMLInterface {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute background = ''
+	@emits('propertychange') @attribute background: string | null = null
 
 	/**
-	 * @property {string} equirectangularBackground - If the `background`
+	 * @property {string} equirectangularBackground -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * If the `background`
 	 * is equirectangular, set this to `true` so use it like a skybox,
 	 * otherwise the image will be used as a regular 2D background image.
 	 *
@@ -181,17 +248,29 @@ export class Scene extends HTMLInterface {
 	@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
 
 	/**
-	 * @property {string} environment - The environment can be a path to a
+	 * @property {string | null} environment -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `null`
+	 *
+	 * The environment can be a path to a
 	 * jpeg, jpg, or png (other format not yet supported). It is assumed to
 	 * be an equirectangular image used for env maps for things like
 	 * reflections on metallic objects in the scene.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute environment = ''
+	@emits('propertychange') @attribute environment: string | null = null
 
 	/**
-	 * @property {'none' | 'linear' | 'expo2'} fogMode - The fog mode to render
+	 * @property {'none' | 'linear' | 'expo2'} fogMode -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `'none'`
+	 *
+	 * The fog mode to render
 	 * the scene with.
 	 *
 	 * A value of `'none'` means no fog.
@@ -212,7 +291,13 @@ export class Scene extends HTMLInterface {
 	@stringAttribute('none') fogMode: FogMode = 'none'
 
 	/**
-	 * @property {number} fogNear - When `fogMode` is `'linear'`, this controls
+	 * @property {number} fogNear -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0`
+	 *
+	 * When `fogMode` is `'linear'`, this controls
 	 * the distance from the camera where fog starts to appear and objects start
 	 * to be less visible.
 	 *
@@ -221,7 +306,13 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(0) fogNear = 0
 
 	/**
-	 * @property {number} fogFar - When `fogMode` is `'linear'`, this controls
+	 * @property {number} fogFar -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `1000`
+	 *
+	 * When `fogMode` is `'linear'`, this controls
 	 * the distance from the camera where fog reaches maximum density and
 	 * objects are no longer visible.
 	 *
@@ -230,31 +321,47 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(1000) fogFar = 1000
 
 	/**
-	 * @property {string} fogColor - If `fogMode` is not `'none'`, this
+	 * @property {string} fogColor -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `'gray'`
+	 *
+	 * If `fogMode` is not `'none'`, this
 	 * configures the fog color. The value should be any valid CSS color string.
 	 *
-	 * Defaults to `'gray'`, but you will likely want to change the value to
-	 * match that of your scene's `backgroundColor`.
+	 * You will want to change the value to match that of, or be similar to,
+	 * your scene's `backgroundColor`.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
 	@stringAttribute('gray') fogColor: string = 'gray'
 
 	/**
-	 * @property {number} fogDensity - If `fogMode` is set to `'expo2'`, this
-	 * configures the fog density. Defaults to `0.0025`.
+	 * @property {number} fogDensity -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.0025`
+	 *
+	 * If `fogMode` is set to `'expo2'`, this
+	 * configures the fog density.
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
 	@numberAttribute(0.0025) fogDensity = 0.0025
 
 	/**
-	 * @property {number} cameraNear - When not using a custom camera, this
+	 * @property {number} cameraNear -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.1`
+	 *
+	 * When not using a custom camera, this
 	 * configures the distance from the default camera of a plane perpendicular
 	 * to the camera's line of sight after which objects objects are visible. Anything between
 	 * the plane and the camera will not be visible. This should be smaller than `cameraFar`. Also see `cameraFar`.
-	 *
-	 * Defaults to `0.1`.
 	 *
 	 * Applies in both CSS and WebGL rendering. Note that the near and far
 	 * values apply only to WebGL rendering and are otherwise infinitely small and
@@ -263,12 +370,16 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(0.1) cameraNear = 0.1
 
 	/**
-	 * @property {number} cameraFar - When not using a custom camera, this
+	 * @property {number} cameraFar -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `10000`
+	 *
+	 * When not using a custom camera, this
 	 * configures the distance from the default camera of a plane perpendicular
 	 * to the camera's line of sight before which objects are visible. Anything further than
 	 * the plane will not be visible. This should be bigger than `cameraNear`. Also see `cameraNear`.
-	 *
-	 * Defaults to `10000`.
 	 *
 	 * Applies in both CSS and WebGL rendering. Note that the near and far
 	 * values apply only to WebGL rendering and are otherwise infinitely small and
@@ -277,7 +388,13 @@ export class Scene extends HTMLInterface {
 	@numberAttribute(10000) cameraFar = 10000
 
 	/**
-	 * @property {number} perspective - This property behaves just like CSS perspective
+	 * @property {number} perspective -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `400`
+	 *
+	 * This property behaves just like CSS perspective
 	 * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
 	 * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
 	 * value does not (currently) have any effect.
@@ -308,8 +425,11 @@ export class Scene extends HTMLInterface {
 	#perspective = 400
 
 	/**
-	 * @readonly
-	 * @property {THREE.Camera} threeCamera - The current active THREE.Camera being
+	 * @property {THREE.Camera} threeCamera -
+	 *
+	 * *readonly*
+	 *
+	 * The current active THREE.Camera being
 	 * used by the scene. It will be a default camera if no camera was manually
 	 * specified by a camera element such as `<lume-perspective-camera>`, in
 	 * which case the scene's `perspective` property is used for configuring the
@@ -335,6 +455,9 @@ export class Scene extends HTMLInterface {
 		super()
 
 		// Used by the `scene` getter in ImperativeBase
+		// TODO set this in connectedCallback, unset in disconnectedCallback, so
+		// it has the same semantics as with Node (this.scene is not null when
+		// scene is connected and has webgl or css rendering turned on)
 		this._scene = this
 
 		// this.sizeMode and this.size have to be overriden here inside the
@@ -344,19 +467,27 @@ export class Scene extends HTMLInterface {
 		// accessors.
 
 		/**
-		 * @override
-		 * @property {XYZSizeModeValues} sizeMode - This overrides the
+		 * @property {XYZSizeModeValues} sizeMode -
+		 *
+		 * *override*, *attribute*
+		 *
+		 * Default: ['proportional', 'proportional', 'literal']
+		 *
+		 * This overrides the
 		 * [`Sizeable.sizeMode`](/api/core/Sizeable.md#sizeMode) property to make the default values for the X and
 		 * Y axes both "proportional".
 		 */
 		this.sizeMode.set('proportional', 'proportional', 'literal')
 
 		/**
-		 * @override
+		 * @property {XYZNonNegativeValues} size -
 		 *
-		 * @property {XYZNonNegativeValues} size - This overrides the
-		 * [`Sizeable.size`](/api/core/Sizeable.md#size) property to make the default values for the
-		 * X and Y axes both `1`.
+		 * *override*, *attribute*
+		 *
+		 * Default: [1, 1, 0]
+		 *
+		 * This overrides the [`Sizeable.size`](/api/core/Sizeable.md#size)
+		 * property to make the default values for the X and Y axes both `1`.
 		 */
 		this.size.set(1, 1, 0)
 
@@ -503,8 +634,25 @@ export class Scene extends HTMLInterface {
 	}
 
 	/**
-	 * @method traverseSceneGraph - This traverses the composed tree of
-	 * LUME 3D elements (the scene graph) not including this element, in pre-order. It skips non-LUME elements.
+	 * @method traverseSceneGraph - This traverses the composed tree of LUME 3D
+	 * elements (the scene graph) not including the scene node, starting from
+	 * the scene's children, in pre-order. It skips non-LUME elements. The given
+	 * callback will be called for each node in the traversal.
+	 *
+	 * This is similar to
+	 * [`Node#traverseSceneGraph`](./Node.md#traversescenegraph) but traversal
+	 * does not include the Scene that this is called on, because a Scene is not
+	 * something that is rendered, but a container of things that are rendered.
+	 *
+	 * Example:
+	 *
+	 * ```js
+	 * scene.traverseSceneGraph(node => {
+	 *   console.log(scene === node) // never true
+	 *   console.log(node instanceof LUME.Node) // true
+	 * })
+	 * ```
+	 *
 	 * @param {(node: Node) => void} visitor - A function called for each
 	 * LUME node in the scene graph (the composed tree).
 	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,

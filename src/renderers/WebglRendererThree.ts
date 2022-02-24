@@ -148,9 +148,15 @@ export class WebglRendererThree {
 		state.renderer.setClearAlpha(opacity)
 	}
 
-	setShadowMapType(scene: Scene, type: ShadowMapTypeString) {
+	setShadowMapType(scene: Scene, type: ShadowMapTypeString | null) {
 		const state = sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set clear alpha. Scene state should be initialized first.')
+
+		// default
+		if (!type) {
+			state.renderer.shadowMap.type = PCFShadowMap
+			return
+		}
 
 		// TODO shouldn't need a cast here. Bug on TypeScript: https://github.com/microsoft/TypeScript/issues/32054
 		type = type.toLowerCase() as ShadowMapTypeString
@@ -161,9 +167,6 @@ export class WebglRendererThree {
 			state.renderer.shadowMap.type = PCFSoftShadowMap
 		} else if (type == 'basic') {
 			state.renderer.shadowMap.type = BasicShadowMap
-		} else {
-			// default
-			state.renderer.shadowMap.type = PCFShadowMap
 		}
 	}
 
@@ -226,7 +229,7 @@ export class WebglRendererThree {
 
 		const version = this.#bgVersion
 
-		new TextureLoader().load(scene.background, tex => {
+		new TextureLoader().load(scene.background ?? '', tex => {
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
 			if (version !== this.#bgVersion) return
@@ -293,7 +296,7 @@ export class WebglRendererThree {
 
 		const version = this.#envVersion
 
-		new TextureLoader().load(scene.environment, tex => {
+		new TextureLoader().load(scene.environment ?? '', tex => {
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
 			if (version !== this.#envVersion) return

@@ -12,16 +12,17 @@ import type {BaseAttributes} from './ImperativeBase.js'
 export type NodeAttributes = BaseAttributes | 'visible'
 
 /**
- * @element lume-node
  * @class Node -
  * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * `Node` is the backing class for `<lume-node>` elements, which are the most
- * primitive of the LUME elements.
+ * Element: `<lume-node>`
  *
- * Node contains the basics that all objects in
- * a 3D scene need, such a transform (position, rotation, scale, etc), a size,
- * and reactivity.
+ * `Node` is the backing class for `<lume-node>` elements, the most
+ * primitive of the LUME 3D elements.
+ *
+ * Node contains the basics that all objects in a 3D scene need, such as a
+ * transform (position, rotation, scale, align-point, mount-point, origin),
+ * size, and mechanisms of reactivity.
  *
  * All objects in a 3D scene are an instance of `Node`, including more advanced
  * elements that render different types of visuals. For example, `<lume-sphere>`
@@ -89,7 +90,22 @@ export type NodeAttributes = BaseAttributes | 'visible'
 @element('lume-node', autoDefineElements)
 export class Node extends HtmlInterface {
 	/**
-	 * @property {boolean} visible - Whether or not the node will be
+	 * @property {true} isNode -
+	 *
+	 * *readonly*
+	 *
+	 * Always `true` for things that are or inherit from `Node`.
+	 */
+	readonly isNode = true
+
+	/**
+	 * @property {boolean} visible -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `true`
+	 *
+	 * Whether or not the node will be
 	 * visible (if it renders anything). For `<lume-node>` elements, this
 	 * only applies if the element has CSS styling or traditional HTML
 	 * content inside of it (children), otherwise `<lume-node>`
@@ -101,12 +117,6 @@ export class Node extends HtmlInterface {
 	 * If a `Node` is not visible, its children are also not visible.
 	 */
 	@booleanAttribute(true) @emits('propertychange') visible = true
-
-	/**
-	 * @readonly
-	 * @property {true} isNode - Always true for things that are or inherit from `Node`.
-	 */
-	isNode = true
 
 	/**
 	 * @constructor - Create a Node instance.
@@ -134,8 +144,8 @@ export class Node extends HtmlInterface {
 	 * TODO describe the overall format and reactivity of the properties.
 	 *
 	 * @example
-	 * // TODO handle @example blocks
 	 */
+	// TODO @example jsdoc tag
 	constructor() {
 		super()
 
@@ -164,6 +174,20 @@ export class Node extends HtmlInterface {
 	/**
 	 * @method traverseSceneGraph - This traverses the composed tree of
 	 * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+	 *
+	 * This is similar to
+	 * [`Scene#traverseSceneGraph`](./Scene.md#traversescenegraph) but traversal
+	 * includes the Node that this is called on.
+	 *
+	 * Example:
+	 *
+	 * ```js
+	 * node.traverseSceneGraph(n => {
+	 *   console.log(node === n) // true for the first call only
+	 *   console.log(n instanceof LUME.Node) // true
+	 * })
+	 * ```
+	 *
 	 * @param {(node: Node) => void} visitor - A function called for each
 	 * LUME node in the scene graph (the composed tree).
 	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,

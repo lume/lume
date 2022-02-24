@@ -5,7 +5,7 @@ export class XYZStringValues extends XYZValues<string> {
 		return {x: '', y: '', z: ''}
 	}
 
-	checkValue(prop: string, value: string) {
+	checkValue(prop: 'x' | 'y' | 'z', value: string) {
 		if (!super.checkValue(prop, value)) return false
 
 		// this allows undefined values to be ignored. So we can for example do
