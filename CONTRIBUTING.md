@@ -1,1 +1,1 @@
-See https://lume.io/docs/#/contributing.
+See https://docs.lume.io/#/guide/contributing.
