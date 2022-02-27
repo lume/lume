@@ -23,15 +23,19 @@ export type SizeableAttributes = 'sizeMode' | 'size'
 const sizeMode = new WeakMap<Sizeable, XYZSizeModeValues>()
 const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 
-// No decorators for private fields (yet), so we implement reactivity manually.
-// const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>()
-const calculatedSize = new WeakMap<Sizeable, Variable<{x: number; y: number; z: number}>>()
+// No decorators for private fields (yet), so we implement reactivity manually
+// by having a WeakMap-based private value for each instance.
+const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>()
 
 /**
- * @class Sizeable - A class that contains the `sizeMode` and `size` features LUME's elements.
+ * @class Sizeable - Provides features for defining the size volume of an object in 3D space.
+ *
+ * The properties of `Sizeable` all follow a common usage pattern,
+ * described in the [`Common Attributes`](../../guide/common-attributes) doc.
+ *
  * @extends TreeNode
  */
-// Sizeable and its subclass Transformable extend TreeNode because they know
+// Sizeable and its subclass Transformable extend from TreeNode because they know
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
 @element
@@ -40,27 +44,32 @@ export class Sizeable extends TreeNode {
 	constructor() {
 		super()
 
-		calculatedSize.set(
-			this,
-			// variable<XYZValuesObject<number>>({x: 0, y: 0, z: 0}),
-			variable({x: 0, y: 0, z: 0}),
-		)
+		calculatedSize.set(this, variable({x: 0, y: 0, z: 0}))
 
 		this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
 		this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
 	}
 
 	/**
-	 * @property {XYZSizeModeValues} sizeMode - Set the size mode for each
-	 * axis. Possible size modes are "literal" and "proportional". The
-	 * default values are "literal" for all axes. The size mode speicified
-	 * for an axis dictates how the respective value of the same axis in
-	 * the [`size`](TODO) property will behave.  A value of
-	 * "literal" for the X axis of `sizeMode` means the value for the X axis
-	 * of `size` will be a literal value.  A value of "proportional" for
-	 * the X axis of `sizeMode` means the value for the X axis of
-	 * `size` is a proportion of whatever the current size of
-	 * this node's parent node is.
+	 * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
+	 *
+	 * *attribute*
+	 *
+	 * Default: <code>new <a href="../xyz-values/XYZSizeModeValues">XYZSizeModeValues</a>('literal', 'literal', 'literal')</code>
+	 *
+	 * Set the size mode for each axis. Possible values are `"literal"` and
+	 * `"proportional"`. For example,
+	 *
+	 * ```html
+	 * <lume-node size-mode="proportional literal"></lume-node>
+	 * ```
+	 *
+	 * The `.sizeMode` for a particular axis dictates how the respective
+	 * [`.size`](#size) value along the same axis will behave. A value of
+	 * `"literal"` for an axis means the `.size` value along the same axis will
+	 * be a literally as specified. A `.sizeMode` value of `"proportional"`
+	 * for the an axis means the `.size` value along the same axis will be a
+	 * proportion of the object's parent's size along the same axis.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -82,28 +91,27 @@ export class Sizeable extends TreeNode {
 	// dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
 
 	/**
-	 * @property {XYZNonNegativeValues} size -
-	 * Set the size of each axis. The size for each axis depends on the
-	 * sizeMode for each axis. For example, if node.sizeMode is set to
-	 * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
-	 * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
-	 * Y size is 0.5 of it's parent Y size, and Z size is a literal value
-	 * of 30. It is easy this way to mix literal and proportional sizes for
-	 * the different axes.
+	 * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNonNegativeValues | null} size -
 	 *
-	 * Literal sizes can be any value (the literal size that you want) and
-	 * proportional sizes are a number between 0 and 1 representing a
-	 * proportion of the parent node size. 0 means 0% of the parent size,
-	 * and 1.0 means 100% of the parent size.
+	 * *attribute*
 	 *
-	 * All size values must be positive numbers.
+	 * Default: <code>new <a href="../xyz-values/XYZNonNegativeValues">XYZNonNegativeValues</a>(0, 0, 0)</code>
 	 *
-	 * Defaults to `0` for each axis.
+	 * Set the size of the object along each axis. The meaning of a size value for a particular axis depends on the
+	 * [`.sizeMode`](#sizemode) value for the same axis.
 	 *
-	 * @param {Object} newValue
-	 * @param {number} [newValue.x] The x-axis size to apply.
-	 * @param {number} [newValue.y] The y-axis size to apply.
-	 * @param {number} [newValue.z] The z-axis size to apply.
+	 * All size values must be positive numbers or an error is thrown.
+	 *
+	 * Literal sizes can be any positive value (the literal size that you want).
+	 * Proportional size along an axis represents a proportion of the parent
+	 * size on the same axis. `0` means 0% of the parent size, and `1.0` means
+	 * 100% of the parent size.
+	 *
+	 * For example, if `.sizeMode` is set to `el.sizeMode = ['literal',
+	 * 'proportional', 'literal']`, then setting `el.size = [20, 0.5, 30]` means
+	 * the X size is a literal value of `20`, the Y size is 50% of the parent Y
+	 * size, and the Z size is a literal value of `30`. It is easy this way to
+	 * mix literal and proportional sizes for the different axes.
 	 */
 	@attribute
 	@emits('propertychange')
@@ -117,17 +125,17 @@ export class Sizeable extends TreeNode {
 	}
 
 	/**
-	 * Get the actual size of the Node. This can be useful when size is
-	 * proportional, as the actual size of the Node depends on the size of
-	 * it's parent.
+	 * @property {{x: number, y: number, z: number}} calculatedSize -
 	 *
-	 * @readonly
+	 * *readonly*, *reactive*
 	 *
-	 * @return {Array.number} An Oject with x, y, and z properties, each
-	 * property representing the computed size of the x, y, and z axes
-	 * respectively.
+	 * Get the actual size of an element as an object with `x`, `y`, and `z`
+	 * properties, each property containing the computed size along its
+	 * respective axis.
 	 *
-	 * @reactive
+	 * This can be useful when size is proportional, as the actual size of the
+	 * an element will depend on the size of its parent, and otherwise looking
+	 * at the `.size` value won't tell us the actual size.
 	 */
 	get calculatedSize() {
 		// TODO we can re-calculate the actual size lazily, this way it can
@@ -135,8 +143,7 @@ export class Sizeable extends TreeNode {
 		// explicitly needs it and reads the value.
 		// if (this.__sizeDirty) this._calcSize
 
-		// TODO make __calculatedSize properties readonly and don't clone it
-		// each time.
+		// TODO make it a readonly reactive object instead of cloning.
 		return {...(calculatedSize.get(this)?.get() ?? {x: 0, y: 0, z: 0})}
 	}
 
@@ -225,7 +232,6 @@ export class Sizeable extends TreeNode {
 	}
 
 	_setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V) {
-		// if (newValue === (this as any)['__' + name]) return
 		// @ts-ignore
 		if (newValue === xyz) return
 
@@ -242,10 +248,7 @@ export class Sizeable extends TreeNode {
 			// valuechanged listeners above). If we've reached this logic,
 			// it is because a property is being set, which will already
 			// trigger reactivity.
-			untrack(() => {
-				// ;(this as any)['__' + name].from(newValue)
-				xyz.from(newValue)
-			})
+			untrack(() => xyz.from(newValue))
 		}
 
 		this.#isSettingProperty = false
@@ -261,10 +264,7 @@ export class Sizeable extends TreeNode {
 			else this.#settingValueFromPropFunction = false
 
 			// Same note about this untrack() call as the one in _setPropertyXYZ.
-			untrack(() => {
-				// ;(this as any)['__' + name] = newValue
-				setter(newValue as any) // FIXME no any
-			})
+			untrack(() => setter(newValue as any)) // FIXME no any
 		}
 
 		this.#isSettingProperty = false
@@ -283,29 +283,14 @@ export class Sizeable extends TreeNode {
 		this.#propertyFunctions.set(
 			name as string,
 			Motor.addRenderTask((time, deltaTime) => {
-				const result = fn(
-					// (this as any)['__' + name].x,
-					// (this as any)['__' + name].y,
-					// (this as any)['__' + name].z,
-					xyz.x,
-					xyz.y,
-					xyz.z,
-					time,
-					deltaTime,
-				)
+				const result = fn(xyz.x, xyz.y, xyz.z, time, deltaTime)
 
 				if (result === false) {
 					this.#propertyFunctions!.delete(name as string)
 					return false
 				}
 
-				// mark this true, so that the following set of this[name]
-				// doesn't override the prop function (normally a
-				// user can set this[name] to a value that isn't a function
-				// to disable the prop function).
 				this.#settingValueFromPropFunction = true
-
-				// ;(this as any)[name] = result
 				xyz.from(result)
 
 				return
@@ -323,7 +308,6 @@ export class Sizeable extends TreeNode {
 		this.#propertyFunctions.set(
 			name as string,
 			Motor.addRenderTask(time => {
-				// const result = fn((this as any)['__' + name], time)
 				const result = fn((this as any)[name], time)
 
 				if (result === false) {

@@ -3,6 +3,7 @@
   - [Introduction](/)
   - [Install](/guide/install)
   - [Scene Graph](/guide/scene-graph)
+  - [Common Attributes](/guide/common-attributes)
   - [Positioning](/guide/positioning)
   - [Sizing](/guide/sizing)
   - [Rendering Modes](/guide/rendering-modes)
