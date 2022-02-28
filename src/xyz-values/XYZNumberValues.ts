@@ -48,7 +48,7 @@ export class XYZNumberValues extends XYZValues<number> {
 		if (value === undefined) return false
 
 		// ...but if a value is supplied, it needs to be a valid number (string number is ok).
-		if (!(typeof value === 'number' || typeof value === 'string') || isNaN(value) || !isFinite(value))
+		if (!(typeof value === 'number') || isNaN(value) || !isFinite(value))
 			throw new TypeError(`Expected ${prop} to be a finite number. Received: ${value}`)
 
 		return true

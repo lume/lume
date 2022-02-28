@@ -39,6 +39,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 */
 	@reactive
 	set x(value: T) {
+		if (typeof value === 'string') value = this.deserializeValue('x', value)
 		if (!this.checkValue('x', value)) return
 		this.#x = value
 		this.emit('valuechanged', 'x')
@@ -58,6 +59,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 */
 	@reactive
 	set y(value: T) {
+		if (typeof value === 'string') value = this.deserializeValue('y', value)
 		if (!this.checkValue('y', value)) return
 		this.#y = value
 		this.emit('valuechanged', 'y')
@@ -77,6 +79,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 */
 	@reactive
 	set z(value: T) {
+		if (typeof value === 'string') value = this.deserializeValue('z', value)
 		if (!this.checkValue('z', value)) return
 		this.#z = value
 		this.emit('valuechanged', 'z')
