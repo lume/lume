@@ -1,4 +1,6 @@
 {
+	"name": "docs",
+	"private": true,
 	"dependencies": {
 		"@lume/docsify": "^4.9.4-1d3246a2.0",
 		"@lume/live-code": "^0.3.5",

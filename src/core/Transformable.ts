@@ -56,7 +56,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
 	 *
 	 * Set the position of the object in 3D space, relative to its
 	 * parent, by specifying X, Y, and Z coordinates.
@@ -79,7 +79,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
 	 *
 	 * Set the orientation of the object in 3D space, relative to its
 	 * parent, by specifying rotation in degrees around the X, Y, and Z axes.
@@ -106,7 +106,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(1, 1, 1)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(1, 1, 1)</code>
 	 *
 	 * Set the scale of the object in 3D space, relative to its parent,
 	 * by specifying scale along the X, Y, and Z axes.
@@ -127,7 +127,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
 	 *
 	 * Set the rotational origin of the object in 3D space, relative to
 	 * itself, by specifying origin along the X, Y, and Z axes.
@@ -172,7 +172,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
 	 *
 	 * Set the align point of the object in 3D space, relative to its
 	 * parent, by specifying values along the X, Y, and Z axes.
@@ -203,7 +203,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNumberValues">XYZNumberValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
 	 *
 	 * Set the mount point of the object in 3D space, relative to itself,
 	 * by specifying values along the X, Y, and Z axes.

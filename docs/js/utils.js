@@ -13,7 +13,15 @@ function stripIndent(string) {
 	return string.replace(regex, '')
 }
 
-const buttonsWithShadowExample = stripIndent(/*html*/ `
+/** no-op template tag */
+function noop(strings, ...keys) {
+	const lastIndex = strings.length - 1
+	return strings.slice(0, lastIndex).reduce((p, s, i) => p + s + keys[i], '') + strings[lastIndex]
+}
+
+const html = noop // useful for syntax highlight and auto-formatting
+
+const buttonsWithShadowExample = stripIndent(html`
 	<script src="${location.origin + location.pathname}global.js"></script>
 	<script src="${location.origin + location.pathname}node_modules/vue/dist/vue.js"></script>
 	<!-- Tween.js is a lib for animating numbers based on "easing curves". -->
@@ -22,7 +30,8 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 	<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
 	<style>
-		body, html {
+		body,
+		html {
 			width: 100%;
 			height: 100%;
 			margin: 0;
@@ -63,7 +72,8 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 			background-color="black"
 			background-opacity="0"
 			perspective="800"
-			shadowmap-type="pcfsoft" NOTE="one of basic, pcf, pcfsoft"
+			shadowmap-type="pcfsoft"
+			NOTE="one of basic, pcf, pcfsoft"
 			touch-action="none"
 		>
 			<lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
@@ -89,13 +99,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 					</lume-mixed-plane>
 				</lume-node>
 				<lume-node id="lightContainer" size="0 0 0" position="0 0 300">
-					<lume-point-light
-						id="light"
-						color="white"
-						size="0 0 0"
-						cast-shadow="true"
-						intensity="0.8"
-					>
+					<lume-point-light id="light" color="white" size="0 0 0" cast-shadow="true" intensity="0.8">
 						<lume-mesh
 							has="sphere-geometry basic-material"
 							size="10 10 10"
@@ -121,7 +125,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 		new Vue({
 			el: '#buttonsRoot',
 			template: document.querySelector('[vue]').innerHTML,
-			mounted: function() {
+			mounted() {
 				const {Motor, Events} = LUME
 				const scene = document.querySelector('#scene')
 				const lightContainer = document.querySelector('#lightContainer')
@@ -137,7 +141,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 					// The following is a temporary hack because opacity isn't
 					// exposed through the HTML API yet. work-in-progress...
 					// TODO this stuff should be doable via the HTML
-					Array.from( document.querySelectorAll('lume-mixed-plane') ).forEach(function(n) {
+					Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(n => {
 						n.three.material.opacity = 0.3
 					})
 
@@ -149,7 +153,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 
 				const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 2}
 
-				document.addEventListener('pointermove', function(e) {
+				document.addEventListener('pointermove', e => {
 					e.preventDefault()
 					targetPosition.x = e.clientX
 					targetPosition.y = e.clientY
@@ -163,8 +167,8 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 				let downTween, upTween, pressedButton
 
 				// On mouse down animate the button downward
-				document.addEventListener('pointerdown', function(e) {
-					if ( is( e.target, 'button' ) ) {
+				document.addEventListener('pointerdown', e => {
+					if (is(e.target, 'button')) {
 						pressedButton = e.target
 
 						if (upTween) {
@@ -175,9 +179,9 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 						downTween = new TWEEN.Tween(e.target.parentNode.position)
 							.to({z: -20}, 75)
 							.start()
-							.onComplete(function () { downTween = null })
+							.onComplete(() => (downTween = null))
 
-						Motor.addRenderTask(function(time) {
+						Motor.addRenderTask(time => {
 							if (!downTween) return false
 							downTween.update(time)
 						})
@@ -185,8 +189,8 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 				})
 
 				// On mouse up animate the button upward
-				document.addEventListener('pointerup', function(e) {
-					if ( pressedButton ) {
+				document.addEventListener('pointerup', e => {
+					if (pressedButton) {
 						if (downTween) {
 							downTween.stop()
 							downTween = null
@@ -195,20 +199,17 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 						upTween = new TWEEN.Tween(pressedButton.parentNode.position)
 							.to({z: 0}, 75)
 							.start()
-							.onComplete(function() { upTween = null })
+							.onComplete(() => (upTween = null))
 
-						Motor.addRenderTask(function(time) {
+						Motor.addRenderTask(time => {
 							if (!upTween) return false
 							upTween.update(time)
 						})
 					}
 				})
 
-				function is( el, selector ) {
-					if ( [].includes.call(
-						document.querySelectorAll( selector ),
-						el
-					) ) return true
+				function is(el, selector) {
+					if ([].includes.call(document.querySelectorAll(selector), el)) return true
 					return false
 				}
 			},
@@ -217,7 +218,7 @@ const buttonsWithShadowExample = stripIndent(/*html*/ `
 `)
 
 function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 		${
 			'' /*
@@ -261,7 +262,7 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 }
 
 function miniGalaxyDemo() {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 
 		<lume-scene id="scene">
@@ -468,14 +469,17 @@ function miniGalaxyDemo() {
 			scene.addEventListener('pointermove', event => {
 				// Rotate the image a little bit too.
 				container.rotation.y = (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount
-				container.rotation.x = -((event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount)
+				container.rotation.x = -(
+					(event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) -
+					rotationAmount
+				)
 			})
 		</script>
 	`)
 }
 
 function sceneExample() {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 
 		<lume-scene id="scene">
@@ -505,7 +509,7 @@ function sceneExample() {
 }
 
 function pointLightExample() {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 
 		<lume-scene webgl shadowmap-type="soft">
@@ -513,8 +517,13 @@ function pointLightExample() {
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
 			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
-				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
-
+				<lume-plane
+					color="white"
+					size="1500 1500"
+					align-point="0.5 0.5"
+					mount-point="0.5 0.5"
+					rotation="0 0 30"
+				>
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
 					<!-- A point in space where light emanates from. -->
@@ -527,15 +536,26 @@ function pointLightExample() {
 					></lume-point-light>
 
 					<!-- A box that will cast a shadow onto the floor. -->
-					<lume-box id="box" color="skyblue" size="50 50 50" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0" rotation="0 0 10"></lume-box>
-
+					<lume-box
+						id="box"
+						color="skyblue"
+						size="50 50 50"
+						align-point="0.5 0.5 0.5"
+						mount-point="0.5 0.5 0"
+						rotation="0 0 10"
+					></lume-box>
 				</lume-plane>
-
 			</lume-node>
 		</lume-scene>
 
 		<style>
-			html, body { margin: 0; height: 100%; width: 100%; background: white; }
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				background: white;
+			}
 		</style>
 
 		<script>
@@ -547,7 +567,7 @@ function pointLightExample() {
 }
 
 function directionalLightExample() {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 
 		<lume-scene webgl shadowmap-type="soft">
@@ -555,8 +575,13 @@ function directionalLightExample() {
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
 			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
-				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
-
+				<lume-plane
+					color="white"
+					size="1500 1500"
+					align-point="0.5 0.5"
+					mount-point="0.5 0.5"
+					rotation="0 0 30"
+				>
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
 					<!-- A point in space that determines direction of an infinitely-far source of light. -->
@@ -569,20 +594,36 @@ function directionalLightExample() {
 					></lume-directional-light>
 
 					<!-- A box that will cast a shadow onto the floor. -->
-					<lume-box id="box" color="skyblue" size="50 50 50" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0" rotation="0 0 10"></lume-box>
+					<lume-box
+						id="box"
+						color="skyblue"
+						size="50 50 50"
+						align-point="0.5 0.5 0.5"
+						mount-point="0.5 0.5 0"
+						rotation="0 0 10"
+					></lume-box>
 
 					<!-- Add an interactive camera viewpoint. -->
 					<lume-node align-point="0.5 0.5" rotation="-90 0 0">
-						<lume-camera-rig initial-polar-angle="30" min-polar-angle="5" initial-distance="500"></lume-camera-rig>
+						<lume-camera-rig
+							initial-polar-angle="30"
+							min-polar-angle="5"
+							initial-distance="500"
+						></lume-camera-rig>
 					</lume-node>
-
 				</lume-plane>
-
 			</lume-node>
 		</lume-scene>
 
 		<style>
-			html, body { margin: 0; height: 100%; width: 100%; background: white; touch-action: none;}
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				background: white;
+				touch-action: none;
+			}
 		</style>
 
 		<script>
@@ -594,7 +635,7 @@ function directionalLightExample() {
 }
 
 function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
-	return stripIndent(/*html*/ `
+	return stripIndent(html`
 		<script src="${location.origin + location.pathname}global.js"></script>
 
 		<lume-scene id="scene" touch-action="none" webgl>
@@ -687,7 +728,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 	`)
 }
 
-const shapesExample = stripIndent(/*html*/ `
+const shapesExample = stripIndent(html`
 	<script src="${location.origin + location.pathname}global.js"></script>
 
 	<style>
@@ -1083,7 +1124,7 @@ const shapesExample = stripIndent(/*html*/ `
 	</style>
 `)
 
-const instancedMeshExample = stripIndent(/*html*/ `
+const instancedMeshExample = stripIndent(html`
 	<style>
 		html,
 		body {
@@ -1102,7 +1143,13 @@ const instancedMeshExample = stripIndent(/*html*/ `
 
 		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-node>
 
-		<lume-camera-rig active initial-distance="1000" max-distance="2500" min-distance="100" position="500 500 500"></lume-camera-rig>
+		<lume-camera-rig
+			active
+			initial-distance="1000"
+			max-distance="2500"
+			min-distance="100"
+			position="500 500 500"
+		></lume-camera-rig>
 
 		<!-- FIXME: this works: -->
 		<!-- <lume-mesh has="sphere-geometry" size="30 30 30"></lume-mesh> -->
@@ -1148,7 +1195,7 @@ const instancedMeshExample = stripIndent(/*html*/ `
 	</script>
 `)
 
-const originExample = stripIndent(/*html*/ `
+const originExample = stripIndent(html`
 	<body touch-action="none">
 		<script src="${location.origin + location.pathname}global.js"></script>
 
@@ -1194,7 +1241,13 @@ const originExample = stripIndent(/*html*/ `
 				shadow-map-height="1024"
 			></lume-point-light>
 
-			<lume-camera-rig align-point="0.5 0.5" active initial-distance="400" max-distance="700" min-distance="100"></lume-camera-rig>
+			<lume-camera-rig
+				align-point="0.5 0.5"
+				active
+				initial-distance="400"
+				max-distance="700"
+				min-distance="100"
+			></lume-camera-rig>
 		</lume-scene>
 
 		<lume-scene id="scene2">
@@ -1287,4 +1340,292 @@ const originExample = stripIndent(/*html*/ `
 			zRotation.addEventListener('input', onChangeXRotation)
 		</script>
 	</body>
+`)
+
+const perspectiveCameraExample = stripIndent(html`
+	<body touch-action="none">
+		<script src="${location.origin + location.pathname}global.js"></script>
+		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+		<style>
+			body,
+			html {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				background: #191919;
+				touch-action: none; /* prevent touch drag from scrolling */
+				color: #ccc;
+			}
+			lume-scene {
+				position: absolute !important;
+				top: 0;
+				left: 0;
+			}
+			lume-scene:nth-of-type(2),
+			lume-scene:nth-of-type(2) lume-node {
+				pointer-events: none;
+			}
+			lume-scene:nth-of-type(2) label {
+				pointer-events: auto;
+			}
+			lume-node {
+				padding: 15px;
+			}
+			label {
+				padding-right: 10px;
+			}
+		</style>
+
+		<!-- FIXME: Move this script tag below the UI, and initial values stop working, so the UI is squished. -->
+		<script>
+			// defines the default names for the HTML elements
+			LUME.defineElements()
+		</script>
+
+		<lume-scene id="scene" webgl perspective="800" touch-action="none">
+			<!-- This node visualizes the size of the default viewing area. -->
+			<lume-node
+				size-mode="proportional proportional"
+				size="1 1"
+				style="border: 5px solid royalblue;"
+			></lume-node>
+
+			<lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera>
+
+			<lume-ambient-light intensity="0.3"></lume-ambient-light>
+			<lume-point-light id="light" color="white" cast-shadow="true" intensity="0.8" position="0 0 300">
+				<lume-mesh
+					has="sphere-geometry basic-material"
+					cast-shadow="false"
+					size="10 10 10"
+					mount-point="0.5 0.5"
+					color="#eee"
+				></lume-mesh>
+			</lume-point-light>
+
+			<!-- Specify a color otherwise the material will be tinted deeppink by default -->
+			<lume-mesh
+				id="model"
+				has="box-geometry phong-material"
+				rotation="40 40 0"
+				align-point="0.5 0.5 0.5"
+				mount-point="0.5 0.5 0.5"
+				size="100 100 100"
+				color="white"
+				texture="${location.origin + location.pathname}textures/cement.jpg"
+			>
+			</lume-mesh>
+		</lume-scene>
+
+		<lume-scene id="scene2">
+			<lume-node size-mode="proportional literal" size="1 80">
+				<label>
+					Camera active:
+					<input id="active" type="checkbox" onchange="cam.active = !cam.active" />
+				</label>
+				<br />
+				<label>
+					Field of view <code>(50)</code>:
+					<input
+						id="fov"
+						type="range"
+						min="1"
+						max="75"
+						value="50"
+						onchange="onFovChange(this)"
+						oninput="onFovChange(this)"
+					/>
+				</label>
+				<br />
+				<script>
+					const onFovChange = el => {
+						cam.fov = el.value
+						el.previousElementSibling.textContent = '(' + el.value.padStart(2, '0') + ')'
+					}
+				</script>
+				<label>
+					Camera Y rotation <code>(0)</code>:
+					<input
+						type="range"
+						min="-45"
+						max="45"
+						value="0"
+						onchange="onRotationChange(this)"
+						oninput="onRotationChange(this)"
+					/>
+				</label>
+				<br />
+				<script>
+					const onRotationChange = el => {
+						cam.rotation.y = el.value
+						el.previousElementSibling.textContent = '(' + el.value.padStart(2, '0') + ')'
+					}
+				</script>
+				<label>
+					Camera Y position <code>(0)</code>:
+					<input
+						type="range"
+						min="-150"
+						max="150"
+						value="0"
+						onchange="onPositionChange(this)"
+						oninput="onPositionChange(this)"
+					/>
+				</label>
+				<script>
+					const onPositionChange = el => {
+						window.debug = true
+						cam.position.y = el.value
+						window.debug = false
+						el.previousElementSibling.textContent = '(' + el.value.padStart(2, '0') + ')'
+					}
+				</script>
+			</lume-node>
+		</lume-scene>
+
+		<script>
+			document.addEventListener('pointermove', event => {
+				event.preventDefault()
+				light.position.x = event.clientX
+				light.position.y = event.clientY
+			})
+
+			const rotate = t => 180 * Math.sin(0.0005 * t)
+
+			model.rotation = (x, y, z, t) => [rotate(t / 1.4), rotate(t / 2.1), rotate(t / 2.5)]
+		</script>
+	</body>
+`)
+
+const cameraRigExample = stripIndent(html`
+	<body touch-action="none">
+		<script src="${location.origin + location.pathname}global.js"></script>
+		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
+		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+		<style>
+			body,
+			html {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				background: #191919;
+				touch-action: none; /* prevent touch drag from scrolling */
+				color: #ccc;
+			}
+			lume-scene {
+				position: absolute !important;
+				top: 0;
+				left: 0;
+			}
+			lume-scene:nth-of-type(2),
+			lume-scene:nth-of-type(2) lume-node {
+				pointer-events: none;
+			}
+			lume-scene:nth-of-type(2) label {
+				pointer-events: auto;
+			}
+			lume-node {
+				padding: 15px;
+			}
+		</style>
+
+		<!-- FIXME: Move this script tag below the UI, and initial values stop working, so the UI is squished. -->
+		<script>
+			// defines the default names for the HTML elements
+			LUME.defineElements()
+		</script>
+
+		<lume-scene id="scene" webgl perspective="800" touch-action="none">
+			<!-- This node visualizes the size of the default viewing area. -->
+			<lume-node
+				size-mode="proportional proportional"
+				size="1 1"
+				style="border: 5px solid royalblue;"
+			></lume-node>
+
+			<!-- <lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera> -->
+			<lume-camera-rig
+				id="cam"
+				initial-distance="400"
+				min-distance="50"
+				max-distance="1000"
+				align-point="0.5 0.5"
+			></lume-camera-rig>
+
+			<lume-ambient-light intensity="0.3"></lume-ambient-light>
+			<lume-point-light id="light" color="white" cast-shadow="true" intensity="0.8" position="0 0 300">
+				<lume-mesh
+					has="sphere-geometry basic-material"
+					cast-shadow="false"
+					size="10 10 10"
+					mount-point="0.5 0.5"
+					color="#eee"
+				></lume-mesh>
+			</lume-point-light>
+
+			<lume-box
+				id="model"
+				rotation="40 40 0"
+				align-point="0.5 0.5 0.5"
+				mount-point="0.5 0.5 0.5"
+				size="100 100 100"
+				color="white"
+				texture="${location.origin + location.pathname}textures/cement.jpg"
+			></lume-box>
+		</lume-scene>
+
+		<lume-scene id="scene2">
+			<lume-node size-mode="proportional literal" size="1 80">
+				<label>
+					Camera rig active:
+					<input id="active" type="checkbox" checked onchange="cam.active = !cam.active" />
+				</label>
+			</lume-node>
+		</lume-scene>
+
+		<script>
+			document.addEventListener('pointermove', event => {
+				event.preventDefault()
+				light.position.x = event.clientX
+				light.position.y = event.clientY
+			})
+
+			const rotate = t => 180 * Math.sin(0.0005 * t)
+
+			model.rotation = (x, y, z, t) => [rotate(t / 1.4), rotate(t / 2.1), rotate(t / 2.5)]
+		</script>
+	</body>
+`)
+
+const cameraRigVerticalRotationExample = stripIndent(html`
+	<script src="${location.origin + location.pathname}global.js"></script>
+	<script>
+		LUME.defineElements()
+	</script>
+
+	<lume-scene webgl style="background: #444">
+		<lume-box size="100 100 100" color="pink">
+			<lume-camera-rig
+				align-point="0.5 0.5 0.5"
+				initial-polar-angle="20"
+				min-polar-angle="-45"
+				max-polar-angle="45"
+				initial-distance="500"
+			>
+				<lume-point-light
+					slot="camera-child"
+					color="white"
+					intensity="0.9"
+					position="120 120 120"
+				></lume-point-light>
+			</lume-camera-rig>
+		</lume-box>
+	</lume-scene>
 `)

@@ -55,7 +55,7 @@ export class Sizeable extends TreeNode {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZSizeModeValues">XYZSizeModeValues</a>('literal', 'literal', 'literal')</code>
+	 * Default: <code>new [XYZSizeModeValues](../xyz-values/XYZSizeModeValues)('literal', 'literal', 'literal')</code>
 	 *
 	 * Set the size mode for each axis. Possible values are `"literal"` and
 	 * `"proportional"`. For example,
@@ -95,7 +95,7 @@ export class Sizeable extends TreeNode {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new <a href="../xyz-values/XYZNonNegativeValues">XYZNonNegativeValues</a>(0, 0, 0)</code>
+	 * Default: <code>new [XYZNonNegativeValues](../xyz-values/XYZNonNegativeValues)(0, 0, 0)</code>
 	 *
 	 * Set the size of the object along each axis. The meaning of a size value for a particular axis depends on the
 	 * [`.sizeMode`](#sizemode) value for the same axis.

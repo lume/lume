@@ -3,8 +3,8 @@ import {XYZValues} from './XYZValues.js'
 /**
  * @class XYZNumberValues - Extends [`XYZValues`](./XYZValues) to enforce that
  * values are numbers. Additionally, values of `undefined` are ignored instead
- * of throwing errors, which allows us to handle values like `{y: 123}` to set
- * only one axis.
+ * of throwing errors, which allows us to handle values like `{y: 123}` when
+ * setting element properties to set only one axis value.
  *
  * @extends XYZValues
  */

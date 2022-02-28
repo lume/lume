@@ -13,20 +13,11 @@
 </style>
 
 <lume-scene id="scene" perspective="800" webgl>
-	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
-	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
-
-	<!-- background -->
-	<lume-sphere
-		has="basic-material"
-		color="white"
-		sidedness="double"
-		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-		size="4000"
-		mount-point="0.5 0.5 0.5"
-	></lume-sphere>
+	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100">
+		<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
+	</lume-camera-rig>
 
 	<lume-fbx-model
 		id="model"

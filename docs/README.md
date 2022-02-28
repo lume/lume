@@ -1,8 +1,6 @@
 # Introduction
 
-<!-- #### **LUME is a toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.** -->
-
-> **LUME is a toolkit that simplifies the creation of rich and interactive 2D or 3D experiences for any device from mobile to desktop to AR/VR.**
+> **Create rich 2D or 3D graphical experiences more easily using HTML.**
 
 <h3 style="display: none;">
   <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;

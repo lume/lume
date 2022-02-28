@@ -2,6 +2,12 @@ import {XYZStringValues} from './XYZStringValues.js'
 
 export type SizeModeValue = 'literal' | 'proportional'
 
+/**
+ * @class XYZSizeModeValues - Extends [`XYZValues`](./XYZValues) to enforce that
+ * values are one of the strings `"literal"` or `"proportional"`.
+ *
+ * @extends XYZValues
+ */
 // TODO it would be cool if we can have compiletime type errors when the values
 // aren't SizeModeValues. At the moment we'll get only runtime errors.
 export class XYZSizeModeValues extends XYZStringValues {

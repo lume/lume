@@ -51,7 +51,6 @@ export type SceneAttributes =
 
 /**
  * @class Scene -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
  * Element: `<lume-node>`
  *
