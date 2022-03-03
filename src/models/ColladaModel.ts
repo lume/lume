@@ -2,7 +2,10 @@ import {element} from '@lume/element'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/models/ColladaModelBehavior.js'
+import type {
+	ColladaModelBehavior,
+	ColladaModelBehaviorAttributes,
+} from '../behaviors/mesh-behaviors/models/ColladaModelBehavior.js'
 
 // TODO FIXME Type error because this property comes from a behavior.
 // new ColladaModel().src

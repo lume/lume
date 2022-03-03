@@ -1,9 +1,9 @@
 import 'element-behaviors'
 import {reactive, autorun, stringAttribute} from '@lume/element'
 import {ColladaLoader} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import {disposeObjectTree} from '../../utils/three.js'
-import {Events} from '../../core/Events.js'
-import {RenderableBehavior} from '../RenderableBehavior.js'
+import {disposeObjectTree} from '../../../utils/three.js'
+import {Events} from '../../../core/Events.js'
+import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 import type {StopFunction} from '@lume/element'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'

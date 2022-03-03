@@ -1,42 +1,38 @@
 import 'element-behaviors'
-import {autorun, reactive, stringAttribute} from '@lume/element'
-import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
-import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
-import {Events} from '../../core/Events.js'
-import {Points} from '../../meshes/Points.js'
-import {GeometryBehavior} from './GeometryBehavior.js'
+import {reactive, autorun, stringAttribute} from '@lume/element'
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
+import {disposeObjectTree} from '../../../utils/three.js'
+import {Events} from '../../../core/Events.js'
+import {RenderableBehavior} from '../../RenderableBehavior.js'
+
+import type {StopFunction} from '@lume/element'
+import type {Group} from 'three/src/objects/Group.js'
+
+export type FbxModelBehaviorAttributes = 'src'
 
 @reactive
-export class PlyGeometryBehavior extends GeometryBehavior {
-	/** Path to a .ply file. */
+export class FbxModelBehavior extends RenderableBehavior {
+	/** Path to a .fbx file. */
 	@stringAttribute('') src = ''
 
-	loader?: PLYLoader
-	model?: BufferGeometry
+	loader?: FBXLoader
+	model?: Group
 
-	requiredElementType(): [typeof Points] {
-		return [Points]
-	}
-
-	static _observedProperties = ['src', ...(GeometryBehavior._observedProperties || [])]
-
-	_createComponent() {
-		// An empty geometry to start with. It will be replaced once the PLY file is loaded.
-		if (!this.model) return new BufferGeometry()
-		return this.model
-	}
+	static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
 
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
+	#stopFns: StopFunction[] = []
+
 	loadGL() {
 		if (!super.loadGL()) return false
 
-		this.loader = new PLYLoader()
+		this.loader = new FBXLoader()
 
-		this._stopFns.push(
+		this.#stopFns.push(
 			autorun(() => {
 				this.src
 
@@ -53,6 +49,9 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	unloadGL() {
 		if (!super.unloadGL()) return false
 
+		for (const stop of this.#stopFns) stop()
+		this.#stopFns.length = 0
+
 		this.loader = undefined
 
 		this.#cleanupModel()
@@ -64,7 +63,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	#cleanupModel() {
-		// if (this.model) disposeObjectTree(this.model)
+		if (this.model) disposeObjectTree(this.model)
 		this.model = undefined
 	}
 
@@ -74,12 +73,10 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 
 		if (!src) return
 
-		// In the following fbxLoader.load() callbacks, if #version doesn't
+		// In the following fbxLoader.load() callbacks, if __version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
-
-		console.log('load the model!')
 
 		this.loader!.load(
 			src,
@@ -89,7 +86,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent | Error) {
+	#onError(error: ErrorEvent) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`
@@ -99,12 +96,12 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		this.element.emit(Events.MODEL_ERROR, err)
 	}
 
-	#setModel(model: BufferGeometry) {
+	#setModel(model: Group) {
 		this.model = model
-		this.model.computeVertexNormals()
-		this.resetMeshComponent()
-		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
+		this.element.three.add(model)
+		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
+		this.element.needsUpdate()
 	}
 }
 
-if (!elementBehaviors.has('ply-geometry')) elementBehaviors.define('ply-geometry', PlyGeometryBehavior)
+if (!elementBehaviors.has('fbx-model')) elementBehaviors.define('fbx-model', FbxModelBehavior)

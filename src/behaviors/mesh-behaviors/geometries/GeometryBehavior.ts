@@ -1,10 +1,10 @@
 import {autorun} from '@lume/element'
-import {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
+import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
-import type {StopFunction} from '@lume/element'
+import type {MeshComponentType} from '../MeshBehavior.js'
 
 // base class for geometry behaviors
-export abstract class GeometryBehavior extends MeshBehavior {
+export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
 	type: MeshComponentType = 'geometry'
 
 	// We don't use @reactive or @attribute in this class because the values
@@ -25,8 +25,6 @@ export abstract class GeometryBehavior extends MeshBehavior {
 		this.element.sizeMode = val
 	}
 
-	_stopFns: StopFunction[] = []
-
 	loadGL() {
 		if (!super.loadGL()) return false
 
@@ -45,15 +43,6 @@ export abstract class GeometryBehavior extends MeshBehavior {
 				this.resetMeshComponent()
 			}),
 		)
-
-		return true
-	}
-
-	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this._stopFns) stop()
-		this._stopFns.length = 0
 
 		return true
 	}

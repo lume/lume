@@ -172,6 +172,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 *
 	 * @returns {this} - Returns the instance for method chaining.
 	 */
+	// TODO @return(s) jsdoc tag not working.
 	fromDefault(): this {
 		this.from(this.#default)
 		return this

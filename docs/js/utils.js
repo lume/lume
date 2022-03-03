@@ -1524,11 +1524,11 @@ const cameraRigExample = stripIndent(html`
 				top: 0;
 				left: 0;
 			}
-			lume-scene:nth-of-type(2),
-			lume-scene:nth-of-type(2) lume-node {
+			#ui,
+			#ui lume-node {
 				pointer-events: none;
 			}
-			lume-scene:nth-of-type(2) label {
+			#ui label {
 				pointer-events: auto;
 			}
 			lume-node {
@@ -1581,7 +1581,7 @@ const cameraRigExample = stripIndent(html`
 			></lume-box>
 		</lume-scene>
 
-		<lume-scene id="scene2">
+		<lume-scene id="ui">
 			<lume-node size-mode="proportional literal" size="1 80">
 				<label>
 					Camera rig active:
@@ -1628,4 +1628,117 @@ const cameraRigVerticalRotationExample = stripIndent(html`
 			</lume-camera-rig>
 		</lume-box>
 	</lume-scene>
+`)
+
+const clipPlaneExample = stripIndent(html`
+	<title>&lt;lume-clip-plane&gt;</title>
+
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #333;
+			touch-action: none;
+		}
+		#ui {
+			position: absolute !important;
+			top: 0;
+			left: 0;
+			color: white;
+		}
+		#ui,
+		#ui lume-node {
+			pointer-events: none;
+		}
+		#ui label {
+			pointer-events: auto;
+		}
+		lume-node {
+			padding: 15px;
+		}
+	</style>
+
+	<script src="${location.origin + location.pathname}global.js"></script>
+
+	<script>
+		LUME.defineElements()
+	</script>
+
+	<lume-scene id="scene" perspective="800" webgl shadowmap-type="pcfsoft">
+		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
+
+		<lume-camera-rig active initial-distance="400" max-distance="7000" min-distance="100">
+			<lume-point-light
+				position="200 -200 200"
+				intensity="0.6"
+				color="white"
+				shadow-bias="-0.005"
+				shadow-map-width="1024"
+				shadow-map-height="1024"
+				slot="camera-child"
+			></lume-point-light>
+		</lume-camera-rig>
+
+		<lume-box
+			id="box"
+			has="clip-planes"
+			clip-planes="#clipPlane"
+			flip-clip="false"
+			sidedness="double"
+			cast-shadow="false"
+			receive-shadow="true"
+			opacity="1"
+			color="skyblue"
+			mount-point="0.5 0.5 0.5"
+			rotation="0 45 0"
+			size="100 100 100"
+			scale="1 1 1"
+		>
+			<lume-sphere size="20 20 20" color="pink" mount-point="0.5 0.5 0.5" align-point="0.5 0.5 0.5"></lume-sphere>
+
+			<lume-clip-plane id="clipPlane" size="175 175" mount-point="0.5 0.5 0.5" align-point="0.5 0.5 0.5">
+				<lume-plane
+					id="plane"
+					opacity="0.5"
+					visible="false"
+					sidedness="double"
+					color="orange"
+					size="1 1"
+					size-mode="proportional proportional"
+					cast-shadow="false"
+					receive-shadow="false"
+				></lume-plane>
+			</lume-clip-plane>
+		</lume-box>
+	</lume-scene>
+
+	<lume-scene id="ui">
+		<lume-node size-mode="proportional literal" size="1 80">
+			<label>
+				Flip clip:
+				<input
+					type="checkbox"
+					onchange="box.behaviors.get('clip-planes').flipClip = !box.behaviors.get('clip-planes').flipClip"
+				/>
+			</label>
+			<br />
+			<label>
+				Visualize plane:
+				<input type="checkbox" onchange="plane.visible = !plane.visible" />
+			</label>
+		</lume-node>
+	</lume-scene>
+
+	<script>
+		// LUME.defineElements()
+
+		// Other ways to set the clip planes:
+		// box.setAttribute('clip-planes', '#clipPlane')
+		// box.clipPlanes = [clipPlane]
+
+		clipPlane.rotation = (x, y, z, t) => [x, (y += 0.1), z]
+	</script>
 `)

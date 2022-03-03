@@ -2,7 +2,9 @@ import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
 import {reactive, autorun, booleanAttribute, StopFunction, stringAttribute} from '@lume/element'
-import {MeshBehavior, MeshComponentType} from '../MeshBehavior.js'
+import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
+
+import type {MeshComponentType} from '../MeshBehavior.js'
 
 export type MaterialBehaviorAttributes = 'wireframe' | 'sidedness' | 'color'
 
@@ -13,10 +15,15 @@ export type MaterialBehaviorAttributes = 'wireframe' | 'sidedness' | 'color'
  * Base class for material behaviors.
  */
 @reactive
-export class MaterialBehavior extends MeshBehavior {
+export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	type: MeshComponentType = 'material'
 
-	static _observedProperties = ['wireframe', 'sidedness', 'color', ...(MeshBehavior._observedProperties || [])]
+	static _observedProperties = [
+		'wireframe',
+		'sidedness',
+		'color',
+		...(GeometryOrMaterialBehavior._observedProperties || []),
+	]
 
 	// TODO wireframe works with -geometry behaviors, but not with obj-model
 	// because obj-model doesn't inherit from geometry. We should share common

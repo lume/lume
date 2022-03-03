@@ -50,16 +50,33 @@ export class ShaderMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 	loadGL() {
 		if (!super.loadGL()) return false
 
+		// CONTINUE FIXME: I added the 'retry' trick here to see if re-setting
+		// the material would fix the issue in the custom shader example. The
+		// shader does not appear.
+
+		// let retry: (() => void) | undefined
 		this._stopFns.push(
-			autorun(() => {
-				const mat = this.getMeshComponent<ShaderMaterial>('material')
+			autorun(
+				// (retry =
+				() => {
+					const mat = this.getMeshComponent<ShaderMaterial>('material')
 
-				mat.uniforms = this.uniforms as Record<string, any>
-				mat.vertexShader = this.vertexShader || default_vertex
-				mat.fragmentShader = this.fragmentShader || default_fragment
+					console.log('shader????:', this.fragmentShader)
 
-				this.element.needsUpdate()
-			}),
+					mat.uniforms = this.uniforms as Record<string, any>
+					mat.vertexShader = this.vertexShader || default_vertex
+					mat.fragmentShader = this.fragmentShader || default_fragment
+
+					mat.needsUpdate = true
+					this.element.needsUpdate()
+
+					// setTimeout(() => {
+					// 	retry && retry()
+					// 	retry = undefined
+					// }, 1000)
+				},
+				// ),
+			),
 		)
 
 		return true

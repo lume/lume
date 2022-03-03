@@ -1,29 +1,21 @@
+import {MeshBehavior, MeshComponentType} from './MeshBehavior.js'
+
 import type {Material} from 'three/src/materials/Material.js'
 import type {Geometry} from 'three/src/core/Geometry.js'
 import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
-import {RenderableBehavior} from './RenderableBehavior.js'
-import {Mesh} from '../meshes/Mesh.js'
-import {Points} from '../meshes/Points.js'
-import {InstancedMesh} from '../meshes/InstancedMesh.js'
-
-export type MeshComponentType = 'geometry' | 'material'
-
 /**
- * Base class for Geometry and Material behaviors, not intended for direct use.
+ * @class GeometryOrMaterialBehavior
+ * Abstract base class for Geometry and Material behaviors, not intended for direct use.
  *
  * Subclasses should implement:
  * _createComponent() - return a geometry or material instance.
+ *
+ * @extends MeshBehavior
  */
-export abstract class MeshBehavior extends RenderableBehavior {
-	abstract type: MeshComponentType
 
-	requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh)[] {
-		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
-		// XXX An alternative to using arrays with multiple types is we could branch the class
-		// hierarchy to avoid arrays/unions.
-		return [Mesh, Points, InstancedMesh]
-	}
+export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
+	abstract type: MeshComponentType
 
 	loadGL() {
 		if (!super.loadGL()) return false
@@ -51,10 +43,6 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		this.element.needsUpdate()
 	}
 
-	getMeshComponent<T>(name: 'geometry' | 'material'): T {
-		return this.element.three[name] as unknown as T
-	}
-
 	meshComponent?: BufferGeometry | Geometry | Material
 
 	_createComponent(): BufferGeometry | Geometry | Material {
@@ -66,7 +54,6 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	// the user.
 	// TODO
 	// #initialSize: null,
-
 	#disposeMeshComponent(name: 'geometry' | 'material') {
 		// TODO handle material arrays
 		if (this.element.three[name]) (this.element.three[name] as Geometry | Material).dispose()
@@ -81,7 +68,6 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		// (we can't type this sort of JavaScript in TypeScript)
 		this.element.three[name as 'geometry'] = newComponent as Geometry
 		// or element.three[name as 'material'] = newComponent as Material
-
 		this.meshComponent = newComponent as Geometry
 	}
 }

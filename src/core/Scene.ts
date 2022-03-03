@@ -2,7 +2,16 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {autorun, booleanAttribute, attribute, numberAttribute, untrack, element, stringAttribute} from '@lume/element'
+import {
+	autorun,
+	booleanAttribute,
+	attribute,
+	numberAttribute,
+	untrack,
+	element,
+	stringAttribute,
+	reactive,
+} from '@lume/element'
 import {emits} from '@lume/eventful'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
@@ -450,6 +459,8 @@ export class Scene extends HTMLInterface {
 	// perspective attribute.
 	__threeCamera!: ThreePerspectiveCamera
 
+	@reactive __localClipping = false
+
 	constructor() {
 		super()
 
@@ -806,6 +817,10 @@ export class Scene extends HTMLInterface {
 					fog.color.set(this.fogColor)
 					fog.density = this.fogDensity
 				}
+			}),
+			autorun(() => {
+				this.#glRenderer!.localClippingEnabled = this.__localClipping
+				this.needsUpdate()
 			}),
 			autorun(() => {
 				this.#glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)

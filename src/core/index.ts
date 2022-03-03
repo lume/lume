@@ -1,3 +1,4 @@
+export * from './ClipPlane.js'
 export * from './DeclarativeBase.js'
 export * from './ElementOperations.js'
 export * from './Events.js'

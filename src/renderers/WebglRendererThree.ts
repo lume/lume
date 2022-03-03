@@ -1,3 +1,4 @@
+import {reactive, autorun, StopFunction} from '@lume/variable'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
@@ -31,6 +32,7 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
+@reactive
 export class WebglRendererThree {
 	static singleton() {
 		if (instance) return instance
@@ -51,6 +53,10 @@ export class WebglRendererThree {
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}
 
+	@reactive localClippingEnabled = false
+
+	disposers: StopFunction[] = []
+
 	initialize(scene: Scene) {
 		let sceneState = sceneStates.get(scene)
 
@@ -64,6 +70,12 @@ export class WebglRendererThree {
 
 			antialias: true,
 		})
+
+		this.disposers.push(
+			autorun(() => {
+				renderer.localClippingEnabled = this.localClippingEnabled
+			}),
+		)
 
 		// TODO: make some of the renderer options configurable by property/attribute.
 

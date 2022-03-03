@@ -4,7 +4,7 @@ import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {Shape} from 'three/src/extras/core/Shape.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
-import {stringToNumberArray} from '../../meshes/utils.js'
+import {stringToNumberArray} from '../../../meshes/utils.js'
 
 import type {Geometry} from 'three/src/core/Geometry.js'
 

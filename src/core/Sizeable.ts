@@ -15,7 +15,6 @@ import type {
 import type {RenderTask} from './Motor.js'
 import type {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
-// Cache variables to avoid making new variables in repeatedly-called methods.
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
 export type SizeableAttributes = 'sizeMode' | 'size'
