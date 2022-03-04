@@ -25,7 +25,7 @@ const clipNormal: [number, number, number] = [0, 0, -1]
  * child of a `<lume-clip-plane>`, as in the below example.
  *
  * To clip an element, add a
- * [`clip-planes`](../behaviors/mesh-behaviors/ClipPlane) behavior to the
+ * [`clip-planes`](../behaviors/mesh-behaviors/ClipPlanesBehavior) behavior to the
  * element with the `has=""` attribute, then assign any number of connected
  * `<lume-clip-plane>` elements to the element's `clipPlanes` property.
  *

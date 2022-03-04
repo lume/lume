@@ -4,15 +4,15 @@ import {ClipPlane} from '../../core/ClipPlane.js'
 
 import type {Material} from 'three'
 
-export type ClipPlanesBehaviorAttributes = 'clipPlanes'
+export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'flipClip' | 'clipDisabled'
 
 let refCount = 0
 
 /**
- * @class ClipPlaneBehavior
+ * @class ClipPlanesBehavior
  *
  * When applied to an element with GL content, allows specifying one or more
- * planes to clip the content with.
+ * [`<lume-clip-plane>`](../../core/ClipPlane) elements to clip the content with.
  *
  * This class extends from MeshBehavior, enforcing that the behavior can be used
  * only on elements that have geometry and material.
@@ -27,7 +27,7 @@ let refCount = 0
  */
 @reactive
 export class ClipPlanesBehavior extends MeshBehavior {
-	static _observedProperties = ['clipPlanes', 'flipClip', ...(MeshBehavior._observedProperties || [])]
+	static _observedProperties = ['clipPlanes', 'flipClip', 'clipDisabled', ...(MeshBehavior._observedProperties || [])]
 
 	// TODO reactive array?
 	#clipPlanes: Array<ClipPlane> = []
@@ -38,14 +38,17 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 *
 	 * *attribute*
 	 *
-	 * Adds a clip-planes attribute to the host elements that accepts one or
-	 * more selectors, comma separated, that define which `<lume-clip-plane>`
-	 * elements are to be used as clip planes. If a selector matches an element
-	 * that is not a `<lume-clip-plane>`, it is ignored. If a selector matches
-	 * more than one element, all of them that are clip planes are used.
+	 * Default: `[]`
+	 *
+	 * The corresponding `clip-planes` attribute accepts one or more selectors,
+	 * comma separated, that define which
+	 * [`<lume-clip-plane>`](../../core/ClipPlane) elements are to be used as
+	 * clip planes. If a selector matches an element that is not a
+	 * `<lume-clip-plane>`, it is ignored. If a selector matches more than one
+	 * element, all of them that are clip planes are used.
 	 *
 	 * ```html
-	 * <lume-box has="clip-planes" clip-planes=".foo, .bar"></lume-box>
+	 * <lume-box has="clip-planes" clip-planes=".foo, .bar, #baz"></lume-box>
 	 * ```
 	 *
 	 * The property can also be set with a string (comma separated selectors),
@@ -53,13 +56,18 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 * instances.
 	 *
 	 * ```js
+	 * el.clipPlanes = ".some-plane"
+	 * // or
 	 * const plane = document.querySelector('.some-clip-plane')
-	 * mesh.clipPlanes = [plane, "#someOtherPlane"]
+	 * el.clipPlanes = [plane, "#someOtherPlane"]
 	 * ```
 	 *
-	 * The property getter returns the current collection of `<lume-clip-plane>`
-	 * instances that are being applied, not the original string or array of
-	 * values passed into the attribute or setter.
+	 * The property getter returns the currently applicable collection of
+	 * `<lume-clip-plane>` instances, not the original string or array of values
+	 * passed into the attribute or setter. Applicable planes are those that are
+	 * connected into the document, and that participate in rendering (composed,
+	 * either in the top level document, in a ShadowRoot, or distributed to a
+	 * slot in a ShadowRoot).
 	 */
 	@stringAttribute('')
 	get clipPlanes(): Array<ClipPlane> {
@@ -129,11 +137,24 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 *
 	 * *attribute*
 	 *
+	 * Default: `false`
+	 *
 	 * By default, the side of a plane that is clipped is in its positive Z
 	 * direction. Setting this to `true` will reverse clipping to the other
 	 * side.
 	 */
 	@booleanAttribute(false) flipClip = false
+
+	/**
+	 * @property {boolean} clipDisabled
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * If `true`, clipping is not applied.
+	 */
+	@booleanAttribute(false) clipDisabled = false
 
 	#observer: MutationObserver | null = null
 
@@ -169,7 +190,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 
 				this.element.needsUpdate()
 
-				if (!planes.length) {
+				if (!planes.length || this.clipDisabled) {
 					mat.clippingPlanes = null
 					mat.clipShadows = false // FIXME upstream: don't forget this or Three.js has a bug that still attempts to perform clipping even if clippingPlanes is null.
 					return

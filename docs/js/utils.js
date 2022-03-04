@@ -1670,7 +1670,7 @@ const clipPlaneExample = stripIndent(html`
 	<lume-scene id="scene" perspective="800" webgl shadowmap-type="pcfsoft">
 		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
 
-		<lume-camera-rig active initial-distance="400" max-distance="7000" min-distance="100">
+		<lume-camera-rig active initial-polar-angle="30" initial-distance="400" max-distance="7000" min-distance="100">
 			<lume-point-light
 				position="200 -200 200"
 				intensity="0.6"
@@ -1687,6 +1687,7 @@ const clipPlaneExample = stripIndent(html`
 			has="clip-planes"
 			clip-planes="#clipPlane"
 			flip-clip="false"
+			clip-disabled="false"
 			sidedness="double"
 			cast-shadow="false"
 			receive-shadow="true"
@@ -1717,6 +1718,11 @@ const clipPlaneExample = stripIndent(html`
 
 	<lume-scene id="ui">
 		<lume-node size-mode="proportional literal" size="1 80">
+			<label>
+				Clipping enabled:
+				<input type="checkbox" checked onchange="console.log(box.clipDisabled = !box.clipDisabled)" />
+			</label>
+			<br />
 			<label>
 				Flip clip:
 				<input
