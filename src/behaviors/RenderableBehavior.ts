@@ -1,9 +1,16 @@
+import {autorun, StopFunction} from '@lume/variable'
 import {Behavior} from './Behavior.js'
 import {Events} from '../core/Events.js'
 import {Node} from '../core/Node.js'
 
 /**
- * Base class for behaviors relating to rendering. This is for any behavior that renders with CSS or WebGL rendering.
+ * @class RenderableBehavior
+ * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).
+ *
+ * Subclasses should provide loadGL and unloadGL methods in order to load or
+ * unload WebGL resources when GL is enabled or disabled in a scene.
+ *
+ * @extends Behavior
  */
 export abstract class RenderableBehavior extends Behavior {
 	requiredElementType() {
@@ -13,19 +20,19 @@ export abstract class RenderableBehavior extends Behavior {
 	connectedCallback() {
 		super.connectedCallback()
 
-		this.loadGL()
+		this.#triggerLoadGL()
 
-		this.element.on(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)
-		this.element.on(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
+		this.element.on(Events.BEHAVIOR_GL_LOAD, this.#triggerLoadGL, this)
+		this.element.on(Events.BEHAVIOR_GL_UNLOAD, this.#triggerUnloadGL, this)
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback()
 
-		this.unloadGL()
+		this.#triggerUnloadGL()
 
-		this.element.off(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)
-		this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
+		this.element.off(Events.BEHAVIOR_GL_LOAD, this.#triggerLoadGL, this)
+		this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.#triggerUnloadGL, this)
 	}
 
 	get glLoaded() {
@@ -40,19 +47,41 @@ export abstract class RenderableBehavior extends Behavior {
 
 	_cssLoaded = false
 
-	loadGL(): boolean {
-		if (!this.element.three) return false
+	#triggerLoadGL() {
+		// .three will be undefined if an element is not upgraded yet.
+		if (!this.element.three) return
 
-		if (this._glLoaded) return false
+		if (this._glLoaded) return
 		this._glLoaded = true
 
-		return true
+		this.loadGL?.()
 	}
 
-	unloadGL(): boolean {
-		if (!this._glLoaded) return false
+	#triggerUnloadGL() {
+		if (!this._glLoaded) return
 		this._glLoaded = false
 
-		return true
+		this.stopEffects()
+		this.unloadGL?.()
+	}
+
+	abstract loadGL?(): void
+
+	abstract unloadGL?(): void
+
+	/////////////////////////////////////
+
+	// TODO get this feature from classy-solid
+	createEffect(fn: () => void) {
+		this._stopFns.push(autorun(fn))
+	}
+
+	// TODO WithAutoruns mixin or similar (decorators), instead of it being in a
+	// base class. Not all sub-classes need it.
+	_stopFns: StopFunction[] = []
+
+	stopEffects() {
+		for (const stop of this._stopFns) stop()
+		this._stopFns.length = 0
 	}
 }

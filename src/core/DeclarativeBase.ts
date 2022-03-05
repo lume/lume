@@ -23,12 +23,6 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		this.defineElement(name)
 	}
 
-	// This empty constructor is needed merely to satisfy the type system.
-	// Remmoving it causes a type error.
-	constructor(..._args: any[]) {
-		super()
-	}
-
 	// COMPOSED TREE TRACKING:
 	// Overriding HTMLElement.prototype.attachShadow here is part of our
 	// implementation for tracking the composed tree and connecting THREE
@@ -209,9 +203,21 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		return this.__distributedChildren ? [...this.__distributedChildren] : null
 	}
 
+	__composedParent: Element | null = null
+
+	get composedParent(): Element | null {
+		let result = this.__composedParent
+
+		if (!result) {
+			result = this.__getComposedParent()
+		}
+
+		return result
+	}
+
 	// COMPOSED TREE TRACKING: The composed parent is the parent that this element renders relative
 	// to in the flat tree (composed tree).
-	get _composedParent(): HTMLElement | null {
+	__getComposedParent(): HTMLElement | null {
 		let parent: Node | null = this.parentElement
 
 		// Special case only for Nodes that are children of a Scene.
@@ -305,10 +311,9 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	__distributedParent: DeclarativeBase | null = null
 
 	// COMPOSED TREE TRACKING:
-	// If this element is a top-level child of a shadow root, then this
-	// points to the parent of the shadow root. The shadow root parent
-	// is the element that this element renders relative to in the flat tree
-	// (composed tree).
+	// If this element is a top-level child of a shadow root, then this points
+	// to the shadow root host. The shadow root host is the prent element that
+	// this element renders relative to in the flat tree (composed tree).
 	__shadowRootParent: DeclarativeBase | null = null
 
 	// COMPOSED TREE TRACKING:
@@ -382,16 +387,24 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		const isUpgraded = child.matches(':defined')
 
 		if (isUpgraded) {
-			this.childComposedCallback(child, connectionType)
+			child.__composedParent = this
+			this.childComposedCallback!(child, connectionType)
 		} else {
 			customElements.whenDefined(child.tagName.toLowerCase()).then(() => {
+				child.__composedParent = this
 				this.childComposedCallback!(child, connectionType)
 			})
 		}
 	}
 
 	__triggerChildUncomposedCallback(child: DeclarativeBase, connectionType: ConnectionType) {
-		this.childUncomposedCallback && this.childUncomposedCallback(child, connectionType)
+		// The theory is we don't need to defer here like we did in
+		// __triggerChildComposedCallback because if an element is uncomposed,
+		// it won't load anything even if its class gets defined later.
+
+		child.__composedParent = null
+
+		this.childUncomposedCallback?.(child, connectionType)
 	}
 
 	// COMPOSED TREE TRACKING: This is called in certain cases when distributed
@@ -493,6 +506,32 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		// The remaining nodes in newNodes must have been added.
 
 		return diff
+	}
+
+	traverseComposed(visitor: (node: DeclarativeBase) => void, waitForUpgrade = false): Promise<void> | void {
+		if (!waitForUpgrade) {
+			for (const child of this._composedChildren) child.traverseComposed(visitor, waitForUpgrade)
+
+			return
+		}
+
+		// if waitForUpgrade is true, we make a promise chain so that traversal
+		// order is still the same as when waitForUpgrade is false.
+		let promise: Promise<any> = Promise.resolve()
+
+		for (const child of this._composedChildren) {
+			const isUpgraded = child.matches(':defined')
+
+			if (isUpgraded) {
+				promise = promise!.then(() => child.traverseComposed(visitor, waitForUpgrade))
+			} else {
+				promise = promise!
+					.then(() => customElements.whenDefined(child.tagName.toLowerCase()))
+					.then(() => child.traverseComposed(visitor, waitForUpgrade))
+			}
+		}
+
+		return promise
 	}
 }
 

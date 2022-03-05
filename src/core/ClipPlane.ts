@@ -72,12 +72,13 @@ export class ClipPlane extends Node {
 		return true
 	}
 
-	override update(t: number, dt: number) {
-		super.update(t, dt)
+	override updateWorldMatrices() {
+		super.updateWorldMatrices()
 
 		const plane = this.#plane[0]()
 		const inverse = this.#inversePlane[0]()
 
+		// These only exist if WebGL mode is enabled.
 		if (!plane || !inverse) return
 
 		plane.normal.set(...clipNormal)

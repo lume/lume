@@ -1,9 +1,9 @@
+import {stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
 import {MeshLambertMaterial} from 'three/src/materials/MeshLambertMaterial.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
-import {MaterialTexture, MaterialTextureAttributes} from './MaterialTexture.js'
 
-export type LambertMaterialBehaviorAttributes = MaterialTextureAttributes | MaterialBehaviorAttributes
+export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 
 /**
  * @behavior lambert-material
@@ -24,12 +24,31 @@ export type LambertMaterialBehaviorAttributes = MaterialTextureAttributes | Mate
  *   })
  * </script>
  *
- * @extends MaterialTexture
  * @extends MaterialBehavior
  */
-export class LambertMaterialBehavior extends MaterialTexture(MaterialBehavior) {
+export class LambertMaterialBehavior extends MaterialBehavior {
+	@stringAttribute('') texture = ''
+	@stringAttribute('') specularMap = ''
+
 	_createComponent() {
 		return new MeshLambertMaterial({color: 0x00ff00})
+	}
+
+	loadGL() {
+		super.loadGL()
+
+		this._handleTexture(
+			() => this.texture,
+			tex => {
+				this.meshComponent!.map = tex
+			},
+		)
+		this._handleTexture(
+			() => this.specularMap,
+			tex => {
+				this.meshComponent!.specularMap = tex
+			},
+		)
 	}
 }
 

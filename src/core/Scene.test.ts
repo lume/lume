@@ -58,12 +58,12 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentNode).toBe(scene)
-			expect(node.lumeParent).toBe(scene)
+			expect(node.parentLumeElement).toBe(scene)
 
 			// Although a Scene has ShadowDOM, child Nodes are considered
 			// composed to the Scene instead of the ShadowDOM for our 3D
 			// rendering purposes.
-			expect(node._composedParent).withContext('_composedParent').toBe(scene)
+			expect(node.composedParent).withContext('composedParent').toBe(scene)
 			expect(node.composedLumeParent).withContext('composedLumeParent').toBe(scene)
 
 			expect(node.three.parent).withContext('three.parent').toBe(scene.three)
@@ -89,9 +89,9 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentElement).toBe(container)
-			expect(node.lumeParent).toBe(null)
+			expect(node.parentLumeElement).toBe(null)
 			expect(node.assignedSlot).toBe(scene.querySelector('slot'))
-			expect(node._composedParent).toBe(scene)
+			expect(node.composedParent).toBe(scene)
 			expect(node.composedLumeParent).toBe(scene)
 			expect(node.three.parent).toBe(scene.three)
 			expect(node.threeCSS.parent).toBe(scene.threeCSS)
@@ -104,7 +104,7 @@ describe('Scene', () => {
 			expect(scene.threeCSS.children[0]).toBe(node.threeCSS)
 
 			expect(scene.parentNode).toBe(root)
-			expect(scene._composedParent).toBe(container)
+			expect(scene.composedParent).toBe(container)
 			expect(scene.composedLumeParent).toBe(null)
 			expect(scene.three.parent).toBe(null)
 			expect(scene.threeCSS.parent).toBe(null)
@@ -131,8 +131,8 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node2.parentNode).toBe(shadow)
-			expect(node2.lumeParent).toBe(null)
-			expect(node2._composedParent).toBe(node)
+			expect(node2.parentLumeElement).toBe(null)
+			expect(node2.composedParent).toBe(node)
 			expect(node2.composedLumeParent).toBe(node)
 			expect(node2.three.parent).withContext('three should be connected to parent').toBe(node.three)
 			expect(node2.threeCSS.parent).withContext('threeCSS should be connected to parent').toBe(node.threeCSS)
@@ -168,9 +168,9 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentNode).toBe(container)
-			expect(node.lumeParent).withContext('no lume parent').toBe(null)
+			expect(node.parentLumeElement).withContext('no lume parent').toBe(null)
 			expect(node.assignedSlot).toBe(null)
-			expect(node._composedParent).withContext('no composed parent').toBe(null)
+			expect(node.composedParent).withContext('no composed parent').toBe(null)
 			expect(node.composedLumeParent).withContext('no composed LUME parent').toBe(null)
 			expect(node.three.parent).toBe(null)
 			expect(node.threeCSS.parent).toBe(null)
@@ -213,9 +213,9 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentElement).toBe(container)
-			expect(node.lumeParent).toBe(null)
+			expect(node.parentLumeElement).toBe(null)
 			expect(node.assignedSlot).toBe(middle.querySelector('slot'))
-			expect(node._composedParent).toBe(scene)
+			expect(node.composedParent).toBe(scene)
 			expect(node.composedLumeParent).toBe(scene)
 			expect(node.three.parent).toBe(scene.three)
 			expect(node.threeCSS.parent).toBe(scene.threeCSS)
@@ -230,7 +230,7 @@ describe('Scene', () => {
 			expect(scene.threeCSS.children[0]).toBe(node.threeCSS)
 
 			expect(scene.parentNode).toBe(deeper)
-			expect(scene._composedParent).toBe(deeper)
+			expect(scene.composedParent).toBe(deeper)
 			expect(scene.composedLumeParent).toBe(null)
 			expect(scene.three.parent).toBe(null)
 			expect(scene.threeCSS.parent).toBe(null)
@@ -272,17 +272,17 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentElement).toBe(container)
-			expect(node.lumeParent).toBe(null)
+			expect(node.parentLumeElement).toBe(null)
 			expect(node.assignedSlot).toBe(null)
-			expect(node._composedParent).toBe(null)
+			expect(node.composedParent).toBe(null)
 			expect(node.composedLumeParent).toBe(null)
 			expect(node.three.parent).toBe(null)
 			expect(node.threeCSS.parent).toBe(null)
 
 			expect(sphere.parentElement).toBe(slot)
-			expect(sphere.lumeParent).toBe(null)
+			expect(sphere.parentLumeElement).toBe(null)
 			expect(sphere.assignedSlot).toBe(null)
-			expect(sphere._composedParent).withContext('composed parent').toBe(scene)
+			expect(sphere.composedParent).withContext('composed parent').toBe(scene)
 			expect(sphere.composedLumeParent).withContext('composed lume parent').toBe(scene)
 			expect(sphere.three.parent).withContext('three parent').toBe(scene.three)
 			expect(sphere.threeCSS.parent).withContext('threeCSS parent').toBe(scene.threeCSS)
@@ -333,17 +333,17 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentElement).toBe(container)
-			expect(node.lumeParent).toBe(null)
+			expect(node.parentLumeElement).toBe(null)
 			expect(node.assignedSlot).toBe(middle.querySelector('slot'))
-			expect(node._composedParent).toBe(scene)
+			expect(node.composedParent).toBe(scene)
 			expect(node.composedLumeParent).toBe(scene)
 			expect(node.three.parent).toBe(scene.three)
 			expect(node.threeCSS.parent).toBe(scene.threeCSS)
 
 			expect(sphere.parentElement).toBe(slot)
-			expect(sphere.lumeParent).toBe(null)
+			expect(sphere.parentLumeElement).toBe(null)
 			expect(sphere.assignedSlot).toBe(null)
-			expect(sphere._composedParent).withContext('composed parent').toBe(null)
+			expect(sphere.composedParent).withContext('composed parent').toBe(null)
 			expect(sphere.composedLumeParent).withContext('composed lume parent').toBe(null)
 			expect(sphere.three.parent).withContext('three parent').toBe(null)
 			expect(sphere.threeCSS.parent).withContext('threeCSS parent').toBe(null)
@@ -384,18 +384,18 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(box.parentElement).toBe(node)
-			expect(box.lumeParent).toBe(node)
+			expect(box.parentLumeElement).toBe(node)
 			expect(box.assignedSlot).toBe(slot)
-			expect(box._composedParent).toBe(node)
+			expect(box.composedParent).toBe(node)
 			expect(box.composedLumeParent).toBe(node)
 			expect(box.three.parent).withContext('box three parent').toBe(node.three)
 			expect(box.threeCSS.parent).withContext('box threeCSS parent').toBe(node.threeCSS)
 
 			// The sphere is not composed because it is not slotted into the ShadowRoot
 			expect(sphere.parentElement).toBe(node)
-			expect(sphere.lumeParent).toBe(node)
+			expect(sphere.parentLumeElement).toBe(node)
 			expect(sphere.assignedSlot).toBe(null)
-			expect(sphere._composedParent).toBe(null)
+			expect(sphere.composedParent).toBe(null)
 			expect(sphere.composedLumeParent).toBe(null)
 			expect(sphere.three.parent).withContext('sphere three parent').toBe(null)
 			expect(sphere.threeCSS.parent).withContext('sphere threeCSS parent').toBe(null)
@@ -437,9 +437,9 @@ describe('Scene', () => {
 			await new Promise(r => setTimeout(r, 10))
 
 			expect(node.parentElement).toBe(container)
-			expect(node.lumeParent).toBe(null)
+			expect(node.parentLumeElement).toBe(null)
 			expect(node.assignedSlot).toBe(middleSlot)
-			expect(node._composedParent).toBe(middleNode)
+			expect(node.composedParent).toBe(middleNode)
 			expect(node.composedLumeParent).toBe(middleNode)
 			expect(node.three.parent).toBe(middleNode.three)
 			expect(node.threeCSS.parent).toBe(middleNode.threeCSS)
@@ -483,12 +483,12 @@ describe('Scene', () => {
 			// which triggers reactions deferred).
 			await new Promise(r => setTimeout(r, 10))
 
-			expect(node.lumeParent).toBe(scene)
-			expect(node._composedParent).toBe(scene)
+			expect(node.parentLumeElement).toBe(scene)
+			expect(node.composedParent).toBe(scene)
 			expect(node.composedLumeParent).toBe(scene)
 			expect(scene.composedLumeChildren.length).toBe(1)
 			expect(scene.composedLumeChildren[0]).toBe(node)
-			expect(scene._composedParent).toBe(container)
+			expect(scene.composedParent).toBe(container)
 			expect(scene.composedLumeParent).toBe(null)
 		})
 
@@ -520,12 +520,12 @@ describe('Scene', () => {
 			// which triggers reactions deferred).
 			await new Promise(r => setTimeout(r, 10))
 
-			expect(node.lumeParent).toBe(scene)
-			expect(node._composedParent).toBe(scene)
+			expect(node.parentLumeElement).toBe(scene)
+			expect(node.composedParent).toBe(scene)
 			expect(node.composedLumeParent).toBe(scene)
 			expect(scene.composedLumeChildren.length).toBe(1)
 			expect(scene.composedLumeChildren[0]).toBe(node)
-			expect(scene._composedParent).toBe(distributedParent)
+			expect(scene.composedParent).toBe(distributedParent)
 			expect(scene.composedLumeParent).toBe(null)
 		})
 

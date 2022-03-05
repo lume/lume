@@ -39,6 +39,9 @@ const appliedPosition = [0, 0, 0]
 
 const elOps = new WeakMap<ImperativeBase, ElementOperations>()
 
+const ourThreeObjects = new WeakSet<Object3D>()
+const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
+
 export type BaseAttributes = TransformableAttributes
 
 /**
@@ -179,11 +182,14 @@ export class ImperativeBase extends Settable(Transformable) {
 		// Helpful for debugging when looking in devtools.
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`
+		ourThreeObjects.add(o)
 		return o
 	}
 
 	__disposeThree() {
-		this.__three && disposeObject(this.__three)
+		if (!this.__three) return
+		disposeObject(this.__three)
+		ourThreeObjects.delete(this.__three)
 		this.__three = undefined
 	}
 
@@ -224,11 +230,14 @@ export class ImperativeBase extends Settable(Transformable) {
 		const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`
+		ourThreeObjects.add(o)
 		return o
 	}
 
 	__disposeThreeCSS() {
-		this.__threeCSS && disposeObject(this.__threeCSS)
+		if (!this.__threeCSS) return
+		disposeObject(this.__threeCSS)
+		ourThreeObjects.delete(this.__threeCSS)
 		this.__threeCSS = undefined
 	}
 
@@ -243,7 +252,9 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.__disposeThreeCSS()
 		// The threeCSS getter is used here, which makes a new instance
 		this._connectThreeCSS()
-		if (children) this.threeCSS.add(...children)
+
+		// Three.js crashes on arrays of length 0.
+		if (children && children.length) this.threeCSS.add(...children)
 	}
 
 	connectedCallback() {
@@ -251,6 +262,7 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		this._stopFns.push(
 			autorun(() => {
+				this.scene
 				this.sizeMode
 				this.size
 
@@ -266,32 +278,35 @@ export class ImperativeBase extends Settable(Transformable) {
 					// document to prefer not to force calculation, and instead
 					// observe the property changes (f.e. with autorun()).
 					this._calcSize()
+					this.needsUpdate()
 				})
 			}),
 			autorun(() => {
-				const composedParent = this.composedSceneGraphParent
+				if (!this.scene) return
 
-				if (!composedParent) return
-
-				composedParent.calculatedSize
+				// If the parent size changes,
+				this.parentSize
 
 				untrack(() => {
 					if (
+						// then we only need to update if any size dimension is proportional,
 						this.sizeMode.x === 'proportional' ||
 						this.sizeMode.y === 'proportional' ||
 						this.sizeMode.z === 'proportional' ||
+						// or if any alignPoint dimension is not zero because parent size affects alignment.
 						this.alignPoint.x !== 0 ||
 						this.alignPoint.y !== 0 ||
 						this.alignPoint.z !== 0
 					) {
+						// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
+						// unless explicitly requested by a user (f.e. they read a prop so
+						// the size must be calculated). https://github.com/lume/lume/issues/66
 						this._calcSize()
 						this.needsUpdate()
 					}
 				})
 			}),
 			autorun(() => {
-				this.sizeMode
-				this.size
 				this.position
 				this.rotation
 				this.scale
@@ -337,7 +352,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (scene) this.__giveSceneToChildrenAndMaybeLoadThree(child, scene)
 	}
 
-	childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
+	override childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
 		if (!(child instanceof ImperativeBase)) return
 		this.__possiblyUnloadThree(child)
 		child._scene = null
@@ -345,19 +360,15 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	__giveSceneToChildrenAndMaybeLoadThree(node: ImperativeBase, scene: Scene) {
 		node.traverseSceneGraph(subnode => {
-			subnode._scene = scene
-
-			// Calculate sizing because proportional size might depend on
-			// the new parent.
-			subnode._calcSize()
-			subnode.needsUpdate()
-
+			if (node !== this) {
+				subnode._scene = scene
+			}
 			this.__possiblyLoadThree(subnode)
 		})
 	}
 
 	/** @abstract */
-	traverseSceneGraph(_visitor: (node: Node) => void, _waitForUpgrade = false): Promise<void> | void {
+	traverseSceneGraph(_visitor: (node: ImperativeBase) => void, _waitForUpgrade = false): Promise<void> | void {
 		throw 'Node and Scene implement this'
 	}
 
@@ -380,16 +391,16 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	/**
-	 * Overrides [`TreeNode.lumeParent`](./TreeNode?id=lumeparent) to assert
+	 * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
 	 * that parents are `ImperativeBase` (`Node` or `Scene`) instances.
 	 */
-	// This override serves to change the type of `lumeParent` for
+	// This override serves to change the type of `parentLumeElement` for
 	// subclasses of ImperativeBase.
 	// Nodes (f.e. Mesh, Sphere, etc) and Scenes should always have parents
 	// that are Nodes or Scenes (at least for now).
 	// @prod-prune
-	override get lumeParent(): ImperativeBase | null {
-		const parent = super.lumeParent
+	override get parentLumeElement(): ImperativeBase | null {
+		const parent = super.parentLumeElement
 
 		// @prod-prune
 		if (parent && !(parent instanceof ImperativeBase)) throw new TypeError('Parent must be type ImperativeBase.')
@@ -443,6 +454,13 @@ export class ImperativeBase extends Settable(Transformable) {
 		return elOps.get(this)!
 	}
 
+	// Overrides to filter out any non-Nodes (f.e. Scenes).
+	override get composedLumeChildren(): Node[] {
+		const result: Node[] = []
+		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
+		return result
+	}
+
 	/**
 	 * @method makeThreeObject3d -
 	 *
@@ -480,11 +498,27 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	_connectThree(): void {
 		this.composedSceneGraphParent?.three.add(this.three)
+
+		// Although children connect themselves during _connectThree when
+		// triggered via _loadGL, we still need to do this in case a child is
+		// already loaded but the parent was re-distributed (f.e. to a different
+		// slot, in which case unload/load will happen for that parent),
+		// otherwise the child tree will be connected to the old diconnected
+		// parent three object and won't render on screen.
+		for (const child of this.composedLumeChildren) {
+			this.three.add(child.three)
+		}
+
 		this.needsUpdate()
 	}
 
 	_connectThreeCSS(): void {
 		this.composedSceneGraphParent?.threeCSS.add(this.threeCSS)
+
+		for (const child of this.composedLumeChildren) {
+			this.threeCSS.add(child.threeCSS)
+		}
+
 		this.needsUpdate()
 	}
 
@@ -495,7 +529,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	get composedSceneGraphParent(): ImperativeBase | null {
-		// check if lumeParent is a Scene because Scenes always have shadow
+		// read first, to track the dependency
+		const composedLumeParent = this.composedLumeParent
+
+		// check if parentLumeElement is a Scene because Scenes always have shadow
 		// roots as part of their implementation (users will not be adding
 		// shadow roots to them), and we treat distribution into a Scene shadow
 		// root different than with all other Nodes (users can add shadow roots
@@ -504,9 +541,9 @@ export class ImperativeBase extends Settable(Transformable) {
 		// the lume-scene's ShadowRoot, and things will not work in that case
 		// because the top-level Node elements will seem to not be composed to
 		// any Scene element.
-		if (this.lumeParent?.isScene) return this.lumeParent
 
-		return this.composedLumeParent
+		if (this.parentLumeElement?.isScene) return this.parentLumeElement
+		return composedLumeParent
 	}
 
 	_glStopFns: StopFunction[] = []
@@ -638,7 +675,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		threeJsPostAdjustment[1] = size.y / 2
 		threeJsPostAdjustment[2] = size.z / 2
 
-		const parentSize = this._getParentSize()
+		const parentSize = this.parentSize
 
 		// THREE-COORDS-TO-DOM-COORDS
 		// translate the "align" back to the top/left/back of the parent element.
@@ -673,9 +710,7 @@ export class ImperativeBase extends Settable(Transformable) {
 			appliedPosition[2] + threeJsPostAdjustment[2],
 		)
 
-		// TODO Besides that Transformable shouldn't know about Three.js
-		// objects, it should also not know about Scene.
-		const childOfScene = this.threeCSS.parent && this.threeCSS.parent.type === 'Scene'
+		const childOfScene = this.composedSceneGraphParent?.isScene
 
 		// FIXME we shouldn't need this conditional check. See the next XXX.
 		if (childOfScene) {
@@ -775,8 +810,14 @@ export class ImperativeBase extends Settable(Transformable) {
 	}
 
 	updateWorldMatrices(): void {
-		this.three.updateMatrixWorld()
-		this.threeCSS.updateMatrixWorld()
+		this.three.updateWorldMatrix(false, false)
+		for (const child of this.three.children) if (!isManagedByUs(child)) child.updateMatrixWorld(true)
+
+		this.threeCSS.updateWorldMatrix(false, false)
+		for (const child of this.threeCSS.children) if (!isManagedByUs(child)) child.updateMatrixWorld(true)
+
+		this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(), false)
+
 		this.emit('worldMatrixUpdate')
 	}
 
@@ -804,11 +845,11 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	// This method is used by Motor._renderNodes().
 	getNearestAncestorThatShouldBeRendered(): ImperativeBase | null {
-		let composedParent = this.composedSceneGraphParent
+		let composedSceneGraphParent = this.composedSceneGraphParent
 
-		while (composedParent) {
-			if (composedParent.__willBeRendered) return composedParent
-			composedParent = composedParent.composedSceneGraphParent
+		while (composedSceneGraphParent) {
+			if (composedSceneGraphParent.__willBeRendered) return composedSceneGraphParent
+			composedSceneGraphParent = composedSceneGraphParent.composedSceneGraphParent
 		}
 
 		return null

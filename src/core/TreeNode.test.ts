@@ -12,7 +12,7 @@ describe('TreeNode', () => {
 		const t = new TreeNode()
 
 		expect(t.lumeChildren).toEqual([])
-		expect(t.lumeParent).toBe(null)
+		expect(t.parentLumeElement).toBe(null)
 		expect(t.lumeChildCount).toBe(0)
 	})
 

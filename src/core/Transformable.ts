@@ -127,7 +127,7 @@ export class Transformable extends Sizeable {
 	 *
 	 * *attribute*
 	 *
-	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0, 0, 0)</code>
+	 * Default: <code>new [XYZNumberValues](../xyz-values/XYZNumberValues)(0.5, 0.5, 0.5)</code>
 	 *
 	 * Set the rotational origin of the object in 3D space, relative to
 	 * itself, by specifying origin along the X, Y, and Z axes.

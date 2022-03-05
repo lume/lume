@@ -1,17 +1,20 @@
 import 'element-behaviors'
-import {reactive, autorun, attribute} from '@lume/element'
+import {reactive, attribute, stringAttribute} from '../../attribute.js'
 import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 // @ts-ignore, no type def
 import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
-import {MaterialBehavior} from './MaterialBehavior.js'
-import {MaterialTexture} from './MaterialTexture.js'
+import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+
+export type ShaderMaterialBehaviorAttributes =
+	| MaterialBehaviorAttributes
+	| 'uniforms'
+	| 'vertexShader'
+	| 'fragmentShader'
 
 @reactive
-export class ShaderMaterialBehavior extends MaterialTexture(MaterialBehavior) {
-	static _observedProperties = ['uniforms', 'vertexShader', 'fragmentShader', ...MaterialBehavior._observedProperties]
-
+export class ShaderMaterialBehavior extends MaterialBehavior {
 	// TODO: Perhaps instead of accepting string objects for HTML attributes,
 	// we can create specific uniform-foo attributes for each uniform, and have
 	// specific data handling and type definitions for each one. This would
@@ -36,50 +39,34 @@ export class ShaderMaterialBehavior extends MaterialTexture(MaterialBehavior) {
 
 	#uniforms: Record<string, any> = {}
 
-	@attribute vertexShader = default_vertex
-	@attribute fragmentShader = default_fragment
+	@stringAttribute(default_vertex) vertexShader = default_vertex
+	@stringAttribute(default_fragment) fragmentShader = default_fragment
 
 	_createComponent() {
 		return new ShaderMaterial({
 			uniforms: this.uniforms as Record<string, any>,
-			vertexShader: this.vertexShader || default_vertex,
-			fragmentShader: this.fragmentShader || default_fragment,
+			vertexShader: this.vertexShader,
+			fragmentShader: this.fragmentShader,
 		})
 	}
 
 	loadGL() {
-		if (!super.loadGL()) return false
+		super.loadGL()
 
 		// CONTINUE FIXME: I added the 'retry' trick here to see if re-setting
 		// the material would fix the issue in the custom shader example. The
 		// shader does not appear.
 
-		// let retry: (() => void) | undefined
-		this._stopFns.push(
-			autorun(
-				// (retry =
-				() => {
-					const mat = this.getMeshComponent<ShaderMaterial>('material')
+		this.createEffect(() => {
+			const mat = this.meshComponent!
 
-					console.log('shader????:', this.fragmentShader)
+			mat.uniforms = this.uniforms as Record<string, any>
+			mat.vertexShader = this.vertexShader || default_vertex
+			mat.fragmentShader = this.fragmentShader || default_fragment
 
-					mat.uniforms = this.uniforms as Record<string, any>
-					mat.vertexShader = this.vertexShader || default_vertex
-					mat.fragmentShader = this.fragmentShader || default_fragment
-
-					mat.needsUpdate = true
-					this.element.needsUpdate()
-
-					// setTimeout(() => {
-					// 	retry && retry()
-					// 	retry = undefined
-					// }, 1000)
-				},
-				// ),
-			),
-		)
-
-		return true
+			mat.needsUpdate = true
+			this.element.needsUpdate()
+		})
 	}
 }
 

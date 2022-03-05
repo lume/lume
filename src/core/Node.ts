@@ -119,6 +119,15 @@ export class Node extends HtmlInterface {
 	@booleanAttribute(true) @emits('propertychange') visible = true
 
 	/**
+	 * *reactive*
+	 */
+	override get parentSize() {
+		const composedLumeParent = this.composedLumeParent
+		if (this.scene && this.scene === this.parentElement) return this.scene.calculatedSize
+		return composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
+	}
+
+	/**
 	 * @constructor - Create a Node instance.
 	 *
 	 * The following examples calls `.set()` to set initial properties. Any
@@ -163,12 +172,6 @@ export class Node extends HtmlInterface {
 			// TC39's vision of inheritance for JavaScript.
 			defer(() => this.needsUpdate())
 		}
-	}
-
-	get composedLumeChildren(): Node[] {
-		const result: Node[] = []
-		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
-		return result
 	}
 
 	/**
@@ -276,7 +279,3 @@ declare global {
 
 // Exposes the `has=""` attribute type definition for all elements in TypeScript JSX templates.
 import type {} from 'element-behaviors/src/attribute-types'
-
-function isNode(n: any): n is Node {
-	return n.isNode
-}

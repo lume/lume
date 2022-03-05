@@ -101,6 +101,5 @@ export interface Disposable {
 }
 
 export function isDisposable(o: any): o is Disposable {
-	if (typeof o === 'object' && o && 'dispose' in o) return true
-	return false
+	return !!(typeof o === 'object' && o && 'dispose' in o)
 }

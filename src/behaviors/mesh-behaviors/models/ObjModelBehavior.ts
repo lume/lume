@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {reactive, stringAttribute, autorun, StopFunction} from '@lume/element'
+import {reactive, stringAttribute} from '../../attribute.js'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
@@ -9,12 +9,11 @@ import {RenderableBehavior} from '../../RenderableBehavior.js'
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
 import type {Group} from 'three/src/objects/Group.js'
+import type {ElementBehaviors} from 'element-behaviors'
 
-// TODO move this somewhere better.
+// TODO move this somewhere better, perhaps element-behaviors
 declare global {
-	interface Element {
-		behaviors: Map<string, object>
-	}
+	interface Element extends ElementBehaviors {}
 }
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
@@ -28,18 +27,12 @@ export class ObjModelBehavior extends RenderableBehavior {
 	objLoader?: OBJLoader
 	mtlLoader?: MTLLoader
 
-	static _observedProperties = ['obj', 'mtl', ...(RenderableBehavior._observedProperties || [])]
-
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	#stopFns: StopFunction[] = []
-
 	loadGL() {
-		if (!super.loadGL()) return false
-
 		this.objLoader = new OBJLoader() // TODO types for loaders
 		this.mtlLoader = new MTLLoader(this.objLoader.manager)
 		// Allow cross-origin images to be loaded.
@@ -51,7 +44,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 
 		let firstRun = true
 
-		const stop = autorun(() => {
+		this.createEffect(() => {
 			this.mtl
 			this.obj
 
@@ -64,24 +57,13 @@ export class ObjModelBehavior extends RenderableBehavior {
 		})
 
 		firstRun = false
-
-		this.#stopFns.push(stop)
-
-		return true
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this.#stopFns) stop()
-		this.#stopFns.length = 0
-
 		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
 		this.#version++
-
-		return true
 	}
 
 	#materialIsFromMaterialBehavior = false
@@ -163,7 +145,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 				model.traverse((child: Object3D) => {
 					console.log('isRenderItem?', isRenderItem(child))
 					if (isRenderItem(child)) {
-						child.material = materialBehavior.getMeshComponent('material')
+						child.material = materialBehavior.meshComponent || thro(new Error('Expected a material'))
 					}
 				})
 			} else {
@@ -181,3 +163,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 }
 
 if (!elementBehaviors.has('obj-model')) elementBehaviors.define('obj-model', ObjModelBehavior)
+
+const thro = (err: any) => {
+	throw err
+}

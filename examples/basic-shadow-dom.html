@@ -111,13 +111,16 @@ The code below is commented to describe which parts correlate to the above list 
 								>
 									<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
 									<lume-sphere
-										id="sphere"
+										id="distributedSphere"
+										color="pink"
 										Xslot="box"
 										slot="plane"
 										size="40 40 40"
 										position="-30 -30 -30"
 										texture="../docs/textures/cement.jpg"
-									></lume-sphere>
+									>
+										<lume-camera-rig></lume-camera-rig>
+									</lume-sphere>
 								</lume-box>
 							</lume-scene>
 						</div>
@@ -126,7 +129,7 @@ The code below is commented to describe which parts correlate to the above list 
 			)
 
 			const light = bodyRoot.querySelector('#light')
-			const sphere = bodyRoot.querySelector('#sphere')
+			const sphere = bodyRoot.querySelector('#distributedSphere')
 			const scene = bodyRoot.querySelector('#scene')
 
 			setTimeout(() => {})
@@ -165,13 +168,23 @@ The code below is commented to describe which parts correlate to the above list 
 							<!-- A slot that is child of a ShadowRoot. Any content (distributed, or fallback) renders relative to the shadow host. -->
 							<slot name="root">
 								<!-- Default content to render when nothing is assigned to this slot. -->
-								<lume-sphere color="orange" size="50 50 50" position="10 10 10"></lume-sphere>
+								<lume-sphere
+									id="default-sphere-orange"
+									color="orange"
+									size="50 50 50"
+									position="10 10 10"
+								></lume-sphere>
 							</slot>
 							<!-- A LUME element as child of a ShadowRoot renders relative to the shadow host. -->
 							<lume-box id="box" size="50 50 50" position="-100 -100 -100" color="royalblue">
 								<slot name="box">
 									<!-- Default content to render when nothing is assigned to this slot. -->
-									<lume-sphere color="white" size="50 50 50" position="10 10 10"></lume-sphere>
+									<lume-sphere
+										id="default-sphere-white"
+										color="white"
+										size="50 50 50"
+										position="10 10 10"
+									></lume-sphere>
 								</slot>
 							</lume-box>
 							<lume-node position="10 10 10">
@@ -186,15 +199,17 @@ The code below is commented to describe which parts correlate to the above list 
 									style="background: skyblue; padding: 5px; font-size: 0.5rem"
 								>
 									<h4>This is DOM content.</h4>
+
+									<!-- This slot is further assigned to a deeper slot, so LUME elements assigned here
+									will not render relative to here, but relative to the parent of the deeper slot.  -->
 									<slot name="plane" slot="deeper" ref=${el => (slot = el)}>
-										<!--
-										This slot is further assigned to a deeper slot, so LUME elements assigned here
-										will not render relative to here, but relative to the parent of the deeper slot.
-										FIXME JSX issue: if this comment is outside of the slot, right above it, the JSX
-										toggles the comment instead of the slot element.
-										-->
 										<!-- Default content to render when nothing is assigned to this slot. -->
-										<lume-sphere color="teal" size="50 50 50" position="10 10 10"></lume-sphere>
+										<lume-sphere
+											id="default-sphere-teal"
+											color="teal"
+											size="50 50 50"
+											position="10 10 10"
+										></lume-sphere>
 									</slot>
 								</lume-mixed-plane>
 							</lume-node>
@@ -216,12 +231,22 @@ The code below is commented to describe which parts correlate to the above list 
 									The <h4> from the above ShadowRoot is always distributed here, so
 									this yellow sphere will never render.
 								-->
-								<lume-sphere color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
+								<lume-sphere
+									id="default-sphere-yellow"
+									color="yellow"
+									size="50 50 50"
+									position="10 10 10"
+								></lume-sphere>
 							</slot>
 							<lume-box id="deeperbox" size="20 20 20" position="0 0 100">
 								<slot name="deeper">
 									<!-- Default content to render when nothing is assigned to this slot. -->
-									<lume-sphere color="green" size="50 50 50" position="10 10 10"></lume-sphere>
+									<lume-sphere
+										id="default-sphere-green"
+										color="green"
+										size="50 50 50"
+										position="10 10 10"
+									></lume-sphere>
 								</slot>
 							</lume-box>
 						`,
@@ -231,7 +256,7 @@ The code below is commented to describe which parts correlate to the above list 
 					setTimeout(() => {
 						let nodes = []
 						scene.traverseSceneGraph(n => nodes.push(n))
-						if (nodes.length !== 11) throw new Error('Composed tree traversal failed.')
+						if (nodes.length !== 11) throw new Error('Composed tree size not as expected.')
 					})
 
 					let i = 0

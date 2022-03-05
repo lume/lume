@@ -22,17 +22,14 @@ import {FogExp2} from 'three/src/scenes/FogExp2.js'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {HtmlScene as HTMLInterface} from './HtmlScene.js'
-import {defer, thro} from './utils.js'
-import {possiblyPolyfillResizeObserver} from './ResizeObserver.js'
+import {defer} from './utils.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {DeclarativeBase} from './DeclarativeBase.js'
 import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
-import type {Sizeable} from './Sizeable.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Node} from './Node.js'
 
@@ -459,6 +456,7 @@ export class Scene extends HTMLInterface {
 	// perspective attribute.
 	__threeCamera!: ThreePerspectiveCamera
 
+	// This is toggled by ClipPlanesBehavior, not intended for direct use.
 	@reactive __localClipping = false
 
 	constructor() {
@@ -515,10 +513,6 @@ export class Scene extends HTMLInterface {
 		this.needsUpdate()
 	}
 
-	// size of the element where the Scene is mounted
-	// NOTE: z size is always 0, since native DOM elements are always flat.
-	_elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
-
 	static css = /*css*/ `
 		${HTMLInterface.css}
 		.vrButton {
@@ -540,13 +534,13 @@ export class Scene extends HTMLInterface {
 				if (this.webgl) this._triggerLoadGL()
 				else this._triggerUnloadGL()
 
-				// TODO Need this?
 				this.needsUpdate()
 			}),
 			autorun(() => {
 				if (!this.webgl || !this.background) {
 					if (isDisposable(this.three.background)) this.three.background.dispose()
 					this.#glRenderer?.disableBackground(this)
+					this.needsUpdate()
 					return
 				}
 
@@ -573,6 +567,7 @@ export class Scene extends HTMLInterface {
 				if (!this.webgl || !this.environment) {
 					if (isDisposable(this.three.environment)) this.three.environment.dispose()
 					this.#glRenderer?.disableEnvironment(this)
+					this.needsUpdate()
 					return
 				}
 
@@ -599,7 +594,6 @@ export class Scene extends HTMLInterface {
 				if (this.enableCss) this._triggerLoadCSS()
 				else this._triggerUnloadCSS()
 
-				// Do we need this? Doesn't hurt to have it just in case.
 				this.needsUpdate()
 			}),
 			autorun(() => {
@@ -634,13 +628,6 @@ export class Scene extends HTMLInterface {
 
 	makeThreeCSSObject() {
 		return new ThreeScene()
-	}
-
-	// Overrides to filter out any non-Nodes (f.e. Scenes).
-	get composedLumeChildren(): Node[] {
-		const result: Node[] = []
-		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
-		return result
 	}
 
 	/**
@@ -710,6 +697,9 @@ export class Scene extends HTMLInterface {
 			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
 			// TODO update with calculatedSize in autorun
 			this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
+			this.__threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${
+				this.__threeCamera.type
+			})`
 			this.perspective = this.perspective
 		})
 	}
@@ -765,9 +755,18 @@ export class Scene extends HTMLInterface {
 		}
 	}
 
-	/** @override */
-	_getParentSize(): XYZValuesObject<number> {
-		return this.composedLumeParent ? (this.composedLumeParent as Sizeable).calculatedSize : this._elementParentSize
+	/**
+	 * @property {{x: number, y: number, z: number}} parentSize
+	 *
+	 * `override` `reactive` `readonly`
+	 *
+	 * Overrides [`Sizeable.parentSize`](./Sizeable#parentSize) in order to return the size of a Scene's
+	 * non-LUME parent element where the scene is connected.
+	 * NOTE: `z` size of a non-LUME element is always `0`, since regular DOM
+	 * elements don't have the concept of Z size and are always flat.
+	 */
+	override get parentSize(): XYZValuesObject<number> {
+		return this.composedLumeParent?.calculatedSize ?? this.__elementParentSize
 	}
 
 	// For now, use the same program (with shaders) for all objects.
@@ -817,6 +816,8 @@ export class Scene extends HTMLInterface {
 					fog.color.set(this.fogColor)
 					fog.density = this.fogDensity
 				}
+
+				this.needsUpdate()
 			}),
 			autorun(() => {
 				this.#glRenderer!.localClippingEnabled = this.__localClipping
@@ -856,6 +857,8 @@ export class Scene extends HTMLInterface {
 				} else {
 					// TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
 				}
+
+				this.needsUpdate()
 			}),
 			autorun(() => {
 				this.__threeCamera.near = this.cameraNear
@@ -962,8 +965,13 @@ export class Scene extends HTMLInterface {
 
 	// TODO move the following parent size change stuff to a separate re-usable class.
 
-	#parentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+	// size of the element where the Scene is mounted
+	@reactive __elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
+	// TODO NESTED SCENES At the moment, we assume Scenes are top-level, connected to regular
+	// element parents. In the future, we will allow Scenes to be children of
+	// Nodes, in order to have nested scene rendering (f.e. a WebGL Scene
+	// rendered on a plane inside a parent Scene, to make portals, etc).
 	#startOrStopParentSizeObservation() {
 		if (
 			// If we will be rendering something...
@@ -984,24 +992,21 @@ export class Scene extends HTMLInterface {
 
 	// observe size changes on the scene's parent.
 	#startParentSizeObservation() {
-		const parentError = 'A Scene can only be child of HTMLElement or ShadowRoot (f.e. not an SVGElement).'
-
-		// TODO SLOTS use of _composedParent here won't fully work until we
-		// detect composed parent changes when the parent is not one of our own
-		// elements (f.e. when a scene is distributed via slot to a div). The only way
-		// to do this without polling is with a combination of monkey patching
-		// attachShadow and using MutationObserver in all trees to observe slot
-		// elements for slotchange.
+		// TODO The only way to make composedParent reactive even for non-LUME
+		// composed parents without polling is with a combination of monkey
+		// patching attachShadow and using MutationObserver in all trees to
+		// observe slot elements for slotchange.
 		// https://github.com/WICG/webcomponents/issues/941
-		const parent = this._composedParent
+		// TODO NESTED SCENES In the future, we will want to distinguish between Nodes and
+		// regular elements, and we will only need size observation with regular
+		// elements.
+		const parent = /*not reactive*/ this.composedParent
 
 		// This shouldn't be possible.
 		// @prod-prune
-		if (!parent) thro(parentError)
+		if (!parent) throw new Error('A Scene can only be child of HTMLElement or ShadowRoot (f.e. not an SVGElement).')
 
 		// TODO use a single ResizeObserver for all scenes.
-
-		possiblyPolyfillResizeObserver()
 
 		this.#resizeObserver = new ResizeObserver(changes => {
 			for (const change of changes) {
@@ -1028,13 +1033,13 @@ export class Scene extends HTMLInterface {
 					// If the text writing mode is horizontal, then inlinSize is
 					// the width, otherwise in vertical writing mode it is the height.
 					// For more details: https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize#Syntax
-					if (isHorizontal) this.#checkSize(inlineSize, blockSize)
-					else this.#checkSize(blockSize, inlineSize)
+					if (isHorizontal) this.#checkElementParentSize(inlineSize, blockSize)
+					else this.#checkElementParentSize(blockSize, inlineSize)
 				}
 				// Otherwise use the older API (possibly polyfilled)
 				else {
 					const {width, height} = change.contentRect
-					this.#checkSize(width, height)
+					this.#checkElementParentSize(width, height)
 				}
 			}
 		})
@@ -1049,25 +1054,16 @@ export class Scene extends HTMLInterface {
 
 	// NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
 	// we haven't taken that into consideration here.
-	#checkSize(x: number, y: number) {
-		const parentSize = this.#parentSize
+	#checkElementParentSize(x: number, y: number) {
+		const parentSize = this.__elementParentSize
 
 		// if we have a size change
 		if (parentSize.x != x || parentSize.y != y) {
 			parentSize.x = x
 			parentSize.y = y
 
-			this.#onElementParentSizeChange(parentSize)
+			this.__elementParentSize = parentSize
 		}
-	}
-
-	#onElementParentSizeChange(newSize: XYZValuesObject<number>) {
-		this._elementParentSize = newSize
-		// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
-		// unless explicitly requested by a user (f.e. they read a prop so
-		// the size must be calculated). https://github.com/lume/lume/issues/66
-		this._calcSize()
-		this.needsUpdate()
 	}
 }
 
@@ -1093,7 +1089,3 @@ declare global {
 }
 
 type FogMode = 'none' | 'linear' | 'expo2'
-
-function isNode(n: DeclarativeBase): n is Node {
-	return n.isNode
-}

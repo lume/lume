@@ -13,6 +13,17 @@ export class HtmlNode extends ImperativeBase {
 			 */
 			display: none;
 
+			/*
+			Layout of a node's CSS rectangle is never affected by anything
+			outside of it. We don't contain paint because CSS content can
+			overflow if desired, or size because eventually we'll add natural
+			sizing to let the node be sized by its content.
+			*/
+			contain: layout;
+
+			/* TODO see how content-visibility affects CSS performance with nodes that are off-screen. */
+			/* content-visibility: auto; implies contain:strict */
+
 			box-sizing: border-box;
 			position: absolute;
 			top: 0;

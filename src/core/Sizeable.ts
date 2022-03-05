@@ -1,5 +1,6 @@
 import {emits} from '@lume/eventful'
-import {attribute, untrack, element, variable, Variable} from '@lume/element'
+import {reactive} from '@lume/variable'
+import {attribute, untrack, element} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
@@ -22,10 +23,6 @@ export type SizeableAttributes = 'sizeMode' | 'size'
 const sizeMode = new WeakMap<Sizeable, XYZSizeModeValues>()
 const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 
-// No decorators for private fields (yet), so we implement reactivity manually
-// by having a WeakMap-based private value for each instance.
-const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>()
-
 /**
  * @class Sizeable - Provides features for defining the size volume of an object in 3D space.
  *
@@ -39,15 +36,14 @@ const calculatedSize = new WeakMap<Sizeable, Variable<XYZValuesObject<number>>>(
 // based on parent values.
 @element
 export class Sizeable extends TreeNode {
-	// TODO handle ctor arg types
 	constructor() {
 		super()
-
-		calculatedSize.set(this, variable({x: 0, y: 0, z: 0}))
 
 		this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
 		this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
 	}
+
+	@reactive __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
 	 * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
@@ -143,7 +139,7 @@ export class Sizeable extends TreeNode {
 		// if (this.__sizeDirty) this._calcSize
 
 		// TODO make it a readonly reactive object instead of cloning.
-		return {...(calculatedSize.get(this)?.get() ?? {x: 0, y: 0, z: 0})}
+		return {...(this.__calculatedSize ?? {x: 0, y: 0, z: 0})}
 	}
 
 	/**
@@ -169,7 +165,7 @@ export class Sizeable extends TreeNode {
 	}
 
 	get composedLumeParent(): Sizeable | null {
-		const result = super._composedParent
+		const result = this.composedParent
 		if (!(result instanceof Sizeable)) return null
 		return result
 	}
@@ -178,49 +174,59 @@ export class Sizeable extends TreeNode {
 		return super._composedChildren as Sizeable[]
 	}
 
-	_getParentSize() {
-		return (this.composedLumeParent && calculatedSize.get(this.composedLumeParent)?.get()) ?? {x: 0, y: 0, z: 0}
+	/**
+	 * @property {{x: number, y: number, z: number}} parentSize
+	 *
+	 * *reactive* *readonly*
+	 *
+	 * Returns an object with `x`, `y`, and `z` properties containing the size
+	 * dimensions of the composed LUME parent. If there is no composed LUME
+	 * parent, the size is 0,0,0.
+	 */
+	get parentSize() {
+		return this.composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
 
 	_calcSize() {
-		const _calculatedSize = calculatedSize.get(this)!.get()
+		const calculatedSize = this.__calculatedSize ?? {x: 0, y: 0, z: 0}
 
-		Object.assign(previousSize, _calculatedSize)
+		Object.assign(previousSize, calculatedSize)
 
 		const size = this.size
 		const sizeMode = this.sizeMode
-		const parentSize = this._getParentSize()
+		const parentSize = this.parentSize
 
 		if (sizeMode.x == 'literal') {
-			_calculatedSize.x = size.x
+			calculatedSize.x = size.x
 		} else {
 			// proportional
-			_calculatedSize.x = parentSize.x * size.x
+			calculatedSize.x = parentSize.x * size.x
 		}
 
 		if (sizeMode.y == 'literal') {
-			_calculatedSize.y = size.y
+			calculatedSize.y = size.y
 		} else {
 			// proportional
-			_calculatedSize.y = parentSize.y * size.y
+			calculatedSize.y = parentSize.y * size.y
 		}
 
 		if (sizeMode.z == 'literal') {
-			_calculatedSize.z = size.z
+			calculatedSize.z = size.z
 		} else {
 			// proportional
-			_calculatedSize.z = parentSize.z * size.z
+			calculatedSize.z = parentSize.z * size.z
 		}
 
-		// trigger reactive updates (although we set it to the same value)
-		calculatedSize.get(this)!.set(_calculatedSize)
+		// We set it to the same value to trigger reactivity.
+		this.__calculatedSize = calculatedSize
 
 		if (
-			previousSize.x !== _calculatedSize.x ||
-			previousSize.y !== _calculatedSize.y ||
-			previousSize.z !== _calculatedSize.z
+			previousSize.x !== calculatedSize.x ||
+			previousSize.y !== calculatedSize.y ||
+			previousSize.z !== calculatedSize.z
 		) {
-			this.emit('sizechange', {..._calculatedSize})
+			// TODO replace events with reactivity
+			this.emit('sizechange', {...calculatedSize})
 		}
 	}
 

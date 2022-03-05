@@ -10,6 +10,8 @@ type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 			| 'interactionInitiator'
 			| 'minFlingRotationX'
 			| 'maxFlingRotationX'
+			| 'minFlingRotationY'
+			| 'maxFlingRotationY'
 			| 'interactionContainer'
 		>
 	>
@@ -41,6 +43,20 @@ export class FlingRotation {
 	 * facing straight down.
 	 */
 	readonly maxFlingRotationX: number = 90
+
+	/**
+	 * The Y rotation can not go below this value. Defaults to -Infinity which
+	 * means the camera can keep rotating laterally around the focus point
+	 * indefinitely.
+	 */
+	readonly minFlingRotationY: number = -Infinity
+
+	/**
+	 * The Y rotation can not go below this value. Defaults to Infinity which
+	 * means the camera can keep rotating laterally around the focus point
+	 * indefinitely.
+	 */
+	readonly maxFlingRotationY: number = Infinity
 
 	/**
 	 * The area in which drag tacking will happen. Defaults to document because
@@ -77,7 +93,11 @@ export class FlingRotation {
 				this.maxFlingRotationX,
 			)
 			deltaY = -event.movementX * 0.2
-			this.rotationYTarget.rotation.y += deltaY
+			this.rotationYTarget.rotation.y = clamp(
+				this.rotationYTarget.rotation.y + deltaY,
+				this.minFlingRotationY,
+				this.maxFlingRotationY,
+			)
 		}
 
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
@@ -110,7 +130,7 @@ export class FlingRotation {
 					// no longer notice the rotation.
 					if (Math.abs(deltaY) < 0.01) return false
 
-					return [x, y + deltaY, z]
+					return [x, clamp(y + deltaY, this.minFlingRotationY, this.maxFlingRotationY), z]
 				}
 			}),
 			{once: true},

@@ -1,10 +1,10 @@
 import 'element-behaviors'
-import {ForwardProps} from './ForwardProps.js'
+import {PropReceiver} from './PropReceiver.js'
 import {defer} from '../core/utils.js'
 
 import type {Element as LumeElement} from '@lume/element'
-// @ts-ignore the type is used in a JSDoc comment
 import type {Constructor} from 'lowclass'
+import type {ElementWithBehaviors} from 'element-behaviors'
 
 type ElementTypeArrayToInstArray<T extends Constructor[]> = {
 	// Pick only the number keys (array values, not array methods and properties).
@@ -14,15 +14,18 @@ type ArrayValues<T extends any[]> = T[number & keyof T]
 type ElementTypes<T extends Constructor[]> = ArrayValues<ElementTypeArrayToInstArray<T>>
 
 /**
- * Base class for all behaviors.
+ * @class Behavior
+ * Base class for all LUME behaviors.
  *
  * Features:
  * - Sets `awaitElementDefined` to `true`, which causes `elementBehaviors` to wait until the behavior's host element is upgraded if it might be a custom element (i.e. when the host element has a hyphen in its name).
  * - Assigns the host element onto `this.element` for convenience.
  * - Calls a subclass's requiredElementType method which should return the type (constructor) of allowed elements that the behavior can be hosted on. If the element is not instanceof the requiredElementType(), then an error is shown in console. For TypeScript users, it enforces the type `element` in subclass code.
- * - Forwards the properties specified in `_observedProperties` from `_observedObject` to `this` any time `_observedProperties` on `_observedObject` change. Useful for forwarding JS properties from the host element to the behavior.
+ * - Forwards the properties specified in `receivedProperties` from `observedObject` to `this` any time `receivedProperties` on `observedObject` change. Useful for forwarding JS properties from the host element to the behavior.
+ *
+ * @extends PropReceiver
  */
-export abstract class Behavior extends ForwardProps() {
+export abstract class Behavior extends PropReceiver() {
 	// If true, elementBehaviors will wait for a custom element to be defined
 	// before running "connectedCallback" or "disconnectedCallback" on the
 	// behavior. This guarantees that the host element is already upgraded
@@ -31,7 +34,7 @@ export abstract class Behavior extends ForwardProps() {
 
 	element: ElementTypes<ReturnType<this['requiredElementType']>>
 
-	constructor(element: Element) {
+	constructor(element: ElementWithBehaviors) {
 		super()
 
 		// Ensure this.element is the type specified by a subclass's requiredElementType.
@@ -42,25 +45,24 @@ export abstract class Behavior extends ForwardProps() {
 	}
 
 	/**
-	 * @method requiredElementType - A subclass can specify override this
-	 * method (whose return value should be a constructor) in order to enforce
-	 * that the behavior operates only on a certain type of Element. An error
-	 * will be thrown if `this.element` is not of the specified type. If the
-	 * element name has a hyphen in it, the logic will consider it to
-	 * possibly be a custom element and will wait for it to be upgraded before
-	 * performing the check; if the custom element is not upgraded within a
-	 * second, an error is thrown.
+	 * @method requiredElementType - A subclass can override this method in
+	 * order to enforce that the behavior can be applied only on certain types
+	 * of elements by returning an array of constructors. An error will be
+	 * thrown if `this.element` is not an instanceof one of the constructors.
 	 *
-	 * @returns {Array<typeof Element>}
+	 * If the element's tag name has a hyphen in it, the logic will consider it
+	 * to possibly be a custom element and will wait for it to be upgraded
+	 * before performing the check; if the custom element is not upgraded within
+	 * a second, an error is thrown.
+	 *
+	 * @returns {[typeof Element]}
 	 */
-	// TODO support an array of types for behaviors that are allowed on
-	// multiple types of elements.
 	requiredElementType() {
 		return [Element]
 	}
 
-	// used by ForwardProps. See ForwardProps.ts
-	get _observedObject() {
+	// used by PropReceiver. See PropReceiver.ts
+	override get observedObject() {
 		return this.element
 	}
 
@@ -68,8 +70,8 @@ export abstract class Behavior extends ForwardProps() {
 	#whenDefined: Promise<unknown> = null! as Promise<unknown>
 	#elementDefined = false
 
-	_forwardInitialProps() {
-		super._forwardInitialProps()
+	override __forwardInitialProps() {
+		super.__forwardInitialProps()
 		this.#fowardPreUpgradeValues()
 	}
 
@@ -79,13 +81,13 @@ export abstract class Behavior extends ForwardProps() {
 	#fowardPreUpgradeValues() {
 		if (this.#preUpgradeValuesHandled) return
 
-		const el = this._observedObject
+		const el = this.observedObject
 
 		if (!isLumeElement(el)) return
 
 		this.#preUpgradeValuesHandled = true
 
-		for (const prop of this._forwardedProps()) {
+		for (const prop of this.__forwardedProps()) {
 			// prettier-ignore
 			const value = el.
 				// @ts-ignore protected access is ok here

@@ -129,10 +129,10 @@ of its parent.
 				<script src="${location.origin+location.pathname}global.js"><\/script>
 
 				<lume-scene>
-					<lume-node id="one" position="50 50" size="10 10">
-						<lume-node id="two" position="50 50" size="10 10">
-							<lume-node id="three" position="50 50" size="10 10">
-								<lume-node id="four" position="50 50" size="100 100">
+					<lume-node id="one" position="50 50" size="10 10" rotation="0 0 10">
+						<lume-node id="two" position="50 50" size="10 10" rotation="0 0 10">
+							<lume-node id="three" position="50 50" size="10 10" rotation="0 0 10">
+								<lume-node id="four" position="50 50" size="100 100" rotation="0 0 10">
 									Positioning is relative to parents!
 								</lume-node>
 							</lume-node>

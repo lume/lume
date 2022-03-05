@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {reactive, attribute, autorun} from '@lume/element'
+import {reactive, attribute} from '../../attribute.js'
 import {Shape} from 'three/src/extras/core/Shape.js'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
@@ -35,34 +35,23 @@ export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 		else this.#quadraticCorners = true
 	}
 
-	static _observedProperties = [
-		'cornerRadius',
-		'thickness',
-		'quadraticCorners',
-		...(GeometryBehavior._observedProperties || []),
-	]
-
 	loadGL() {
-		if (!super.loadGL()) return false
+		super.loadGL()
 
-		// XXX, if making an autorun() within loadGL ends up being too common,
+		// XXX, if using createEffect() within loadGL ends up being too common,
 		// we can make a pattern to abstract it away (similar to what we do with
 		// template() in lume/element elements, or perhaps with a decorator).
-		this._stopFns.push(
-			autorun(() => {
-				this.cornerRadius
-				this.thickness
-				this.quadraticCorners
+		this.createEffect(() => {
+			this.cornerRadius
+			this.thickness
+			this.quadraticCorners
 
-				// TODO PERFORMANCE This `resetMeshComponent` call recreates the
-				// whole mesh. We should instead try to update it without replacing
-				// it, so that we don't dispose the geometry and material on each
-				// property update.
-				this.resetMeshComponent()
-			}),
-		)
-
-		return true
+			// TODO PERFORMANCE This `resetMeshComponent` call recreates the
+			// whole mesh. We should instead try to update it without replacing
+			// it, so that we don't dispose the geometry and material on each
+			// property update.
+			this.resetMeshComponent()
+		})
 	}
 
 	_createComponent() {

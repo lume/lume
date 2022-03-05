@@ -18,7 +18,7 @@
 		"typeRoots": [],
 
 		// TODO, disable this, and see the type error with Behavior and
-		// ForwardProps regarding declaration output (Behavior's getter override a
+		// PropReceiver regarding declaration output (Behavior's getter override a
 		// readonly property, which is wrong). Report the bug to TypeScript if
 		// it still exists.
 		"skipLibCheck": true

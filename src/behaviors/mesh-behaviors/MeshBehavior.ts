@@ -2,7 +2,8 @@ import {RenderableBehavior} from '../RenderableBehavior.js'
 import {Mesh} from '../../meshes/Mesh.js'
 import {Points} from '../../meshes/Points.js'
 import {InstancedMesh} from '../../meshes/InstancedMesh.js'
-import type {StopFunction} from '@lume/element'
+
+import type {BufferGeometry, Geometry, Material} from 'three'
 
 export type MeshComponentType = 'geometry' | 'material'
 
@@ -19,20 +20,9 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		return [Mesh, Points, InstancedMesh]
 	}
 
-	getMeshComponent<T>(name: 'geometry' | 'material'): T {
-		return this.element.three[name] as unknown as T
+	_createComponent(): BufferGeometry | Geometry | Material {
+		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
-	// TODO WithAutoruns mixin or similar (decorators), instead of it being in a
-	// base class. Not all sub-classes need it.
-	_stopFns: StopFunction[] = []
-
-	override unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this._stopFns) stop()
-		this._stopFns.length = 0
-
-		return true
-	}
+	meshComponent?: ReturnType<this['_createComponent']>
 }

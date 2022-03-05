@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {autorun, reactive, stringAttribute} from '@lume/element'
+import {reactive, stringAttribute} from '../../attribute.js'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
@@ -18,8 +18,6 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		return [Points]
 	}
 
-	static _observedProperties = ['src', ...(GeometryBehavior._observedProperties || [])]
-
 	_createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.
 		if (!this.model) return new BufferGeometry()
@@ -32,26 +30,22 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	#version = 0
 
 	loadGL() {
-		if (!super.loadGL()) return false
+		super.loadGL()
 
 		this.loader = new PLYLoader()
 
-		this._stopFns.push(
-			autorun(() => {
-				this.src
+		this.createEffect(() => {
+			this.src
 
-				this.#cleanupModel()
+			this.#cleanupModel()
 
-				this.#version++
-				this.#loadModel()
-			}),
-		)
-
-		return true
+			this.#version++
+			this.#loadModel()
+		})
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
+		super.unloadGL()
 
 		this.loader = undefined
 
@@ -59,8 +53,6 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
 		this.#version++
-
-		return true
 	}
 
 	#cleanupModel() {

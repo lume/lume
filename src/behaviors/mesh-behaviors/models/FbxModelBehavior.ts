@@ -1,11 +1,10 @@
 import 'element-behaviors'
-import {reactive, autorun, stringAttribute} from '@lume/element'
+import {reactive, stringAttribute} from '../../attribute.js'
 import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
-import type {StopFunction} from '@lume/element'
 import type {Group} from 'three/src/objects/Group.js'
 
 export type FbxModelBehaviorAttributes = 'src'
@@ -18,48 +17,31 @@ export class FbxModelBehavior extends RenderableBehavior {
 	loader?: FBXLoader
 	model?: Group
 
-	static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
-
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	#stopFns: StopFunction[] = []
-
 	loadGL() {
-		if (!super.loadGL()) return false
-
 		this.loader = new FBXLoader()
 
-		this.#stopFns.push(
-			autorun(() => {
-				this.src
+		this.createEffect(() => {
+			this.src
 
-				this.#cleanupModel()
+			this.#cleanupModel()
 
-				this.#version++
-				this.#loadModel()
-			}),
-		)
-
-		return true
+			this.#version++
+			this.#loadModel()
+		})
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this.#stopFns) stop()
-		this.#stopFns.length = 0
-
 		this.loader = undefined
 
 		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
 		this.#version++
-
-		return true
 	}
 
 	#cleanupModel() {

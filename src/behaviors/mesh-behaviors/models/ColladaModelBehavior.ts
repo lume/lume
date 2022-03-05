@@ -1,11 +1,10 @@
 import 'element-behaviors'
-import {reactive, autorun, stringAttribute} from '@lume/element'
+import {reactive, stringAttribute} from '../../attribute.js'
 import {ColladaLoader} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
-import type {StopFunction} from '@lume/element'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
@@ -18,47 +17,31 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	loader?: ColladaLoader
 	model?: Collada
 
-	static _observedProperties = ['src', ...(RenderableBehavior._observedProperties || [])]
-
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	#stopFns: StopFunction[] = []
-
 	loadGL() {
-		if (!super.loadGL()) return false
-
 		this.loader = new ColladaLoader()
 
-		this.#stopFns.push(
-			autorun(() => {
-				this.src
+		this.createEffect(() => {
+			this.src
 
-				this.#cleanupModel()
+			this.#cleanupModel()
 
-				this.#version++
-				this.#loadModel()
-			}),
-		)
-
-		return true
+			this.#version++
+			this.#loadModel()
+		})
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this.#stopFns) stop()
-
 		this.loader = undefined
 
 		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
 		this.#version++
-
-		return true
 	}
 
 	#cleanupModel() {

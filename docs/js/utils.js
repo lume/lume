@@ -21,13 +21,19 @@ function noop(strings, ...keys) {
 
 const html = noop // useful for syntax highlight and auto-formatting
 
+const host = location.origin + location.pathname
+
 const buttonsWithShadowExample = stripIndent(html`
-	<script src="${location.origin + location.pathname}global.js"></script>
-	<script src="${location.origin + location.pathname}node_modules/vue/dist/vue.js"></script>
+	<script src="${host}global.js"></script>
+	<script src="${host}node_modules/vue/dist/vue.js"></script>
 	<!-- Tween.js is a lib for animating numbers based on "easing curves". -->
-	<script src="${location.origin + location.pathname}node_modules/tween.js/src/Tween.js"></script>
+	<script src="${host}node_modules/tween.js/src/Tween.js"></script>
 	<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 	<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+
+	<script>
+		LUME.defineElements()
+	</script>
 
 	<style>
 		body,
@@ -77,7 +83,14 @@ const buttonsWithShadowExample = stripIndent(html`
 			touch-action="none"
 		>
 			<lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
-			<lume-mixed-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
+			<lume-mixed-plane
+				ref="plane"
+				id="bg"
+				size-mode="proportional proportional"
+				size="1 1 0"
+				color="#444"
+				dithering
+			>
 				<lume-node
 					id="button-container"
 					position="0 0 20"
@@ -120,8 +133,6 @@ const buttonsWithShadowExample = stripIndent(html`
 	<div id="buttonsRoot"></div>
 
 	<script>
-		LUME.defineElements()
-
 		new Vue({
 			el: '#buttonsRoot',
 			template: document.querySelector('[vue]').innerHTML,
@@ -146,7 +157,6 @@ const buttonsWithShadowExample = stripIndent(html`
 					})
 
 					document.querySelector('#bg').three.material.opacity = 0.3
-					document.querySelector('#bg').three.material.dithering = true
 
 					scene.needsUpdate()
 				})
@@ -219,7 +229,7 @@ const buttonsWithShadowExample = stripIndent(html`
 
 function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 		${
 			'' /*
 			TODO: The behaviors don't load if the global script is loaded after the
@@ -263,7 +273,7 @@ function meshExample({geometry = 'box', material = 'phong', color = ''} = {}) {
 
 function miniGalaxyDemo() {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<lume-scene id="scene">
 			<lume-node id="container" size="78 78" align-point="0.5 0.5" mount-point="0.5 0.5">
@@ -480,7 +490,7 @@ function miniGalaxyDemo() {
 
 function sceneExample() {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<lume-scene id="scene">
 			<lume-node size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
@@ -510,7 +520,7 @@ function sceneExample() {
 
 function pointLightExample() {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<lume-scene webgl shadowmap-type="soft">
 			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
@@ -568,7 +578,7 @@ function pointLightExample() {
 
 function directionalLightExample() {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<lume-scene webgl shadowmap-type="soft">
 			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
@@ -636,7 +646,7 @@ function directionalLightExample() {
 
 function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 	return stripIndent(html`
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<lume-scene id="scene" touch-action="none" webgl>
 			<lume-point-light
@@ -662,7 +672,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 					color="#444"
 					TODO-material-opacity="0.3"
 				>
-					<img src="${location.origin + location.pathname}${bg}" />
+					<img src="${host}${bg}" />
 				</lume-mixed-plane>
 				<lume-mixed-plane
 					size-mode="proportional proportional"
@@ -671,7 +681,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 					color="#444"
 					TODO-material-opacity="0.3"
 				>
-					<img src="${location.origin + location.pathname}${fg}" />
+					<img src="${host}${fg}" />
 				</lume-mixed-plane>
 			</lume-node>
 		</lume-scene>
@@ -729,7 +739,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 }
 
 const shapesExample = stripIndent(html`
-	<script src="${location.origin + location.pathname}global.js"></script>
+	<script src="${host}global.js"></script>
 
 	<style>
 		html,
@@ -1157,7 +1167,7 @@ const instancedMeshExample = stripIndent(html`
 		<!-- <lume-mesh has="sphere-geometry phong-material" size="30 30 30"></lume-mesh> -->
 	</lume-scene>
 
-	<script src="${location.origin + location.pathname}global.js"></script>
+	<script src="${host}global.js"></script>
 	<script>
 		// Define all the LUME elements with their default names.
 		LUME.defineElements()
@@ -1197,7 +1207,7 @@ const instancedMeshExample = stripIndent(html`
 
 const originExample = stripIndent(html`
 	<body touch-action="none">
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 
 		<style>
 			html,
@@ -1342,9 +1352,120 @@ const originExample = stripIndent(html`
 	</body>
 `)
 
+const morphingSpiralExample = stripIndent(html`
+	<script src="${host}global.js"></script>
+	<script src="${host}node_modules/vue/dist/vue.js"></script>
+
+	<body>
+		<template>
+			<lume-scene id="scene" webgl="true" enable-css="false">
+				<lume-node
+					ref="rotator"
+					TODO-calculate-minimum-size-based-on-viewport-size
+					size="1630 1630"
+					align-point="0.5 0.5"
+					mount-point="0.5 0.5"
+					rotation="0 0 0"
+				>
+					<lume-node
+						v-for="(n, i) of Array(400)"
+						:key="i"
+						size="0 0 0"
+						align-point="0.5 0.5"
+						:rotation="[0, 0, i * 10]"
+					>
+						<lume-rounded-rectangle
+							has="basic-material"
+							:corner-radius="i % 50 > (50 - (i % 50)) / 2 ? (50 - (i % 50)) / 2 : i % 50"
+							thickness="1"
+							quadratic-corners="false"
+							:size="[50 - i % 50, 50 - i % 50, 0]"
+							mount-point="0.5 0.5"
+							:position="[0, i * 2, 0]"
+							:color="'hsl(' + ((i * 2) % 360) + ', 90%, 78%)'"
+							:style="{
+								background: 'hsl(' + ((i * 2) % 360) + ', 90%, 78%)',
+								borderRadius: (i % 50) + 'px',
+							}"
+						></lume-rounded-rectangle>
+					</lume-node>
+				</lume-node>
+			</lume-scene>
+		</template>
+
+		<div class="ui">
+			<fieldset>
+				<legend>Render mode</legend>
+				<!-- prettier-ignore -->
+				<label>
+					<input type="radio" name="webgl" onchange="scene.enableCss = !(scene.webgl = this.checked)" checked />
+					WebGL (higher fps, longer initialization)
+				</label>
+				<br />
+				<!-- prettier-ignore -->
+				<label>
+					<input type="radio" name="webgl" onchange="scene.enableCss = !(scene.webgl = !this.checked)" />
+					CSS (lower fps, shorter initialization)
+				</label>
+			</fieldset>
+		</div>
+
+		<style>
+			lume-scene {
+				background: #333;
+			}
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+			}
+
+			.ui {
+				position: absolute;
+				margin: 15px;
+				padding: 10px;
+				top: 0;
+				left: 0;
+				color: white;
+				font-family: sans-serif;
+				background: rgba(0, 0, 0, 0.6);
+				border-radius: 7px;
+			}
+
+			fieldset {
+				--fieldsetOutline: hsl(320, 90%, 78%);
+				--fieldsetText: hsl(100, 90%, 78%);
+
+				color: var(--fieldsetText);
+				border-color: var(--fieldsetOutline);
+				border-radius: 4px;
+			}
+			fieldset legend {
+				color: var(--fieldsetOutline);
+			}
+		</style>
+
+		<script>
+			LUME.defineElements()
+			var template = document.querySelector('template')
+
+			new Vue({
+				el: template,
+				template: template.innerHTML,
+				mounted() {
+					const rotator = this.$refs.rotator
+					rotator.rotation = (x, y, z) => [x, y, z - 9.8]
+				},
+			})
+		</script>
+	</body>
+`)
+
 const perspectiveCameraExample = stripIndent(html`
 	<body touch-action="none">
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
@@ -1416,7 +1537,7 @@ const perspectiveCameraExample = stripIndent(html`
 				mount-point="0.5 0.5 0.5"
 				size="100 100 100"
 				color="white"
-				texture="${location.origin + location.pathname}textures/cement.jpg"
+				texture="${host}textures/cement.jpg"
 			>
 			</lume-mesh>
 		</lume-scene>
@@ -1503,7 +1624,7 @@ const perspectiveCameraExample = stripIndent(html`
 
 const cameraRigExample = stripIndent(html`
 	<body touch-action="none">
-		<script src="${location.origin + location.pathname}global.js"></script>
+		<script src="${host}global.js"></script>
 		<!-- pep.js provides the pointer events (pointermove, pointerdown, etc) -->
 		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
@@ -1577,7 +1698,7 @@ const cameraRigExample = stripIndent(html`
 				mount-point="0.5 0.5 0.5"
 				size="100 100 100"
 				color="white"
-				texture="${location.origin + location.pathname}textures/cement.jpg"
+				texture="${host}textures/cement.jpg"
 			></lume-box>
 		</lume-scene>
 
@@ -1605,7 +1726,7 @@ const cameraRigExample = stripIndent(html`
 `)
 
 const cameraRigVerticalRotationExample = stripIndent(html`
-	<script src="${location.origin + location.pathname}global.js"></script>
+	<script src="${host}global.js"></script>
 	<script>
 		LUME.defineElements()
 	</script>
@@ -1661,7 +1782,7 @@ const clipPlaneExample = stripIndent(html`
 		}
 	</style>
 
-	<script src="${location.origin + location.pathname}global.js"></script>
+	<script src="${host}global.js"></script>
 
 	<script>
 		LUME.defineElements()
@@ -1675,9 +1796,9 @@ const clipPlaneExample = stripIndent(html`
 				position="200 -200 200"
 				intensity="0.6"
 				color="white"
-				shadow-bias="-0.005"
-				shadow-map-width="1024"
-				shadow-map-height="1024"
+				shadow-bias="-0.001"
+				shadow-map-width="2048"
+				shadow-map-height="2048"
 				slot="camera-child"
 			></lume-point-light>
 		</lume-camera-rig>
@@ -1689,10 +1810,11 @@ const clipPlaneExample = stripIndent(html`
 			flip-clip="false"
 			clip-disabled="false"
 			sidedness="double"
-			cast-shadow="false"
+			cast-shadow="true"
 			receive-shadow="true"
 			opacity="1"
 			color="skyblue"
+			dithering
 			mount-point="0.5 0.5 0.5"
 			rotation="0 45 0"
 			size="100 100 100"
@@ -1714,13 +1836,15 @@ const clipPlaneExample = stripIndent(html`
 				></lume-plane>
 			</lume-clip-plane>
 		</lume-box>
+
+		<lume-plane size="800 800" color="pink" rotation="90" position="0 150" mount-point="0.5 0.5"></lume-plane>
 	</lume-scene>
 
 	<lume-scene id="ui">
 		<lume-node size-mode="proportional literal" size="1 80">
 			<label>
 				Clipping enabled:
-				<input type="checkbox" checked onchange="console.log(box.clipDisabled = !box.clipDisabled)" />
+				<input type="checkbox" checked onchange="box.clipDisabled = !box.clipDisabled" />
 			</label>
 			<br />
 			<label>
@@ -1728,6 +1852,15 @@ const clipPlaneExample = stripIndent(html`
 				<input
 					type="checkbox"
 					onchange="box.behaviors.get('clip-planes').flipClip = !box.behaviors.get('clip-planes').flipClip"
+				/>
+			</label>
+			<br />
+			<label>
+				Clip shadows:
+				<input
+					type="checkbox"
+					checked
+					onchange="box.behaviors.get('clip-planes').clipShadows = !box.behaviors.get('clip-planes').clipShadows"
 				/>
 			</label>
 			<br />
@@ -1747,4 +1880,299 @@ const clipPlaneExample = stripIndent(html`
 
 		clipPlane.rotation = (x, y, z, t) => [x, (y += 0.1), z]
 	</script>
+`)
+
+const pictureFrameExample = stripIndent(html`
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #333;
+			touch-action: none;
+		}
+	</style>
+
+	<script src="${host}global.js"></script>
+
+	<script>
+		LUME.defineElements()
+	</script>
+
+	<lume-scene
+		id="scene"
+		perspective="800"
+		webgl
+		shadowmap-type="pcfsoft"
+		xenvironment="${host}examples/nasa-astrobee-robot/luna-station.jpg"
+	>
+		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
+
+		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid red;"></lume-node>
+
+		<lume-cube-layout size="1000 1000 1000" position="0 0 0" mount-point="0.5 0.5" align-point="0.5 0.5">
+			<!-- the orb is not assigned to a slot, so it goes to the default slot like a regular child of the cube layout. -->
+			<flickering-orb
+				distance="8000"
+				intensity="0.9"
+				color="#999"
+				shadow-bias="-0.005"
+				shadow-map-width="1024"
+				shadow-map-height="1024"
+				align-point="0.5 0.2 0.82"
+			></flickering-orb>
+
+			<!-- Walls --------------------------------------------------------->
+			<lume-plane
+				id="picture"
+				slot="front"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				note="free texture from https://polyhaven.com/a/stone_brick_wall_001"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+			<lume-plane
+				id="picture"
+				slot="back"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+			<lume-plane
+				id="picture"
+				slot="left"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+			<lume-plane
+				id="picture"
+				slot="right"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+			<lume-plane
+				id="picture"
+				slot="top"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+			<lume-plane
+				id="picture"
+				slot="bottom"
+				size-mode="proportional proportional"
+				size="1 1"
+				rotation="0 180 0"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="white"
+				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
+				------
+				has="phong-material"
+				shininess="100"
+				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
+				bump-scale="8"
+			></lume-plane>
+		</lume-cube-layout>
+
+		<!-- picture frame container -------------------------------->
+		<lume-node size="160 200 15" mount-point="0.5 0.5" align-point="0.5 0.5">
+			<lume-camera-rig
+				active
+				initial-polar-angle="30"
+				min-polar-angle="-50"
+				max-polar-angle="50"
+				min-horizontal-angle="-50"
+				max-horizontal-angle="50"
+				initial-distance="500"
+				max-distance="900"
+				min-distance="200"
+				align-point="0.5 0.5"
+				align-point="0 0"
+			>
+			</lume-camera-rig>
+
+			<lume-box
+				id="box"
+				shininess="100"
+				color="white"
+				texture="${host}images/monalisa-2.jpg"
+				size-mode="proportional proportional"
+				size="1 1 1"
+				note="align point needs to be determined. Will it be a percentage or absolute value from the back of the frame? Or?"
+				align-point="0 0 0.4"
+			></lume-box>
+
+			<!-- frame edges -------------------------->
+			<lume-node size-mode="proportional proportional" size="1 1">
+				<lume-node size="0 0 15" align-point="0 0.5">
+					<lume-shape
+						id="left"
+						has="clip-planes physical-material"
+						xhas="clip-planes projected-material"
+						color="#ddd"
+						metalness="0.8"
+						roughness="0.3"
+						clearcoat="1"
+						clip-planes="#clipPlane1, #clipPlane3"
+						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
+						curve-segments="60"
+						size="15 15 240"
+						xtexture="${host}examples/wood.jpg"
+						rotation="-90 0 0"
+						mount-point="1 0.5 0.5"
+						align-point="0 0 0.5"
+						receive-shadow="false"
+						fitment="contain"
+					></lume-shape>
+				</lume-node>
+				<lume-node size="0 0 15" align-point="1 0.5">
+					<lume-shape
+						id="right"
+						has="clip-planes physical-material"
+						color="#ddd"
+						metalness="0.8"
+						roughness="0.3"
+						clearcoat="1"
+						clip-planes="#clipPlane2, #clipPlane4"
+						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
+						curve-segments="60"
+						size="15 15 240"
+						xtexture="${host}examples/wood.jpg"
+						rotation="-90 180 0"
+						mount-point="0 0.5 0.5"
+						align-point="0 0 0.5"
+						receive-shadow="false"
+						fitment="contain"
+					></lume-shape>
+				</lume-node>
+				<lume-node size="0 0 15" align-point="0.5 0">
+					<lume-shape
+						id="top"
+						has="clip-planes physical-material"
+						color="#ddd"
+						metalness="0.8"
+						roughness="0.3"
+						clearcoat="1"
+						clip-planes="#clipPlane1, #clipPlane2"
+						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
+						curve-segments="60"
+						flip-clip
+						size="15 15 210"
+						xtexture="${host}examples/wood.jpg"
+						rotation="-90 -90 0"
+						mount-point="0.5 1 0.5"
+						align-point="0 0 0.5"
+						receive-shadow="false"
+						fitment="contain"
+					></lume-shape>
+				</lume-node>
+				<lume-node size="0 0 15" align-point="0.5 1">
+					<lume-shape
+						id="bottom"
+						has="clip-planes physical-material"
+						color="#ddd"
+						metalness="0.8"
+						roughness="0.3"
+						clearcoat="1"
+						clip-planes="#clipPlane3, #clipPlane4"
+						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
+						curve-segments="60"
+						flip-clip
+						size="15 15 210"
+						xtexture="${host}examples/wood.jpg"
+						rotation="-90 90 0"
+						mount-point="0.5 0 0.5"
+						align-point="0 0 0.5"
+						receive-shadow="false"
+						fitment="contain"
+					></lume-shape>
+				</lume-node>
+			</lume-node>
+
+			<!-- corner clips -------------------------->
+			<lume-node size-mode="proportional proportional" size="1 1">
+				<lume-clip-plane
+					id="clipPlane1"
+					size="250 250"
+					mount-point="0.5 0.5 0.5"
+					align-point="0 0"
+					rotation="90 45 0"
+				></lume-clip-plane>
+
+				<lume-clip-plane
+					id="clipPlane2"
+					size="250 250"
+					mount-point="0.5 0.5 0.5"
+					align-point="1 0"
+					rotation="90 -45 0"
+				></lume-clip-plane>
+
+				<lume-clip-plane
+					id="clipPlane3"
+					size="250 250"
+					mount-point="0.5 0.5 0.5"
+					align-point="0 1 0.5"
+					rotation="90 -225 0"
+				></lume-clip-plane>
+
+				<lume-clip-plane
+					id="clipPlane4"
+					size="250 250"
+					mount-point="0.5 0.5 0.5"
+					align-point="1 1 0.5"
+					rotation="90 225 0"
+				></lume-clip-plane>
+			</lume-node>
+		</lume-node>
+	</lume-scene>
 `)

@@ -1,3 +1,3 @@
 export * from './AutoLayoutNode.js'
-export * from './Cube.js'
+export * from './CubeLayout.js'
 export * from './PushPaneLayout.js'

@@ -4,30 +4,16 @@ import {Constructor} from 'lowclass'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement.js'
 
 export function WithChildren<T extends Constructor<HTMLElement>>(Base: T) {
-	// This doesn't work
-	// return class WithChildren extends Constructor<PossibleCustomElement & InstanceType<T>, PossibleCustomElementConstructor & T>(Base) {
-	// but this does.  Need help from TS gods as to why. https://discord.com/channels/508357248330760243/508357248330760249/942301492503773194
 	return class WithChildren extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor & T>(Base) {
 		constructor(...args: any[]) {
 			super(...args)
 
 			this.#createObserver()
-
-			if (!this.isConnected) {
-				this.#handleChildrenWhenConnected = true
-				return
-			}
-
-			this.#handleConnectedChildren()
 		}
 
 		connectedCallback() {
 			super.connectedCallback?.()
-
-			if (this.#handleChildrenWhenConnected) {
-				this.#handleConnectedChildren()
-			}
-
+			this.#handleConnectedChildren()
 			this.#createObserver()
 		}
 
@@ -35,13 +21,11 @@ export function WithChildren<T extends Constructor<HTMLElement>>(Base: T) {
 			super.disconnectedCallback?.()
 
 			this.#destroyObserver()
-			this.#handleChildrenWhenConnected = true
 		}
 
 		childConnectedCallback?(_child: Element): void
 		childDisconnectedCallback?(_child: Element): void
 
-		#handleChildrenWhenConnected = false
 		#observer: MutationObserver | null = null
 
 		#createObserver() {

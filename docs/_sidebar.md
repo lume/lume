@@ -21,6 +21,7 @@
   <!-- - [Hello 3D world!](/examples/hello3d.md ':class=no-sublist') -->
 
   - [Hello world!](/examples/hello-world/ ':class=no-sublist')
+  - [Picture Frame](/examples/picture-frame ':class=no-sublist')
   - [NASA Astrobee Robot](/examples/nasa-astrobee-robot/ ':class=no-sublist')
   - [Velodyne Lidar Scan](/examples/velodyne-lidar-scan/ ':class=no-sublist')
   - [Shelby GT350 Points](/examples/shelby-gt350-points/ ':class=no-sublist')

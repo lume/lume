@@ -1,16 +1,33 @@
+import {stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
 import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial.js'
-// import {multiple} from 'lowclass'
-import {MaterialBehavior} from './MaterialBehavior.js'
-import {MaterialTexture} from './MaterialTexture.js'
+import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
-// export class BasicMaterialBehavior extends multiple(MaterialBehavior, MaterialTexture) {
-export class BasicMaterialBehavior extends MaterialTexture(MaterialBehavior) {
-	// constructor(el: Element) {
-	//     super(el)
-	// }
+export type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
+
+export class BasicMaterialBehavior extends MaterialBehavior {
+	@stringAttribute('') texture = ''
+	@stringAttribute('') specularMap = ''
+
 	_createComponent() {
 		return new MeshBasicMaterial({color: 0x00ff00})
+	}
+
+	loadGL() {
+		super.loadGL()
+
+		this._handleTexture(
+			() => this.texture,
+			tex => {
+				this.meshComponent!.map = tex
+			},
+		)
+		this._handleTexture(
+			() => this.specularMap,
+			tex => {
+				this.meshComponent!.specularMap = tex
+			},
+		)
 	}
 }
 

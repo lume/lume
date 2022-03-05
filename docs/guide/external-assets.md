@@ -305,9 +305,6 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
     sizeZ.addEventListener('change', event => el.behaviors.get('box-geometry').size = {z: event.target.value})
 
     enableTex.addEventListener('click', event => {
-      // TODO FIXME Make sure ForwardProps sets initial values. Currently el.texture
-      // starts as 'undefined' althought the attribute value is not.
-      // el.texture = el.texture ? '' : '${location.origin+location.pathname}textures/cement.jpg'
       el.setAttribute('texture', el.getAttribute('texture') ? '' : '${location.origin+location.pathname}textures/cement.jpg')
     })
 

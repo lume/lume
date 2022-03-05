@@ -1,3 +1,4 @@
+// import {reactive, untrack} from '@lume/variable'
 import {MeshBehavior, MeshComponentType} from './MeshBehavior.js'
 
 import type {Material} from 'three/src/materials/Material.js'
@@ -14,36 +15,29 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
  * @extends MeshBehavior
  */
 
+// @reactive
 export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	abstract type: MeshComponentType
 
 	loadGL() {
-		if (!super.loadGL()) return false
-
 		this.resetMeshComponent()
 		this.element.needsUpdate()
-
-		return true
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		this.#disposeMeshComponent(this.type)
+		this.#disposeMeshComponent()
 		this.element.needsUpdate()
-
-		return true
 	}
 
 	resetMeshComponent(): void {
+		// Reactivity enables the remove of the following TODO. So nice. No deferring, just use what you need (f.e. calculatedSize).
 		// TODO We might have to defer so that calculatedSize is already calculated
 		// (note, this method is called when the size or sizeMode prop of subclasses has
 		// changed)
-		this.#setMeshComponent(this.type, this._createComponent())
+		this.#disposeMeshComponent()
+		this.#setMeshComponent()
 		this.element.needsUpdate()
 	}
-
-	meshComponent?: BufferGeometry | Geometry | Material
 
 	_createComponent(): BufferGeometry | Geometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
@@ -54,20 +48,18 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	// the user.
 	// TODO
 	// #initialSize: null,
-	#disposeMeshComponent(name: 'geometry' | 'material') {
-		// TODO handle material arrays
-		if (this.element.three[name]) (this.element.three[name] as Geometry | Material).dispose()
 
+	#disposeMeshComponent() {
+		// TODO handle material arrays
+		this.meshComponent?.dispose()
 		this.meshComponent = undefined
 	}
 
-	#setMeshComponent(name: 'geometry' | 'material', newComponent: BufferGeometry | Geometry | Material) {
-		this.#disposeMeshComponent(name)
-
-		// the following type casting is not type safe, but shows what we intend
-		// (we can't type this sort of JavaScript in TypeScript)
-		this.element.three[name as 'geometry'] = newComponent as Geometry
-		// or element.three[name as 'material'] = newComponent as Material
-		this.meshComponent = newComponent as Geometry
+	#setMeshComponent() {
+		const newComponent = this._createComponent()
+		// @ts-expect-error not type safe, but shows what we intend
+		this.element.three[this.type] = newComponent
+		// @ts-expect-error
+		this.meshComponent = newComponent
 	}
 }

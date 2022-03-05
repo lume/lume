@@ -1,5 +1,5 @@
 import 'element-behaviors'
-import {reactive, attribute, autorun, booleanAttribute} from '@lume/element'
+import {reactive, attribute, booleanAttribute} from '../../attribute.js'
 import {Scene} from 'three/src/scenes/Scene.js'
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -9,7 +9,6 @@ import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
-import type {StopFunction} from '@lume/element'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
@@ -38,59 +37,40 @@ export class GltfModelBehavior extends RenderableBehavior {
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null
 
-	static _observedProperties = [
-		'src',
-		'dracoPath',
-		'centerGeometry',
-		...(RenderableBehavior._observedProperties || []),
-	]
-
 	// This is incremented any time we need a pending load() to cancel (f.e. on
 	// src change, or unloadGL cycle), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	#stopFns: StopFunction[] = []
-
 	loadGL() {
-		if (!super.loadGL()) return false
-
 		this.dracoLoader = new DRACOLoader()
 		this.gltfLoader = new GLTFLoader()
 		this.gltfLoader.setDRACOLoader(this.dracoLoader)
 
 		let firstRun = true
 
-		this.#stopFns.push(
-			autorun(() => {
-				if (this.dracoDecoder) {
-					if (!firstRun) this.dracoLoader!.dispose()
-					this.dracoLoader!.setDecoderPath(this.dracoDecoder)
-				}
-			}),
-			autorun(() => {
-				this.src
-				this.dracoDecoder
-				this.centerGeometry
+		this.createEffect(() => {
+			if (this.dracoDecoder) {
+				if (!firstRun) this.dracoLoader!.dispose()
+				this.dracoLoader!.setDecoderPath(this.dracoDecoder)
+			}
+		})
 
-				this.#cleanupModel()
+		this.createEffect(() => {
+			this.src
+			this.dracoDecoder
+			this.centerGeometry
 
-				this.#version++
-				this.#loadModel()
-			}),
-		)
+			this.#cleanupModel()
+
+			this.#version++
+			this.#loadModel()
+		})
 
 		firstRun = false
-
-		return true
 	}
 
 	unloadGL() {
-		if (!super.unloadGL()) return false
-
-		for (const stop of this.#stopFns) stop()
-		this.#stopFns.length = 0
-
 		this.gltfLoader = undefined
 		this.dracoLoader?.dispose()
 		this.dracoLoader = undefined
@@ -99,8 +79,6 @@ export class GltfModelBehavior extends RenderableBehavior {
 
 		// Increment this in case the loader is still loading, so it will ignore the result.
 		this.#version++
-
-		return true
 	}
 
 	#cleanupModel() {

@@ -12,6 +12,14 @@ export class HtmlScene extends ImperativeBase {
 			 */
 			display: none;
 
+			/*
+			A Scene is strict: it does not leak content, its rendering is not
+			affected by external layout, and its size is not affected by its
+			content. It is an absolutely contained drawing area.
+			*/
+			contain: size layout paint; /*fallback, TODO remove once Safari goers are caught up*/
+			contain: strict;
+
 			box-sizing: border-box;
 			position: static;
 			overflow: hidden;

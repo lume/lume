@@ -103,6 +103,32 @@ export class CameraRig extends Node {
 	@numberAttribute(90) maxPolarAngle = 90
 
 	/**
+	 * @property {number} minHorizontalAngle
+	 *
+	 * *attribute*
+	 *
+	 * Default: `-Infinity`
+	 *
+	 * The smallest angle that the camera will be allowed to rotate to
+	 * horizontally. The default of `-Infinity` means the camera will rotate
+	 * laterally around the focus point indefinitely.
+	 */
+	@numberAttribute(-Infinity) minHorizontalAngle = -Infinity
+
+	/**
+	 * @property {number} maxHorizontalAngle
+	 *
+	 * *attribute*
+	 *
+	 * Default: `Infinity`
+	 *
+	 * The largest angle that the camera will be allowed to rotate to
+	 * horizontally. The default of `Infinity` means the camera will rotate
+	 * laterally around the focus point indefinitely.
+	 */
+	@numberAttribute(Infinity) maxHorizontalAngle = Infinity
+
+	/**
 	 * @property {number} initialDistance
 	 *
 	 * *attribute*
@@ -175,11 +201,13 @@ export class CameraRig extends Node {
 
 	template = () => html`
 		<lume-node
+			id="cameraY"
 			size="1 1 1"
 			ref=${(el: Node) => (this.rotationYTarget = el)}
 			size-mode="proportional proportional proportional"
 		>
 			<lume-node
+				id="cameraX"
 				size="1 1 1"
 				rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
 				size-mode="proportional proportional proportional"
@@ -220,6 +248,8 @@ export class CameraRig extends Node {
 			rotationYTarget: this.rotationYTarget!,
 			minFlingRotationX: this.minPolarAngle,
 			maxFlingRotationX: this.maxPolarAngle,
+			minFlingRotationY: this.minHorizontalAngle,
+			maxFlingRotationY: this.maxHorizontalAngle,
 		}).start()
 
 		this.scrollFling = new ScrollFling({

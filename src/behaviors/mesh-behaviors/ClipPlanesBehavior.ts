@@ -1,10 +1,9 @@
-import {autorun, stringAttribute, reactive, booleanAttribute} from '@lume/element'
-import {MeshBehavior} from './MeshBehavior.js'
+import {stringAttribute, reactive, booleanAttribute} from '../attribute.js'
 import {ClipPlane} from '../../core/ClipPlane.js'
+import {MeshBehavior} from './MeshBehavior.js'
+import type {MaterialBehavior} from './index.js'
 
-import type {Material} from 'three'
-
-export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'flipClip' | 'clipDisabled'
+export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipShadows' | 'flipClip' | 'clipDisabled'
 
 let refCount = 0
 
@@ -14,8 +13,8 @@ let refCount = 0
  * When applied to an element with GL content, allows specifying one or more
  * [`<lume-clip-plane>`](../../core/ClipPlane) elements to clip the content with.
  *
- * This class extends from MeshBehavior, enforcing that the behavior can be used
- * only on elements that have geometry and material.
+ * This class extends from `MeshBehavior`, enforcing that the behavior can be used
+ * only on elements that have a geometry and material.
  *
  * <div id="clipPlaneExample"></div>
  *
@@ -27,7 +26,18 @@ let refCount = 0
  */
 @reactive
 export class ClipPlanesBehavior extends MeshBehavior {
-	static _observedProperties = ['clipPlanes', 'flipClip', 'clipDisabled', ...(MeshBehavior._observedProperties || [])]
+	/**
+	 * @property {boolean} clipShadows
+	 *
+	 * `attribute`
+	 *
+	 * Default: `false`
+	 *
+	 * Defines whether to clip shadows
+	 * according to the clipping planes specified on this material. Default is
+	 * false.
+	 */
+	@booleanAttribute(true) clipShadows = true
 
 	// TODO reactive array?
 	#clipPlanes: Array<ClipPlane> = []
@@ -96,19 +106,13 @@ export class ClipPlanesBehavior extends MeshBehavior {
 
 			let root = this.element.getRootNode() as Document | ShadowRoot | null
 
-			console.log(' *** search for plane:', v, root)
-
 			// TODO Should we not search up the composed tree, and stay only
 			// in the current ShadowRoot?
 
 			while (root) {
 				const plane = root.querySelector(v)
 
-				console.log('query result:', v, plane)
-
 				if (plane) {
-					console.log(' *** plane found?', plane)
-
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
@@ -156,15 +160,15 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 */
 	@booleanAttribute(false) clipDisabled = false
 
+	get material() {
+		return (this.element.behaviors.find(name => name.endsWith('-material')) as MaterialBehavior).meshComponent
+	}
+
 	#observer: MutationObserver | null = null
 
 	override loadGL() {
-		if (!super.loadGL()) return false
-
 		if (!refCount) this.element.scene!.__localClipping = true
 		refCount++
-
-		console.log('ROOT????', this.element.getRootNode())
 
 		// loadGL may fire during parsing before children exist. This
 		// MutationObserver will also fire during parsing. This allows us to
@@ -175,54 +179,52 @@ export class ClipPlanesBehavior extends MeshBehavior {
 		// consistency.  This covers most cases, for now.
 		this.#observer = new MutationObserver(() => {
 			// TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
+			// This triggers the setter logic.
 			this.clipPlanes = this.#rawClipPlanes
 		})
 
 		this.#observer.observe(this.element.getRootNode(), {childList: true, subtree: true})
 
-		this._stopFns.push(
-			autorun(() => {
-				const planes = this.clipPlanes
-				const flip = this.flipClip
-				const mat: Material = this.getMeshComponent('material')
+		this.createEffect(() => {
+			const {clipPlanes, clipShadows, flipClip} = this
 
-				if (!mat) return
+			// TODO CLIP PLANES REACTIVITY HACK, this is not reactive, so if
+			// a material is added later, this won't re-run.
+			// MaterialBehavior triggers reactivity, for now, in case this behavior is
+			// added to an element.
+			// What we need to do is make this.element.behaviors[name].meshComponent reactive
+			const mat = this.material
+			if (!mat) return
 
-				this.element.needsUpdate()
+			this.element.needsUpdate()
 
-				if (!planes.length || this.clipDisabled) {
-					mat.clippingPlanes = null
-					mat.clipShadows = false // FIXME upstream: don't forget this or Three.js has a bug that still attempts to perform clipping even if clippingPlanes is null.
-					return
-				}
+			if (!clipPlanes.length || this.clipDisabled) {
+				mat.clippingPlanes = null
+				mat.clipShadows = false // FIXME upstream: don't forget this or Three.js has a bug that still attempts to perform clipping even if clippingPlanes is null.
 
-				if (!mat.clippingPlanes) {
-					mat.clippingPlanes = []
-					mat.clipShadows = true // TODO: attribute for this too, but seems unnecessary.
-				}
+				return
+			}
 
-				mat.clippingPlanes.length = 0
+			if (!mat.clippingPlanes) {
+				mat.clippingPlanes = []
+			}
 
-				for (const plane of planes) {
-					if (!plane?.clip) continue
-					mat.clippingPlanes.push(flip ? plane.inverseClip : plane.clip)
-				}
-			}),
-		)
+			mat.clippingPlanes.length = 0
+			mat.clipShadows = clipShadows
 
-		return true
+			for (const plane of clipPlanes) {
+				if (!plane.clip) continue
+				mat.clippingPlanes.push(flipClip ? plane.inverseClip : plane.clip)
+			}
+		})
 	}
 
 	override unloadGL() {
-		if (!super.unloadGL()) return false
-
 		refCount--
 		if (!refCount) this.element.scene!.__localClipping = false
 
 		this.#observer?.disconnect()
 		this.#observer = null
-
-		return true
 	}
 }
 

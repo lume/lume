@@ -43,11 +43,11 @@ export class Mesh extends Node {
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.
 	static defaultBehaviors: {[k: string]: any} = {
-		'box-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
+		'box-geometry': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-geometry'))
 		},
-		'phong-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
+		'phong-material': (initialBehaviors: string[]) => {
+			return !initialBehaviors.some(b => b.endsWith('-material'))
 		},
 	}
 

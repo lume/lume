@@ -12,7 +12,6 @@ import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {stringToNumberArray} from './utils.js'
 
-import type {Geometry, Material} from 'three'
 import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
 
 export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales'
@@ -166,8 +165,8 @@ export class InstancedMesh extends Mesh {
 
 		// Use the existing geometry and material from the behaviors in case we are in the recreateThree process.
 		const mesh = new ThreeInstancedMesh(
-			(geometryBehavior?.meshComponent as Geometry) || new BoxGeometry(),
-			(materialBehavior?.meshComponent as Material) || new MeshPhongMaterial(),
+			geometryBehavior?.meshComponent || new BoxGeometry(),
+			materialBehavior?.meshComponent || new MeshPhongMaterial(),
 			this.#biggestCount,
 		)
 
