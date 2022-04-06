@@ -1,8 +1,7 @@
-import {Geometry} from 'three/src/core/Geometry.js'
+import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
 import type {MeshComponentType} from '../MeshBehavior.js'
-import type {BufferGeometry} from 'three'
 
 // base class for geometry behaviors
 export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
@@ -30,8 +29,8 @@ export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
 		return this.meshComponent
 	}
 
-	override _createComponent(): BufferGeometry | Geometry {
-		return new Geometry()
+	override _createComponent(): BufferGeometry {
+		return new BufferGeometry()
 	}
 
 	loadGL() {

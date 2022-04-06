@@ -68,10 +68,10 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 			mat.bumpScale = this.bumpScale
 			mat.normalScale.set(this.normalScale, this.normalScale)
 			mat.metalness = this.metalness
-			mat.morphNormals = this.morphNormals
-			mat.morphTargets = this.morphTargets
+			// mat.morphNormals = this.morphNormals
+			// mat.morphTargets = this.morphTargets
 			mat.roughness = this.roughness
-			mat.vertexTangents = this.vertexTangents
+			// mat.vertexTangents = this.vertexTangents
 
 			// TODO Needed?
 			// mat.needsUpdate = true

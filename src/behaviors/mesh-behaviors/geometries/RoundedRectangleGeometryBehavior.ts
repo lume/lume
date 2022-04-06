@@ -5,7 +5,7 @@ import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
-import type {Geometry} from 'three/src/core/Geometry.js'
+import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 // function BoolAttribute(val: string | null) {
 // 	if (val === null || val === 'false') return false
@@ -56,7 +56,7 @@ export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 
 	_createComponent() {
 		let thickness = this.thickness
-		let geom: Geometry
+		let geom: BufferGeometry
 
 		const roundedRectShape = new RoundedRectShape(
 			0,

@@ -329,7 +329,7 @@ export class WebglRendererThree {
 			renderer.setAnimationLoop(fn)
 		else if (renderer.animate)
 			// < r94
-			renderer.animate(fn)
+			renderer.animate(fn as () => void)
 	}
 
 	// TODO: at the moment this has only been tested toggling it on

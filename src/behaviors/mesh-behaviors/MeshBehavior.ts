@@ -3,7 +3,7 @@ import {Mesh} from '../../meshes/Mesh.js'
 import {Points} from '../../meshes/Points.js'
 import {InstancedMesh} from '../../meshes/InstancedMesh.js'
 
-import type {BufferGeometry, Geometry, Material} from 'three'
+import type {BufferGeometry, Material} from 'three'
 
 export type MeshComponentType = 'geometry' | 'material'
 
@@ -20,7 +20,7 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		return [Mesh, Points, InstancedMesh]
 	}
 
-	_createComponent(): BufferGeometry | Geometry | Material {
+	_createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 

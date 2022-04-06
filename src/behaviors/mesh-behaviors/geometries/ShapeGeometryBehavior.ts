@@ -9,7 +9,7 @@ import {Vector2} from 'three/src/math/Vector2.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {stringToNumberArray} from '../../../meshes/utils.js'
 
-import type {Geometry} from 'three/src/core/Geometry.js'
+// import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 // Heart shape.
 const defaultShape = new Shape()
@@ -212,8 +212,9 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		// Negative scale throws a lot of things off, causing lighting not to work due to normals going the wrong direction.
 		geometry.scale(1, -1, 1)
 		// So we have to do the following to reverse the effects:
-		handleInvertedGeometry(geometry)
+		// handleInvertedGeometry(geometry)
 
+		if (this.fitment) return geometry
 		if (this.fitment === 'none') return geometry
 
 		let minX = Number.MAX_VALUE
@@ -221,12 +222,12 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		let minY = Number.MAX_VALUE
 		let maxY = -Number.MAX_VALUE
 
-		for (const vert of geometry.vertices) {
-			minX = vert.x < minX ? vert.x : minX
-			maxX = vert.x > maxX ? vert.x : maxX
-			minY = vert.y < minY ? vert.y : minY
-			maxY = vert.y > maxY ? vert.y : maxY
-		}
+		// for (const vert of geometry.vertices) {
+		// 	minX = vert.x < minX ? vert.x : minX
+		// 	maxX = vert.x > maxX ? vert.x : maxX
+		// 	minY = vert.y < minY ? vert.y : minY
+		// 	maxY = vert.y > maxY ? vert.y : maxY
+		// }
 
 		const shapeSizeX = maxX - minX
 		const shapeSizeY = maxY - minY
@@ -298,41 +299,109 @@ if (!elementBehaviors.has('shape-geometry')) elementBehaviors.define('shape-geom
 // Based on https://stackoverflow.com/questions/16824650/three-js-how-to-flip-normals-after-negative-scale
 // TODO handle BufferGeometry too. We'll need to once we update Three.js to
 // latest, which drops the old Geometry classes.
-function handleInvertedGeometry(geometry: Geometry) {
-	for (const face of geometry.faces) {
-		// flip face normals
-		// TODO It seems to work without modifying z. Is this ok?
-		face.normal.x *= -1
-		face.normal.y *= -1
-		face.normal.z *= -1
+// function handleInvertedGeometryOld(geometry: BufferGeometry) {
+// 	for (const face of geometry.faces) {
+// 		// flip face normals
+// 		// TODO It seems to work without modifying z. Is this ok?
+// 		face.normal.x *= -1
+// 		face.normal.y *= -1
+// 		face.normal.z *= -1
 
-		// change face winding order
-		const temp = face.a
-		face.a = face.c
-		face.c = temp
-	}
+// 		// change face winding order
+// 		const temp = face.a
+// 		face.a = face.c
+// 		face.c = temp
+// 	}
 
-	// flip UV coordinates
-	const faceVertexUvs = geometry.faceVertexUvs[0]
-	for (let i = 0; i < faceVertexUvs.length; i++) {
-		const temp = faceVertexUvs[i][0]
-		faceVertexUvs[i][0] = faceVertexUvs[i][2]
-		faceVertexUvs[i][2] = temp
-	}
+// 	// flip UV coordinates
+// 	const faceVertexUvs = geometry.faceVertexUvs[0]
+// 	for (let i = 0; i < faceVertexUvs.length; i++) {
+// 		const temp = faceVertexUvs[i][0]
+// 		faceVertexUvs[i][0] = faceVertexUvs[i][2]
+// 		faceVertexUvs[i][2] = temp
+// 	}
 
-	// TODO Does anything else need update? Right now it doesn't matter, as
-	// we're only using this on freshly-made geometries. When we optimize in the
-	// future, we'd want to update geometries in place rather than always
-	// replacing them, then this will matter.
-	geometry.verticesNeedUpdate = true
-	geometry.normalsNeedUpdate = true
+// 	// TODO Does anything else need update? Right now it doesn't matter, as
+// 	// we're only using this on freshly-made geometries. When we optimize in the
+// 	// future, we'd want to update geometries in place rather than always
+// 	// replacing them, then this will matter.
+// 	geometry.verticesNeedUpdate = true
+// 	geometry.normalsNeedUpdate = true
 
-	// If we use this on a geometry that needs smoothing, this will apply:
-	// TODO attribute to toggle flat shading
-	// geometry.computeFaceNormals()
-	// geometry.computeVertexNormals()
-	// geometry.computeBoundingSphere()
-}
+// 	// If we use this on a geometry that needs smoothing, this will apply:
+// 	// TODO attribute to toggle flat shading
+// 	// geometry.computeFaceNormals()
+// 	// geometry.computeVertexNormals()
+// 	// geometry.computeBoundingSphere()
+// }
+
+// function handleInvertedGeometry(geometry: BufferGeometry) {
+//   const tempXYZ = [0, 0, 0];
+
+//   // flip normals
+//   for (let i = 0; i < geometry.attributes.normal.array.length / 9; i++) {
+//     // cache a coordinates
+//     tempXYZ[0] = geometry.attributes.normal.array[i * 9];
+//     tempXYZ[1] = geometry.attributes.normal.array[i * 9 + 1];
+//     tempXYZ[2] = geometry.attributes.normal.array[i * 9 + 2];
+
+//     // overwrite a with c
+//     geometry.attributes.normal.array[i * 9] =
+//       geometry.attributes.normal.array[i * 9 + 6];
+//     geometry.attributes.normal.array[i * 9 + 1] =
+//       geometry.attributes.normal.array[i * 9 + 7];
+//     geometry.attributes.normal.array[i * 9 + 2] =
+//       geometry.attributes.normal.array[i * 9 + 8];
+
+//     // overwrite c with stored a values
+//     geometry.attributes.normal.array[i * 9 + 6] = tempXYZ[0];
+//     geometry.attributes.normal.array[i * 9 + 7] = tempXYZ[1];
+//     geometry.attributes.normal.array[i * 9 + 8] = tempXYZ[2];
+//   }
+
+//   // change face winding order
+//   for (let i = 0; i < geometry.attributes.position.array.length / 9; i++) {
+//     // cache a coordinates
+//     tempXYZ[0] = geometry.attributes.position.array[i * 9];
+//     tempXYZ[1] = geometry.attributes.position.array[i * 9 + 1];
+//     tempXYZ[2] = geometry.attributes.position.array[i * 9 + 2];
+
+//     // overwrite a with c
+//     geometry.attributes.position.array[i * 9] =
+//       geometry.attributes.position.array[i * 9 + 6];
+//     geometry.attributes.position.array[i * 9 + 1] =
+//       geometry.attributes.position.array[i * 9 + 7];
+//     geometry.attributes.position.array[i * 9 + 2] =
+//       geometry.attributes.position.array[i * 9 + 8];
+
+//     // overwrite c with stored a values
+//     geometry.attributes.position.array[i * 9 + 6] = tempXYZ[0];
+//     geometry.attributes.position.array[i * 9 + 7] = tempXYZ[1];
+//     geometry.attributes.position.array[i * 9 + 8] = tempXYZ[2];
+//   }
+
+//   // flip UV coordinates
+//   for (let i = 0; i < geometry.attributes.uv.array.length / 6; i++) {
+//     // cache a coordinates
+//     tempXYZ[0] = geometry.attributes.uv.array[i * 6];
+//     tempXYZ[1] = geometry.attributes.uv.array[i * 6 + 1];
+
+//     // overwrite a with c
+//     geometry.attributes.uv.array[i * 6] =
+//       geometry.attributes.uv.array[i * 6 + 4];
+//     geometry.attributes.uv.array[i * 6 + 1] =
+//       geometry.attributes.uv.array[i * 6 + 5];
+
+//     // overwrite c with stored a values
+//     geometry.attributes.uv.array[i * 6 + 4] = tempXYZ[0];
+//     geometry.attributes.uv.array[i * 6 + 5] = tempXYZ[1];
+//   }
+
+//   geometry.attributes.normal.needsUpdate = true;
+//   geometry.attributes.position.needsUpdate = true;
+//   geometry.attributes.uv.needsUpdate = true;
+
+// }
 
 // Adapted from https://github.com/mrdoob/three.js/blob/c7d06c02e302ab9c20fe8b33eade4b61c6712654/examples/jsm/loaders/SVGLoader.js#L207
 

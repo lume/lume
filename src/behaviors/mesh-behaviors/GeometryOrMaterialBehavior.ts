@@ -2,7 +2,6 @@
 import {MeshBehavior, MeshComponentType} from './MeshBehavior.js'
 
 import type {Material} from 'three/src/materials/Material.js'
-import type {Geometry} from 'three/src/core/Geometry.js'
 import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 /**
@@ -39,7 +38,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 		this.element.needsUpdate()
 	}
 
-	_createComponent(): BufferGeometry | Geometry | Material {
+	_createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
