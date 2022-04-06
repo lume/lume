@@ -27,7 +27,7 @@ export type FbxModelAttributes = NodeAttributes
  * ```js
  * const scene = new Scene
  * document.body.append(scene)
- * const model = new FBXModel
+ * const model = new FbxModel
  * model.src = 'path/to/model.fbx'
  * scene.add(model)
  * ```

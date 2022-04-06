@@ -1,20 +1,20 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
+import {TDSLoader} from 'three/examples/jsm/loaders/TDSLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 import type {Group} from 'three/src/objects/Group.js'
 
-export type FbxModelBehaviorAttributes = 'src'
+export type TdsModelBehaviorAttributes = 'src'
 
 @reactive
-export class FbxModelBehavior extends RenderableBehavior {
-	/** Path to a .fbx file. */
+export class TdsModelBehavior extends RenderableBehavior {
+	/** Path to a .3ds file. */
 	@stringAttribute('') src = ''
 
-	loader?: FBXLoader
+	loader?: TDSLoader
 	model?: Group
 
 	// This is incremented any time we need a pending load() to cancel (f.e. on
@@ -23,7 +23,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 	#version = 0
 
 	loadGL() {
-		this.loader = new FBXLoader()
+		this.loader = new TDSLoader()
 
 		this.createEffect(() => {
 			this.src
@@ -81,9 +81,9 @@ export class FbxModelBehavior extends RenderableBehavior {
 	#setModel(model: Group) {
 		this.model = model
 		this.element.three.add(model)
-		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
+		this.element.emit(Events.MODEL_LOAD, {format: '3ds', model})
 		this.element.needsUpdate()
 	}
 }
 
-if (!elementBehaviors.has('fbx-model')) elementBehaviors.define('fbx-model', FbxModelBehavior)
+if (!elementBehaviors.has('3ds-model')) elementBehaviors.define('3ds-model', TdsModelBehavior)
