@@ -46,3 +46,6 @@
 [submodule "packages/kiwi"]
 	path = packages/kiwi
 	url = https://github.com/lume/kiwi.git
+[submodule "apps/first-person-shooter"]
+	path = apps/first-person-shooter
+	url = https://github.com/LUMECraft/first-person-shooter.git
