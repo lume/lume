@@ -49,3 +49,6 @@
 [submodule "apps/first-person-shooter"]
 	path = apps/first-person-shooter
 	url = https://github.com/LUMECraft/first-person-shooter.git
+[submodule "packages/classy-solid"]
+	path = packages/classy-solid
+	url = https://github.com/lume/classy-solid.git
