@@ -1,6 +1,6 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
 import {emits} from '@lume/eventful'
-import {HtmlNode as HtmlInterface} from './HtmlNode.js'
+import {ImperativeBase} from './ImperativeBase.js'
 import {defer} from './utils.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -85,10 +85,11 @@ export type NodeAttributes = BaseAttributes | 'visible'
  * </script>
  *
  * @extends ImperativeBase
- * @extends HTMLNode
  */
 @element('lume-node', autoDefineElements)
-export class Node extends HtmlInterface {
+export class Node extends ImperativeBase {
+	override readonly hasShadow: boolean = false
+
 	/**
 	 * @property {true} isNode -
 	 *
@@ -126,6 +127,43 @@ export class Node extends HtmlInterface {
 		if (this.scene && this.scene === this.parentElement) return this.scene.calculatedSize
 		return composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
+
+	static css = /*css*/ `
+		:host {
+			/*
+			 * All items of the scene graph are hidden until they are mounted in
+			 * a scene (this changes to display:block). This gets toggled
+			 * between "none" and "block" by ImperativeBase depending on if CSS
+			 * rendering is enabled.
+			 */
+			display: none;
+
+			/*
+			Layout of a node's CSS rectangle is never affected by anything
+			outside of it. We don't contain paint because CSS content can
+			overflow if desired, or size because eventually we'll add natural
+			sizing to let the node be sized by its content.
+			*/
+			contain: layout;
+
+			/* TODO see how content-visibility affects CSS performance with nodes that are off-screen. */
+			/* content-visibility: auto; implies contain:strict */
+
+			box-sizing: border-box;
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			/*
+			 * Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM
+			 * elements, but does for 3D objects in WebGL that have any size
+			 * along Z.)
+			 */
+			transform-origin: 50% 50% 0; /* default */
+
+			transform-style: preserve-3d;
+		}
+	`
 
 	/**
 	 * @constructor - Create a Node instance.

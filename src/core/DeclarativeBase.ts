@@ -3,17 +3,17 @@ import {defer, observeChildren} from '../core/utils.js'
 import {WithChildren} from './WithChildren.js'
 import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
 
-import type {HtmlNode} from './HtmlNode.js'
+import type {Node as _Node} from './Node.js'
 import type {Scene} from './Scene.js'
 
 export type ConnectionType = 'root' | 'slot' | 'actual'
 
 const observers = new WeakMap()
 
-// We're using isNode instead of instanceof HtmlNode to avoid a runtime reference HtmlNode here,
-// thus prevent a circular dependency between this module and HtmlNode
+// We're using isNode instead of instanceof Node to avoid a runtime reference Node here,
+// thus prevent a circular dependency between this module and Node
 // TODO consolidate with one in ImperativeBase
-function isNode(n: any): n is HtmlNode {
+function isNode(n: any): n is _Node {
 	return n.isNode
 }
 
@@ -64,7 +64,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	// from Scene
 	isScene = false
 
-	// from HTMLNode
+	// from Node
 	isNode = false
 
 	childConnectedCallback(child: HTMLElement) {
