@@ -738,6 +738,10 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
 	`)
 }
 
+// Make SVG path strings at https://yqnn.github.io/svg-path-editor/
+const starPath =
+	'M5.605 12.784c-.294-.052-.556-.222-.718-.466-.098-.147-.08-.095-.455-1.303-.077-.247-.188-.603-.246-.79-.058-.187-.168-.54-.244-.785l-.138-.444-.12-.037c-.137-.043-.721-.224-1.059-.329-.126-.04-.3-.094-.385-.12-1.613-.501-1.572-.487-1.679-.548-.393-.221-.611-.658-.55-1.098.034-.249.148-.468.335-.644.055-.052.488-.363 1.397-1.005l1.318-.93-.006-.255c-.01-.461-.027-2.045-.029-2.58-.001-.552-.001-.55.046-.7.031-.1.111-.246.181-.335.313-.396.86-.525 1.312-.311.117.055.101.044.64.446.248.185.822.613 1.277.953l.826.617.179-.061c.098-.034.324-.11.503-.171.516-.175.807-.273 1.395-.473.94-.319 1.012-.343 1.107-.359.515-.089 1.026.211 1.202.705.064.179.081.368.05.55-.011.064-.074.264-.196.624-.195.574-.322.95-.477 1.407-.054.161-.165.486-.245.721l-.145.429.616.826c.34.455.779 1.043.976 1.307.299.4.367.498.413.59.183.372.14.81-.112 1.141-.155.204-.371.339-.644.406-.043.01-.175.013-.595.012-.53-.002-2.032-.019-2.555-.029l-.265-.005-.93 1.316c-.511.724-.951 1.34-.977 1.37-.25.286-.636.423-1.003.358z'
+
 const shapesExample = stripIndent(html`
 	<script src="${host}global.js"></script>
 
@@ -755,11 +759,17 @@ const shapesExample = stripIndent(html`
 
 	<script src="global.js"></script>
 
-	<lume-scene id="scene" perspective="800" webgl fog-mode="linear" fog-near="100" fog-far="500" fog-color="white">
+	<lume-scene id="scene" perspective="800" webgl fog-mode="none" fog-near="100" fog-far="500" fog-color="white">
 		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
 
-		<lume-camera-rig id="cam" active initial-distance="200" max-distance="700" min-distance="100">
+		<lume-camera-rig id="cam" active initial-distance="200" max-distance="70000" min-distance="100">
 			<lume-point-light position="200 0 200" intensity="0.7" color="white" slot="camera-child"></lume-point-light>
+			<lume-perspective-camera
+				align-point="0.5 0.5 0.5"
+				far="200000"
+				active
+				slot="camera-child"
+			></lume-perspective-camera>
 		</lume-camera-rig>
 
 		<lume-shape
@@ -818,6 +828,7 @@ const shapesExample = stripIndent(html`
 				mount-point="0.5 0.5"
 				sidedness="double"
 				receive-shadow="false"
+				fitment="none"
 			>
 				<lume-box
 					visible="false"
@@ -920,6 +931,7 @@ const shapesExample = stripIndent(html`
 				mount-point="0.5 0.5"
 				sidedness="double"
 				receive-shadow="false"
+				fitment="none"
 			>
 				<lume-box
 					visible="false"
@@ -1056,6 +1068,10 @@ const shapesExample = stripIndent(html`
 					<input type="radio" name="shape" value="trapezoids" onchange="updateShape(event)" />&nbsp;
 					Trapezoids
 				</label>
+				<br />
+				<label>
+					<input type="radio" name="shape" value="stars" onchange="updateShape(event)" />&nbsp; Stars
+				</label>
 			</fieldset>
 		</fieldset>
 	</div>
@@ -1098,6 +1114,10 @@ const shapesExample = stripIndent(html`
 				} else if (input.value === 'trapezoids') {
 					// Set the 'shape' attribute with a list of points
 					shape.setAttribute('shape', '-5 0, 2 -13,  13 -13,  20 0,  0 0')
+				} else if (input.value === 'stars') {
+					// Set an SVG path string (same as the value you'd find in a <path> element's d="" attribute).
+					// Make SVG path strings at https://yqnn.github.io/svg-path-editor/
+					shape.shape = '${starPath}'
 				} else {
 					// Revert back to the default shape
 					shape.shape = null
