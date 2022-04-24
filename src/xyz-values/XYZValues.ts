@@ -367,3 +367,12 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		return true
 	}
 }
+
+// TODO make this a decorator
+function enumerable<T extends object>(obj: T, prop: keyof T) {
+	Object.defineProperty(obj, prop, {...Object.getOwnPropertyDescriptor(obj, prop), enumerable: true})
+}
+
+enumerable(XYZValues.prototype, 'x')
+enumerable(XYZValues.prototype, 'y')
+enumerable(XYZValues.prototype, 'z')
