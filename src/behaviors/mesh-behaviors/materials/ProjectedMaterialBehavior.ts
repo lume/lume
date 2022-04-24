@@ -1,7 +1,7 @@
 // WIP
 
 import 'element-behaviors'
-import ProjectedMaterial from 'three-projected-material'
+import {ProjectedMaterial} from '@lume/three-projected-material/dist/ProjectedMaterial.js'
 import {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
