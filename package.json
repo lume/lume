@@ -102,7 +102,7 @@
 		"@lume/three-projected-material": "^0.1.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.7.4",
+		"@lume/cli": "^0.8.0",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",
 		"@types/three": "^0.139.0",
