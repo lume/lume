@@ -55,3 +55,6 @@
 [submodule "packages/three-projected-material"]
 	path = packages/three-projected-material
 	url = https://github.com/lume/three-projected-material.git
+[submodule "packages/mapapp"]
+	path = apps/mapapp
+	url = https://github.com/LUMECraft/mapapp.git
