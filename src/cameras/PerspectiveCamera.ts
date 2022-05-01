@@ -110,7 +110,7 @@ export class PerspectiveCamera extends Node {
 	// TODO lookat property
 	// @attribute lookat: string | Node | null = null
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		// We use an autorun to wait for the this.scene to exist.
@@ -181,13 +181,13 @@ export class PerspectiveCamera extends Node {
 		)
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
 	}
 
 	// TODO make sure this works. Camera should switch to scene's default on
 	// removal of last camera, etc.
-	disconnectedCallback() {
+	override disconnectedCallback() {
 		super.disconnectedCallback()
 
 		this.#setSceneCamera('unset')

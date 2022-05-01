@@ -26,11 +26,11 @@ export class Light extends Node {
 	// This is not used in practice because this class is abstract, but this enforces
 	// (in TypeScript) that subclasses that override this will return a subtype of
 	// ThreeLight.
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeLight()
 	}
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(

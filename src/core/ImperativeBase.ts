@@ -69,10 +69,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	// one place. f.e. isScene is currently also used in DeclarativeBase.
 
 	/** @property {boolean} isScene - True if a subclass of this class is a Scene. */
-	isScene = false
+	override isScene = false
 
 	/** @property {boolean} isNode - True if a subclass of this class is a Node. */
-	isNode = false
+	override isNode = false
 
 	/**
 	 * @property {boolean} glLoaded
@@ -257,7 +257,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (children && children.length) this.threeCSS.add(...children)
 	}
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		this._stopFns.push(
@@ -320,7 +320,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		)
 	}
 
-	disconnectedCallback(): void {
+	override disconnectedCallback(): void {
 		super.disconnectedCallback()
 
 		this.__possiblyUnloadThree(this)
@@ -340,7 +340,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * (childComposedCallback with "actual" being passed in is essentially the
 	 * same as childConnectedCallback).
 	 */
-	childComposedCallback(child: Element, _connectionType: ConnectionType): void {
+	override childComposedCallback(child: Element, _connectionType: ConnectionType): void {
 		if (!(child instanceof ImperativeBase)) return
 
 		// This code may run during a super constructor (f.e. while constructing
@@ -522,7 +522,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.needsUpdate()
 	}
 
-	get composedLumeParent(): ImperativeBase | null {
+	override get composedLumeParent(): ImperativeBase | null {
 		const result = super.composedLumeParent
 		if (!(result instanceof ImperativeBase)) return null
 		return result

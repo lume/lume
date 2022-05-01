@@ -6,7 +6,7 @@ export type PlaneAttributes = MeshAttributes
 
 @element('lume-plane', autoDefineElements)
 export class Plane extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'plane-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))
 		},

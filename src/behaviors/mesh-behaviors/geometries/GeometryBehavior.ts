@@ -33,7 +33,7 @@ export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
 		return new BufferGeometry()
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this.createEffect(() => {

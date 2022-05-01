@@ -11,7 +11,7 @@ export function DefaultBehaviors<T extends Constructor<HTMLElement>>(Base: T) {
 		// override in subclasses
 		static defaultBehaviors: any = []
 
-		connectedCallback() {
+		override connectedCallback() {
 			super.connectedCallback && super.connectedCallback()
 
 			// If no geometry or material behavior is detected, add default ones.

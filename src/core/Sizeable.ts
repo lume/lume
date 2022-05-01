@@ -150,14 +150,14 @@ export class Sizeable extends TreeNode {
 	// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
 	_stopFns: Array<StopFunction> = []
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		// For example, subclasses should push autoruns in connectedCallback.
 		// this._stopFns.push(autorun(...))
 	}
 
-	disconnectedCallback() {
+	override disconnectedCallback() {
 		super.disconnectedCallback?.()
 
 		for (const stop of this._stopFns) stop()

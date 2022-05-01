@@ -14,11 +14,11 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	loader?: PLYLoader
 	model?: BufferGeometry
 
-	requiredElementType(): [typeof Points] {
+	override requiredElementType(): [typeof Points] {
 		return [Points]
 	}
 
-	_createComponent() {
+	override _createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.
 		if (!this.model) return new BufferGeometry()
 		return this.model
@@ -29,7 +29,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this.loader = new PLYLoader()
@@ -44,7 +44,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		super.unloadGL()
 
 		this.loader = undefined

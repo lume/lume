@@ -9,11 +9,11 @@ export class BasicMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') texture = ''
 	@stringAttribute('') specularMap = ''
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshBasicMaterial({color: 0x00ff00})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this._handleTexture(

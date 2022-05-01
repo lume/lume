@@ -13,7 +13,7 @@ export type MeshComponentType = 'geometry' | 'material'
  * @extends RenderableBehavior
  */
 export abstract class MeshBehavior extends RenderableBehavior {
-	requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh)[] {
+	override requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh)[] {
 		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
 		// XXX An alternative to using arrays with multiple types is we could branch the class
 		// hierarchy to avoid arrays/unions.

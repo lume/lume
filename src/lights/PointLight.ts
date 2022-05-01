@@ -58,7 +58,7 @@ export class PointLight extends Light {
 	@numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
 	@numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
@@ -88,7 +88,7 @@ export class PointLight extends Light {
 		return true
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreePointLight()
 	}
 }

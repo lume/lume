@@ -63,7 +63,7 @@ export class DirectionalLight extends Light {
 	@numberAttribute(1) shadowCameraBottom = -1000
 	@numberAttribute(1) shadowCameraLeft = -1000
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
@@ -96,7 +96,7 @@ export class DirectionalLight extends Light {
 		return true
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeDirectionalLight()
 	}
 }

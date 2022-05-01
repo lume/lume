@@ -23,7 +23,7 @@ export class ProjectedMaterialBehavior extends MaterialBehavior {
 	// textureOffset?: Vector2
 	// cover?: boolean
 
-	_createComponent() {
+	override _createComponent() {
 		this.#camera.position.set(0, 0, 500)
 		return new ProjectedMaterial({color: 0x0000ff, texture: this._actualTexture ?? undefined, camera: this.camera})
 	}

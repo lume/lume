@@ -6,7 +6,7 @@ export type SphereAttributes = MeshAttributes
 
 @element('lume-sphere', autoDefineElements)
 export class Sphere extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'sphere-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))
 		},

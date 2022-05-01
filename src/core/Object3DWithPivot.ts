@@ -15,15 +15,15 @@ declare module 'three/src/core/Object3D.js' {
 }
 
 export class Object3DWithPivot extends Object3D {
-	type = 'Object3DWithPivot'
+	override type = 'Object3DWithPivot'
 
 	__pivot?: Vector3
 
-	get pivot(): Vector3 {
+	override get pivot(): Vector3 {
 		if (!this.__pivot) this.__pivot = new Vector3()
 		return this.__pivot
 	}
-	set pivot(v: Vector3) {
+	override set pivot(v: Vector3) {
 		this.__pivot = v
 	}
 
@@ -31,7 +31,7 @@ export class Object3DWithPivot extends Object3D {
 	// THREE.Vector3 that allows the origin (pivot) of rotation and scale to be
 	// specified in local coordinate space. For more info:
 	// https://github.com/mrdoob/three.js/issues/15965
-	updateMatrix() {
+	override updateMatrix() {
 		this.matrix.compose(this.position, this.quaternion, this.scale)
 
 		const pivot = this.pivot

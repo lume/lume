@@ -42,7 +42,7 @@ export class Mesh extends Node {
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.
-	static defaultBehaviors: {[k: string]: any} = {
+	static override defaultBehaviors: {[k: string]: any} = {
 		'box-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))
 		},
@@ -54,7 +54,7 @@ export class Mesh extends Node {
 	@booleanAttribute(true) @emits('propertychange') castShadow = true
 	@booleanAttribute(true) @emits('propertychange') receiveShadow = true
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
@@ -73,7 +73,7 @@ export class Mesh extends Node {
 		return true
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeMesh()
 	}
 }

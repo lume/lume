@@ -317,7 +317,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 *
 	 * @returns {string} - The string of values.
 	 */
-	toString(separator: string = ''): string {
+	override toString(separator: string = ''): string {
 		if (separator) {
 			return `${this.x}${separator} ${this.y}${separator} ${this.z}`
 		} else {

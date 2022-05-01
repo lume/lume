@@ -35,7 +35,7 @@ export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 		else this.#quadraticCorners = true
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		// XXX, if using createEffect() within loadGL ends up being too common,
@@ -54,7 +54,7 @@ export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 		})
 	}
 
-	_createComponent() {
+	override _createComponent() {
 		let thickness = this.thickness
 		let geom: BufferGeometry
 

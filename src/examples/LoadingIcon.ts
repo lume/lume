@@ -17,7 +17,7 @@ export class LoadingIcon extends Element {
 	@stringAttribute(defaultColor) color = defaultColor
 
 	// TODO convert to JSX.
-	template = () => html`
+	override template = () => html`
 		<>
 			<div class="top"></div>
 			<div class="right"></div>
@@ -26,7 +26,7 @@ export class LoadingIcon extends Element {
 		</>
 	`
 
-	css = /*css*/ `
+	override css = /*css*/ `
 		:host {
 			--loading-icon-color: ${this.color};
 		}

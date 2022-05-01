@@ -11,11 +11,11 @@ export class PointsMaterialBehavior extends MaterialBehavior {
 	@booleanAttribute(true) sizeAttenuation = true
 	@numberAttribute(1) pointSize = 1
 
-	_createComponent() {
+	override _createComponent() {
 		return new PointsMaterial({color: 0x00ff00})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!

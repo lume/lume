@@ -9,7 +9,7 @@ export type PointsAttributes = NodeAttributes
 
 @element('lume-points', autoDefineElements)
 export class Points extends Node {
-	static defaultBehaviors: {[k: string]: any} = {
+	static override defaultBehaviors: {[k: string]: any} = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},
@@ -18,7 +18,7 @@ export class Points extends Node {
 		},
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreePoints()
 	}
 }

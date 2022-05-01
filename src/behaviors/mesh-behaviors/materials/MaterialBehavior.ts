@@ -86,7 +86,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		else return false
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!

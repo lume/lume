@@ -55,11 +55,11 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	@booleanAttribute(false) morphTargets: boolean = false
 	@booleanAttribute(false) morphNormals: boolean = false
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshStandardMaterial()
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!

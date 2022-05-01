@@ -191,7 +191,7 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 
 	// TODO attribute to apply smoothing to the geometry (calculate normals)?
 
-	_createComponent() {
+	override _createComponent() {
 		let geometry: ExtrudeGeometry | ShapeGeometry
 
 		if (this.element.calculatedSize.z === 0) {
@@ -266,7 +266,7 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		return geometry
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this.createEffect(() => {

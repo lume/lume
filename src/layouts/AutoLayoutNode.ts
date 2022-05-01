@@ -82,7 +82,7 @@ export class AutoLayoutNode extends Node {
 		}
 	}
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		this._stopFns.push(
@@ -94,7 +94,7 @@ export class AutoLayoutNode extends Node {
 
 	#autoLayoutView?: any | undefined
 
-	childConnectedCallback(child: Node) {
+	override childConnectedCallback(child: Node) {
 		// @prod-prune
 		if (!(child instanceof Node))
 			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
@@ -105,7 +105,7 @@ export class AutoLayoutNode extends Node {
 		this.#checkNodes()
 	}
 
-	childDisconnectedCallback(child: Node) {
+	override childDisconnectedCallback(child: Node) {
 		// @prod-prune
 		if (!(child instanceof Node))
 			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')

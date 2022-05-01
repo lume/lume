@@ -31,7 +31,7 @@ export type ObjModelAttributes = NodeAttributes
  */
 @element('lume-obj-model', autoDefineElements)
 export class ObjModel extends Node {
-	static defaultBehaviors = ['obj-model']
+	static override defaultBehaviors = ['obj-model']
 }
 
 import type {ElementAttributes} from '@lume/element'

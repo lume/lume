@@ -8,7 +8,7 @@ export type BoxAttributes = MeshAttributes
 
 @element('lume-box', autoDefineElements)
 export class Box extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},

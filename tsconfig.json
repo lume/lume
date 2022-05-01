@@ -11,7 +11,9 @@
 		// modified a ton of interfaces from lib.dom.d.ts, so skip type errors in
 		// node_modules. :(
 		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
-		"skipLibCheck": true
+		"skipLibCheck": true,
+
+		"noImplicitOverride": true
 	},
 
 	// TODO Ideally we don't want test API type defs showing up in source code,

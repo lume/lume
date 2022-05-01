@@ -30,11 +30,11 @@ export class LambertMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') texture = ''
 	@stringAttribute('') specularMap = ''
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshLambertMaterial({color: 0x00ff00})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this._handleTexture(

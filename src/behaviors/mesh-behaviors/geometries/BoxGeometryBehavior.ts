@@ -3,7 +3,7 @@ import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 export class BoxGeometryBehavior extends GeometryBehavior {
-	_createComponent() {
+	override _createComponent() {
 		return new BoxGeometry(
 			this.element.calculatedSize.x,
 			this.element.calculatedSize.y,

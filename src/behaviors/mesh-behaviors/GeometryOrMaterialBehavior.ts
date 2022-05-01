@@ -38,7 +38,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 		this.element.needsUpdate()
 	}
 
-	_createComponent(): BufferGeometry | Material {
+	override _createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 

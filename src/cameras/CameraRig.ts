@@ -199,7 +199,7 @@ export class CameraRig extends Node {
 
 	rotationYTarget?: Node
 
-	template = () => html`
+	override template = () => html`
 		<lume-node
 			id="cameraY"
 			size="1 1 1"
@@ -288,19 +288,19 @@ export class CameraRig extends Node {
 		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
 	}
 
-	_loadGL(): boolean {
+	override _loadGL(): boolean {
 		if (!super._loadGL()) return false
 		this.startInteraction()
 		return true
 	}
 
-	_loadCSS(): boolean {
+	override _loadCSS(): boolean {
 		if (!super._loadCSS()) return false
 		this.startInteraction()
 		return true
 	}
 
-	disconnectedCallback() {
+	override disconnectedCallback() {
 		super.disconnectedCallback()
 		this.stopInteraction()
 	}

@@ -18,7 +18,7 @@ export type AmbientLightAttributes = LightAttributes
  */
 @element('lume-ambient-light', autoDefineElements)
 export class AmbientLight extends Light {
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeAmbientLight()
 	}
 }

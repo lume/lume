@@ -19,7 +19,7 @@ export class FlickeringOrb extends Node {
 	sphere?: Sphere
 
 	// FIXME 'attr:' is used to work around an issue with default property behavior
-	template = () => html`
+	override template = () => html`
 		<lume-point-light
 			ref=${(l: PointLight) => (this.light = l)}
 			attr:color=${() => this.color}
@@ -40,7 +40,7 @@ export class FlickeringOrb extends Node {
 		</lume-point-light>
 	`
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		const initialIntensity = this.intensity

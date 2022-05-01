@@ -42,7 +42,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 	@stringAttribute(default_vertex) vertexShader = default_vertex
 	@stringAttribute(default_fragment) fragmentShader = default_fragment
 
-	_createComponent() {
+	override _createComponent() {
 		return new ShaderMaterial({
 			uniforms: this.uniforms as Record<string, any>,
 			vertexShader: this.vertexShader,
@@ -50,7 +50,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 		})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		// CONTINUE FIXME: I added the 'retry' trick here to see if re-setting

@@ -97,7 +97,7 @@ export class Node extends ImperativeBase {
 	 *
 	 * Always `true` for things that are or inherit from `Node`.
 	 */
-	readonly isNode = true
+	override readonly isNode = true
 
 	/**
 	 * @property {boolean} visible -
@@ -128,7 +128,7 @@ export class Node extends ImperativeBase {
 		return composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
 
-	static css = /*css*/ `
+	static override css = /*css*/ `
 		:host {
 			/*
 			 * All items of the scene graph are hidden until they are mounted in
@@ -267,7 +267,7 @@ export class Node extends ImperativeBase {
 		return promise
 	}
 
-	_loadCSS() {
+	override _loadCSS() {
 		if (!super._loadCSS()) return false
 
 		this._cssStopFns.push(
@@ -280,7 +280,7 @@ export class Node extends ImperativeBase {
 		return true
 	}
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(

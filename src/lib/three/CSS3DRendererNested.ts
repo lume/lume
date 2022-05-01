@@ -9,7 +9,7 @@ import type {Scene} from 'three/src/scenes/Scene.js'
 import type {Camera} from 'three/src/cameras/Camera.js'
 
 export class CSS3DObjectNested extends Object3DWithPivot {
-	type = 'CSS3DObjectNested'
+	override type = 'CSS3DObjectNested'
 
 	#initialFrame = requestAnimationFrame(() => {
 		// delay to the next frame because attributes are not allowed be set

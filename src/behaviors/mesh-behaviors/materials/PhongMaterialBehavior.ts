@@ -82,13 +82,13 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 
 	@numberAttribute(30) shininess = 30
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshPhongMaterial({
 			color: 0x00ff00,
 		})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!

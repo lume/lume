@@ -99,7 +99,7 @@ export class Scene extends ImperativeBase {
 	 * Always `true` for things that are or inherit from `Scene`.
 	 */
 	// TODO @readonly jsdoc tag
-	readonly isScene = true
+	override readonly isScene = true
 
 	/**
 	 * @property {boolean} enableCss -
@@ -514,7 +514,7 @@ export class Scene extends ImperativeBase {
 		this.needsUpdate()
 	}
 
-	static css = /*css*/ `
+	static override css = /*css*/ `
 		:host {
 			/*
 			 * All items of the scene graph are hidden until they are mounted in
@@ -607,7 +607,7 @@ export class Scene extends ImperativeBase {
 	// Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
 	_miscLayer: HTMLDivElement | null = null
 
-	template = () => html`
+	override template = () => html`
 		<div class="container">
 			<div
 				ref=${(el: any) => (this._cssLayer = el)}
@@ -638,7 +638,7 @@ export class Scene extends ImperativeBase {
 		this.#cssRenderer && this.#cssRenderer.drawScene(this)
 	}
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		this._stopFns.push(
@@ -715,14 +715,14 @@ export class Scene extends ImperativeBase {
 		)
 	}
 
-	disconnectedCallback() {
+	override disconnectedCallback() {
 		super.disconnectedCallback()
 		this.#stopParentSizeObservation()
 	}
 
-	static observedAttributes = ['slot']
+	static override observedAttributes = ['slot']
 
-	attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
+	override attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
 		super.attributeChangedCallback!(name, oldV, newV)
 
 		if (name === 'slot') {
@@ -734,11 +734,11 @@ export class Scene extends ImperativeBase {
 		}
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeScene()
 	}
 
-	makeThreeCSSObject() {
+	override makeThreeCSSObject() {
 		return new ThreeScene()
 	}
 
@@ -884,7 +884,7 @@ export class Scene extends ImperativeBase {
 	// For now, use the same program (with shaders) for all objects.
 	// Basically it has position, frag colors, point light, directional
 	// light, and ambient light.
-	_loadGL() {
+	override _loadGL() {
 		// THREE
 		// maybe keep this in sceneState in WebGLRendererThree
 		if (!super._loadGL()) return false
@@ -984,7 +984,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_unloadGL() {
+	override _unloadGL() {
 		if (!super._unloadGL()) return false
 
 		if (this.#glRenderer) {
@@ -1005,7 +1005,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_loadCSS() {
+	override _loadCSS() {
 		if (!super._loadCSS()) return false
 
 		this.#cssRenderer = this.#getCSSRenderer('three')
@@ -1015,7 +1015,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_unloadCSS() {
+	override _unloadCSS() {
 		if (!super._unloadCSS()) return false
 
 		if (this.#cssRenderer) {
