@@ -27,11 +27,6 @@ powered by CSS3D, WebGL, or both mixed together.
 
 This package uses and re-exports features from the below packages.
 
-### [`glas`](//github.com/lume/glas) - WebGL engine written in AssemblyScript
-
-This is a WebGL engine with the consistent performance of WebAssembly, written
-in [AssemblyScript](http://assemblyscript.org/) (a TypeScript-to-WebAssembly compiler).
-
 ### [`@lume/element`](//github.com/lume/element) - System for defining HTML elements
 
 This is a web component system that allows you to create new, fast, and
@@ -39,17 +34,25 @@ performant HTML elements in a simple way. It provides the foundation for
 LUME's HTML elements, and a standard pattern for building new elements that
 extend the features of LUME.
 
-### [`@lume/variable`](//github.com/lume/variable) - Reactive variables
-
-Create reactive variables and observe their changes in a simple and concise way with
-less code and less coupling.
-
 ### [`element-behaviors`](//github.com/lume/element-behaviors) - Mix functionalities onto HTML elements
 
 This allows you to augment HTML elements with features called "behaviors"
 that are similar to custom elements: each behavior is defined as a `class`
 that has the same lifecycle methods as custom elements. The difference is
 that an unlimited number of behaviors can be associated with an element.
+
+### [`glas`](//github.com/lume/glas) - WebGL engine written in AssemblyScript (WIP)
+
+This is a WebGL engine with the consistent performance of WebAssembly, written
+in [AssemblyScript](http://assemblyscript.org/) (a TypeScript-to-WebAssembly compiler).
+
+## LUMECraft
+
+LUMECraft is a collection of applications made with LUME, showing what LUME can do, and serving as forkable starting points for further customization.
+
+### [`first-person-shooter`](//github.com/LUMECraft/first-person-shooter) - First-person shooter game
+
+A first-person shooter game foundation made with LUME, Solid.js, and Meteor.
 
 ## Getting involved
 
