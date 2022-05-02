@@ -90,6 +90,10 @@
 		"docs": "npm run build && npm run docs:build && npm run docs:serve"
 	},
 	"dependencies": {
+		"@here/harp-geoutils": "^0.28.0",
+		"@here/harp-map-controls": "^0.28.0",
+		"@here/harp-mapview": "^0.28.0",
+		"@here/harp-vectortile-datasource": "^0.28.0",
 		"@lume/autolayout": "^0.8.0",
 		"@lume/element": "^0.6.0",
 		"@lume/eventful": "^0.2.2",
@@ -100,6 +104,10 @@
 		"resize-observer-polyfill": "^1.5.1",
 		"three": "^0.139.0",
 		"@lume/three-projected-material": "^0.1.0"
+	},
+	"// override comment:": " force harp version of three to our version",
+	"overrides": {
+		"three": "$three"
 	},
 	"devDependencies": {
 		"@lume/cli": "^0.8.0",

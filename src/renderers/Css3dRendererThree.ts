@@ -1,18 +1,18 @@
+import {Renderer, SceneState} from './Renderer.js'
 import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested.js'
 
 import type {Scene} from '../core/Scene.js'
 
-interface SceneState {
+interface CssSceneState extends SceneState {
 	renderer: CSS3DRendererNested
-	sizeChangeHandler: () => void
 }
 
-const sceneStates = new WeakMap<Scene, SceneState>()
+const sceneStates = new WeakMap<Scene, CssSceneState>()
 
 let instance: Css3dRendererThree | null = null
 let isCreatingSingleton = false
 
-export class Css3dRendererThree {
+export class Css3dRendererThree extends Renderer {
 	static singleton() {
 		if (instance) return instance
 		else {
@@ -28,6 +28,8 @@ export class Css3dRendererThree {
 	}
 
 	private constructor() {
+		super()
+
 		if (!isCreatingSingleton)
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}

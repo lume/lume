@@ -7,25 +7,24 @@ import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
 
+import {GlRenderer, GlSceneState} from './GlRenderer.js'
+
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/textures/Texture.js'
+import type {ShadowMapTypeString} from './GlRenderer.js'
 
-interface SceneState {
+interface GlThreeSceneState extends GlSceneState {
 	renderer: WebGLRenderer
 	pmremgen?: PMREMGenerator
 	backgroundIsEquirectangular?: boolean
 	hasBackground?: boolean
 	hasEnvironment?: boolean
-	sizeChangeHandler: () => void
 }
 
-const sceneStates = new WeakMap<Scene, SceneState>()
+const sceneStates = new WeakMap<Scene, GlThreeSceneState>()
 
 let instance: WebglRendererThree | null = null
 let isCreatingSingleton = false
-
-/** @typedef {'pcf' | 'pcfsoft' | 'basic'} ShadowMapTypeString */
-export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
 
 /**
  * @internal
@@ -33,7 +32,7 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
 @reactive
-export class WebglRendererThree {
+export class WebglRendererThree extends GlRenderer {
 	static singleton() {
 		if (instance) return instance
 		else {
@@ -49,6 +48,8 @@ export class WebglRendererThree {
 	}
 
 	private constructor() {
+		super()
+
 		if (!isCreatingSingleton)
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}

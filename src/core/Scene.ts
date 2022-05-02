@@ -20,7 +20,7 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/Per
 import {Color} from 'three/src/math/Color.js'
 import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
-import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
+import {WebglRendererThree} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {ImperativeBase} from './ImperativeBase.js'
 import {defer} from './utils.js'
@@ -33,6 +33,7 @@ import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Node} from './Node.js'
+import type {GlRenderer, ShadowMapTypeString} from '../renderers/GlRenderer.js'
 
 export type SceneAttributes =
 	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
@@ -1028,19 +1029,30 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	#glRenderer: WebglRendererThree | null = null
-	#cssRenderer: Css3dRendererThree | null = null
+	static GlRenderer = WebglRendererThree
+	static CssRenderer = Css3dRendererThree
+
+	createGlRenderer(): GlRenderer {
+		return WebglRendererThree.singleton()
+	}
+
+	createCssRenderer() {
+		return Css3dRendererThree.singleton()
+	}
+
+	#glRenderer: ReturnType<this['createGlRenderer']> | null = null
+	#cssRenderer: ReturnType<this['createCssRenderer']> | null = null
 
 	// The idea here is that in the future we might have "babylon",
 	// "playcanvas", etc, on a per scene basis. We'd needed to abstract the
 	// renderer more, have abstract base classes to define the common
 	// interfaces.
-	#getGLRenderer(type: 'three'): WebglRendererThree {
+	#getGLRenderer(type: 'three') {
 		if (this.#glRenderer) return this.#glRenderer
 
-		let renderer: WebglRendererThree
+		let renderer: ReturnType<this['createGlRenderer']>
 
-		if (type === 'three') renderer = WebglRendererThree.singleton()
+		if (type === 'three') renderer = this.createGlRenderer() as ReturnType<this['createGlRenderer']>
 		else throw new Error('invalid WebGL renderer')
 
 		renderer.initialize(this)
@@ -1051,9 +1063,9 @@ export class Scene extends ImperativeBase {
 	#getCSSRenderer(type: 'three') {
 		if (this.#cssRenderer) return this.#cssRenderer
 
-		let renderer: Css3dRendererThree
+		let renderer: ReturnType<this['createCssRenderer']>
 
-		if (type === 'three') renderer = Css3dRendererThree.singleton()
+		if (type === 'three') renderer = this.createCssRenderer() as ReturnType<this['createCssRenderer']>
 		else throw new Error('invalid CSS renderer. The only type supported is currently "three" (i.e. Three.js).')
 
 		renderer.initialize(this)
