@@ -1,5 +1,4 @@
 import {attribute, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
@@ -64,7 +63,6 @@ export class Transformable extends Sizeable {
 	// TODO evalute being able to set reactive arrays or objects and
 	// re-rendering based on updates to those arrays.
 	@attribute
-	@emits('propertychange')
 	set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!position.has(this)) position.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('position', position.get(this)!, newValue)
@@ -91,7 +89,6 @@ export class Transformable extends Sizeable {
 	 * axes, and a Y rotation rotates the object's Z axis.
 	 */
 	@attribute
-	@emits('propertychange')
 	set rotation(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!rotation.has(this)) rotation.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('rotation', rotation.get(this)!, newValue)
@@ -112,7 +109,6 @@ export class Transformable extends Sizeable {
 	 * by specifying scale along the X, Y, and Z axes.
 	 */
 	@attribute
-	@emits('propertychange')
 	set scale(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!scale.has(this)) scale.set(this, new XYZNumberValues(1, 1, 1))
 		this._setPropertyXYZ('scale', scale.get(this)!, newValue)
@@ -157,7 +153,6 @@ export class Transformable extends Sizeable {
 	 * </script>
 	 */
 	@attribute
-	@emits('propertychange')
 	set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!origin.has(this)) origin.set(this, new XYZNumberValues(0.5, 0.5, 0.5))
 		this._setPropertyXYZ('origin', origin.get(this)!, newValue)
@@ -188,7 +183,6 @@ export class Transformable extends Sizeable {
 	 * parent's size space.
 	 */
 	@attribute
-	@emits('propertychange')
 	set alignPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!alignPoint.has(this)) alignPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('alignPoint', alignPoint.get(this)!, newValue)
@@ -220,7 +214,6 @@ export class Transformable extends Sizeable {
 	 * object's size space.
 	 */
 	@attribute
-	@emits('propertychange')
 	set mountPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!mountPoint.has(this)) mountPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('mountPoint', mountPoint.get(this)!, newValue)
@@ -243,7 +236,6 @@ export class Transformable extends Sizeable {
 	 */
 	// TODO opacity doesn't belong in Transformable
 	@attribute
-	@emits('propertychange')
 	set opacity(newValue: number | SinglePropertyFunction) {
 		if (!opacity.has(this)) opacity.set(this, 1)
 		this._setPropertySingle('opacity', v => opacity.set(this, v), newValue)

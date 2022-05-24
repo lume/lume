@@ -21,7 +21,6 @@
 
 import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
 import {attribute, autorun, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {Motor} from '../core/Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -53,7 +52,7 @@ export class AutoLayoutNode extends Node {
 		strict: false,
 	}
 
-	@attribute @emits('propertychange') visualFormat: string | null = ''
+	@attribute visualFormat: string | null = ''
 
 	/**
 	 * Constructor

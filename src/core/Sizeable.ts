@@ -1,4 +1,3 @@
-import {emits} from '@lume/eventful'
 import {reactive} from '@lume/variable'
 import {attribute, untrack, element} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
@@ -67,7 +66,6 @@ export class Sizeable extends TreeNode {
 	 * proportion of the object's parent's size along the same axis.
 	 */
 	@attribute
-	@emits('propertychange')
 	set sizeMode(newValue: XYZSizeModeValuesProperty) {
 		if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
 		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
@@ -109,7 +107,6 @@ export class Sizeable extends TreeNode {
 	 * mix literal and proportional sizes for the different axes.
 	 */
 	@attribute
-	@emits('propertychange')
 	set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
 		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
 		this._setPropertyXYZ('size', size.get(this)!, newValue)

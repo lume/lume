@@ -1,6 +1,5 @@
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
 import {autorun, booleanAttribute, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {Node} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -51,8 +50,8 @@ export class Mesh extends Node {
 		},
 	}
 
-	@booleanAttribute(true) @emits('propertychange') castShadow = true
-	@booleanAttribute(true) @emits('propertychange') receiveShadow = true
+	@booleanAttribute(true) castShadow = true
+	@booleanAttribute(true) receiveShadow = true
 
 	override _loadGL() {
 		if (!super._loadGL()) return false

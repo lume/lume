@@ -1,5 +1,4 @@
 import {autorun, booleanAttribute, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {ImperativeBase} from './ImperativeBase.js'
 import {defer} from './utils.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -117,7 +116,7 @@ export class Node extends ImperativeBase {
 	 *
 	 * If a `Node` is not visible, its children are also not visible.
 	 */
-	@booleanAttribute(true) @emits('propertychange') visible = true
+	@booleanAttribute(true) visible = true
 
 	/**
 	 * *reactive*

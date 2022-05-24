@@ -1,6 +1,5 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {Light} from './Light.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -44,19 +43,19 @@ export type PointLightAttributes =
  */
 @element('lume-point-light', autoDefineElements)
 export class PointLight extends Light {
-	@numberAttribute(0) @emits('propertychange') distance = 0
-	@numberAttribute(1) @emits('propertychange') decay = 1
-	@booleanAttribute(true) @emits('propertychange') castShadow = true
+	@numberAttribute(0) distance = 0
+	@numberAttribute(1) decay = 1
+	@booleanAttribute(true) castShadow = true
 	// TODO @numberAttribute(1) power = computed(() => this.intensity * 4 * Math.PI) // see https://threejs.org/docs/index.html?q=light#api/en/lights/PointLight.power
 
 	// These map to THREE.PointLightShadow properties.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
-	@numberAttribute(512) @emits('propertychange') shadowMapWidth = 512
-	@numberAttribute(512) @emits('propertychange') shadowMapHeight = 512
-	@numberAttribute(3) @emits('propertychange') shadowRadius = 3
-	@numberAttribute(0) @emits('propertychange') shadowBias = 0
-	@numberAttribute(1) @emits('propertychange') shadowCameraNear = 1
-	@numberAttribute(2000) @emits('propertychange') shadowCameraFar = 2000
+	@numberAttribute(512) shadowMapWidth = 512
+	@numberAttribute(512) shadowMapHeight = 512
+	@numberAttribute(3) shadowRadius = 3
+	@numberAttribute(0) shadowBias = 0
+	@numberAttribute(1) shadowCameraNear = 1
+	@numberAttribute(2000) shadowCameraFar = 2000
 
 	override _loadGL() {
 		if (!super._loadGL()) return false

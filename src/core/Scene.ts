@@ -13,7 +13,6 @@ import {
 	reactive,
 } from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
-import {emits} from '@lume/eventful'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
@@ -120,7 +119,7 @@ export class Scene extends ImperativeBase {
 	 */
 	// TODO @attribute jsdoc tag
 	// TODO @default jsdoc tag
-	@emits('propertychange') @booleanAttribute(true) enableCss = true
+	@booleanAttribute(true) enableCss = true
 
 	/**
 	 * @property {boolean} webgl -
@@ -131,7 +130,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * When `true`, enables WebGL rendering.
 	 */
-	@emits('propertychange') @booleanAttribute(false) webgl = false
+	@booleanAttribute(false) webgl = false
 
 	/**
 	 * @property {boolean} swapLayers -
@@ -144,7 +143,7 @@ export class Scene extends ImperativeBase {
 	 * WebGL render modes are enabled. When `true`, the CSS layer will render on
 	 * top of the WebGL layer instead of below.
 	 */
-	@emits('propertychange') @booleanAttribute(false) swapLayers = false
+	@booleanAttribute(false) swapLayers = false
 
 	/**
 	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType -
@@ -160,7 +159,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString | null = 'basic'
+	@attribute shadowmapType: ShadowMapTypeString | null = 'basic'
 
 	/**
 	 * @property {boolean} vr -
@@ -178,7 +177,7 @@ export class Scene extends ImperativeBase {
 	 * hence WebXR, but it has some limitations including low performance if
 	 * animating CSS features; we may add this feature later.
 	 */
-	@emits('propertychange') @booleanAttribute(false) vr = false
+	@booleanAttribute(false) vr = false
 
 	/**
 	 * @property {Color | string | number | null} backgroundColor -
@@ -196,7 +195,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute backgroundColor: TColor | null = new Color('white')
+	@attribute backgroundColor: TColor | null = new Color('white')
 
 	/**
 	 * @property {number} backgroundOpacity -
@@ -214,7 +213,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
+	@numberAttribute(0) backgroundOpacity = 0
 
 	/**
 	 * @property {string | null} background -
@@ -236,7 +235,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute background: string | null = null
+	@attribute background: string | null = null
 
 	/**
 	 * @property {string} equirectangularBackground -
@@ -251,7 +250,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
+	@booleanAttribute(false) equirectangularBackground = false
 
 	/**
 	 * @property {string | null} environment -
@@ -267,7 +266,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute environment: string | null = null
+	@attribute environment: string | null = null
 
 	/**
 	 * @property {'none' | 'linear' | 'expo2'} fogMode -
