@@ -1,3 +1,4 @@
+import {createEffect, on} from 'solid-js'
 import {attribute, element} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
@@ -39,12 +40,15 @@ export class Transformable extends Sizeable {
 	constructor() {
 		super()
 
-		this.position.on('valuechanged', () => !this._isSettingProperty && (this.position = this.position))
-		this.rotation.on('valuechanged', () => !this._isSettingProperty && (this.rotation = this.rotation))
-		this.scale.on('valuechanged', () => !this._isSettingProperty && (this.scale = this.scale))
-		this.origin.on('valuechanged', () => !this._isSettingProperty && (this.origin = this.origin))
-		this.alignPoint.on('valuechanged', () => !this._isSettingProperty && (this.alignPoint = this.alignPoint))
-		this.mountPoint.on('valuechanged', () => !this._isSettingProperty && (this.mountPoint = this.mountPoint))
+		// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
+		// trigger reactivity for the respective properties. See also NOTE REACTIVITY
+		// in Sizeable.
+		createEffect(on(this.position.asDependency, () => (this.position = this.position)))
+		createEffect(on(this.rotation.asDependency, () => (this.rotation = this.rotation)))
+		createEffect(on(this.scale.asDependency, () => (this.scale = this.scale)))
+		createEffect(on(this.origin.asDependency, () => (this.origin = this.origin)))
+		createEffect(on(this.alignPoint.asDependency, () => (this.alignPoint = this.alignPoint)))
+		createEffect(on(this.mountPoint.asDependency, () => (this.mountPoint = this.mountPoint)))
 	}
 
 	// TODO readem's JSDoc parser can not handle the following type if it is

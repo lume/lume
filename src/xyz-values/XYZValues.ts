@@ -367,6 +367,16 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	checkValue(_prop: 'x' | 'y' | 'z', _value: T): boolean {
 		return true
 	}
+
+	/**
+	 * A method that when called in a effect makes all three x/y/z properties a
+	 * dependency of the effect.
+	 */
+	asDependency = () => {
+		this.x
+		this.y
+		this.z
+	}
 }
 
 // TODO make this a decorator

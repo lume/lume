@@ -1,3 +1,4 @@
+import {createEffect, on} from 'solid-js'
 import {XYZAnyValues} from './XYZAnyValues.js'
 import {checkValues, testWithSeparator} from './XYZValues.test.common.js'
 
@@ -133,19 +134,17 @@ describe('XYZAnyValues', () => {
 			expect(a.toArray()).toEqual([1, 2, 3])
 		})
 
-		it('triggers valuechange events', () => {
+		it('triggers reactivity', () => {
 			const a = new XYZAnyValues()
-			const changedProps: string[] = []
+			let count = 0
 
-			a.on('valuechanged', (prop: string) => {
-				changedProps.push(prop)
-			})
+			createEffect(on(a.asDependency, () => count++))
 
 			a.y = 2
 			a.z = 3
 			a.x = 1
 
-			expect(changedProps).toEqual(['y', 'z', 'x'])
+			expect(count).toEqual(4)
 		})
 	})
 })

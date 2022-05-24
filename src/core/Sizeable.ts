@@ -1,3 +1,4 @@
+import {createEffect, on} from 'solid-js'
 import {reactive} from '@lume/variable'
 import {attribute, untrack, element} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
@@ -38,8 +39,11 @@ export class Sizeable extends TreeNode {
 	constructor() {
 		super()
 
-		this.sizeMode.on('valuechanged', () => !this._isSettingProperty && (this.sizeMode = this.sizeMode))
-		this.size.on('valuechanged', () => !this._isSettingProperty && (this.size = this.size))
+		// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
+		// trigger reactivity for the respective properties. See also NOTE REACTIVITY
+		// below.
+		createEffect(on(this.sizeMode.asDependency, () => (this.sizeMode = this.sizeMode)))
+		createEffect(on(this.size.asDependency, () => (this.size = this.size)))
 	}
 
 	@reactive __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
@@ -245,11 +249,9 @@ export class Sizeable extends TreeNode {
 			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
 			else this.#settingValueFromPropFunction = false
 
-			// If we're in a computation, we don't want the valuechanged
-			// event that will be emitted to trigger reactivity (see
-			// valuechanged listeners above). If we've reached this logic,
-			// it is because a property is being set, which will already
-			// trigger reactivity.
+			// NOTE REACTIVITY We're already in the middle of setting a property, so untrack to
+			// prevent an infinite reactivity loop the reactivity triggers we
+			// set up in the constructor.
 			untrack(() => xyz.from(newValue))
 		}
 

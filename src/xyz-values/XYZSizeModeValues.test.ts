@@ -1,3 +1,4 @@
+import {createEffect, on} from 'solid-js'
 import {XYZSizeModeValues} from './XYZSizeModeValues.js'
 import {checkValues, testWithSeparator} from './XYZValues.test.common.js'
 
@@ -134,19 +135,17 @@ describe('XYZNumberValues', () => {
 			expect(a.toArray()).toEqual(['literal', 'proportional', 'literal'])
 		})
 
-		it('triggers valuechange events', () => {
+		it('triggers reactivity', () => {
 			const a = new XYZSizeModeValues()
-			const changedProps: string[] = []
+			let count = 0
 
-			a.on('valuechanged', (prop: string) => {
-				changedProps.push(prop)
-			})
+			createEffect(on(a.asDependency, () => count++))
 
 			a.y = 'literal'
 			a.z = 'proportional'
 			a.x = 'literal'
 
-			expect(changedProps).toEqual(['y', 'z', 'x'])
+			expect(count).toEqual(4)
 		})
 	})
 
