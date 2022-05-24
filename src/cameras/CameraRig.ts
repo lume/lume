@@ -1,3 +1,4 @@
+import {createEffect, onCleanup} from 'solid-js'
 import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -242,49 +243,55 @@ export class CameraRig extends Node {
 		if (this.#startedInteraction) return
 		this.#startedInteraction = true
 
-		// Uses initial attribute values only, changes not tracked at the moment.
-		this.flingRotation = new FlingRotation({
-			interactionInitiator: this.scene!,
-			rotationYTarget: this.rotationYTarget!,
-			minFlingRotationX: this.minPolarAngle,
-			maxFlingRotationX: this.maxPolarAngle,
-			minFlingRotationY: this.minHorizontalAngle,
-			maxFlingRotationY: this.maxHorizontalAngle,
-		}).start()
-
-		this.scrollFling = new ScrollFling({
-			target: this.scene!,
-			y: this.initialDistance,
-			minY: this.minDistance,
-			maxY: this.maxDistance,
-			scrollFactor: this.dollySpeed,
-		}).start()
-
 		this.autorunStoppers = []
 
 		this.autorunStoppers.push(
 			autorun(() => {
-				this.scrollFling!.y
+				this.flingRotation = new FlingRotation({
+					interactionInitiator: this.scene!,
+					rotationYTarget: this.rotationYTarget!,
+					minFlingRotationX: this.minPolarAngle,
+					maxFlingRotationX: this.maxPolarAngle,
+					minFlingRotationY: this.minHorizontalAngle,
+					maxFlingRotationY: this.maxHorizontalAngle,
+				}).start()
 
-				untrack(() => (this.cam!.position.z = this.scrollFling!.y))
+				createEffect(() => {
+					if (this.interactive) this.flingRotation!.start()
+					else this.flingRotation!.stop()
+				})
+
+				onCleanup(() => this.flingRotation?.stop())
 			}),
 			autorun(() => {
-				if (this.interactive) {
-					this.flingRotation!.start()
-					this.scrollFling!.start()
-				} else {
-					this.flingRotation!.stop()
-					this.scrollFling!.stop()
-				}
+				this.scrollFling = new ScrollFling({
+					target: this.scene!,
+					y: this.initialDistance,
+					minY: this.minDistance,
+					maxY: this.maxDistance,
+					scrollFactor: this.dollySpeed,
+				}).start()
+
+				createEffect(() => {
+					this.scrollFling!.y
+
+					untrack(() => (this.cam!.position.z = this.scrollFling!.y))
+				})
+
+				createEffect(() => {
+					if (this.interactive) this.scrollFling!.start()
+					else this.scrollFling!.stop()
+				})
+
+				onCleanup(() => this.scrollFling?.stop())
 			}),
 		)
 	}
 
 	stopInteraction() {
 		if (!this.#startedInteraction) return
+		this.#startedInteraction = false
 
-		this.flingRotation?.stop()
-		this.scrollFling?.stop()
 		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
 	}
 
@@ -297,6 +304,18 @@ export class CameraRig extends Node {
 	override _loadCSS(): boolean {
 		if (!super._loadCSS()) return false
 		this.startInteraction()
+		return true
+	}
+
+	override _unloadGL(): boolean {
+		if (!super._unloadGL()) return false
+		if (!this.glLoaded && !this.cssLoaded) this.stopInteraction()
+		return true
+	}
+
+	override _unloadCSS(): boolean {
+		if (!super._unloadCSS()) return false
+		if (!this.glLoaded && !this.cssLoaded) this.stopInteraction()
 		return true
 	}
 
