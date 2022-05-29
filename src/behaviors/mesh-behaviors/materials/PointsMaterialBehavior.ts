@@ -30,6 +30,7 @@ export class PointsMaterialBehavior extends MaterialBehavior {
 		this._handleTexture(
 			() => this.texture,
 			tex => (this.meshComponent!.map = tex),
+			() => !!this.meshComponent!.map,
 		)
 	}
 }

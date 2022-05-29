@@ -18,15 +18,13 @@ export class BasicMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.texture,
-			tex => {
-				this.meshComponent!.map = tex
-			},
+			tex => (this.meshComponent!.map = tex),
+			() => !!this.meshComponent!.map,
 		)
 		this._handleTexture(
 			() => this.specularMap,
-			tex => {
-				this.meshComponent!.specularMap = tex
-			},
+			tex => (this.meshComponent!.specularMap = tex),
+			() => !!this.meshComponent!.specularMap,
 		)
 	}
 }

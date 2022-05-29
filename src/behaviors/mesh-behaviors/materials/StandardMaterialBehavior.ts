@@ -82,18 +82,22 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 		this._handleTexture(
 			() => this.bumpMap,
 			tex => (mat.bumpMap = tex),
+			() => !!mat.bumpMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
 			tex => (mat.map = tex),
+			() => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.normalMap,
 			tex => (mat.normalMap = tex),
+			() => !!mat.normalMap,
 		)
 		this._handleTexture(
 			() => this.roughnessMap,
 			tex => (mat.roughnessMap = tex),
+			() => !!mat.roughnessMap,
 		)
 	}
 }
