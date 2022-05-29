@@ -46,6 +46,17 @@ export class PointLight extends Light {
 	@numberAttribute(0) distance = 0
 	@numberAttribute(1) decay = 1
 	@booleanAttribute(true) castShadow = true
+
+	@numberAttribute(1 * 4 * Math.PI) // intensity 1
+	get power() {
+		// compute the light's luminous power (in lumens) from its intensity (in candela)
+		// for an isotropic light source, luminous power (lm) = 4 π luminous intensity (cd)
+		return this.intensity * 4 * Math.PI
+	}
+	set power(power) {
+		// set the light's intensity (in candela) from the desired luminous power (in lumens)
+		this.intensity = power / (4 * Math.PI)
+	}
 	// TODO @numberAttribute(1) power = computed(() => this.intensity * 4 * Math.PI) // see https://threejs.org/docs/index.html?q=light#api/en/lights/PointLight.power
 
 	// These map to THREE.PointLightShadow properties.
