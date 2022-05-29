@@ -59,8 +59,10 @@ class _Motor {
 
 	// A Node calls this any time its properties have been modified (f.e. by the end user).
 	setNodeToBeRendered(node: ImperativeBase) {
-		if (this.#nodesToUpdate.includes(node)) return
-		this.#nodesToUpdate.push(node)
+		// delete so it goes to the end
+		if (this.#nodesToUpdate.has(node)) this.#nodesToUpdate.delete(node)
+
+		this.#nodesToUpdate.add(node)
 
 		// noop if the loop's already started
 		this.#startAnimationLoop()
@@ -81,12 +83,12 @@ class _Motor {
 	#numberOfTasks = 0
 
 	#allRenderTasks = [] as RenderTask[]
-	#nodesToUpdate = [] as ImperativeBase[]
-	#modifiedScenes = [] as Scene[]
+	#nodesToUpdate = new Set<ImperativeBase>()
+	#modifiedScenes = new Set<Scene>()
 
 	// A set of nodes that are the root nodes of subtrees where all nodes
 	// in each subtree need to have their world matrices updated.
-	#treesToUpdate = [] as ImperativeBase[]
+	#treesToUpdate = new Set<ImperativeBase>()
 
 	// default to requestAnimationFrame for regular non-VR/AR scenes.
 	#requestFrame = window.requestAnimationFrame.bind(window)
@@ -138,11 +140,9 @@ class _Motor {
 	}
 
 	#renderNodes(timestamp: number, deltaTime: number) {
-		if (!this.#nodesToUpdate.length) return
+		if (this.#nodesToUpdate.size === 0) return
 
-		for (let i = 0, l = this.#nodesToUpdate.length; i < l; i += 1) {
-			const node = this.#nodesToUpdate[i]
-
+		for (const node of this.#nodesToUpdate) {
 			// Skip any Node that no longer participates in rendering of a scene.
 			if (!node.scene) continue
 
@@ -151,34 +151,23 @@ class _Motor {
 			// if there is no ancestor of the current node that should be
 			// rendered, then the current node is a root node of a subtree
 			// that needs to be updated
-			if (!node.getNearestAncestorThatShouldBeRendered() && !this.#treesToUpdate.includes(node)) {
-				this.#treesToUpdate.push(node)
-			}
+			if (!node.getNearestAncestorThatShouldBeRendered()) this.#treesToUpdate.add(node)
 
 			// keep track of which scenes are modified so we can render webgl
 			// only for those scenes.
-			if (!this.#modifiedScenes.includes(node.scene)) this.#modifiedScenes.push(node.scene)
+			this.#modifiedScenes.add(node.scene)
 		}
 
 		// Update world matrices of the subtrees.
-		const treesToUpdate = this.#treesToUpdate
-		for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
-			treesToUpdate[i].updateWorldMatrices()
-		}
-		treesToUpdate.length = 0
+		for (const node of this.#treesToUpdate) node.updateWorldMatrices()
+		this.#treesToUpdate.clear()
 
 		// render webgl of modified scenes.
-		const modifiedScenes = this.#modifiedScenes
-		for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
-			modifiedScenes[i].drawScene()
-		}
-		modifiedScenes.length = 0
+		for (const scene of this.#modifiedScenes) scene.drawScene()
+		this.#modifiedScenes.clear()
 
-		const nodesToUpdate = this.#nodesToUpdate
-		for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
-			nodesToUpdate[i].__willBeRendered = false
-		}
-		nodesToUpdate.length = 0
+		for (const node of this.#nodesToUpdate) node.__willBeRendered = false
+		this.#nodesToUpdate.clear()
 	}
 }
 
