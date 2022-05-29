@@ -22,7 +22,7 @@ export class TdsModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.loader = new TDSLoader()
 
 		this.createEffect(() => {
@@ -35,7 +35,7 @@ export class TdsModelBehavior extends RenderableBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.loader = undefined
 
 		this.#cleanupModel()

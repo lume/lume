@@ -40,7 +40,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.dracoLoader = new DRACOLoader()
 		this.gltfLoader = new GLTFLoader()
 		this.gltfLoader.setDRACOLoader(this.dracoLoader)
@@ -68,7 +68,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 		firstRun = false
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.gltfLoader = undefined
 		this.dracoLoader?.dispose()
 		this.dracoLoader = undefined

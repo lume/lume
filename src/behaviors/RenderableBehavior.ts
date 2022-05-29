@@ -54,7 +54,8 @@ export abstract class RenderableBehavior extends Behavior {
 		if (this._glLoaded) return
 		this._glLoaded = true
 
-		this.loadGL?.()
+		this.loadGL()
+		this.element.needsUpdate()
 	}
 
 	#triggerUnloadGL() {
@@ -62,12 +63,13 @@ export abstract class RenderableBehavior extends Behavior {
 		this._glLoaded = false
 
 		this.stopEffects()
-		this.unloadGL?.()
+		this.unloadGL()
+		this.element.needsUpdate()
 	}
 
-	abstract loadGL?(): void
-
-	abstract unloadGL?(): void
+	// Subclasses override these
+	loadGL(): void {}
+	unloadGL(): void {}
 
 	/////////////////////////////////////
 

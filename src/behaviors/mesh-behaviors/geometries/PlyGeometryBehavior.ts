@@ -36,8 +36,8 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	 */
 	@stringAttribute('') src = ''
 
-	loader?: PLYLoader
-	model?: BufferGeometry
+	loader: PLYLoader | null = null
+	@reactive model: BufferGeometry | null = null
 
 	override requiredElementType(): [typeof Points] {
 		return [Points]
@@ -71,9 +71,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	override unloadGL() {
-		super.unloadGL()
-
-		this.loader = undefined
+		this.loader = null
 
 		this.#cleanupModel()
 
@@ -82,8 +80,9 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	#cleanupModel() {
-		// if (this.model) disposeObjectTree(this.model)
-		this.model = undefined
+		// Note that dispose is already called in the super.resetMeshComponent process.
+		// TODO This causes the geometry to be removed while loading a new one. Perhaps we should not do that.
+		this.model = null
 	}
 
 	#loadModel() {
@@ -96,8 +95,6 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
-
-		console.log('load the model!')
 
 		this.loader!.load(
 			src,
@@ -118,9 +115,8 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	#setModel(model: BufferGeometry) {
-		this.model = model
-		this.model.computeVertexNormals()
-		this.resetMeshComponent()
+		model.computeVertexNormals()
+		this.model = model // triggers the resetMeshComponent effect
 		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
 	}
 }

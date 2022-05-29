@@ -20,7 +20,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.loader = new ColladaLoader()
 
 		this.createEffect(() => {
@@ -33,7 +33,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.loader = undefined
 
 		this.#cleanupModel()

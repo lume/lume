@@ -3,6 +3,7 @@
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
 
+import {untrack} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
@@ -150,7 +151,6 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	}
 
 	override _createComponent(): Material {
-		super._createComponent
 		return new Material()
 	}
 
@@ -160,11 +160,10 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		// TODO CLIP PLANES REACTIVITY HACK, This triggers the
 		// ClipPlanesBehavior effect in case the material changed. TODO: Make
 		// element.behaviors reactive so that the dependent code can react to
-		// material changes instead.
-		const clipPlanes = this.element.behaviors.get('clip-planes') as ClipPlanesBehavior | undefined
+		// material changes instead. Untrack() here for now, to prevent reactivity issues.
+		const clipPlanes = untrack(() => this.element.behaviors.get('clip-planes') as ClipPlanesBehavior | undefined)
 		if (!clipPlanes) return
-		console.log('PLANES trigger clipShadows', clipPlanes.clipPlanes)
-		clipPlanes.clipShadows = clipPlanes.clipShadows
+		clipPlanes.clipShadows = untrack(() => clipPlanes.clipShadows)
 	}
 
 	_handleTexture(

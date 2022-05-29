@@ -265,22 +265,6 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 
 		return geometry
 	}
-
-	override loadGL() {
-		super.loadGL()
-
-		this.createEffect(() => {
-			this.shape
-			this.curveSegments
-			this.bevel
-			this.bevelSegments
-			this.bevelThickness
-			this.centerGeometry
-			this.element.calculatedSize
-
-			untrack(() => this.resetMeshComponent())
-		})
-	}
 }
 
 if (!elementBehaviors.has('shape-geometry')) elementBehaviors.define('shape-geometry', ShapeGeometryBehavior)
