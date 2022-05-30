@@ -8,6 +8,7 @@ import {GeometryBehavior} from './GeometryBehavior.js'
 import {stringToNumberArray} from '../../../meshes/utils.js'
 import {handleInvertedGeometry} from './utils/handleInvertedGeometry.js'
 import {parseSvgPathDAttribute} from './utils/svg.js'
+import {getFitmentScale, Fitment} from './utils/getFitmentScale.js'
 
 // Heart shape.
 const defaultShape = new Shape()
@@ -181,13 +182,16 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	@booleanAttribute(true) centerGeometry = true
 
 	/**
-	 * @property {string} fitment - Determines how to fit a shape within the
-	 * size area on X and Y. The Z size dictates the shape extrusion separately.
-	 * This takes the same values as the object-fit CSS property, except global
-	 * values. See https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values
-	 * for details.
+	 * @property {'fill' | 'contain' | 'cover' | 'scale-down'} fitment -
+	 * Determines how to fit a shape within the size area on X and Y. The Z size
+	 * dictates the shape extrusion separately.  This takes the same values as
+	 * the object-fit CSS property except global values: 'fill' | 'contain' |
+	 * 'cover' | 'scale-down'. See
+	 * https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values for
+	 * details on how each value determines how the shape is fitted into the
+	 * size area.
 	 */
-	@stringAttribute('none') fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
+	@stringAttribute('none') fitment: 'none' | Fitment = 'none'
 
 	// TODO attribute to apply smoothing to the geometry (calculate normals)?
 
@@ -214,7 +218,10 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		// So we have to do the following to reverse the effects:
 		handleInvertedGeometry(geometry)
 
+		// If no fitment, don't resize the geometry.
 		if (this.fitment === 'none') return geometry
+
+		// Otherwise resize the geometry according to the chosen fitment.
 
 		let minX = Number.MAX_VALUE
 		let maxX = -Number.MAX_VALUE
@@ -233,37 +240,10 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 			if (y > maxY) maxY = y
 		}
 
-		const shapeSizeX = maxX - minX
-		const shapeSizeY = maxY - minY
+		const shapeSize = {x: maxX - minX, y: maxY - minY}
+		const scale = getFitmentScale(this.fitment, shapeSize, this.element.calculatedSize)
 
-		const scaleX = shapeSizeX / this.element.calculatedSize.x
-		const scaleY = shapeSizeY / this.element.calculatedSize.y
-
-		if (this.fitment === 'fill') return geometry.scale(1 / scaleX, 1 / scaleY, 1)
-
-		const shapeAspect = shapeSizeX / shapeSizeY
-		const sizeAspect = this.element.calculatedSize.x / this.element.calculatedSize.y
-
-		if (this.fitment === 'contain') {
-			// tall
-			if (shapeAspect < sizeAspect) geometry.scale(1 / scaleY, 1 / scaleY, 1)
-			// wide (or equal)
-			else geometry.scale(1 / scaleX, 1 / scaleX, 1)
-		} else if (this.fitment === 'cover') {
-			// tall
-			if (shapeAspect < sizeAspect) geometry.scale(1 / scaleX, 1 / scaleX, 1)
-			// wide (or equal)
-			else geometry.scale(1 / scaleY, 1 / scaleY, 1)
-		} else if (this.fitment === 'scale-down') {
-			if (!(shapeSizeX <= this.element.calculatedSize.x && shapeSizeY <= this.element.calculatedSize.y)) {
-				// tall
-				if (shapeAspect < sizeAspect) geometry.scale(1 / scaleY, 1 / scaleY, 1)
-				// wide (or equal)
-				else geometry.scale(1 / scaleX, 1 / scaleX, 1)
-			}
-		}
-
-		return geometry
+		return geometry.scale(scale.x, scale.y, 1)
 	}
 }
 
