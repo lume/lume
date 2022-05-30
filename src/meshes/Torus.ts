@@ -4,27 +4,24 @@ import {autoDefineElements} from '../LumeConfig.js'
 
 import type {MeshAttributes} from './Mesh.js'
 
-export type BoxAttributes = MeshAttributes
+export type TorusAttributes = MeshAttributes
 
 /**
- * @class Box -
+ * @class Torus -
  *
- * Element: `<lume-box>`
+ * Element: `<lume-torus>`
  *
  * Extends from `Mesh` to apply default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
+ * [`torus-geometry`](../behaviors/mesh-behaviors/geometries/TorusGeometryBehavior)
  * and
  * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
- * The dimensions of the box are determined by the
- * [`size`](../core/Sizeable#size) of the element.
- *
  * @extends Mesh
  */
-@element('lume-box', autoDefineElements)
-export class Box extends Mesh {
+@element('lume-torus', autoDefineElements)
+export class Torus extends Mesh {
 	static override defaultBehaviors = {
-		'box-geometry': (initialBehaviors: any) => {
+		'torus-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},
 		'phong-material': (initialBehaviors: any) => {
@@ -35,14 +32,14 @@ export class Box extends Mesh {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'lume-box': Box
+		'lume-torus': Torus
 	}
 }
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-box': JSX.IntrinsicElements['lume-mesh']
+			'lume-torus': JSX.IntrinsicElements['lume-mesh']
 		}
 	}
 }

@@ -12,7 +12,6 @@ export type NodeAttributes = BaseAttributes | 'visible'
 
 /**
  * @class Node -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
  * Element: `<lume-node>`
  *

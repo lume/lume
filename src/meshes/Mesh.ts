@@ -9,17 +9,22 @@ import type {NodeAttributes} from '../core/Node.js'
 export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
 
 /**
- * @element lume-mesh
  * @class Mesh -
+ *
+ * Element: `<lume-mesh>`
+ *
  * An element that renders a particular 3D shape (geometry) along with a
  * particular style (material). This is a generic element with no particular
- * shape. Elements like `<lume-box>` set particular defaults. For example a
- * `<lume-box>` element (backed by the [`Box`](./Box) class) extends from
- * this class and applies two default behaviors: `box-geometry` and
- * `phong-material`.
+ * shape. Elements like `<lume-box>` extend from `Mesh` in order to set define
+ * behaviors they ship with by default. For example a `<lume-box>` element
+ * (backed by the [`Box`](./Box) class) extends from this `Mesh` class and
+ * applies two default behaviors:
+ * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
+ * and
+ * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
- * For sake of simplicity, `<lume-mesh>` has a box-geometry and
- * phong-material by default.
+ * For sake of simplicity, `<lume-mesh>` has a `box-geometry` and
+ * `phong-material` by default, just like a `<lume-box>`.
  *
  * ## Example
  *
@@ -34,6 +39,7 @@ export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
  * </script>
  *
  * @extends Node
+ * @element lume-mesh TODO @element jsdoc tag
  *
  */
 @element('lume-mesh', autoDefineElements)
@@ -50,7 +56,30 @@ export class Mesh extends Node {
 		},
 	}
 
+	/**
+	 * @property {boolean} castShadow
+	 *
+	 * `boolean` `attribute`
+	 *
+	 * Default: `true`
+	 *
+	 * When `true`, the mesh casts shadows onto other objects when under the
+	 * presence of a light such as a
+	 * [`<lume-point-light>`](../lights/PointLight).
+	 */
 	@booleanAttribute(true) castShadow = true
+
+	/**
+	 * @property {boolean} receiveShadow
+	 *
+	 * `boolean` `attribute`
+	 *
+	 * Default: `true`
+	 *
+	 * When `true`, the mesh receives shadows from other objects when under the
+	 * presence of a light such as a
+	 * [`<lume-point-light>`](../lights/PointLight).
+	 */
 	@booleanAttribute(true) receiveShadow = true
 
 	override _loadGL() {
