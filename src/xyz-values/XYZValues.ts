@@ -1,5 +1,6 @@
 import {Eventful} from '@lume/eventful'
 import {reactive} from '@lume/element'
+import {getInheritedDescriptor} from 'lowclass'
 import {stringToArray} from './utils.js'
 
 export type XYZValuesArray<T> = [T, T, T]
@@ -370,7 +371,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 
 // TODO make this a decorator
 function enumerable<T extends object>(obj: T, prop: keyof T) {
-	Object.defineProperty(obj, prop, {...Object.getOwnPropertyDescriptor(obj, prop), enumerable: true})
+	Object.defineProperty(obj, prop, {...getInheritedDescriptor(obj, prop), enumerable: true})
 }
 
 enumerable(XYZValues.prototype, 'x')
