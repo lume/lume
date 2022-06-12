@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
+import {FBXLoader} from '../../../lib/three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'

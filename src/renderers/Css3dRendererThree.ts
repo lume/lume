@@ -1,4 +1,4 @@
-import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested.js'
+import {CSS3DRendererNested} from './CSS3DRendererNested.js'
 
 import type {Scene} from '../core/Scene.js'
 

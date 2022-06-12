@@ -20,12 +20,4 @@ export * from './xyz-values/index.js'
 
 export * from './defineElements.js'
 
-import * as _THREE from 'three/src/Three.js'
-
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
-import {SVGLoader} from 'three/examples/jsm/loaders/SVGLoader.js'
-
-// Add more objects as needed.
-export const THREE = {..._THREE, OrbitControls, SVGLoader}
-
 export const version = '0.3.0-alpha.11'
