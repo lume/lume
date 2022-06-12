@@ -51,6 +51,7 @@ export type SceneAttributes =
 	| 'fogFar'
 	| 'fogColor'
 	| 'fogDensity'
+	| 'physicallyCorrectLights'
 	| 'cameraNear'
 	| 'cameraFar'
 	| 'perspective'
@@ -58,7 +59,7 @@ export type SceneAttributes =
 /**
  * @class Scene -
  *
- * Element: `<lume-node>`
+ * Element: `<lume-scene>`
  *
  * This is the backing class for `<lume-scene>` elements. All
  * [`Node`](/api/core/Node.md) elements must be inside of a `<lume-scene>` element. A `Scene`
@@ -355,6 +356,22 @@ export class Scene extends ImperativeBase {
 	 * Applies only if `webgl` is `true`.
 	 */
 	@numberAttribute(0.0025) fogDensity = 0.0025
+
+	/**
+	 * @property {boolean} physicallyCorrectLights -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `false`
+	 *
+	 * Whether to use physically correct lighting mode or not. This affects only
+	 * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
+	 * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
+	 * physical example](https://threejs.org/examples/#webgl_lights_physical)
+	 * from Three.js and "physicallyCorrectLights" in the Three.js manual's
+	 * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
+	 */
+	@booleanAttribute(false) physicallyCorrectLights = false
 
 	/**
 	 * @property {number} cameraNear -
@@ -944,6 +961,10 @@ export class Scene extends ImperativeBase {
 			}),
 			autorun(() => {
 				this.#glRenderer!.setShadowMapType(this, this.shadowmapType)
+				this.needsUpdate()
+			}),
+			autorun(() => {
+				this.#glRenderer!.setPhysicallyCorrectLights(this, this.physicallyCorrectLights)
 				this.needsUpdate()
 			}),
 			autorun(() => {

@@ -17,15 +17,20 @@ export type PointLightAttributes =
 	| 'shadowCameraNear'
 	| 'shadowCameraFar'
 
+// TODO @element jsdoc tag
+
 /**
  * @element lume-point-light
  * @class PointLight -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * The PointLight class is the implementation behind
- * `<lume-point-light>` elements.
+ * Element: `<lume-point-light>`
  *
- * This light illuminates objects near it, casting shadows in any direction away from the light.
+ * An element that illuminates objects near it, casting shadows in any direction
+ * away from the light by default. The light element itself is not visible; to
+ * visualize it you can place a sphere as a child of the light for example.
+ *
+ * All mesh elements [receive](../meshes/Mesh#receiveshadow) or
+ * [cast](../meshes/Mesh#castshadow) shadows by default.
  *
  * ## Example
  *

@@ -11,7 +11,6 @@ export type LightAttributes = NodeAttributes | 'color' | 'intensity'
 /**
  * @abstract
  * @class Light -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
  * An abstract base class for light elements.
  *
