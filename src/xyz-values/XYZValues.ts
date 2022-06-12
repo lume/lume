@@ -1,4 +1,3 @@
-import {Eventful} from '@lume/eventful'
 import {reactive} from '@lume/element'
 import {getInheritedDescriptor} from 'lowclass'
 import {stringToArray} from './utils.js'
@@ -22,9 +21,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 @reactive
-export abstract class XYZValues<T = any> extends Eventful() {
-	// TODO remove Eventful and use only reactivity.
-
+export abstract class XYZValues<T = any> extends Object {
 	#x: T = undefined!
 	#y: T = undefined!
 	#z: T = undefined!
@@ -43,7 +40,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('x', value)
 		if (!this.checkValue('x', value)) return
 		this.#x = value
-		this.emit('valuechanged', 'x')
 	}
 	get x(): T {
 		return this.#x
@@ -63,7 +59,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('y', value)
 		if (!this.checkValue('y', value)) return
 		this.#y = value
-		this.emit('valuechanged', 'y')
 	}
 	get y(): T {
 		return this.#y
@@ -83,7 +78,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('z', value)
 		if (!this.checkValue('z', value)) return
 		this.#z = value
-		this.emit('valuechanged', 'z')
 	}
 	get z(): T {
 		return this.#z
@@ -308,6 +302,8 @@ export abstract class XYZValues<T = any> extends Eventful() {
 
 	/**
 	 * @method toString - Returns the `x`, `y`, and `z` values in string of values form, with an optional separator.
+	 *
+	 * `override`
 	 *
 	 * ```js
 	 * values.toString() // 'foo bar baz'

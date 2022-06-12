@@ -1,6 +1,5 @@
 import {Class, Mixin} from 'lowclass'
 export {Class, Mixin}
-export * from '@lume/eventful'
 export * from '@lume/element'
 export * from '@lume/element/dist/html.js'
 
