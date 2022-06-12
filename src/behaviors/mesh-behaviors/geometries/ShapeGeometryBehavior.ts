@@ -1,4 +1,4 @@
-import {booleanAttribute, numberAttribute, reactive, stringAttribute, untrack} from '../../attribute.js'
+import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
 import {attribute} from '../../attribute.js'
 import 'element-behaviors'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
