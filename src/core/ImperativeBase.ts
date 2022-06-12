@@ -809,6 +809,19 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.threeCSS.scale.set(x, y, z)
 	}
 
+	/**
+	 * @property {number} version -
+	 *
+	 * `reactive`
+	 *
+	 * Default: `0`
+	 *
+	 * Incremented any time the element has been updated for rendering in an
+	 * animation frame. Any time this changes, it means the underlying Three.js
+	 * world matrices for this element and its sub tree have been calculated.
+	 */
+	@reactive version = 0
+
 	updateWorldMatrices(): void {
 		this.three.updateWorldMatrix(false, false)
 		for (const child of this.three.children) if (!isManagedByUs(child)) child.updateMatrixWorld(true)
@@ -818,7 +831,7 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(), false)
 
-		this.emit('worldMatrixUpdate')
+		this.version++
 	}
 
 	/**
