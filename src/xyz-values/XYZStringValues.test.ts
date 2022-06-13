@@ -135,11 +135,13 @@ describe('XYZNumberValues', () => {
 			expect(a.toArray()).toEqual(['foo', 'bar', 'baz'])
 		})
 
-		it('triggers reactivity', () => {
+		it('triggers reactivity', async () => {
 			const a = new XYZStringValues()
 			let count = 0
 
 			createEffect(on(a.asDependency, () => count++))
+
+			await Promise.resolve()
 
 			a.y = 'bar'
 			a.z = 'baz'

@@ -134,11 +134,13 @@ describe('XYZAnyValues', () => {
 			expect(a.toArray()).toEqual([1, 2, 3])
 		})
 
-		it('triggers reactivity', () => {
+		it('triggers reactivity', async () => {
 			const a = new XYZAnyValues()
 			let count = 0
 
 			createEffect(on(a.asDependency, () => count++))
+
+			await Promise.resolve()
 
 			a.y = 2
 			a.z = 3

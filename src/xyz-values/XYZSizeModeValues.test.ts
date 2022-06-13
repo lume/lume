@@ -135,11 +135,13 @@ describe('XYZNumberValues', () => {
 			expect(a.toArray()).toEqual(['literal', 'proportional', 'literal'])
 		})
 
-		it('triggers reactivity', () => {
+		it('triggers reactivity', async () => {
 			const a = new XYZSizeModeValues()
 			let count = 0
 
 			createEffect(on(a.asDependency, () => count++))
+
+			await Promise.resolve()
 
 			a.y = 'literal'
 			a.z = 'proportional'
