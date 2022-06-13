@@ -24,5 +24,6 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
+	// TODO make it reactive so that effects can update when meshComponent changes declaratively, instead of imperatively
 	meshComponent?: ReturnType<this['_createComponent']>
 }

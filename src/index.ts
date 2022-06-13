@@ -14,6 +14,7 @@ export * from './math/index.js'
 export * from './meshes/index.js'
 export * from './models/index.js'
 export * from './renderers/index.js'
+export * from './textures/index.js'
 export * from './utils/index.js'
 export * from './xyz-values/index.js'
 

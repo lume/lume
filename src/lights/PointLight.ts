@@ -48,10 +48,40 @@ export type PointLightAttributes =
  */
 @element('lume-point-light', autoDefineElements)
 export class PointLight extends Light {
+	/**
+	 * @property {number} intensity -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `1`
+	 *
+	 * This light's intensity. Changing the intensity will also change the light's
+	 * [`power`](#power) according to the formula `intensity * 4 * Math.PI`.
+	 *
+	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
+	 * enabled, intensity is the luminous intensity of the light measured in
+	 * candela (cd).
+	 */
+	@numberAttribute(1) intensity: number = 1
+
 	@numberAttribute(0) distance = 0
 	@numberAttribute(1) decay = 1
 	@booleanAttribute(true) castShadow = true
 
+	/**
+	 * @property {number} power -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `1`
+	 *
+	 * This light's power. Changing the power will also change the light's
+	 * [`intensity`](#intensity) according to the formula `power / (4 * Math.PI)`.
+	 *
+	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
+	 * is enabled, power is the luminous power of the light measured in lumens
+	 * (lm).
+	 */
 	@numberAttribute(1 * 4 * Math.PI) // intensity 1
 	get power() {
 		// compute the light's luminous power (in lumens) from its intensity (in candela)

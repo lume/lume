@@ -21,7 +21,148 @@ function noop(strings, ...keys) {
 
 const html = noop // useful for syntax highlight and auto-formatting
 
-const host = location.origin + location.pathname
+const host = location.origin + '/'
+
+const projectedTextureExample = stripIndent(html`
+	<title>&lt;lume-texture-projector&gt;</title>
+
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #333;
+			touch-action: none;
+		}
+		#ui {
+			position: absolute !important;
+			top: 0;
+			left: 0;
+			color: white;
+		}
+		#ui,
+		#ui lume-node {
+			pointer-events: none;
+		}
+		#ui label {
+			pointer-events: auto;
+		}
+		lume-node {
+			padding: 15px;
+		}
+	</style>
+
+	<script src="${host}global.js"></script>
+
+	<script>
+		LUME.defineElements()
+	</script>
+
+	<lume-scene id="scene" perspective="800" webgl shadowmap-type="pcfsoft">
+		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
+
+		<lume-camera-rig active initial-polar-angle="30" initial-distance="400" max-distance="7000" min-distance="100">
+			<lume-point-light
+				position="200 -200 200"
+				intensity="0.6"
+				color="white"
+				shadow-bias="-0.001"
+				shadow-map-width="2048"
+				shadow-map-height="2048"
+				slot="camera-child"
+			></lume-point-light>
+		</lume-camera-rig>
+
+		<lume-box
+			id="box"
+			has="projected-material"
+			projected-textures="#projectedTexture"
+			sidedness="double"
+			cast-shadow="true"
+			receive-shadow="true"
+			opacity="1"
+			color="deeppink"
+			dithering
+			mount-point="0.5 0.5 0.5"
+			rotation="0 45 0"
+			size="100 100 100"
+			scale="1 1 1"
+		></lume-box>
+
+		<lume-node id="textureRotator" rotation="0 45 0">
+			<lume-node rotation="45 0 0">
+				<lume-texture-projector
+					id="projectedTexture"
+					size="150 150"
+					mount-point="0.5 0.5 0.5"
+					src="${host}/images/monalisa-2.jpg"
+					fitment="contain"
+					visible="true"
+					position="0 0 150"
+					rotation="0 180 0"
+				>
+					<lume-box
+						id="visual"
+						opacity="0.5"
+						color="yellow"
+						size="1 1 500"
+						size-mode="proportional proportional"
+						cast-shadow="false"
+						receive-shadow="false"
+						visible="false"
+					>
+						<lume-sphere size="5" color="yellow" align-point="0.5 0.5"></lume-sphere>
+					</lume-box>
+				</lume-texture-projector>
+			</lume-node>
+		</lume-node>
+
+		<lume-plane
+			has="projected-material"
+			projected-textures="#projectedTexture"
+			size="800 800"
+			color="cyan"
+			rotation="90"
+			position="0 150"
+			mount-point="0.5 0.5"
+		></lume-plane>
+	</lume-scene>
+
+	<lume-scene id="ui">
+		<lume-node size-mode="proportional literal" size="1 80">
+			<label>
+				Projected texture enabled on box:
+				<input
+					type="checkbox"
+					checked
+					onchange="box.getAttribute('projected-textures') === 'none' ? box.setAttribute('projected-textures', '#projectedTexture') : box.setAttribute('projected-textures', 'none')"
+				/>
+			</label>
+			<br />
+			<label>
+				Fitment "cover" instead of "contain"
+				<input
+					type="checkbox"
+					onchange="projectedTexture.getAttribute('fitment') === 'contain' ? projectedTexture.setAttribute('fitment', 'cover') : projectedTexture.setAttribute('fitment', 'contain')"
+				/>
+			</label>
+			<br />
+			<label>
+				Visualize texture projector:
+				<input type="checkbox" onchange="visual.visible = !visual.visible" />
+			</label>
+		</lume-node>
+	</lume-scene>
+
+	<script>
+		// LUME.defineElements()
+
+		box.rotation = (x, y, z) => [x + 0.3, y + 0.3, z]
+		textureRotator.rotation = (x, y, z) => [x, y + 0.1, z]
+	</script>
+`)
 
 const buttonsWithShadowExample = stripIndent(html`
 	<script src="${host}global.js"></script>
@@ -112,7 +253,15 @@ const buttonsWithShadowExample = stripIndent(html`
 					</lume-mixed-plane>
 				</lume-node>
 				<lume-node id="lightContainer" size="0 0 0" position="0 0 300">
-					<lume-point-light id="light" color="white" size="0 0 0" cast-shadow="true" intensity="0.8">
+					<lume-point-light
+						id="light"
+						color="white"
+						size="0 0 0"
+						cast-shadow="true"
+						intensity="0.8"
+						shadow-map-width="2048"
+						shadow-map-height="2048"
+					>
 						<lume-mesh
 							has="sphere-geometry basic-material"
 							size="10 10 10"
@@ -644,7 +793,7 @@ function directionalLightExample() {
 	`)
 }
 
-function perspectiveLayeredImage({bg, fg, bgPosition = {}, fgPosition = {}}) {
+function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition = {}}) {
 	return stripIndent(html`
 		<script src="${host}global.js"></script>
 
@@ -1105,12 +1254,14 @@ const shapesExample = stripIndent(html`
 			for (const shape of shapes) {
 				if (input.value === 'triangles') {
 					// Set a Shape instance
-					shape.shape = new LUME.THREE.Shape([
-						new LUME.THREE.Vector2(-12, 0),
-						new LUME.THREE.Vector2(12, 0),
-						new LUME.THREE.Vector2(0, 12),
-						new LUME.THREE.Vector2(-12, 0),
-					])
+					// TODO convert to global THREE.* API after finishing externalization in the externalize-THREE branch.
+					//shape.shape = new LUME.THREE.Shape([
+					//new LUME.THREE.Vector2(-12, 0),
+					//new LUME.THREE.Vector2(12, 0),
+					//new LUME.THREE.Vector2(0, 12),
+					//new LUME.THREE.Vector2(-12, 0),
+					//])
+					shape.shape = '-12, 0 12, 0 0, 12 -12, 0'
 				} else if (input.value === 'trapezoids') {
 					// Set the 'shape' attribute with a list of points
 					shape.setAttribute('shape', '-5 0, 2 -13,  13 -13,  20 0,  0 0')
@@ -1915,284 +2066,17 @@ const pictureFrameExample = stripIndent(html`
 		}
 	</style>
 
-	<script src="${host}global.js"></script>
-
 	<script>
-		LUME.defineElements()
+		// Make sure a global LUME object is in place before importing global.js as an ES module.
+		// TODO this shouldn't be necessary.
+		var LUME = {}
+
+		import('${host}js/PictureFrameScene.js')
 	</script>
 
-	<lume-scene
-		id="scene"
-		perspective="800"
-		webgl
-		shadowmap-type="pcfsoft"
-		xenvironment="${host}examples/nasa-astrobee-robot/luna-station.jpg"
-	>
-		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
-
-		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid red;"></lume-node>
-
-		<lume-cube-layout size="1000 1000 1000" position="0 0 0" mount-point="0.5 0.5" align-point="0.5 0.5">
-			<!-- the orb is not assigned to a slot, so it goes to the default slot like a regular child of the cube layout. -->
-			<flickering-orb
-				distance="8000"
-				intensity="0.9"
-				color="#999"
-				shadow-bias="-0.005"
-				shadow-map-width="1024"
-				shadow-map-height="1024"
-				align-point="0.5 0.2 0.82"
-			></flickering-orb>
-
-			<!-- Walls --------------------------------------------------------->
-			<lume-plane
-				id="picture"
-				slot="front"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				note="free texture from https://polyhaven.com/a/stone_brick_wall_001"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-			<lume-plane
-				id="picture"
-				slot="back"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-			<lume-plane
-				id="picture"
-				slot="left"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-			<lume-plane
-				id="picture"
-				slot="right"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-			<lume-plane
-				id="picture"
-				slot="top"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-			<lume-plane
-				id="picture"
-				slot="bottom"
-				size-mode="proportional proportional"
-				size="1 1"
-				rotation="0 180 0"
-				align-point="0.5 0.5"
-				mount-point="0.5 0.5"
-				color="white"
-				texture="${host}textures/stone-brick-wall/diff_2k.jpg"
-				------
-				has="phong-material"
-				shininess="100"
-				bump-map="${host}textures/stone-brick-wall/disp_2k.png"
-				bump-scale="8"
-			></lume-plane>
-		</lume-cube-layout>
-
-		<!-- picture frame container -------------------------------->
-		<lume-node size="160 200 15" mount-point="0.5 0.5" align-point="0.5 0.5">
-			<lume-camera-rig
-				active
-				initial-polar-angle="30"
-				min-polar-angle="-50"
-				max-polar-angle="50"
-				min-horizontal-angle="-50"
-				max-horizontal-angle="50"
-				initial-distance="500"
-				max-distance="900"
-				min-distance="200"
-				align-point="0.5 0.5"
-				align-point="0 0"
-			>
-			</lume-camera-rig>
-
-			<lume-box
-				id="box"
-				shininess="100"
-				color="white"
-				texture="${host}images/monalisa-2.jpg"
-				size-mode="proportional proportional"
-				size="1 1 1"
-				note="align point needs to be determined. Will it be a percentage or absolute value from the back of the frame? Or?"
-				align-point="0 0 0.4"
-			></lume-box>
-
-			<!-- frame edges -------------------------->
-			<lume-node size-mode="proportional proportional" size="1 1">
-				<lume-node size="0 0 15" align-point="0 0.5">
-					<lume-shape
-						id="left"
-						has="clip-planes physical-material"
-						xhas="clip-planes projected-material"
-						color="#ddd"
-						metalness="0.8"
-						roughness="0.3"
-						clearcoat="1"
-						clip-planes="#clipPlane1, #clipPlane3"
-						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
-						curve-segments="60"
-						size="15 15 240"
-						xtexture="${host}examples/wood.jpg"
-						rotation="-90 0 0"
-						mount-point="1 0.5 0.5"
-						align-point="0 0 0.5"
-						receive-shadow="false"
-						fitment="contain"
-					></lume-shape>
-				</lume-node>
-				<lume-node size="0 0 15" align-point="1 0.5">
-					<lume-shape
-						id="right"
-						has="clip-planes physical-material"
-						color="#ddd"
-						metalness="0.8"
-						roughness="0.3"
-						clearcoat="1"
-						clip-planes="#clipPlane2, #clipPlane4"
-						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
-						curve-segments="60"
-						size="15 15 240"
-						xtexture="${host}examples/wood.jpg"
-						rotation="-90 180 0"
-						mount-point="0 0.5 0.5"
-						align-point="0 0 0.5"
-						receive-shadow="false"
-						fitment="contain"
-					></lume-shape>
-				</lume-node>
-				<lume-node size="0 0 15" align-point="0.5 0">
-					<lume-shape
-						id="top"
-						has="clip-planes physical-material"
-						color="#ddd"
-						metalness="0.8"
-						roughness="0.3"
-						clearcoat="1"
-						clip-planes="#clipPlane1, #clipPlane2"
-						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
-						curve-segments="60"
-						flip-clip
-						size="15 15 210"
-						xtexture="${host}examples/wood.jpg"
-						rotation="-90 -90 0"
-						mount-point="0.5 1 0.5"
-						align-point="0 0 0.5"
-						receive-shadow="false"
-						fitment="contain"
-					></lume-shape>
-				</lume-node>
-				<lume-node size="0 0 15" align-point="0.5 1">
-					<lume-shape
-						id="bottom"
-						has="clip-planes physical-material"
-						color="#ddd"
-						metalness="0.8"
-						roughness="0.3"
-						clearcoat="1"
-						clip-planes="#clipPlane3, #clipPlane4"
-						shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
-						curve-segments="60"
-						flip-clip
-						size="15 15 210"
-						xtexture="${host}examples/wood.jpg"
-						rotation="-90 90 0"
-						mount-point="0.5 0 0.5"
-						align-point="0 0 0.5"
-						receive-shadow="false"
-						fitment="contain"
-					></lume-shape>
-				</lume-node>
-			</lume-node>
-
-			<!-- corner clips -------------------------->
-			<lume-node size-mode="proportional proportional" size="1 1">
-				<lume-clip-plane
-					id="clipPlane1"
-					size="250 250"
-					mount-point="0.5 0.5 0.5"
-					align-point="0 0"
-					rotation="90 45 0"
-				></lume-clip-plane>
-
-				<lume-clip-plane
-					id="clipPlane2"
-					size="250 250"
-					mount-point="0.5 0.5 0.5"
-					align-point="1 0"
-					rotation="90 -45 0"
-				></lume-clip-plane>
-
-				<lume-clip-plane
-					id="clipPlane3"
-					size="250 250"
-					mount-point="0.5 0.5 0.5"
-					align-point="0 1 0.5"
-					rotation="90 -225 0"
-				></lume-clip-plane>
-
-				<lume-clip-plane
-					id="clipPlane4"
-					size="250 250"
-					mount-point="0.5 0.5 0.5"
-					align-point="1 1 0.5"
-					rotation="90 225 0"
-				></lume-clip-plane>
-			</lume-node>
-		</lume-node>
-	</lume-scene>
+	<picture-frame-scene
+		picture="${host}images/monalisa-2.jpg"
+		frame-texture="${host}images/wood.jpg"
+		frame-shape="m16.1 345c217.1-.3 328.7-.3 335 0 6.3-.3 10-6.3 11-18 3.6-50.8 5.3-78.8 5-84 .3-5.2 1.9-7.9 5-8 27.3.8 42.6 1.2 46 1 3.2.2 5.5-2.5 7.1-8v-23l-27-1c-23.2-22.7-28.2-15.4-28-22-.1-4.9-1.1-9.3-3-13h-31c.1 6.1-1.6 10.4-5 13-5.2 2.7-27.8 3.6-53 0-28.2-5-54.6-21.7-60-24-37.7-18.6-78.3-65.9-106-137-1.2-2.8-3.9-5.1-8-7-3.3-.2-4.9-.9-5-2 .1-.9-.4-8.5-1-9-.7-1.3-2.3-2.3-5-3h-56c.2 10 .2 14.7 0 14 .2-1.1-5.4-1.1-17 0 .2 9 .2 16 0 21-.8 10.4-.4 33.3 2 37 20.5 30.1 24.2 84.5 15 132-4.2 20.1-15.9 48.4-35 85-2.6 20.8-3 34.8-1.1 42 1.6 7.5 6.6 12.2 15 14z"
+	></picture-frame-scene>
 `)

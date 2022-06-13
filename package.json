@@ -99,7 +99,7 @@
 		"regexr": "^1.5.1",
 		"resize-observer-polyfill": "^1.5.1",
 		"three": "^0.139.0",
-		"@lume/three-projected-material": "^0.1.0"
+		"@lume/three-projected-material": "^0.2.2"
 	},
 	"devDependencies": {
 		"@lume/cli": "^0.8.0",
