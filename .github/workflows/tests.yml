@@ -8,7 +8,6 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [16.x, 17.x]
                 # TODO get tests working in Windows and macOS (help wanted!)
                 # windows-latest
                 # macos-latest
@@ -19,10 +18,10 @@ jobs:
               with:
                   submodules: 'recursive'
                   token: ${{ secrets.ACCESS_TOKEN }}
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
+            - name: Use Node.js latest
+              uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: latest
             - name: npm install, build, and test
               run: |
                   npm run fresh
