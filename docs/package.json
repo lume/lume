@@ -10,7 +10,7 @@
 		"docsify-plugin-flexible-alerts": "^1.0.3",
 		"docsify-tabs": "^1.1.2",
 		"docsify-themeable": "^0.7.2",
-		"lume": "^0.3.0-alpha.11",
+		"lume": "^0.3.0-alpha.12",
 		"tinycolor2": "^1.4.1",
 		"tween.js": "^16.6.0",
 		"vue": "^2.6.10"
