@@ -21,7 +21,6 @@
 
 import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
 import {attribute, autorun, element} from '@lume/element'
-import {emits} from '@lume/eventful'
 import {Node, NodeAttributes} from '../core/Node.js'
 import {Motor} from '../core/Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -53,7 +52,7 @@ export class AutoLayoutNode extends Node {
 		strict: false,
 	}
 
-	@attribute @emits('propertychange') visualFormat: string | null = ''
+	@attribute visualFormat: string | null = ''
 
 	/**
 	 * Constructor
@@ -82,7 +81,7 @@ export class AutoLayoutNode extends Node {
 		}
 	}
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		this._stopFns.push(
@@ -94,7 +93,7 @@ export class AutoLayoutNode extends Node {
 
 	#autoLayoutView?: any | undefined
 
-	childConnectedCallback(child: Node) {
+	override childConnectedCallback(child: Node) {
 		// @prod-prune
 		if (!(child instanceof Node))
 			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
@@ -105,7 +104,7 @@ export class AutoLayoutNode extends Node {
 		this.#checkNodes()
 	}
 
-	childDisconnectedCallback(child: Node) {
+	override childDisconnectedCallback(child: Node) {
 		// @prod-prune
 		if (!(child instanceof Node))
 			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')

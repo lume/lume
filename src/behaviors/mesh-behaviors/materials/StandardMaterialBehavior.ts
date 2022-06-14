@@ -5,12 +5,15 @@ import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.j
 
 export type StandardMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
+	| 'aoMap'
+	| 'aoMapIntensity'
 	| 'bumpMap'
 	| 'bumpScale'
 	| 'texture' // map
 	| 'normalMap'
 	| 'normalScale'
 	| 'metalness'
+	| 'metalnessMap'
 	| 'morphNormals'
 	| 'morphTargets'
 	| 'roughness'
@@ -22,8 +25,8 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	// TODO
 
 	// alphaMap?: Texture | null;
-	// aoMap?: Texture | null;
-	// @numberAttribute(1) aoMapIntensity?: number
+	@stringAttribute('') aoMap = ''
+	@numberAttribute(1) aoMapIntensity = 1
 	@stringAttribute('') bumpMap = ''
 	@numberAttribute(1) bumpScale = 1
 	// displacementMap?: Texture | null;
@@ -41,7 +44,7 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	// normalMapType
 	@numberAttribute(1) normalScale = 1
 	@numberAttribute(0) metalness = 0
-	// metalnessMap?: Texture | null;
+	@stringAttribute('') metalnessMap = ''
 	// @numberAttribute(1) refractionRatio?: number
 	@numberAttribute(1) roughness = 1
 	@stringAttribute('') roughnessMap = ''
@@ -55,16 +58,17 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	@booleanAttribute(false) morphTargets: boolean = false
 	@booleanAttribute(false) morphNormals: boolean = false
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshStandardMaterial()
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!
 
 		this.createEffect(() => {
+			mat.aoMapIntensity = this.aoMapIntensity
 			mat.bumpScale = this.bumpScale
 			mat.normalScale.set(this.normalScale, this.normalScale)
 			mat.metalness = this.metalness
@@ -80,20 +84,34 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 		})
 
 		this._handleTexture(
+			() => this.aoMap,
+			tex => (mat.aoMap = tex),
+			() => !!mat.aoMap,
+		)
+		this._handleTexture(
 			() => this.bumpMap,
 			tex => (mat.bumpMap = tex),
+			() => !!mat.bumpMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
 			tex => (mat.map = tex),
+			() => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.normalMap,
 			tex => (mat.normalMap = tex),
+			() => !!mat.normalMap,
+		)
+		this._handleTexture(
+			() => this.metalnessMap,
+			tex => (mat.metalnessMap = tex),
+			() => !!mat.metalnessMap,
 		)
 		this._handleTexture(
 			() => this.roughnessMap,
 			tex => (mat.roughnessMap = tex),
+			() => !!mat.roughnessMap,
 		)
 	}
 }

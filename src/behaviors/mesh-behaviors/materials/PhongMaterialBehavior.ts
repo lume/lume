@@ -82,13 +82,13 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 
 	@numberAttribute(30) shininess = 30
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshPhongMaterial({
 			color: 0x00ff00,
 		})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!
@@ -116,42 +116,52 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 		this._handleTexture(
 			() => this.alphaMap,
 			tex => (mat.alphaMap = tex),
+			() => !!mat.alphaMap,
 		)
 		this._handleTexture(
 			() => this.aoMap,
 			tex => (mat.aoMap = tex),
+			() => !!mat.aoMap,
 		)
 		this._handleTexture(
 			() => this.bumpMap,
 			tex => (mat.bumpMap = tex),
+			() => !!mat.bumpMap,
 		)
 		this._handleTexture(
 			() => this.displacementMap,
 			tex => (mat.displacementMap = tex),
+			() => !!mat.displacementMap,
 		)
 		this._handleTexture(
 			() => this.emissiveMap,
 			tex => (mat.emissiveMap = tex),
+			() => !!mat.emissiveMap,
 		)
 		this._handleTexture(
 			() => this.envMap,
 			tex => (mat.envMap = tex),
+			() => !!mat.envMap,
 		)
 		this._handleTexture(
 			() => this.lightMap,
 			tex => (mat.lightMap = tex),
+			() => !!mat.lightMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
 			tex => (mat.map = tex),
+			() => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.normalMap,
 			tex => (mat.normalMap = tex),
+			() => !!mat.normalMap,
 		)
 		this._handleTexture(
 			() => this.specularMap,
 			tex => (mat.specularMap = tex),
+			() => !!mat.specularMap,
 		)
 	}
 }

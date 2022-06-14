@@ -9,24 +9,22 @@ export class BasicMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') texture = ''
 	@stringAttribute('') specularMap = ''
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshBasicMaterial({color: 0x00ff00})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this._handleTexture(
 			() => this.texture,
-			tex => {
-				this.meshComponent!.map = tex
-			},
+			tex => (this.meshComponent!.map = tex),
+			() => !!this.meshComponent!.map,
 		)
 		this._handleTexture(
 			() => this.specularMap,
-			tex => {
-				this.meshComponent!.specularMap = tex
-			},
+			tex => (this.meshComponent!.specularMap = tex),
+			() => !!this.meshComponent!.specularMap,
 		)
 	}
 }

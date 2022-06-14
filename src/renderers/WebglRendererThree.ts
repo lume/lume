@@ -182,6 +182,12 @@ export class WebglRendererThree {
 		}
 	}
 
+	setPhysicallyCorrectLights(scene: Scene, value: boolean) {
+		const state = sceneStates.get(scene)
+		if (!state) throw new ReferenceError('Unable to set value. Scene state should be initialized first.')
+		state.renderer.physicallyCorrectLights = value
+	}
+
 	#bgVersion = 0
 
 	/**

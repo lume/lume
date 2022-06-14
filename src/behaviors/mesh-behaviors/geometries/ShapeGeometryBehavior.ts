@@ -1,4 +1,4 @@
-import {booleanAttribute, numberAttribute, reactive, stringAttribute, untrack} from '../../attribute.js'
+import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
 import {attribute} from '../../attribute.js'
 import 'element-behaviors'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
@@ -191,7 +191,7 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 
 	// TODO attribute to apply smoothing to the geometry (calculate normals)?
 
-	_createComponent() {
+	override _createComponent() {
 		let geometry: ExtrudeGeometry | ShapeGeometry
 
 		if (this.element.calculatedSize.z === 0) {
@@ -264,22 +264,6 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 		}
 
 		return geometry
-	}
-
-	loadGL() {
-		super.loadGL()
-
-		this.createEffect(() => {
-			this.shape
-			this.curveSegments
-			this.bevel
-			this.bevelSegments
-			this.bevelThickness
-			this.centerGeometry
-			this.element.calculatedSize
-
-			untrack(() => this.resetMeshComponent())
-		})
 	}
 }
 

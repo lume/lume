@@ -30,7 +30,7 @@ Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geomet
 */
 @element('lume-shape', autoDefineElements)
 export class Shape extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'shape-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},

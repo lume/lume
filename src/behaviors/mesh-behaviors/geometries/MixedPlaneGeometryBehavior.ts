@@ -3,7 +3,7 @@ import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 export class MixedPlaneGeometryBehavior extends GeometryBehavior {
-	_createComponent() {
+	override _createComponent() {
 		// We have to use a BoxGeometry instead of a
 		// PlaneGeometry because Three.js is not capable of
 		// casting shadows from Planes, at least until we find

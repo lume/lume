@@ -10,7 +10,7 @@ export class FlickeringOrbs extends Node {
 	@numberAttribute(0) shadowBias = 0
 
 	// FIXME 'attr:' is used to work around an issue with default property behavior
-	template = () => html`
+	override template = () => html`
 		<>
 			<flickering-orb color="yellow" position="500 0 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
 			<flickering-orb color="deeppink" position="-500 0 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>

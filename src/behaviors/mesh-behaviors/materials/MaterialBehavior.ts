@@ -3,6 +3,7 @@
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
 
+import {untrack} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
@@ -86,7 +87,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		else return false
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!
@@ -150,7 +151,6 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	}
 
 	override _createComponent(): Material {
-		super._createComponent
 		return new Material()
 	}
 
@@ -160,19 +160,19 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		// TODO CLIP PLANES REACTIVITY HACK, This triggers the
 		// ClipPlanesBehavior effect in case the material changed. TODO: Make
 		// element.behaviors reactive so that the dependent code can react to
-		// material changes instead.
-		const clipPlanes = this.element.behaviors.get('clip-planes') as ClipPlanesBehavior | undefined
+		// material changes instead. Untrack() here for now, to prevent reactivity issues.
+		const clipPlanes = untrack(() => this.element.behaviors.get('clip-planes') as ClipPlanesBehavior | undefined)
 		if (!clipPlanes) return
-		console.log('PLANES trigger clipShadows', clipPlanes.clipPlanes)
-		clipPlanes.clipShadows = clipPlanes.clipShadows
+		clipPlanes.clipShadows = untrack(() => clipPlanes.clipShadows)
 	}
 
-	// Any time a texture is loaded, this gets set with the loaded Texture
-	// instance.
-	@reactive _actualTexture: Texture | null = null
-
-	_handleTexture(textureUrl: () => string, setTexture: (t: Texture | null) => void) {
-		const mat = this.meshComponent
+	_handleTexture(
+		textureUrl: () => string,
+		setTexture: (t: Texture | null) => void,
+		hasTexture: () => boolean,
+		onLoad?: () => void,
+	) {
+		const mat = this.meshComponent!
 
 		this.createEffect(() => {
 			const url = textureUrl() // this is a dependency of the effect
@@ -181,23 +181,32 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 				// TODO The default material color (if not specified) when
 				// there's a texture should be white
 
-				// @ts-ignore
+				let cleaned = false
+
+				// TODO onProgress and onError
 				const texture = new TextureLoader().load(url, () => {
+					if (cleaned) return
+
+					// We only need to re-compile the shader when we first
+					// enable the texture (from null).
+					if (!hasTexture()) mat.needsUpdate = true
+
+					setTexture(texture)
+
 					this.element.needsUpdate()
-					this._actualTexture = texture
+
+					onLoad?.()
 				})
 
 				onCleanup(() => {
+					cleaned = true
 					texture.dispose()
 				})
-
-				// TODO handle Material[] arrays
-				setTexture(texture)
 			} else {
-				setTexture(null)
+				untrack(() => setTexture(null))
 			}
 
-			mat!.needsUpdate = true // Three.js needs to update the material in the GPU
+			mat.needsUpdate = true // Three.js needs to update the material in the GPU
 			this.element.needsUpdate() // LUME needs to re-render
 		})
 	}

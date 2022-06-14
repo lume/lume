@@ -50,12 +50,11 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 *
 	 * Default: `[]`
 	 *
-	 * The corresponding `clip-planes` attribute accepts one or more selectors,
-	 * comma separated, that define which
-	 * [`<lume-clip-plane>`](../../core/ClipPlane) elements are to be used as
-	 * clip planes. If a selector matches an element that is not a
-	 * `<lume-clip-plane>`, it is ignored. If a selector matches more than one
-	 * element, all of them that are clip planes are used.
+	 * The `clip-planes` attribute accepts one or more selectors, comma
+	 * separated, that define which [`<lume-clip-plane>`](../../core/ClipPlane)
+	 * elements are to be used as clip planes. If a selector matches an element
+	 * that is not a `<lume-clip-plane>`, it is ignored. If a selector matches
+	 * more than one element, all of them that are clip planes are used.
 	 *
 	 * ```html
 	 * <lume-box has="clip-planes" clip-planes=".foo, .bar, #baz"></lume-box>
@@ -89,7 +88,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 		let array: Array<ClipPlane | string> = []
 
 		if (typeof value === 'string') {
-			array = value.split(',').filter(v => !!v.trim())
+			array = [value.trim()]
 		} else if (Array.isArray(value)) {
 			array = value
 		} else {
@@ -100,7 +99,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
-				this.#clipPlanes.push(v)
+				if (v instanceof ClipPlane && v.scene) this.#clipPlanes.push(v)
 				continue
 			}
 
@@ -110,25 +109,24 @@ export class ClipPlanesBehavior extends MeshBehavior {
 			// in the current ShadowRoot?
 
 			while (root) {
-				const plane = root.querySelector(v)
+				const els = root.querySelectorAll(v)
 
-				if (plane) {
+				for (let i = 0, l = els.length; i < l; i += 1) {
+					const el = els.item(i) as Element | null
+
+					if (!el) continue
+
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
-					if (plane instanceof ClipPlane && plane.scene) this.#clipPlanes.push(plane)
+					if (el instanceof ClipPlane && el.scene) this.#clipPlanes.push(el)
 
-					// TODO
-					// If a lume-clip-plane element was not yet upgraded, it
-					// will not be found here. We need to also use
-					// MutationObserver on the root, or something, to detect
-					// upgraded lume-clip-planes
-					//
-					// We need to also react to added/removed lume-clip-planes
-
-					// If we found an element, but it's the wrong type, end
-					// search, don't use it.
-					break
+					// TODO We aren't observing el.scene, so if the element
+					// becomes a particpant in the scene later nothing will
+					// happen.
+					// TODO If an element was not yet upgraded, it will not
+					// be found here. We need to wait for upgrade.
+					// TODO We need to also react to added/removed elements.
 				}
 
 				root = root instanceof ShadowRoot ? (root.host.getRootNode() as Document | ShadowRoot) : null
@@ -172,11 +170,11 @@ export class ClipPlanesBehavior extends MeshBehavior {
 
 		// loadGL may fire during parsing before children exist. This
 		// MutationObserver will also fire during parsing. This allows us to
-		// re-run the query logic for the clip-planes="" prop whenever DOM in
-		// the current root changes.
+		// re-run the query logic whenever DOM in the current root changes.
+		//
 		// TODO we need to observe all the way up the composed tree, or we
-		// should make clipPlanes's querying scoped to the nearest root, for
-		// consistency.  This covers most cases, for now.
+		// should make the querying scoped only to the nearest root, for
+		// consistency. This covers most cases, for now.
 		this.#observer = new MutationObserver(() => {
 			// TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
 			// This triggers the setter logic.
@@ -200,7 +198,11 @@ export class ClipPlanesBehavior extends MeshBehavior {
 
 			if (!clipPlanes.length || this.clipDisabled) {
 				mat.clippingPlanes = null
-				mat.clipShadows = false // FIXME upstream: don't forget this or Three.js has a bug that still attempts to perform clipping even if clippingPlanes is null.
+
+				// FIXME upstream: don't forget this or Three.js has a bug that
+				// still attempts to perform clipping even if clippingPlanes is
+				// null. https://github.com/munrocket/three.js/pull/5
+				mat.clipShadows = false
 
 				return
 			}

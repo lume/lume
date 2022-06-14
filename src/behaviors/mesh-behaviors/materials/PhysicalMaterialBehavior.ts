@@ -37,11 +37,11 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	@numberAttribute(0) transmission = 0
 	// transmissionMap
 
-	_createComponent() {
+	override _createComponent() {
 		return new MeshPhysicalMaterial({})
 	}
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		const mat = this.meshComponent!

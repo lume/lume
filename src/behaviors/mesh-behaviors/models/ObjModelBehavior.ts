@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
-import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
-import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
+import {OBJLoader} from '../../../lib/three/examples/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from '../../../lib/three/examples/jsm/loaders/MTLLoader.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -32,7 +32,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.objLoader = new OBJLoader() // TODO types for loaders
 		this.mtlLoader = new MTLLoader(this.objLoader.manager)
 		// Allow cross-origin images to be loaded.
@@ -59,7 +59,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 		firstRun = false
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.#cleanupModel()
 
 		// Increment this in case the loader is still loading, so it will ignore the result.

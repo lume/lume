@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {TDSLoader} from 'three/examples/jsm/loaders/TDSLoader.js'
+import {TDSLoader} from '../../../lib/three/examples/jsm/loaders/TDSLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
@@ -22,7 +22,7 @@ export class TdsModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.loader = new TDSLoader()
 
 		this.createEffect(() => {
@@ -35,7 +35,7 @@ export class TdsModelBehavior extends RenderableBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.loader = undefined
 
 		this.#cleanupModel()

@@ -1,5 +1,5 @@
-import {Eventful} from '@lume/eventful'
 import {reactive} from '@lume/element'
+import {getInheritedDescriptor} from 'lowclass'
 import {stringToArray} from './utils.js'
 
 export type XYZValuesArray<T> = [T, T, T]
@@ -21,9 +21,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * {x:'foo', y:'bar', z:'baz'}
  */
 @reactive
-export abstract class XYZValues<T = any> extends Eventful() {
-	// TODO remove Eventful and use only reactivity.
-
+export abstract class XYZValues<T = any> extends Object {
 	#x: T = undefined!
 	#y: T = undefined!
 	#z: T = undefined!
@@ -42,7 +40,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('x', value)
 		if (!this.checkValue('x', value)) return
 		this.#x = value
-		this.emit('valuechanged', 'x')
 	}
 	get x(): T {
 		return this.#x
@@ -62,7 +59,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('y', value)
 		if (!this.checkValue('y', value)) return
 		this.#y = value
-		this.emit('valuechanged', 'y')
 	}
 	get y(): T {
 		return this.#y
@@ -82,7 +78,6 @@ export abstract class XYZValues<T = any> extends Eventful() {
 		if (typeof value === 'string') value = this.deserializeValue('z', value)
 		if (!this.checkValue('z', value)) return
 		this.#z = value
-		this.emit('valuechanged', 'z')
 	}
 	get z(): T {
 		return this.#z
@@ -308,6 +303,8 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	/**
 	 * @method toString - Returns the `x`, `y`, and `z` values in string of values form, with an optional separator.
 	 *
+	 * `override`
+	 *
 	 * ```js
 	 * values.toString() // 'foo bar baz'
 	 * values.toString(',') // 'foo, bar, baz'
@@ -317,7 +314,7 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	 *
 	 * @returns {string} - The string of values.
 	 */
-	toString(separator: string = ''): string {
+	override toString(separator: string = ''): string {
 		if (separator) {
 			return `${this.x}${separator} ${this.y}${separator} ${this.z}`
 		} else {
@@ -366,4 +363,23 @@ export abstract class XYZValues<T = any> extends Eventful() {
 	checkValue(_prop: 'x' | 'y' | 'z', _value: T): boolean {
 		return true
 	}
+
+	/**
+	 * A method that when called in a effect makes all three x/y/z properties a
+	 * dependency of the effect.
+	 */
+	asDependency = () => {
+		this.x
+		this.y
+		this.z
+	}
 }
+
+// TODO make this a decorator
+function enumerable<T extends object>(obj: T, prop: keyof T) {
+	Object.defineProperty(obj, prop, {...getInheritedDescriptor(obj, prop), enumerable: true})
+}
+
+enumerable(XYZValues.prototype, 'x')
+enumerable(XYZValues.prototype, 'y')
+enumerable(XYZValues.prototype, 'z')

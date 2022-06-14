@@ -11,13 +11,13 @@ export function WithChildren<T extends Constructor<HTMLElement>>(Base: T) {
 			this.#createObserver()
 		}
 
-		connectedCallback() {
+		override connectedCallback() {
 			super.connectedCallback?.()
 			this.#handleConnectedChildren()
 			this.#createObserver()
 		}
 
-		disconnectedCallback() {
+		override disconnectedCallback() {
 			super.disconnectedCallback?.()
 
 			this.#destroyObserver()

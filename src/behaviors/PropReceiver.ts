@@ -50,13 +50,13 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 			this._propChangedCallback = this._propChangedCallback.bind(this)
 		}
 
-		connectedCallback() {
+		override connectedCallback() {
 			super.connectedCallback && super.connectedCallback()
 			this.__forwardInitialProps()
 			this.#observeProps()
 		}
 
-		disconnectedCallback() {
+		override disconnectedCallback() {
 			super.disconnectedCallback && super.disconnectedCallback()
 			this.#unobserveProps()
 		}

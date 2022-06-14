@@ -136,7 +136,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
         // objects
         objModelElement.on(Events.MODEL_LOAD, ({ model }) => {
           console.log('%%%%%%%%%%%%%%%% modify geometry')
-            modifyGeometry(model)
+            centerAndSmoothGeometry(model)
 
             // we modified the internals the element, signal that it
             // needs an update on next render
@@ -145,7 +145,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 
     }
 
-    function modifyGeometry(obj) {
+    function centerAndSmoothGeometry(obj) {
 
         // Use Three.js APIs to traverse obj's decendants.
         obj.traverse(node => {
@@ -159,10 +159,10 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
                 // make it look smooth. See https://discourse.threejs.org/t/5531
                 // TODO, when we upgrade to Three.js r125 or higher, use this
                 // approach instead: https://discourse.threejs.org/t/5531/10
-                const tempGeometry = new LUME.THREE.Geometry().fromBufferGeometry( node.geometry );
-                tempGeometry.mergeVertices();
-                tempGeometry.computeVertexNormals();
-                node.geometry = new LUME.THREE.BufferGeometry().fromGeometry( tempGeometry );
+                // const tempGeometry = new LUME.THREE.Geometry().fromBufferGeometry( node.geometry );
+                // tempGeometry.mergeVertices();
+                // tempGeometry.computeVertexNormals();
+                // node.geometry = new LUME.THREE.BufferGeometry().fromGeometry( tempGeometry );
 
                 // IDEA: perhaps scale the geometry so it fits within the \`size\` of the node.
 

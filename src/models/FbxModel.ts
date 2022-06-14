@@ -34,7 +34,7 @@ export type FbxModelAttributes = NodeAttributes
  */
 @element('lume-fbx-model', autoDefineElements)
 export class FbxModel extends Node {
-	static defaultBehaviors = ['fbx-model']
+	static override defaultBehaviors = ['fbx-model']
 }
 
 import type {ElementAttributes} from '@lume/element'

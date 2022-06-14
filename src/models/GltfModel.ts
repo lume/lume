@@ -37,7 +37,7 @@ export type GltfModelAttributes = NodeAttributes
  */
 @element('lume-gltf-model', autoDefineElements)
 export class GltfModel extends Node {
-	static defaultBehaviors = ['gltf-model']
+	static override defaultBehaviors = ['gltf-model']
 }
 
 import type {ElementAttributes} from '@lume/element'

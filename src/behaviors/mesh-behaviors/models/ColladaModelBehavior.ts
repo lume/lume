@@ -1,11 +1,9 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {ColladaLoader} from 'three/examples/jsm/loaders/ColladaLoader.js'
+import {ColladaLoader, Collada} from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
-
-import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
@@ -22,7 +20,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.loader = new ColladaLoader()
 
 		this.createEffect(() => {
@@ -35,7 +33,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.loader = undefined
 
 		this.#cleanupModel()

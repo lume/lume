@@ -1,15 +1,13 @@
 import 'element-behaviors'
 import {reactive, attribute, booleanAttribute} from '../../attribute.js'
 import {Scene} from 'three/src/scenes/Scene.js'
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {DRACOLoader} from '../../../lib/three/examples/jsm/loaders/DRACOLoader.js'
+import {GLTFLoader, GLTF} from '../../../lib/three/examples/jsm/loaders/GLTFLoader.js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
-
-import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
@@ -42,7 +40,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.dracoLoader = new DRACOLoader()
 		this.gltfLoader = new GLTFLoader()
 		this.gltfLoader.setDRACOLoader(this.dracoLoader)
@@ -70,7 +68,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 		firstRun = false
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.gltfLoader = undefined
 		this.dracoLoader?.dispose()
 		this.dracoLoader = undefined

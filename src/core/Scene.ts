@@ -13,7 +13,6 @@ import {
 	reactive,
 } from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
-import {emits} from '@lume/eventful'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
@@ -52,6 +51,7 @@ export type SceneAttributes =
 	| 'fogFar'
 	| 'fogColor'
 	| 'fogDensity'
+	| 'physicallyCorrectLights'
 	| 'cameraNear'
 	| 'cameraFar'
 	| 'perspective'
@@ -59,7 +59,7 @@ export type SceneAttributes =
 /**
  * @class Scene -
  *
- * Element: `<lume-node>`
+ * Element: `<lume-scene>`
  *
  * This is the backing class for `<lume-scene>` elements. All
  * [`Node`](/api/core/Node.md) elements must be inside of a `<lume-scene>` element. A `Scene`
@@ -99,7 +99,7 @@ export class Scene extends ImperativeBase {
 	 * Always `true` for things that are or inherit from `Scene`.
 	 */
 	// TODO @readonly jsdoc tag
-	readonly isScene = true
+	override readonly isScene = true
 
 	/**
 	 * @property {boolean} enableCss -
@@ -120,7 +120,7 @@ export class Scene extends ImperativeBase {
 	 */
 	// TODO @attribute jsdoc tag
 	// TODO @default jsdoc tag
-	@emits('propertychange') @booleanAttribute(true) enableCss = true
+	@booleanAttribute(true) enableCss = true
 
 	/**
 	 * @property {boolean} webgl -
@@ -131,7 +131,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * When `true`, enables WebGL rendering.
 	 */
-	@emits('propertychange') @booleanAttribute(false) webgl = false
+	@booleanAttribute(false) webgl = false
 
 	/**
 	 * @property {boolean} swapLayers -
@@ -144,7 +144,7 @@ export class Scene extends ImperativeBase {
 	 * WebGL render modes are enabled. When `true`, the CSS layer will render on
 	 * top of the WebGL layer instead of below.
 	 */
-	@emits('propertychange') @booleanAttribute(false) swapLayers = false
+	@booleanAttribute(false) swapLayers = false
 
 	/**
 	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType -
@@ -160,7 +160,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute shadowmapType: ShadowMapTypeString | null = 'basic'
+	@attribute shadowmapType: ShadowMapTypeString | null = 'basic'
 
 	/**
 	 * @property {boolean} vr -
@@ -178,7 +178,7 @@ export class Scene extends ImperativeBase {
 	 * hence WebXR, but it has some limitations including low performance if
 	 * animating CSS features; we may add this feature later.
 	 */
-	@emits('propertychange') @booleanAttribute(false) vr = false
+	@booleanAttribute(false) vr = false
 
 	/**
 	 * @property {Color | string | number | null} backgroundColor -
@@ -196,7 +196,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute backgroundColor: TColor | null = new Color('white')
+	@attribute backgroundColor: TColor | null = new Color('white')
 
 	/**
 	 * @property {number} backgroundOpacity -
@@ -214,7 +214,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @numberAttribute(0) backgroundOpacity = 0
+	@numberAttribute(0) backgroundOpacity = 0
 
 	/**
 	 * @property {string | null} background -
@@ -236,7 +236,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute background: string | null = null
+	@attribute background: string | null = null
 
 	/**
 	 * @property {string} equirectangularBackground -
@@ -251,7 +251,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @booleanAttribute(false) equirectangularBackground = false
+	@booleanAttribute(false) equirectangularBackground = false
 
 	/**
 	 * @property {string | null} environment -
@@ -267,7 +267,7 @@ export class Scene extends ImperativeBase {
 	 *
 	 * Applies only if `webgl` is `true`.
 	 */
-	@emits('propertychange') @attribute environment: string | null = null
+	@attribute environment: string | null = null
 
 	/**
 	 * @property {'none' | 'linear' | 'expo2'} fogMode -
@@ -356,6 +356,22 @@ export class Scene extends ImperativeBase {
 	 * Applies only if `webgl` is `true`.
 	 */
 	@numberAttribute(0.0025) fogDensity = 0.0025
+
+	/**
+	 * @property {boolean} physicallyCorrectLights -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `false`
+	 *
+	 * Whether to use physically correct lighting mode or not. This affects only
+	 * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
+	 * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
+	 * physical example](https://threejs.org/examples/#webgl_lights_physical)
+	 * from Three.js and "physicallyCorrectLights" in the Three.js manual's
+	 * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
+	 */
+	@booleanAttribute(false) physicallyCorrectLights = false
 
 	/**
 	 * @property {number} cameraNear -
@@ -514,7 +530,7 @@ export class Scene extends ImperativeBase {
 		this.needsUpdate()
 	}
 
-	static css = /*css*/ `
+	static override css = /*css*/ `
 		:host {
 			/*
 			 * All items of the scene graph are hidden until they are mounted in
@@ -607,7 +623,7 @@ export class Scene extends ImperativeBase {
 	// Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
 	_miscLayer: HTMLDivElement | null = null
 
-	template = () => html`
+	override template = () => html`
 		<div class="container">
 			<div
 				ref=${(el: any) => (this._cssLayer = el)}
@@ -638,7 +654,7 @@ export class Scene extends ImperativeBase {
 		this.#cssRenderer && this.#cssRenderer.drawScene(this)
 	}
 
-	connectedCallback() {
+	override connectedCallback() {
 		super.connectedCallback()
 
 		this._stopFns.push(
@@ -715,14 +731,14 @@ export class Scene extends ImperativeBase {
 		)
 	}
 
-	disconnectedCallback() {
+	override disconnectedCallback() {
 		super.disconnectedCallback()
 		this.#stopParentSizeObservation()
 	}
 
-	static observedAttributes = ['slot']
+	static override observedAttributes = ['slot']
 
-	attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
+	override attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
 		super.attributeChangedCallback!(name, oldV, newV)
 
 		if (name === 'slot') {
@@ -734,11 +750,11 @@ export class Scene extends ImperativeBase {
 		}
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeScene()
 	}
 
-	makeThreeCSSObject() {
+	override makeThreeCSSObject() {
 		return new ThreeScene()
 	}
 
@@ -884,7 +900,7 @@ export class Scene extends ImperativeBase {
 	// For now, use the same program (with shaders) for all objects.
 	// Basically it has position, frag colors, point light, directional
 	// light, and ambient light.
-	_loadGL() {
+	override _loadGL() {
 		// THREE
 		// maybe keep this in sceneState in WebGLRendererThree
 		if (!super._loadGL()) return false
@@ -948,6 +964,10 @@ export class Scene extends ImperativeBase {
 				this.needsUpdate()
 			}),
 			autorun(() => {
+				this.#glRenderer!.setPhysicallyCorrectLights(this, this.physicallyCorrectLights)
+				this.needsUpdate()
+			}),
+			autorun(() => {
 				this.#glRenderer!.enableVR(this, this.vr)
 
 				if (this.vr) {
@@ -984,7 +1004,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_unloadGL() {
+	override _unloadGL() {
 		if (!super._unloadGL()) return false
 
 		if (this.#glRenderer) {
@@ -1005,7 +1025,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_loadCSS() {
+	override _loadCSS() {
 		if (!super._loadCSS()) return false
 
 		this.#cssRenderer = this.#getCSSRenderer('three')
@@ -1015,7 +1035,7 @@ export class Scene extends ImperativeBase {
 		return true
 	}
 
-	_unloadCSS() {
+	override _unloadCSS() {
 		if (!super._unloadCSS()) return false
 
 		if (this.#cssRenderer) {

@@ -15,13 +15,12 @@ export type DirectionalLightAttributes =
 	| 'shadowCameraNear'
 	| 'shadowCameraFar'
 
+// TODO @element jsdoc tag
 /**
  * @element lume-directional-light
  * @class DirectionalLight -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * The DirectionalLight class is the implementation behind
- * `<lume-directional-light>` elements.
+ * Element: `<lume-directional-light>`
  *
  * This creates light with a particular direction all over the world. Think of
  * it like a point light infinitely (or very) far away, and the emitted light
@@ -48,6 +47,20 @@ export type DirectionalLightAttributes =
  */
 @element('lume-directional-light', autoDefineElements)
 export class DirectionalLight extends Light {
+	/**
+	 * @property {number} intensity -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `1`
+	 *
+	 * The intensity of the light.
+	 *
+	 * The intensity of this element does not change behavior when [physically
+	 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
+	 */
+	@numberAttribute(1) intensity: number = 1
+
 	@booleanAttribute(true) castShadow = true
 
 	// These map to THREE.DirectionalLightShadow properties.
@@ -63,7 +76,7 @@ export class DirectionalLight extends Light {
 	@numberAttribute(1) shadowCameraBottom = -1000
 	@numberAttribute(1) shadowCameraLeft = -1000
 
-	_loadGL() {
+	override _loadGL() {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
@@ -96,7 +109,7 @@ export class DirectionalLight extends Light {
 		return true
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		return new ThreeDirectionalLight()
 	}
 }

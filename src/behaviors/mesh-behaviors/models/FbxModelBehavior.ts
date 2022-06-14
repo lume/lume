@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
+import {FBXLoader} from '../../../lib/three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
@@ -22,7 +22,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		this.loader = new FBXLoader()
 
 		this.createEffect(() => {
@@ -35,7 +35,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 		})
 	}
 
-	unloadGL() {
+	override unloadGL() {
 		this.loader = undefined
 
 		this.#cleanupModel()

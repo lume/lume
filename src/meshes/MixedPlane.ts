@@ -8,7 +8,7 @@ export type MixedPlaneAttributes = MeshAttributes
 /** See MixedPlaneGeometryBehavior and MixedPlaneMaterialBehavior for available properties. */
 @element('lume-mixed-plane', autoDefineElements)
 export class MixedPlane extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'mixedplane-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},

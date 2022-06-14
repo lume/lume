@@ -40,7 +40,7 @@ export type ColladaModelAttributes = NodeAttributes
  */
 @element('lume-collada-model', autoDefineElements)
 export class ColladaModel extends Node {
-	static defaultBehaviors = ['collada-model']
+	static override defaultBehaviors = ['collada-model']
 }
 
 import type {ElementAttributes} from '@lume/element'

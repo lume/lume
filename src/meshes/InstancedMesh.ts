@@ -145,7 +145,7 @@ export class InstancedMesh extends Mesh {
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.
-	static defaultBehaviors: {[k: string]: any} = {
+	static override defaultBehaviors: {[k: string]: any} = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},
@@ -154,7 +154,7 @@ export class InstancedMesh extends Mesh {
 		},
 	}
 
-	makeThreeObject3d() {
+	override makeThreeObject3d() {
 		let geometryBehavior: GeometryBehavior | null = null
 		let materialBehavior: MaterialBehavior | null = null
 
@@ -312,7 +312,7 @@ export class InstancedMesh extends Mesh {
 		// }
 	}
 
-	_loadGL(): boolean {
+	override _loadGL(): boolean {
 		if (!super._loadGL()) return false
 
 		this._glStopFns.push(
@@ -341,13 +341,13 @@ export class InstancedMesh extends Mesh {
 		return true
 	}
 
-	needsUpdate() {
+	override needsUpdate() {
 		this.three.instanceMatrix.needsUpdate = true
 		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
 		super.needsUpdate()
 	}
 
-	update(t: number, dt: number) {
+	override update(t: number, dt: number) {
 		super.update(t, dt)
 		this.updateInstances()
 	}

@@ -1,24 +1,49 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
+import {PLYLoader} from '../../../lib/three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {Points} from '../../../meshes/Points.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
+/**
+ * @class PlyGeometryBehavior -
+ *
+ * Behavior: `ply-geometry`
+ *
+ * This is useful for rendering a set of points from a `.ply` file.
+ *
+ * Given a `src` attribute that points to a `.ply` file, the behavior will load
+ * a set of points from the file to use as geometry.
+ *
+ * It can be useful to use this behavior on a
+ * [`<lume-points>`](../../../meshes/Points) element, which has a
+ * [`points-material`](../materials/PointsMaterialBehavior) behavior for
+ * configuring how points are rendered.
+ *
+ * @extends GeometryBehavior
+ */
 @reactive
 export class PlyGeometryBehavior extends GeometryBehavior {
-	/** Path to a .ply file. */
+	/**
+	 * @property {string} src
+	 *
+	 * `string` `attribute`
+	 *
+	 * Default: `''`
+	 *
+	 * Path to a `.ply` file to load points from.
+	 */
 	@stringAttribute('') src = ''
 
-	loader?: PLYLoader
-	model?: BufferGeometry
+	loader: PLYLoader | null = null
+	@reactive model: BufferGeometry | null = null
 
-	requiredElementType(): [typeof Points] {
+	override requiredElementType(): [typeof Points] {
 		return [Points]
 	}
 
-	_createComponent() {
+	override _createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.
 		if (!this.model) return new BufferGeometry()
 		return this.model
@@ -29,7 +54,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	// result when a version change has happened.
 	#version = 0
 
-	loadGL() {
+	override loadGL() {
 		super.loadGL()
 
 		this.loader = new PLYLoader()
@@ -37,6 +62,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		this.createEffect(() => {
 			this.src
 
+			// TODO use onCleanup in for all cleanupModel methods of loader behaviors
 			this.#cleanupModel()
 
 			this.#version++
@@ -44,10 +70,8 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		})
 	}
 
-	unloadGL() {
-		super.unloadGL()
-
-		this.loader = undefined
+	override unloadGL() {
+		this.loader = null
 
 		this.#cleanupModel()
 
@@ -56,8 +80,9 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	#cleanupModel() {
-		// if (this.model) disposeObjectTree(this.model)
-		this.model = undefined
+		// Note that dispose is already called in the super.resetMeshComponent process.
+		// TODO This causes the geometry to be removed while loading a new one. Perhaps we should not do that.
+		this.model = null
 	}
 
 	#loadModel() {
@@ -70,8 +95,6 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
-
-		console.log('load the model!')
 
 		this.loader!.load(
 			src,
@@ -92,9 +115,8 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 
 	#setModel(model: BufferGeometry) {
-		this.model = model
-		this.model.computeVertexNormals()
-		this.resetMeshComponent()
+		model.computeVertexNormals()
+		this.model = model // triggers the resetMeshComponent effect
 		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
 	}
 }

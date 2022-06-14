@@ -6,7 +6,7 @@ export type RoundedRectangleAttributes = MeshAttributes
 
 @element('lume-rounded-rectangle', autoDefineElements)
 export class RoundedRectangle extends Mesh {
-	static defaultBehaviors = {
+	static override defaultBehaviors = {
 		'rounded-rectangle-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
 		},

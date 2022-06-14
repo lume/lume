@@ -35,26 +35,7 @@ export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 		else this.#quadraticCorners = true
 	}
 
-	loadGL() {
-		super.loadGL()
-
-		// XXX, if using createEffect() within loadGL ends up being too common,
-		// we can make a pattern to abstract it away (similar to what we do with
-		// template() in lume/element elements, or perhaps with a decorator).
-		this.createEffect(() => {
-			this.cornerRadius
-			this.thickness
-			this.quadraticCorners
-
-			// TODO PERFORMANCE This `resetMeshComponent` call recreates the
-			// whole mesh. We should instead try to update it without replacing
-			// it, so that we don't dispose the geometry and material on each
-			// property update.
-			this.resetMeshComponent()
-		})
-	}
-
-	_createComponent() {
+	override _createComponent() {
 		let thickness = this.thickness
 		let geom: BufferGeometry
 

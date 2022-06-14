@@ -29,7 +29,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	// objects in the same structure as the DOM composed tree so that it will
 	// render as expected when end users compose elements with ShadowDOM and
 	// slots.
-	attachShadow(options: ShadowRootInit): ShadowRoot {
+	override attachShadow(options: ShadowRootInit): ShadowRoot {
 		const root = super.attachShadow(options)
 
 		// Skip ShadowRoot observation for Scene instances. Only Scene actual
@@ -67,7 +67,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	// from Node
 	isNode = false
 
-	childConnectedCallback(child: HTMLElement) {
+	override childConnectedCallback(child: HTMLElement) {
 		// This code handles two cases: the element has a ShadowRoot
 		// ("composed children" are children of the ShadowRoot), or it has a
 		// <slot> child ("composed children" are nodes that may be
@@ -130,7 +130,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 		}
 	}
 
-	childDisconnectedCallback(child: HTMLElement) {
+	override childDisconnectedCallback(child: HTMLElement) {
 		if (isNode(child)) {
 			if (!this.isScene && this.__shadowRoot) {
 				child.__isPossiblyDistributedToShadowRoot = false
@@ -150,7 +150,7 @@ export class DeclarativeBase extends DefaultBehaviors(WithChildren(LumeElement))
 	}
 
 	// TODO: make setAttribute accept non-string values.
-	setAttribute(attr: string, value: any) {
+	override setAttribute(attr: string, value: any) {
 		super.setAttribute(attr, value)
 	}
 

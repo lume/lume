@@ -1,6 +1,9 @@
 // Work started at https://discourse.threejs.org/t/12503/35
 
-import {Camera, Object3D, Renderer, Scene as ThreeScene, WebGLRenderer} from 'three'
+import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
+import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
+
+import type {Camera, Object3D, Renderer} from 'three'
 
 /**
  * Allows rendering objects into one ore more visual layers that are stacked on

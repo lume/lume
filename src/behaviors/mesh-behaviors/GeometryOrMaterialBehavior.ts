@@ -1,4 +1,4 @@
-// import {reactive, untrack} from '@lume/variable'
+import {untrack, onCleanup} from 'solid-js'
 import {MeshBehavior, MeshComponentType} from './MeshBehavior.js'
 
 import type {Material} from 'three/src/materials/Material.js'
@@ -13,32 +13,21 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
  *
  * @extends MeshBehavior
  */
-
-// @reactive
 export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	abstract type: MeshComponentType
 
-	loadGL() {
-		this.resetMeshComponent()
-		this.element.needsUpdate()
-	}
-
-	unloadGL() {
-		this.#disposeMeshComponent()
-		this.element.needsUpdate()
+	override loadGL() {
+		this.createEffect(() => this.resetMeshComponent())
 	}
 
 	resetMeshComponent(): void {
-		// Reactivity enables the remove of the following TODO. So nice. No deferring, just use what you need (f.e. calculatedSize).
-		// TODO We might have to defer so that calculatedSize is already calculated
-		// (note, this method is called when the size or sizeMode prop of subclasses has
-		// changed)
-		this.#disposeMeshComponent()
 		this.#setMeshComponent()
 		this.element.needsUpdate()
+
+		onCleanup(this.#disposeMeshComponent)
 	}
 
-	_createComponent(): BufferGeometry | Material {
+	override _createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
@@ -48,7 +37,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	// TODO
 	// #initialSize: null,
 
-	#disposeMeshComponent() {
+	#disposeMeshComponent = () => {
 		// TODO handle material arrays
 		this.meshComponent?.dispose()
 		this.meshComponent = undefined
@@ -56,8 +45,13 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 
 	#setMeshComponent() {
 		const newComponent = this._createComponent()
-		// @ts-expect-error not type safe, but shows what we intend
-		this.element.three[this.type] = newComponent
+
+		// untrack in case we make .three reactive later
+		untrack(() => {
+			// @ts-expect-error not type safe, but shows what we intend
+			this.element.three[this.type] = newComponent
+		})
+
 		// @ts-expect-error
 		this.meshComponent = newComponent
 	}
