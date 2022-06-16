@@ -78,7 +78,7 @@
 		"website": "(npm run docs:serve & p1=$!; npm run website:serve & p2=$!; wait $p1 $p2)",
 		"website:serve": "cd apps/website && meteor",
 		"website:reinstall": "cd apps/website && rimraf node_modules && npm install",
-		"website:publish": "npm run website:reinstall && cd apps/website && meteor deploy lume.meteorapp.com --free --mongo && cd ../../ && npm run docs:publish",
+		"website:publish": "npm run website:reinstall && cd apps/website && meteor deploy lume.meteorapp.com --free --mongo",
 		"// DOCS XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"// docs TODO": "build docs into a separate folder instead of moving files in.",
 		"docs:build": "npm run docs:clean && npm run docs:copy && npm run docs:link && node --input-type module < ./scripts/build-docs.js",
