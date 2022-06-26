@@ -198,7 +198,11 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 			// Do we need this?
 			onCleanup(() => {
-				const mat = this.meshComponent!
+				const mat = this.meshComponent
+
+				// If the whole behavior was cleaned up, mat will be undefined
+				// here due to #disposeMeshComponent in the base class onCleanup
+				if (!mat) return
 
 				mat.camera = new OrthographicCamera(0.00000001, 0.00000001, 0.00000001, 0.00000001)
 				mat.updateFromCamera()
