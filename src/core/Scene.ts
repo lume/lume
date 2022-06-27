@@ -26,12 +26,17 @@ import {defer} from './utils.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
+import {version} from '../index.js' // TODO replace with version.ts
 
 import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Node} from './Node.js'
+
+const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
+
+queueMicrotask(() => console.info(magic()))
 
 export type SceneAttributes =
 	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
@@ -656,6 +661,8 @@ export class Scene extends ImperativeBase {
 
 	override connectedCallback() {
 		super.connectedCallback()
+
+		this.shadowRoot!.prepend(new Comment(magic()))
 
 		this._stopFns.push(
 			autorun(() => {
