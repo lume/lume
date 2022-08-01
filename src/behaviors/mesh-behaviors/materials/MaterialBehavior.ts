@@ -82,7 +82,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		else this.#color = val
 	}
 
-	#color = new Color('deeppink')
+	#color = new Color('white')
 
 	get transparent(): boolean {
 		if (this.element.opacity < 1 || this.materialOpacity < 1) return true
