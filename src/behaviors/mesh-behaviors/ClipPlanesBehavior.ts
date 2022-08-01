@@ -216,8 +216,8 @@ export class ClipPlanesBehavior extends MeshBehavior {
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
-					if (!plane.clip) continue
-					mat.clippingPlanes.push(flipClip ? plane.inverseClip : plane.clip)
+					if (!plane.__clip) continue
+					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
 				}
 			})
 		})

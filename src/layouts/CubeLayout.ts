@@ -1,8 +1,10 @@
-import {element} from '@lume/element'
-import {Node} from '../core/Node.js'
+import {element, ElementAttributes} from '@lume/element'
+import {Node, NodeAttributes} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
+
+type CubeLayoutAttributes = NodeAttributes
 
 /**
  * @extends Node
@@ -107,5 +109,19 @@ export class CubeLayout extends Node {
 		}
 
 		return this
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-cube-layout': ElementAttributes<CubeLayout, CubeLayoutAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-cube-layout': CubeLayout
 	}
 }

@@ -1,14 +1,17 @@
 // Useful info on THREE.Plane not covered in Three.js docs:
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
-import {booleanAttribute, element, reactive, stringAttribute} from '@lume/element'
+import {booleanAttribute, element, ElementAttributes, reactive, stringAttribute} from '@lume/element'
 import {createEffect, createRoot} from 'solid-js'
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
-import {Node} from '../core/Node.js'
+import {Node, NodeAttributes} from '../core/Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial'
 import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
+
+type TextureProjectorAttributes = NodeAttributes | 'src' | 'fitment'
+// | 'frontFacesOnly'
 
 /**
  * @class TextureProjector
@@ -163,5 +166,19 @@ export class TextureProjector extends Node {
 		this._camera = null
 
 		return true
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-texture-projector': ElementAttributes<TextureProjector, TextureProjectorAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-texture-projector': TextureProjector
 	}
 }

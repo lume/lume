@@ -1,17 +1,19 @@
 // Useful info on THREE.Plane not covered in Three.js docs:
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
-import {element} from '@lume/element'
+import {element, ElementAttributes} from '@lume/element'
 import {Plane} from 'three/src/math/Plane.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {createSignal} from 'solid-js'
-import {Node} from './Node.js'
+import {Node, NodeAttributes} from './Node.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 // Make the clip plane clip anything in front of it (towards the default
 // camera). Three.js clips anything along -Z, so we negate Z to clip along +Z
 // towards the camera by default.
 const clipNormal: [number, number, number] = [0, 0, -1]
+
+type ClipPlaneAttributes = NodeAttributes
 
 /**
  * @class ClipPlane
@@ -42,19 +44,25 @@ export class ClipPlane extends Node {
 	#plane = createSignal<Plane | null>(null)
 	#inversePlane = createSignal<Plane | null>(null)
 
+	// The __clip and __inverseClip properties are used by `ClipPlanesBehavior`
+
 	/**
-	 * @-property {THREE.Plane | null} clip
-	 *
 	 * *reactive* *readonly*
 	 *
 	 * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
 	 * for the scene and the element participates in rendering.
 	 */
-	get clip(): Readonly<Plane> | null {
+	get __clip(): Readonly<Plane> | null {
 		return this.#plane[0]()
 	}
 
-	get inverseClip(): Readonly<Plane> | null {
+	/**
+	 * *reactive* *readonly*
+	 *
+	 * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
+	 * for the scene and the element participates in rendering.
+	 */
+	get __inverseClip(): Readonly<Plane> | null {
 		return this.#inversePlane[0]()
 	}
 
@@ -89,5 +97,19 @@ export class ClipPlane extends Node {
 		// Clip planes are world-positioned.
 		plane.applyMatrix4(this.three.matrixWorld)
 		inverse.applyMatrix4(this.three.matrixWorld)
+	}
+}
+
+declare module '@lume/element' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'lume-clip-plane': ElementAttributes<ClipPlane, ClipPlaneAttributes>
+		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-clip-plane': ClipPlane
 	}
 }

@@ -115,24 +115,31 @@ import type {
 	ElementWithBehaviors,
 	ClipPlanesBehavior,
 	ClipPlanesBehaviorAttributes,
+	PhysicalMaterialBehavior,
+	PhysicalMaterialBehaviorAttributes,
+	StandardMaterialBehavior,
+	StandardMaterialBehaviorAttributes,
 } from '../index.js'
 
-export interface Mesh
-	extends ElementWithBehaviors<
-		PhongMaterialBehavior & LambertMaterialBehavior & ClipPlanesBehavior,
-		PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes | ClipPlanesBehaviorAttributes
-	> {}
+type BehaviorInstanceTypes = PhongMaterialBehavior &
+	LambertMaterialBehavior &
+	StandardMaterialBehavior &
+	PhysicalMaterialBehavior &
+	ClipPlanesBehavior
+
+type BehaviorAttributes =
+	| PhongMaterialBehaviorAttributes
+	| LambertMaterialBehaviorAttributes
+	| StandardMaterialBehaviorAttributes
+	| PhysicalMaterialBehaviorAttributes
+	| ClipPlanesBehaviorAttributes
+
+export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-mesh': ElementAttributes<
-				Mesh & PhongMaterialBehavior & LambertMaterialBehavior & ClipPlanesBehavior,
-				| MeshAttributes
-				| PhongMaterialBehaviorAttributes
-				| LambertMaterialBehaviorAttributes
-				| ClipPlanesBehaviorAttributes
-			>
+			'lume-mesh': ElementAttributes<Mesh & BehaviorInstanceTypes, MeshAttributes | BehaviorAttributes>
 		}
 	}
 }
