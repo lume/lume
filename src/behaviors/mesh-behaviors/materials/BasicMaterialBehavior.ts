@@ -1,16 +1,17 @@
-import {stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
+import {stringAttribute, reactive} from '../../attribute.js'
 import {MeshBasicMaterial} from 'three/src/materials/MeshBasicMaterial.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 
+@reactive
 export class BasicMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') texture = ''
 	@stringAttribute('') specularMap = ''
 
 	override _createComponent() {
-		return new MeshBasicMaterial({color: 0x00ff00})
+		return new MeshBasicMaterial()
 	}
 
 	override loadGL() {

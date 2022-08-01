@@ -1,4 +1,4 @@
-import {stringAttribute} from '../../attribute.js'
+import {stringAttribute, reactive} from '../../attribute.js'
 import 'element-behaviors'
 import {MeshLambertMaterial} from 'three/src/materials/MeshLambertMaterial.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
@@ -26,6 +26,7 @@ export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'te
  *
  * @extends MaterialBehavior
  */
+@reactive
 export class LambertMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') texture = ''
 	@stringAttribute('') specularMap = ''
