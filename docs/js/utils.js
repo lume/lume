@@ -604,10 +604,7 @@ function miniGalaxyDemo() {
 			scene.addEventListener('pointermove', event => {
 				// Rotate the image a little bit too.
 				container.rotation.y = (event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount
-				container.rotation.x = -(
-					(event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) -
-					rotationAmount
-				)
+				container.rotation.x = -((event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount)
 			})
 		</script>
 	`)
@@ -652,13 +649,7 @@ function pointLightExample() {
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
 			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
-				<lume-plane
-					color="white"
-					size="1500 1500"
-					align-point="0.5 0.5"
-					mount-point="0.5 0.5"
-					rotation="0 0 30"
-				>
+				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
 					<!-- A point in space where light emanates from. -->
@@ -710,13 +701,7 @@ function directionalLightExample() {
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
 			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
-				<lume-plane
-					color="white"
-					size="1500 1500"
-					align-point="0.5 0.5"
-					mount-point="0.5 0.5"
-					rotation="0 0 30"
-				>
+				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
 					<!-- A point in space that determines direction of an infinitely-far source of light. -->
@@ -740,11 +725,7 @@ function directionalLightExample() {
 
 					<!-- Add an interactive camera viewpoint. -->
 					<lume-node align-point="0.5 0.5" rotation="-90 0 0">
-						<lume-camera-rig
-							initial-polar-angle="30"
-							min-polar-angle="5"
-							initial-distance="500"
-						></lume-camera-rig>
+						<lume-camera-rig initial-polar-angle="30" min-polar-angle="5" initial-distance="500"></lume-camera-rig>
 					</lume-node>
 				</lume-plane>
 			</lume-node>
@@ -1168,8 +1149,7 @@ const shapesExample = stripIndent(html`
 			<fieldset>
 				<legend>Shape</legend>
 				<label>
-					<input type="radio" name="shape" value="hearts" checked onchange="updateShape(event)" />&nbsp;
-					Hearts
+					<input type="radio" name="shape" value="hearts" checked onchange="updateShape(event)" />&nbsp; Hearts
 				</label>
 				<br />
 				<label>
@@ -1177,13 +1157,10 @@ const shapesExample = stripIndent(html`
 				</label>
 				<br />
 				<label>
-					<input type="radio" name="shape" value="trapezoids" onchange="updateShape(event)" />&nbsp;
-					Trapezoids
+					<input type="radio" name="shape" value="trapezoids" onchange="updateShape(event)" />&nbsp; Trapezoids
 				</label>
 				<br />
-				<label>
-					<input type="radio" name="shape" value="stars" onchange="updateShape(event)" />&nbsp; Stars
-				</label>
+				<label> <input type="radio" name="shape" value="stars" onchange="updateShape(event)" />&nbsp; Stars </label>
 			</fieldset>
 		</fieldset>
 	</div>
@@ -1441,12 +1418,7 @@ const originExample = stripIndent(html`
 					color="skyblue"
 					opacity="0.5"
 				>
-					<lume-sphere
-						align-point=\${origin}
-						size="10 10 10"
-						mount-point="0.5 0.5 0.5"
-						color="deeppink"
-					></lume-sphere>
+					<lume-sphere align-point=\${origin} size="10 10 10" mount-point="0.5 0.5 0.5" color="deeppink"></lume-sphere>
 				</lume-box>
 			\`
 
@@ -1643,11 +1615,7 @@ const perspectiveCameraExample = stripIndent(html`
 
 		<lume-scene id="scene" webgl perspective="800" touch-action="none">
 			<!-- This node visualizes the size of the default viewing area. -->
-			<lume-node
-				size-mode="proportional proportional"
-				size="1 1"
-				style="border: 5px solid royalblue;"
-			></lume-node>
+			<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
 
 			<lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera>
 
@@ -1799,11 +1767,7 @@ const cameraRigExample = stripIndent(html`
 
 		<lume-scene id="scene" webgl perspective="800" touch-action="none">
 			<!-- This node visualizes the size of the default viewing area. -->
-			<lume-node
-				size-mode="proportional proportional"
-				size="1 1"
-				style="border: 5px solid royalblue;"
-			></lume-node>
+			<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
 
 			<!-- <lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera> -->
 			<lume-camera-rig
@@ -1874,12 +1838,7 @@ const cameraRigVerticalRotationExample = stripIndent(html`
 				max-polar-angle="45"
 				initial-distance="500"
 			>
-				<lume-point-light
-					slot="camera-child"
-					color="white"
-					intensity="0.9"
-					position="120 120 120"
-				></lume-point-light>
+				<lume-point-light slot="camera-child" color="white" intensity="0.9" position="120 120 120"></lume-point-light>
 			</lume-camera-rig>
 		</lume-box>
 	</lume-scene>

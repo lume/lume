@@ -93,8 +93,6 @@ const ShimmerCube = element('shimmer-cube')(
 				)}
 				<!-- </lume-node> -->
 			`
-
-			// root.querySelector('lume-box').three.material.opacity = 0.2
 		}
 	},
 )

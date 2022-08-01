@@ -33,6 +33,9 @@
         size="0 0 0"
         cast-shadow="true"
         intensity="0.8"
+        shadow-radius="2"
+        distance="800"
+        shadow-bias="-0.001"
         >
     </lume-point-light>
     <lume-rounded-rectangle
@@ -45,6 +48,8 @@
         size="100 100 100"
         position="55"
         color="skyblue"
+        Xsidedness="double"
+        Xwireframe
     >
     </lume-rounded-rectangle>
     <lume-rounded-rectangle
@@ -76,15 +81,6 @@
 
     rect1.rotation = (x, y) => [0, ++y, 0]
     rect2.rotation = (x, y) => [0, ++y, 0]
-
-    scene.on(LUME.Events.GL_LOAD, async () => {
-        light.three.shadow.radius = 2
-        light.three.distance = 800
-        light.three.shadow.bias = -0.001
-
-        // rect1.three.material.side = THREE.DoubleSide
-        // rect1.three.material.wireframe = true
-    })
 <\/script>
 
 `

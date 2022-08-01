@@ -72,6 +72,7 @@
     <lume-node rotation="90 10 0">
       <lume-node id="moonRotator" rotation="0 0 110">
         <lume-sphere
+          id="moon"
           texture="${location.origin+location.pathname}examples/hello-world/moon.jpg"
           position="250"
           size="5 5 5"
