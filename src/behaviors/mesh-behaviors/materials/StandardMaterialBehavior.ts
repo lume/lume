@@ -9,6 +9,9 @@ export type StandardMaterialBehaviorAttributes =
 	| 'aoMapIntensity'
 	| 'bumpMap'
 	| 'bumpScale'
+	| 'displacementMap'
+	| 'displacementScale'
+	| 'displacementBias'
 	| 'texture' // map
 	| 'normalMap'
 	| 'normalScale'
@@ -22,16 +25,14 @@ export type StandardMaterialBehaviorAttributes =
 
 @reactive
 export class StandardMaterialBehavior extends MaterialBehavior {
-	// TODO
-
 	// alphaMap?: Texture | null;
 	@stringAttribute('') aoMap = ''
 	@numberAttribute(1) aoMapIntensity = 1
 	@stringAttribute('') bumpMap = ''
 	@numberAttribute(1) bumpScale = 1
-	// displacementMap?: Texture | null;
-	// @numberAttribute(1) displacementScale?: number
-	// @numberAttribute(1) displacementBias?: number
+	@stringAttribute('') displacementMap = ''
+	@numberAttribute(1) displacementScale = 1
+	@numberAttribute(0) displacementBias = 0
 	// emissive?: Color | string | number;
 	// envMap?: Texture | null;
 	// @numberAttribute(1) envMapIntensity?: number
@@ -71,6 +72,8 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 
 			mat.aoMapIntensity = this.aoMapIntensity
 			mat.bumpScale = this.bumpScale
+			mat.displacementScale = this.displacementScale
+			mat.displacementBias = this.displacementBias
 			mat.normalScale.set(this.normalScale, this.normalScale)
 			mat.metalness = this.metalness
 			// mat.morphNormals = this.morphNormals
@@ -93,6 +96,11 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 			() => this.bumpMap,
 			(mat, tex) => (mat.bumpMap = tex),
 			mat => !!mat.bumpMap,
+		)
+		this._handleTexture(
+			() => this.displacementMap,
+			(mat, tex) => (mat.displacementMap = tex),
+			mat => !!mat.displacementMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
