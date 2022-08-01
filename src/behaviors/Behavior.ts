@@ -18,10 +18,10 @@ type ElementTypes<T extends Constructor[]> = ArrayValues<ElementTypeArrayToInstA
  * Base class for all LUME behaviors.
  *
  * Features:
- * - Sets `awaitElementDefined` to `true`, which causes `elementBehaviors` to wait until the behavior's host element is upgraded if it might be a custom element (i.e. when the host element has a hyphen in its name).
+ * - Sets `static awaitElementDefined` to `true`, which causes `elementBehaviors` to wait until the behavior's host element is upgraded if it might be a custom element (i.e. when the host element has a hyphen in its name).
  * - Assigns the host element onto `this.element` for convenience.
- * - Calls a subclass's requiredElementType method which should return the type (constructor) of allowed elements that the behavior can be hosted on. If the element is not instanceof the requiredElementType(), then an error is shown in console. For TypeScript users, it enforces the type `element` in subclass code.
- * - Forwards the properties specified in `receivedProperties` from `observedObject` to `this` any time `receivedProperties` on `observedObject` change. Useful for forwarding JS properties from the host element to the behavior.
+ * - Calls a subclass's `requiredElementType` method which should return the type (constructor) of allowed elements that the behavior can be hosted on. If the element is not instanceof the `requiredElementType()`, then an error is shown in console. For TypeScript users, it enforces the type of `.element` in subclass code.
+ * - Forwards the properties specified in `receivedProperties` from `observedObject` to `this` any time `receivedProperties` on `observedObject` change. Useful for forwarding JS properties from the host element to the behavior. This functionality comes from the [`PropReceiver`](./PropReceiver) class.
  *
  * @extends PropReceiver
  */
@@ -30,7 +30,7 @@ export abstract class Behavior extends PropReceiver() {
 	// before running "connectedCallback" or "disconnectedCallback" on the
 	// behavior. This guarantees that the host element is already upgraded
 	// before the life cycle hooks run.
-	awaitElementDefined = true
+	static awaitElementDefined = true
 
 	element: ElementTypes<ReturnType<this['requiredElementType']>>
 

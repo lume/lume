@@ -1,3 +1,4 @@
+import {reactive} from '@lume/element'
 import {RenderableBehavior} from '../RenderableBehavior.js'
 import {Mesh} from '../../meshes/Mesh.js'
 import {Points} from '../../meshes/Points.js'
@@ -12,6 +13,7 @@ export type MeshComponentType = 'geometry' | 'material'
  *
  * @extends RenderableBehavior
  */
+@reactive
 export abstract class MeshBehavior extends RenderableBehavior {
 	override requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh)[] {
 		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
@@ -20,10 +22,20 @@ export abstract class MeshBehavior extends RenderableBehavior {
 		return [Mesh, Points, InstancedMesh]
 	}
 
+	/**
+	 * Subclasses override this to create either a Material or a BufferGeometry.
+	 * It is reactive, any reactive dependencies used in here will cause
+	 * re-creation of the instance. Use `untrack` for cases where a dependency
+	 * should not re-create the instance (in that case an additional effect may
+	 * update the instance instead).
+	 */
 	_createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}
 
-	// TODO make it reactive so that effects can update when meshComponent changes declaratively, instead of imperatively
-	meshComponent?: ReturnType<this['_createComponent']>
+	/**
+	 * The component that this behavior manages, either a Material, or a
+	 * BufferGeometry.
+	 */
+	@reactive meshComponent: ReturnType<this['_createComponent']> | null = null
 }

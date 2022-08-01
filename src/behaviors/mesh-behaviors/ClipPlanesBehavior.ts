@@ -1,3 +1,4 @@
+import {createEffect} from 'solid-js'
 import {stringAttribute, reactive, booleanAttribute} from '../attribute.js'
 import {ClipPlane} from '../../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
@@ -158,72 +159,75 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 */
 	@booleanAttribute(false) clipDisabled = false
 
+	/**
+	 * `reactive`
+	 */
 	get material() {
-		return (this.element.behaviors.find(name => name.endsWith('-material')) as MaterialBehavior).meshComponent
+		const mat = this.element.behaviors.find(name => name.endsWith('-material')) as MaterialBehavior | null
+		return mat?.meshComponent ?? null
 	}
 
 	#observer: MutationObserver | null = null
 
 	override loadGL() {
-		if (!refCount) this.element.scene!.__localClipping = true
-		refCount++
-
-		// loadGL may fire during parsing before children exist. This
-		// MutationObserver will also fire during parsing. This allows us to
-		// re-run the query logic whenever DOM in the current root changes.
-		//
-		// TODO we need to observe all the way up the composed tree, or we
-		// should make the querying scoped only to the nearest root, for
-		// consistency. This covers most cases, for now.
-		this.#observer = new MutationObserver(() => {
-			// TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
-			// This triggers the setter logic.
-			this.clipPlanes = this.#rawClipPlanes
-		})
-
-		this.#observer.observe(this.element.getRootNode(), {childList: true, subtree: true})
-
 		this.createEffect(() => {
-			const {clipPlanes, clipShadows, flipClip} = this
+			if (!this.element.scene) return
 
-			// TODO CLIP PLANES REACTIVITY HACK, this is not reactive, so if
-			// a material is added later, this won't re-run.
-			// MaterialBehavior triggers reactivity, for now, in case this behavior is
-			// added to an element.
-			// What we need to do is make this.element.behaviors[name].meshComponent reactive
-			const mat = this.material
-			if (!mat) return
+			if (!refCount) this.element.scene.__localClipping = true
+			refCount++
 
-			this.element.needsUpdate()
+			// loadGL may fire during parsing before children exist. This
+			// MutationObserver will also fire during parsing. This allows us to
+			// re-run the query logic whenever DOM in the current root changes.
+			//
+			// TODO we need to observe all the way up the composed tree, or we
+			// should make the querying scoped only to the nearest root, for
+			// consistency. This covers most cases, for now.
+			this.#observer = new MutationObserver(() => {
+				// TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
+				// This triggers the setter logic.
+				this.clipPlanes = this.#rawClipPlanes
+			})
 
-			if (!clipPlanes.length || this.clipDisabled) {
-				mat.clippingPlanes = null
+			this.#observer.observe(this.element.getRootNode(), {childList: true, subtree: true})
 
-				// FIXME upstream: don't forget this or Three.js has a bug that
-				// still attempts to perform clipping even if clippingPlanes is
-				// null. https://github.com/munrocket/three.js/pull/5
-				mat.clipShadows = false
+			createEffect(() => {
+				const {clipPlanes, clipShadows, flipClip} = this
 
-				return
-			}
+				const mat = this.material
+				if (!mat) return
 
-			if (!mat.clippingPlanes) {
-				mat.clippingPlanes = []
-			}
+				this.element.needsUpdate()
 
-			mat.clippingPlanes.length = 0
-			mat.clipShadows = clipShadows
+				if (!clipPlanes.length || this.clipDisabled) {
+					mat.clippingPlanes = null
 
-			for (const plane of clipPlanes) {
-				if (!plane.clip) continue
-				mat.clippingPlanes.push(flipClip ? plane.inverseClip : plane.clip)
-			}
+					// FIXME upstream: don't forget this or Three.js has a bug that
+					// still attempts to perform clipping even if clippingPlanes is
+					// null. https://github.com/munrocket/three.js/pull/5
+					mat.clipShadows = false
+
+					return
+				}
+
+				if (!mat.clippingPlanes) mat.clippingPlanes = []
+
+				mat.clippingPlanes.length = 0
+				mat.clipShadows = clipShadows
+
+				for (const plane of clipPlanes) {
+					if (!plane.clip) continue
+					mat.clippingPlanes.push(flipClip ? plane.inverseClip : plane.clip)
+				}
+			})
 		})
 	}
 
 	override unloadGL() {
+		if (!this.element.scene) return
+
 		refCount--
-		if (!refCount) this.element.scene!.__localClipping = false
+		if (!refCount) this.element.scene.__localClipping = false
 
 		this.#observer?.disconnect()
 		this.#observer = null

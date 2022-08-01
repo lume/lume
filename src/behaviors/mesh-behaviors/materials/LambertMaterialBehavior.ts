@@ -40,13 +40,13 @@ export class LambertMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.texture,
-			tex => (this.meshComponent!.map = tex),
-			() => !!this.meshComponent!.map,
+			(mat, tex) => (mat.map = tex),
+			mat => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.specularMap,
-			tex => (this.meshComponent!.specularMap = tex),
-			() => !!this.meshComponent!.specularMap,
+			(mat, tex) => (mat.specularMap = tex),
+			mat => !!mat.specularMap,
 		)
 	}
 }

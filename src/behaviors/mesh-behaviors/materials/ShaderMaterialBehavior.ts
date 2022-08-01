@@ -6,6 +6,7 @@ import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vert
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {untrack} from 'solid-js'
 
 export type ShaderMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -21,7 +22,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 	// make it easier to animate particular uniforms instead of replacing the
 	// whole object each time.
 	@attribute
-	get uniforms(): string | Record<string, any> | null {
+	get uniforms(): Record<string, any> {
 		return this.#uniforms
 	}
 	set uniforms(u: string | Record<string, any> | null) {
@@ -31,7 +32,11 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 		}
 
 		if (typeof u === 'string') {
-			this.#uniforms = JSON.parse(u)
+			try {
+				this.#uniforms = JSON.parse(u)
+			} catch (e) {
+				console.warn('Unparsable uniform value:', u)
+			}
 		} else {
 			this.#uniforms = u
 		}
@@ -43,22 +48,20 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 	@stringAttribute(default_fragment) fragmentShader = default_fragment
 
 	override _createComponent() {
-		return new ShaderMaterial({
-			uniforms: this.uniforms as Record<string, any>,
-			vertexShader: this.vertexShader,
-			fragmentShader: this.fragmentShader,
+		// untrack because we update the properties on the material instance in the effect in loadGL
+		return untrack(() => {
+			return new ShaderMaterial({
+				uniforms: this.uniforms,
+				vertexShader: this.vertexShader,
+				fragmentShader: this.fragmentShader,
+			})
 		})
 	}
 
 	override loadGL() {
-		super.loadGL()
-
-		// CONTINUE FIXME: I added the 'retry' trick here to see if re-setting
-		// the material would fix the issue in the custom shader example. The
-		// shader does not appear.
-
 		this.createEffect(() => {
-			const mat = this.meshComponent!
+			const mat = this.meshComponent
+			if (!mat) return
 
 			mat.uniforms = this.uniforms as Record<string, any>
 			mat.vertexShader = this.vertexShader || default_vertex
@@ -67,6 +70,8 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 			mat.needsUpdate = true
 			this.element.needsUpdate()
 		})
+
+		super.loadGL()
 	}
 }
 

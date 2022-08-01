@@ -18,9 +18,10 @@ export class PointsMaterialBehavior extends MaterialBehavior {
 	override loadGL() {
 		super.loadGL()
 
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.sizeAttenuation = this.sizeAttenuation
 			mat.size = this.pointSize
 
@@ -29,8 +30,8 @@ export class PointsMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.texture,
-			tex => (this.meshComponent!.map = tex),
-			() => !!this.meshComponent!.map,
+			(mat, tex) => (mat.map = tex),
+			mat => !!mat.map,
 		)
 	}
 }

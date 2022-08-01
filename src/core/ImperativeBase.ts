@@ -292,19 +292,18 @@ export class ImperativeBase extends Settable(Transformable) {
 						// then we only need to update if any size dimension is proportional,
 						this.sizeMode.x === 'proportional' ||
 						this.sizeMode.y === 'proportional' ||
-						this.sizeMode.z === 'proportional' ||
-						// or if any alignPoint dimension is not zero because parent size affects alignment.
-						this.alignPoint.x !== 0 ||
-						this.alignPoint.y !== 0 ||
-						this.alignPoint.z !== 0
+						this.sizeMode.z === 'proportional'
 					) {
 						// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
 						// unless explicitly requested by a user (f.e. they read a prop so
 						// the size must be calculated). https://github.com/lume/lume/issues/66
 						this._calcSize()
-						this.needsUpdate()
 					}
 				})
+
+				// update regardless if we calculated size, in order to update
+				// matrices (align-point depends on parent size).
+				this.needsUpdate()
 			}),
 			autorun(() => {
 				this.position
@@ -445,7 +444,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		Motor.setNodeToBeRendered(this)
 	}
 
-	_glLoaded = false
+	@reactive _glLoaded = false
 	@reactive _cssLoaded = false
 	__willBeRendered = false
 
@@ -552,7 +551,6 @@ export class ImperativeBase extends Settable(Transformable) {
 		if (!(this.scene && this.scene.webgl)) return false
 
 		if (this._glLoaded) return false
-		this._glLoaded = true
 
 		// we don't let Three update local matrices automatically, we do
 		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
@@ -561,12 +559,12 @@ export class ImperativeBase extends Settable(Transformable) {
 		this._connectThree()
 		this.needsUpdate()
 
+		this._glLoaded = true
 		return true
 	}
 
 	_unloadGL(): boolean {
 		if (!this._glLoaded) return false
-		this._glLoaded = false
 
 		for (const stop of this._glStopFns) stop()
 		this._glStopFns.length = 0
@@ -574,18 +572,16 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.__disposeThree()
 		this.needsUpdate()
 
+		this._glLoaded = false
 		return true
 	}
 
 	_cssStopFns: StopFunction[] = []
 
 	_loadCSS(): boolean {
-		const cssIsEnabled = this.scene && this.scene.enableCss
-
-		if (!cssIsEnabled) return false
+		if (!(this.scene && this.scene.enableCss)) return false
 
 		if (this._cssLoaded) return false
-		this._cssLoaded = true
 
 		// We don't let Three update local matrices automatically, we do
 		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree.
@@ -594,12 +590,12 @@ export class ImperativeBase extends Settable(Transformable) {
 		this._connectThreeCSS()
 		this.needsUpdate()
 
+		this._cssLoaded = true
 		return true
 	}
 
 	_unloadCSS(): boolean {
 		if (!this._cssLoaded) return false
-		this._cssLoaded = false
 
 		for (const stop of this._cssStopFns) stop()
 		this._cssStopFns.length = 0
@@ -607,6 +603,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.__disposeThreeCSS()
 		this.needsUpdate()
 
+		this._cssLoaded = false
 		return true
 	}
 

@@ -65,9 +65,10 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	override loadGL() {
 		super.loadGL()
 
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.aoMapIntensity = this.aoMapIntensity
 			mat.bumpScale = this.bumpScale
 			mat.normalScale.set(this.normalScale, this.normalScale)
@@ -85,33 +86,33 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.aoMap,
-			tex => (mat.aoMap = tex),
-			() => !!mat.aoMap,
+			(mat, tex) => (mat.aoMap = tex),
+			mat => !!mat.aoMap,
 		)
 		this._handleTexture(
 			() => this.bumpMap,
-			tex => (mat.bumpMap = tex),
-			() => !!mat.bumpMap,
+			(mat, tex) => (mat.bumpMap = tex),
+			mat => !!mat.bumpMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
-			tex => (mat.map = tex),
-			() => !!mat.map,
+			(mat, tex) => (mat.map = tex),
+			mat => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.normalMap,
-			tex => (mat.normalMap = tex),
-			() => !!mat.normalMap,
+			(mat, tex) => (mat.normalMap = tex),
+			mat => !!mat.normalMap,
 		)
 		this._handleTexture(
 			() => this.metalnessMap,
-			tex => (mat.metalnessMap = tex),
-			() => !!mat.metalnessMap,
+			(mat, tex) => (mat.metalnessMap = tex),
+			mat => !!mat.metalnessMap,
 		)
 		this._handleTexture(
 			() => this.roughnessMap,
-			tex => (mat.roughnessMap = tex),
-			() => !!mat.roughnessMap,
+			(mat, tex) => (mat.roughnessMap = tex),
+			mat => !!mat.roughnessMap,
 		)
 	}
 }

@@ -1,5 +1,5 @@
 import {createEffect, onCleanup} from 'solid-js'
-import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction} from '@lume/element'
+import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Node, NodeAttributes} from '../core/Node.js'
@@ -196,9 +196,9 @@ export class CameraRig extends Node {
 	 */
 	@booleanAttribute(true) interactive = true
 
-	cam?: PerspectiveCamera
+	@reactive cam?: PerspectiveCamera
 
-	rotationYTarget?: Node
+	@reactive rotationYTarget?: Node
 
 	override template = () => html`
 		<lume-node
@@ -247,9 +247,11 @@ export class CameraRig extends Node {
 
 		this.autorunStoppers.push(
 			autorun(() => {
+				if (!(this.scene && this.rotationYTarget)) return
+
 				this.flingRotation = new FlingRotation({
-					interactionInitiator: this.scene!,
-					rotationYTarget: this.rotationYTarget!,
+					interactionInitiator: this.scene,
+					rotationYTarget: this.rotationYTarget,
 					minFlingRotationX: this.minPolarAngle,
 					maxFlingRotationX: this.maxPolarAngle,
 					minFlingRotationY: this.minHorizontalAngle,
@@ -264,8 +266,10 @@ export class CameraRig extends Node {
 				onCleanup(() => this.flingRotation?.stop())
 			}),
 			autorun(() => {
+				if (!this.scene) return
+
 				this.scrollFling = new ScrollFling({
-					target: this.scene!,
+					target: this.scene,
 					y: this.initialDistance,
 					minY: this.minDistance,
 					maxY: this.maxDistance,
@@ -273,9 +277,12 @@ export class CameraRig extends Node {
 				}).start()
 
 				createEffect(() => {
+					const cam = this.cam
+					if (!cam) return
+
 					this.scrollFling!.y
 
-					untrack(() => (this.cam!.position.z = this.scrollFling!.y))
+					untrack(() => (cam.position.z = this.scrollFling!.y))
 				})
 
 				createEffect(() => {

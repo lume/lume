@@ -1,9 +1,8 @@
-import {reactive} from '../../attribute.js'
 import 'element-behaviors'
 import {Color} from 'three/src/math/Color.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
-import {numberAttribute, stringAttribute, booleanAttribute} from '../../attribute.js'
+import {numberAttribute, stringAttribute, booleanAttribute, reactive} from '../../attribute.js'
 
 export type PhongMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -60,7 +59,7 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 	@stringAttribute('') lightMap = ''
 	@numberAttribute(1) lightMapIntensity = 1
 	@stringAttribute('') texture = '' // map
-	@stringAttribute('') normalMap = '' // map
+	@stringAttribute('') normalMap = ''
 	// normalMapType
 	@numberAttribute(1) normalScale = 1
 	@numberAttribute(1) reflectivity = 1
@@ -91,9 +90,10 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 	override loadGL() {
 		super.loadGL()
 
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.aoMapIntensity = this.aoMapIntensity
 			mat.bumpScale = this.bumpScale
 			mat.displacementScale = this.displacementScale
@@ -115,53 +115,53 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.alphaMap,
-			tex => (mat.alphaMap = tex),
-			() => !!mat.alphaMap,
+			(mat, tex) => (mat.alphaMap = tex),
+			mat => !!mat.alphaMap,
 		)
 		this._handleTexture(
 			() => this.aoMap,
-			tex => (mat.aoMap = tex),
-			() => !!mat.aoMap,
+			(mat, tex) => (mat.aoMap = tex),
+			mat => !!mat.aoMap,
 		)
 		this._handleTexture(
 			() => this.bumpMap,
-			tex => (mat.bumpMap = tex),
-			() => !!mat.bumpMap,
+			(mat, tex) => (mat.bumpMap = tex),
+			mat => !!mat.bumpMap,
 		)
 		this._handleTexture(
 			() => this.displacementMap,
-			tex => (mat.displacementMap = tex),
-			() => !!mat.displacementMap,
+			(mat, tex) => (mat.displacementMap = tex),
+			mat => !!mat.displacementMap,
 		)
 		this._handleTexture(
 			() => this.emissiveMap,
-			tex => (mat.emissiveMap = tex),
-			() => !!mat.emissiveMap,
+			(mat, tex) => (mat.emissiveMap = tex),
+			mat => !!mat.emissiveMap,
 		)
 		this._handleTexture(
 			() => this.envMap,
-			tex => (mat.envMap = tex),
-			() => !!mat.envMap,
+			(mat, tex) => (mat.envMap = tex),
+			mat => !!mat.envMap,
 		)
 		this._handleTexture(
 			() => this.lightMap,
-			tex => (mat.lightMap = tex),
-			() => !!mat.lightMap,
+			(mat, tex) => (mat.lightMap = tex),
+			mat => !!mat.lightMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
-			tex => (mat.map = tex),
-			() => !!mat.map,
+			(mat, tex) => (mat.map = tex),
+			mat => !!mat.map,
 		)
 		this._handleTexture(
 			() => this.normalMap,
-			tex => (mat.normalMap = tex),
-			() => !!mat.normalMap,
+			(mat, tex) => (mat.normalMap = tex),
+			mat => !!mat.normalMap,
 		)
 		this._handleTexture(
 			() => this.specularMap,
-			tex => (mat.specularMap = tex),
-			() => !!mat.specularMap,
+			(mat, tex) => (mat.specularMap = tex),
+			mat => !!mat.specularMap,
 		)
 	}
 }

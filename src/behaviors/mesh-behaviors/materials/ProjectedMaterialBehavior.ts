@@ -161,16 +161,15 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 		this._handleTexture(
 			() => this.projectedTextures[0]?.src ?? '',
-			tex => (this.meshComponent!.texture = tex || new Texture()),
-			() => !!this.meshComponent!.texture,
+			(mat, tex) => (mat.texture = tex || new Texture()),
+			mat => !!mat.texture,
 		)
 
-		// FIXME meshComponent is not reactive, effects below will have stale references in some cases.
-
 		this.createEffect(() => {
-			const mat = this.meshComponent!
-			const tex = this.projectedTextures[0]
+			const mat = this.meshComponent
+			if (!mat) return
 
+			const tex = this.projectedTextures[0]
 			if (!tex) return
 
 			createEffect(() => {
@@ -188,7 +187,8 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 			const cam = tex._camera
 			if (!cam) return
 
-			const mat = this.meshComponent!
+			const mat = this.meshComponent
+			if (!mat) return
 
 			mat.camera = cam
 			mat.updateFromCamera()
@@ -231,9 +231,10 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 		})
 
 		this.createEffect(() => {
-			const mat = this.meshComponent!
-			const tex = this.projectedTextures[0]
+			const mat = this.meshComponent
+			if (!mat) return
 
+			const tex = this.projectedTextures[0]
 			if (!tex) return
 
 			createEffect(() => {

@@ -40,7 +40,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	#disposeMeshComponent = () => {
 		// TODO handle material arrays
 		this.meshComponent?.dispose()
-		this.meshComponent = undefined
+		this.meshComponent = null
 	}
 
 	#setMeshComponent() {

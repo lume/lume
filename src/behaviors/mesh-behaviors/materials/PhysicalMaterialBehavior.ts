@@ -44,9 +44,10 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	override loadGL() {
 		super.loadGL()
 
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.clearcoat = this.clearcoat
 			mat.clearcoatRoughness = this.clearcoatRoughness
 			mat.ior = this.refractiveIndex

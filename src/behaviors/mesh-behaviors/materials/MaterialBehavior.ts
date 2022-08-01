@@ -14,7 +14,6 @@ import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
 import type {MeshComponentType} from '../MeshBehavior.js'
 import type {MeshPhongMaterial, Texture} from 'three'
-import type {ClipPlanesBehavior} from '../ClipPlanesBehavior.js'
 
 export type MaterialBehaviorAttributes =
 	| 'alphaTest'
@@ -92,9 +91,10 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	override loadGL() {
 		super.loadGL()
 
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.alphaTest = this.alphaTest
 			mat.clipIntersection = this.clipIntersection
 			mat.colorWrite = this.colorWrite
@@ -108,43 +108,47 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		// conditional checks.
 
 		// Only some materials have wireframe.
-		if ('wireframe' in mat) {
-			this.createEffect(() => {
-				;(mat as MeshPhongMaterial).wireframe = this.wireframe
-				this.element.needsUpdate()
-			})
-		}
-
-		if ('side' in mat) {
-			this.createEffect(() => {
-				let side: Side
-
-				switch (this.sidedness) {
-					case 'front':
-						side = FrontSide
-						break
-					case 'back':
-						side = BackSide
-						break
-					case 'double':
-						side = DoubleSide
-						break
-				}
-
-				mat.side = side
-
-				this.element.needsUpdate()
-			})
-		}
-
-		if ('color' in mat) {
-			this.createEffect(() => {
-				;(mat as MeshPhongMaterial).color = this.color
-				this.element.needsUpdate()
-			})
-		}
+		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!(mat && 'wireframe' in mat)) return
+			;(mat as MeshPhongMaterial).wireframe = this.wireframe
+			this.element.needsUpdate()
+		})
 
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!(mat && 'side' in mat)) return
+
+			let side: Side
+
+			switch (this.sidedness) {
+				case 'front':
+					side = FrontSide
+					break
+				case 'back':
+					side = BackSide
+					break
+				case 'double':
+					side = DoubleSide
+					break
+			}
+
+			mat.side = side
+
+			this.element.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!(mat && 'color' in mat)) return
+			;(mat as MeshPhongMaterial).color = this.color
+			this.element.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			mat.opacity = this.element.opacity * this.materialOpacity
 			mat.transparent = this.transparent
 
@@ -156,27 +160,16 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		return new Material()
 	}
 
-	override resetMeshComponent() {
-		super.resetMeshComponent()
-
-		// TODO CLIP PLANES REACTIVITY HACK, This triggers the
-		// ClipPlanesBehavior effect in case the material changed. TODO: Make
-		// element.behaviors reactive so that the dependent code can react to
-		// material changes instead. Untrack() here for now, to prevent reactivity issues.
-		const clipPlanes = untrack(() => this.element.behaviors.get('clip-planes') as ClipPlanesBehavior | undefined)
-		if (!clipPlanes) return
-		clipPlanes.clipShadows = untrack(() => clipPlanes.clipShadows)
-	}
-
 	_handleTexture(
 		textureUrl: () => string,
-		setTexture: (t: Texture | null) => void,
-		hasTexture: () => boolean,
+		setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void,
+		hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean,
 		onLoad?: () => void,
 	) {
-		const mat = this.meshComponent!
-
 		this.createEffect(() => {
+			const mat = this.meshComponent
+			if (!mat) return
+
 			const url = textureUrl() // this is a dependency of the effect
 
 			if (url) {
@@ -191,9 +184,9 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 
 					// We only need to re-compile the shader when we first
 					// enable the texture (from null).
-					if (!hasTexture()) mat.needsUpdate = true
+					if (!hasTexture(mat!)) mat.needsUpdate = true
 
-					setTexture(texture)
+					setTexture(mat!, texture)
 
 					this.element.needsUpdate()
 
@@ -205,7 +198,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 					texture.dispose()
 				})
 			} else {
-				untrack(() => setTexture(null))
+				untrack(() => setTexture(mat!, null))
 			}
 
 			mat.needsUpdate = true // Three.js needs to update the material in the GPU
