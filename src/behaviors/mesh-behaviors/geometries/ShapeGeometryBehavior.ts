@@ -1,5 +1,4 @@
-import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
-import {attribute} from '../../attribute.js'
+import {attribute, booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {Shape} from 'three/src/extras/core/Shape.js'
@@ -123,15 +122,12 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 				this.__shape.copy(defaultShape)
 			} else {
 				if (points.length % 2 !== 0)
-					throw new Error(
-						'shape path must have an even number of numbers, each pair of numbers being a point.',
-					)
+					throw new Error('shape path must have an even number of numbers, each pair of numbers being a point.')
 
 				this.__shape.copy(emptyShape)
 				this.__shape.moveTo(points[0], points[1])
 
-				if (points.length > 2)
-					for (let i = 2; i < points.length; i += 2) this.__shape.lineTo(points[i], points[i + 1])
+				if (points.length > 2) for (let i = 2; i < points.length; i += 2) this.__shape.lineTo(points[i], points[i + 1])
 			}
 		} else {
 			// Three.js bug: Copying a shape from itself breaks, causing
