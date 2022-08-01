@@ -197,6 +197,7 @@ The code below is commented to describe which parts correlate to the above list 
 									align-point="1 1 1"
 									size="50 50"
 									style="background: skyblue; padding: 5px; font-size: 0.5rem"
+									material-opacity="0.4"
 								>
 									<h4>This is DOM content.</h4>
 
@@ -217,10 +218,6 @@ The code below is commented to describe which parts correlate to the above list 
 					)
 
 					slotContainer.rotation = (x, y, z) => [x, ++y, z]
-					slotContainer.on('GL_LOAD', () => {
-						// TODO material-opacity attribute or similar instead of having to do this.
-						slotContainer.three.material.opacity = 0.4
-					})
 
 					const root2 = slotContainer.attachShadow({mode: 'open'})
 					root2.append(

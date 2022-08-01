@@ -20,6 +20,10 @@ export class MixedPlane extends Mesh {
 	get isMixedPlane() {
 		return true
 	}
+
+	// This property is observed by MaterialBehavior
+	// 0.3 gives mixed planes a nice default for viewing DOM content behind.
+	override materialOpacity = 0.3
 }
 
 declare module '@lume/element' {

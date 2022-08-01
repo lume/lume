@@ -94,15 +94,11 @@
 		scene.needsUpdate()
 	}, 1500)
 
-	for (const n of Array.from(document.querySelectorAll('lume-scene *'))) {
-		transparent(n)
-		n.on('GL_LOAD', () => transparent(n))
-	}
-
-	function transparent(n) {
-		n.three && n.three.material && (n.three.material.opacity = 0.4)
-		n.needsUpdate()
-	}
+	// TODO replace with CSS, once that's ready
+	document.querySelectorAll('lume-scene *').forEach(n => {
+		n.color = 'deeppink'
+		n.materialOpacity = 0.4
+	})
 
 	root.rotation = (x, y, z) => [x, (y += 1), z]
 </script>

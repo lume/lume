@@ -35,6 +35,9 @@
                   size="0 0 0"
                   cast-shadow="true"
                   intensity="0.5"
+                  shadow-radius="2"
+                  distance="800"
+                  shadow-bias="-0.01"
                   >
                   <lume-mesh
                       has="sphere-geometry basic-material"
@@ -109,16 +112,6 @@
 
                   lastSize = size
               })
-
-              Array.from( document.querySelectorAll('lume-mixed-plane') ).forEach(plane => {
-                  plane.three.material.opacity = 0.3
-                  plane.needsUpdate()
-              })
-
-              light.three.shadow.radius = 2
-              light.three.distance = 800
-              light.three.shadow.bias = -0.01
-              light.needsUpdate()
           <\/script>
         </body>
       `).trim()

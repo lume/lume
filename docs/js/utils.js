@@ -224,14 +224,7 @@ const buttonsWithShadowExample = stripIndent(html`
 			touch-action="none"
 		>
 			<lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
-			<lume-mixed-plane
-				ref="plane"
-				id="bg"
-				size-mode="proportional proportional"
-				size="1 1 0"
-				color="#444"
-				dithering
-			>
+			<lume-mixed-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444" dithering>
 				<lume-node
 					id="button-container"
 					position="0 0 20"
@@ -261,6 +254,9 @@ const buttonsWithShadowExample = stripIndent(html`
 						intensity="0.8"
 						shadow-map-width="2048"
 						shadow-map-height="2048"
+						shadow-radius="2"
+						distance="800"
+						shadow-bias="-0.001"
 					>
 						<lume-mesh
 							has="sphere-geometry basic-material"
@@ -290,26 +286,6 @@ const buttonsWithShadowExample = stripIndent(html`
 				const scene = document.querySelector('#scene')
 				const lightContainer = document.querySelector('#lightContainer')
 				const light = document.querySelector('#light')
-
-				scene.on(Events.GL_LOAD, async () => {
-					// TODO fix order of events. Promise.resolve() should not be needed here.
-					await Promise.resolve()
-					light.three.shadow.radius = 2
-					light.three.distance = 800
-					light.three.shadow.bias = -0.001
-
-					// The following is a temporary hack because opacity isn't
-					// exposed through the HTML API yet. work-in-progress...
-					// TODO this stuff should be doable via the HTML
-					Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(n => {
-						n.three.material.opacity = 0.3
-					})
-
-					document.querySelector('#bg').three.material.opacity = 0.3
-
-					scene.needsUpdate()
-				})
-
 				const targetPosition = {x: window.innerWidth / 2, y: window.innerHeight / 2}
 
 				document.addEventListener('pointermove', e => {
@@ -819,17 +795,10 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition 
 					size="1 1"
 					position="${bgPosition.x || 0} ${bgPosition.y || 0} -50"
 					color="#444"
-					TODO-material-opacity="0.3"
 				>
 					<img src="${host}${bg}" />
 				</lume-mixed-plane>
-				<lume-mixed-plane
-					size-mode="proportional proportional"
-					size="1 1"
-					position="0 0 50"
-					color="#444"
-					TODO-material-opacity="0.3"
-				>
+				<lume-mixed-plane size-mode="proportional proportional" size="1 1" position="0 0 50" color="#444">
 					<img src="${host}${fg}" />
 				</lume-mixed-plane>
 			</lume-node>
@@ -876,12 +845,6 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition 
 			LUME.Motor.addRenderTask(() => {
 				container.rotation.x += (targetRotation.x - container.rotation.x) * 0.05
 				container.rotation.y += (targetRotation.y - container.rotation.y) * 0.05
-			})
-
-			scene.on('GL_LOAD', () => {
-				Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(n => {
-					n.three.material.opacity = 0.3
-				})
 			})
 		</script>
 	`)

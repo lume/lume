@@ -101,7 +101,7 @@
 					mount-point="0.5 0.5 0.5"
 					position="60 30 80"
 					color="#e96699"
-					TODO-material-opacity="0.9"
+					material-opacity="0.5"
 				></lume-sphere>
 
 				<lume-plane
@@ -120,7 +120,6 @@
 					rotation="0 0 0"
 					style="background: #d490a1"
 					color="#444444"
-					TODO-material-opacity="0.3"
 				>
 					3D!
 
@@ -130,7 +129,6 @@
 						position="20 30 110"
 						style="background: #e96699"
 						color="#444444"
-						TODO-material-opacity="0.3"
 					>
 						Yeah!
 					</lume-mixed-plane>
@@ -184,23 +182,14 @@
 				little2.rotation.x += 1
 			})
 
+			// TODO replace with CSS, once that's ready
 			Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(plane => {
-				// if already loaded, run intial logic
-				if (plane.glLoaded) onGLLoad(plane)
-				plane.on(Events.GL_LOAD, onGLLoad)
+				plane.materialOpacity = 0.3
 			})
-
-			function onGLLoad(plane) {
-				plane.three.material.opacity = 0.3
-				plane.needsUpdate()
-			}
 
 			const scene = document.querySelector('lume-scene')
 
 			// This setInterval shows that
-			//
-			// - the above GL_LOAD event handler re-establishes the material
-			// opacity of the lume-mixed-plane elements every couple of seconds.
 			//
 			// - that turning GL rendering off and on makes the animation
 			// stutter for a small moment, because destroying and re-creating

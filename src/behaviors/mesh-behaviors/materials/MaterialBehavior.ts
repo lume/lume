@@ -1,5 +1,5 @@
 // TODO material arrays are not handled. Any LUME elements have one material. If
-// a user make a subclass or provides a custom three objects with a material
+// a user makes a subclass or provides a custom three object with a material
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
 
@@ -11,7 +11,6 @@ import {Material} from 'three/src/materials/Material.js'
 import {reactive, booleanAttribute, stringAttribute, numberAttribute} from '../../attribute.js'
 import {onCleanup} from 'solid-js'
 import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
-// import {isDisposable} from '../../../utils/three.js'
 
 import type {MeshComponentType} from '../MeshBehavior.js'
 import type {MeshPhongMaterial, Texture} from 'three'
@@ -27,6 +26,7 @@ export type MaterialBehaviorAttributes =
 	| 'wireframe'
 	| 'sidedness'
 	| 'color'
+	| 'materialOpacity'
 
 /**
  * @class MaterialBehavior -
@@ -69,6 +69,8 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 */
 	@stringAttribute('front') sidedness: 'front' | 'back' | 'double' = 'front'
 
+	@numberAttribute(1) materialOpacity = 1
+
 	@stringAttribute('deeppink')
 	get color(): Color {
 		return this.#color
@@ -83,7 +85,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	#color = new Color('deeppink')
 
 	get transparent(): boolean {
-		if (this.element.opacity < 1) return true
+		if (this.element.opacity < 1 || this.materialOpacity < 1) return true
 		else return false
 	}
 
@@ -143,7 +145,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		}
 
 		this.createEffect(() => {
-			mat.opacity = this.element.opacity
+			mat.opacity = this.element.opacity * this.materialOpacity
 			mat.transparent = this.transparent
 
 			this.element.needsUpdate()

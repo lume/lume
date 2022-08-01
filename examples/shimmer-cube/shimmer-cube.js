@@ -72,6 +72,7 @@ const ShimmerCube = element('shimmer-cube')(
 					size-mode="proportional proportional proportional"
 					size="1 1 1"
 					opacity="0.2"
+					Xmaterial-opacity="0.2"
 				>
 					<slot></slot>
 				</lume-box>
