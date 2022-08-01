@@ -1,4 +1,4 @@
-import {numberAttribute, reactive} from '../../attribute.js'
+import {numberAttribute, reactive, stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
 import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
 import {StandardMaterialBehavior} from './StandardMaterialBehavior.js'
@@ -12,6 +12,7 @@ export type PhysicalMaterialBehaviorAttributes =
 	| 'refractiveIndex'
 	| 'reflectivity'
 	| 'transmission'
+	| 'transmissionMap'
 
 @reactive
 export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
@@ -35,7 +36,7 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	// specularColor
 	// specularColorMap
 	@numberAttribute(0) transmission = 0
-	// transmissionMap
+	@stringAttribute('') transmissionMap = ''
 
 	override _createComponent() {
 		return new MeshPhysicalMaterial({})
@@ -59,6 +60,12 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 
 			this.element.needsUpdate()
 		})
+
+		this._handleTexture(
+			() => this.transmissionMap,
+			(mat, tex) => (mat.transmissionMap = tex),
+			mat => !!mat.transmissionMap,
+		)
 	}
 }
 
