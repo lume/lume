@@ -21,7 +21,7 @@ export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
 		this.element.sizeMode = val
 	}
 
-	get geometry(): ReturnType<this['_createComponent']> | undefined {
+	get geometry() {
 		return this.meshComponent
 	}
 
