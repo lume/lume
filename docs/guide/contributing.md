@@ -56,14 +56,20 @@ cd lume
 
 ### Installing dependencies
 
+#### System Dependencies
+
 Now install all needed dependencies. Before continuing to the next commands,
 you should have [Node.js](https://nodejs.org) installed, which comes with the
 `npm` command. `npm` (the Node Package Manager) is a standard tool in the
 world of JavaScript for installing JavaScript depedencies into a JavaScript-
 (or TypeScript-) based project.
 
-Install the dependencies (both build dependencies and runtime dependencies)
-for all of the LUME projects with the following command:
+If you are in `macOS`, you will need to install `libpng` and `pkg-config`.
+First install [Homebrew](https://brew.sh), then `brew install libpng pkg-config`.
+
+#### Local Dependencies
+
+Now install the local project dependencies:
 
 ```bash
 npm install
