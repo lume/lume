@@ -1,5 +1,5 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
-import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
+import {numberAttribute, booleanAttribute, element} from '@lume/element'
 import {Light} from './Light.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -106,29 +106,27 @@ export class PointLight extends Light {
 	override _loadGL() {
 		if (!super._loadGL()) return false
 
-		this._glStopFns.push(
-			autorun(() => {
-				const light = this.three
+		this.createGLEffect(() => {
+			const light = this.three
 
-				light.distance = this.distance
-				light.decay = this.decay
-				light.castShadow = this.castShadow
+			light.distance = this.distance
+			light.decay = this.decay
+			light.castShadow = this.castShadow
 
-				const shadow = this.three.shadow
+			const shadow = this.three.shadow
 
-				shadow.mapSize.width = this.shadowMapWidth
-				shadow.mapSize.height = this.shadowMapHeight
-				shadow.radius = this.shadowRadius
-				shadow.bias = this.shadowBias
-				// TODO: auto-adjust near and far planes like we will with Camera,
-				// unless the user supplies a manual value.
-				shadow.camera.near = this.shadowCameraNear
-				shadow.camera.far = this.shadowCameraFar
+			shadow.mapSize.width = this.shadowMapWidth
+			shadow.mapSize.height = this.shadowMapHeight
+			shadow.radius = this.shadowRadius
+			shadow.bias = this.shadowBias
+			// TODO: auto-adjust near and far planes like we will with Camera,
+			// unless the user supplies a manual value.
+			shadow.camera.near = this.shadowCameraNear
+			shadow.camera.far = this.shadowCameraFar
 
-				shadow.needsUpdate = true
-				this.needsUpdate()
-			}),
-		)
+			shadow.needsUpdate = true
+			this.needsUpdate()
+		})
 
 		return true
 	}

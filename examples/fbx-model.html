@@ -1,21 +1,4 @@
-<title>&lt;lume-fbx-model&gt;</title>
-
-<style>
-	html,
-	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		background: #222;
-		touch-action: none;
-		overflow: hidden;
-	}
-
-	lume-node {
-		border: 5px solid deeppink;
-	}
-</style>
+<script src="./wrapper.js" title="<lume-fbx-model>"></script>
 
 <lume-scene id="scene" perspective="800" webgl>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
@@ -34,12 +17,13 @@
 	></lume-fbx-model>
 </lume-scene>
 
-<script>
+<!-- <script>
 	// CONTINUE FIXME: auto define changes order of definitions and it breaks.
 	window.$LUME = {autoDefineElements: false}
 	// window.$LUME = {autoDefineElements: true}
 </script>
-<script src="global.js"></script>
+<script src="global.js"></script> -->
+
 <script>
 	// Define all the LUME elements with their default names.
 	LUME.defineElements()

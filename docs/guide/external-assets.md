@@ -5,15 +5,15 @@
 LUME elements can load various types of external assets.
 
 The following demo shows how to load a 3D model in OBJ format using the
-`<obj-model>` element. It also shows how to use a `<lume-node>` element with an
+`<obj-model>` element. It also shows how to use a `<lume-element3d>` element with an
 `obj-model` [behavior](./element-behaviors). The `<obj-model>` element is a
-shortcut for the equivalent of a `<lume-node has="obj-model">`.
+shortcut for the equivalent of a `<lume-element3d has="obj-model">`.
 
 <div id="objModel"></div>
 
 The next example shows how to set a texture onto a mesh element. A texture is
 loaded from an image file like a JPEG or PNG file using the `texture`
-attribute. Similarly to `<obj-model>` being a shortcut for `<lume-node has="obj-model">`, the following `<lume-box>` element is a shortcut for
+attribute. Similarly to `<obj-model>` being a shortcut for `<lume-element3d has="obj-model">`, the following `<lume-box>` element is a shortcut for
 `<lume-mesh has="box-geometry phong-material">` which is a mesh element having both a geometry
 behavior and a material behavior.
 
@@ -43,7 +43,7 @@ behavior and a material behavior.
     }
     lume-scene { position: absolute!important; top: 0; left: 0; }
     lume-scene:nth-child(2) { pointer-events: none; }
-    lume-node { padding: 15px; pointer-events: all; }
+    lume-element3d { padding: 15px; pointer-events: all; }
 </style>
 
 <body touch-action="none">
@@ -70,10 +70,10 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             >
         </lume-sphere>
     </lume-point-light>
-    <lume-node id="ship1Rotator" align-point="0.5 0.5 0" rotation="0 40 0">
-        <!-- This is an lume-node element with an obj-model behavior. The
+    <lume-element3d id="ship1Rotator" align-point="0.5 0.5 0" rotation="0 40 0">
+        <!-- This is a lume-element3d element with an obj-model behavior. The
         obj-model behavior observes the obj and mtl attributes. -->
-        <lume-node
+        <lume-element3d
             id="ship1"
             has="obj-model"
             size="0 0 0 "
@@ -82,9 +82,9 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             obj="${location.origin + location.pathname}models/spaceship/ship.obj"
             mtl="${location.origin + location.pathname}models/spaceship/ship.mtl"
         >
-        </lume-node>
-    </lume-node>
-    <lume-node id="ship2Rotator" align-point="0.5 0.5 0" rotation="0 20 0">
+        </lume-element3d>
+    </lume-element3d>
+    <lume-element3d id="ship2Rotator" align-point="0.5 0.5 0" rotation="0 20 0">
         <!-- Alternatively, the lume-obj-model is an element that implicityly
         has an obj-model behavior. We've omitted the mtl attribute, so this
         model will by default have a plain random color. -->
@@ -96,17 +96,17 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             obj="${location.origin+location.pathname}models/spaceship/ship.obj"
         >
         </lume-obj-model>
-    </lume-node>
+    </lume-element3d>
 </lume-scene>
 
 <!-- We're using two scenes, the next one for overlaid HTML/CSS-based UI, the previous one for WebGL content. -->
 
 <lume-scene id="scene">
-    <lume-node size-mode="proportional literal" size="1 80">
+    <lume-element3d size-mode="proportional literal" size="1 80">
         <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
         <label><input id="objToggle" type="checkbox" checked /> Enable model on first ship.</label>
         <label><input id="matToggle" type="checkbox" /> Enable material on second ship.</label>
-    </lume-node>
+    </lume-element3d>
 </lume-scene>
 
 <script>
@@ -216,7 +216,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
     }
     lume-scene { position: absolute!important; top: 0; left: 0; }
     lume-scene:nth-child(2) { pointer-events: none; }
-    lume-node { padding: 15px; pointer-events: all; }
+    lume-element3d { padding: 15px; pointer-events: all; }
     label { padding-right: 10px; }
 </style>
 
@@ -244,7 +244,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
 </lume-scene>
 
 <lume-scene id="scene2">
-    <lume-node size-mode="proportional literal" size="1 80">
+    <lume-element3d size-mode="proportional literal" size="1 80">
         <!-- FIXME When toggling these too fast, the toggling breaks. Three.js Loader problem? -->
         <label>
             X size:
@@ -279,7 +279,7 @@ rendering is enabled (this saves CPU/Memory if you don't need CSS rendering).
             Perspective <code id="perspectiveVal"></code>:
             <input id="perspective" type="range" min="75" max="250">
         </label>
-    </lume-node>
+    </lume-element3d>
 </lume-scene>
 
 <script>

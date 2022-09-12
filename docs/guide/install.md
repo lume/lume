@@ -309,7 +309,7 @@ code:
   // The code outputs these elements to the DOM:
   // <body>
   //   <lume-scene>
-  //     <lume-node position="50 50 0" size="100 100 0"></lume-node>
+  //     <lume-element3d position="50 50 0" size="100 100 0"></lume-element3d>
   //   </lume-scene>
   // </body>
 <\/script>
@@ -329,7 +329,7 @@ code:
 `<script src="https://unpkg.com/lume@0.3.0-alpha.9/dist/global.js"><\/script>
 
 <lume-scene>
-  <lume-node id="node" position="50 50" size="100 100"></lume-node>
+  <lume-element3d id="node" position="50 50" size="100 100"></lume-element3d>
 </lume-scene>
 
 <script type=module>

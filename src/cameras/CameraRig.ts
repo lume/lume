@@ -2,13 +2,13 @@ import {createEffect, onCleanup} from 'solid-js'
 import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling} from '../interaction/index.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
 export type CameraRigAttributes =
-	| NodeAttributes
+	| Element3DAttributes
 	| 'initialPolarAngle'
 	| 'minPolarAngle'
 	| 'maxPolarAngle'
@@ -42,7 +42,7 @@ export type CameraRigAttributes =
  * camera rig's underlying camera.
  */
 @element('lume-camera-rig', autoDefineElements)
-export class CameraRig extends Node {
+export class CameraRig extends Element3D {
 	/**
 	 * @property {true} hasShadow
 	 *
@@ -198,16 +198,16 @@ export class CameraRig extends Node {
 
 	@reactive cam?: PerspectiveCamera
 
-	@reactive rotationYTarget?: Node
+	@reactive rotationYTarget?: Element3D
 
 	override template = () => html`
-		<lume-node
+		<lume-element3d
 			id="cameraY"
 			size="1 1 1"
-			ref=${(el: Node) => (this.rotationYTarget = el)}
+			ref=${(el: Element3D) => (this.rotationYTarget = el)}
 			size-mode="proportional proportional proportional"
 		>
-			<lume-node
+			<lume-element3d
 				id="cameraX"
 				size="1 1 1"
 				rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
@@ -227,8 +227,8 @@ export class CameraRig extends Node {
 						<slot name="camera-child"></slot>
 					</lume-perspective-camera>
 				</slot>
-			</lume-node>
-		</lume-node>
+			</lume-element3d>
+		</lume-element3d>
 
 		<slot></slot>
 	`

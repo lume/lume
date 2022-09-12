@@ -1,12 +1,12 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
-import {numberAttribute, booleanAttribute, autorun, untrack, element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
-import {defer} from '../core/utils.js'
+import {createEffect, createRoot} from 'solid-js'
+import {numberAttribute, booleanAttribute, untrack, element} from '@lume/element'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Scene} from '../core/Scene.js'
 
-export type PerspectiveCameraAttributes = NodeAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active'
+export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active'
 // | 'lookAt' // TODO
 
 /**
@@ -27,10 +27,10 @@ export type PerspectiveCameraAttributes = NodeAttributes | 'fov' | 'aspect' | 'n
  *   })
  * </script>
  *
- * @extends Node
+ * @extends Element3D
  */
 @element('lume-perspective-camera', autoDefineElements)
-export class PerspectiveCamera extends Node {
+export class PerspectiveCamera extends Element3D {
 	/**
 	 * @property {number} fov
 	 *
@@ -108,77 +108,82 @@ export class PerspectiveCamera extends Node {
 	@booleanAttribute(false) active = false
 
 	// TODO lookat property
-	// @attribute lookat: string | Node | null = null
+	// @attribute lookat: string | Element3D | null = null
 
 	override connectedCallback() {
 		super.connectedCallback()
 
-		// We use an autorun to wait for the this.scene to exist.
-		const stop = autorun(_ => {
-			if (this.scene) {
+		// Run logic once the scene exists.
+		createRoot(dispose => {
+			createEffect(() => {
+				if (!this.scene) return
+
 				untrack(() => {
 					this.#lastKnownScene = this.scene
 					this.#setSceneCamera(this.active ? undefined : 'unset')
-					defer(() => stop())
+					queueMicrotask(() => dispose())
 				})
-			}
+			})
 		})
-
-		// TODO once(condition) to make the above simpler, F.e.:
+		// TODO ^ once(condition) to make the above simpler, F.e.:
+		//
 		// once(() => this.scene).then(() => {
 		// 	this.__lastKnownScene = this.scene
 		// 	this.__setSceneCamera(this.active ? undefined : 'unset')
 		// })
 
-		this._stopFns.push(
-			autorun(_ => {
-				this.three.fov = this.fov
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-			}),
-			autorun(_ => {
-				// Any value other than zero means the user supplied an aspect
-				// ratio manually. Stop auto-aspect in that case.
-				if (this.aspect !== 0) {
-					this.three.aspect = this.aspect
-					this.three.updateProjectionMatrix()
-					return
-				}
+		this.createEffect(() => {
+			this.three.fov = this.fov
+			this.three.updateProjectionMatrix()
+			this.needsUpdate()
+		})
 
-				let aspect = 0
+		this.createEffect(() => {
+			// Any value other than zero means the user supplied an aspect
+			// ratio manually. Stop auto-aspect in that case.
+			if (this.aspect !== 0) {
+				this.three.aspect = this.aspect
+				this.three.updateProjectionMatrix()
+				return
+			}
 
-				if (this.scene) aspect = this.scene.calculatedSize.x / this.scene.calculatedSize.y
+			let aspect = 0
 
-				// in case of a 0 or NaN (f.e. 0 / 0 == NaN)
-				if (!aspect) aspect = 16 / 9
+			if (this.scene) aspect = this.scene.calculatedSize.x / this.scene.calculatedSize.y
 
-				this.three.aspect = aspect
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-			}),
-			autorun(_ => {
-				this.three.near = this.near
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-			}),
-			autorun(_ => {
-				this.three.far = this.far
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-			}),
-			autorun(_ => {
-				this.three.zoom = this.zoom
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-			}),
-			autorun(_ => {
-				const active = this.active
-				untrack(() => {
-					this.#setSceneCamera(active ? undefined : 'unset')
-				})
-				this.needsUpdate() // TODO need this? Cameras don't render as anything, maybe they don't need an update in this case.
-			}),
-		)
+			// in case of a 0 or NaN (f.e. 0 / 0 == NaN)
+			if (!aspect) aspect = 16 / 9
+
+			this.three.aspect = aspect
+			this.three.updateProjectionMatrix()
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.three.near = this.near
+			this.three.updateProjectionMatrix()
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.three.far = this.far
+			this.three.updateProjectionMatrix()
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.three.zoom = this.zoom
+			this.three.updateProjectionMatrix()
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			const active = this.active
+			untrack(() => {
+				this.#setSceneCamera(active ? undefined : 'unset')
+			})
+			this.needsUpdate() // TODO need this? Cameras don't render as anything, maybe they don't need an update in this case.
+		})
 	}
 
 	override makeThreeObject3d() {

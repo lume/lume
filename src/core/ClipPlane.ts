@@ -5,7 +5,7 @@ import {element, ElementAttributes} from '@lume/element'
 import {Plane} from 'three/src/math/Plane.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {createSignal} from 'solid-js'
-import {Node, NodeAttributes} from './Node.js'
+import {Element3D, Element3DAttributes} from './Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 // Make the clip plane clip anything in front of it (towards the default
@@ -13,7 +13,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 // towards the camera by default.
 const clipNormal: [number, number, number] = [0, 0, -1]
 
-type ClipPlaneAttributes = NodeAttributes
+type ClipPlaneAttributes = Element3DAttributes
 
 /**
  * @class ClipPlane
@@ -37,10 +37,10 @@ type ClipPlaneAttributes = NodeAttributes
  *   new Vue({ el: '#clipPlaneExample', data: { code: clipPlaneExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
  * </script>
  *
- * @extends Node
+ * @extends Element3D
  */
 @element('lume-clip-plane', autoDefineElements)
-export class ClipPlane extends Node {
+export class ClipPlane extends Element3D {
 	#plane = createSignal<Plane | null>(null)
 	#inversePlane = createSignal<Plane | null>(null)
 

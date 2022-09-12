@@ -20,8 +20,8 @@
 // - Allow visual-format to be fetch by path (like img src attribute).
 
 import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
-import {attribute, autorun, element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {attribute, element} from '@lume/element'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -39,14 +39,14 @@ type Viewport = {
 	'aspect-ratio': number
 }
 
-export type AutoLayoutNodeAttributes = NodeAttributes | 'visualFormat'
+export type AutoLayoutNodeAttributes = Element3DAttributes | 'visualFormat'
 
 /**
- * A Node that lays children out based on an Apple AutoLayout VFL layout
+ * An Element3D that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
 @element('lume-autolayout-node', autoDefineElements)
-export class AutoLayoutNode extends Node {
+export class AutoLayoutNode extends Element3D {
 	static DEFAULT_PARSE_OPTIONS = {
 		extended: true,
 		strict: false,
@@ -84,19 +84,17 @@ export class AutoLayoutNode extends Node {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this._stopFns.push(
-			autorun(() => {
-				this.setVisualFormat(this.visualFormat || '')
-			}),
-		)
+		this.createEffect(() => {
+			this.setVisualFormat(this.visualFormat || '')
+		})
 	}
 
 	#autoLayoutView?: any | undefined
 
-	override childConnectedCallback(child: Node) {
+	override childConnectedCallback(child: Element3D) {
 		// @prod-prune
-		if (!(child instanceof Node))
-			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
+		if (!(child instanceof Element3D))
+			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Element3D.')
 
 		super.childConnectedCallback(child)
 
@@ -104,10 +102,10 @@ export class AutoLayoutNode extends Node {
 		this.#checkNodes()
 	}
 
-	override childDisconnectedCallback(child: Node) {
+	override childDisconnectedCallback(child: Element3D) {
 		// @prod-prune
-		if (!(child instanceof Node))
-			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Node.')
+		if (!(child instanceof Element3D))
+			throw new Error('Child elements of AutoLayoutNode must be instances of LUME.Element3D.')
 
 		super.childDisconnectedCallback(child)
 
@@ -145,10 +143,7 @@ export class AutoLayoutNode extends Node {
 	setVisualFormat(visualFormat: string, parseOptions?: any) {
 		// @ts-ignore: TODO, _visualFormat is not used anywhere, but it works???
 		this._visualFormat = visualFormat
-		var constraints = AutoLayout.VisualFormat.parse(
-			visualFormat,
-			parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS,
-		)
+		var constraints = AutoLayout.VisualFormat.parse(visualFormat, parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS)
 		this.#metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
 		this.#autoLayoutView = new AutoLayout.View({
 			constraints: constraints,
@@ -175,11 +170,11 @@ export class AutoLayoutNode extends Node {
 	 * create a new node, however it can also be called with an existing node which it will
 	 * append to the node that this method is being called on. Returns the new or passed in node.
 	 *
-	 * @param {Node|void} child The node to appended or no node to create a new node.
+	 * @param {Element3D|void} child The node to appended or no node to create a new node.
 	 * @param {String} id Unique id of the node which matches the id used in the Visual format.
-	 * @return {Node} the appended node.
+	 * @return {Element3D} the appended node.
 	 */
-	addToLayout(child: Node, id: string) {
+	addToLayout(child: Element3D, id: string) {
 		// PORTED
 		this.append(child) // PORTED
 		// TODO instead of handling nodes here, we should handle them in
@@ -193,10 +188,10 @@ export class AutoLayoutNode extends Node {
 	 * Removes a child node from another node. The passed in node must be
 	 * a child of the node that this method is called upon.
 	 *
-	 * @param {Node} [child] node to be removed
+	 * @param {Element3D} [child] node to be removed
 	 * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
 	 */
-	removeFromLayout(child: Node, id: string) {
+	removeFromLayout(child: Element3D, id: string) {
 		// PORTED
 		if (child && id) {
 			this.removeChild(child) // PORTED
@@ -311,7 +306,7 @@ export class AutoLayoutNode extends Node {
 		}
 	}
 
-	#updateNode(node: Node, subView: any, x: number, y: number, widths: any, heights: any) {
+	#updateNode(node: Element3D, subView: any, x: number, y: number, widths: any, heights: any) {
 		// NOTE The following sizeMode, size, and position functions are no-ops,
 		// they only perform type casting for use in TypeScript code. Without
 		// them there will be type errors.

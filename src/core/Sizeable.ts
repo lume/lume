@@ -1,12 +1,12 @@
-import {createEffect, on} from 'solid-js'
+import {createEffect, createRoot, on} from 'solid-js'
 import {reactive} from '@lume/variable'
 import {attribute, untrack, element} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {Motor} from './Motor.js'
+import {CompositionTracker} from './CompositionTracker.js'
 
-import type {StopFunction} from '@lume/element'
 import type {
 	XYZValues,
 	XYZValuesObject,
@@ -35,15 +35,17 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
 @element
-export class Sizeable extends TreeNode {
+export class Sizeable extends CompositionTracker(TreeNode) {
 	constructor() {
 		super()
 
-		// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-		// trigger reactivity for the respective properties. See also NOTE REACTIVITY
-		// below.
-		createEffect(on(this.sizeMode.asDependency, () => (this.sizeMode = this.sizeMode)))
-		createEffect(on(this.size.asDependency, () => (this.size = this.size)))
+		createRoot(() => {
+			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
+			// trigger reactivity for the respective properties. See also NOTE REACTIVITY
+			// below.
+			createEffect(on(this.sizeMode.asDependency, () => (this.sizeMode = this.sizeMode)))
+			createEffect(on(this.size.asDependency, () => (this.size = this.size)))
+		})
 	}
 
 	@reactive __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
@@ -55,19 +57,22 @@ export class Sizeable extends TreeNode {
 	 *
 	 * Default: <code>new [XYZSizeModeValues](../xyz-values/XYZSizeModeValues)('literal', 'literal', 'literal')</code>
 	 *
-	 * Set the size mode for each axis. Possible values are `"literal"` and
-	 * `"proportional"`. For example,
+	 * Set the size mode for each axis. Possible values are `"literal"` (or `"l"` for short) and
+	 * `"proportional"` (or `"p"` for short). For example,
 	 *
 	 * ```html
-	 * <lume-node size-mode="proportional literal"></lume-node>
+	 * <lume-element3d size-mode="proportional literal"></lume-element3d>
+	 * <lume-element3d size-mode="p l"></lume-element3d>
 	 * ```
 	 *
-	 * The `.sizeMode` for a particular axis dictates how the respective
-	 * [`.size`](#size) value along the same axis will behave. A value of
-	 * `"literal"` for an axis means the `.size` value along the same axis will
-	 * be a literally as specified. A `.sizeMode` value of `"proportional"`
-	 * for the an axis means the `.size` value along the same axis will be a
-	 * proportion of the object's parent's size along the same axis.
+	 * The value of `.sizeMode` for a particular axis dictates how the respective
+	 * [`.size`](#size) value along the same axis will behave:
+	 *
+	 * - A value of `"literal"` for an axis means the `.size` value along that
+	 * axis will be literally as specified.
+	 * - A value of `"proportional"` for an axis means the `.size`
+	 * value along that axis will be a proportion of the object's parent's size
+	 * along that axis.
 	 */
 	@attribute
 	set sizeMode(newValue: XYZSizeModeValuesProperty) {
@@ -143,28 +148,6 @@ export class Sizeable extends TreeNode {
 		return {...(this.__calculatedSize ?? {x: 0, y: 0, z: 0})}
 	}
 
-	/**
-	 * Subclasses should push stop functions returned by autorun() into this
-	 * array in connectedCallback, then disconnectedCallback will
-	 * automatically clean them up.
-	 */
-	// XXX Perhaps move this to a separate mixin, as it isn't really related to sizing.
-	_stopFns: Array<StopFunction> = []
-
-	override connectedCallback() {
-		super.connectedCallback()
-
-		// For example, subclasses should push autoruns in connectedCallback.
-		// this._stopFns.push(autorun(...))
-	}
-
-	override disconnectedCallback() {
-		super.disconnectedCallback?.()
-
-		for (const stop of this._stopFns) stop()
-		this._stopFns.length = 0
-	}
-
 	get composedLumeParent(): Sizeable | null {
 		const result = this.composedParent
 		if (!(result instanceof Sizeable)) return null
@@ -195,26 +178,24 @@ export class Sizeable extends TreeNode {
 
 		const size = this.size
 		const sizeMode = this.sizeMode
+		const {x: modeX, y: modeY, z: modeZ} = sizeMode
 		const parentSize = this.parentSize
 
-		if (sizeMode.x == 'literal') {
+		if (modeX === 'literal' || modeX === 'l') {
 			calculatedSize.x = size.x
-		} else {
-			// proportional
+		} else if (modeX === 'proportional' || modeX === 'p') {
 			calculatedSize.x = parentSize.x * size.x
 		}
 
-		if (sizeMode.y == 'literal') {
+		if (modeY === 'literal' || modeY === 'l') {
 			calculatedSize.y = size.y
-		} else {
-			// proportional
+		} else if (modeY === 'proportional' || modeY === 'p') {
 			calculatedSize.y = parentSize.y * size.y
 		}
 
-		if (sizeMode.z == 'literal') {
+		if (modeZ === 'literal' || modeZ === 'l') {
 			calculatedSize.z = size.z
-		} else {
-			// proportional
+		} else if (modeZ === 'proportional' || modeZ === 'p') {
 			calculatedSize.z = parentSize.z * size.z
 		}
 

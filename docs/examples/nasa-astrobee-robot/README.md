@@ -69,7 +69,7 @@
 
           <div class="sceneContainer hidden" ref=\${el => this.sceneContainer = el}>
             <lume-scene webgl enable-css="false" environment=\${() => lunaStation}>
-              <lume-node align-point="0.5 0.5 0.5">
+              <lume-element3d align-point="0.5 0.5 0.5">
                 <lume-camera-rig
                   active=\${() => this.view === 'free'}
                   initial-polar-angle="30"
@@ -78,10 +78,10 @@
                   dolly-speed="0.002"
                   initial-distance="1"
                 />
-                <lume-node rotation=\${() => [this.view === 'top' ? -90 : 0, 0, 0]}>
+                <lume-element3d rotation=\${() => [this.view === 'top' ? -90 : 0, 0, 0]}>
                   <lume-perspective-camera active=\${() => this.view !== 'free'} position="0 0 0.7" />
-                </lume-node>
-              </lume-node>
+                </lume-element3d>
+              </lume-element3d>
 
               <lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 90 0" />
               <lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 -90 0" />
@@ -92,19 +92,19 @@
               <lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 80 0" />
               <lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 -80 0" />
 
-              <lume-node ref=\${el => this.astrobee = el} align-point="0.5 0.5 0.5" rotation=\${() => this.astrobeeRotation}>
+              <lume-element3d ref=\${el => this.astrobee = el} align-point="0.5 0.5 0.5" rotation=\${() => this.astrobeeRotation}>
                 <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => bodyModelUrl} />
                 <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcModelUrl} />
                 <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcSkinModelUrl} />
                 <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcBumperModelUrl} />
 
                 <comment style="display:none">The other side.</comment>
-                <lume-node scale="1 1 -1">
+                <lume-element3d scale="1 1 -1">
                   <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcModelUrl} />
                   <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcSkinModelUrl} />
                   <lume-collada-model ref=\${el => this.models.push(el)} src=\${() => pmcBumperModelUrl} />
-                </lume-node>
-              </lume-node>
+                </lume-element3d>
+              </lume-element3d>
 
               <lume-sphere
                 has="basic-material"

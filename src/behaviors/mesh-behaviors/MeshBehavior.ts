@@ -27,7 +27,8 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	 * It is reactive, any reactive dependencies used in here will cause
 	 * re-creation of the instance. Use `untrack` for cases where a dependency
 	 * should not re-create the instance (in that case an additional effect may
-	 * update the instance instead).
+	 * update the instance instead, while in other cases constructing a new
+	 * object is the only (or easier) way).
 	 */
 	_createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')

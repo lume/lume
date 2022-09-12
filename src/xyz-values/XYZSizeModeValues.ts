@@ -1,6 +1,6 @@
 import {XYZStringValues} from './XYZStringValues.js'
 
-export type SizeModeValue = 'literal' | 'proportional'
+export type SizeModeValue = 'literal' | 'l' | 'proportional' | 'p'
 
 /**
  * @class XYZSizeModeValues - Extends [`XYZValues`](./XYZValues) to enforce that
@@ -16,13 +16,15 @@ export class XYZSizeModeValues extends XYZStringValues {
 	}
 
 	get allowedValues() {
-		return ['literal', 'proportional']
+		return ['literal', 'l', 'proportional', 'p']
 	}
 
 	override checkValue(prop: 'x' | 'y' | 'z', value: SizeModeValue) {
 		if (!super.checkValue(prop, value)) return false
 		if (!this.allowedValues.includes(value))
-			throw new TypeError(`Expected ${prop} to be one of 'literal' or 'proportional'. Received: '${value}'`)
+			throw new TypeError(
+				`Expected ${prop} to be one of 'literal' ('l' for short) or 'proportional' ('p' for short). Received: '${value}'`,
+			)
 		return true
 	}
 }

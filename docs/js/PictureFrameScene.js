@@ -98,7 +98,7 @@ export const PictureFrameScene = element('picture-frame-scene')(
 				</lume-cube-layout>
 
 				${/*<!-- picture frame container -------------------------------->*/ ''}
-				<lume-node size="160 200 15" mount-point="0.5 0.5" align-point="0.5 0.5">
+				<lume-element3d size="160 200 15" mount-point="0.5 0.5" align-point="0.5 0.5">
 					${/* */ ''}
 					<lume-camera-rig
 						active="false"
@@ -120,9 +120,7 @@ export const PictureFrameScene = element('picture-frame-scene')(
 							far="10000"
 						></lume-perspective-camera>
 					</lume-camera-rig>
-					${
-						/*<lume-perspective-camera active slot="camera-child" far="100000"></lume-perspective-camera>*/ ''
-					}
+					${/*<lume-perspective-camera active slot="camera-child" far="100000"></lume-perspective-camera>*/ ''}
 					${/*<!-- picture -------------------------------->*/ ''}
 					<lume-plane
 						id="box"
@@ -136,7 +134,7 @@ export const PictureFrameScene = element('picture-frame-scene')(
 					></lume-plane>
 
 					${/*<!-- frame edges -------------------------->*/ ''}
-					<lume-node size-mode="proportional proportional" size="1 1">
+					<lume-element3d size-mode="proportional proportional" size="1 1">
 						${[
 							{
 								alignPoint: '0 0.5',
@@ -167,7 +165,7 @@ export const PictureFrameScene = element('picture-frame-scene')(
 								flipClip: true,
 							},
 						].map((frame, i) => {
-							return html`<lume-node size="0 0 15" align-point=${frame.alignPoint}>
+							return html`<lume-element3d size="0 0 15" align-point=${frame.alignPoint}>
 								<lume-shape
 									id=${'shape' + i}
 									has="clip-planes projected-material"
@@ -204,12 +202,12 @@ export const PictureFrameScene = element('picture-frame-scene')(
 										size-mode="proportional proportional"
 									></lume-plane>
 								</lume-texture-projector>
-							</lume-node>`
+							</lume-element3d>`
 						})}
-					</lume-node>
+					</lume-element3d>
 
 					${/*<!-- corner clips -------------------------->*/ ''}
-					<lume-node size-mode="proportional proportional" size="1 1">
+					<lume-element3d size-mode="proportional proportional" size="1 1">
 						${[
 							{alignPoint: '0 0', rotation: '90 45 0'},
 							{alignPoint: '1 0', rotation: '90 -45 0'},
@@ -234,8 +232,8 @@ export const PictureFrameScene = element('picture-frame-scene')(
 								</lume-clip-plane>
 							`
 						})}
-					</lume-node>
-				</lume-node>
+					</lume-element3d>
+				</lume-element3d>
 			</lume-scene>
 		`
 	},

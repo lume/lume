@@ -7,7 +7,7 @@ import {Vector3} from 'three/src/math/Vector3.js'
 import {Color} from 'three/src/math/Color.js'
 import {Matrix4} from 'three/src/math/Matrix4.js'
 import {Euler} from 'three/src/math/Euler.js'
-import {autorun, element, numberAttribute, stringAttribute, untrack} from '@lume/element'
+import {element, numberAttribute, stringAttribute, untrack} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {stringToNumberArray} from './utils.js'
@@ -315,28 +315,28 @@ export class InstancedMesh extends Mesh {
 	override _loadGL(): boolean {
 		if (!super._loadGL()) return false
 
-		this._glStopFns.push(
-			autorun(() => {
-				// Increase the InstancedMesh size (by making a new one) as needed.
-				if (this.count > this.#biggestCount) {
-					this.#biggestCount = this.count
+		this.createGLEffect(() => {
+			// Increase the InstancedMesh size (by making a new one) as needed.
+			if (this.count > this.#biggestCount) {
+				this.#biggestCount = this.count
 
-					untrack(() => this.recreateThree())
-				}
+				untrack(() => this.recreateThree())
+			}
 
-				untrack(() => (this.three.count = this.count))
+			untrack(() => (this.three.count = this.count))
 
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.rotations
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.positions
-				this.needsUpdate()
-			}),
-		)
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.rotations
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.positions
+			this.needsUpdate()
+		})
 
 		return true
 	}

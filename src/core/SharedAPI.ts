@@ -1,5 +1,5 @@
 import {Object3D} from 'three/src/core/Object3D.js'
-import {reactive, StopFunction, autorun, untrack, element} from '@lume/element'
+import {reactive, untrack, element} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
@@ -7,51 +7,44 @@ import {CSS3DObjectNested} from '../renderers/CSS3DRendererNested.js'
 import {disposeObject} from '../utils/three.js'
 import {Events} from './Events.js'
 import {Settable} from '../utils/Settable.js'
-import {defer, toRadians} from './utils.js'
+import {toRadians} from './utils/index.js'
+import {ChildTracker} from './ChildTracker.js'
+import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
+import {isDomEnvironment, isElement3D, isScene} from './utils/isThisOrThat.js'
+import {Effectful} from './Effectful.js'
 
-import type {Node} from './Node.js'
+import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
-import type {ConnectionType} from './DeclarativeBase.js'
+import type {CompositionType} from './CompositionTracker'
 import type {TransformableAttributes} from './Transformable.js'
 
-// The following isScene and isNode functions are used in order to avoid using
-// instanceof, which would mean that we would need to import Node and Scene as
-// references, which would cause a circular depdency problem. The problem exists
-// only when compiling to CommonJS modules, where the initImperativeBase trick
-// won't work because functions don't hoiste in CommonJS like they do with
-// ES-Module-compliant builds like with Webpack. We can look into the "internal
-// module" pattern to solve the issue if we wish to switch back to using
-// instanceof:
-// https://medium.com/visual-development/how-to-fix-nasty-circular-dependency-issues-once-and-for-all-in-javascript-typescript-a04c987cf0de
-
-function isScene(s: HTMLElement & {isScene?: boolean}): s is Scene {
-	return s.isScene!
-}
-
-function isNode(n: HTMLElement & {isNode?: boolean}): n is Node {
-	return n.isNode!
-}
+// Exposes the `has=""` attribute type definition for all elements in TypeScript JSX templates.
+import type {} from 'element-behaviors/src/attribute-types'
 
 const threeJsPostAdjustment = [0, 0, 0]
 const alignAdjustment = [0, 0, 0]
 const mountPointAdjustment = [0, 0, 0]
 const appliedPosition = [0, 0, 0]
 
-const elOps = new WeakMap<ImperativeBase, ElementOperations>()
+const elOps = new WeakMap<SharedAPI, ElementOperations>()
 
 const ourThreeObjects = new WeakSet<Object3D>()
 const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
 
+class GLEffects extends Effectful(Object) {}
+class CSSEffects extends Effectful(Object) {}
+
 export type BaseAttributes = TransformableAttributes
 
+// TODO @abstract jsdoc tag
 /**
  * @abstract
- * @class ImperativeBase - This is an abstract base class that provides common
- * properties and methods for the non-abstract [`Node`](./Node) and
+ * @class SharedAPI - This is an abstract base class that provides common
+ * properties and methods for the non-abstract [`Element3D`](./Element3D) and
  * [`Scene`](./Scene) custom element classes.
  *
  * This class is not intended for extension by end users. You'll want to extend
- * from [`Scene`](/api/core/Scene) or [`Node`](/api/core/Node) (or their
+ * from [`Scene`](./Scene) or [`Element3D`](./Element3D) (or their
  * subclasses) instead of this class.
  *
  * For purposes of documentation it is still useful to know what properties and
@@ -60,39 +53,44 @@ export type BaseAttributes = TransformableAttributes
  * @extends Settable
  * @extends Transformable
  */
-// TODO @abstract jsdoc tag
-
-// function makeImperativeBase() {
 @element
-export class ImperativeBase extends Settable(Transformable) {
-	// TODO re-organize variables like isScene and isNode, so they come from
-	// one place. f.e. isScene is currently also used in DeclarativeBase.
+export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
+	/** @deprecated use `.defineElement()` instead */
+	static define(name?: string) {
+		this.defineElement(name)
+	}
+
+	// TODO re-organize variables like isScene and isElement3D, so they come from a
+	// proper place. f.e. they are currently also used in CompositionTracker
+	// where they don't belong (see TODO there).
 
 	/** @property {boolean} isScene - True if a subclass of this class is a Scene. */
 	override isScene = false
 
-	/** @property {boolean} isNode - True if a subclass of this class is a Node. */
-	override isNode = false
+	/**
+	 * @property {boolean} isElement3D - True if a subclass of this class is an `Element3D`.
+	 */
+	override isElement3D = false
 
 	/**
 	 * @property {boolean} glLoaded
 	 *
-	 * *readonly*
+	 * *readonly*, *reactive*
 	 *
 	 * Returns a boolean indicating whether or not the WebGL rendering features
 	 * of a LUME element are loaded and ready.
 	 *
-	 * All nodes in a `<lume-scene>` element have WebGL rendering disabled by
+	 * All elements in a `<lume-scene>` have WebGL rendering disabled by
 	 * default.
 	 *
-	 * If a `<lume-scene>` element has the `webgl` attribute set to
+	 * If a `<lume-scene>` element has its `webgl` attribute set to
 	 * `"false"` (the default), then `glLoaded` will always return `false` for any LUME
 	 * elements in the scene.
 	 *
 	 * If a `<lume-scene>` element has the `webgl` attribute set to
-	 * `"true"`, then `glLoaded` will always return `true` for any LUME
-	 * elements in the scene only *after* WebGL APIs have been loaded
-	 * (otherwise `false` up until then).
+	 * `"true"`, then `glLoaded` will return `true` for any LUME
+	 * elements in the scene *after* their WebGL APIs have been loaded
+	 * (`false` up until then).
 	 */
 	get glLoaded(): boolean {
 		return this._glLoaded
@@ -101,28 +99,28 @@ export class ImperativeBase extends Settable(Transformable) {
 	/**
 	 * @property {boolean} cssLoaded
 	 *
-	 * *readonly*
+	 * *readonly*, *reactive*
 	 *
 	 * Returns a boolean indicating whether or not the CSS rendering features
 	 * of a LUME element are loaded and ready.
 	 *
-	 * All nodes in a `<lume-scene>` element have CSS rendering enabled by
+	 * All elements in a `<lume-scene>` have CSS rendering enabled by
 	 * default.
 	 *
-	 * If a `<lume-scene>` element has the `enableCss` attribute set to
+	 * If a `<lume-scene>` element has its `enable-css` attribute set to
 	 * `"false"`, then `cssLoaded` will always return `false` for any LUME
 	 * elements in the scene.
 	 *
-	 * If a `<lume-scene>` element has the `enableCss` attribute set to
-	 * `"true"` (the default), then `cssLoaded` will always return `true` for
-	 * any LUME elements in the scene only after CSS APIs have been loaded
-	 * (otherwise 'false' up until then).
+	 * If a `<lume-scene>` element has its `enable-css` attribute set to
+	 * `"true"` (the default), then `cssLoaded` will return `true` for
+	 * any LUME elements in the scene *after* their CSS APIs have been loaded
+	 * ('false' up until then).
 	 */
 	get cssLoaded(): boolean {
 		return this._cssLoaded
 	}
 
-	// stores a ref to this Node's root Scene when/if this Node is
+	// stores a ref to this element's root Scene when/if this element is
 	// in a scene.
 	@reactive _scene: Scene | null = null
 
@@ -201,9 +199,10 @@ export class ImperativeBase extends Settable(Transformable) {
 	 */
 	recreateThree() {
 		const children = this.__three?.children
+
 		this.__disposeThree()
 		// The three getter is used here, which makes a new instance
-		this._connectThree()
+		this.__connectThree()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.three.add(...children)
@@ -251,7 +250,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		const children = this.__threeCSS?.children
 		this.__disposeThreeCSS()
 		// The threeCSS getter is used here, which makes a new instance
-		this._connectThreeCSS()
+		this.__connectThreeCSS()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.threeCSS.add(...children)
@@ -260,87 +259,93 @@ export class ImperativeBase extends Settable(Transformable) {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this._stopFns.push(
-			autorun(() => {
-				this.scene
-				this.sizeMode
-				this.size
+		this.createEffect(() => {
+			// if (this.id === 'one' && this.scene) debugger
+			this.scene
+			this.sizeMode
+			this.size
 
-				// Code wrapped with `untrack` causes dependencies not to be
-				// tracked within that code, so it won't register more
-				// dependencies for this autorun.
-				untrack(() => {
-					// TODO: Size calculation should happen in a render task
-					// just like _calculateMatrix, instead of on each property
-					// change, unless the calculatedSize prop is acessed by the
-					// user in which case it should trigger a calculation (sort
-					// of like DOM properties that cause re-layout). We should
-					// document to prefer not to force calculation, and instead
-					// observe the property changes (f.e. with autorun()).
+			untrack(() => {
+				// TODO: Size calculation should happen in a render task
+				// just like _calculateMatrix, instead of on each property
+				// change, unless the calculatedSize prop is acessed by the
+				// user in which case it should trigger a calculation (sort
+				// of like DOM properties that cause re-layout). We should
+				// document to prefer not to force calculation, and instead
+				// observe the property changes (f.e. with createEffect()).
+				this._calcSize()
+				this.needsUpdate()
+			})
+		})
+
+		this.createEffect(() => {
+			if (!this.scene) return
+
+			// If the parent size changes,
+			this.parentSize
+
+			untrack(() => {
+				const {x, y, z} = this.sizeMode
+
+				if (
+					// then we only need to update if any size dimension is proportional,
+					x === 'proportional' ||
+					x === 'p' ||
+					y === 'proportional' ||
+					y === 'p' ||
+					z === 'proportional' ||
+					z === 'p'
+				) {
+					// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
+					// unless explicitly requested by a user (f.e. they read a prop so
+					// the size must be calculated). https://github.com/lume/lume/issues/66
 					this._calcSize()
-					this.needsUpdate()
-				})
-			}),
-			autorun(() => {
-				if (!this.scene) return
+				}
+			})
 
-				// If the parent size changes,
-				this.parentSize
+			// update regardless if we calculated size, in order to update
+			// matrices (align-point depends on parent size).
+			this.needsUpdate()
+		})
 
-				untrack(() => {
-					if (
-						// then we only need to update if any size dimension is proportional,
-						this.sizeMode.x === 'proportional' ||
-						this.sizeMode.y === 'proportional' ||
-						this.sizeMode.z === 'proportional'
-					) {
-						// TODO #66 defer _calcSize to an animation frame (via needsUpdate),
-						// unless explicitly requested by a user (f.e. they read a prop so
-						// the size must be calculated). https://github.com/lume/lume/issues/66
-						this._calcSize()
-					}
-				})
+		this.createEffect(() => {
+			this.position
+			this.rotation
+			this.scale
+			this.origin
+			this.alignPoint
+			this.mountPoint
+			this.opacity
 
-				// update regardless if we calculated size, in order to update
-				// matrices (align-point depends on parent size).
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.position
-				this.rotation
-				this.scale
-				this.origin
-				this.alignPoint
-				this.mountPoint
-				this.opacity
-
-				this.needsUpdate()
-			}),
-		)
+			this.needsUpdate()
+		})
 	}
 
 	override disconnectedCallback(): void {
 		super.disconnectedCallback()
 
-		this.__possiblyUnloadThree(this)
+		this.__unloadThree(this)
 		this._scene = null
 	}
 
 	/**
-	 * Called whenever a node is connected. This is called with
-	 * a connectionType that tells us how the node is connected
-	 * (relative to the "flat tree" or "composed tree").
+	 * Called whenever a child element is composed to this element.
+	 * This is called with a `compositionType` argument that tells us how the element is
+	 * composed relative to the ["composed tree"](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
 	 *
-	 * @param  {"root" | "slot" | "actual"} connectionType - If the value is
-	 * "root", then the child was connected as a child of a shadow root of the
-	 * current node. If the value is "slot", then the child was distributed to
-	 * the current node via a slot. If the value is "actual", then the
-	 * child was connected to the current node as a regular child
-	 * (childComposedCallback with "actual" being passed in is essentially the
-	 * same as childConnectedCallback).
+	 * @param  {"root" | "slot" | "actual"} compositionType - If the value is
+	 * `"root"`, then the child was composed as a child of a shadow root of the
+	 * current element. If the value is `"slot"`, then the child was composed (i.e. distributed, or assigned) to
+	 * the current element via a [`<slot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) element.
+	 * If the value is `"actual"`, then the child was composed to the current
+	 * element as a regular child (`childComposedCallback` with `"actual"` passed
+	 * in is essentially the same as [`ChildTracker`](./ChildTracker)'s [`childConnectedCallback`](./ChildTracker#childconnectedcallback)).
 	 */
-	override childComposedCallback(child: Element, _connectionType: ConnectionType): void {
-		if (!(child instanceof ImperativeBase)) return
+	// TODO update MDN docs on "composed trees", https://github.com/mdn/content/pull/20703
+	override childComposedCallback(child: Element, _compositionType: CompositionType): void {
+		if (!(child instanceof SharedAPI)) return
+
+		this.needsUpdate() // TODO needed??????? No harm in adding an extra call.
 
 		// This code may run during a super constructor (f.e. while constructing
 		// a Scene and it calls `super()`), therefore a Scene's _scene property
@@ -348,61 +353,68 @@ export class ImperativeBase extends Settable(Transformable) {
 		// an alternative.
 		const scene = this._scene ?? (isScene(this) && this)
 
-		if (scene) this.__giveSceneToChildrenAndMaybeLoadThree(child, scene)
+		if (scene) this.__giveSceneToChildrenAndLoadThree(child, scene)
 	}
 
-	override childUncomposedCallback(child: Element, _connectionType: ConnectionType): void {
-		if (!(child instanceof ImperativeBase)) return
-		this.__possiblyUnloadThree(child)
-		child._scene = null
+	override childUncomposedCallback(child: Element, _compositionType: CompositionType): void {
+		if (!(child instanceof SharedAPI)) return
+
+		// Update the parent because the child is gone, but the scene needs a
+		// redraw, and we can't update the child because it is already gone.
+		this.needsUpdate()
+
+		if (this._scene) {
+			child.traverseSceneGraph(el => {
+				this.__unloadThree(el)
+				el._scene = null
+			})
+		}
 	}
 
-	__giveSceneToChildrenAndMaybeLoadThree(node: ImperativeBase, scene: Scene) {
-		node.traverseSceneGraph(subnode => {
-			if (node !== this) {
-				subnode._scene = scene
-			}
-			this.__possiblyLoadThree(subnode)
+	__giveSceneToChildrenAndLoadThree(el: SharedAPI, scene: Scene) {
+		el.traverseSceneGraph(child => {
+			if (el !== this) child._scene = scene
+			this.__loadThree(child)
 		})
 	}
 
 	/** @abstract */
-	traverseSceneGraph(_visitor: (node: ImperativeBase) => void, _waitForUpgrade = false): Promise<void> | void {
-		throw 'Node and Scene implement this'
+	traverseSceneGraph(_visitor: (el: SharedAPI) => void, _waitForUpgrade = false): Promise<void> | void {
+		throw 'Element3D and Scene implement this'
 	}
 
-	__possiblyLoadThree(node: ImperativeBase): void {
+	__loadThree(el: SharedAPI): void {
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
-		if (!isNode(node)) return
+		if (!isElement3D(el)) return
 
-		node._triggerLoadGL()
-		node._triggerLoadCSS()
+		el._triggerLoadGL()
+		el._triggerLoadCSS()
 	}
 
-	__possiblyUnloadThree(node: ImperativeBase): void {
+	__unloadThree(el: SharedAPI): void {
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
-		if (!isNode(node)) return
+		if (!isElement3D(el)) return
 
-		node._triggerUnloadGL()
-		node._triggerUnloadCSS()
+		el._triggerUnloadGL()
+		el._triggerUnloadCSS()
 	}
 
 	/**
 	 * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
-	 * that parents are `ImperativeBase` (`Node` or `Scene`) instances.
+	 * that parents are `SharedAPI` (`Element3D` or `Scene`) instances.
 	 */
 	// This override serves to change the type of `parentLumeElement` for
-	// subclasses of ImperativeBase.
-	// Nodes (f.e. Mesh, Sphere, etc) and Scenes should always have parents
-	// that are Nodes or Scenes (at least for now).
+	// subclasses of SharedAPI.
+	// Element3D instances (f.e. Mesh, Sphere, etc) and Scenes should always have parents
+	// that are Element3Ds or Scenes (at least for now).
 	// @prod-prune
-	override get parentLumeElement(): ImperativeBase | null {
+	override get parentLumeElement(): SharedAPI | null {
 		const parent = super.parentLumeElement
 
 		// @prod-prune
-		if (parent && !(parent instanceof ImperativeBase)) throw new TypeError('Parent must be type ImperativeBase.')
+		if (parent && !(parent instanceof SharedAPI)) throw new TypeError('Parent must be type SharedAPI.')
 
 		return parent
 	}
@@ -412,7 +424,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * Usually you don't need to call this when using the outer APIs, as setting
 	 * attributes or properties will queue an update.
 	 *
-	 * But if you're doing something special to a Node or a Scene, f.e.
+	 * But if you're doing something special to an Element3D or a Scene, f.e.
 	 * modifying the [`.three`](#three) or [`.threeCSS`](#threeCSS) properties
 	 * whose updates are not tracked (are not reactive), you should call this so
 	 * that LUME will know to re-render the visuals for the element.
@@ -432,16 +444,16 @@ export class ImperativeBase extends Settable(Transformable) {
 	 * ```
 	 */
 	needsUpdate(): void {
-		// we don't need to render until we're connected into a tree with a scene.
+		if (!this.scene) return
+
+		// we don't need to update until we're connected into a tree with a scene.
 		// if (!this.scene || !this.isConnected) return
 		// TODO make sure we render when connected into a tree with a scene
 
-		// TODO, we already call Motor.setNodeToBeRendered(node), so instead
-		// of having a __willBeRendered property, we can have a
-		// Motor.nodeWillBeRendered(node) method.
+		// TODO, __willBeRendered can be internal to Motor (f.e. a WeakMap).
 		this.__willBeRendered = true
 
-		Motor.setNodeToBeRendered(this)
+		Motor.needsUpdate(this)
 	}
 
 	@reactive _glLoaded = false
@@ -453,10 +465,10 @@ export class ImperativeBase extends Settable(Transformable) {
 		return elOps.get(this)!
 	}
 
-	// Overrides to filter out any non-Nodes (f.e. Scenes).
-	override get composedLumeChildren(): Node[] {
-		const result: Node[] = []
-		for (const child of super.composedLumeChildren) if (isNode(child)) result.push(child)
+	// Overrides to filter out any non-Element3Ds (f.e. Scenes).
+	override get composedLumeChildren(): Element3D[] {
+		const result: Element3D[] = []
+		for (const child of super.composedLumeChildren) if (isElement3D(child)) result.push(child)
 		return result
 	}
 
@@ -495,10 +507,10 @@ export class ImperativeBase extends Settable(Transformable) {
 		return new CSS3DObjectNested(this)
 	}
 
-	_connectThree(): void {
+	__connectThree(): void {
 		this.composedSceneGraphParent?.three.add(this.three)
 
-		// Although children connect themselves during _connectThree when
+		// Although children connect themselves during __connectThree when
 		// triggered via _loadGL, we still need to do this in case a child is
 		// already loaded but the parent was re-distributed (f.e. to a different
 		// slot, in which case unload/load will happen for that parent),
@@ -511,7 +523,7 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.needsUpdate()
 	}
 
-	_connectThreeCSS(): void {
+	__connectThreeCSS(): void {
 		this.composedSceneGraphParent?.threeCSS.add(this.threeCSS)
 
 		for (const child of this.composedLumeChildren) {
@@ -521,42 +533,54 @@ export class ImperativeBase extends Settable(Transformable) {
 		this.needsUpdate()
 	}
 
-	override get composedLumeParent(): ImperativeBase | null {
+	override get composedLumeParent(): SharedAPI | null {
 		const result = super.composedLumeParent
-		if (!(result instanceof ImperativeBase)) return null
+		if (!(result instanceof SharedAPI)) return null
 		return result
 	}
 
-	get composedSceneGraphParent(): ImperativeBase | null {
+	get composedSceneGraphParent(): SharedAPI | null {
 		// read first, to track the dependency
 		const composedLumeParent = this.composedLumeParent
 
 		// check if parentLumeElement is a Scene because Scenes always have shadow
 		// roots as part of their implementation (users will not be adding
 		// shadow roots to them), and we treat distribution into a Scene shadow
-		// root different than with all other Nodes (users can add shadow roots
-		// to those). Otherwise _distributedParent for a lume-node that is
+		// root different than with all other Element3Ds (users can add shadow roots
+		// to those). Otherwise _distributedParent for a lume-element3d that is
 		// child of a lume-scene will be a non-LUME element that is inside of
 		// the lume-scene's ShadowRoot, and things will not work in that case
-		// because the top-level Node elements will seem to not be composed to
-		// any Scene element.
+		// because the top-level Element3D elements will not be composed to
+		// the Scene element itself. TODO: perhaps the Scene can make the
+		// connection by observing the children in its ShadowRoot.
 
 		if (this.parentLumeElement?.isScene) return this.parentLumeElement
 		return composedLumeParent
 	}
 
-	_glStopFns: StopFunction[] = []
+	#glEffects = new GLEffects()
+
+	createGLEffect(fn: () => void) {
+		this.#glEffects.createEffect(fn)
+	}
+
+	#stopGLEffects() {
+		this.#glEffects.stopEffects()
+	}
 
 	_loadGL(): boolean {
 		if (!(this.scene && this.scene.webgl)) return false
 
 		if (this._glLoaded) return false
 
+		// create the object in case it isn't already (via the getter)
+		const three = this.three
+
 		// we don't let Three update local matrices automatically, we do
 		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
-		this.three.matrixAutoUpdate = false
+		three.matrixAutoUpdate = false
 
-		this._connectThree()
+		this.__connectThree()
 		this.needsUpdate()
 
 		this._glLoaded = true
@@ -566,8 +590,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	_unloadGL(): boolean {
 		if (!this._glLoaded) return false
 
-		for (const stop of this._glStopFns) stop()
-		this._glStopFns.length = 0
+		this.#stopGLEffects()
 
 		this.__disposeThree()
 		this.needsUpdate()
@@ -576,18 +599,29 @@ export class ImperativeBase extends Settable(Transformable) {
 		return true
 	}
 
-	_cssStopFns: StopFunction[] = []
+	#cssEffects = new CSSEffects()
+
+	createCSSEffect(fn: () => void) {
+		this.#cssEffects.createEffect(fn)
+	}
+
+	#stopCSSEffects() {
+		this.#cssEffects.stopEffects()
+	}
 
 	_loadCSS(): boolean {
 		if (!(this.scene && this.scene.enableCss)) return false
 
 		if (this._cssLoaded) return false
 
+		// create the object in case it isn't already (via the getter)
+		const threeCSS = this.threeCSS
+
 		// We don't let Three update local matrices automatically, we do
 		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree.
-		this.threeCSS.matrixAutoUpdate = false
+		threeCSS.matrixAutoUpdate = false
 
-		this._connectThreeCSS()
+		this.__connectThreeCSS()
 		this.needsUpdate()
 
 		this._cssLoaded = true
@@ -597,8 +631,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	_unloadCSS(): boolean {
 		if (!this._cssLoaded) return false
 
-		for (const stop of this._cssStopFns) stop()
-		this._cssStopFns.length = 0
+		this.#stopCSSEffects()
 
 		this.__disposeThreeCSS()
 		this.needsUpdate()
@@ -612,7 +645,7 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		this.emit(Events.BEHAVIOR_GL_LOAD, this)
 
-		defer(async () => {
+		queueMicrotask(async () => {
 			// FIXME Can we get rid of the code deferral here? Without the
 			// deferral of a total of three microtasks, then GL_LOAD may
 			// fire before behaviors have loaded GL (when their
@@ -631,7 +664,7 @@ export class ImperativeBase extends Settable(Transformable) {
 	_triggerUnloadGL(): void {
 		if (!this._unloadGL()) return
 		this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
-		defer(() => this.emit(Events.GL_UNLOAD, this))
+		queueMicrotask(() => this.emit(Events.GL_UNLOAD, this))
 	}
 
 	_triggerLoadCSS(): void {
@@ -647,12 +680,8 @@ export class ImperativeBase extends Settable(Transformable) {
 
 	/**
 	 * Takes all the current component values (position, rotation, etc) and
-	 * calculates a transformation DOMMatrix from them. See "W3C Geometry
-	 * Interfaces" to learn about DOMMatrix.
-	 *
-	 * @method
-	 * @private
-	 * @memberOf Node
+	 * calculates a transformation matrix from them (currently a THREE.Matrix4,
+	 * but it used to be a DOMMatrix).
 	 *
 	 * TODO #66: make sure this is called after size calculations when we
 	 * move _calcSize to a render task.
@@ -834,9 +863,9 @@ export class ImperativeBase extends Settable(Transformable) {
 	/**
 	 * This is called by Motor on each update before the GL or CSS renderers
 	 * will re-render. This does not fire repeatedly endlessly, it only fires
-	 * (in the next animation frame) as a response to modifying any of a node's
-	 * properties/attributes (modifying a property enqueues a render task which
-	 * calls update).
+	 * (in the next animation frame) as a response to modifying any of an
+	 * Element3D's properties/attributes (modifying a property enqueues a render
+	 * task that calls update).
 	 */
 	update(_timestamp: number, _deltaTime: number): void {
 		this._updateRotation()
@@ -846,15 +875,11 @@ export class ImperativeBase extends Settable(Transformable) {
 		// changed, only if position/align/mountPoint changed, etc)
 		this._calculateMatrix()
 
-		// TODO, pass the needed data into the elementOperations calls,
-		// instead of relying on ElementOperations knowing about
-		// non-HTMLElement features. See the TODOs in __applyStyle and
-		// __applyOpacity there.
 		this._elementOperations.applyProperties()
 	}
 
-	// This method is used by Motor._renderNodes().
-	getNearestAncestorThatShouldBeRendered(): ImperativeBase | null {
+	// Internal, this method is used by Motor.#updateElements().
+	__getNearestAncestorThatShouldBeUpdated(): SharedAPI | null {
 		let composedSceneGraphParent = this.composedSceneGraphParent
 
 		while (composedSceneGraphParent) {
@@ -864,20 +889,140 @@ export class ImperativeBase extends Settable(Transformable) {
 
 		return null
 	}
+
+	/** @deprecated Use `addEventListener()` instead. */
+	override on(eventName: string, callback: Function, context?: any) {
+		super.on(eventName, callback, context)
+	}
+
+	/** @deprecated Use `dispatchEvent()` instead. */
+	override emit(eventName: string, data?: any) {
+		super.emit(eventName, data)
+	}
+
+	override childConnectedCallback(child: Element) {
+		// This code handles two cases: the element has a ShadowRoot
+		// ("composed children" are children of the ShadowRoot), or it has a
+		// <slot> child ("composed children" are elements that may be
+		// distributed to the <slot>).
+		if (isElement3D(child)) {
+			// We skip Scene here because we know it already has a
+			// ShadowRoot that serves a different purpose than for Element3Ds. A
+			// Scene child's three objects will always be connected to the
+			// scene's three object regardless of its ShadowRoot.
+			if (!this.isScene && this.__shadowRoot) {
+				child.__isPossiblyDistributedToShadowRoot = true
+
+				// We don't call childComposedCallback here because that
+				// will be called indirectly due to a slotchange event on a
+				// <slot> element if the added child will be distributed to
+				// a slot.
+			} else {
+				// If there's no shadow root, call the childComposedCallback
+				// with connection type "actual". This is effectively a
+				// regular parent-child composition (no distribution, no
+				// children of a ShadowRoot).
+
+				this.__triggerChildComposedCallback(child, 'actual')
+			}
+		} else if (child instanceof HTMLSlotElement) {
+			// COMPOSED TREE TRACKING: Detecting slots here is part of composed
+			// tree tracking (detecting when a child is distributed to an element).
+
+			child.addEventListener('slotchange', this.__onChildSlotChange)
+
+			// XXX Do we need __handleDistributedChildren for initial slotted
+			// elements? The answer seems to be "yes, sometimes". When slots are
+			// appended, their slotchange events will fire. However, this
+			// `childConnectedCallback` is fired later from when a child is
+			// actually connected, in a MutationObserver task. Because of this,
+			// an appended slot's slotchange event *may* have already fired,
+			// and we will not have had the chance to add a slotchange event
+			// handler yet, therefore we need to fire
+			// __handleDistributedChildren here to handle that missed
+			// opportunity.
+			//
+			// Also we need to defer() here because otherwise, this
+			// childConnectedCallback will fire once for when a child is
+			// connected into the light DOM and run the logic in the `if
+			// (isElement3D(child))` branch *after* childConnectedCallback is fired
+			// and executes this __handleDistributedChildren call for a shadow
+			// DOM slot, and in that case the distribution will not be detected
+			// (why is that?).  By deferring, this __handleDistributedChildren
+			// call correctly happens *after* the above `if (isElement3D(child))`
+			// branch and then things will work as expected. This is all due to
+			// using MutationObserver, which fires event in a later task than
+			// when child connections actually happen.
+			//
+			// TODO ^, Can we make WithChildren call this callback right when
+			// children are added, synchronously?  If so then we could rely on
+			// a slot's slotchange event upon it being connected without having
+			// to call __handleDistributedChildren here (which means also not
+			// having to use defer for anything).
+			queueMicrotask(() => this.__handleDistributedChildren(child))
+		}
+	}
+
+	override childDisconnectedCallback(child: Element) {
+		if (isElement3D(child)) {
+			if (!this.isScene && this.__shadowRoot) {
+				child.__isPossiblyDistributedToShadowRoot = false
+			} else {
+				// If there's no shadow root, call the
+				// childUncomposedCallback with connection type "actual".
+				// This is effectively similar to childDisconnectedCallback.
+				this.__triggerChildUncomposedCallback(child, 'actual')
+			}
+		} else if (child instanceof HTMLSlotElement) {
+			// COMPOSED TREE TRACKING:
+			child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
+
+			this.__handleDistributedChildren(child)
+			this.__previousSlotAssignedNodes.delete(child)
+		}
+	}
+
+	// TODO: make setAttribute accept non-string values.
+	override setAttribute(attr: string, value: any) {
+		super.setAttribute(attr, value)
+	}
+
+	// FIXME This object/array spreading and cloning is sloooooooow, and becomes
+	// apparent the more ShadowRoots a tree has.
+	override get _composedChildren(): SharedAPI[] {
+		if (!this.isScene && this.__shadowRoot) {
+			// FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
+			return [
+				...(this._distributedShadowRootChildren.filter(n => n instanceof SharedAPI) as SharedAPI[]),
+				...(this._shadowRootChildren.filter(n => n instanceof SharedAPI) as SharedAPI[]),
+			]
+		} else {
+			// FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
+			return [
+				// TODO perhaps use slot.assignedElements instead?
+				...([...(this.__distributedChildren || [])].filter(n => n instanceof SharedAPI) as SharedAPI[]),
+
+				// We only care about other elements of the same type.
+				...Array.from(this.children).filter((n): n is SharedAPI => n instanceof SharedAPI),
+			]
+		}
+	}
 }
 
-window.addEventListener('error', event => {
-	const error = event.error
+if (isDomEnvironment()) {
+	globalThis.addEventListener('error', event => {
+		const error = event.error
 
-	// sometimes it can be `null` (f.e. for ScriptErrors).
-	if (!error) return
+		// sometimes it can be `null` (f.e. for ScriptErrors).
+		if (!error) return
 
-	if (/Illegal constructor/i.test(error.message)) {
-		console.error(`
-			One of the reasons the following error can happen is if a Custom
-			Element is called with 'new' before being defined. Did you forget
-			to call 'LUME.defineElements()'?  For other reasons, see:
-			https://www.google.com/search?q=chrome%20illegal%20constructor
-        `)
-	}
-})
+		if (/Illegal constructor/i.test(error.message)) {
+			console.error(`
+				One of the reasons the following error can happen is if a Custom
+				Element is called with 'new' before being defined. Did you forget
+				to call 'LUME.defineElements()'?  For other reasons, see:
+				https://www.google.com/search?q=chrome%20illegal%20constructor
+			`)
+		}
+	})
+}

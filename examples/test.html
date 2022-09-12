@@ -1,44 +1,29 @@
-<!DOCTYPE html>
-<html>
-	<!-- TODO: fix this pen, it gets a "script error": https://codepen.io/trusktr/pen/438171a66db3a0597171483f9ee2eaa5?editors=1010 -->
-	<head>
-		<title>test</title>
+<script src="./wrapper.js" title="test"></script>
 
-		<style>
-			body,
-			html {
-				font-family: sans-serif;
-				width: 100%;
-				height: 100%;
-				margin: 0;
-				padding: 0;
-				overflow: hidden;
-				background: #0e99d9;
-			}
-		</style>
+<!-- TODO: fix this pen, it gets a "script error": https://codepen.io/trusktr/pen/438171a66db3a0597171483f9ee2eaa5?editors=1010 -->
 
-		<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
-		<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
-	</head>
-	<body>
-		<!-- Render something below the scene to test transparency -->
-		<!-- <style> lume-scene {position:absolute!important; top:0; left:0;} </style>
+<style>
+	body {
+		font-family: sans-serif;
+		background: #0e99d9;
+	}
+</style>
+
+<!-- Render something below the scene to test transparency -->
+<!-- <style> lume-scene {position:absolute!important; top:0; left:0;} </style>
         <p>This is some text below the scene.</p> -->
 
-		<!--This script only defines classes.-->
-		<script src="global.js"></script>
+<script>
+	console.log('--- beginning of body')
+</script>
 
-		<script>
-			console.log('--- beginning of body')
-		</script>
+<!-- WORKS ======================================================== -->
 
-		<!-- WORKS ======================================================== -->
-
-		<style>
+<!-- <style>
 			lume-mixed-plane {
 				text-align: center;
 			}
-			lume-node {
+			lume-element3d {
 				color: royalblue;
 			}
 			button {
@@ -51,7 +36,6 @@
 			}
 		</style>
 
-		<!-- works here -->
 		<script>
 			LUME.defineElements()
 		</script>
@@ -59,20 +43,13 @@
 		<lume-scene
 			webgl="true"
 			id="scene"
-			TODO-perspective="800"
-			TODO-background-color="rgb(0,0,0)"
-			TODO-background-opacity="1"
+			perspective="500"
 			shadowmap-type="pcfsoft"
 			shadowmap-type-comment="It should be one of basic, pcf, or pcfsoft"
 		>
 			<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-			<lume-mixed-plane
-				size-mode="proportional proportional"
-				size="1 1 0"
-				style="background: #0e99d9"
-				color="#252525"
-			>
+			<lume-mixed-plane size-mode="proportional proportional" size="1 1 0" style="background: #0e99d9" color="#252525">
 				<h1>HTML content, with lighting and shadows!</h1>
 
 				<lume-mixed-plane
@@ -86,13 +63,8 @@
 				</lume-mixed-plane>
 			</lume-mixed-plane>
 
-			<lume-node id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
-				<lume-mixed-plane
-					size="200 200 0"
-					mount-point="0.5 0.5 0.5"
-					style="background: #a1d490"
-					color="#444444"
-				>
+			<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
+				<lume-mixed-plane size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
 					<h1>Hello</h1>
 				</lume-mixed-plane>
 
@@ -134,13 +106,7 @@
 					</lume-mixed-plane>
 				</lume-mixed-plane>
 
-				<lume-box
-					id="cube"
-					size="50 50 50"
-					mount-point="0.5 0 0.5"
-					position="-60 20 80"
-					color="#ff6157"
-				></lume-box>
+				<lume-box id="cube" size="50 50 50" mount-point="0.5 0 0.5" position="-60 20 80" color="#ff6157"></lume-box>
 
 				<lume-mesh
 					id="lightMesh"
@@ -159,11 +125,13 @@
 						intensity="0.5"
 					></lume-point-light>
 				</lume-mesh>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<script>
 			const {Motor, Events} = LUME
+
+			// LUME.defineElements()
 
 			// TODO expose as props/attributes
 			light.three.shadow.radius = 5
@@ -202,405 +170,365 @@
 			// destroyed and re-created, only the CSS styling is being removed
 			// and then added back but otherwise the DOM objects are already instantiated.
 			setInterval(() => {
-				if ((scene.disableCss && !scene.webgl) || (!scene.disableCss && scene.webgl))
-					scene.disableCss = !scene.disableCss
+				if ((!scene.enableCss && !scene.webgl) || (scene.enableCss && scene.webgl)) scene.enableCss = !scene.enableCss
 				else scene.webgl = !scene.webgl
 			}, 2000)
+		</script> -->
+
+<!-- TEST ======================================================== -->
+
+<!-- <script type="comment">
+			TODO: Z align of "1" places items at the front of the cube
+			space, but the parent DOM element is rendered in the middle
+			of the cube space on Z.  Where should a DOM element be
+			rendered in the cube space on Z? Perhaps mount-point should
+			dictate where the DOM element is in the cube space on Z.
 		</script>
-
-		<!-- TEST ======================================================== -->
-		<!--
-        TODO do we need this test?
-        <!~~ works here ~~>
-        <script>
-            LUME.defineElements()
-        </script>
-
-        <style>
-            html, body { background: #333; }
-
-            lume-node { background: deeppink; border: 1px solid yellow }
-
-            div {
-                position: absolute; top: 50%; left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-            }
-        </style>
-
-        <lume-scene
-            webgl="true"
-            backgroundColor="rgb(0,0,0)"
-            backgroundOpacity="0"
-        >
-            <lume-ambient-light color="white"></lume-ambient-light>
-            <lume-node id="n"
-                size-mode="proportional proportional"
-                size="0.25 0.25"
-                align-point="0.5 0.5"
-                mount-point="0.5 0.5"
-            >
-                <!~~ TODO: align 1 places items at the front of the cube space, but the parent DOM element is rendered at the back of the cube space.
-                Where should a DOM element (or Plane) be rendered in the cube space, and where is align 0 and 1 relative to it? ~~>
-                <lume-plane align-point="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 0 1" id="a" color="cyan" map="BG_Map.png"></lume-plane>
-                <lume-node  align-point="0.5 0.5 1" mount-point="0.5 0.5 0" size="100 250 0" position="0 250 2" id="b">HELLO</lume-node>
-            </lume-node>
-        </lume-scene>
-
-        <!~~ <script>
-            LUME.defineElements()
-        </script> ~~>
-
-        <script>
-            const n = document.querySelector('#n')
-
-            // TODO: document that it must be ++y and not y++
-            // n.rotation = (x, y, z) => [x, ++y, z] // works
-            // n.rotation = (x, y, z) => [x, y++, z] // doesn't work!
-        </script>
- -->
-
-		<!-- WORKS ======================================================== -->
-		<!--         <lume-scene
-            webgl="true"
-            backgroundColor="rgb(0,0,0)"
-            backgroundOpacity="0"
-        >
-            <lume-ambient-light color="white"></lume-ambient-light>
-            <lume-node id="n">
-                <lume-plane size="100 250 0" color="white" map="BG_Map.png"></lume-plane>
-                <lume-node size="100 250 0" position="0 250 0">hello</lume-node>
-            </lume-node>
-        </lume-scene>
-        <script>
-            LUME.defineElements()
-            const n = document.querySelector('#n')
-            <!~~ n.rotation = (x, y, z) => [x, y++, z] ~~>
-            LUME.Motor.addRenderTask(() => {
-                n.rotation.y++
-            })
-        </script>
- -->
-		<!-- WORKS ======================================================== -->
-		<!--
-        <script>
-            LUME.defineElements()
-        </script>
-
-        <style>
-            html, body { background: #333; }
-
-            lume-node { background: deeppink; }
-
-            div {
-                position: absolute; top: 50%; left: 50%;
-                transform: translate(-50%, -50%);
-                text-align: center;
-            }
-        </style>
-
-        <lume-scene>
-            <lume-node
-                size-mode="proportional proportional"
-                sizeMode="proportional proportional"
-                size="0.75 0.75"
-                align-point="0.5 0.5"
-                mount-point="0.5 0.5"
-                mountPoint="0.5 0.5"
-            >
-                <div> Hello 3D </div>
-            </lume-node>
-        </lume-scene>
-
-        <script>
-            const node = document.querySelector('lume-node')
-            node.rotation = ( x, y, z ) => [ x, ++y, z ] // increment Y rotation only
-        </script>
- -->
-		<!-- WORKS ======================================================== -->
-		<!--
-               -<lume-scene webgl="true">
-               -    <lume-box size="10 10 10" has="basic-material" color="pink"></lume-box>
-               -    <lume-perspective-camera
-               -        active="true"
-               -        fov="45"
-               -        aspect="1.9"
-               -        near="0.1"
-               -        far="100"
-               -        position="0 0 -10"
-               -    ></lume-perspective-camera>
-               -</lume-scene>
-               -<script>
-               -    LUME.defineElements()
-               -    const scene = document.querySelector('lume-scene')
-               -    const cam = document.querySelector('lume-perspective-camera')
-               -</script>
-               -->
-
-		<!-- WORKS ======================================================== -->
-		<!--
-           -<script>
-           -    console.log('  ---- define elements ---- ')
-           -    LUME.defineElements()
-           -</script>
-           -<lume-scene>
-           -    <lume-node size="100 100 100" rotation="30 30 30">
-           -        <p> hello </p>
-           -        <lume-node sizeMode="proportional literal" size="0.5 100 100">
-           -            <p> there </p>
-           -        </lume-node>
-           -    </lume-node>
-           -</lume-scene>
-           -->
-
-		<!-- WORKS ======================================================== -->
-		<!--<lume-scene>-->
-		<!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--        <p> hello </p>-->
-		<!--    </lume-node>-->
-		<!--</lume-scene>-->
-		<!--<script>-->
-		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.defineElements()-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.defineElements()-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('beforeend', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('beforeend', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.defineElements()-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    setTimeout(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    }, 0)-->
-		<!--</script>-->
-		<!--<lume-scene>-->
-		<!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--        <p> hello </p>-->
-		<!--    </lume-node>-->
-		<!--</lume-scene>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    setTimeout(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    }, 0)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('beforeend', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    setTimeout(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    }, 0)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.write(`-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.defineElements()-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.write(`-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--document.write(`-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--    console.log('  ---- define elements ---- ')-->
-		<!--    LUME.defineElements()-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.write(`-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--document.write(`-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-		<!--<lume-scene>-->
-		<!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--        <p> hello </p>-->
-		<!--    </lume-node>-->
-		<!--</lume-scene>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<lume-scene>-->
-		<!--    <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--        <p> hello </p>-->
-		<!--    </lume-node>-->
-		<!--</lume-scene>-->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('beforeend', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('beforeend', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('afterbegin', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-
-		<!-- WORKS ======================================================== -->
-		<!--<script>-->
-		<!--document.body.insertAdjacentHTML('afterbegin', `-->
-		<!--    <lume-scene>-->
-		<!--        <lume-node absoluteSize="100 100 100" rotation="30 30 30">-->
-		<!--            <p> hello </p>-->
-		<!--        </lume-node>-->
-		<!--    </lume-scene>-->
-		<!--`)-->
-		<!--</script>-->
-		<!--<script>-->
-		<!--    Promise.resolve().then(() => {-->
-		<!--        console.log('  ---- define elements ---- ')-->
-		<!--        LUME.defineElements()-->
-		<!--    })-->
-		<!--</script>-->
 
 		<script>
-			console.log('--- end of body')
+			// LUME.defineElements()
 		</script>
-	</body>
-</html>
+
+		<style>
+			html,
+			body {
+				background: #333;
+			}
+
+			lume-mixed-plane {
+				background: deeppink;
+				border: 1px solid yellow;
+			}
+		</style>
+
+		<lume-scene webgl>
+			<lume-ambient-light color="white"></lume-ambient-light>
+			<lume-mixed-plane
+				id="n"
+				material-opacity="0.3"
+				color="#333"
+				size-mode="proportional proportional"
+				size="0.25 0.25 200"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+			>
+				HELLO
+				<lume-box size-mode="proportional proportional proportional" size="1 1 1" opacity="0.2"></lume-box>
+				<lume-plane
+					align-point="0.5 0.5 1"
+					mount-point="0.5 0.5 0"
+					size="100 250 0"
+					position="0 0 1"
+					id="a"
+					color="cyan"
+					sidedness="double"
+				></lume-plane>
+				<lume-mixed-plane
+					material-opacity="0.3"
+					color="#333"
+					align-point="0.5 0.5 1"
+					mount-point="0.5 0.5 0"
+					size="100 250 0"
+					position="0 250 2"
+					id="b"
+				>
+					HELLO
+				</lume-mixed-plane>
+			</lume-mixed-plane>
+		</lume-scene>
+
+		<script>
+			LUME.defineElements()
+		</script>
+
+		<script>
+			document.querySelector('#n').rotation = (x, y, z) => [x, (y += 0.3), z] // works
+		</script> -->
+
+<!-- WORKS ======================================================== -->
+
+<!-- <lume-scene webgl="true">
+			<lume-box size="100 100 100" has="basic-material" color="pink"></lume-box>
+			<lume-perspective-camera
+				TODO-mode="choose mode: render in CSS pixels, or 1 meter units like Three.js"
+				active="true"
+				fov="45"
+				aspect="1.9"
+				near="0.1"
+				far="1000"
+				position="0 0 400"
+			></lume-perspective-camera>
+		</lume-scene>
+		<script>
+			LUME.defineElements()
+		</script> -->
+
+<!-- WORKS ======================================================== -->
+
+<script>
+	LUME.defineElements()
+</script>
+<style>
+	lume-element3d {
+		border: 1px solid deeppink;
+	}
+</style>
+<lume-scene id="s">
+	<lume-element3d id="a" size-mode="proportional proportional" size="1 1"></lume-element3d>
+	<lume-element3d id="b" size="100 100 0" rotation="30 30 30" align-point="0 0">
+		<p>hello</p>
+		<lume-element3d id="c" size-mode="proportional literal" size="0.5 100 0" position="0 30">
+			<p>there</p>
+		</lume-element3d>
+	</lume-element3d>
+</lume-scene>
+
+<!-- WORKS ======================================================== -->
+<!--<lume-scene>-->
+<!--    <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--        <p> hello </p>-->
+<!--    </lume-element3d>-->
+<!--</lume-scene>-->
+<!--<script>-->
+<!--    console.log('  ---- define elements ---- ')-->
+<!--    LUME.defineElements()-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    console.log('  ---- define elements ---- ')-->
+<!--    LUME.defineElements()-->
+<!--</script>-->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('beforeend', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('beforeend', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+<!--<script>-->
+<!--    console.log('  ---- define elements ---- ')-->
+<!--    LUME.defineElements()-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    setTimeout(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    }, 0)-->
+<!--</script>-->
+<!--<lume-scene>-->
+<!--    <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--        <p> hello </p>-->
+<!--    </lume-element3d>-->
+<!--</lume-scene>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    setTimeout(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    }, 0)-->
+<!--</script>-->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('beforeend', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    setTimeout(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    }, 0)-->
+<!--</script>-->
+<!--<script>-->
+<!--document.write(`-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    console.log('  ---- define elements ---- ')-->
+<!--    LUME.defineElements()-->
+<!--</script>-->
+<!--<script>-->
+<!--document.write(`-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--document.write(`-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+<!--<script>-->
+<!--    console.log('  ---- define elements ---- ')-->
+<!--    LUME.defineElements()-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+<!--<script>-->
+<!--document.write(`-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--document.write(`-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+<!--<lume-scene>-->
+<!--    <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--        <p> hello </p>-->
+<!--    </lume-element3d>-->
+<!--</lume-scene>-->
+
+<!-- WORKS ======================================================== -->
+<!--<lume-scene>-->
+<!--    <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--        <p> hello </p>-->
+<!--    </lume-element3d>-->
+<!--</lume-scene>-->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('beforeend', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('beforeend', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('afterbegin', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+
+<!-- WORKS ======================================================== -->
+<!--<script>-->
+<!--document.body.insertAdjacentHTML('afterbegin', `-->
+<!--    <lume-scene>-->
+<!--        <lume-element3d absoluteSize="100 100 100" rotation="30 30 30">-->
+<!--            <p> hello </p>-->
+<!--        </lume-element3d>-->
+<!--    </lume-scene>-->
+<!--`)-->
+<!--</script>-->
+<!--<script>-->
+<!--    Promise.resolve().then(() => {-->
+<!--        console.log('  ---- define elements ---- ')-->
+<!--        LUME.defineElements()-->
+<!--    })-->
+<!--</script>-->
+
+<script>
+	console.log('--- end of body')
+</script>

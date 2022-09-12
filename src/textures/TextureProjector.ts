@@ -2,15 +2,15 @@
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
 import {booleanAttribute, element, ElementAttributes, reactive, stringAttribute} from '@lume/element'
-import {createEffect, createRoot} from 'solid-js'
+import {createEffect} from 'solid-js'
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial'
 import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 
-type TextureProjectorAttributes = NodeAttributes | 'src' | 'fitment'
+type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
 // | 'frontFacesOnly'
 
 /**
@@ -40,10 +40,10 @@ type TextureProjectorAttributes = NodeAttributes | 'src' | 'fitment'
  *   new Vue({ el: '#projectedTextureExample', data: { code: projectedTextureExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
  * </script>
  *
- * @extends Node
+ * @extends Element3D
  */
 @element('lume-texture-projector', autoDefineElements)
-export class TextureProjector extends Node {
+export class TextureProjector extends Element3D {
 	// This element is only a data and camera container, and
 	// ProjectedMaterialBehavior reacts to the properties.
 
@@ -114,9 +114,7 @@ export class TextureProjector extends Node {
 		// 	this._camera!.rotation.y += 0.005
 		// })
 
-		createRoot(stop => {
-			this._glStopFns.push(stop)
-
+		this.createGLEffect(() => {
 			// CAM HELPER
 			// const sphere = new Mesh(new SphereGeometry(10), new MeshPhongMaterial({color: 'white'}))
 			// this._camera!.add(sphere)

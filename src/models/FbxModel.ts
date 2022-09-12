@@ -1,10 +1,10 @@
 import {element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {FbxModelBehavior, FbxModelBehaviorAttributes} from '../behaviors/mesh-behaviors/models/FbxModelBehavior.js'
 
-export type FbxModelAttributes = NodeAttributes
+export type FbxModelAttributes = Element3DAttributes
 
 /**
  * @element lume-fbx-model
@@ -33,7 +33,7 @@ export type FbxModelAttributes = NodeAttributes
  * ```
  */
 @element('lume-fbx-model', autoDefineElements)
-export class FbxModel extends Node {
+export class FbxModel extends Element3D {
 	static override defaultBehaviors = ['fbx-model']
 }
 
@@ -51,7 +51,7 @@ declare global {
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-fbx-model': JSX.IntrinsicElements['lume-node'] &
+			'lume-fbx-model': JSX.IntrinsicElements['lume-element3d'] &
 				ElementAttributes<FbxModelBehavior, FbxModelBehaviorAttributes>
 		}
 	}

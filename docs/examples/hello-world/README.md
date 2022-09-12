@@ -31,8 +31,8 @@
     color="white"
   ></lume-sphere>
   <!-- Sun light -->
-  <lume-node size="0 0" rotation="0 -50 0">
-    <lume-node size="0 0" rotation="10 0 0">
+  <lume-element3d size="0 0" rotation="0 -50 0">
+    <lume-element3d size="0 0" rotation="10 0 0">
       <lume-point-light
         id="light"
         size="0 0"
@@ -44,11 +44,11 @@
         shadow-map-height="2048"
         shadow-camera-far="20000"
       ></lume-point-light>
-    </lume-node>
-  </lume-node>
+    </lume-element3d>
+  </lume-element3d>
   <!-- Earth -->
-  <lume-node size="0 0 0">
-    <lume-node rotation="0 180 0">
+  <lume-element3d size="0 0 0">
+    <lume-element3d rotation="0 180 0">
       <lume-sphere
         id="earth"
         texture="${location.origin+location.pathname}examples/hello-world/earthmap1k.jpg"
@@ -68,9 +68,9 @@
           color="white"
         ></lume-sphere>
       </lume-sphere>
-    </lume-node>
-    <lume-node rotation="90 10 0">
-      <lume-node id="moonRotator" rotation="0 0 110">
+    </lume-element3d>
+    <lume-element3d rotation="90 10 0">
+      <lume-element3d id="moonRotator" rotation="0 0 110">
         <lume-sphere
           id="moon"
           texture="${location.origin+location.pathname}examples/hello-world/moon.jpg"
@@ -79,9 +79,9 @@
           mount-point="0.5 0.5 0.5"
           color="white"
         ></lume-sphere>
-      </lume-node>
-    </lume-node>
-  </lume-node>
+      </lume-element3d>
+    </lume-element3d>
+  </lume-element3d>
 </lume-scene>
 
 <style>
@@ -91,6 +91,7 @@
     width: 100%;
     height: 100%;
     margin: 0;
+    overflow: hidden;
   }
 
   lume-scene {

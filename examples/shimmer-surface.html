@@ -1,20 +1,8 @@
-<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
-<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
-
-<div class="shimmerSurface">
-	<div class="shimmerSurfaceContent"></div>
-</div>
+<script src="./wrapper.js" title="shimmer-surface"></script>
 
 <style>
-	html,
 	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		/* background: #364659; */
-		/* background: #293442; */
-		background: #1e2630;
+		background: #293442;
 	}
 
 	@keyframes ShimmerEffect {
@@ -28,6 +16,8 @@
 	.shimmerSurface {
 		overflow: hidden;
 		perspective: 100000px;
+		width: 100%;
+		height: 100%;
 	}
 	.shimmerSurfaceContent {
 		transform-style: preserve-3d;
@@ -40,6 +30,10 @@
 		animation: ShimmerEffect 1.8s cubic-bezier(0.75, 0, 0.25, 1) infinite;
 	}
 </style>
+
+<div class="shimmerSurface">
+	<div class="shimmerSurfaceContent"></div>
+</div>
 
 <script async>
 	// emulate jank every 2 seconds to show that the CSS animation keeps going while the JS thread is busy.

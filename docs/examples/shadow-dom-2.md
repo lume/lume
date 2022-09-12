@@ -14,9 +14,9 @@
 	<lume-point-light intensity="0.6"></lume-point-light>
 	<lume-point-light align-point="0.5 0.5" position="300 0 300"></lume-point-light>
 	<lume-box id="node" size="100 100 100" rotation="0 -70 0" align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" color="cornflowerblue">
-		<lume-node align-point="0 1 1" size="100 100">
+		<lume-element3d align-point="0 1 1" size="100 100">
 			<h3 align="center">Hello 3D world!</h3>
-		</lume-node>
+		</lume-element3d>
 	</lume-box>
 </div>
 

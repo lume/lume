@@ -1,17 +1,6 @@
-<title>origin</title>
-
-<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
-<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+<script src="./wrapper.js" title="mount-point"></script>
 
 <style>
-	html,
-	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-	}
-
 	html,
 	body {
 		background: #333;
@@ -49,21 +38,21 @@
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
 	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
 
-	<lume-node id="root" size="0 0 0" align-point="0.5 0.5 0.5" rotation="-10 30 0">
+	<lume-element3d id="root" size="0 0 0" align-point="0.5 0.5 0.5" rotation="-10 30 0">
 		<!-- prettier-ignore -->
-		<lume-node>
+		<lume-element3d>
 			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
 			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150" color="springgreen"></lume-sphere>
-		</lume-node>
+		</lume-element3d>
 
 		<!-- axis helpers -->
 		<!-- prettier-ignore -->
-		<lume-node>
+		<lume-element3d>
 			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-mixed-plane>
 			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-mixed-plane>
 			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-mixed-plane>
 			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-mixed-plane>
-		</lume-node>
+		</lume-element3d>
 
 		<!-- prettier-ignore -->
 		<lume-box class="cube" mount-point="0.5 0.5 0" align-point="0.5 0.5 0" size="100 100 100">
@@ -77,10 +66,9 @@
 			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" color="springgreen"></lume-sphere>
 			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-mixed-plane>
 		</lume-box>
-	</lume-node>
+	</lume-element3d>
 </lume-scene>
 
-<script src="global.js"></script>
 <script>
 	LUME.defineElements()
 

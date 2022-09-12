@@ -1,4 +1,4 @@
-import {createEffect, on} from 'solid-js'
+import {createEffect, createRoot, on} from 'solid-js'
 import {attribute, element} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
@@ -25,7 +25,7 @@ const opacity = new WeakMap<Transformable, number>()
 
 /**
  * @class Transformable - A class containing transform-related features for all
- * `Node` and `Scene` elements: rotation, position, scale, mount-point,
+ * `Element3D` and `Scene` elements: rotation, position, scale, mount-point,
  * align-point, and origin. Note that Transforms have no effect on Scene
  * elements, but Scenes still use the features from Sizeable (the base class of
  * Transformable) for sizing.
@@ -40,15 +40,17 @@ export class Transformable extends Sizeable {
 	constructor() {
 		super()
 
-		// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-		// trigger reactivity for the respective properties. See also NOTE REACTIVITY
-		// in Sizeable.
-		createEffect(on(this.position.asDependency, () => (this.position = this.position)))
-		createEffect(on(this.rotation.asDependency, () => (this.rotation = this.rotation)))
-		createEffect(on(this.scale.asDependency, () => (this.scale = this.scale)))
-		createEffect(on(this.origin.asDependency, () => (this.origin = this.origin)))
-		createEffect(on(this.alignPoint.asDependency, () => (this.alignPoint = this.alignPoint)))
-		createEffect(on(this.mountPoint.asDependency, () => (this.mountPoint = this.mountPoint)))
+		createRoot(() => {
+			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
+			// trigger reactivity for the respective properties. See also NOTE REACTIVITY
+			// in Sizeable.
+			createEffect(on(this.position.asDependency, () => (this.position = this.position)))
+			createEffect(on(this.rotation.asDependency, () => (this.rotation = this.rotation)))
+			createEffect(on(this.scale.asDependency, () => (this.scale = this.scale)))
+			createEffect(on(this.origin.asDependency, () => (this.origin = this.origin)))
+			createEffect(on(this.alignPoint.asDependency, () => (this.alignPoint = this.alignPoint)))
+			createEffect(on(this.mountPoint.asDependency, () => (this.mountPoint = this.mountPoint)))
+		})
 	}
 
 	// TODO readem's JSDoc parser can not handle the following type if it is

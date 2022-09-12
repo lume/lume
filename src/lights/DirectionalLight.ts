@@ -1,5 +1,5 @@
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
-import {autorun, numberAttribute, booleanAttribute, element} from '@lume/element'
+import {numberAttribute, booleanAttribute, element} from '@lume/element'
 import {Light} from './Light.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -79,32 +79,30 @@ export class DirectionalLight extends Light {
 	override _loadGL() {
 		if (!super._loadGL()) return false
 
-		this._glStopFns.push(
-			autorun(() => {
-				const light = this.three
+		this.createGLEffect(() => {
+			const light = this.three
 
-				light.castShadow = this.castShadow
+			light.castShadow = this.castShadow
 
-				const shadow = this.three.shadow
+			const shadow = this.three.shadow
 
-				shadow.mapSize.width = this.shadowMapWidth
-				shadow.mapSize.height = this.shadowMapHeight
-				shadow.radius = this.shadowRadius
-				shadow.bias = this.shadowBias
-				// TODO: auto-adjust near and far planes like we will with Camera,
-				// unless the user supplies a manual value.
-				shadow.camera.near = this.shadowCameraNear
-				shadow.camera.far = this.shadowCameraFar
-				shadow.camera.top = this.shadowCameraTop
-				shadow.camera.right = this.shadowCameraRight
-				shadow.camera.bottom = this.shadowCameraBottom
-				shadow.camera.left = this.shadowCameraLeft
-				// TODO what about top, bottom, right, left values for the OrthoGraphicCamera of DirectionalLightShadow?
+			shadow.mapSize.width = this.shadowMapWidth
+			shadow.mapSize.height = this.shadowMapHeight
+			shadow.radius = this.shadowRadius
+			shadow.bias = this.shadowBias
+			// TODO: auto-adjust near and far planes like we will with Camera,
+			// unless the user supplies a manual value.
+			shadow.camera.near = this.shadowCameraNear
+			shadow.camera.far = this.shadowCameraFar
+			shadow.camera.top = this.shadowCameraTop
+			shadow.camera.right = this.shadowCameraRight
+			shadow.camera.bottom = this.shadowCameraBottom
+			shadow.camera.left = this.shadowCameraLeft
+			// TODO what about top, bottom, right, left values for the OrthoGraphicCamera of DirectionalLightShadow?
 
-				shadow.needsUpdate = true
-				this.needsUpdate()
-			}),
-		)
+			shadow.needsUpdate = true
+			this.needsUpdate()
+		})
 
 		return true
 	}

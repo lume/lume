@@ -1,7 +1,12 @@
-<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
-<!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+<script src="../wrapper.js" title="ShimmerCube"></script>
 
-<script src="../global.js"></script>
+<style>
+	html,
+	body {
+		background: #25303d;
+	}
+</style>
+
 <script src="./shimmer-cube.js"></script>
 
 <script>
@@ -9,35 +14,22 @@
 </script>
 
 <lume-scene webgl="true">
-	<lume-point-light position="0 0 600" id="p-light"></lume-point-light>
-	<lume-ambient-light intensity="0.7" id="a-light"></lume-ambient-light>
+	<lume-ambient-light intensity="0.7"></lume-ambient-light>
+
+	<lume-camera-rig min-distance="250" max-distance="1000" initial-distance="400" align-point="0.5 0.5 0.5">
+		<lume-point-light position="0 0 600" slot="camera-child"></lume-point-light>
+	</lume-camera-rig>
 
 	<shimmer-cube
 		id="shimmer-cube-1"
 		size="200 200 200"
-		align-point="0.5 0.5"
-		mount-point="0.5 0.5"
-		color="rgb(244, 196, 48)"
-	>
-		<!-- prettier-ignore -->
-		<lume-sphere size="20 20 20" align-point="0 0.5 0.5" mount-point="1 0.5 0.5" color="rgb(244,150,48)" rotation="0 45 0" opacity="0.2" id="distributed-sphere"></lume-sphere>
-		<!-- prettier-ignore -->
-		<shimmer-cube size="100 100 100" align-point="0.95 0.5 0.5" mount-point="0 0.5 0.5" id="shimmer-cube-2"></shimmer-cube>
-	</shimmer-cube>
+		align-point="0.5 0.5 0.5"
+		mount-point="0.5 0.5 0.5"
+		color="deeppink"
+	></shimmer-cube>
 </lume-scene>
-
-<style>
-	html,
-	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		background: #364659;
-	}
-</style>
 
 <script>
 	const cube = document.querySelector('shimmer-cube')
-	cube.rotation = (x, y, z, t) => [x, 90 * Math.sin(t * 0.001), z] // Y rotation only
+	cube.rotation = (x, y, z, t) => [x, 90 * Math.sin(t * 0.001), z]
 </script>

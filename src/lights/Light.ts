@@ -1,12 +1,12 @@
 import {Color} from 'three/src/math/Color.js'
 import {Light as ThreeLight} from 'three/src/lights/Light.js'
-import {attribute, autorun, element} from '@lume/element'
-import {Node} from '../core/Node.js'
+import {attribute, element} from '@lume/element'
+import {Element3D} from '../core/Element3D.js'
 
 import type {TColor} from '../utils/three.js'
-import type {NodeAttributes} from '../core/Node.js'
+import type {Element3DAttributes} from '../core/Element3D.js'
 
-export type LightAttributes = NodeAttributes | 'color' | 'intensity'
+export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
 
 /**
  * @abstract
@@ -14,11 +14,11 @@ export type LightAttributes = NodeAttributes | 'color' | 'intensity'
  *
  * An abstract base class for light elements.
  *
- * @extends Node
+ * @extends Element3D
  */
 // @ts-expect-error decorator type doesn't work on abstract class
 @element
-export abstract class Light extends Node {
+export abstract class Light extends Element3D {
 	/**
 	 * @property {string | number | THREE.Color} color -
 	 *
@@ -64,17 +64,16 @@ export abstract class Light extends Node {
 	override _loadGL() {
 		if (!super._loadGL()) return false
 
-		this._glStopFns.push(
-			autorun(() => {
-				if (typeof this.color === 'object') this.three.color = this.color
-				this.three.color = new Color(this.color)
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.three.intensity = this.intensity
-				this.needsUpdate()
-			}),
-		)
+		this.createGLEffect(() => {
+			if (typeof this.color === 'object') this.three.color = this.color
+			this.three.color = new Color(this.color)
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.three.intensity = this.intensity
+			this.needsUpdate()
+		})
 
 		return true
 	}

@@ -43,13 +43,13 @@ const projectedTextureExample = stripIndent(html`
 			color: white;
 		}
 		#ui,
-		#ui lume-node {
+		#ui lume-element3d {
 			pointer-events: none;
 		}
 		#ui label {
 			pointer-events: auto;
 		}
-		lume-node {
+		lume-element3d {
 			padding: 15px;
 		}
 	</style>
@@ -91,8 +91,8 @@ const projectedTextureExample = stripIndent(html`
 			scale="1 1 1"
 		></lume-box>
 
-		<lume-node id="textureRotator" rotation="0 45 0">
-			<lume-node rotation="45 0 0">
+		<lume-element3d id="textureRotator" rotation="0 45 0">
+			<lume-element3d rotation="45 0 0">
 				<lume-texture-projector
 					id="projectedTexture"
 					size="150 150"
@@ -116,8 +116,8 @@ const projectedTextureExample = stripIndent(html`
 						<lume-sphere size="5" color="yellow" align-point="0.5 0.5"></lume-sphere>
 					</lume-box>
 				</lume-texture-projector>
-			</lume-node>
-		</lume-node>
+			</lume-element3d>
+		</lume-element3d>
 
 		<lume-plane
 			has="projected-material"
@@ -131,7 +131,7 @@ const projectedTextureExample = stripIndent(html`
 	</lume-scene>
 
 	<lume-scene id="ui">
-		<lume-node size-mode="proportional literal" size="1 80">
+		<lume-element3d size-mode="proportional literal" size="1 80">
 			<label>
 				Projected texture enabled on box:
 				<input
@@ -153,7 +153,7 @@ const projectedTextureExample = stripIndent(html`
 				Visualize texture projector:
 				<input type="checkbox" onchange="visual.visible = !visual.visible" />
 			</label>
-		</lume-node>
+		</lume-element3d>
 	</lume-scene>
 
 	<script>
@@ -187,7 +187,7 @@ const buttonsWithShadowExample = stripIndent(html`
 			font-family: sans-serif;
 			touch-action: none;
 		}
-		lume-node {
+		lume-element3d {
 			text-align: center;
 		}
 		#bg {
@@ -225,7 +225,7 @@ const buttonsWithShadowExample = stripIndent(html`
 		>
 			<lume-ambient-light color="#ffffff" intensity="0"></lume-ambient-light>
 			<lume-mixed-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444" dithering>
-				<lume-node
+				<lume-element3d
 					id="button-container"
 					position="0 0 20"
 					size="600 31 0"
@@ -244,8 +244,8 @@ const buttonsWithShadowExample = stripIndent(html`
 					>
 						<button>button {{n+1}}</button>
 					</lume-mixed-plane>
-				</lume-node>
-				<lume-node id="lightContainer" size="0 0 0" position="0 0 300">
+				</lume-element3d>
+				<lume-element3d id="lightContainer" size="0 0 0" position="0 0 300">
 					<lume-point-light
 						id="light"
 						color="white"
@@ -270,7 +270,7 @@ const buttonsWithShadowExample = stripIndent(html`
 						>
 						</lume-mesh>
 					</lume-point-light>
-				</lume-node>
+				</lume-element3d>
 			</lume-mixed-plane>
 		</lume-scene>
 	</template>
@@ -401,8 +401,8 @@ function miniGalaxyDemo() {
 		<script src="${host}global.js"></script>
 
 		<lume-scene id="scene">
-			<lume-node id="container" size="78 78" align-point="0.5 0.5" mount-point="0.5 0.5">
-				<lume-node
+			<lume-element3d id="container" size="78 78" align-point="0.5 0.5" mount-point="0.5 0.5">
+				<lume-element3d
 					class="sun"
 					size-mode="proportional proportional"
 					size="0.8 0.8"
@@ -411,9 +411,9 @@ function miniGalaxyDemo() {
 					mount-point="0.5 0.5"
 				>
 					<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-				</lume-node>
-				<lume-node class="rotator A" size="60 60" align-point="1 1">
-					<lume-node
+				</lume-element3d>
+				<lume-element3d class="rotator A" size="60 60" align-point="1 1">
+					<lume-element3d
 						class="sun"
 						size-mode="proportional proportional"
 						size="0.8 0.8"
@@ -422,9 +422,9 @@ function miniGalaxyDemo() {
 						mount-point="0.5 0.5"
 					>
 						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-					</lume-node>
-					<lume-node class="rotator" size="45 45" align-point="1 1">
-						<lume-node
+					</lume-element3d>
+					<lume-element3d class="rotator" size="45 45" align-point="1 1">
+						<lume-element3d
 							class="sun"
 							size-mode="proportional proportional"
 							size="0.8 0.8"
@@ -433,9 +433,9 @@ function miniGalaxyDemo() {
 							mount-point="0.5 0.5"
 						>
 							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-						</lume-node>
-						<lume-node class="rotator" size="28 28" align-point="1 1">
-							<lume-node
+						</lume-element3d>
+						<lume-element3d class="rotator" size="28 28" align-point="1 1">
+							<lume-element3d
 								class="sun"
 								size-mode="proportional proportional"
 								size="0.8 0.8"
@@ -444,12 +444,12 @@ function miniGalaxyDemo() {
 								mount-point="0.5 0.5"
 							>
 								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-							</lume-node>
-						</lume-node>
-					</lume-node>
-				</lume-node>
-				<lume-node class="rotator A" size="60 60" mount-point="1 1">
-					<lume-node
+							</lume-element3d>
+						</lume-element3d>
+					</lume-element3d>
+				</lume-element3d>
+				<lume-element3d class="rotator A" size="60 60" mount-point="1 1">
+					<lume-element3d
 						class="sun"
 						size-mode="proportional proportional"
 						size="0.8 0.8"
@@ -458,9 +458,9 @@ function miniGalaxyDemo() {
 						mount-point="0.5 0.5"
 					>
 						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-					</lume-node>
-					<lume-node class="rotator" size="45 45" mount-point="1 1">
-						<lume-node
+					</lume-element3d>
+					<lume-element3d class="rotator" size="45 45" mount-point="1 1">
+						<lume-element3d
 							class="sun"
 							size-mode="proportional proportional"
 							size="0.8 0.8"
@@ -469,9 +469,9 @@ function miniGalaxyDemo() {
 							mount-point="0.5 0.5"
 						>
 							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-						</lume-node>
-						<lume-node class="rotator" size="28 28" mount-point="1 1">
-							<lume-node
+						</lume-element3d>
+						<lume-element3d class="rotator" size="28 28" mount-point="1 1">
+							<lume-element3d
 								class="sun"
 								size-mode="proportional proportional"
 								size="0.8 0.8"
@@ -480,12 +480,12 @@ function miniGalaxyDemo() {
 								mount-point="0.5 0.5"
 							>
 								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-							</lume-node>
-						</lume-node>
-					</lume-node>
-				</lume-node>
-				<lume-node class="rotator B" size="60 60" align-point="0 1" mount-point="1 0">
-					<lume-node
+							</lume-element3d>
+						</lume-element3d>
+					</lume-element3d>
+				</lume-element3d>
+				<lume-element3d class="rotator B" size="60 60" align-point="0 1" mount-point="1 0">
+					<lume-element3d
 						class="sun"
 						size-mode="proportional proportional"
 						size="0.8 0.8"
@@ -494,9 +494,9 @@ function miniGalaxyDemo() {
 						mount-point="0.5 0.5"
 					>
 						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-					</lume-node>
-					<lume-node class="rotator" size="45 45" align-point="0 1" mount-point="1 0">
-						<lume-node
+					</lume-element3d>
+					<lume-element3d class="rotator" size="45 45" align-point="0 1" mount-point="1 0">
+						<lume-element3d
 							class="sun"
 							size-mode="proportional proportional"
 							size="0.8 0.8"
@@ -505,9 +505,9 @@ function miniGalaxyDemo() {
 							mount-point="0.5 0.5"
 						>
 							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-						</lume-node>
-						<lume-node class="rotator" size="28 28" align-point="0 1" mount-point="1 0">
-							<lume-node
+						</lume-element3d>
+						<lume-element3d class="rotator" size="28 28" align-point="0 1" mount-point="1 0">
+							<lume-element3d
 								class="sun"
 								size-mode="proportional proportional"
 								size="0.8 0.8"
@@ -516,12 +516,12 @@ function miniGalaxyDemo() {
 								mount-point="0.5 0.5"
 							>
 								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-							</lume-node>
-						</lume-node>
-					</lume-node>
-				</lume-node>
-				<lume-node class="B" size="60 60" align-point="1 0" mount-point="0 1">
-					<lume-node
+							</lume-element3d>
+						</lume-element3d>
+					</lume-element3d>
+				</lume-element3d>
+				<lume-element3d class="B" size="60 60" align-point="1 0" mount-point="0 1">
+					<lume-element3d
 						class="sun"
 						size-mode="proportional proportional"
 						size="0.8 0.8"
@@ -530,9 +530,9 @@ function miniGalaxyDemo() {
 						mount-point="0.5 0.5"
 					>
 						<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-					</lume-node>
-					<lume-node class="rotator" size="45 45" align-point="1 0" mount-point="0 1">
-						<lume-node
+					</lume-element3d>
+					<lume-element3d class="rotator" size="45 45" align-point="1 0" mount-point="0 1">
+						<lume-element3d
 							class="sun"
 							size-mode="proportional proportional"
 							size="0.8 0.8"
@@ -541,9 +541,9 @@ function miniGalaxyDemo() {
 							mount-point="0.5 0.5"
 						>
 							<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-						</lume-node>
-						<lume-node class="rotator" size="28 28" align-point="1 0" mount-point="0 1">
-							<lume-node
+						</lume-element3d>
+						<lume-element3d class="rotator" size="28 28" align-point="1 0" mount-point="0 1">
+							<lume-element3d
 								class="sun"
 								size-mode="proportional proportional"
 								size="0.8 0.8"
@@ -552,11 +552,11 @@ function miniGalaxyDemo() {
 								mount-point="0.5 0.5"
 							>
 								<img src="https://momlovesbest.com/wp-content/uploads/2020/03/A-UPF-Rating.png" />
-							</lume-node>
-						</lume-node>
-					</lume-node>
-				</lume-node>
-			</lume-node>
+							</lume-element3d>
+						</lume-element3d>
+					</lume-element3d>
+				</lume-element3d>
+			</lume-element3d>
 		</lume-scene>
 
 		<style>
@@ -571,13 +571,13 @@ function miniGalaxyDemo() {
 				background: black;
 				touch-action: none;
 			}
-			lume-node {
+			lume-element3d {
 				border-radius: 100%;
 				color: white;
 				font-family: sans-serif;
 				font-weight: bold;
 			}
-			lume-node:not(.sun) {
+			lume-element3d:not(.sun) {
 				background: rgba(255, 255, 0, 0.2);
 			}
 			img {
@@ -615,9 +615,9 @@ function sceneExample() {
 		<script src="${host}global.js"></script>
 
 		<lume-scene id="scene">
-			<lume-node size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
+			<lume-element3d size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 30 0">
 				I am centered in the scene, and I am rotated a bit.
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<style>
@@ -628,7 +628,7 @@ function sceneExample() {
 				height: 100%;
 				width: 100%;
 			}
-			lume-node {
+			lume-element3d {
 				padding: 5px;
 				border: 1px solid skyblue;
 			}
@@ -648,7 +648,7 @@ function pointLightExample() {
 			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
-			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
+			<lume-element3d align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
 				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
@@ -671,7 +671,7 @@ function pointLightExample() {
 						rotation="0 0 10"
 					></lume-box>
 				</lume-plane>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<style>
@@ -700,7 +700,7 @@ function directionalLightExample() {
 			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
 
 			<!-- We need a plane onto which shadows will land (the "floor"). -->
-			<lume-node align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
+			<lume-element3d align-point="0.5 0.5" mount-point="0.5 0.5" rotation="60 0 0" size="1000 1000">
 				<lume-plane color="white" size="1500 1500" align-point="0.5 0.5" mount-point="0.5 0.5" rotation="0 0 30">
 					<!-- For simplicity, let's position the light, and a cube, relative to (as children of) the "floor". -->
 
@@ -724,11 +724,11 @@ function directionalLightExample() {
 					></lume-box>
 
 					<!-- Add an interactive camera viewpoint. -->
-					<lume-node align-point="0.5 0.5" rotation="-90 0 0">
+					<lume-element3d align-point="0.5 0.5" rotation="-90 0 0">
 						<lume-camera-rig initial-polar-angle="30" min-polar-angle="5" initial-distance="500"></lume-camera-rig>
-					</lume-node>
+					</lume-element3d>
 				</lume-plane>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<style>
@@ -763,7 +763,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition 
 				shadow-bias="-0.001"
 			></lume-point-light>
 
-			<lume-node
+			<lume-element3d
 				id="container"
 				align-point="0.5 0.5"
 				mount-point="0.5 0.5"
@@ -782,7 +782,7 @@ function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition 
 				<lume-mixed-plane size-mode="proportional proportional" size="1 1" position="0 0 50" color="#444">
 					<img src="${host}${fg}" />
 				</lume-mixed-plane>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<style>
@@ -907,7 +907,7 @@ const shapesExample = stripIndent(html`
 			></lume-box>
 		</lume-shape>
 
-		<lume-node rotation="0 10 0">
+		<lume-element3d rotation="0 10 0">
 			<!--
 			FIXME mesh with manual behaviors not working initially. Change the has
 			attribute to something else and back, then it works. Code load order
@@ -1014,9 +1014,9 @@ const shapesExample = stripIndent(html`
 					wireframe
 				></lume-box>
 			</lume-shape>
-		</lume-node>
+		</lume-element3d>
 
-		<lume-node position="0 0 0">
+		<lume-element3d position="0 0 0">
 			<lume-shape
 				size="40 25 5"
 				color="red"
@@ -1117,7 +1117,7 @@ const shapesExample = stripIndent(html`
 					wireframe
 				></lume-box>
 			</lume-shape>
-		</lume-node>
+		</lume-element3d>
 	</lume-scene>
 
 	<script>
@@ -1262,7 +1262,7 @@ const instancedMeshExample = stripIndent(html`
 		<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 		<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
-		<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-node>
+		<lume-element3d size-mode="proportional proportional" size="1 1" style="border: 5px solid teal"></lume-element3d>
 
 		<lume-camera-rig
 			active
@@ -1336,14 +1336,14 @@ const originExample = stripIndent(html`
 				top: 0;
 				left: 0;
 			}
-			lume-node {
+			lume-element3d {
 				padding: 15px;
 				pointer-events: all;
 			}
 			#scene2 {
 				pointer-events: none;
 			}
-			#scene2 lume-node {
+			#scene2 lume-element3d {
 				pointer-events: auto;
 			}
 		</style>
@@ -1372,7 +1372,7 @@ const originExample = stripIndent(html`
 		</lume-scene>
 
 		<lume-scene id="scene2">
-			<lume-node size-mode="proportional literal" size="1 80">
+			<lume-element3d size-mode="proportional literal" size="1 80">
 				<label>
 					X rotation <code id="xRotationVal"></code>:
 					<input id="xRotation" type="range" min="0" max="360" value="0" />
@@ -1387,7 +1387,7 @@ const originExample = stripIndent(html`
 					Z rotation <code id="zRotationVal"></code>:
 					<input id="zRotation" type="range" min="0" max="360" value="0" />
 				</label>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<script>
@@ -1465,7 +1465,7 @@ const morphingSpiralExample = stripIndent(html`
 	<body>
 		<template>
 			<lume-scene id="scene" webgl="true" enable-css="false">
-				<lume-node
+				<lume-element3d
 					ref="rotator"
 					TODO-calculate-minimum-size-based-on-viewport-size
 					size="1630 1630"
@@ -1473,7 +1473,7 @@ const morphingSpiralExample = stripIndent(html`
 					mount-point="0.5 0.5"
 					rotation="0 0 0"
 				>
-					<lume-node
+					<lume-element3d
 						v-for="(n, i) of Array(400)"
 						:key="i"
 						size="0 0 0"
@@ -1494,8 +1494,8 @@ const morphingSpiralExample = stripIndent(html`
 								borderRadius: (i % 50) + 'px',
 							}"
 						></lume-rounded-rectangle>
-					</lume-node>
-				</lume-node>
+					</lume-element3d>
+				</lume-element3d>
 			</lume-scene>
 		</template>
 
@@ -1593,13 +1593,13 @@ const perspectiveCameraExample = stripIndent(html`
 				left: 0;
 			}
 			lume-scene:nth-of-type(2),
-			lume-scene:nth-of-type(2) lume-node {
+			lume-scene:nth-of-type(2) lume-element3d {
 				pointer-events: none;
 			}
 			lume-scene:nth-of-type(2) label {
 				pointer-events: auto;
 			}
-			lume-node {
+			lume-element3d {
 				padding: 15px;
 			}
 			label {
@@ -1615,7 +1615,11 @@ const perspectiveCameraExample = stripIndent(html`
 
 		<lume-scene id="scene" webgl perspective="800" touch-action="none">
 			<!-- This node visualizes the size of the default viewing area. -->
-			<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
+			<lume-element3d
+				size-mode="proportional proportional"
+				size="1 1"
+				style="border: 5px solid royalblue;"
+			></lume-element3d>
 
 			<lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera>
 
@@ -1645,7 +1649,7 @@ const perspectiveCameraExample = stripIndent(html`
 		</lume-scene>
 
 		<lume-scene id="scene2">
-			<lume-node size-mode="proportional literal" size="1 80">
+			<lume-element3d size-mode="proportional literal" size="1 80">
 				<label>
 					Camera active:
 					<input id="active" type="checkbox" onchange="cam.active = !cam.active" />
@@ -1707,7 +1711,7 @@ const perspectiveCameraExample = stripIndent(html`
 						el.previousElementSibling.textContent = '(' + el.value.padStart(2, '0') + ')'
 					}
 				</script>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<script>
@@ -1748,13 +1752,13 @@ const cameraRigExample = stripIndent(html`
 				left: 0;
 			}
 			#ui,
-			#ui lume-node {
+			#ui lume-element3d {
 				pointer-events: none;
 			}
 			#ui label {
 				pointer-events: auto;
 			}
-			lume-node {
+			lume-element3d {
 				padding: 15px;
 			}
 		</style>
@@ -1767,7 +1771,11 @@ const cameraRigExample = stripIndent(html`
 
 		<lume-scene id="scene" webgl perspective="800" touch-action="none">
 			<!-- This node visualizes the size of the default viewing area. -->
-			<lume-node size-mode="proportional proportional" size="1 1" style="border: 5px solid royalblue;"></lume-node>
+			<lume-element3d
+				size-mode="proportional proportional"
+				size="1 1"
+				style="border: 5px solid royalblue;"
+			></lume-element3d>
 
 			<!-- <lume-perspective-camera id="cam" position="0 0 1000" align-point="0.5 0.5"></lume-perspective-camera> -->
 			<lume-camera-rig
@@ -1801,12 +1809,12 @@ const cameraRigExample = stripIndent(html`
 		</lume-scene>
 
 		<lume-scene id="ui">
-			<lume-node size-mode="proportional literal" size="1 80">
+			<lume-element3d size-mode="proportional literal" size="1 80">
 				<label>
 					Camera rig active:
 					<input id="active" type="checkbox" checked onchange="cam.active = !cam.active" />
 				</label>
-			</lume-node>
+			</lume-element3d>
 		</lume-scene>
 
 		<script>
@@ -1864,13 +1872,13 @@ const clipPlaneExample = stripIndent(html`
 			color: white;
 		}
 		#ui,
-		#ui lume-node {
+		#ui lume-element3d {
 			pointer-events: none;
 		}
 		#ui label {
 			pointer-events: auto;
 		}
-		lume-node {
+		lume-element3d {
 			padding: 15px;
 		}
 	</style>
@@ -1934,7 +1942,7 @@ const clipPlaneExample = stripIndent(html`
 	</lume-scene>
 
 	<lume-scene id="ui">
-		<lume-node size-mode="proportional literal" size="1 80">
+		<lume-element3d size-mode="proportional literal" size="1 80">
 			<label>
 				Clipping enabled:
 				<input type="checkbox" checked onchange="box.clipDisabled = !box.clipDisabled" />
@@ -1961,7 +1969,7 @@ const clipPlaneExample = stripIndent(html`
 				Visualize plane:
 				<input type="checkbox" onchange="plane.visible = !plane.visible" />
 			</label>
-		</lume-node>
+		</lume-element3d>
 	</lume-scene>
 
 	<script>

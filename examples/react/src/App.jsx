@@ -27,7 +27,7 @@ export class App extends Component {
 	render = () => (
 		<>
 			<lume-scene webgl environment={lunaStation}>
-				<lume-node align-point="0.5 0.5 0.5">
+				<lume-element3d align-point="0.5 0.5 0.5">
 					<lume-camera-rig
 						active={this.state.view === 'free'}
 						initial-polar-angle="30"
@@ -36,10 +36,10 @@ export class App extends Component {
 						dolly-speed="0.002"
 						initial-distance="1"
 					/>
-					<lume-node rotation={[this.state.view === 'top' ? -90 : 0, 0, 0].toString()}>
+					<lume-element3d rotation={[this.state.view === 'top' ? -90 : 0, 0, 0].toString()}>
 						<lume-perspective-camera active={this.state.view !== 'free'} position="0 0 0.7" />
-					</lume-node>
-				</lume-node>
+					</lume-element3d>
+				</lume-element3d>
 
 				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 90 0" />
 				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 -90 0" />
@@ -50,19 +50,19 @@ export class App extends Component {
 				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 80 0" />
 				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 -80 0" />
 
-				<lume-node ref={this.astrobee} align-point="0.5 0.5 0.5">
+				<lume-element3d ref={this.astrobee} align-point="0.5 0.5 0.5">
 					<lume-collada-model src={bodyModelUrl} />
 					<lume-collada-model src={pmcModelUrl} />
 					<lume-collada-model src={pmcSkinModelUrl} />
 					<lume-collada-model src={pmcBumperModelUrl} />
 
 					{/* The other side. */}
-					<lume-node scale="1 1 -1">
+					<lume-element3d scale="1 1 -1">
 						<lume-collada-model src={pmcModelUrl} />
 						<lume-collada-model src={pmcSkinModelUrl} />
 						<lume-collada-model src={pmcBumperModelUrl} />
-					</lume-node>
-				</lume-node>
+					</lume-element3d>
+				</lume-element3d>
 
 				<lume-sphere
 					has="basic-material"

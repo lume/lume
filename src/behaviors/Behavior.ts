@@ -1,6 +1,5 @@
 import 'element-behaviors'
 import {PropReceiver} from './PropReceiver.js'
-import {defer} from '../core/utils.js'
 
 import type {Element as LumeElement} from '@lume/element'
 import type {Constructor} from 'lowclass'
@@ -122,7 +121,7 @@ export abstract class Behavior extends PropReceiver() {
 					for the element to be defined. Please make sure all elements
 					you intend to use are defined. The allowed classes are:
 				`
-				defer(() => console.error(errorMessage, classes))
+				queueMicrotask(() => console.error(errorMessage, classes))
 				throw new Error(`${errorMessage}
 
 					${classes}
@@ -133,7 +132,7 @@ export abstract class Behavior extends PropReceiver() {
 				The element you're using the mesh behavior on (<${element.tagName.toLowerCase()}>)
 				is not an instance of one of the following classes:
 			`
-			defer(() => console.error(errorMessage, classes))
+			queueMicrotask(() => console.error(errorMessage, classes))
 			throw new Error(`${errorMessage}
 
 				${classes}

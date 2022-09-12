@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {
@@ -7,7 +7,7 @@ import type {
 	GltfModelBehaviorAttributes,
 } from '../behaviors/mesh-behaviors/models/GltfModelBehavior.js'
 
-export type GltfModelAttributes = NodeAttributes
+export type GltfModelAttributes = Element3DAttributes
 
 /**
  * @element lume-gltf-model
@@ -36,7 +36,7 @@ export type GltfModelAttributes = NodeAttributes
  * ```
  */
 @element('lume-gltf-model', autoDefineElements)
-export class GltfModel extends Node {
+export class GltfModel extends Element3D {
 	static override defaultBehaviors = ['gltf-model']
 }
 
@@ -54,7 +54,7 @@ declare global {
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-gltf-model': JSX.IntrinsicElements['lume-node'] &
+			'lume-gltf-model': JSX.IntrinsicElements['lume-element3d'] &
 				ElementAttributes<GltfModelBehavior, GltfModelBehaviorAttributes>
 		}
 	}

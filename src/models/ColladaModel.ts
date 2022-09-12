@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {
@@ -10,7 +10,7 @@ import type {
 // TODO FIXME Type error because this property comes from a behavior.
 // new ColladaModel().src
 
-export type ColladaModelAttributes = NodeAttributes
+export type ColladaModelAttributes = Element3DAttributes
 
 /**
  * @element lume-collada-model
@@ -39,7 +39,7 @@ export type ColladaModelAttributes = NodeAttributes
  * ```
  */
 @element('lume-collada-model', autoDefineElements)
-export class ColladaModel extends Node {
+export class ColladaModel extends Element3D {
 	static override defaultBehaviors = ['collada-model']
 }
 
@@ -57,7 +57,7 @@ declare global {
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-collada-model': JSX.IntrinsicElements['lume-node'] &
+			'lume-collada-model': JSX.IntrinsicElements['lume-element3d'] &
 				ElementAttributes<ColladaModelBehavior, ColladaModelBehaviorAttributes>
 		}
 	}

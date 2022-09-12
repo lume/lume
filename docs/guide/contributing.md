@@ -58,14 +58,15 @@ cd lume
 
 #### System Dependencies
 
-Now install all needed dependencies. Before continuing to the next commands,
-you should have [Node.js](https://nodejs.org) installed, which comes with the
-`npm` command. `npm` (the Node Package Manager) is a standard tool in the
-world of JavaScript for installing JavaScript depedencies into a JavaScript-
-(or TypeScript-) based project.
+First install needed system dependencies.
 
-If you are in `macOS`, you will need to install `libpng` and `pkg-config`.
-First install [Homebrew](https://brew.sh), then `brew install libpng pkg-config`.
+1. Install [Node.js](https://nodejs.org), which comes with the
+   `npm` command. `npm` (the Node Package Manager) is a standard tool in the
+   world of JavaScript for installing JavaScript depedencies into a JavaScript-
+   (or TypeScript-) based projects.
+2. If you are in `macOS`, you will need to install `libpng` and `pkg-config` or
+   will face an [error saying `pngquant pre-build test failed`](https://github.com/gatsbyjs/gatsby/issues/20389). First install
+   [Homebrew](https://brew.sh), then run `brew install libpng pkg-config`.
 
 #### Local Dependencies
 
@@ -97,13 +98,14 @@ output files present and therefore consumable).
 
 If at any point there appears to be something not working right (like
 something is linked but not built do to some manual handling gone wrong), run
-the following to reset the project to working state. The following will
-delete all dependencies (`node_modules` folders), delete build outputs,
-re-install all dependencies, re-link all projects, and finally re-build all
-projects:
+the following to "refresh" the project.
+
+The following will delete all dependencies (`node_modules` folders), delete
+all build outputs, re-install all dependencies, re-link all projects, and finally
+re-build all projects:
 
 ```bash
-npm run reset
+npm run refresh
 ```
 
 ### Making changes

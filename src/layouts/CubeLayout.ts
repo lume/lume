@@ -1,13 +1,13 @@
 import {element, ElementAttributes} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
-type CubeLayoutAttributes = NodeAttributes
+type CubeLayoutAttributes = Element3DAttributes
 
 /**
- * @extends Node
+ * @extends Element3D
  * @class CubeLayout -
  *
  * Element: `<lume-cube-layout>`
@@ -27,8 +27,8 @@ type CubeLayoutAttributes = NodeAttributes
 // This class is written imperatively, as opposed to declaratively, for sake of
 // example. It would be cleaner written declaratively, but it's not a big class.
 @element('lume-cube-layout', autoDefineElements)
-export class CubeLayout extends Node {
-	#sides: Node[] = []
+export class CubeLayout extends Element3D {
+	#sides: Element3D[] = []
 
 	// Use a ShadowRoot
 	override readonly hasShadow = true
@@ -52,11 +52,11 @@ export class CubeLayout extends Node {
 	 * @param {string} name - The name of the side.
 	 */
 	#createCubeSide(index: number) {
-		const rotator = new Node().set({
+		const rotator = new Element3D().set({
 			alignPoint: new XYZNumberValues(0.5, 0.5, 0.5),
 		})
 
-		const side = new Node().set({
+		const side = new Element3D().set({
 			mountPoint: new XYZNumberValues(0.5, 0.5),
 			size: new XYZNonNegativeValues(this.size.x, this.size.x),
 		})
@@ -97,12 +97,12 @@ export class CubeLayout extends Node {
 	 * children of the 6 sides of the cube layout. The order in which they are
 	 * added is front, right, back, left, top, bottom. Note, it can be easier to
 	 * assign nodes to slots by name, without worrying about their order.
-	 * @param {Array<Node>} content - An array containing [Node](../core/Node)
+	 * @param {Array<Element3D>} content - An array containing [Node](../core/Node)
 	 * instances to place in the cube sides. Only the first 6 items are used,
 	 * the rest are ignored.
 	 * @returns {this}
 	 */
-	setContent(content: Node[]) {
+	setContent(content: Element3D[]) {
 		for (let index = 0; index < 6; index += 1) {
 			this.#sides[index].innerHTML = ''
 			this.#sides[index].append(content[index])

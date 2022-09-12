@@ -1,6 +1,6 @@
 import {clamp} from '../math/clamp.js'
 
-import type {Node} from '../core/Node.js'
+import type {Element3D} from '../core/Element3D.js'
 
 type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 	Partial<
@@ -18,13 +18,13 @@ type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 
 export class FlingRotation {
 	/** The object that will be rotated on Y. Required. */
-	readonly rotationYTarget!: Node
+	readonly rotationYTarget!: Element3D
 
 	/**
 	 * The object that will be rotated on X. Defaults to the element inside the
 	 * rotationYTarget (it's like a gimball).
 	 */
-	readonly rotationXTarget!: Node
+	readonly rotationXTarget!: Element3D
 
 	/**
 	 * The element on which the pointer should be placed down on in order to
@@ -70,7 +70,7 @@ export class FlingRotation {
 
 		// FlingRotation is dependent on tree structure (unless otherwise
 		// specified by the input options), at least for now.
-		if (!this.rotationXTarget) this.rotationXTarget = this.rotationYTarget.children[0] as Node
+		if (!this.rotationXTarget) this.rotationXTarget = this.rotationYTarget.children[0] as Element3D
 		if (!this.interactionInitiator) this.interactionInitiator = this.rotationXTarget
 	}
 

@@ -18,9 +18,9 @@ describe('DefaultBehaviors', () => {
 			<lume-scene webgl>
 				<lume-box id="box" has="foo-bar" size="10 10 10"></lume-box>
 
-				<lume-node position="10 10 10">
+				<lume-element3d position="10 10 10">
 					<lume-box id="box2" has="foo-bar" size="10 10 10"></lume-box>
-				</lume-node>
+				</lume-element3d>
 			</lume-scene>
 		`
 

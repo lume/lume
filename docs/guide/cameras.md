@@ -18,10 +18,11 @@ view (fov), position, and rotation.
 
 All cameras start "inactive". When a manually-created camera is not `active`
 (i.e. it does not have an `active` attribute, or the attribute is set to
-`active="false"`), then the scene will use its internal default camera (TODO
-LINK .....................). Once the perspective camera is active then the view will
-be displayed through the lense of that camera, and we can manipulate that camera
-to control our view.
+`active="false"`, or the `.active` property is set to `false`), then the scene
+will use its internal default camera (see
+[`Scene#camera`](../api/core/Scene#camera) for info on the default camera). Once
+the perspective camera is active then the view will be displayed through the
+lense of that camera, and we can manipulate that camera to control our view.
 
 <div id="perspectiveCamera"></div>
 

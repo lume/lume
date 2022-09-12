@@ -1,11 +1,11 @@
-import {Node} from './Node.js'
+import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
 import {defineElements} from '../index.js'
 import {Object3D} from 'three/src/core/Object3D.js'
 
 defineElements()
 
-describe('Node', () => {
+describe('Element3D', () => {
 	const root = document.createElement('div')
 	document.body.append(root)
 	let scene = new Scene()
@@ -22,7 +22,7 @@ describe('Node', () => {
 	})
 
 	it('has default values', async () => {
-		const n = new Node()
+		const n = new Element3D()
 
 		expect(n.position.x).toEqual(0)
 		expect(n.position.x).toEqual(0)
@@ -56,22 +56,22 @@ describe('Node', () => {
 		expect(n.sizeMode.z).toEqual('literal')
 	})
 
-	it('element is an instance of Node, created with `new`', async () => {
-		const n = new Node()
+	it('element is an instance of Element3D, created with `new`', async () => {
+		const n = new Element3D()
 
 		scene.append(n)
 
-		expect(n instanceof Node).toBe(true)
+		expect(n instanceof Element3D).toBe(true)
 		expect(n.three).toBeInstanceOf(Object3D)
 		expect(n.scene).not.toBeUndefined()
 	})
 
-	it('element is an instance of Node, created with `document.createElement`', async () => {
-		const n = document.createElement('lume-node')
+	it('element is an instance of Element3D, created with `document.createElement`', async () => {
+		const n = document.createElement('lume-element3d')
 
 		scene.append(n)
 
-		expect(n instanceof Node).toBe(true)
+		expect(n instanceof Element3D).toBe(true)
 		expect(n.three).toBeInstanceOf(Object3D)
 		expect(n.scene).not.toBeUndefined()
 	})

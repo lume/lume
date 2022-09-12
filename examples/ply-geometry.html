@@ -1,39 +1,54 @@
-<title>ply-geometry</title>
+<script src="./wrapper.js" title="ply-geometry"></script>
 
 <style>
-	html,
 	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		background: #222;
-		touch-action: none;
+		background: #111;
 	}
 </style>
 
-<!-- TODO: The behaviors don't load if the global script is loaded after the
-	scene markup instead of before and there is more than one behavior specified with has="". -->
-<script src="global.js"></script>
+<!-- The combination of a high-intensity point light moving around to make the
+points shimmer, coupled with the dark color of the points, makes a higher
+contrast between dark and bright points for effect. -->
 
 <lume-scene id="scene" perspective="800" webgl>
-	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
+	<lume-point-light id="light" position="200 -200 200" intensity="6" color="cyan" align-point="0.5 0.5">
+		<!-- uncomment the sphere to the light position -->
+		<!-- <lume-sphere has="basic-material" color="cyan" size="10" align-point="0.5 0.5"></lume-sphere> -->
+	</lume-point-light>
+
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
-	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+
+	<lume-camera-rig
+		active
+		initial-distance="200"
+		max-distance="700"
+		min-distance="100"
+		align-point="0.5 0.5"
+	></lume-camera-rig>
 
 	<lume-points
 		id="model"
-		has="ply-geometry"
+		has="ply-geometry phong-material"
 		src="./models/shelby-gt350.ply"
-		point-size="0.3"
 		rotation="90 0 0"
 		position="-250 0 0"
 		size="0 0 0"
 		scale="50 50 50"
+		color="#003333"
+		align-point="0.5 0.5"
 	></lume-points>
 </lume-scene>
 
 <script>
 	// Define all the LUME elements with their default names.
 	LUME.defineElements()
+
+	const lightDisplacement = 100
+	const movementRate = 0.002
+
+	light.position = (x, y, z, t) => [
+		lightDisplacement * (Math.sin(t * movementRate) - 0.5),
+		lightDisplacement * (Math.cos(t * movementRate) - 0.5),
+		lightDisplacement * (Math.sin(t * movementRate) - 0.5),
+	]
 </script>

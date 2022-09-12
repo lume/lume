@@ -1,14 +1,14 @@
 import {element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/mesh-behaviors/models/ObjModelBehavior.js'
 
-export type ObjModelAttributes = NodeAttributes
+export type ObjModelAttributes = Element3DAttributes
 
 /**
  * @element lume-obj-model
- * @class ObjModel - Defines the `<lume-obj-model>` element, which is short for `<lume-node has="obj-model">`.
+ * @class ObjModel - Defines the `<lume-obj-model>` element, which is short for `<lume-element3d has="obj-model">`.
  *
  * HTML Example:
  *
@@ -30,7 +30,7 @@ export type ObjModelAttributes = NodeAttributes
  * ```
  */
 @element('lume-obj-model', autoDefineElements)
-export class ObjModel extends Node {
+export class ObjModel extends Element3D {
 	static override defaultBehaviors = ['obj-model']
 }
 
@@ -48,7 +48,7 @@ declare global {
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-obj-model': JSX.IntrinsicElements['lume-node'] &
+			'lume-obj-model': JSX.IntrinsicElements['lume-element3d'] &
 				ElementAttributes<ObjModelBehavior, ObjModelBehaviorAttributes>
 		}
 	}

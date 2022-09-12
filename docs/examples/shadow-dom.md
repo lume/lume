@@ -20,7 +20,7 @@
     width: 100%;
     height: 100%;
   }
-  lume-node {
+  lume-element3d {
     background: deeppink;
     font-family: sans serif;
     border-radius: 5px;
@@ -33,7 +33,7 @@
 
 <!--
 <div id="div1" class="hasShadow">
-  <lume-node
+  <lume-element3d
     class="rotate"
     size="100 100"
     rotation="0 -70 0"
@@ -41,7 +41,7 @@
     mount-point="0.5 0.5 0.5"
   >
     <h3 align="center">Hello 3D world!</h3>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
@@ -78,7 +78,7 @@
 <\/script>
 
 <div id="div3" class="hasShadow">
-  <lume-node
+  <lume-element3d
     class="rotate"
     size="100 100"
     rotation="0 -70 0"
@@ -86,16 +86,16 @@
     mount-point="0.5 0.5 0.5"
   >
     <h3 align="center">Hello 3D world!</h3>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div3.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene>
-      <lume-node align-point="0.25 0.25">
+      <lume-element3d align-point="0.25 0.25">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
 <\/script>
@@ -119,16 +119,16 @@
   const root = div4.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene webgl enable-css="false">
-      <lume-node align-point="0.75 0.25">
+      <lume-element3d align-point="0.75 0.25">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
 <\/script>
 
 <div id="div5" class="hasShadow">
-  <lume-node>
-    <lume-node
+  <lume-element3d>
+    <lume-element3d
       class="rotate"
       size="100 100"
       rotation="0 -70 0"
@@ -136,18 +136,18 @@
       mount-point="0.5 0.5 0.5"
     >
       <h3 align="center">Hello 3D world!</h3>
-    </lume-node>
-  </lume-node>
+    </lume-element3d>
+  </lume-element3d>
 </div>
 
 <div id="div6" class="hasShadow">
-  <lume-node
+  <lume-element3d
       id="node1"
       align-point="1 1"
       size="100 100"
       style="background: skyblue;"
   >
-    <lume-node
+    <lume-element3d
       id="node2"
       class="rotate"
       size="100 100"
@@ -156,17 +156,17 @@
       mount-point="0 0 0.5"
     >
       <h3 align="center">Hello 3D world!</h3>
-    </lume-node>
-  </lume-node>
+    </lume-element3d>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div6.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene id="scene1">
-      <lume-node id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
+      <lume-element3d id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
 <\/script>
@@ -174,7 +174,7 @@
 <div id="div7" class="hasShadow">
   <lume-ambient-light intensity="0.7"></lume-ambient-light>
   <lume-point-light intensity="0.7" align-point="0.5 0.5" position="300 0 300"></lume-point-light>
-  <lume-node
+  <lume-element3d
       id="node1"
       align-point="1 1"
       size="100 100"
@@ -191,22 +191,22 @@
     >
       <h3 align="center">Hello 3D world!</h3>
     </lume-box>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div7.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene id="scene1" webgl>
-      <lume-node id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
+      <lume-element3d id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
 <\/script>
 
 <div id="div8" class="hasShadow">
-  <lume-node
+  <lume-element3d
       id="node1"
       align-point="1 1"
       size="100 100"
@@ -223,18 +223,18 @@
     >
       <h3 align="center">Hello 3D world!</h3>
     </lume-box>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div8.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene id="scene1" webgl>
-      <lume-node id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
+      <lume-element3d id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
         <lume-ambient-light intensity="0.7"></lume-ambient-light>
         <lume-point-light intensity="0.7" align-point="0.5 0.5" position="300 0 300"></lume-point-light>
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
 <\/script>
@@ -242,7 +242,7 @@
 <div id="div9" class="hasShadow">
   <lume-ambient-light intensity="0.7"></lume-ambient-light>
   <lume-point-light intensity="0.7" align-point="0.5 0.5" position="300 0 300"></lume-point-light>
-  <lume-node
+  <lume-element3d
       id="node1"
       align-point="1 1"
       size="100 100"
@@ -259,16 +259,16 @@
     >
       <h3 align="center">Hello 3D world!</h3>
     </lume-box>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div9.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene id="scene1" webgl>
-      <lume-node id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
+      <lume-element3d id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
   const root2 = node1.attachShadow({mode: 'open'})
@@ -279,7 +279,7 @@
 <div id="div9" class="hasShadow">
   <lume-ambient-light intensity="0.7"></lume-ambient-light>
   <lume-point-light intensity="0.7" align-point="0.5 0.5" position="300 0 300"></lume-point-light>
-  <lume-node
+  <lume-element3d
       id="node1"
       align-point="1 1"
       size="100 100"
@@ -296,16 +296,16 @@
     >
       <h3 align="center">Hello 3D world!</h3>
     </lume-box>
-  </lume-node>
+  </lume-element3d>
 </div>
 
 <script type=module>
   const root = div9.attachShadow({mode: 'open'})
   root.innerHTML = \`
     <lume-scene id="scene1" webgl>
-      <lume-node id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
+      <lume-element3d id="node3 "size="10 10" align-point="0.25 0.25" style="background: pink;">
         <slot></slot>
-      </lume-node>
+      </lume-element3d>
     </lume-scene>
   \`
   const root2 = node1.attachShadow({mode: 'open'})

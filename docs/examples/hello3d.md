@@ -3,18 +3,18 @@
 <!-- <live-code class="full" :options="{theme: 'base16-light'}" template="#rotating-square" :autorun="true" />
 <script type="text/x-template" id="rotating-square"><template>
   <lume-scene>
-    <lume-node ref="node"
+    <lume-element3d ref="node"
       size="100 100"
       align-point="0.5 0.5 0.5"
       mount-point="0.5 0.5 0.5"
     >
       Hello 3D
-    </lume-node>
+    </lume-element3d>
   </lume-scene>
 </template>
 
 <style>
-  lume-node {
+  lume-element3d {
     background: deeppink;
   }
 </style>
@@ -41,7 +41,7 @@
 <script src="${location.origin+location.pathname}global.js"><\/script>
 
 <lume-scene>
-  <lume-node
+  <lume-element3d
     id="node"
     size="100 100"
     rotation="0 -70 0"
@@ -49,7 +49,7 @@
     mount-point="0.5 0.5 0.5"
   >
     <h3 align="center">Hello 3D world!</h3>
-  </lume-node>
+  </lume-element3d>
 </lume-scene>
 
 <style>
@@ -60,7 +60,7 @@
   lume-scene {
     background: #333;
   }
-  lume-node {
+  lume-element3d {
     background: deeppink;
     font-family: sans serif;
     border-radius: 5px;

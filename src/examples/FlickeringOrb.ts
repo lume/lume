@@ -1,16 +1,16 @@
 import {element, numberAttribute, stringAttribute} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
 
 import type {PointLight} from '../lights/PointLight.js'
 import type {Sphere} from '../meshes/Sphere.js'
 
-export type FlickeringOrbAttributes = NodeAttributes | 'color' | 'intensity' | 'shadowBias'
+export type FlickeringOrbAttributes = Element3DAttributes | 'color' | 'intensity' | 'shadowBias'
 
 @element('flickering-orb', autoDefineElements)
-export class FlickeringOrb extends Node {
+export class FlickeringOrb extends Element3D {
 	@stringAttribute('royalblue') color = 'royalblue'
 	@numberAttribute(1.3) intensity = 1.3
 	@numberAttribute(0) shadowBias = 0

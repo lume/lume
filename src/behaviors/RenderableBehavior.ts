@@ -1,7 +1,7 @@
-import {autorun, StopFunction} from '@lume/variable'
 import {Behavior} from './Behavior.js'
 import {Events} from '../core/Events.js'
-import {Node} from '../core/Node.js'
+import {Element3D} from '../core/Element3D.js'
+import {Effectful} from '../core/Effectful.js'
 
 /**
  * @class RenderableBehavior
@@ -12,9 +12,9 @@ import {Node} from '../core/Node.js'
  *
  * @extends Behavior
  */
-export abstract class RenderableBehavior extends Behavior {
+export abstract class RenderableBehavior extends Effectful(Behavior) {
 	override requiredElementType() {
-		return [Node]
+		return [Element3D]
 	}
 
 	override connectedCallback() {
@@ -70,20 +70,4 @@ export abstract class RenderableBehavior extends Behavior {
 	// Subclasses override these
 	loadGL(): void {}
 	unloadGL(): void {}
-
-	/////////////////////////////////////
-
-	// TODO get this feature from classy-solid
-	createEffect(fn: () => void) {
-		this._stopFns.push(autorun(fn))
-	}
-
-	// TODO WithAutoruns mixin or similar (decorators), instead of it being in a
-	// base class. Not all sub-classes need it.
-	_stopFns: StopFunction[] = []
-
-	stopEffects() {
-		for (const stop of this._stopFns) stop()
-		this._stopFns.length = 0
-	}
 }

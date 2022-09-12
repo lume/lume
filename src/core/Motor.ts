@@ -1,6 +1,6 @@
 // TODO import and use animation-loop
 
-import type {ImperativeBase} from './ImperativeBase.js'
+import type {SharedAPI} from './SharedAPI.js'
 import type {Scene} from './Scene.js'
 
 export type RenderTask = (timestamp: number, deltaTime: number) => false | void
@@ -12,12 +12,12 @@ class _Motor {
 	 *
 	 * A render task is simply a function that will be called over and over
 	 * again, in the Motor's animation loop. That's all, nothing special.
-	 * However, if a Node setter is used inside of a render task, then the Node
+	 * However, if a Element3D setter is used inside of a render task, then the Element3D
 	 * will tell Motor that it needs to be re-rendered, which will happen at
-	 * the end of the current frame. If a Node setter is used outside of a
-	 * render task (i.e. outside of the Motor's animation loop), then the Node
-	 * tells Motor to re-render the Node on the next animation loop tick.
-	 * Basically, regardless of where the Node's setters are used (inside or
+	 * the end of the current frame. If a Element3D setter is used outside of a
+	 * render task (i.e. outside of the Motor's animation loop), then the Element3D
+	 * tells Motor to re-render the Element3D on the next animation loop tick.
+	 * Basically, regardless of where the Element3D's setters are used (inside or
 	 * outside of the Motor's animation loop), rendering always happens inside
 	 * the loop.
 	 *
@@ -51,18 +51,28 @@ class _Motor {
 		if (taskIndex <= this.#taskIterationIndex) this.#taskIterationIndex -= 1
 	}
 
-	/** Adds a render task that executes only once instead of repeatedly. */
-	once(fn: RenderTask) {
+	#onces = new Set<RenderTask>()
+
+	/**
+	 * Adds a render task that executes only once instead of repeatedly. Set
+	 * `allowDuplicates` to `false` to skip queueing a function if it is already
+	 * queued.
+	 */
+	once(fn: RenderTask, allowDuplicates = true) {
+		if (!allowDuplicates && this.#onces.has(fn)) return
+
+		this.#onces.add(fn)
+
 		// The `false` return value of the task tells Motor not to re-run it.
 		return this.addRenderTask((time, dt) => (fn(time, dt), false))
 	}
 
-	// A Node calls this any time its properties have been modified (f.e. by the end user).
-	setNodeToBeRendered(node: ImperativeBase) {
+	// An Element3D calls this any time its properties have been modified (f.e. by the end user).
+	needsUpdate(element: SharedAPI) {
 		// delete so it goes to the end
-		if (this.#nodesToUpdate.has(node)) this.#nodesToUpdate.delete(node)
+		if (this.#elementsToUpdate.has(element)) this.#elementsToUpdate.delete(element)
 
-		this.#nodesToUpdate.add(node)
+		this.#elementsToUpdate.add(element)
 
 		// noop if the loop's already started
 		this.#startAnimationLoop()
@@ -82,16 +92,18 @@ class _Motor {
 	#taskIterationIndex = 0
 	#numberOfTasks = 0
 
+	// This is an array so that it is possible to add a task function more than once.
 	#allRenderTasks = [] as RenderTask[]
-	#nodesToUpdate = new Set<ImperativeBase>()
+
+	#elementsToUpdate = new Set<SharedAPI>()
 	#modifiedScenes = new Set<Scene>()
 
-	// A set of nodes that are the root nodes of subtrees where all nodes
-	// in each subtree need to have their world matrices updated.
-	#treesToUpdate = new Set<ImperativeBase>()
+	// A set of elements that are the root elements of subtrees where all elements
+	// in subtrees need their world matrices updated.
+	#treesToUpdate = new Set<SharedAPI>()
 
 	// default to requestAnimationFrame for regular non-VR/AR scenes.
-	#requestFrame = window.requestAnimationFrame.bind(window)
+	#requestFrame = globalThis.requestAnimationFrame.bind(globalThis)
 
 	/**
 	 * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
@@ -114,7 +126,8 @@ class _Motor {
 			const deltaTime: number = timestamp - lastTime
 
 			this.#runRenderTasks(timestamp, deltaTime)
-			this.#renderNodes(timestamp, deltaTime)
+			this.#onces.clear()
+			this.#updateElements(timestamp, deltaTime)
 
 			// If no tasks are left, stop the animation loop.
 			if (!this.#allRenderTasks.length) this.#loopStarted = false
@@ -128,46 +141,42 @@ class _Motor {
 	}
 
 	#runRenderTasks(timestamp: number, deltaTime: number) {
-		for (
-			this.#taskIterationIndex = 0;
-			this.#taskIterationIndex < this.#numberOfTasks;
-			this.#taskIterationIndex += 1
-		) {
+		for (this.#taskIterationIndex = 0; this.#taskIterationIndex < this.#numberOfTasks; this.#taskIterationIndex += 1) {
 			const task = this.#allRenderTasks[this.#taskIterationIndex]
 
 			if (task(timestamp, deltaTime) === false) this.removeRenderTask(task)
 		}
 	}
 
-	#renderNodes(timestamp: number, deltaTime: number) {
-		if (this.#nodesToUpdate.size === 0) return
+	#updateElements(timestamp: number, deltaTime: number) {
+		if (this.#elementsToUpdate.size === 0) return
 
-		for (const node of this.#nodesToUpdate) {
-			// Skip any Node that no longer participates in rendering of a scene.
-			if (!node.scene) continue
+		for (const el of this.#elementsToUpdate) {
+			// Skip any element that no longer participates in rendering of a scene.
+			if (!el.scene) continue
 
-			node.update(timestamp, deltaTime)
+			el.update(timestamp, deltaTime)
 
-			// if there is no ancestor of the current node that should be
-			// rendered, then the current node is a root node of a subtree
+			// if there is no ancestor of the current element that should be
+			// updated, then the current element is a root element of a subtree
 			// that needs to be updated
-			if (!node.getNearestAncestorThatShouldBeRendered()) this.#treesToUpdate.add(node)
+			if (!el.__getNearestAncestorThatShouldBeUpdated()) this.#treesToUpdate.add(el)
 
 			// keep track of which scenes are modified so we can render webgl
 			// only for those scenes.
-			this.#modifiedScenes.add(node.scene)
+			this.#modifiedScenes.add(el.scene)
 		}
 
 		// Update world matrices of the subtrees.
-		for (const node of this.#treesToUpdate) node.updateWorldMatrices()
+		for (const el of this.#treesToUpdate) el.updateWorldMatrices()
 		this.#treesToUpdate.clear()
 
 		// render webgl of modified scenes.
 		for (const scene of this.#modifiedScenes) scene.drawScene()
 		this.#modifiedScenes.clear()
 
-		for (const node of this.#nodesToUpdate) node.__willBeRendered = false
-		this.#nodesToUpdate.clear()
+		for (const el of this.#elementsToUpdate) el.__willBeRendered = false
+		this.#elementsToUpdate.clear()
 	}
 }
 

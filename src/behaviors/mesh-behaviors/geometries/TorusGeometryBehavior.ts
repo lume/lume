@@ -2,7 +2,7 @@ import 'element-behaviors'
 import {numberAttribute, reactive} from '../../attribute.js'
 import {TorusGeometry} from 'three/src/geometries/TorusGeometry.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
-import {toRadians} from '../../../core/utils.js'
+import {toRadians} from '../../../core/utils/index.js'
 
 export type TorusGeometryBehaviorAttributes = 'tubeThickness' | 'radialSegments' | 'tubularSegments' | 'arc'
 

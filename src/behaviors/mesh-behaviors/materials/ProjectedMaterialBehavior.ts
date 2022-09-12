@@ -169,80 +169,89 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 			const mat = this.meshComponent
 			if (!mat) return
 
-			const tex = this.projectedTextures[0]
-			if (!tex) return
+			const three = this.element.three
+			if (three.material !== mat) return
 
 			createEffect(() => {
-				mat.fitment = tex.fitment
-				mat.frontFacesOnly = tex.frontFacesOnly
-				this.element.needsUpdate()
+				const tex = this.projectedTextures[0]
+				if (!tex) return
+
+				createEffect(() => {
+					mat.fitment = tex.fitment
+					mat.frontFacesOnly = tex.frontFacesOnly
+					this.element.needsUpdate()
+				})
 			})
-		})
 
-		this.createEffect(() => {
-			const tex = this.projectedTextures[0]
-			if (!tex) return
+			createEffect(() => {
+				const tex = this.projectedTextures[0]
+				if (!tex) return
 
-			// if the camera changes
-			const cam = tex._camera
-			if (!cam) return
+				// if the camera changes
+				const cam = tex._camera
+				if (!cam) return
 
-			const mat = this.meshComponent
-			if (!mat) return
+				if (three.material !== mat) return
 
-			mat.camera = cam
-			mat.updateFromCamera()
-			mat.project(this.element.three as any, false)
-
-			this.element.needsUpdate()
-
-			// Do we need this?
-			onCleanup(() => {
-				const mat = this.meshComponent
-
-				// If the whole behavior was cleaned up, mat will be undefined
-				// here due to #disposeMeshComponent in the base class onCleanup
-				if (!mat) return
-
-				mat.camera = new OrthographicCamera(0.00000001, 0.00000001, 0.00000001, 0.00000001)
+				mat.camera = cam
 				mat.updateFromCamera()
-				mat.project(this.element.three as any, false)
+				mat.project(three as any, false)
 
 				this.element.needsUpdate()
-			})
-		})
 
-		this.createEffect(() => {
-			const tex = this.projectedTextures[0]
-			if (!tex) return
+				// Do we need this?
+				onCleanup(() => {
+					const mat = this.meshComponent
+
+					// If the whole behavior was cleaned up, mat will be undefined
+					// here due to #disposeMeshComponent in the base class onCleanup
+					if (!mat) return
+
+					if (three.material !== mat) return
+
+					mat.camera = new OrthographicCamera(0.00000001, 0.00000001, 0.00000001, 0.00000001)
+					mat.updateFromCamera()
+					mat.project(three as any, false)
+
+					this.element.needsUpdate()
+				})
+			})
 
 			createEffect(() => {
-				tex.calculatedSize // dependency
+				const tex = this.projectedTextures[0]
+				if (!tex) return
 
-				this.meshComponent!.updateFromCamera() // needed because the size of the texture projector affects the camera projection
-				this.element.needsUpdate()
+				createEffect(() => {
+					tex.calculatedSize // dependency
+
+					mat.updateFromCamera() // needed because the size of the texture projector affects the camera projection
+					this.element.needsUpdate()
+				})
 			})
-		})
-
-		this.createEffect(() => {
-			// triggered when this.element has its world matrix updated.
-			this.element.version
-			this.meshComponent!.project(this.element.three as any, false)
-		})
-
-		this.createEffect(() => {
-			const mat = this.meshComponent
-			if (!mat) return
-
-			const tex = this.projectedTextures[0]
-			if (!tex) return
 
 			createEffect(() => {
-				// triggered when tex has its world matrix updated, which
-				// transforms the camera we use for texture projection.
-				tex.version
-				mat.project(this.element.three as any, false)
-				this.element.needsUpdate() // The texture element updated, so make sure this.element does too.
+				if (three.material !== mat) return
+
+				// triggered when this.element has its world matrix updated.
+				this.element.version
+				mat.project(three as any, false)
+			})
+
+			createEffect(() => {
+				console.log('> meshComponent effect', this.element.tagName + '#' + this.element.id)
+
+				const tex = this.projectedTextures[0]
+				if (!tex) return
+
+				createEffect(() => {
+					if (three.material !== mat) return
+
+					// triggered when tex has its world matrix updated, which
+					// transforms the camera we use for texture projection.
+					tex.version
+					mat.project(three as any, false)
+					this.element.needsUpdate() // The texture element updated, so make sure this.element does too.
+				})
 			})
 		})
 	}

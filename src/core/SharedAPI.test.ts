@@ -1,11 +1,11 @@
 import {autorun} from '@lume/element'
-import {Node} from './Node.js'
+import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
 import {defineElements} from '../index.js'
 
 defineElements()
 
-describe('ImperativeBase', () => {
+describe('SharedAPI', () => {
 	const root = document.createElement('div')
 	document.body.append(root)
 	let scene = new Scene()
@@ -23,7 +23,7 @@ describe('ImperativeBase', () => {
 
 	describe('.scene', () => {
 		it('tells us what scene a node is in', async () => {
-			const n = new Node()
+			const n = new Element3D()
 
 			expect(n.scene).toBe(null)
 			expect(scene.scene).toBe(scene)

@@ -1,116 +1,217 @@
-<script src="global.js"></script>
+<script src="./wrapper.js" title="shader-material"></script>
 
-<script>
-	// FIXME works here, but not down below.
-	LUME.defineElements()
-</script>
+<lume-scene
+	id="scene"
+	webgl
+	environment="../docs/examples/nasa-astrobee-robot/luna-station.jpg"
+	background="../docs/examples/nasa-astrobee-robot/luna-station.jpg"
+	equirectangular-background="true"
+>
+	<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-<lume-scene id="scene" webgl>
-	<lume-point-light position="500 500 500"></lume-point-light>
-	<lume-plane
-		id="plane"
+	<lume-camera-rig align-point="0.5 0.5 0.5">
+		<lume-point-light slot="camera-child" position="500 500 200" intensity="0.4"></lume-point-light>
+	</lume-camera-rig>
+
+	<lume-box
+		id="centerBox"
 		has="shader-material"
-		Xhas="phong-material"
-		Xcolor="pink"
 		receive-shadow="false"
-		size-mode="proportional proportional"
-		size="0.4 0.4"
-		align-point="0.5 0.5"
-		mount-point="0.5 0.5"
+		size="400 400 400"
+		align-point="0.5 0.5 0.5"
+		mount-point="0.5 0.5 0.5"
 		sidedness="double"
 		uniforms='{
 			"iTime": { "value": 0 },
-			"iResolution": { "value": {"x": 0, "y": 0, "z": 0} }
+			"iResolution": { "value": {"x": 1, "y": 1, "z": 1} }
 		}'
-		this-works
+		vertex-shader="
+			varying vec2 vUv;
+
+			void main() {
+				vUv = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			}
+		"
 		fragment-shader="
 			#include <common>
 
 			uniform vec3 iResolution;
 			uniform float iTime;
 
-			void main() {
-				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-			}
-		"
-		FIXME-but-this-does-not-work
-		Xfragment-shader="
-			#include <common>
-
-			uniform vec3 iResolution;
-			uniform float iTime;
+			// The following is the default shader when you start a new shadertoy example.
+			// By iq: https://www.shadertoy.com/user/iq
+			// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 
 			// BEGIN SHADERTOY CODE {
 
-			// This is the default shader when you start a new shadertoy example.
-
-			// By iq: https://www.shadertoy.com/user/iq
-			// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-			void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+			void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 				// Normalized pixel coordinates (from 0 to 1)
-				vec2 uv = fragCoord / iResolution.xy;
+				vec2 uv = fragCoord/iResolution.xy;
 
 				// Time varying pixel color
-				vec3 col = 0.5 + 0.5 * cos(iTime + uv.xyx + vec3(0,2,4));
+				vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
 
 				// Output to screen
-				fragColor = vec4(col, 1.0);
+				fragColor = vec4(col,1.0);
+				//fragColor = vec4(1.0, 0.3, 0.1, 1.0);
 			}
 
 			// END SHADERTOY CODE }
 
+			varying vec2 vUv;
+
 			void main() {
-			  mainImage(gl_FragColor, gl_FragCoord.xy);
+				mainImage(gl_FragColor, vUv / 2.0 * gl_FragCoord.xy);
 			}
 		"
-	></lume-plane>
+	>
+		<!-- <lume-box
+			align-point="0.5 0.5 0.5"
+			mount-point="0.5 0.5 0.5"
+			has="physical-material"
+			receive-shadow="false"
+			size="1000 1000 1000"
+			sidedness="double"
+			opacity="1"
+			color="white"
+			clearcoat="1"
+			transmission="1"
+			metalness="0.3"
+			roughness="0.5"
+		>
+		</lume-box> -->
+	</lume-box>
 </lume-scene>
 
-<style>
-	html,
-	body {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-	}
-	lume-scene {
-		background: #222;
-		touch-action: none;
-	}
-</style>
-
 <script>
-	{
-		// FIXME Doesn't work here, but works above.
-		// LUME.defineElements()
+	LUME.defineElements()
 
-		// Set new values for the shader uniforms when needed.
-		plane.on('GL_LOAD', () => {
-			const shaderMaterial = plane.behaviors.get('shader-material')
+	const outerCubes = true
+	const outerCubeGlows = false
 
-			LUME.autorun(() => {
-				shaderMaterial.uniforms.iResolution.value.x = plane.calculatedSize.x
-				shaderMaterial.uniforms.iResolution.value.y = plane.calculatedSize.y
+	for (const i of Array(8).keys()) {
+		const {html} = LUME
 
-				shaderMaterial.getMeshComponent('material').needsUpdate = true
-				plane.needsUpdate()
-			})
+		if (outerCubes) {
+			const box = html`
+				<lume-sphere
+					align-point=${[i % 4 < 2 ? -0.0 : 1.0, i < 4 ? -0.0 : 1.0, (i + 1) % 2 ? 1.0 : -0.0]}
+					mount-point=${[i % 4 < 2 ? 1.0 : 0.0, i < 4 ? 1.0 : 0.0, (i + 1) % 2 ? 0.0 : 1.0]}
+					has="physical-material"
+					receive-shadow="false"
+					size="400 400 400"
+					sidedness="double"
+					opacity="1"
+					color="white"
+					clearcoat="1"
+					transmission="1"
+					metalness="0.0"
+					roughness="0.55"
+				></lume-sphere>
+			`
 
-			LUME.Motor.addRenderTask(t => {
-				shaderMaterial.uniforms.iTime.value = t * 0.001
+			centerBox.append(box)
+		}
 
-				shaderMaterial.getMeshComponent('material').needsUpdate = true
-				plane.needsUpdate()
-			})
+		if (outerCubeGlows) {
+			const box2 = html`
+				<lume-sphere
+					id=${'outer' + i}
+					align-point=${[i % 4 < 2 ? -0.0 : 1.0, i < 4 ? -0.0 : 1.0, (i + 1) % 2 ? 1.0 : -0.0]}
+					mount-point=${[i % 4 < 2 ? 1.0 : 0.0, i < 4 ? 1.0 : 0.0, (i + 1) % 2 ? 0.0 : 1.0]}
+					has="shader-material"
+					receive-shadow="false"
+					size="400 400 400"
+					sidedness="double"
+					uniforms='{
+						"iTime": { "value": 0 },
+						"iResolution": { "value": {"x": 1, "y": 1, "z": 1} }
+					}'
+					vertex-shader="
+						varying vec2 vUv;
+
+						void main() {
+							vUv = uv;
+							gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+						}
+					"
+					fragment-shader="
+						#include <common>
+
+						uniform vec3 iResolution;
+						uniform float iTime;
+
+						// The following is the default shader when you start a new shadertoy example.
+						// By iq: https://www.shadertoy.com/user/iq
+						// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
+						// BEGIN SHADERTOY CODE {
+
+						void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+							// Normalized pixel coordinates (from 0 to 1)
+							vec2 uv = fragCoord/iResolution.xy;
+
+							// Time varying pixel color
+							vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+
+							// Output to screen
+							fragColor = vec4(col,1.0);
+							//fragColor = vec4(1.0, 0.3, 0.1, 1.0);
+						}
+
+						// END SHADERTOY CODE }
+
+						varying vec2 vUv;
+
+						void main() {
+							mainImage(gl_FragColor, vUv / 2.0 * gl_FragCoord.xy);
+						}
+					"
+				></lume-sphere>
+			`
+
+			centerBox.append(box2)
+
+			animateShader(box2)
+		}
+	}
+
+	animateShader(centerBox)
+
+	async function animateShader(targetBox) {
+		LUME.autorun(() => {
+			const mat = targetBox.behaviors.get('shader-material')
+
+			if (!mat?.meshComponent) return
+
+			mat.uniforms.iResolution.value.x = targetBox.calculatedSize.x
+			mat.uniforms.iResolution.value.y = targetBox.calculatedSize.y
+
+			targetBox.needsUpdate()
 		})
 
-		const rotationAmount = 15
+		LUME.Motor.addRenderTask(t => {
+			const mat = targetBox.behaviors.get('shader-material')
 
-		// Add some interaction!
-		scene.addEventListener('pointermove', event => {
-			// Rotate the image a little bit too.
-			plane.rotation.y = -((event.clientX / scene.calculatedSize.x) * (rotationAmount * 2) - rotationAmount)
-			plane.rotation.x = (event.clientY / scene.calculatedSize.y) * (rotationAmount * 2) - rotationAmount
+			if (!mat?.meshComponent) return
+
+			mat.uniforms.iTime.value = t * 0.001
+			targetBox.needsUpdate()
 		})
 	}
+
+	function tiltOnPointerMove(pointerContext, rotationTarget, rotationAmount = 15) {
+		// Add some interaction!
+		pointerContext.addEventListener('pointermove', event => {
+			// Rotate the image a little bit too.
+			rotationTarget.rotation.y = -(
+				(event.clientX / pointerContext.offsetWidth) * (rotationAmount * 2) -
+				rotationAmount
+			)
+			rotationTarget.rotation.x = (event.clientY / pointerContext.offsetHeight) * (rotationAmount * 2) - rotationAmount
+		})
+	}
+
+	tiltOnPointerMove(scene, centerBox)
 </script>

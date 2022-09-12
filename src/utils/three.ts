@@ -1,6 +1,5 @@
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {Color} from 'three/src/math/Color.js'
-import {defer} from '../core/utils.js'
 
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {Material} from 'three/src/materials/Material.js'
@@ -36,7 +35,7 @@ export function disposeObject(obj: Object3D, removeFromParent = true, destroyGeo
 	}
 
 	removeFromParent &&
-		defer(() => {
+		queueMicrotask(() => {
 			// if we remove children in the same tick then we can't continue traversing,
 			// so we defer to the next microtask
 			obj.parent && obj.parent.remove(obj)
@@ -51,12 +50,7 @@ type DisposeOptions = Partial<{
 
 export function disposeObjectTree(obj: Object3D, disposeOptions: DisposeOptions = {}) {
 	obj.traverse(node => {
-		disposeObject(
-			node,
-			disposeOptions.removeFromParent,
-			disposeOptions.destroyGeometry,
-			disposeOptions.destroyMaterial,
-		)
+		disposeObject(node, disposeOptions.removeFromParent, disposeOptions.destroyGeometry, disposeOptions.destroyMaterial)
 	})
 }
 

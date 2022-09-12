@@ -2,16 +2,7 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {
-	autorun,
-	booleanAttribute,
-	attribute,
-	numberAttribute,
-	untrack,
-	element,
-	stringAttribute,
-	reactive,
-} from '@lume/element'
+import {booleanAttribute, attribute, numberAttribute, untrack, element, stringAttribute, reactive} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
@@ -21,8 +12,7 @@ import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
-import {ImperativeBase} from './ImperativeBase.js'
-import {defer} from './utils.js'
+import {SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -32,7 +22,7 @@ import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
-import type {Node} from './Node.js'
+import type {Element3D} from './Element3D.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
@@ -67,7 +57,7 @@ export type SceneAttributes =
  * Element: `<lume-scene>`
  *
  * This is the backing class for `<lume-scene>` elements. All
- * [`Node`](/api/core/Node.md) elements must be inside of a `<lume-scene>` element. A `Scene`
+ * [`Element3D`](./Element3D.md)s must be inside of a `<lume-scene>` element. A `Scene`
  * establishes a visual area in a web application where a 3D scene will be
  * rendered.
  *
@@ -91,11 +81,11 @@ export type SceneAttributes =
  *   })
  * </script>
  *
- * @extends ImperativeBase
+ * @extends SharedAPI
  */
 // TODO @element jsdoc tag
 @element('lume-scene', autoDefineElements)
-export class Scene extends ImperativeBase {
+export class Scene extends SharedAPI {
 	/**
 	 * @property {true} isScene -
 	 *
@@ -105,6 +95,12 @@ export class Scene extends ImperativeBase {
 	 */
 	// TODO @readonly jsdoc tag
 	override readonly isScene = true
+
+	// Skip ShadowRoot observation for Scene instances. Only Scene actual
+	// children or distributed children are considered in the LUME scene
+	// graph because Scene's ShadowRoot already exists and serves in the
+	// rendering implementation and is not the user's.
+	override skipShadowObservation = this.isScene
 
 	/**
 	 * @property {boolean} enableCss -
@@ -478,15 +474,40 @@ export class Scene extends ImperativeBase {
 	// perspective attribute.
 	__threeCamera!: ThreePerspectiveCamera
 
+	/**
+	 * @property {PerspectiveCamera} camera
+	 *
+	 * *readonly*, *reactive*
+	 *
+	 * Returns the currently active camera that is within the scene, or `null`
+	 * if there is none and the scene is using its internal default camera. The
+	 * `.threeCamera` property will always return a Three.js camera, whether
+	 * from the active camera element, or the scene's internal camera.
+	 *
+	 * When the scene is using its default camera, the X and Y size of the scene
+	 * fits perfectly within the camera view, at a distance from the camera
+	 * matching the value of the `.perspective` property. In practice, this
+	 * means that anything positioned within a scene with a default camera is
+	 * positioned based on CSS pixels, and those items will be sized with CSS
+	 * pixels. The default camera makes a scene useful for writing apps based on
+	 * the document space, just like with regular DOM+CSS where everything is
+	 * positioned starting at the top/left.
+	 */
+	get camera() {
+		return this.__camera
+	}
+
+	@reactive __camera: PerspectiveCamera | null = null
+
 	// This is toggled by ClipPlanesBehavior, not intended for direct use.
 	@reactive __localClipping = false
 
 	constructor() {
 		super()
 
-		// Used by the `scene` getter in ImperativeBase
+		// Used by the `scene` getter in SharedAPI
 		// TODO set this in connectedCallback, unset in disconnectedCallback, so
-		// it has the same semantics as with Node (this.scene is not null when
+		// it has the same semantics as with Element3D (this.scene is not null when
 		// scene is connected and has webgl or css rendering turned on)
 		this._scene = this
 
@@ -540,7 +561,7 @@ export class Scene extends ImperativeBase {
 			/*
 			 * All items of the scene graph are hidden until they are mounted in
 			 * a scene (this changes to display:block). 'display' gets toggled
-			 * between "none" and "block" by ImperativeBase depending on if CSS
+			 * between "none" and "block" by SharedAPI depending on if CSS
 			 * rendering is enabled.
 			 */
 			display: none;
@@ -664,78 +685,80 @@ export class Scene extends ImperativeBase {
 
 		this.shadowRoot!.prepend(new Comment(magic()))
 
-		this._stopFns.push(
-			autorun(() => {
-				if (this.webgl) this._triggerLoadGL()
-				else this._triggerUnloadGL()
+		this.createEffect(() => {
+			if (this.webgl) this._triggerLoadGL()
+			else this._triggerUnloadGL()
 
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			if (!this.webgl || !this.background) {
+				if (isDisposable(this.three.background)) this.three.background.dispose()
+				this.#glRenderer?.disableBackground(this)
 				this.needsUpdate()
-			}),
-			autorun(() => {
-				if (!this.webgl || !this.background) {
-					if (isDisposable(this.three.background)) this.three.background.dispose()
-					this.#glRenderer?.disableBackground(this)
+				return
+			}
+
+			if (this.background.match(/\.(jpg|jpeg|png)$/)) {
+				// Dispose each time we switch to a new one.
+				if (isDisposable(this.three.background)) this.three.background.dispose()
+
+				// destroy the previous one, if any.
+				this.#glRenderer!.disableBackground(this)
+
+				this.#glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
+					this.three.background = texture || null
 					this.needsUpdate()
-					return
-				}
 
-				if (this.background.match(/\.(jpg|jpeg|png)$/)) {
-					// Dispose each time we switch to a new one.
-					if (isDisposable(this.three.background)) this.three.background.dispose()
+					// TODO emit background load event.
+				})
+			} else {
+				console.warn(
+					`<${this.tagName.toLowerCase()}> background attribute ignored, the given image type is not currently supported.`,
+				)
+			}
+		})
 
-					// destroy the previous one, if any.
-					this.#glRenderer!.disableBackground(this)
-
-					this.#glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
-						this.three.background = texture || null
-						this.needsUpdate()
-
-						// TODO emit background load event.
-					})
-				} else {
-					console.warn(
-						`<${this.tagName.toLowerCase()}> background attribute ignored, the given image type is not currently supported.`,
-					)
-				}
-			}),
-			autorun(() => {
-				if (!this.webgl || !this.environment) {
-					if (isDisposable(this.three.environment)) this.three.environment.dispose()
-					this.#glRenderer?.disableEnvironment(this)
-					this.needsUpdate()
-					return
-				}
-
-				if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
-					// Dispose each time we switch to a new one.
-					if (isDisposable(this.three.environment)) this.three.environment.dispose()
-
-					// destroy the previous one, if any.
-					this.#glRenderer!.disableEnvironment(this)
-
-					this.#glRenderer!.enableEnvironment(this, texture => {
-						this.three.environment = texture
-						this.needsUpdate()
-
-						// TODO emit background load event.
-					})
-				} else {
-					console.warn(
-						`<${this.tagName.toLowerCase()}> environment attribute ignored, the given image type is not currently supported.`,
-					)
-				}
-			}),
-			autorun(() => {
-				if (this.enableCss) this._triggerLoadCSS()
-				else this._triggerUnloadCSS()
-
+		this.createEffect(() => {
+			if (!this.webgl || !this.environment) {
+				if (isDisposable(this.three.environment)) this.three.environment.dispose()
+				this.#glRenderer?.disableEnvironment(this)
 				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.sizeMode
-				this.#startOrStopParentSizeObservation()
-			}),
-		)
+				return
+			}
+
+			if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
+				// Dispose each time we switch to a new one.
+				if (isDisposable(this.three.environment)) this.three.environment.dispose()
+
+				// destroy the previous one, if any.
+				this.#glRenderer!.disableEnvironment(this)
+
+				this.#glRenderer!.enableEnvironment(this, texture => {
+					this.three.environment = texture
+					this.needsUpdate()
+
+					// TODO emit background load event.
+				})
+			} else {
+				console.warn(
+					`<${this.tagName.toLowerCase()}> environment attribute ignored, the given image type is not currently supported.`,
+				)
+			}
+		})
+
+		this.createEffect(() => {
+			if (this.enableCss) this._triggerLoadCSS()
+			else this._triggerUnloadCSS()
+
+			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.sizeMode
+			this.#startOrStopParentSizeObservation()
+		})
 	}
 
 	override disconnectedCallback() {
@@ -749,7 +772,7 @@ export class Scene extends ImperativeBase {
 		super.attributeChangedCallback!(name, oldV, newV)
 
 		if (name === 'slot') {
-			defer(() => {
+			queueMicrotask(() => {
 				throw new Error(
 					'Assigning a <lume-scene> to a slot is not currently supported and may not work as expected. Instead, wrap the <lume-scene> in another element like a <div>, then assign the wrapper to the slot.',
 				)
@@ -767,26 +790,26 @@ export class Scene extends ImperativeBase {
 
 	/**
 	 * @method traverseSceneGraph - This traverses the composed tree of LUME 3D
-	 * elements (the scene graph) not including the scene node, starting from
+	 * elements (the scene graph) not including the scene element, starting from
 	 * the scene's children, in pre-order. It skips non-LUME elements. The given
-	 * callback will be called for each node in the traversal.
+	 * callback will be called for each element in the traversal.
 	 *
 	 * This is similar to
-	 * [`Node#traverseSceneGraph`](./Node.md#traversescenegraph) but traversal
+	 * [`Element3D#traverseSceneGraph`](./Element3D.md#traversescenegraph) but traversal
 	 * does not include the Scene that this is called on, because a Scene is not
 	 * something that is rendered, but a container of things that are rendered.
 	 *
 	 * Example:
 	 *
 	 * ```js
-	 * scene.traverseSceneGraph(node => {
-	 *   console.log(scene === node) // never true
-	 *   console.log(node instanceof LUME.Node) // true
+	 * scene.traverseSceneGraph(el => {
+	 *   console.log(scene === el) // never true
+	 *   console.log(el instanceof LUME.Element3D) // true
 	 * })
 	 * ```
 	 *
-	 * @param {(node: Node) => void} visitor - A function called for each
-	 * LUME node in the scene graph (the composed tree).
+	 * @param {(el: Element3D) => void} visitor - A function called for each
+	 * LUME element in the scene graph (the composed tree).
 	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
 	 * the traversal will wait for custom elements to be defined (with
 	 * customElements.whenDefined) before traversing to them.
@@ -796,7 +819,7 @@ export class Scene extends ImperativeBase {
 	 * asynchronously once all custom elements are defined, and a Promise is
 	 * returned so that it is possible to wait for the traversal to complete.
 	 */
-	override traverseSceneGraph(visitor: (node: Node) => void, waitForUpgrade = false): Promise<void> | void {
+	override traverseSceneGraph(visitor: (el: Element3D) => void, waitForUpgrade = false): Promise<void> | void {
 		if (!waitForUpgrade) {
 			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
 
@@ -926,87 +949,93 @@ export class Scene extends ImperativeBase {
 		// If _loadGL is firing, then this.webgl must be true, therefore
 		// this.#glRenderer must be defined in any of the below autoruns.
 
-		this._glStopFns.push(
-			autorun(() => {
-				if (this.fogMode === 'none') {
-					this.three.fog = null
-				} else if (this.fogMode === 'linear') {
-					this.three.fog = new Fog('deeppink')
-				} else if (this.fogMode === 'expo2') {
-					this.three.fog = new FogExp2(new Color('deeppink').getHex())
-				}
+		this.createGLEffect(() => {
+			if (this.fogMode === 'none') {
+				this.three.fog = null
+			} else if (this.fogMode === 'linear') {
+				this.three.fog = new Fog('deeppink')
+			} else if (this.fogMode === 'expo2') {
+				this.three.fog = new FogExp2(new Color('deeppink').getHex())
+			}
 
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				if (this.fogMode === 'none') {
-					// Nothing to do.
-				} else if (this.fogMode === 'linear') {
-					const fog = this.three.fog! as Fog
-					fog.near = this.fogNear
-					fog.far = this.fogFar
-					fog.color.set(this.fogColor)
-				} else if (this.fogMode === 'expo2') {
-					const fog = this.three.fog! as FogExp2
-					fog.color.set(this.fogColor)
-					fog.density = this.fogDensity
-				}
+			this.needsUpdate()
+		})
 
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.localClippingEnabled = this.__localClipping
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.setClearAlpha(this, this.backgroundOpacity)
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.setShadowMapType(this, this.shadowmapType)
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.setPhysicallyCorrectLights(this, this.physicallyCorrectLights)
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.#glRenderer!.enableVR(this, this.vr)
+		this.createGLEffect(() => {
+			if (this.fogMode === 'none') {
+				// Nothing to do.
+			} else if (this.fogMode === 'linear') {
+				const fog = this.three.fog! as Fog
+				fog.near = this.fogNear
+				fog.far = this.fogFar
+				fog.color.set(this.fogColor)
+			} else if (this.fogMode === 'expo2') {
+				const fog = this.three.fog! as FogExp2
+				fog.color.set(this.fogColor)
+				fog.density = this.fogDensity
+			}
 
-				if (this.vr) {
-					console.log('set vr frame requester!')
+			this.needsUpdate()
+		})
 
-					Motor.setFrameRequester(fn => {
-						this.#glRenderer!.requestFrame(this, fn)
+		this.createGLEffect(() => {
+			this.#glRenderer!.localClippingEnabled = this.__localClipping
+			this.needsUpdate()
+		})
 
-						// Mock rAF return value for Motor.setFrameRequester.
-						return 0
-					})
+		this.createGLEffect(() => {
+			this.#glRenderer!.setClearColor(this, this.backgroundColor, this.backgroundOpacity)
+			this.needsUpdate()
+		})
 
-					const button = this.#glRenderer!.createDefaultVRButton(this)
-					button.classList.add('vrButton')
+		this.createGLEffect(() => {
+			this.#glRenderer!.setClearAlpha(this, this.backgroundOpacity)
+			this.needsUpdate()
+		})
 
-					this._miscLayer!.appendChild(button)
-				} else if ((this as any).xr) {
-					// TODO
-				} else {
-					// TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
-				}
+		this.createGLEffect(() => {
+			this.#glRenderer!.setShadowMapType(this, this.shadowmapType)
+			this.needsUpdate()
+		})
 
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.__threeCamera.near = this.cameraNear
-				this.__threeCamera.far = this.cameraFar
-				this.needsUpdate()
-			}),
-		)
+		this.createGLEffect(() => {
+			this.#glRenderer!.setPhysicallyCorrectLights(this, this.physicallyCorrectLights)
+			this.needsUpdate()
+		})
 
-		this.traverseSceneGraph((node: Node) => node._triggerLoadGL(), true)
+		this.createGLEffect(() => {
+			this.#glRenderer!.enableVR(this, this.vr)
+
+			if (this.vr) {
+				console.log('set vr frame requester!')
+
+				Motor.setFrameRequester(fn => {
+					this.#glRenderer!.requestFrame(this, fn)
+
+					// Mock rAF return value for Motor.setFrameRequester.
+					return 0
+				})
+
+				const button = this.#glRenderer!.createDefaultVRButton(this)
+				button.classList.add('vrButton')
+
+				this._miscLayer!.appendChild(button)
+			} else if ((this as any).xr) {
+				// TODO
+			} else {
+				// TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
+			}
+
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.__threeCamera.near = this.cameraNear
+			this.__threeCamera.far = this.cameraFar
+			this.needsUpdate()
+		})
+
+		this.traverseSceneGraph((el: Element3D) => el._triggerLoadGL(), true)
 
 		return true
 	}
@@ -1019,7 +1048,7 @@ export class Scene extends ImperativeBase {
 			this.#glRenderer = null
 		}
 
-		this.traverseSceneGraph((node: Node) => node._triggerUnloadGL())
+		this.traverseSceneGraph((el: Element3D) => el._triggerUnloadGL())
 
 		// Not all things are loaded in _loadGL (they may be loaded
 		// depending on property/attribute values), but all things, if any, should
@@ -1037,7 +1066,7 @@ export class Scene extends ImperativeBase {
 
 		this.#cssRenderer = this.#getCSSRenderer('three')
 
-		this.traverseSceneGraph((node: Node) => node._loadCSS(), true)
+		this.traverseSceneGraph((el: Element3D) => el._loadCSS(), true)
 
 		return true
 	}
@@ -1050,7 +1079,7 @@ export class Scene extends ImperativeBase {
 			this.#cssRenderer = null
 		}
 
-		this.traverseSceneGraph((node: Node) => node._unloadCSS())
+		this.traverseSceneGraph((el: Element3D) => el._unloadCSS())
 
 		return true
 	}
@@ -1091,11 +1120,13 @@ export class Scene extends ImperativeBase {
 	__setCamera(camera?: PerspectiveCamera) {
 		if (!camera) {
 			this._createDefaultCamera()
+			this.__camera = null
 		} else {
 			// TODO?: implement an changecamera event/method and emit/call
 			// that here, then move this logic to the renderer
 			// handler/method?
 			this.__threeCamera = camera.three
+			this.__camera = camera
 			this._updateCameraAspect()
 			this._updateCameraProjection()
 			this.needsUpdate()
@@ -1109,14 +1140,16 @@ export class Scene extends ImperativeBase {
 
 	// TODO NESTED SCENES At the moment, we assume Scenes are top-level, connected to regular
 	// element parents. In the future, we will allow Scenes to be children of
-	// Nodes, in order to have nested scene rendering (f.e. a WebGL Scene
+	// Element3Ds, in order to have nested scene rendering (f.e. a WebGL Scene
 	// rendered on a plane inside a parent Scene, to make portals, etc).
 	#startOrStopParentSizeObservation() {
+		const {x, y} = this.sizeMode
+
 		if (
 			// If we will be rendering something...
 			(this.enableCss || this.webgl) &&
 			// ...and if one size dimension is proportional...
-			(this.sizeMode.x == 'proportional' || this.sizeMode.y == 'proportional')
+			(x === 'proportional' || x === 'p' || y === 'proportional' || y === 'p')
 			// Note, we don't care about the Z dimension, because Scenes are flat surfaces.
 		) {
 			// ...then observe the parent element size (it may not be a LUME
@@ -1136,7 +1169,7 @@ export class Scene extends ImperativeBase {
 		// patching attachShadow and using MutationObserver in all trees to
 		// observe slot elements for slotchange.
 		// https://github.com/WICG/webcomponents/issues/941
-		// TODO NESTED SCENES In the future, we will want to distinguish between Nodes and
+		// TODO NESTED SCENES In the future, we will want to distinguish between Element3D and
 		// regular elements, and we will only need size observation with regular
 		// elements.
 		const parent = /*not reactive*/ this.composedParent

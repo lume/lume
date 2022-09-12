@@ -38,9 +38,9 @@
 <loading-icon id="loading"></loading-icon>
 
 <lume-scene id="scene" perspective="800" webgl class="hidden">
-  <lume-node position="-250 0 0">
+  <lume-element3d position="-250 0 0">
     <lume-point-light id="light" intensity="3" color="limegreen"></lume-point-light>
-  </lume-node>
+  </lume-element3d>
   <lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
   <lume-camera-rig active rotation="0 -150 0" initial-distance="400" max-distance="700" min-distance="100"></lume-camera-rig>
   <!--

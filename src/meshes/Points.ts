@@ -1,11 +1,11 @@
 import {element} from '@lume/element'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
-import {Node} from '../core/Node.js'
+import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {NodeAttributes} from '../core/Node.js'
+import type {Element3DAttributes} from '../core/Element3D.js'
 
-export type PointsAttributes = NodeAttributes
+export type PointsAttributes = Element3DAttributes
 
 /**
  * @class Points -
@@ -28,7 +28,7 @@ export type PointsAttributes = NodeAttributes
  * @extends Mesh
  */
 @element('lume-points', autoDefineElements)
-export class Points extends Node {
+export class Points extends Element3D {
 	static override defaultBehaviors: {[k: string]: any} = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))

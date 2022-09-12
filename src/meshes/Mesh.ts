@@ -1,12 +1,12 @@
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
-import {autorun, booleanAttribute, element} from '@lume/element'
-import {Node} from '../core/Node.js'
+import {booleanAttribute, element} from '@lume/element'
+import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Material} from 'three/src/materials/Material.js'
-import type {NodeAttributes} from '../core/Node.js'
+import type {Element3DAttributes} from '../core/Element3D.js'
 
-export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
+export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow'
 
 /**
  * @class Mesh -
@@ -38,12 +38,12 @@ export type MeshAttributes = NodeAttributes | 'castShadow' | 'receiveShadow'
  *   })
  * </script>
  *
- * @extends Node
+ * @extends Element3D
  * @element lume-mesh TODO @element jsdoc tag
  *
  */
 @element('lume-mesh', autoDefineElements)
-export class Mesh extends Node {
+export class Mesh extends Element3D {
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.
@@ -85,18 +85,17 @@ export class Mesh extends Node {
 	override _loadGL() {
 		if (!super._loadGL()) return false
 
-		this._glStopFns.push(
-			autorun(() => {
-				this.three.castShadow = this.castShadow
-				this.needsUpdate()
-			}),
-			autorun(() => {
-				this.three.receiveShadow = this.receiveShadow
-				// TODO handle material arrays
-				;(this.three.material as Material).needsUpdate = true
-				this.needsUpdate()
-			}),
-		)
+		this.createGLEffect(() => {
+			this.three.castShadow = this.castShadow
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.three.receiveShadow = this.receiveShadow
+			// TODO handle material arrays
+			;(this.three.material as Material).needsUpdate = true
+			this.needsUpdate()
+		})
 
 		return true
 	}

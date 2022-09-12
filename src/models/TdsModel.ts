@@ -1,10 +1,10 @@
 import {element} from '@lume/element'
-import {Node, NodeAttributes} from '../core/Node.js'
+import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {TdsModelBehavior, TdsModelBehaviorAttributes} from '../behaviors/mesh-behaviors/models/TdsModelBehavior.js'
 
-export type TdsModelAttributes = NodeAttributes
+export type TdsModelAttributes = Element3DAttributes
 
 /**
  * @element lume-3ds-model
@@ -33,7 +33,7 @@ export type TdsModelAttributes = NodeAttributes
  * ```
  */
 @element('lume-3ds-model', autoDefineElements)
-export class TdsModel extends Node {
+export class TdsModel extends Element3D {
 	static override defaultBehaviors = ['3ds-model']
 }
 
@@ -51,7 +51,7 @@ declare global {
 declare module '@lume/element' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-3ds-model': JSX.IntrinsicElements['lume-node'] &
+			'lume-3ds-model': JSX.IntrinsicElements['lume-element3d'] &
 				ElementAttributes<TdsModelBehavior, TdsModelBehaviorAttributes>
 		}
 	}

@@ -5,17 +5,8 @@ import type {ReactElementAttributes} from '@lume/element/src/react'
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
+			/** @deprecated Use `<lume-element3d>` instead. */
 			'lume-node': ReactElementAttributes<Node, NodeAttributes>
-		}
-	}
-}
-
-// TODO move this to the elemet-behaviors package.
-declare global {
-	namespace React {
-		// Attributes for all elements.
-		interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-			has?: string
 		}
 	}
 }

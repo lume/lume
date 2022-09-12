@@ -1,14 +1,15 @@
 import {Eventful} from '@lume/eventful'
-import {DeclarativeBase} from './DeclarativeBase.js'
+import {Element as LumeElement} from '@lume/element'
+import {Effectful} from './Effectful.js'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected
  * to each other in parent-child relationships in a tree structure. A parent
  * can have multiple children, and a child can have only one parent.
  * @extends Eventful
- * @extends DeclarativeBase
+ * @extends LumeElement
  */
-export class TreeNode extends Eventful(DeclarativeBase) {
+export class TreeNode extends Effectful(Eventful(LumeElement)) {
 	/**
 	 * @property {TreeNode | null} parentLumeElement -
 	 *
@@ -48,5 +49,10 @@ export class TreeNode extends Eventful(DeclarativeBase) {
 	 */
 	get lumeChildCount(): number {
 		return this.lumeChildren.length
+	}
+
+	override disconnectedCallback() {
+		super.disconnectedCallback()
+		this.stopEffects()
 	}
 }

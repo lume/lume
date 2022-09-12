@@ -45,7 +45,7 @@ value changes.
 
     const scene = html\`
       <lume-scene>
-        <lume-node
+        <lume-element3d
           id="node"
           rotation=\${rotation}
           size="100 100"
@@ -53,9 +53,9 @@ value changes.
           mount-point="0.5 0.5 0.5"
         >
           <h1 align="center">\${count}</h1>
-        </lume-node>
+        </lume-element3d>
 
-        <lume-node
+        <lume-element3d
           id="node"
           align-point="0.5 0.5"
           position="0 80"
@@ -66,7 +66,7 @@ value changes.
           >
             Click
           </button>
-        </lume-node>
+        </lume-element3d>
       </lume-scene>
     \`
 
@@ -82,7 +82,7 @@ value changes.
       background: #333;
       font-family: sans-serif;
     }
-    lume-node {
+    lume-element3d {
       background: deeppink;
       border-radius: 5px;
     }

@@ -48,11 +48,11 @@ ReactDOM.render(<MyReactComponent />, document.body)
 - Props accept only strings or booleans.
   - Unlike other frameworks, React is behind the times when it comes to Custom Elements, and only supports passing strings or booleans to custom element attributes. This means passing dynamic values like functions, arrays, or objects will not be possible, and instead you'll need to use a `ref` and set JS properties manually.
   - If you do attempt to pass anything other than a boolean or string to a custom element attribute, React will coerce it into a string regardless.
-  - To work around this issue, instead of writing `<lume-node rotation={(x, y, z) => [x, ++y, z]} />` you would need to write something like `<lume-node ref={nodeRef} />` along with `nodeRef.current.rotation = (x, y, z) => [x, ++y, z]` inside of `componentDidMount` (for class components) or `useEffect` (for function components with Hooks).
+  - To work around this issue, instead of writing `<lume-element3d rotation={(x, y, z) => [x, ++y, z]} />` you would need to write something like `<lume-element3d ref={nodeRef} />` along with `nodeRef.current.rotation = (x, y, z) => [x, ++y, z]` inside of `componentDidMount` (for class components) or `useEffect` (for function components with Hooks).
 - Due to the previous bullet point, this has a (usually insignificant) performance implication.
   - Because React always passes prop values to custom elements as strings, LUME will always be converting the strings into number values.
   - _In most cases, this will not result in a noticeable performance hit._ But if you do run into a case where things slow down due to this, this is good to keep in mind.
-  - Workaround: Modifying an element reference directly like `nodeRef.current.position.x = xPosition` will always be faster than `` <lume-node position={`0 ${xPosition} 0`} /> ``. In the former, the number will be passed directly to the element without any coercion.
+  - Workaround: Modifying an element reference directly like `nodeRef.current.position.x = xPosition` will always be faster than `` <lume-element3d position={`0 ${xPosition} 0`} /> ``. In the former, the number will be passed directly to the element without any coercion.
 
 ### Example
 

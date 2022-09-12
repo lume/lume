@@ -29,13 +29,13 @@ concept of a tree.
 		background: black;
 	}
 
-	lume-node:not(.line) {
+	lume-element3d:not(.line) {
 		font-family: sans-serif;
 		background: skyblue;
 		border-radius: 3px;
 	}
 
-	lume-node div {
+	lume-element3d div {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -46,43 +46,43 @@ concept of a tree.
 <div style="width: 400px; height: 300px;">
 	<lume-scene id="scene">
 		<!-- Root Scene -->
-		<lume-node size="60 30" align-point="0.5 0.2" mount-point="0.5 0.5">
+		<lume-element3d size="60 30" align-point="0.5 0.2" mount-point="0.5 0.5">
 			<div align="center">
 				Scene
 			</div>
-		</lume-node>
+		</lume-element3d>
 		<!-- Left Child Node -->
-		<lume-node size="60 30" align-point="0.3 0.5" mount-point="0.5 0.5">
+		<lume-element3d size="60 30" align-point="0.3 0.5" mount-point="0.5 0.5">
 			<div align="center">
 				Node
 			</div>
-		</lume-node>
+		</lume-element3d>
 		<!-- Right Child Node -->
-		<lume-node size="60 30" align-point="0.7 0.5" mount-point="0.5 0.5">
+		<lume-element3d size="60 30" align-point="0.7 0.5" mount-point="0.5 0.5">
 			<div align="center">
 				Node
 			</div>
-		</lume-node>
+		</lume-element3d>
 		<!-- Line, Root Scene to Left Child Node -->
-		<lume-node class="line" size="2 100" align-point="0.4 0.35" rotation="0 0 50" mount-point="0.5 0.5" position="0 0 -1"></lume-node>
+		<lume-element3d class="line" size="2 100" align-point="0.4 0.35" rotation="0 0 50" mount-point="0.5 0.5" position="0 0 -1"></lume-element3d>
 		<!-- Line, Root Scene to Left Child Node -->
-		<lume-node class="line" size="2 100" align-point="0.6 0.35" rotation="0 0 -50" mount-point="0.5 0.5" position="0 0 -1"></lume-node>
+		<lume-element3d class="line" size="2 100" align-point="0.6 0.35" rotation="0 0 -50" mount-point="0.5 0.5" position="0 0 -1"></lume-element3d>
 		<!-- Left Grandchild Node -->
-		<lume-node size="60 30" align-point="0.2 0.8" mount-point="0.5 0.5">
+		<lume-element3d size="60 30" align-point="0.2 0.8" mount-point="0.5 0.5">
 			<div align="center">
 				Node
 			</div>
-		</lume-node>
+		</lume-element3d>
 		<!-- Right Grandchild Node -->
-		<lume-node size="60 30" align-point="0.4 0.8" mount-point="0.5 0.5">
+		<lume-element3d size="60 30" align-point="0.4 0.8" mount-point="0.5 0.5">
 			<div align="center">
 				Node
 			</div>
-		</lume-node>
+		</lume-element3d>
 		<!-- Line, Left Child to Left Grandchild Node -->
-		<lume-node class="line" size="2 100" align-point="0.25 0.65" rotation="0 0 25" mount-point="0.5 0.5" position="0 0 -1"></lume-node>
+		<lume-element3d class="line" size="2 100" align-point="0.25 0.65" rotation="0 0 25" mount-point="0.5 0.5" position="0 0 -1"></lume-element3d>
 		<!-- Line, Left Child to Right Grandchild Node -->
-		<lume-node class="line" size="2 100" align-point="0.35 0.65" rotation="0 0 -25" mount-point="0.5 0.5" position="0 0 -1"></lume-node>
+		<lume-element3d class="line" size="2 100" align-point="0.35 0.65" rotation="0 0 -25" mount-point="0.5 0.5" position="0 0 -1"></lume-element3d>
 	</lume-scene>
 </div>
 
@@ -92,8 +92,8 @@ graphics. Below the scene element are other types of nodes that render in
 different visual ways.
 
 This next example shows how parent nodes affect the positioning of child nodes.
-The positions and rotations of the child `<lume-node>` elements are relative to
-their parent `<lume-node>` elements. This is why the parent-most node only
+The positions and rotations of the child `<lume-element3d>` elements are relative to
+their parent `<lume-element3d>` elements. This is why the parent-most node only
 rotates, while each child not only rotates, but also moves due to the rotation
 of its parent.
 
@@ -129,15 +129,15 @@ of its parent.
 				<script src="${location.origin+location.pathname}global.js"><\/script>
 
 				<lume-scene>
-					<lume-node id="one" position="50 50" size="10 10" rotation="0 0 10">
-						<lume-node id="two" position="50 50" size="10 10" rotation="0 0 10">
-							<lume-node id="three" position="50 50" size="10 10" rotation="0 0 10">
-								<lume-node id="four" position="50 50" size="100 100" rotation="0 0 10">
+					<lume-element3d id="one" position="50 50" size="10 10" rotation="0 0 10">
+						<lume-element3d id="two" position="50 50" size="10 10" rotation="0 0 10">
+							<lume-element3d id="three" position="50 50" size="10 10" rotation="0 0 10">
+								<lume-element3d id="four" position="50 50" size="100 100" rotation="0 0 10">
 									Positioning is relative to parents!
-								</lume-node>
-							</lume-node>
-						</lume-node>
-					</lume-node>
+								</lume-element3d>
+							</lume-element3d>
+						</lume-element3d>
+					</lume-element3d>
 				</lume-scene>
 
 				<style>
@@ -146,7 +146,7 @@ of its parent.
 						height: 100%; width: 100%;
 						background: #333; color: white;
 					}
-					lume-node { padding: 5px; }
+					lume-element3d { padding: 5px; }
 					#one { background: coral; }
 					#two { background: yellowgreen; }
 					#three { background: deeppink; }

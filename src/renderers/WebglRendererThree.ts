@@ -1,4 +1,5 @@
-import {reactive, autorun, StopFunction} from '@lume/variable'
+import {reactive} from '@lume/variable' // TODO replace reactive with signal classy-solid
+import {Effectful} from '../core/Effectful.js'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
@@ -10,6 +11,8 @@ import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/textures/Texture.js'
 
+class SceneEffects extends Effectful(Object) {}
+
 interface SceneState {
 	renderer: WebGLRenderer
 	pmremgen?: PMREMGenerator
@@ -17,6 +20,7 @@ interface SceneState {
 	hasBackground?: boolean
 	hasEnvironment?: boolean
 	sizeChangeHandler: () => void
+	effects: SceneEffects
 }
 
 const sceneStates = new WeakMap<Scene, SceneState>()
@@ -55,8 +59,6 @@ export class WebglRendererThree {
 
 	@reactive localClippingEnabled = false
 
-	disposers: StopFunction[] = []
-
 	initialize(scene: Scene) {
 		let sceneState = sceneStates.get(scene)
 
@@ -71,11 +73,11 @@ export class WebglRendererThree {
 			antialias: true,
 		})
 
-		this.disposers.push(
-			autorun(() => {
-				renderer.localClippingEnabled = this.localClippingEnabled
-			}),
-		)
+		const effects = new SceneEffects()
+
+		effects.createEffect(() => {
+			renderer.localClippingEnabled = this.localClippingEnabled
+		})
 
 		// TODO: make some of the renderer options configurable by property/attribute.
 
@@ -83,7 +85,7 @@ export class WebglRendererThree {
 		// and reinitialize renderes to toggle between XR or non-XR scenes.
 		renderer.xr.enabled = true
 
-		renderer.setPixelRatio(window.devicePixelRatio)
+		renderer.setPixelRatio(globalThis.devicePixelRatio)
 		renderer.shadowMap.enabled = true
 		renderer.shadowMap.type = PCFSoftShadowMap // default PCFShadowMap
 
@@ -92,6 +94,7 @@ export class WebglRendererThree {
 			(sceneState = {
 				renderer,
 				sizeChangeHandler: () => this.updateResolution(scene),
+				effects,
 			}),
 		)
 
@@ -115,6 +118,7 @@ export class WebglRendererThree {
 
 		sceneState.renderer.dispose()
 		sceneState.pmremgen?.dispose()
+		sceneState.effects.stopEffects()
 
 		sceneStates.delete(scene)
 	}
