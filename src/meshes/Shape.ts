@@ -28,8 +28,9 @@ Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geomet
 
 @extends Mesh
 */
+export {Shape}
 @element('lume-shape', autoDefineElements)
-export class Shape extends Mesh {
+class Shape extends Mesh {
 	static override defaultBehaviors = {
 		'shape-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
@@ -43,7 +44,9 @@ export class Shape extends Mesh {
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors, ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes} from '../index.js'
 
-export interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {}
+// CONTINUE export was removed from this statement, but still kept on the above
+// class. Does the type still work?
+interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -51,7 +54,7 @@ declare global {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-shape': JSX.IntrinsicElements['lume-mesh'] &

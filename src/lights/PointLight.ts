@@ -37,8 +37,9 @@ export type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'dec
  *
  * @extends LightWithShadow
  */
+export {PointLight}
 @element('lume-point-light', autoDefineElements)
-export class PointLight extends LightWithShadow {
+class PointLight extends LightWithShadow {
 	/**
 	 * @property {number} intensity -
 	 *
@@ -53,11 +54,11 @@ export class PointLight extends LightWithShadow {
 	 * enabled, intensity is the luminous intensity of the light measured in
 	 * candela (cd).
 	 */
-	@numberAttribute(1) override intensity: number = 1
+	@numberAttribute override intensity: number = 1
 
 	// These map to THREE.PointLightShadow properties, which uses a perspective camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
-	@numberAttribute(90) shadowCameraFov = 90
+	@numberAttribute shadowCameraFov = 90
 
 	/**
 	 * @property {number} distance -
@@ -79,7 +80,7 @@ export class PointLight extends LightWithShadow {
 	 * cutoff, where it will then attenuate quickly and smoothly to 0.
 	 * Inherently, cutoffs are not physically correct.
 	 */
-	@numberAttribute(0) distance = 0
+	@numberAttribute distance = 0
 
 	/**
 	 * @property {number} decay
@@ -93,7 +94,7 @@ export class PointLight extends LightWithShadow {
 	 * In [physically correct mode](../core/Scene#physicallycorrectlights), a
 	 * decay value of `2` leads to physically realistic light falloff.
 	 */
-	@numberAttribute(1) decay = 1
+	@numberAttribute decay = 1
 
 	/**
 	 * @property {number} power -
@@ -109,7 +110,7 @@ export class PointLight extends LightWithShadow {
 	 * is enabled, power is the luminous power of the light measured in lumens
 	 * (lm).
 	 */
-	@numberAttribute(1 * 4 * Math.PI) // intensity 1
+	@numberAttribute // (1 * 4 * Math.PI) // intensity 1 // CONTINUE: what about default value on getter/setter? Maybe do not allow getter/setter, use effects only. Perhaps add @settableMemo and use that for intensity, etc.
 	get power() {
 		// compute the light's luminous power (in lumens) from its intensity (in candela)
 		// for an isotropic light source, luminous power (lm) = 4 π luminous intensity (cd)
@@ -121,7 +122,7 @@ export class PointLight extends LightWithShadow {
 	}
 
 	// TODO computed properties, f.e.
-	// @memo @numberAttribute(1) power = this.intensity * 4 * Math.PI
+	// @memo @numberAttribute power = this.intensity * 4 * Math.PI
 
 	override _loadGL() {
 		if (!super._loadGL()) return false
@@ -147,7 +148,7 @@ export class PointLight extends LightWithShadow {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-point-light': ElementAttributes<PointLight, PointLightAttributes>

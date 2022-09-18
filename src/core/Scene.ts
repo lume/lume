@@ -2,8 +2,10 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {booleanAttribute, attribute, numberAttribute, untrack, element, stringAttribute, reactive} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
+import {untrack} from 'solid-js'
+import html from 'solid-js/html'
+import {signal} from 'classy-solid'
+import {booleanAttribute, attribute, numberAttribute, element, stringAttribute} from '@lume/element'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
@@ -84,8 +86,9 @@ export type SceneAttributes =
  * @extends SharedAPI
  */
 // TODO @element jsdoc tag
+export {Scene}
 @element('lume-scene', autoDefineElements)
-export class Scene extends SharedAPI {
+class Scene extends SharedAPI {
 	/**
 	 * @property {true} isScene -
 	 *
@@ -121,7 +124,7 @@ export class Scene extends SharedAPI {
 	 */
 	// TODO @attribute jsdoc tag
 	// TODO @default jsdoc tag
-	@booleanAttribute(true) enableCss = true
+	@booleanAttribute enableCss = true
 
 	/**
 	 * @property {boolean} webgl -
@@ -132,7 +135,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * When `true`, enables WebGL rendering.
 	 */
-	@booleanAttribute(false) webgl = false
+	@booleanAttribute webgl = false
 
 	/**
 	 * @property {boolean} swapLayers -
@@ -145,7 +148,7 @@ export class Scene extends SharedAPI {
 	 * WebGL render modes are enabled. When `true`, the CSS layer will render on
 	 * top of the WebGL layer instead of below.
 	 */
-	@booleanAttribute(false) swapLayers = false
+	@booleanAttribute swapLayers = false
 
 	/**
 	 * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
@@ -180,7 +183,7 @@ export class Scene extends SharedAPI {
 	 * hence WebXR, but it has some limitations including low performance if
 	 * animating CSS features; we may add this feature later.
 	 */
-	@booleanAttribute(false) vr = false
+	@booleanAttribute vr = false
 
 	/**
 	 * @property {Color | string | number | null} backgroundColor -
@@ -216,7 +219,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@numberAttribute(0) backgroundOpacity = 0
+	@numberAttribute backgroundOpacity = 0
 
 	/**
 	 * @property {string | null} background -
@@ -253,7 +256,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@booleanAttribute(false) equirectangularBackground = false
+	@booleanAttribute equirectangularBackground = false
 
 	/**
 	 * @property {string | null} environment -
@@ -296,7 +299,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@stringAttribute('none') fogMode: FogMode = 'none'
+	@stringAttribute fogMode: FogMode = 'none'
 
 	/**
 	 * @property {number} fogNear -
@@ -311,7 +314,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@numberAttribute(0) fogNear = 0
+	@numberAttribute fogNear = 0
 
 	/**
 	 * @property {number} fogFar -
@@ -326,7 +329,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@numberAttribute(1000) fogFar = 1000
+	@numberAttribute fogFar = 1000
 
 	/**
 	 * @property {string} fogColor -
@@ -343,7 +346,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@stringAttribute('gray') fogColor: string = 'gray'
+	@stringAttribute fogColor: string = 'gray'
 
 	/**
 	 * @property {number} fogDensity -
@@ -357,7 +360,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@numberAttribute(0.0025) fogDensity = 0.0025
+	@numberAttribute fogDensity = 0.0025
 
 	/**
 	 * @property {boolean} physicallyCorrectLights -
@@ -373,7 +376,7 @@ export class Scene extends SharedAPI {
 	 * from Three.js and "physicallyCorrectLights" in the Three.js manual's
 	 * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
 	 */
-	@booleanAttribute(false) physicallyCorrectLights = false
+	@booleanAttribute physicallyCorrectLights = false
 
 	/**
 	 * @property {number} cameraNear -
@@ -391,7 +394,7 @@ export class Scene extends SharedAPI {
 	 * values apply only to WebGL rendering and are otherwise infinitely small and
 	 * infinitely big (respectively) when it comes to CSS rendering.
 	 */
-	@numberAttribute(0.1) cameraNear = 0.1
+	@numberAttribute cameraNear = 0.1
 
 	/**
 	 * @property {number} cameraFar -
@@ -409,7 +412,7 @@ export class Scene extends SharedAPI {
 	 * values apply only to WebGL rendering and are otherwise infinitely small and
 	 * infinitely big (respectively) when it comes to CSS rendering.
 	 */
-	@numberAttribute(10000) cameraFar = 10000
+	@numberAttribute cameraFar = 10000
 
 	/**
 	 * @property {number} perspective -
@@ -435,7 +438,7 @@ export class Scene extends SharedAPI {
 	 *
 	 * Applies with both CSS and WebGL rendering.
 	 */
-	@numberAttribute(400)
+	@numberAttribute // CONTINUE what happens with getters/setters and the default value of the numberAttribute?
 	set perspective(value) {
 		this.#perspective = value
 		this._updateCameraPerspective()
@@ -478,7 +481,7 @@ export class Scene extends SharedAPI {
 	/**
 	 * @property {PerspectiveCamera} camera
 	 *
-	 * *readonly*, *reactive*
+	 * *readonly*, *signal*
 	 *
 	 * Returns the currently active camera that is within the scene, or `null`
 	 * if there is none and the scene is using its internal default camera. The
@@ -525,10 +528,10 @@ export class Scene extends SharedAPI {
 		return this.#cssRenderer?.sceneStates.get(this)?.renderer
 	}
 
-	@reactive __camera: PerspectiveCamera | null = null
+	@signal __camera: PerspectiveCamera | null = null
 
 	// This is toggled by ClipPlanesBehavior, not intended for direct use.
-	@reactive __localClipping = false
+	@signal __localClipping = false
 
 	constructor() {
 		super()
@@ -708,12 +711,16 @@ export class Scene extends SharedAPI {
 		this.#cssRenderer && this.#cssRenderer.drawScene(this)
 	}
 
+	// override readonly hasShadow = false;
+
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this.shadowRoot!.prepend(new Comment(magic()))
+		// this.shadowRoot!.prepend(new Comment(magic()))
+		;(this.root as Element | ShadowRoot).prepend(new Comment(magic()))
 
 		this.createEffect(() => {
+			console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& webgl effect:', this.webgl)
 			if (this.webgl) this._triggerLoadGL()
 			else this._triggerUnloadGL()
 
@@ -794,9 +801,11 @@ export class Scene extends SharedAPI {
 		this.#stopParentSizeObservation()
 	}
 
+	// CONTINUE CONTINUE CONTINUE: this overrides the ones defined by @attribute decorator
 	static override observedAttributes = ['slot']
 
 	override attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
+		console.log('attribute changed!', name, oldV, newV)
 		super.attributeChangedCallback!(name, oldV, newV)
 
 		if (name === 'slot') {
@@ -944,7 +953,7 @@ export class Scene extends SharedAPI {
 	/**
 	 * @property {{x: number, y: number, z: number}} parentSize
 	 *
-	 * `override` `reactive` `readonly`
+	 * `override` `signal` `readonly`
 	 *
 	 * Overrides [`Sizeable.parentSize`](./Sizeable#parentSize) in order to return the size of a Scene's
 	 * non-LUME parent element where the scene is connected.
@@ -959,6 +968,7 @@ export class Scene extends SharedAPI {
 	// Basically it has position, frag colors, point light, directional
 	// light, and ambient light.
 	override _loadGL() {
+		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get scene._loadGL?')
 		// THREE
 		// maybe keep this in sceneState in WebGLRendererThree
 		if (!super._loadGL()) return false
@@ -973,6 +983,7 @@ export class Scene extends SharedAPI {
 		//this.three.add( ambientLight )
 
 		this.#glRenderer = this.#getGLRenderer('three')
+		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get GL renderer')
 
 		// If _loadGL is firing, then this.webgl must be true, therefore
 		// this.#glRenderer must be defined in any of the below autoruns.
@@ -1164,7 +1175,7 @@ export class Scene extends SharedAPI {
 	// TODO move the following parent size change stuff to a separate re-usable class.
 
 	// size of the element where the Scene is mounted
-	@reactive __elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+	@signal __elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	// TODO NESTED SCENES At the moment, we assume Scenes are top-level, connected to regular
 	// element parents. In the future, we will allow Scenes to be children of
@@ -1274,7 +1285,7 @@ Scene.prototype.isScene = true
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-scene': ElementAttributes<Scene, SceneAttributes>

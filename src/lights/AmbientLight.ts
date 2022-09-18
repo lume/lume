@@ -16,8 +16,9 @@ export type AmbientLightAttributes = LightAttributes
  *
  * @extends Light
  */
+export {AmbientLight}
 @element('lume-ambient-light', autoDefineElements)
-export class AmbientLight extends Light {
+class AmbientLight extends Light {
 	constructor() {
 		super()
 
@@ -43,7 +44,7 @@ export class AmbientLight extends Light {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-ambient-light': ElementAttributes<AmbientLight, AmbientLightAttributes>

@@ -45,8 +45,9 @@ export type DirectionalLightAttributes =
  *
  * @extends LightWithShadow
  */
+export {DirectionalLight}
 @element('lume-directional-light', autoDefineElements)
-export class DirectionalLight extends LightWithShadow {
+class DirectionalLight extends LightWithShadow {
 	constructor() {
 		super()
 
@@ -67,10 +68,10 @@ export class DirectionalLight extends LightWithShadow {
 
 	// These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
-	@numberAttribute(1) shadowCameraTop = 1000
-	@numberAttribute(1) shadowCameraRight = 1000
-	@numberAttribute(1) shadowCameraBottom = -1000
-	@numberAttribute(1) shadowCameraLeft = -1000
+	@numberAttribute shadowCameraTop = 1000
+	@numberAttribute shadowCameraRight = 1000
+	@numberAttribute shadowCameraBottom = -1000
+	@numberAttribute shadowCameraLeft = -1000
 
 	override _loadGL() {
 		if (!super._loadGL()) return false
@@ -98,7 +99,7 @@ export class DirectionalLight extends LightWithShadow {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-directional-light': ElementAttributes<DirectionalLight, DirectionalLightAttributes>

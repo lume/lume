@@ -180,10 +180,14 @@
 	animateShader(centerBox)
 
 	async function animateShader(targetBox) {
-		LUME.autorun(() => {
+		LUME.createEffect(() => {
 			const mat = targetBox.behaviors.get('shader-material')
 
 			if (!mat?.meshComponent) return
+
+			// CONTINUE this is not being updated based on the attribute, so it
+			// is an empty default object.
+			if (!mat.uniforms.iResolution) return
 
 			mat.uniforms.iResolution.value.x = targetBox.calculatedSize.x
 			mat.uniforms.iResolution.value.y = targetBox.calculatedSize.y
@@ -195,6 +199,10 @@
 			const mat = targetBox.behaviors.get('shader-material')
 
 			if (!mat?.meshComponent) return
+
+			// CONTINUE this is not being updated based on the attribute, so it
+			// is an empty default object.
+			if (!mat.uniforms.iTime) return
 
 			mat.uniforms.iTime.value = t * 0.001
 			targetBox.needsUpdate()

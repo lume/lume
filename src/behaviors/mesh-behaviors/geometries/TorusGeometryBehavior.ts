@@ -1,6 +1,8 @@
 import 'element-behaviors'
-import {numberAttribute, reactive} from '../../attribute.js'
+import {numberAttribute} from '@lume/element'
 import {TorusGeometry} from 'three/src/geometries/TorusGeometry.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {toRadians} from '../../../core/utils/index.js'
 
@@ -20,8 +22,9 @@ export type TorusGeometryBehaviorAttributes = 'tubeThickness' | 'radialSegments'
  *
  * @extends GeometryBehavior
  */
-@reactive
-export class TorusGeometryBehavior extends GeometryBehavior {
+export {TorusGeometryBehavior}
+@behavior
+class TorusGeometryBehavior extends GeometryBehavior {
 	// TODO tubeThicknessMode: literal or proportional
 
 	/**
@@ -36,7 +39,7 @@ export class TorusGeometryBehavior extends GeometryBehavior {
 	 * element's `x` size). The default `0.1` value means the donut's tube
 	 * thickness is 10% of the overall diameter.
 	 */
-	@numberAttribute(0.1) tubeThickness = 0.1
+	@numberAttribute @receiver tubeThickness = 0.1
 
 	/**
 	 * @property {number} radialSegments -
@@ -48,7 +51,7 @@ export class TorusGeometryBehavior extends GeometryBehavior {
 	 * The number of segments (or edges) of the circular cross section of the
 	 * donut tube.
 	 */
-	@numberAttribute(16) radialSegments = 16
+	@numberAttribute @receiver radialSegments = 16
 
 	/**
 	 * @property {number} tubularSegments -
@@ -59,7 +62,7 @@ export class TorusGeometryBehavior extends GeometryBehavior {
 	 *
 	 * The number of tube sections around the donut.
 	 */
-	@numberAttribute(32) tubularSegments = 32
+	@numberAttribute @receiver tubularSegments = 32
 
 	/**
 	 * @property {number} arc -
@@ -73,7 +76,7 @@ export class TorusGeometryBehavior extends GeometryBehavior {
 	 * to form a whole donut. A value of `180` means we get a half of a donut
 	 * shape.
 	 */
-	@numberAttribute(360) arc = 360
+	@numberAttribute @receiver arc = 360
 
 	override _createComponent() {
 		const outerDiameter = this.element.calculatedSize.x

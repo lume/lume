@@ -1,8 +1,10 @@
-import {attribute, booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
+import {attribute, booleanAttribute, numberAttribute, stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {Shape} from 'three/src/extras/core/Shape.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {stringToNumberArray} from '../../../meshes/utils.js'
 import {handleInvertedGeometry} from './utils/handleInvertedGeometry.js'
@@ -56,8 +58,9 @@ only.
   })
 </script>
 */
-@reactive
-export class ShapeGeometryBehavior extends GeometryBehavior {
+export {ShapeGeometryBehavior}
+@behavior
+class ShapeGeometryBehavior extends GeometryBehavior {
 	__shape = new Shape().copy(defaultShape)
 
 	/**
@@ -96,6 +99,7 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	 * default shape to be rendered.
 	 */
 	@attribute
+	@receiver
 	get shape(): Shape {
 		return this.__shape
 	}
@@ -148,33 +152,33 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	 * render time.
 	 * @default 8
 	 */
-	@numberAttribute(8) curveSegments = 8
+	@numberAttribute @receiver curveSegments = 8
 	/**
 	 * @property {boolean} bevel - When the shape is extruded, enables rounding
 	 * of the shape edges.
 	 * @default false
 	 */
-	@booleanAttribute(false) bevel = false
+	@booleanAttribute @receiver bevel = false
 	/**
 	 * @property {number} bevelSegments - When the shape is extruded, determines
 	 * the number of sections for the bevel. A higher number makes the model
 	 * look smoother, but cost more time to render.
 	 * @default 4
 	 */
-	@numberAttribute(4) bevelSegments = 4
+	@numberAttribute @receiver bevelSegments = 4
 	/**
 	 * @property {number} bevelThickness - When the shape is extruded,
 	 * determines the thickness of the bevel. Roughly like the amount of
 	 * radius for the rounded edges.
 	 * @default 4
 	 */
-	@numberAttribute(4) bevelThickness = 4
+	@numberAttribute @receiver bevelThickness = 4
 	/**
 	 * @property {boolean} centerGeometry - When true, centers the shape geometry
 	 * within the host element's size space.
 	 * @default true
 	 */
-	@booleanAttribute(true) centerGeometry = true
+	@booleanAttribute @receiver centerGeometry = true
 
 	/**
 	 * @property {string} fitment - Determines how to fit a shape within the
@@ -183,7 +187,7 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	 * values. See https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values
 	 * for details.
 	 */
-	@stringAttribute('none') fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
+	@stringAttribute @receiver fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
 
 	// TODO attribute to apply smoothing to the geometry (calculate normals)?
 

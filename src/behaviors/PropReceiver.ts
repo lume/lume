@@ -1,6 +1,7 @@
 import {observe, unobserve} from 'james-bond'
 
 import type {Constructor} from 'lowclass'
+import type {DecoratorArgs} from 'classy-solid/dist/decorators/types'
 
 // We use this to enforce that the @receiver decorator is used on PropReceiver
 // classes.
@@ -44,7 +45,12 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 	// from PossibleCustomElement), and we can have a separate mixin for that.
 
 	// TODO Use abstract with TS 4.2
-	class PropReceiver extends Base {
+	return class PropReceiver extends Base {
+		static {
+			// Make this unknown to the type system, otherwise we get errors with the mixin usage downstream. :(
+			;(this as any)[isPropReceiverClass] = true
+		}
+
 		constructor(...args: any[]) {
 			super(...args)
 			this._propChangedCallback = this._propChangedCallback.bind(this)
@@ -52,7 +58,6 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 
 		override connectedCallback() {
 			super.connectedCallback && super.connectedCallback()
-			this.__forwardInitialProps()
 			this.#observeProps()
 		}
 
@@ -76,21 +81,32 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
             `)
 		}
 
-		_propChangedCallback(propName: string, value: any) {
+		_propChangedCallback(propName: PropertyKey, value: any) {
 			;(this as any)[propName] = value
 		}
 
+		#isObserving = false
+
 		#observeProps() {
+			if (this.#isObserving) return
+			this.#isObserving = true
+
+			const ctor = this.constructor as typeof PropReceiver
+
+			// Make it unique, before we pass it to observe(), just in case.
+			if (ctor.receivedProperties) ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties))
+
+			this.__forwardInitialProps()
+
 			observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
-
-			if (this.__forwardedProps().includes('clipPlanes')) {
-				// debugger // FIXME with this debugger, things don't load properly once unpaused, indicating code load order race conditions or something.
-			}
 		}
 
 		#unobserveProps() {
+			if (!this.#isObserving) return
+			this.#isObserving = false
+
 			unobserve(this.observedObject, this.__forwardedProps(), this._propChangedCallback)
 		}
 
@@ -101,12 +117,13 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		 *
 		 * An array of strings, the properties of observedObject to observe.
 		 */
-		static receivedProperties?: string[]
+		static receivedProperties?: PropertyKey[]
 
-		__forwardedProps(): string[] {
-			const props = (this.constructor as typeof PropReceiver).receivedProperties || []
+		__forwardedProps(): PropertyKey[] {
+			const ctor = this.constructor as typeof PropReceiver
+			const props = ctor.receivedProperties || []
 			// @prod-prune
-			if (!Array.isArray(props)) throw new TypeError('Expected protected static receivedProperties to be an array.')
+			if (!Array.isArray(props)) throw new TypeError('Expected static receivedProperties to be an array.')
 			return props
 		}
 
@@ -118,10 +135,6 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 			}
 		}
 	}
-
-	;(PropReceiver as any)[isPropReceiverClass] = true
-
-	return PropReceiver
 }
 
 export interface CustomElementLike {
@@ -131,48 +144,34 @@ export interface CustomElementLike {
 	attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
 }
 
+// CONTINUE Update signature with proper types, and destructure directly in the argument list after we update to latest TS 5.0.
 export function receiver(...args: any[]): any {
-	return decoratorAbstraction(decorator, ...args)
+	const [_, context] = args as DecoratorArgs
+	const {kind, name} = context
 
-	function decorator(prototype: any, propName: string, _descriptor?: PropertyDescriptor) {
-		const ctor = prototype?.constructor as ReturnType<typeof PropReceiver> | undefined
-
-		if (!(ctor && (ctor as any)[isPropReceiverClass]))
-			throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver')
-
-		if (!ctor.hasOwnProperty('receivedProperties')) ctor.receivedProperties = [...(ctor.receivedProperties || [])]
-
-		ctor.receivedProperties!.push(propName)
+	if (kind === 'field') {
+		return function (this: object, initialValue: unknown) {
+			trackSignalProperty(this, name)
+			return initialValue
+		}
+	} else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
+		context.addInitializer!(function (this: object) {
+			trackSignalProperty(this, name)
+		})
+	} else {
+		throw new TypeError(
+			'@receiver is for use only on class fields, getters/setters, and auto accessors. Also make sure your class extends from PropReceiver.',
+		)
 	}
 }
 
-export function decoratorAbstraction(
-	decorator: (prototype: any, propName: string, _descriptor?: PropertyDescriptor) => void,
-	handlerOrProtoOrFactoryArg?: any,
-	propName?: string,
-	descriptor?: PropertyDescriptor,
-) {
-	// This is true only if we're using the decorator in a Babel-compiled app
-	// with non-legacy decorators. TypeScript only has legacy decorators.
-	const isDecoratorV2 = handlerOrProtoOrFactoryArg && 'kind' in handlerOrProtoOrFactoryArg
+function trackSignalProperty(obj: object, name: PropertyKey) {
+	const ctor = obj.constructor as ReturnType<typeof PropReceiver>
 
-	if (isDecoratorV2) {
-		const classElement = handlerOrProtoOrFactoryArg
+	if (!(ctor as any)[isPropReceiverClass])
+		throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver')
 
-		return {
-			...classElement,
-			finisher(Class: Constructor) {
-				decorator(Class.prototype, classElement.key)
-				return classElement.finisher?.(Class) ?? Class
-			},
-		}
-	}
+	if (!ctor.hasOwnProperty('receivedProperties')) ctor.receivedProperties = [...(ctor.receivedProperties || [])]
 
-	if (handlerOrProtoOrFactoryArg && propName) {
-		// if being used as a legacy decorator directly
-		const prototype = handlerOrProtoOrFactoryArg
-		return decorator(prototype, propName, descriptor)
-	}
-
-	throw new TypeError('Invalid decorator')
+	ctor.receivedProperties!.push(name)
 }

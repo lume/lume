@@ -18,8 +18,9 @@ export type SphereAttributes = MeshAttributes
  *
  * @extends Mesh
  */
+export {Sphere}
 @element('lume-sphere', autoDefineElements)
-export class Sphere extends Mesh {
+class Sphere extends Mesh {
 	static override defaultBehaviors = {
 		'sphere-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))
@@ -36,7 +37,7 @@ declare global {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-sphere': JSX.IntrinsicElements['lume-mesh']

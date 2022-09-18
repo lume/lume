@@ -19,9 +19,9 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
  *
  * @extends Element3D
  */
-// @ts-expect-error decorator type doesn't work on abstract class (yet, todo)
+export {Light}
 @element
-export abstract class Light extends Element3D {
+abstract class Light extends Element3D {
 	/**
 	 * @property {string | number | THREE.Color} color -
 	 *
@@ -49,13 +49,15 @@ export abstract class Light extends Element3D {
 	 *
 	 * `abstract`
 	 *
+	 * Default: `1`
+	 *
 	 * The intensity of the light.
 	 *
 	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
 	 * is enabled, the units of intensity depend on the type of light (f.e.
 	 * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
 	 */
-	@numberAttribute(1) intensity: number = 1
+	@numberAttribute intensity: number = 1
 
 	// This is not used in practice because this class is abstract, but this enforces
 	// (in TypeScript) that subclasses that override this will return a subtype of

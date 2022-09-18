@@ -1,5 +1,8 @@
+import {signal} from 'classy-solid'
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {PLYLoader} from '../../../lib/three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
@@ -23,8 +26,9 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  *
  * @extends GeometryBehavior
  */
-@reactive
-export class PlyGeometryBehavior extends GeometryBehavior {
+export {PlyGeometryBehavior}
+@behavior
+class PlyGeometryBehavior extends GeometryBehavior {
 	/**
 	 * @property {string} src
 	 *
@@ -34,10 +38,10 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	 *
 	 * Path to a `.ply` file to load points from.
 	 */
-	@stringAttribute('') src = ''
+	@stringAttribute @receiver src = ''
 
 	loader: PLYLoader | null = null
-	@reactive model: BufferGeometry | null = null
+	@signal model: BufferGeometry | null = null
 
 	override requiredElementType(): [typeof Points] {
 		return [Points]

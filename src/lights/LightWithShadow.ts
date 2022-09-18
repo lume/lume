@@ -30,9 +30,9 @@ export type LightWithShadowAttributes =
  *
  * @extends Light
  */
-// @ts-expect-error decorator type doesn't work on abstract class (yet, todo)
+export {LightWithShadow}
 @element
-export abstract class LightWithShadow extends Light {
+abstract class LightWithShadow extends Light {
 	/**
 	 * @property {boolean} castShadow -
 	 *
@@ -51,7 +51,7 @@ export abstract class LightWithShadow extends Light {
 	 * [`Mesh.castShadow`](../meshes/Mesh#castShadow) and
 	 * [`Mesh.receiveShadow`](../meshes/Mesh#receiveShadow)).
 	 */
-	@booleanAttribute(true) castShadow = true
+	@booleanAttribute castShadow = true
 
 	// These map to THREE.LightShadow properties.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/LightShadow
@@ -71,7 +71,7 @@ export abstract class LightWithShadow extends Light {
 	 * for a given device, although the width and height don't have to be the
 	 * same (for example (512, 1024) is valid).
 	 */
-	@numberAttribute(512) shadowMapWidth = 512
+	@numberAttribute shadowMapWidth = 512
 
 	/**
 	 * @property {number} shadowMapHeight -
@@ -88,7 +88,7 @@ export abstract class LightWithShadow extends Light {
 	 * for a given device, although the width and height don't have to be the
 	 * same (for example (512, 1024) is valid).
 	 */
-	@numberAttribute(512) shadowMapHeight = 512
+	@numberAttribute shadowMapHeight = 512
 
 	/**
 	 * @property {number} shadowRadius -
@@ -110,7 +110,7 @@ export abstract class LightWithShadow extends Light {
 	 * `"basic"`, radius also has no effect, and there is no further way to
 	 * adjust shadow softness.
 	 */
-	@numberAttribute(3) shadowRadius = 3
+	@numberAttribute shadowRadius = 3
 
 	// TODO make our own guide on shadow acne with live examples.
 
@@ -134,7 +134,7 @@ export abstract class LightWithShadow extends Light {
 	 * - https://digitalrune.github.io/DigitalRune-Documentation/html/3f4d959e-9c98-4a97-8d85-7a73c26145d7.htm
 	 * - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
 	 */
-	@numberAttribute(0) shadowBias = 0
+	@numberAttribute shadowBias = 0
 
 	/**
 	 * @property {number} shadowNormalBias -
@@ -152,7 +152,7 @@ export abstract class LightWithShadow extends Light {
 	 * large scenes where light shines onto geometry at a shallow angle. The
 	 * downside is that shadows may appear warped with larger values.
 	 */
-	@numberAttribute(0) shadowNormalBias = 0
+	@numberAttribute shadowNormalBias = 0
 
 	// TODO: auto-adjust near and far planes like we will with Camera,
 	// unless the user supplies a manual value.
@@ -166,7 +166,7 @@ export abstract class LightWithShadow extends Light {
 	 *
 	 * Adjusts the near plane of the internal camera used for shadow projection.
 	 */
-	@numberAttribute(1) shadowCameraNear = 1
+	@numberAttribute shadowCameraNear = 1
 
 	/**
 	 * @property {number} shadowCameraFar -
@@ -177,7 +177,7 @@ export abstract class LightWithShadow extends Light {
 	 *
 	 * Adjusts the far plane of the internal camera used for shadow projection.
 	 */
-	@numberAttribute(2000) shadowCameraFar = 2000
+	@numberAttribute shadowCameraFar = 2000
 
 	override _loadGL() {
 		if (!super._loadGL()) return false

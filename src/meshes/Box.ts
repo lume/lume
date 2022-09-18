@@ -21,8 +21,9 @@ export type BoxAttributes = MeshAttributes
  *
  * @extends Mesh
  */
+export {Box}
 @element('lume-box', autoDefineElements)
-export class Box extends Mesh {
+class Box extends Mesh {
 	static override defaultBehaviors = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
@@ -39,7 +40,7 @@ declare global {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-box': JSX.IntrinsicElements['lume-mesh']

@@ -38,15 +38,20 @@ export type ColladaModelAttributes = Element3DAttributes
  * scene.add(model)
  * ```
  */
+export {ColladaModel}
 @element('lume-collada-model', autoDefineElements)
-export class ColladaModel extends Element3D {
+class ColladaModel extends Element3D {
 	static override defaultBehaviors = ['collada-model']
 }
 
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors} from '../index.js'
 
-export interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {}
+// CONTINUE export was removed from this statement, but still kept on the above
+// class. Does the type still work? Maybe we need to just put the export
+// directly on the class now that we're on TS 5 (and maybe there's a TS bug when
+// that isn't the case).
+interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -54,7 +59,7 @@ declare global {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-collada-model': JSX.IntrinsicElements['lume-element3d'] &

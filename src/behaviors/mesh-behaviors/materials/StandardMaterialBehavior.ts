@@ -1,6 +1,8 @@
 import 'element-behaviors'
 import {MeshStandardMaterial} from 'three/src/materials/MeshStandardMaterial.js'
-import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
+import {booleanAttribute, numberAttribute, stringAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type StandardMaterialBehaviorAttributes =
@@ -23,41 +25,42 @@ export type StandardMaterialBehaviorAttributes =
 	| 'roughnessMap'
 	| 'vertexTangents'
 
-@reactive
-export class StandardMaterialBehavior extends MaterialBehavior {
+export {StandardMaterialBehavior}
+@behavior
+class StandardMaterialBehavior extends MaterialBehavior {
 	// alphaMap?: Texture | null;
-	@stringAttribute('') aoMap = ''
-	@numberAttribute(1) aoMapIntensity = 1
-	@stringAttribute('') bumpMap = ''
-	@numberAttribute(1) bumpScale = 1
-	@stringAttribute('') displacementMap = ''
-	@numberAttribute(1) displacementScale = 1
-	@numberAttribute(0) displacementBias = 0
+	@stringAttribute @receiver aoMap = ''
+	@numberAttribute @receiver aoMapIntensity = 1
+	@stringAttribute @receiver bumpMap = ''
+	@numberAttribute @receiver bumpScale = 1
+	@stringAttribute @receiver displacementMap = ''
+	@numberAttribute @receiver displacementScale = 1
+	@numberAttribute @receiver displacementBias = 0
 	// emissive?: Color | string | number;
 	// envMap?: Texture | null;
-	// @numberAttribute(1) envMapIntensity?: number
-	// @numberAttribute(1) emissiveIntensity?: number
+	// @numberAttribute @receiver envMapIntensity?: number
+	// @numberAttribute @receiver emissiveIntensity?: number
 	// emissiveMap?: Texture | null;
 	// lightMap?: Texture | null;
-	// @numberAttribute(1) lightMapIntensity?: number
-	@stringAttribute('') texture = '' // map
-	@stringAttribute('') normalMap = ''
+	// @numberAttribute @receiver lightMapIntensity?: number
+	@stringAttribute @receiver texture = '' // map
+	@stringAttribute @receiver normalMap = ''
 	// normalMapType
-	@numberAttribute(1) normalScale = 1
-	@numberAttribute(0) metalness = 0
-	@stringAttribute('') metalnessMap = ''
-	// @numberAttribute(1) refractionRatio?: number
-	@numberAttribute(1) roughness = 1
-	@stringAttribute('') roughnessMap = ''
+	@numberAttribute @receiver normalScale = 1
+	@numberAttribute @receiver metalness = 0
+	@stringAttribute @receiver metalnessMap = ''
+	// @numberAttribute @receiver refractionRatio?: number
+	@numberAttribute @receiver roughness = 1
+	@stringAttribute @receiver roughnessMap = ''
 
 	// wireframe?: boolean
 
-	// @numberAttribute(1) wireframeLinewidth?: number // Not supported because the WebGL line width is always 1.
+	// @numberAttribute @receiver wireframeLinewidth?: number // Not supported because the WebGL line width is always 1.
 
-	// @booleanAttribute(false) skinning: boolean = false
-	@booleanAttribute(false) vertexTangents: boolean = false
-	@booleanAttribute(false) morphTargets: boolean = false
-	@booleanAttribute(false) morphNormals: boolean = false
+	// @booleanAttribute @receiver skinning: boolean = false
+	@booleanAttribute @receiver vertexTangents: boolean = false
+	@booleanAttribute @receiver morphTargets: boolean = false
+	@booleanAttribute @receiver morphNormals: boolean = false
 
 	override _createComponent() {
 		return new MeshStandardMaterial()

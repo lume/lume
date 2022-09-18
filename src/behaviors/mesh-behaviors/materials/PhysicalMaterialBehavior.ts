@@ -1,6 +1,8 @@
-import {numberAttribute, reactive, stringAttribute} from '../../attribute.js'
+import {numberAttribute, stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {StandardMaterialBehavior} from './StandardMaterialBehavior.js'
 
 import type {StandardMaterialBehaviorAttributes} from './StandardMaterialBehavior.js'
@@ -14,29 +16,30 @@ export type PhysicalMaterialBehaviorAttributes =
 	| 'transmission'
 	| 'transmissionMap'
 
-@reactive
-export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
+export {PhysicalMaterialBehavior}
+@behavior
+class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	// WIP
-	@numberAttribute(0) clearcoat = 0
+	@numberAttribute @receiver clearcoat = 0
 	// clearcoatMap
 	// clearcoatNormalMap
 	// clearcoatNormalScale
-	@numberAttribute(0) clearcoatRoughness = 0
+	@numberAttribute @receiver clearcoatRoughness = 0
 	// clearcoatRoughnessMap
 	// defines
-	@numberAttribute(1.5) refractiveIndex = 1.5
-	@numberAttribute(0.5) reflectivity = 0.5
-	// @numberAttribute(0) sheen = 0 // TODO update to latest three to enable this
-	// @numberAttribute(0) sheenRoughness = 0
+	@numberAttribute @receiver refractiveIndex = 1.5
+	@numberAttribute @receiver reflectivity = 0.5
+	// @numberAttribute @receiver sheen = 0 // TODO update to latest three to enable this
+	// @numberAttribute @receiver sheenRoughness = 0
 	// sheenRoughnessMap
 	// sheenColor
 	// sheenColorMap
-	// @numberAttribute(0) specularIntensity = 0
+	// @numberAttribute @receiver specularIntensity = 0
 	// specularIntensityMap
 	// specularColor
 	// specularColorMap
-	@numberAttribute(0) transmission = 0
-	@stringAttribute('') transmissionMap = ''
+	@numberAttribute @receiver transmission = 0
+	@stringAttribute @receiver transmissionMap = ''
 
 	override _createComponent() {
 		return new MeshPhysicalMaterial({})

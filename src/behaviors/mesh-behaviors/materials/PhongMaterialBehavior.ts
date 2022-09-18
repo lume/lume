@@ -1,8 +1,10 @@
 import 'element-behaviors'
 import {Color} from 'three/src/math/Color.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import {numberAttribute, stringAttribute, booleanAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
-import {numberAttribute, stringAttribute, booleanAttribute, reactive} from '../../attribute.js'
 
 export type PhongMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -27,21 +29,23 @@ export type PhongMaterialBehaviorAttributes =
 	| 'specular'
 	| 'shininess'
 
-@reactive
-export class PhongMaterialBehavior extends MaterialBehavior {
-	@stringAttribute('') alphaMap = ''
-	@stringAttribute('') aoMap = ''
-	@numberAttribute(1) aoMapIntensity = 1
-	@stringAttribute('') bumpMap = ''
-	@numberAttribute(1) bumpScale = 1
+export {PhongMaterialBehavior}
+@behavior
+class PhongMaterialBehavior extends MaterialBehavior {
+	@stringAttribute @receiver alphaMap = ''
+	@stringAttribute @receiver aoMap = ''
+	@numberAttribute @receiver aoMapIntensity = 1
+	@stringAttribute @receiver bumpMap = ''
+	@numberAttribute @receiver bumpScale = 1
 	// combine
-	@stringAttribute('') displacementMap = ''
-	@numberAttribute(1) displacementScale = 1
-	@numberAttribute(0) displacementBias = 0
-	@stringAttribute('') emissiveMap = ''
+	@stringAttribute @receiver displacementMap = ''
+	@numberAttribute @receiver displacementScale = 1
+	@numberAttribute @receiver displacementBias = 0
+	@stringAttribute @receiver emissiveMap = ''
 
 	// TODO this is not DRY, similar to the .color and .specular properties, consolidate.
-	@stringAttribute('black')
+	@stringAttribute
+	@receiver
 	get emissive(): Color {
 		return this.#emissive
 	}
@@ -53,21 +57,22 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 	}
 	#emissive = new Color('black')
 
-	@numberAttribute(1) emissiveIntensity = 1
-	@stringAttribute('') envMap = ''
-	@booleanAttribute(false) flatShading = false
-	@stringAttribute('') lightMap = ''
-	@numberAttribute(1) lightMapIntensity = 1
-	@stringAttribute('') texture = '' // map
-	@stringAttribute('') normalMap = ''
+	@numberAttribute @receiver emissiveIntensity = 1
+	@stringAttribute @receiver envMap = ''
+	@booleanAttribute @receiver flatShading = false
+	@stringAttribute @receiver lightMap = ''
+	@numberAttribute @receiver lightMapIntensity = 1
+	@stringAttribute @receiver texture = '' // map
+	@stringAttribute @receiver normalMap = ''
 	// normalMapType
-	@numberAttribute(1) normalScale = 1
-	@numberAttribute(1) reflectivity = 1
-	@stringAttribute('') specularMap = ''
+	@numberAttribute @receiver normalScale = 1
+	@numberAttribute @receiver reflectivity = 1
+	@stringAttribute @receiver specularMap = ''
 
 	// CONTINUE envMap
 
-	@stringAttribute('#111')
+	@stringAttribute
+	@receiver
 	get specular(): Color {
 		return this.#specular
 	}
@@ -79,7 +84,7 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 	}
 	#specular = new Color('#111')
 
-	@numberAttribute(30) shininess = 30
+	@numberAttribute @receiver shininess = 30
 
 	override _createComponent() {
 		return new MeshPhongMaterial({
@@ -89,6 +94,10 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 
 	override loadGL() {
 		super.loadGL()
+
+		this.createEffect(() => {
+			console.log('bumpScale effect')
+		})
 
 		this.createEffect(() => {
 			const mat = this.meshComponent

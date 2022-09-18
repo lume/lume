@@ -1,9 +1,42 @@
 import 'element-behaviors'
+import {element} from '@lume/element'
 import {PropReceiver} from './PropReceiver.js'
 
 import type {Element as LumeElement} from '@lume/element'
 import type {Constructor} from 'lowclass'
 import type {ElementWithBehaviors} from 'element-behaviors'
+
+/**
+ * Alias of the `@element` decorator used on custom elements for use on Behavior
+ * classes. If a name is passed in, it defines an element behavior instead of a
+ * custom element.
+ *
+ * Besides defining an element behavior instead of a custom element, it re-uses
+ * the `@element` implementation: sets up `observedAttributes`,
+ * `attributeChangedCallback`, and makes properties be Solid signals by
+ * composing `@reactive` and `@signal` decorators).
+ *
+ * Example (ignore backslashes):
+ *
+ * ```js
+ * \@behavior('my-behavior')
+ * class MyBehavior extends Behavior {
+ *   \@numberAttribute foo = 123
+ * }
+ * ```
+ */
+// TODO avoid `any`
+export const behavior = (nameOrClass?: any, context?: any) => {
+	if (typeof nameOrClass === 'string' && context == null) {
+		return (Class: any, context: any) => elementBehaviors.define(nameOrClass, element(Class, context))
+	} else if (context && context.kind === 'class') {
+		return element(nameOrClass, context)
+	} else {
+		throw new TypeError(
+			'Invalid decorator usage. Call with a string, or as a plain decorator with, only on a class meant to be used as an element behavior.',
+		)
+	}
+}
 
 type ElementTypeArrayToInstArray<T extends Constructor[]> = {
 	// Pick only the number keys (array values, not array methods and properties).

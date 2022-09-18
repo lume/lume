@@ -2,9 +2,10 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {createEffect, onCleanup} from 'solid-js'
-import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
+import {createEffect, createRoot, createSignal, onCleanup, untrack} from 'solid-js'
+import html from 'solid-js/html'
+import {signal} from 'classy-solid'
+import {element, numberAttribute, booleanAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
@@ -45,8 +46,9 @@ export type CameraRigAttributes =
  * - `camera-child`: Allows children of the camera rig to render relative to the
  * camera rig's underlying camera.
  */
+export {CameraRig}
 @element('lume-camera-rig', autoDefineElements)
-export class CameraRig extends Element3D {
+class CameraRig extends Element3D {
 	/**
 	 * @property {true} hasShadow
 	 *
@@ -68,7 +70,7 @@ export class CameraRig extends Element3D {
 	 * down, the camera will move up and down as it rotates around the center.
 	 * The camera is always looking at the center.
 	 */
-	@numberAttribute(0) initialPolarAngle = 0
+	@numberAttribute initialPolarAngle = 0
 
 	/**
 	 * @property {number} minPolarAngle
@@ -79,7 +81,7 @@ export class CameraRig extends Element3D {
 	 *
 	 * The lowest angle that the camera will rotate vertically.
 	 */
-	@numberAttribute(-90) minPolarAngle = -90
+	@numberAttribute minPolarAngle = -90
 
 	/**
 	 * @property {number} maxPolarAngle
@@ -105,7 +107,7 @@ export class CameraRig extends Element3D {
 	 *   })
 	 * </script>
 	 */
-	@numberAttribute(90) maxPolarAngle = 90
+	@numberAttribute maxPolarAngle = 90
 
 	/**
 	 * @property {number} minHorizontalAngle
@@ -118,7 +120,7 @@ export class CameraRig extends Element3D {
 	 * horizontally. The default of `-Infinity` means the camera will rotate
 	 * laterally around the focus point indefinitely.
 	 */
-	@numberAttribute(-Infinity) minHorizontalAngle = -Infinity
+	@numberAttribute minHorizontalAngle = -Infinity
 
 	/**
 	 * @property {number} maxHorizontalAngle
@@ -131,7 +133,7 @@ export class CameraRig extends Element3D {
 	 * horizontally. The default of `Infinity` means the camera will rotate
 	 * laterally around the focus point indefinitely.
 	 */
-	@numberAttribute(Infinity) maxHorizontalAngle = Infinity
+	@numberAttribute maxHorizontalAngle = Infinity
 
 	/**
 	 * @property {number} initialDistance
@@ -144,7 +146,7 @@ export class CameraRig extends Element3D {
 	 * When the performing a scroll gesture, the camera will zoom by moving
 	 * towards or away from the center point (i.e. dollying).
 	 */
-	@numberAttribute(1000) initialDistance = 1000
+	@numberAttribute initialDistance = 1000
 
 	/**
 	 * @property {number} minDistance
@@ -156,7 +158,7 @@ export class CameraRig extends Element3D {
 	 * The smallest distance the camera can get to the center point when zooming
 	 * by scrolling.
 	 */
-	@numberAttribute(200) minDistance = 200
+	@numberAttribute minDistance = 200
 
 	/**
 	 * @property {number} maxDistance
@@ -168,7 +170,7 @@ export class CameraRig extends Element3D {
 	 * The largest distance the camera can get from the center point when
 	 * zooming by scrolling.
 	 */
-	@numberAttribute(2000) maxDistance = 2000
+	@numberAttribute maxDistance = 2000
 
 	/**
 	 * @property {boolean} active
@@ -179,7 +181,7 @@ export class CameraRig extends Element3D {
 	 *
 	 * When `true`, the underlying camera is set to [`active`](./PerspectiveCamera#active).
 	 */
-	@booleanAttribute(true) active = true
+	@booleanAttribute active = true
 
 	/**
 	 * @property {number} dollySpeed
@@ -188,21 +190,23 @@ export class CameraRig extends Element3D {
 	 *
 	 * Default: `1`
 	 */
-	@numberAttribute(1) dollySpeed = 1
+	@numberAttribute dollySpeed = 1
 
 	/**
 	 * @property {boolean} interactive
 	 *
 	 * *attribute*
 	 *
+	 * Default: `true`
+	 *
 	 * When `false`, user interaction (ability to zoom or rotate the camera) is
 	 * disabled, but the camera rig can still be manipulated programmatically.
 	 */
-	@booleanAttribute(true) interactive = true
+	@booleanAttribute interactive = true
 
-	@reactive cam?: PerspectiveCamera
+	@signal cam?: PerspectiveCamera
 
-	@reactive rotationYTarget?: Element3D
+	@signal rotationYTarget?: Element3D
 
 	override template = () => html`
 		<lume-element3d
@@ -237,11 +241,20 @@ export class CameraRig extends Element3D {
 		<slot></slot>
 	`
 
-	@reactive flingRotation: FlingRotation | null = null
-	@reactive scrollFling: ScrollFling | null = null
-	@reactive pinchFling: PinchFling | null = null
+	@signal flingRotation: FlingRotation | null = null
+	@signal scrollFling: ScrollFling | null = null
+	@signal pinchFling: PinchFling | null = null
 
-	autorunStoppers?: StopFunction[]
+	override connectedCallback(): void {
+		super.connectedCallback?.()
+
+		// CONTINUE debugging
+		// this.createEffect(() => {
+		// 	console.log('camera effect,', this.cam!.position) // CONTINUE no loop here, but see the one in startInteraction
+		// })
+	}
+
+	autorunStoppers?: Array<() => void>
 
 	#startedInteraction = false
 
@@ -249,75 +262,103 @@ export class CameraRig extends Element3D {
 		if (this.#startedInteraction) return
 		this.#startedInteraction = true
 
+		// // DEBUG {{{
+		// this.createEffect(() => {
+		// 	console.log('initialDistance effect,', this.initialDistance)
+		// })
+
+		// let count = 0
+
+		// this.createEffect(() => {
+		// 	// if (!this.cam) return
+		// 	debugger
+		// 	this.cam!.position
+		// 	if (++count % 100 === 0) {
+		// 		debugger
+		// 		this.cam!.position = this.cam!.position
+		// 	}
+		// 	// console.log('camera effect,', this.cam!.position) // CONTINUE infinite reactivity loop
+		// 	console.log('camera effect,') // no loop
+		// })
+		// // }}} DEBUG
+
 		this.autorunStoppers = []
 
+		console.log('START INTERACTION ================================================================== ')
+
 		this.autorunStoppers.push(
-			autorun(() => {
-				if (!(this.scene && this.rotationYTarget)) return
-
-				const flingRotation = (this.flingRotation = new FlingRotation({
-					interactionInitiator: this.scene,
-					rotationYTarget: this.rotationYTarget,
-					minFlingRotationX: this.minPolarAngle,
-					maxFlingRotationX: this.maxPolarAngle,
-					minFlingRotationY: this.minHorizontalAngle,
-					maxFlingRotationY: this.maxHorizontalAngle,
-				}).start())
-
+			// CONTINUE converted to solid/classy-solid, ensure it works.
+			createRoot(stop => {
 				createEffect(() => {
-					if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
-					else flingRotation.stop()
-				})
+					if (!(this.scene && this.rotationYTarget)) return
 
-				onCleanup(() => flingRotation?.stop())
-			}),
-			autorun(() => {
-				if (!this.scene) return
+					const flingRotation = (this.flingRotation = new FlingRotation({
+						interactionInitiator: this.scene,
+						rotationYTarget: this.rotationYTarget,
+						minFlingRotationX: this.minPolarAngle,
+						maxFlingRotationX: this.maxPolarAngle,
+						minFlingRotationY: this.minHorizontalAngle,
+						maxFlingRotationY: this.maxHorizontalAngle,
+					}).start())
 
-				const scrollFling = (this.scrollFling = new ScrollFling({
-					target: this.scene,
-					y: this.initialDistance,
-					minY: this.minDistance,
-					maxY: this.maxDistance,
-					scrollFactor: this.dollySpeed,
-				}).start())
+					createEffect(() => {
+						if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
+						else flingRotation.stop()
+					})
 
-				const pinchFling = (this.pinchFling = new PinchFling({
-					target: this.scene,
-					x: this.initialDistance,
-					minX: this.minDistance,
-					maxX: this.maxDistance,
-					factor: this.dollySpeed,
-				}).start())
-
-				createEffect(() => {
-					const cam = this.cam
-					if (!cam) return
-
-					untrack(() => cam.position).z = scrollFling.y
+					onCleanup(() => flingRotation?.stop())
 				})
 
 				createEffect(() => {
-					const cam = this.cam
-					if (!cam) return
+					if (!this.scene) return
 
-					untrack(() => cam.position).z = pinchFling.x
-				})
+					const scrollFling = (this.scrollFling = new ScrollFling({
+						target: this.scene,
+						y: this.initialDistance,
+						minY: this.minDistance,
+						maxY: this.maxDistance,
+						scrollFactor: this.dollySpeed,
+					}).start())
 
-				createEffect(() => {
-					if (this.interactive) {
-						scrollFling.start()
-						pinchFling.start()
-					} else {
+					const pinchFling = (this.pinchFling = new PinchFling({
+						target: this.scene,
+						x: this.initialDistance,
+						minX: this.minDistance,
+						maxX: this.maxDistance,
+						factor: this.dollySpeed,
+					}).start())
+
+					createEffect(() => {
+						const cam = this.cam
+						if (!cam) return
+
+						untrack(() => cam.position).z = scrollFling.y
+					})
+
+					createEffect(() => {
+						const cam = this.cam
+						if (!cam) return
+
+						untrack(() => cam.position).z = pinchFling.x
+					})
+
+					createEffect(() => {
+						if (this.interactive) {
+							scrollFling.start()
+							pinchFling.start()
+						} else {
+							scrollFling.stop()
+							pinchFling.stop()
+						}
+					})
+
+					onCleanup(() => {
 						scrollFling.stop()
 						pinchFling.stop()
-					}
+					})
 				})
 
-				onCleanup(() => {
-					scrollFling.stop()
-					pinchFling.stop()
-				})
+				return stop
 			}),
 		)
 	}
@@ -325,6 +366,8 @@ export class CameraRig extends Element3D {
 	stopInteraction() {
 		if (!this.#startedInteraction) return
 		this.#startedInteraction = false
+
+		console.log('STOP INTERACTION |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ')
 
 		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
 	}
@@ -361,7 +404,7 @@ export class CameraRig extends Element3D {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-camera-rig': ElementAttributes<CameraRig, CameraRigAttributes>

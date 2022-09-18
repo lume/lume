@@ -33,8 +33,9 @@ const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
  *
  * @extends Sizeable
  */
+export {Transformable}
 @element
-export class Transformable extends Sizeable {
+class Transformable extends Sizeable {
 	constructor() {
 		super()
 

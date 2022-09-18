@@ -83,8 +83,9 @@ export type Element3DAttributes = BaseAttributes | 'visible'
  *
  * @extends SharedAPI
  */
+export {Element3D}
 @element('lume-element3d', autoDefineElements)
-export class Element3D extends SharedAPI {
+class Element3D extends SharedAPI {
 	override readonly hasShadow: boolean = false
 
 	/**
@@ -114,7 +115,7 @@ export class Element3D extends SharedAPI {
 	 *
 	 * If an `Element3D` is not visible, its children are also not visible.
 	 */
-	@booleanAttribute(true) visible = true
+	@booleanAttribute visible = true
 
 	/**
 	 * *reactive*
@@ -291,7 +292,7 @@ Element3D.prototype.isElement3D = true
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-element3d': ElementAttributes<Element3D, Element3DAttributes>

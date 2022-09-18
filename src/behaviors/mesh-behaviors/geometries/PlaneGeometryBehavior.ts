@@ -1,6 +1,8 @@
 import 'element-behaviors'
 import {PlaneGeometry} from 'three/src/geometries/PlaneGeometry.js'
-import {numberAttribute, reactive} from '../../attribute.js'
+import {numberAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 /**
@@ -18,8 +20,9 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  * @extends GeometryBehavior
  * @behavior plane-geometry TODO @behavior jsdoc tag
  */
-@reactive
-export class PlaneGeometryBehavior extends GeometryBehavior {
+export {PlaneGeometryBehavior}
+@behavior
+class PlaneGeometryBehavior extends GeometryBehavior {
 	/**
 	 * @property {number} widthSegments -
 	 *
@@ -31,7 +34,7 @@ export class PlaneGeometryBehavior extends GeometryBehavior {
 	 * width segments and 10 height segments is essentially made up of 100 cells
 	 * (or 10 rows and 10 columns of smaller planes)
 	 */
-	@numberAttribute(1) widthSegments = 1
+	@numberAttribute @receiver widthSegments = 1
 
 	/**
 	 * @property {number} heightSegments -
@@ -44,7 +47,7 @@ export class PlaneGeometryBehavior extends GeometryBehavior {
 	 * width segments and 10 height segments is essentially made up of 100 cells
 	 * (or 10 rows and 10 columns of smaller planes)
 	 */
-	@numberAttribute(1) heightSegments = 1
+	@numberAttribute @receiver heightSegments = 1
 
 	override _createComponent() {
 		return new PlaneGeometry(

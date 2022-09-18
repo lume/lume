@@ -1,6 +1,8 @@
 import 'element-behaviors'
 import {SphereGeometry} from 'three/src/geometries/SphereGeometry.js'
-import {numberAttribute, reactive} from '../../attribute.js'
+import {numberAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 /**
@@ -18,8 +20,9 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  * @extends GeometryBehavior
  * @behavior sphere-geometry TODO @behavior jsdoc tag
  */
-@reactive
-export class SphereGeometryBehavior extends GeometryBehavior {
+export {SphereGeometryBehavior}
+@behavior
+class SphereGeometryBehavior extends GeometryBehavior {
 	/**
 	 * @property {number} horizontalSegments -
 	 *
@@ -30,7 +33,7 @@ export class SphereGeometryBehavior extends GeometryBehavior {
 	 * The number of divisions around the equator of the sphere. A sphere with 10
 	 * horizontal segments and 10 vertical segments is made up of 100 flat faces.
 	 */
-	@numberAttribute(32) horizontalSegments = 32
+	@numberAttribute @receiver horizontalSegments = 32
 
 	/**
 	 * @property {number} verticalSegments -
@@ -43,7 +46,7 @@ export class SphereGeometryBehavior extends GeometryBehavior {
 	 * width segments and 10 height segments is essentially made up of 100 cells
 	 * (or 10 rows and 10 columns of smaller planes)
 	 */
-	@numberAttribute(32) verticalSegments = 32
+	@numberAttribute @receiver verticalSegments = 32
 
 	override _createComponent() {
 		return new SphereGeometry(this.element.calculatedSize.x / 2, this.horizontalSegments, this.verticalSegments)

@@ -96,7 +96,7 @@
 		"@lume/element": "^0.6.0",
 		"@lume/eventful": "^0.2.2",
 		"@lume/three-projected-material": "^0.2.2",
-		"@lume/variable": "^0.7.2",
+		"classy-solid": "^0.2.0",
 		"element-behaviors": "^3.0.0",
 		"james-bond": "^0.5.0",
 		"lowclass": "^5.0.0",

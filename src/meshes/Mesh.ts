@@ -42,8 +42,9 @@ export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow
  * @element lume-mesh TODO @element jsdoc tag
  *
  */
+export {Mesh}
 @element('lume-mesh', autoDefineElements)
-export class Mesh extends Element3D {
+class Mesh extends Element3D {
 	// TODO NAMING: It would be neat to be able to return an array of classes
 	// as well, so that it can be agnostic of the naming. Either way should
 	// work.
@@ -67,7 +68,7 @@ export class Mesh extends Element3D {
 	 * presence of a light such as a
 	 * [`<lume-point-light>`](../lights/PointLight).
 	 */
-	@booleanAttribute(true) castShadow = true
+	@booleanAttribute castShadow = true
 
 	/**
 	 * @property {boolean} receiveShadow
@@ -80,7 +81,7 @@ export class Mesh extends Element3D {
 	 * presence of a light such as a
 	 * [`<lume-point-light>`](../lights/PointLight).
 	 */
-	@booleanAttribute(true) receiveShadow = true
+	@booleanAttribute receiveShadow = true
 
 	override _loadGL() {
 		if (!super._loadGL()) return false
@@ -133,9 +134,11 @@ type BehaviorAttributes =
 	| PhysicalMaterialBehaviorAttributes
 	| ClipPlanesBehaviorAttributes
 
-export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
+// CONTINUE export was removed from this statement, but still kept on the above
+// class. Does the type still work?
+interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-mesh': ElementAttributes<Mesh & BehaviorInstanceTypes, MeshAttributes | BehaviorAttributes>

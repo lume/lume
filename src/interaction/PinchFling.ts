@@ -1,5 +1,5 @@
 import {createSignal, untrack} from 'solid-js'
-import {reactive} from '@lume/element'
+import {reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
@@ -7,14 +7,15 @@ import type {RenderTask} from '../core/index.js'
 
 type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>
 
+export {PinchFling}
 @reactive
-export class PinchFling {
+class PinchFling {
 	/**
-	 * During pinch, this value will change. It is reactive so that it can be
+	 * During pinch, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
 	 * value.
 	 */
-	@reactive x = 0
+	@signal x = 0
 
 	minX = -Infinity
 	maxX = Infinity

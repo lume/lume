@@ -3,17 +3,18 @@
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
 
-import {untrack} from 'solid-js'
+import {untrack, onCleanup} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
-import {reactive, booleanAttribute, stringAttribute, numberAttribute} from '../../attribute.js'
-import {onCleanup} from 'solid-js'
+import {booleanAttribute, stringAttribute, numberAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
 import type {MeshComponentType} from '../MeshBehavior.js'
-import type {MeshPhongMaterial, Texture} from 'three'
+import type {Texture} from 'three'
 
 export type MaterialBehaviorAttributes =
 	| 'alphaTest'
@@ -33,8 +34,9 @@ export type MaterialBehaviorAttributes =
  *
  * @extends GeometryOrMaterialBehavior
  */
-@reactive
-export class MaterialBehavior extends GeometryOrMaterialBehavior {
+export {MaterialBehavior}
+@behavior
+class MaterialBehavior extends GeometryOrMaterialBehavior {
 	type: MeshComponentType = 'material'
 
 	/**
@@ -47,11 +49,11 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * Sets the alpha value to be used when running an alpha test. The material
 	 * will not be rendered if the opacity is lower than this value.
 	 */
-	@numberAttribute(0) alphaTest = 0
+	@numberAttribute @receiver alphaTest = 0
 
 	// located in ClipPlanesBehavior instead
-	// @booleanAttribute(false) clipIntersection = false
-	// @booleanAttribute(true) clipShadows = true
+	// @booleanAttribute @receiver clipIntersection = false
+	// @booleanAttribute @receiver clipShadows = true
 
 	/**
 	 * @property {boolean} colorWrite -
@@ -64,7 +66,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * with a mesh's renderOrder property to create invisible objects that
 	 * occlude other objects.
 	 */
-	@booleanAttribute(true) colorWrite = true
+	@booleanAttribute @receiver colorWrite = true
 
 	// defines
 	// depthFunc
@@ -78,7 +80,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 *
 	 * Whether to have depth test enabled when rendering this material.
 	 */
-	@booleanAttribute(true) depthTest = true
+	@booleanAttribute @receiver depthTest = true
 
 	/**
 	 * @property {boolean} depthWrite -
@@ -93,7 +95,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * order to layer several things together without creating z-index
 	 * artifacts.
 	 */
-	@booleanAttribute(true) depthWrite = true
+	@booleanAttribute @receiver depthWrite = true
 
 	/**
 	 * @property {boolean} dithering -
@@ -105,7 +107,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * Whether to apply dithering to the color to remove the appearance of
 	 * banding.
 	 */
-	@booleanAttribute(false) dithering = false
+	@booleanAttribute @receiver dithering = false
 
 	/**
 	 * @property {boolean} fog -
@@ -116,7 +118,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 *
 	 * Whether the material is affected by a [scene's fog](../../../core/Scene#fogMode).
 	 */
-	@booleanAttribute(true) fog = true
+	@booleanAttribute @receiver fog = true
 
 	// TODO wireframe works with -geometry behaviors, but not with obj-model
 	// because obj-model doesn't inherit from geometry. We should share common
@@ -132,7 +134,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * Whether to render geometry as wireframe, i.e. outlines of polygons. The
 	 * default of `false` renders geometries as smooth shaded.
 	 */
-	@booleanAttribute(false) wireframe = false
+	@booleanAttribute @receiver wireframe = false
 
 	/**
 	 * @property {'front' | 'back' | 'double'} sidedness -
@@ -146,7 +148,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * camera, the polygon will be invisible. Use "both" if you want the
 	 * polygons to always be visible no matter which side faces the camera.
 	 */
-	@stringAttribute('front') sidedness: 'front' | 'back' | 'double' = 'front'
+	@stringAttribute @receiver sidedness: 'front' | 'back' | 'double' = 'front'
 
 	/**
 	 * @property {number} materialOpacity -
@@ -170,7 +172,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * whereas modifying an element's `opacity` affects CSS rendering including
 	 * the element's children.
 	 */
-	@numberAttribute(1) materialOpacity = 1
+	@numberAttribute @receiver materialOpacity = 1
 
 	#color = new Color('white')
 
@@ -190,7 +192,8 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color)
 	 * object.
 	 */
-	@stringAttribute('white')
+	@stringAttribute
+	@receiver // CONTINUE default value
 	get color(): Color {
 		return this.#color
 	}
@@ -236,8 +239,8 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		// Only some materials have wireframe.
 		this.createEffect(() => {
 			const mat = this.meshComponent
-			if (!(mat && 'wireframe' in mat)) return
-			;(mat as MeshPhongMaterial).wireframe = this.wireframe
+			if (!(mat && isWireframeMaterial(mat))) return
+			mat.wireframe = this.wireframe
 			this.element.needsUpdate()
 		})
 
@@ -266,8 +269,8 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 
 		this.createEffect(() => {
 			const mat = this.meshComponent
-			if (!(mat && 'color' in mat)) return
-			;(mat as MeshPhongMaterial).color = this.color
+			if (!(mat && isColoredMaterial(mat))) return
+			mat.color = this.color
 			this.element.needsUpdate()
 		})
 
@@ -331,4 +334,12 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 			this.element.needsUpdate() // LUME needs to re-render
 		})
 	}
+}
+
+function isColoredMaterial(mat: Material): mat is Material & {color: Color} {
+	return 'color' in mat
+}
+
+function isWireframeMaterial(mat: Material): mat is Material & {wireframe: boolean} {
+	return 'wireframe' in mat
 }

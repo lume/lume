@@ -1,4 +1,4 @@
-import {reactive} from '@lume/variable' // TODO replace reactive with signal classy-solid
+import {reactive, signal} from 'classy-solid'
 import {Effectful} from '../core/Effectful.js'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
@@ -35,8 +35,9 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
+export {WebglRendererThree}
 @reactive
-export class WebglRendererThree {
+class WebglRendererThree {
 	static singleton() {
 		if (instance) return instance
 		else {
@@ -58,7 +59,7 @@ export class WebglRendererThree {
 
 	sceneStates = new WeakMap<Scene, SceneState>()
 
-	@reactive localClippingEnabled = false
+	@signal localClippingEnabled = false
 
 	initialize(scene: Scene) {
 		let sceneState = this.sceneStates.get(scene)

@@ -3,18 +3,19 @@
 // Find a standalone version of this loading icon at
 // https://codepen.io/trusktr/pen/poNxzqJ
 
+import html from 'solid-js/html'
 import {Element, element, stringAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 const defaultColor = '120,130,140'
 
 export type LoadingIconAttributes = 'color'
 
+export {LoadingIcon}
 @element('loading-icon', autoDefineElements)
-export class LoadingIcon extends Element {
+class LoadingIcon extends Element {
 	/** A string with an RGB triplet, comma separated. */
-	@stringAttribute(defaultColor) color = defaultColor
+	@stringAttribute color = defaultColor
 
 	// TODO convert to JSX.
 	override template = () => html`
@@ -65,7 +66,7 @@ export class LoadingIcon extends Element {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'loading-icon': ElementAttributes<LoadingIcon, LoadingIconAttributes>

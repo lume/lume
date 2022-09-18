@@ -1,31 +1,26 @@
 import 'element-behaviors'
-import {reactive, attribute} from '../../attribute.js'
+import {attribute} from '@lume/element'
 import {Shape} from 'three/src/extras/core/Shape.js'
 import {ExtrudeGeometry} from 'three/src/geometries/ExtrudeGeometry.js'
 import {ShapeGeometry} from 'three/src/geometries/ShapeGeometry.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
-// function BoolAttribute(val: string | null) {
-// 	if (val === null || val === 'false') return false
-// 	return true
-// }
-
 export type RoundedRectangleGeometryBehaviorAttributes = 'cornerRadius' | 'thickness' | 'quadraticCorners'
 
-@reactive
-export class RoundedRectangleGeometryBehavior extends GeometryBehavior {
-	// FIXME We need this because if we pass string numbers to Three.js it
-	// breaks. Three.js should be fixed.
-	@attribute({from: Number}) cornerRadius = 0
-	@attribute({from: Number}) thickness = 0
-
-	// @attribute({from: BoolAttribute}) quadraticCorners = false
+export {RoundedRectangleGeometryBehavior}
+@behavior
+class RoundedRectangleGeometryBehavior extends GeometryBehavior {
+	@attribute({from: Number}) @receiver cornerRadius = 0
+	@attribute({from: Number}) @receiver thickness = 0
 
 	#quadraticCorners = false
 
 	@attribute
+	@receiver
 	get quadraticCorners() {
 		return this.#quadraticCorners
 	}

@@ -1,4 +1,4 @@
-import {reactive} from '@lume/element'
+import {reactive, signal} from 'classy-solid'
 import {getInheritedDescriptor} from 'lowclass'
 import {stringToArray} from './utils.js'
 
@@ -20,8 +20,9 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
+export {XYZValues}
 @reactive
-export abstract class XYZValues<T = any> extends Object {
+abstract class XYZValues<T = any> extends Object {
 	#x: T = undefined!
 	#y: T = undefined!
 	#z: T = undefined!
@@ -29,13 +30,13 @@ export abstract class XYZValues<T = any> extends Object {
 	/**
 	 * @property {any} x -
 	 *
-	 * *reactive*
+	 * *signal*
 	 *
 	 * Default: `undefined`
 	 *
 	 * The X value.
 	 */
-	@reactive
+	@signal
 	set x(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('x', value)
 		if (!this.checkValue('x', value)) return
@@ -48,13 +49,13 @@ export abstract class XYZValues<T = any> extends Object {
 	/**
 	 * @property {any} y -
 	 *
-	 * *reactive*
+	 * *signal*
 	 *
 	 * Default: `undefined`
 	 *
 	 * The Y value.
 	 */
-	@reactive
+	@signal
 	set y(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('y', value)
 		if (!this.checkValue('y', value)) return
@@ -67,13 +68,13 @@ export abstract class XYZValues<T = any> extends Object {
 	/**
 	 * @property {any} z -
 	 *
-	 * *reactive*
+	 * *signal*
 	 *
 	 * Default: `undefined`
 	 *
 	 * The Z value.
 	 */
-	@reactive
+	@signal
 	set z(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('z', value)
 		if (!this.checkValue('z', value)) return

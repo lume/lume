@@ -1,5 +1,5 @@
+import html from 'solid-js/html'
 import {element, numberAttribute, stringAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
@@ -9,11 +9,12 @@ import type {Sphere} from '../meshes/Sphere.js'
 
 export type FlickeringOrbAttributes = Element3DAttributes | 'color' | 'intensity' | 'shadowBias'
 
+export {FlickeringOrb}
 @element('flickering-orb', autoDefineElements)
-export class FlickeringOrb extends Element3D {
-	@stringAttribute('royalblue') color = 'royalblue'
-	@numberAttribute(1.3) intensity = 1.3
-	@numberAttribute(0) shadowBias = 0
+class FlickeringOrb extends Element3D {
+	@stringAttribute color = 'royalblue'
+	@numberAttribute intensity = 1.3
+	@numberAttribute shadowBias = 0
 
 	light?: PointLight
 	sphere?: Sphere
@@ -61,7 +62,7 @@ export class FlickeringOrb extends Element3D {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'flickering-orb': ElementAttributes<FlickeringOrb, FlickeringOrbAttributes>

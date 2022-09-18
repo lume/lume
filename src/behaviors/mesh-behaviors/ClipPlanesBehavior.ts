@@ -1,5 +1,8 @@
 import {createEffect} from 'solid-js'
-import {stringAttribute, reactive, booleanAttribute} from '../attribute.js'
+// import {stringAttribute, booleanAttribute} from '../attribute.js'
+import {stringAttribute, booleanAttribute} from '@lume/element'
+import {behavior} from '../Behavior.js'
+import {receiver} from '../PropReceiver.js'
 import {ClipPlane} from '../../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
 import type {MaterialBehavior} from './index.js'
@@ -30,8 +33,9 @@ let refCount = 0
  *
  * @extends MeshBehavior
  */
-@reactive
-export class ClipPlanesBehavior extends MeshBehavior {
+export {ClipPlanesBehavior}
+@behavior
+class ClipPlanesBehavior extends MeshBehavior {
 	/**
 	 * @property {boolean} clipIntersection
 	 *
@@ -42,7 +46,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 * Changes the behavior of clipping planes so that only their intersection
 	 * is clipped, rather than their union.
 	 */
-	@booleanAttribute(false) clipIntersection = false
+	@booleanAttribute @receiver clipIntersection = false
 
 	/**
 	 * @property {boolean} clipShadows
@@ -55,7 +59,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 * according to the clipping planes specified on this material. Default is
 	 * false.
 	 */
-	@booleanAttribute(true) clipShadows = true
+	@booleanAttribute @receiver clipShadows = true
 
 	// TODO reactive array?
 	#clipPlanes: Array<ClipPlane> = []
@@ -96,7 +100,8 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 * either in the top level document, in a ShadowRoot, or distributed to a
 	 * slot in a ShadowRoot).
 	 */
-	@stringAttribute('')
+	@stringAttribute
+	@receiver // CONTINUE default value
 	get clipPlanes(): Array<ClipPlane> {
 		return this.#clipPlanes
 	}
@@ -167,7 +172,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 * direction. Setting this to `true` will reverse clipping to the other
 	 * side.
 	 */
-	@booleanAttribute(false) flipClip = false
+	@booleanAttribute @receiver flipClip = false
 
 	/**
 	 * @property {boolean} clipDisabled
@@ -178,7 +183,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	 *
 	 * If `true`, clipping is not applied.
 	 */
-	@booleanAttribute(false) clipDisabled = false
+	@booleanAttribute @receiver clipDisabled = false
 
 	/**
 	 * `reactive`

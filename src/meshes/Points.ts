@@ -27,8 +27,9 @@ export type PointsAttributes = Element3DAttributes
  *
  * @extends Mesh
  */
+export {Points}
 @element('lume-points', autoDefineElements)
-export class Points extends Element3D {
+class Points extends Element3D {
 	static override defaultBehaviors: {[k: string]: any} = {
 		'box-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
@@ -54,13 +55,15 @@ import type {
 	PointsMaterialBehaviorAttributes,
 } from '../index.js'
 
-export interface Points
+// CONTINUE export was removed from this statement, but still kept on the above
+// class. Does the type still work?
+interface Points
 	extends ElementWithBehaviors<
 		PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
 		PointsMaterialBehaviorAttributes | PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes
 	> {}
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-points': ElementAttributes<

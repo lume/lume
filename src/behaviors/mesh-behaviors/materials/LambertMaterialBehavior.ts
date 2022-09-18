@@ -1,6 +1,8 @@
-import {stringAttribute, reactive} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {MeshLambertMaterial} from 'three/src/materials/MeshLambertMaterial.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
@@ -26,10 +28,11 @@ export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'te
  *
  * @extends MaterialBehavior
  */
-@reactive
-export class LambertMaterialBehavior extends MaterialBehavior {
-	@stringAttribute('') texture = ''
-	@stringAttribute('') specularMap = ''
+export {LambertMaterialBehavior}
+@behavior
+class LambertMaterialBehavior extends MaterialBehavior {
+	@stringAttribute @receiver texture = ''
+	@stringAttribute @receiver specularMap = ''
 
 	override _createComponent() {
 		return new MeshLambertMaterial({color: 0x00ff00})

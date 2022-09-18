@@ -6,8 +6,9 @@ import {element, ElementAttributes} from '@lume/element'
 export type NodeAttributes = Element3DAttributes
 
 /** @deprecated Use `Element3D` (`<lume-element3d>`) instead. */
+export {Node}
 @element('lume-node', autoDefineElements)
-export class Node extends Element3D {
+class Node extends Element3D {
 	/**
 	 * @property {true} isNode -
 	 *
@@ -23,7 +24,7 @@ export class Node extends Element3D {
 // @ts-expect-error readonly
 Node.prototype.isNode = true
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			/** @deprecated Use Element3D (<lume-element3d>) instead. */

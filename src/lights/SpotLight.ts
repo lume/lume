@@ -34,8 +34,9 @@ export type SpotLightAttributes = PointLightAttributes
  *
  * @extends PointLight
  */
+export {SpotLight}
 @element('lume-spot-light', autoDefineElements)
-export class SpotLight extends PointLight {
+class SpotLight extends PointLight {
 	/**
 	 * @property {number} angle -
 	 *
@@ -46,7 +47,7 @@ export class SpotLight extends PointLight {
 	 * The angle of the cone shape in which light propagates. Should be no more
 	 * than 90. This value affects the fov of the light's shadow camera
 	 */
-	@numberAttribute(60) angle = 60
+	@numberAttribute angle = 60
 
 	/**
 	 * @property {number} penumbra -
@@ -65,7 +66,7 @@ export class SpotLight extends PointLight {
 	 * half way to the center, and 0 means that there is no fade in which gives
 	 * the oval a sharp/crisp outline.
 	 */
-	@numberAttribute(1) penumbra = 1
+	@numberAttribute penumbra = 1
 
 	// TODO color map, like an old-school projector. We need to further abstract
 	// _handleTexture from the behaviors (f.e. make it a mixin so we can pull it
@@ -78,7 +79,7 @@ export class SpotLight extends PointLight {
 
 	// TODO Consolidate target selector functionality with similar clipPlanes
 	// functionality in ClipPlanesBehavior.
-	@stringAttribute('')
+	@stringAttribute
 	get target(): Element3D | null {
 		return this.#target[0] ?? null
 	}
@@ -141,7 +142,7 @@ export class SpotLight extends PointLight {
 	}
 
 	// TODO generic debug for all elements.
-	@booleanAttribute(false) debug = false
+	@booleanAttribute debug = false
 
 	override updateWorldMatrices(traverse = true) {
 		super.updateWorldMatrices(traverse)
@@ -225,7 +226,7 @@ export class SpotLight extends PointLight {
 import type {ElementAttributes} from '@lume/element'
 import {Object3D} from 'three'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-spot-light': ElementAttributes<SpotLight, SpotLightAttributes>

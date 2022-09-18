@@ -1,8 +1,10 @@
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {OBJLoader} from '../../../lib/three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from '../../../lib/three/examples/jsm/loaders/MTLLoader.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -18,10 +20,11 @@ declare global {
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
 
-@reactive
-export class ObjModelBehavior extends RenderableBehavior {
-	@stringAttribute('') obj = ''
-	@stringAttribute('') mtl = ''
+export {ObjModelBehavior}
+@behavior
+class ObjModelBehavior extends RenderableBehavior {
+	@stringAttribute @receiver obj = ''
+	@stringAttribute @receiver mtl = ''
 
 	model?: Group
 	objLoader?: OBJLoader

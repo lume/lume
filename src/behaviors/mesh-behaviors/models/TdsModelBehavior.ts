@@ -1,7 +1,9 @@
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import {TDSLoader} from '../../../lib/three/examples/jsm/loaders/TDSLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -9,10 +11,11 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type TdsModelBehaviorAttributes = 'src'
 
-@reactive
-export class TdsModelBehavior extends RenderableBehavior {
+export {TdsModelBehavior}
+@behavior
+class TdsModelBehavior extends RenderableBehavior {
 	/** Path to a .3ds file. */
-	@stringAttribute('') src = ''
+	@stringAttribute @receiver src = ''
 
 	loader?: TDSLoader
 	model?: Group

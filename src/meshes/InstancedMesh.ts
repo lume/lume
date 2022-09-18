@@ -1,3 +1,4 @@
+import {untrack} from 'solid-js'
 import {InstancedMesh as ThreeInstancedMesh} from 'three/src/objects/InstancedMesh.js'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
@@ -7,7 +8,7 @@ import {Vector3} from 'three/src/math/Vector3.js'
 import {Color} from 'three/src/math/Color.js'
 import {Matrix4} from 'three/src/math/Matrix4.js'
 import {Euler} from 'three/src/math/Euler.js'
-import {element, numberAttribute, stringAttribute, untrack} from '@lume/element'
+import {element, numberAttribute, stringAttribute} from '@lume/element'
 import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {stringToNumberArray} from './utils.js'
@@ -57,12 +58,13 @@ const appliedPosition = [0, 0, 0]
  * @extends Mesh
  *
  */
+export {InstancedMesh}
 @element('lume-instanced-mesh', autoDefineElements)
-export class InstancedMesh extends Mesh {
+class InstancedMesh extends Mesh {
 	/**
 	 * @property {number} count - The number of instances to render.
 	 */
-	@numberAttribute(10) count = 10
+	@numberAttribute count = 10
 
 	#biggestCount = this.count
 
@@ -75,7 +77,7 @@ export class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` rotations, those
 	 * rotations are ignored.
 	 */
-	@stringAttribute('')
+	@stringAttribute // CONTINUE default value for getters/setters?
 	get rotations(): number[] {
 		return this.#rotations
 	}
@@ -94,7 +96,7 @@ export class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` positions, those
 	 * positions are ignored.
 	 */
-	@stringAttribute('')
+	@stringAttribute
 	get positions() {
 		return this.#positions
 	}
@@ -113,7 +115,7 @@ export class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` scales, those
 	 * scales are ignored.
 	 */
-	@stringAttribute('')
+	@stringAttribute
 	get scales() {
 		return this.#scales
 	}
@@ -132,7 +134,7 @@ export class InstancedMesh extends Mesh {
 	 * values of zero (black). If it has more than `this.count` colors, those
 	 * colors are ignored.
 	 */
-	@stringAttribute('')
+	@stringAttribute
 	get colors() {
 		return this.#colors
 	}
@@ -355,7 +357,7 @@ export class InstancedMesh extends Mesh {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-instanced-mesh': JSX.IntrinsicElements['lume-mesh'] &

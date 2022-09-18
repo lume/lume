@@ -39,8 +39,9 @@ type ClipPlaneAttributes = Element3DAttributes
  *
  * @extends Element3D
  */
+export {ClipPlane}
 @element('lume-clip-plane', autoDefineElements)
-export class ClipPlane extends Element3D {
+class ClipPlane extends Element3D {
 	#plane = createSignal<Plane | null>(null)
 	#inversePlane = createSignal<Plane | null>(null)
 
@@ -100,7 +101,7 @@ export class ClipPlane extends Element3D {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-clip-plane': ElementAttributes<ClipPlane, ClipPlaneAttributes>

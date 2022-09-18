@@ -1,15 +1,18 @@
-import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
+import {booleanAttribute, numberAttribute, stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {PointsMaterial} from 'three/src/materials/PointsMaterial.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type PointsMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'sizeAttenuation' | 'pointSize'
 
-@reactive
-export class PointsMaterialBehavior extends MaterialBehavior {
-	@stringAttribute('') texture = ''
-	@booleanAttribute(true) sizeAttenuation = true
-	@numberAttribute(1) pointSize = 1
+export {PointsMaterialBehavior}
+@behavior
+class PointsMaterialBehavior extends MaterialBehavior {
+	@stringAttribute @receiver texture = ''
+	@booleanAttribute @receiver sizeAttenuation = true
+	@numberAttribute @receiver pointSize = 1
 
 	override _createComponent() {
 		return new PointsMaterial({color: 0x00ff00})

@@ -1,7 +1,9 @@
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import {FBXLoader} from '../../../lib/three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -9,10 +11,11 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type FbxModelBehaviorAttributes = 'src'
 
-@reactive
-export class FbxModelBehavior extends RenderableBehavior {
+export {FbxModelBehavior}
+@behavior
+class FbxModelBehavior extends RenderableBehavior {
 	/** Path to a .fbx file. */
-	@stringAttribute('') src = ''
+	@stringAttribute @receiver src = ''
 
 	loader?: FBXLoader
 	model?: Group

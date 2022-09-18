@@ -1,13 +1,14 @@
 // Useful info on THREE.Plane not covered in Three.js docs:
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
-import {booleanAttribute, element, ElementAttributes, reactive, stringAttribute} from '@lume/element'
+import {signal} from 'classy-solid'
+import {booleanAttribute, element, ElementAttributes, stringAttribute} from '@lume/element'
 import {createEffect} from 'solid-js'
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial'
+import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial.js'
 import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 
 type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
@@ -42,8 +43,9 @@ type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
  *
  * @extends Element3D
  */
+export {TextureProjector}
 @element('lume-texture-projector', autoDefineElements)
-export class TextureProjector extends Element3D {
+class TextureProjector extends Element3D {
 	// This element is only a data and camera container, and
 	// ProjectedMaterialBehavior reacts to the properties.
 
@@ -59,7 +61,7 @@ export class TextureProjector extends Element3D {
 	 * The path to an image to be used as a projected
 	 * texture.
 	 */
-	@stringAttribute('') src = ''
+	@stringAttribute src = ''
 
 	/**
 	 * @property {'cover' | 'contain'} fitment
@@ -71,7 +73,7 @@ export class TextureProjector extends Element3D {
 	 * Fitment of the image within the size area on X and Y. Similar to the CSS
 	 * object-fit property, but supporting only "cover" and "contain" fitments.
 	 */
-	@stringAttribute('cover') fitment: Fitment = 'cover'
+	@stringAttribute fitment: Fitment = 'cover'
 
 	/* FIXME - documentation not exposed yet, experimental, does not work yet due to this issue:
 	 * https://github.com/marcofugaro/three-projected-material/issues/46
@@ -87,13 +89,13 @@ export class TextureProjector extends Element3D {
 	 * projection hits all surfaces, even those facing away from the projector
 	 * (this element).
 	 */
-	@booleanAttribute(false) frontFacesOnly = false
+	@booleanAttribute frontFacesOnly = false
 
 	// textureScale?: number
 	// textureOffset?: Vector2
 
 	// TODO support also perspective projection
-	@reactive _camera: PerspectiveCamera | OrthographicCamera | null = null
+	@signal _camera: PerspectiveCamera | OrthographicCamera | null = null
 
 	override _loadGL(): boolean {
 		if (!super._loadGL()) return false
@@ -167,7 +169,7 @@ export class TextureProjector extends Element3D {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-texture-projector': ElementAttributes<TextureProjector, TextureProjectorAttributes>

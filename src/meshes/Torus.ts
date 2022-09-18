@@ -18,8 +18,9 @@ export type TorusAttributes = MeshAttributes
  *
  * @extends Mesh
  */
+export {Torus}
 @element('lume-torus', autoDefineElements)
-export class Torus extends Mesh {
+class Torus extends Mesh {
 	static override defaultBehaviors = {
 		'torus-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
@@ -36,7 +37,7 @@ declare global {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-torus': JSX.IntrinsicElements['lume-mesh']

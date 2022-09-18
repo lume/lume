@@ -1,6 +1,6 @@
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
-import {createEffect, createRoot} from 'solid-js'
-import {numberAttribute, booleanAttribute, untrack, element} from '@lume/element'
+import {createEffect, createRoot, untrack} from 'solid-js'
+import {numberAttribute, booleanAttribute, element} from '@lume/element'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -29,8 +29,9 @@ export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect'
  *
  * @extends Element3D
  */
+export {PerspectiveCamera}
 @element('lume-perspective-camera', autoDefineElements)
-export class PerspectiveCamera extends Element3D {
+class PerspectiveCamera extends Element3D {
 	/**
 	 * @property {number} fov
 	 *
@@ -41,7 +42,7 @@ export class PerspectiveCamera extends Element3D {
 	 * The camera's field of view angle, in degrees, when [`zoom`](#zoom) level
 	 * is `1`.
 	 */
-	@numberAttribute(50) fov = 50
+	@numberAttribute fov = 50
 
 	/**
 	 * @property {number} aspect
@@ -55,7 +56,7 @@ export class PerspectiveCamera extends Element3D {
 	 * case of stretched or squished display, this can be adjusted appropriately
 	 * to unstretch or unsquish the view of the 3d world.
 	 */
-	@numberAttribute(0) aspect = 0
+	@numberAttribute aspect = 0
 
 	/**
 	 * @property {number} near
@@ -66,7 +67,7 @@ export class PerspectiveCamera extends Element3D {
 	 *
 	 * Anything closer to the camera than this value will not be rendered.
 	 */
-	@numberAttribute(0.1) near = 0.1
+	@numberAttribute near = 0.1
 
 	/**
 	 * @property {number} far
@@ -77,7 +78,7 @@ export class PerspectiveCamera extends Element3D {
 	 *
 	 * Anything further from the camera than this value will not be rendered.
 	 */
-	@numberAttribute(3000) far = 3000
+	@numberAttribute far = 3000
 
 	/**
 	 * @property {number} zoom
@@ -91,7 +92,7 @@ export class PerspectiveCamera extends Element3D {
 	 * versa. At zoom level `1`, the effective field of view is equivalent to
 	 * [`fov`](#fov).
 	 */
-	@numberAttribute(1) zoom = 1
+	@numberAttribute zoom = 1
 
 	/**
 	 * @property {boolean} active
@@ -105,7 +106,7 @@ export class PerspectiveCamera extends Element3D {
 	 * camera that was set (and is still) active will be used, or if no other
 	 * cameras are active the scene's default camera will be used.
 	 */
-	@booleanAttribute(false) active = false
+	@booleanAttribute active = false
 
 	// TODO lookat property
 	// @attribute lookat: string | Element3D | null = null
@@ -214,7 +215,7 @@ export class PerspectiveCamera extends Element3D {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-perspective-camera': ElementAttributes<PerspectiveCamera, PerspectiveCameraAttributes>

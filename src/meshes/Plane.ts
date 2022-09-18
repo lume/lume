@@ -19,8 +19,9 @@ export type PlaneAttributes = MeshAttributes
  *
  * @extends Mesh
  */
+export {Plane}
 @element('lume-plane', autoDefineElements)
-export class Plane extends Mesh {
+class Plane extends Mesh {
 	static override defaultBehaviors = {
 		'plane-geometry': (initialBehaviors: string[]) => {
 			return !initialBehaviors.some(b => b.endsWith('-geometry'))
@@ -31,7 +32,7 @@ export class Plane extends Mesh {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-plane': JSX.IntrinsicElements['lume-mesh']

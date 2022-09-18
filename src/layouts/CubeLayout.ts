@@ -26,8 +26,9 @@ type CubeLayoutAttributes = Element3DAttributes
  */
 // This class is written imperatively, as opposed to declaratively, for sake of
 // example. It would be cleaner written declaratively, but it's not a big class.
+export {CubeLayout}
 @element('lume-cube-layout', autoDefineElements)
-export class CubeLayout extends Element3D {
+class CubeLayout extends Element3D {
 	#sides: Element3D[] = []
 
 	// Use a ShadowRoot
@@ -112,7 +113,7 @@ export class CubeLayout extends Element3D {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-cube-layout': ElementAttributes<CubeLayout, CubeLayoutAttributes>

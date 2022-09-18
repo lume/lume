@@ -1,12 +1,14 @@
 import 'element-behaviors'
-import {reactive, attribute, stringAttribute} from '../../attribute.js'
+import {untrack} from 'solid-js'
+import {attribute, stringAttribute} from '@lume/element'
 import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 // @ts-ignore, no type def
 import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
-import {untrack} from 'solid-js'
 
 export type ShaderMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -14,14 +16,16 @@ export type ShaderMaterialBehaviorAttributes =
 	| 'vertexShader'
 	| 'fragmentShader'
 
-@reactive
-export class ShaderMaterialBehavior extends MaterialBehavior {
+export {ShaderMaterialBehavior}
+@behavior
+class ShaderMaterialBehavior extends MaterialBehavior {
 	// TODO: Perhaps instead of accepting string objects for HTML attributes,
 	// we can create specific uniform-foo attributes for each uniform, and have
 	// specific data handling and type definitions for each one. This would
 	// make it easier to animate particular uniforms instead of replacing the
 	// whole object each time.
 	@attribute
+	@receiver
 	get uniforms(): Record<string, any> {
 		return this.#uniforms
 	}
@@ -45,8 +49,13 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 
 	#uniforms: Record<string, any> = {}
 
-	@stringAttribute(default_vertex) vertexShader = default_vertex
-	@stringAttribute(default_fragment) fragmentShader = default_fragment
+	override attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null): void {
+		console.log('attribute changed:', name, oldVal, newVal)
+		super.attributeChangedCallback?.(name, oldVal, newVal)
+	}
+
+	@stringAttribute @receiver vertexShader = default_vertex
+	@stringAttribute @receiver fragmentShader = default_fragment
 
 	override _createComponent() {
 		// untrack because we update the properties on the material instance in the effect in loadGL
@@ -64,7 +73,8 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 			const mat = this.meshComponent
 			if (!mat) return
 
-			mat.uniforms = this.uniforms as Record<string, any>
+			console.log('uniforms:', this.uniforms)
+			mat.uniforms = this.uniforms
 			mat.vertexShader = this.vertexShader || default_vertex
 			mat.fragmentShader = this.fragmentShader || default_fragment
 

@@ -1,5 +1,7 @@
+import {untrack} from 'solid-js'
+import {signal} from 'classy-solid'
 import {Object3D} from 'three/src/core/Object3D.js'
-import {reactive, untrack, element, attribute} from '@lume/element'
+import {element, attribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
@@ -56,8 +58,9 @@ export type BaseAttributes = TransformableAttributes | 'opacity'
  * @extends Settable
  * @extends Transformable
  */
+export {SharedAPI}
 @element
-export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
+class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
 	/** @deprecated use `.defineElement()` instead */
 	static define(name?: string) {
 		this.defineElement(name)
@@ -100,7 +103,7 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	/**
 	 * @property {boolean} glLoaded
 	 *
-	 * *readonly*, *reactive*
+	 * *readonly*, *signal*
 	 *
 	 * Returns a boolean indicating whether or not the WebGL rendering features
 	 * of a LUME element are loaded and ready.
@@ -124,7 +127,7 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	/**
 	 * @property {boolean} cssLoaded
 	 *
-	 * *readonly*, *reactive*
+	 * *readonly*, *signal*
 	 *
 	 * Returns a boolean indicating whether or not the CSS rendering features
 	 * of a LUME element are loaded and ready.
@@ -147,12 +150,12 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 
 	// stores a ref to this element's root Scene when/if this element is
 	// in a scene.
-	@reactive _scene: Scene | null = null
+	@signal _scene: Scene | null = null
 
 	/**
 	 * @property {THREE.Scene} scene -
 	 *
-	 * *reactive*, *readonly*
+	 * *signal*, *readonly*
 	 *
 	 * The `<lume-scene>` that the element is a child or grandchild of, `null`
 	 * if the element is not a descendant of a Scene, `null` if the child is a
@@ -481,8 +484,8 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		Motor.needsUpdate(this)
 	}
 
-	@reactive _glLoaded = false
-	@reactive _cssLoaded = false
+	@signal _glLoaded = false
+	@signal _cssLoaded = false
 	__willBeRendered = false
 
 	get _elementOperations(): ElementOperations {
@@ -594,9 +597,15 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	_loadGL(): boolean {
+		console.log(
+			' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI _loadGL???',
+			this.scene,
+			this.scene?.webgl,
+		)
 		if (!(this.scene && this.scene.webgl)) return false
 
 		if (this._glLoaded) return false
+		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI _loadGL!!!')
 
 		// create the object in case it isn't already (via the getter)
 		const three = this.three
@@ -635,9 +644,11 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	_loadCSS(): boolean {
+		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load CSS??')
 		if (!(this.scene && this.scene.enableCss)) return false
 
 		if (this._cssLoaded) return false
+		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load CSS!!')
 
 		// create the object in case it isn't already (via the getter)
 		const threeCSS = this.threeCSS
@@ -665,42 +676,57 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		return true
 	}
 
+	// This is meant to be called in a non-reactive way (untracked) here, and in
+	// Scene. It is designed to be a one-way thing: create GL once, then destroy
+	// GL once.
 	_triggerLoadGL(): void {
-		if (!this._loadGL()) return
+		untrack(() => {
+			console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load GL???')
+			if (!this._loadGL()) return
 
-		this.emit(Events.BEHAVIOR_GL_LOAD, this)
+			this.emit(Events.BEHAVIOR_GL_LOAD, this)
+			console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load GL!!')
 
-		queueMicrotask(async () => {
-			// FIXME Can we get rid of the code deferral here? Without the
-			// deferral of a total of three microtasks, then GL_LOAD may
-			// fire before behaviors have loaded GL (when their
-			// connectedCallbacks fire) due to ordering of when custom
-			// elements and element-behaviors life cycle methods fire, and
-			// thus the user code that relies on GL_LOAD will modify
-			// Three.js object properties and then once the behaviors load
-			// the behaviors overwrite the users' values.
-			await null
-			await null
+			queueMicrotask(async () => {
+				// FIXME Can we get rid of the code deferral here? Without the
+				// deferral of a total of three microtasks, then GL_LOAD may
+				// fire before behaviors have loaded GL (when their
+				// connectedCallbacks fire) due to ordering of when custom
+				// elements and element-behaviors life cycle methods fire, and
+				// thus the user code that relies on GL_LOAD will modify
+				// Three.js object properties and then once the behaviors load
+				// the behaviors overwrite the users' values.
+				await null
+				await null
 
-			this.emit(Events.GL_LOAD, this)
+				this.emit(Events.GL_LOAD, this)
+			})
 		})
 	}
 
 	_triggerUnloadGL(): void {
-		if (!this._unloadGL()) return
-		this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
-		queueMicrotask(() => this.emit(Events.GL_UNLOAD, this))
+		// CONTINUE document why untrack here?
+		untrack(() => {
+			if (!this._unloadGL()) return
+
+			this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
+			queueMicrotask(() => this.emit(Events.GL_UNLOAD, this))
+		})
 	}
 
 	_triggerLoadCSS(): void {
-		if (!this._loadCSS()) return
+		untrack(() => {
+			if (!this._loadCSS()) return
 
-		this.emit(Events.CSS_LOAD, this)
+			this.emit(Events.CSS_LOAD, this)
+		})
 	}
 
 	_triggerUnloadCSS(): void {
-		if (!this._unloadCSS()) return
-		this.emit(Events.CSS_UNLOAD, this)
+		untrack(() => {
+			if (!this._unloadCSS()) return
+			this.emit(Events.CSS_UNLOAD, this)
+		})
 	}
 
 	/**
@@ -863,7 +889,7 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	/**
 	 * @property {number} version -
 	 *
-	 * `reactive`
+	 * `signal`
 	 *
 	 * Default: `0`
 	 *
@@ -871,7 +897,7 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	 * animation frame. Any time this changes, it means the underlying Three.js
 	 * world matrices for this element and its sub tree have been calculated.
 	 */
-	@reactive version = 0
+	@signal version = 0
 
 	updateWorldMatrices(traverse = true): void {
 		this.three.updateWorldMatrix(false, false)
@@ -882,7 +908,8 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 
 		if (traverse) this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(false), false)
 
-		this.version++
+		// CONTINUE find more accidental effect triggers/loops. f.e. shadow dom example is looping for some reason
+		untrack(() => this.version++)
 	}
 
 	/**

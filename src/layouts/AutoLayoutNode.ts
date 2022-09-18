@@ -19,7 +19,7 @@
 // re-use in multiple layouts.
 // - Allow visual-format to be fetch by path (like img src attribute).
 
-import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
+import AutoLayout from '@lume/autolayout/dist/AutoLayout.js'
 import {attribute, element} from '@lume/element'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
@@ -45,8 +45,9 @@ export type AutoLayoutNodeAttributes = Element3DAttributes | 'visualFormat'
  * An Element3D that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
+export {AutoLayoutNode}
 @element('lume-autolayout-node', autoDefineElements)
-export class AutoLayoutNode extends Element3D {
+class AutoLayoutNode extends Element3D {
 	static DEFAULT_PARSE_OPTIONS = {
 		extended: true,
 		strict: false,
@@ -370,7 +371,7 @@ export class AutoLayoutNode extends Element3D {
 
 import type {ElementAttributes} from '@lume/element'
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-autolayout-node': ElementAttributes<AutoLayoutNode, AutoLayoutNodeAttributes>

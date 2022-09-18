@@ -1,4 +1,4 @@
-import {autorun} from '@lume/element'
+import {createEffect, createRoot} from 'solid-js'
 import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
 import {defineElements} from '../index.js'
@@ -32,10 +32,15 @@ describe('SharedAPI', () => {
 
 			// It is reactive
 			let count = 0
-			const stop = autorun(() => {
-				count++
-				if (count === 1) expect(n.scene).toBe(null)
-				else if (count === 2) expect(n.scene).toBe(scene)
+			// CONTINUE switched from variable to solid/classy-solid, make sure it works
+			const stop = createRoot(stop => {
+				createEffect(() => {
+					count++
+					if (count === 1) expect(n.scene).toBe(null)
+					else if (count === 2) expect(n.scene).toBe(scene)
+				})
+
+				return stop
 			})
 
 			await Promise.resolve() // allow MutationObserver to operate first.

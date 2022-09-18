@@ -1,7 +1,7 @@
-import {Class, Mixin} from 'lowclass'
-export {Class, Mixin}
 export * from '@lume/element'
-export * from '@lume/element/dist/html.js'
+export * from 'solid-js'
+export {default as html} from 'solid-js/html'
+export {render} from 'solid-js/web'
 
 export * from './behaviors/index.js'
 export * from './cameras/index.js'

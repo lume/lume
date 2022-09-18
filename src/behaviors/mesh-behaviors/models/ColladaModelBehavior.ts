@@ -1,16 +1,19 @@
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import {ColladaLoader, Collada} from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
-@reactive
-export class ColladaModelBehavior extends RenderableBehavior {
+export {ColladaModelBehavior}
+@behavior
+class ColladaModelBehavior extends RenderableBehavior {
 	/** Path to a .dae file. */
-	@stringAttribute('') src = ''
+	@stringAttribute @receiver src = ''
 
 	loader?: ColladaLoader
 	model?: Collada

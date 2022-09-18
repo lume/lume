@@ -1,6 +1,9 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
+		// CONTINUE this is not working, see src/test.tsx
+		"jsxImportSource": "solid-js", // TODO move to lume/cli
+
 		// Good practice: start with 'types' empty, then add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
 

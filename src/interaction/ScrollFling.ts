@@ -1,5 +1,5 @@
 import {createSignal, untrack} from 'solid-js'
-import {reactive} from '@lume/element'
+import {reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
@@ -9,21 +9,26 @@ type ScrollFlingOptions = Partial<
 	Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'scrollFactor'>
 >
 
+// @ts-ignore
+window.debug = true
+
+export {ScrollFling}
 @reactive
-export class ScrollFling {
+class ScrollFling {
 	/**
-	 * During scroll, this value will change. It is reactive so that it can be
+	 * During scroll, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
 	 * value.
 	 */
-	@reactive x = 0
+	@signal x = 0
 
 	/**
-	 * During scroll, this value will change. It is reactive so that it can be
+	 * During scroll, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
 	 * value.
 	 */
-	@reactive y = 0
+	// @signal y = 0
+	@signal y = 0.0000123 // CONTINUE debug why a close-to-zero number has no issue, while zero does.
 
 	minX = -Infinity
 	maxX = Infinity
@@ -46,6 +51,7 @@ export class ScrollFling {
 	}
 
 	constructor(options: ScrollFlingOptions) {
+		console.log('initial scroll fling y', options.y)
 		Object.assign(this, options)
 	}
 
@@ -99,3 +105,6 @@ export class ScrollFling {
 		return this
 	}
 }
+
+// @ts-ignore
+window.debug = false

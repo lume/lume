@@ -1,7 +1,5 @@
 import {defineElements} from '../defineElements.js'
 
-// import type {ElementWithBehaviors} from 'element-behaviors'
-
 defineElements()
 
 describe('DefaultBehaviors', () => {

@@ -3,7 +3,9 @@ import {ProjectedMaterial} from '@lume/three-projected-material/dist/ProjectedMa
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
 import {onCleanup, createEffect} from 'solid-js'
 import {Texture} from 'three/src/textures/Texture.js'
-import {stringAttribute, reactive} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {PhysicalMaterialBehavior, PhysicalMaterialBehaviorAttributes} from './PhysicalMaterialBehavior.js'
 import {TextureProjector} from '../../../textures/TextureProjector.js'
 
@@ -20,8 +22,9 @@ export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttrib
  *
  * @extends PhysicalMaterialBehavior
  */
-@reactive
-export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
+export {ProjectedMaterialBehavior}
+@behavior
+class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	#projectedTextures: Array<TextureProjector> = []
 	#rawProjectedTextures: string | Array<TextureProjector | string> = []
 
@@ -61,7 +64,8 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 * either in the top level document, in a ShadowRoot, or distributed to a
 	 * slot in a ShadowRoot).
 	 */
-	@stringAttribute('')
+	@stringAttribute
+	@receiver
 	get projectedTextures(): Array<TextureProjector> {
 		return this.#projectedTextures
 	}

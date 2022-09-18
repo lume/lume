@@ -1,6 +1,6 @@
-import {createEffect, createRoot, on} from 'solid-js'
-import {reactive} from '@lume/variable'
-import {attribute, untrack, element} from '@lume/element'
+import {createEffect, createRoot, on, untrack} from 'solid-js'
+import {signal} from 'classy-solid'
+import {attribute, element} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
@@ -34,8 +34,9 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // Sizeable and its subclass Transformable extend from TreeNode because they know
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
+export {Sizeable}
 @element
-export class Sizeable extends CompositionTracker(TreeNode) {
+class Sizeable extends CompositionTracker(TreeNode) {
 	constructor() {
 		super()
 
@@ -48,7 +49,7 @@ export class Sizeable extends CompositionTracker(TreeNode) {
 		})
 	}
 
-	@reactive __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+	@signal __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
 	 * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
@@ -128,7 +129,7 @@ export class Sizeable extends CompositionTracker(TreeNode) {
 	/**
 	 * @property {{x: number, y: number, z: number}} calculatedSize -
 	 *
-	 * *readonly*, *reactive*
+	 * *readonly*, *signal*
 	 *
 	 * Get the actual size of an element as an object with `x`, `y`, and `z`
 	 * properties, each property containing the computed size along its
@@ -161,7 +162,7 @@ export class Sizeable extends CompositionTracker(TreeNode) {
 	/**
 	 * @property {{x: number, y: number, z: number}} parentSize
 	 *
-	 * *reactive* *readonly*
+	 * *signal* *readonly*
 	 *
 	 * Returns an object with `x`, `y`, and `z` properties containing the size
 	 * dimensions of the composed LUME parent. If there is no composed LUME

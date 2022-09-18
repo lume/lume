@@ -1,12 +1,14 @@
 import 'element-behaviors'
 import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
-import {reactive, attribute, booleanAttribute, stringAttribute} from '../../attribute.js'
+import {attribute, booleanAttribute, stringAttribute} from '@lume/element'
 import {Scene} from 'three/src/scenes/Scene.js'
 import {DRACOLoader} from '../../../lib/three/examples/jsm/loaders/DRACOLoader.js'
 import {GLTFLoader, GLTF} from '../../../lib/three/examples/jsm/loaders/GLTFLoader.js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../../utils/three.js'
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -21,25 +23,32 @@ let dracoLoaders = new Map<string, {count: number; dracoLoader: DRACOLoader}>()
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
-@reactive
-export class GltfModelBehavior extends RenderableBehavior {
+export {GltfModelBehavior}
+@behavior
+class GltfModelBehavior extends RenderableBehavior {
 	/** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
-	@attribute src: string | null = ''
+	@attribute @receiver src: string | null = ''
 
 	/**
-	 * @attribute
-	 * @property {string | null} dracoDecoder - Path to the draco decoder that
+	 * @property {string | null} dracoDecoder -
+	 *
+	 * `attribute`
+	 *
+	 * Path to the draco decoder that
 	 * will unpack decode compressed assets of the GLTF file. This does not need
 	 * to be supplied unless you explicitly know you need it.
 	 */
-	@stringAttribute(defaultDracoDecoder) dracoDecoder = defaultDracoDecoder
+	@stringAttribute @receiver dracoDecoder = defaultDracoDecoder
 
 	/**
-	 * @attribute
-	 * @property {boolean} centerGeometry - When `true`, all geometry of the
+	 * @property {boolean} centerGeometry -
+	 *
+	 * `attribute`
+	 *
+	 * When `true`, all geometry of the
 	 * loaded model will be centered at the local origin.
 	 */
-	@booleanAttribute(false) centerGeometry = false
+	@booleanAttribute @receiver centerGeometry = false
 
 	gltfLoader?: GLTFLoader
 	model: GLTF | null = null

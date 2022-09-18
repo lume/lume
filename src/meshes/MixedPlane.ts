@@ -31,8 +31,9 @@ export type MixedPlaneAttributes = MeshAttributes
  *
  * @extends Mesh
  */
+export {MixedPlane}
 @element('lume-mixed-plane', autoDefineElements)
-export class MixedPlane extends Mesh {
+class MixedPlane extends Mesh {
 	static override defaultBehaviors = {
 		'mixedplane-geometry': (initialBehaviors: any) => {
 			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
@@ -52,7 +53,7 @@ export class MixedPlane extends Mesh {
 	}
 }
 
-declare module '@lume/element' {
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-mixed-plane': JSX.IntrinsicElements['lume-mesh']
