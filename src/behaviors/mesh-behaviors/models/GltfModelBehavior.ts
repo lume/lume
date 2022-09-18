@@ -7,7 +7,7 @@ import {GLTFLoader, GLTF} from '../../../lib/three/examples/jsm/loaders/GLTFLoad
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../../utils/three.js'
-import {Events} from '../../../core/Events.js'
+import {Events, ModelLoadEvent} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 /**
@@ -113,7 +113,9 @@ export class GltfModelBehavior extends RenderableBehavior {
 		this.gltfLoader!.load(
 			src,
 			model => version == this.#version && this.#setModel(model),
-			progress => version == this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version == this.#version && this.#onError(error),
 		)
 	}
@@ -126,6 +128,19 @@ export class GltfModelBehavior extends RenderableBehavior {
 		const err = error instanceof ErrorEvent && error.error ? error.error : error
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(
+			error instanceof ErrorEvent
+				? error
+				: new ErrorEvent(
+						'error',
+						error instanceof Error
+							? {
+									error,
+									message: error.message,
+							  }
+							: {},
+				  ),
+		)
 	}
 
 	#setModel(model: GLTF) {
@@ -142,6 +157,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
+		this.element.dispatchEvent(new ModelLoadEvent('modelload', {format: 'gltf', model}))
 		this.element.needsUpdate()
 	}
 }

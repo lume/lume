@@ -159,6 +159,10 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 		this.#observer.observe(this.element.getRootNode(), {childList: true, subtree: true})
 
+		// FIXME every time `src` is empty, a setInterval loop is leaked by
+		// three-projected-texture because the texture never loads. Needs cleanup
+		// on texture change.
+
 		this._handleTexture(
 			() => this.projectedTextures[0]?.src ?? '',
 			(mat, tex) => (mat.texture = tex || new Texture()),

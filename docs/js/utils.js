@@ -63,8 +63,16 @@ const projectedTextureExample = stripIndent(html`
 	<lume-scene id="scene" perspective="800" webgl shadowmap-type="pcfsoft">
 		<lume-ambient-light color="white" intensity="0.4"></lume-ambient-light>
 
-		<lume-camera-rig active initial-polar-angle="30" initial-distance="400" max-distance="7000" min-distance="100">
+		<lume-camera-rig
+			id="cam"
+			active
+			initial-polar-angle="30"
+			initial-distance="400"
+			max-distance="7000"
+			min-distance="100"
+		>
 			<lume-point-light
+				id="light"
 				position="200 -200 200"
 				intensity="0.6"
 				color="white"
@@ -113,13 +121,14 @@ const projectedTextureExample = stripIndent(html`
 						receive-shadow="false"
 						visible="false"
 					>
-						<lume-sphere size="5" color="yellow" align-point="0.5 0.5"></lume-sphere>
+						<lume-sphere id="sphere" size="5" color="yellow" align-point="0.5 0.5"></lume-sphere>
 					</lume-box>
 				</lume-texture-projector>
 			</lume-element3d>
 		</lume-element3d>
 
 		<lume-plane
+			id="floor"
 			has="projected-material"
 			projected-textures="#projectedTexture"
 			size="800 800"

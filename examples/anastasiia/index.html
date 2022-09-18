@@ -1,0 +1,75 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;700&display=swap" />
+
+<link rel="stylesheet" href="./font/font.css" />
+
+<script src="../wrapper.js" title="Anastasiia"></script>
+
+<style>
+	:root {
+		--scale: 0.5;
+		--purple: #8145bf;
+	}
+
+	body {
+		color: white;
+		background: #532c79;
+		font-size: 10px;
+	}
+</style>
+
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+
+<script>
+	LUME.defineElements()
+</script>
+<script src="./elements/MenuBtn.js"></script>
+<script src="./elements/Featured.js"></script>
+<script src="./elements/Layout.js"></script>
+<script src="./elements/Menu.js"></script>
+<script src="./elements/Content.js"></script>
+<script src="./elements/SkillsBanner.js"></script>
+<script src="./elements/Hero.js"></script>
+
+<lume-scene id="scene" size-mode="l p" size="1000 1" perspective="1200" touch-action="none" webgl="false">
+	<lume-ambient-light color="white" intensity="0.2"></lume-ambient-light>
+
+	<lume-point-light
+		id="pointlight"
+		position="200 -200 200"
+		intensity="0.1"
+		color="white"
+		slot="camera-child"
+		shadow-map-width="2048"
+		shadow-map-height="2048"
+		shadow-radius="2"
+		distance="800"
+		shadow-bias="-0.001"
+	></lume-point-light>
+
+	<av-layout id="layout" size="1 1" size-mode="p p">
+		<!-- Slideout Menu ###############################################################################################-->
+		<av-menu id="menu" slot="menu" size-mode="p p" size="1 1"></av-menu>
+
+		<!-- Main Content ###############################################################################################-->
+		<av-content slot="content" size-mode="p p" size="1 1"></av-content>
+	</av-layout>
+</lume-scene>
+
+<script type="module">
+	// import yoga from 'https://jspm.dev/yoga-layout'
+	// import * as THREE from 'https://unpkg.com/three@0.145.0/build/three.module.js'
+
+	// import './MenuBtn.js' // doesn't work, loaded via script tag instead
+
+	// LUME.defineElements()
+
+	menu.layout = layout
+
+	// Light ////////////////////////////////////////////////////////////////////////
+
+	document.addEventListener('pointermove', event => {
+		pointlight.position.set(event.clientX, event.clientY)
+	})
+</script>

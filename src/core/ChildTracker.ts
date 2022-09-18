@@ -46,13 +46,19 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 
 		override connectedCallback() {
 			super.connectedCallback?.()
-			if (this.syncChildCallbacks) this.#runChildConnectedCallbacks()
+			if (this.syncChildCallbacks) {
+				this.#runChildConnectedCallbacks()
+				// queueMicrotask(() => this.#runChildConnectedCallbacks())
+			}
 			this.#createObserver()
 		}
 
 		override disconnectedCallback() {
 			super.disconnectedCallback?.()
-			if (this.syncChildCallbacks) this.#runChildDisconnectedCallbacks()
+			if (this.syncChildCallbacks) {
+				this.#runChildDisconnectedCallbacks()
+				// queueMicrotask(() => this.#runChildDisconnectedCallbacks())
+			}
 			this.#destroyObserver()
 		}
 
@@ -71,7 +77,12 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 		#awaitedChildren = new Set<Element>()
 
 		#runChildConnectedCallbacks() {
-			for (let el = this.firstElementChild; el; el = el.nextElementSibling) this.#runChildConnect(el)
+			console.log('RUN CHILD CONNECTED CALLBACKS', this.id)
+
+			for (let el = this.firstElementChild; el; el = el.nextElementSibling) {
+				console.log('   CHILD CONNECTED CALLBACK for CHILD', el.id)
+				this.#runChildConnect(el)
+			}
 		}
 
 		#runChildConnect(child: Element) {
@@ -93,7 +104,12 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		#runChildDisconnectedCallbacks() {
-			for (let el = this.firstElementChild; el; el = el.nextElementSibling) this.#runChildDisconnect(el)
+			console.log('RUN CHILD DISCONNECTED CALLBACKS', this.id)
+
+			for (let el = this.firstElementChild; el; el = el.nextElementSibling) {
+				console.log('   CHILD DISCONNECTED CALLBACK for CHILD', el.id)
+				this.#runChildDisconnect(el)
+			}
 		}
 
 		#runChildDisconnect(child: Element) {
@@ -105,6 +121,8 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 		#unobserveChildren: (() => void) | null = null
 
 		#createObserver() {
+			console.log('Create Child Observer', this.id)
+
 			if (this.#unobserveChildren) return
 
 			// observeChildren returns a MutationObserver observing childList
@@ -123,6 +141,8 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 		}
 
 		#destroyObserver() {
+			console.log('Destroy Child Observer', this.id)
+
 			if (!this.#unobserveChildren) return
 			this.#unobserveChildren()
 			this.#unobserveChildren = null

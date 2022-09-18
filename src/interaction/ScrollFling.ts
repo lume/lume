@@ -4,6 +4,7 @@ import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
 import type {RenderTask} from '../core/index.js'
+import {untrack} from 'solid-js'
 
 type ScrollFlingOptions = Partial<
 	Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'scrollFactor'>
@@ -47,6 +48,8 @@ export class ScrollFling {
 
 	constructor(options: ScrollFlingOptions) {
 		Object.assign(this, options)
+		// untrack(() => console.log('ScrollFling constructor -----> ', this.y))
+		// debugger
 	}
 
 	#onWheel = (event: WheelEvent) => {
@@ -77,6 +80,8 @@ export class ScrollFling {
 	}
 
 	start(): this {
+		// untrack(() => console.log('ScrollFling start -----> ', this.y))
+
 		if (untrack(this.#isStarted.get)) return this
 		this.#isStarted.set(true)
 
@@ -95,6 +100,8 @@ export class ScrollFling {
 
 		// @ts-expect-error, whyyyyy TypeScript
 		this.target.removeEventListener('wheel', this.#onWheel)
+
+		// untrack(() => console.log('ScrollFling stop -----> ', this.y))
 
 		return this
 	}

@@ -114,6 +114,7 @@ export class CSS3DRendererNested {
 
 			// if ( cachedStyle === undefined || cachedStyle !== style ) { // BUG, https://github.com/mrdoob/three.js/pull/15470
 			if (cachedStyle === undefined || cachedStyle.style !== style) {
+				// TODO use CSSOM for speed in production, style attribute in dev mode
 				element.style.transform = style
 
 				const objectData = {style: style}

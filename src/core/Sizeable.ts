@@ -1,4 +1,6 @@
 import {createEffect, createRoot, on, untrack} from 'solid-js'
+// TODO use @signal from classy-solid, but first make @signal have a
+// non-deferred option for easy migration to it.
 import {attribute, element, reactive} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'

@@ -126,6 +126,14 @@ export class WebglRendererThree {
 	}
 
 	drawScene(scene: Scene) {
+		// console.log(
+		// 	'draw scene. camera details: fov: ',
+		// 	scene.threeCamera.fov,
+		// 	'aspect:',
+		// 	scene.threeCamera.aspect,
+		// 	'zoom:',
+		// 	scene.threeCamera.zoom,
+		// )
 		const sceneState = this.sceneStates.get(scene)
 
 		if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
@@ -158,6 +166,23 @@ export class WebglRendererThree {
 
 			const {x, y} = scene.calculatedSize
 			state.renderer.setSize(x, y)
+
+			// state.renderer.setViewport(
+			// 	state.renderer.getContext().drawingBufferWidth,
+			// 	state.renderer.getContext().drawingBufferHeight,
+			// )
+
+			// console.log(
+			// 	' ----------------- canvas CSS size:',
+			// 	state.renderer.domElement.width,
+			// 	state.renderer.domElement.height,
+			// 	'renderer scene GL buffer size:',
+			// 	state.renderer.getContext().drawingBufferWidth,
+			// 	state.renderer.getContext().drawingBufferHeight,
+			// 	state.renderer.domElement.getContext('webgl2')!.drawingBufferWidth,
+			// 	state.renderer.domElement.getContext('webgl2')!.drawingBufferHeight,
+			// )
+
 			scene.needsUpdate()
 		}, false)
 	}

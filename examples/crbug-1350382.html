@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>Anastasiia</title>
+	</head>
+	<body>
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				background: #222;
+				touch-action: none;
+				overflow: hidden;
+			}
+
+			lume-autolayout > lume-element3d {
+				border: 5px solid deeppink;
+			}
+		</style>
+
+		<lume-scene id="scene" perspective="800" webgl>
+			<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+			<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
+
+			<lume-slideout size="1 1" size-mode="proportional proportional">
+				<lume-autolayout
+					visual-format="
+						V:|-[one(three)]-[three]-|
+						V:|-[two(four)]-[four]-|
+						V:[five(four)]-|
+						|-[one(two)]-[two]-|
+						|-[three(four,five)]-[four]-[five]-|
+					"
+					size="1 1"
+					size-mode="proportional proportional"
+					slot="content"
+				>
+					<lume-element3d size="1 1" size-mode="proportional proportional" slot="one"></lume-element3d>
+					<lume-element3d size="1 1" size-mode="proportional proportional" slot="two"></lume-element3d>
+					<lume-element3d size="1 1" size-mode="proportional proportional" slot="three"></lume-element3d>
+					<lume-element3d size="1 1" size-mode="proportional proportional" slot="four"></lume-element3d>
+					<lume-element3d size="1 1" size-mode="proportional proportional" slot="five"></lume-element3d>
+				</lume-autolayout>
+			</lume-slideout>
+		</lume-scene>
+
+		<!-- <script src="https://assets.codepen.io/191583/lume-global-crbug-1350382.js"></script> -->
+		<script src="./global.js"></script>
+		<script>
+			LUME.defineElements()
+		</script>
+	</body>
+</html>

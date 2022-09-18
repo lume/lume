@@ -44,8 +44,11 @@ export class XYZNumberValues extends XYZValues<number> {
 	override checkValue(prop: 'x' | 'y' | 'z', value: number) {
 		if (!super.checkValue(prop, value)) return false
 
+		// TODO don't accept undefined values, but instead skip setting undefined values higher up, f.e. in fromArray(), fromObject(), or set().
 		// Skip setting undefined values...
 		if (value === undefined) return false
+
+		// if (isNaN(value)) debugger
 
 		// ...but if a value is supplied, it needs to be a valid number (string number is ok).
 		if (!(typeof value === 'number') || isNaN(value) || !isFinite(value))

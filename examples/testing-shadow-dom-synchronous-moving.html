@@ -1,0 +1,111 @@
+<script src="./wrapper.js"></script>
+
+<lume-scene id="scene" webgl>
+	<lume-camera-rig
+		active
+		initial-distance="200"
+		max-distance="1700"
+		min-distance="100"
+		align-point="0.5 0.5"
+	></lume-camera-rig>
+
+	<lume-box
+		id="zero"
+		has="basic-material"
+		color="teal"
+		rotation="10 10 10"
+		position="10 10"
+		mount-point="0.5 0.5 0.5"
+		align-point="0.5 0.5"
+		size="10 10 10"
+	>
+		<lume-box
+			id="one"
+			has="basic-material"
+			color="pink"
+			rotation="10 10 10"
+			position="25 40"
+			mount-point="0.5 0.5 0.5"
+			align-point="0.5 0.5"
+			size="20 20 20"
+		>
+			<lume-box
+				id="two"
+				has="basic-material"
+				color="skyblue"
+				rotation="10 10 10"
+				position="-50 -50"
+				mount-point="0.5 0.5 0.5"
+				align-point="0.5 0.5"
+				size="30 30 30"
+			>
+				<lume-box
+					id="three"
+					has="basic-material"
+					color="orange"
+					rotation="10 10 10"
+					position="25 -75"
+					mount-point="0.5 0.5 0.5"
+					align-point="0.5 0.5"
+					size="40 40 40"
+				></lume-box>
+			</lume-box>
+		</lume-box>
+	</lume-box>
+</lume-scene>
+
+<script>
+	LUME.defineElements()
+
+	document.addEventListener('click', () => {
+		console.log('click')
+		queueMicrotask(() => console.log('MICROTASK ------------------------------- '))
+
+		// const box = one
+		// box.remove()
+		// zero.append(box)
+
+		// zero.append(two)
+
+		// BROKEN
+		// const twoo = two
+		// two.remove()
+		// zero.append(twoo)
+
+		// BROKEN
+		const t = three
+		t.remove()
+		one.append(t)
+
+		// WORKS
+		// const t = three
+		// t.remove()
+		// setTimeout(() => one.append(t))
+
+		// WORKS
+		// const twoo = two
+		// two.remove()
+		// setTimeout(() => zero.append(twoo))
+
+		// WORKS
+		// const twoo = two
+		// two.remove()
+		// queueMicrotask(() => zero.append(twoo))
+
+		// const {html} = LUME
+		// const el = html`
+		// 	<lume-box
+		// 		id="four"
+		// 		has="basic-material"
+		// 		color="red"
+		// 		rotation="10 10 10"
+		// 		position="-50 -50"
+		// 		mount-point="0.5 0.5 0.5"
+		// 		align-point="0.5 0.5"
+		// 		size="50 50 50"
+		// 	></lume-box>
+		// `
+		// zero.append(el)
+		// el.remove()
+	})
+</script>

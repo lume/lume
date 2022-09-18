@@ -30,8 +30,14 @@ const appliedPosition = [0, 0, 0]
 
 const elOps = new WeakMap<SharedAPI, ElementOperations>()
 
-const ourThreeObjects = new WeakSet<Object3D>()
-const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
+// const threeObjectsToElements = new WeakSet<Object3D>()
+const threeObjectsToElements = new WeakMap<Object3D, SharedAPI>()
+const isManagedByUs = (obj: Object3D) => threeObjectsToElements.has(obj)
+
+export const getElementFromThree = (obj: Object3D) => {
+	if (!threeObjectsToElements.has(obj)) return null
+	return threeObjectsToElements.get(obj)
+}
 
 class GLEffects extends Effectful(Object) {}
 class CSSEffects extends Effectful(Object) {}
@@ -198,6 +204,9 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	get three(): ReturnType<this['makeThreeObject3d']> {
 		if (!this.__three) this.__three = this.__makeThreeObject3d()
 
+		// const obj = this.__three
+		// if (this.tagName === 'LUME-SPHERE') console.log('ARG', obj.geometry)
+
 		return this.__three
 	}
 
@@ -206,14 +215,14 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		// Helpful for debugging when looking in devtools.
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`
-		ourThreeObjects.add(o)
+		threeObjectsToElements.set(o, this)
 		return o
 	}
 
 	__disposeThree() {
 		if (!this.__three) return
 		disposeObject(this.__three)
-		ourThreeObjects.delete(this.__three)
+		threeObjectsToElements.delete(this.__three)
 		this.__three = undefined
 	}
 
@@ -255,14 +264,14 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`
-		ourThreeObjects.add(o)
+		threeObjectsToElements.set(o, this)
 		return o
 	}
 
 	__disposeThreeCSS() {
 		if (!this.__threeCSS) return
 		disposeObject(this.__threeCSS)
-		ourThreeObjects.delete(this.__threeCSS)
+		threeObjectsToElements.delete(this.__threeCSS)
 		this.__threeCSS = undefined
 	}
 
@@ -282,8 +291,26 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		if (children && children.length) this.threeCSS.add(...children)
 	}
 
+	// #previousParent: Element | null = null
+	#reconnectedInSameTask = false
+
 	override connectedCallback() {
+		if (this.tagName.includes('SPHERE')) console.log('composition: connected', this)
+		console.log(' ---- connected', this.id)
+
 		super.connectedCallback()
+
+		// If reconnected right away in the same task (f.e. moving elements around synchronously)
+		if (this.#reconnectedInSameTask) {
+			// if (this.#previousParent !== this.parentElement) {
+			// 	console.log('     re-parented, unload and reload', this.id)
+			// 	this.__unloadThree(this)
+			// 	this.__loadThree(this)
+			// }
+		} else {
+		}
+
+		// this.#previousParent = this.parentElement
 
 		this.createEffect(() => {
 			// if (this.id === 'one' && this.scene) debugger
@@ -348,9 +375,42 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	override disconnectedCallback(): void {
+		if (this.tagName.includes('SPHERE')) console.log('composition: disconnected', this)
+		console.log(' ---- disconnected', this.id)
+
 		super.disconnectedCallback()
 
-		this.__unloadThree(this)
+		this.#reconnectedInSameTask = true
+
+		// const prevParent = this.#previousParent
+
+		queueMicrotask(() => {
+			this.#reconnectedInSameTask = false
+
+			console.log('  -- disconnected microtask', this.id)
+
+			// if (!this.isConnected) {
+			// 	console.log('     disconnected, unload', this.id)
+			// 	// if not connected, unload regardless if parent or no parent.
+			// 	this.__unloadThree(this)
+			// } else {
+			// 	if (prevParent !== this.parentElement) {
+			// 		console.log('     re-parented, unload and reload', this.id)
+			// 		// reconnected to a new parent, unload/reload to reparent
+			// 		this.__unloadThree(this)
+			// 		this.__loadThree(this)
+			// 	} else {
+			// 		console.log('     reconnected to same parent, nothing to do', this.id)
+			// 		// nothing to do, reconnected to the same parent, keep things loaded
+			// 	}
+			// }
+		})
+
+		if (this.id === 'one') {
+			// console.log('set this._scene null')
+			// debugger
+		}
+
 		this._scene = null
 	}
 
@@ -371,7 +431,10 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	override childComposedCallback(child: Element, _compositionType: CompositionType): void {
 		if (!(child instanceof SharedAPI)) return
 
-		this.needsUpdate() // TODO needed??????? No harm in adding an extra call.
+		if (child.tagName.includes('SPHERE')) console.log('composition: child composed', this, child)
+		console.log('   - composed', child.id)
+
+		// this.needsUpdate() // TODO needed??????? No harm in adding an extra call.
 
 		// This code may run during a super constructor (f.e. while constructing
 		// a Scene and it calls `super()`), therefore a Scene's _scene property
@@ -379,27 +442,49 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		// an alternative.
 		const scene = this._scene ?? (isScene(this) && this)
 
-		if (scene) this.__giveSceneToChildrenAndLoadThree(child, scene)
+		console.log('give scene to children?')
+		if (scene) {
+			this.__giveSceneToChildrenAndLoadThree(child, scene)
+		} else {
+			console.log('no')
+			debugger
+		}
 	}
 
 	override childUncomposedCallback(child: Element, _compositionType: CompositionType): void {
 		if (!(child instanceof SharedAPI)) return
 
+		if (child.tagName.includes('SPHERE')) console.log('composition: child uncomposed', this, child)
+		console.log('   - uncomposed', child.id)
+
 		// Update the parent because the child is gone, but the scene needs a
 		// redraw, and we can't update the child because it is already gone.
 		this.needsUpdate()
 
+		console.log('######## uncomposed, traverse children', child.id)
+
+		// PREVIOUS
+		// this.__unloadThree(child)
+		// child._scene = null
+
+		// NEW
 		if (this._scene) {
 			child.traverseSceneGraph(el => {
+				console.log(' ####### traversed child', el.id)
+
 				this.__unloadThree(el)
 				el._scene = null
+				console.log('     set child._scene null', el.id)
 			})
 		}
 	}
 
 	__giveSceneToChildrenAndLoadThree(el: SharedAPI, scene: Scene) {
 		el.traverseSceneGraph(child => {
-			if (el !== this) child._scene = scene
+			if (el !== this) {
+				console.log('     set child._scene to Scene', child.id)
+				child._scene = scene
+			}
 			this.__loadThree(child)
 		})
 	}
@@ -410,6 +495,9 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	__loadThree(el: SharedAPI): void {
+		console.log('     __loadThree', el.id)
+		// debugger
+
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
 		if (!isElement3D(el)) return
@@ -419,6 +507,8 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	__unloadThree(el: SharedAPI): void {
+		console.log('     __unloadThree', el.id)
+
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
 		if (!isElement3D(el)) return
@@ -534,7 +624,10 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	__connectThree(): void {
+		// TODO disconnect this.three manually here in case there is no composed parent, so it isn't left connected to a previous parent accidentally?
 		this.composedSceneGraphParent?.three.add(this.three)
+
+		// TODO manually clear children here in case any are stale from previous composed children?
 
 		// Although children connect themselves during __connectThree when
 		// triggered via _loadGL, we still need to do this in case a child is
@@ -905,6 +998,7 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	// Internal, this method is used by Motor.#updateElements().
+	// TODO perhaps move to Motor along with __willBeRendered?
 	__getNearestAncestorThatShouldBeUpdated(): SharedAPI | null {
 		let composedSceneGraphParent = this.composedSceneGraphParent
 
@@ -926,12 +1020,52 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		super.emit(eventName, data)
 	}
 
+	/// Moved from DeclarativeBase ////////////////////////////////////////////////////////
+
+	// This was an attempt to work around the issue with synchronous disconnect
+	// and reconnect not loading WebGL content, but that turned out to be the
+	// issue with MO that mutation ordering is unexpected:
+	// https://github.com/whatwg/dom/issues/1111
+	//
+	// This is probably not needed anymore, and instead we need to fix our MO
+	// implementation to ensure that reactions happen in correct order.  The
+	// testing-shadow-dom-synchronous-moving.html example has the examples that
+	// break. {{
+
+	// override childComposedCallback(child: Element, compositionType: CompositionType) {
+	// 	super.childComposedCallback?.(child, compositionType)
+
+	// 	console.log('CHILD COMPOSED', child.id)
+
+	// 	if (compositionType === 'actual' && child instanceof SharedAPI) {
+	// 		console.log('element connected, make it run child connected callbacks', child.id)
+	// 		child.#runChildConnectedCallbacks()
+	// 	}
+	// }
+
+	// override childUncomposedCallback(child: Element, compositionType: CompositionType) {
+	// 	super.childUncomposedCallback?.(child, compositionType)
+
+	// 	console.log('CHILD UNCOMPOSED', child.id)
+
+	// 	if (compositionType === 'actual' && child instanceof SharedAPI) {
+	// 		console.log('element disconnected, make it run child disconnected callbacks', child.id)
+	// 		child.#runChildDisconnectedCallbacks()
+	// 	}
+	// }
+
+	// }}
+
 	override childConnectedCallback(child: Element) {
+		console.log('CHILD CONNECTED', child.id)
+
 		// This code handles two cases: the element has a ShadowRoot
 		// ("composed children" are children of the ShadowRoot), or it has a
 		// <slot> child ("composed children" are elements that may be
 		// distributed to the <slot>).
 		if (isElement3D(child)) {
+			if (child.tagName.includes('SPHERE')) console.log('composition: child connected', this, child)
+
 			// We skip Scene here because we know it already has a
 			// ShadowRoot that serves a different purpose than for Element3Ds. A
 			// Scene child's three objects will always be connected to the
@@ -990,7 +1124,10 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	}
 
 	override childDisconnectedCallback(child: Element) {
+		console.log('CHILD DISCONNECTED', child.id)
+
 		if (isElement3D(child)) {
+			if (child.tagName.includes('SPHERE')) console.log('composition: child disconnected', this, child)
 			if (!this.isScene && this.__shadowRoot) {
 				child.__isPossiblyDistributedToShadowRoot = false
 			} else {

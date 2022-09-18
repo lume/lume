@@ -248,6 +248,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	}
 
 	override unloadGL() {
+		// TODO why is this needed?
 		if (!this.element.scene) return
 
 		refCount--

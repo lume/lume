@@ -114,18 +114,17 @@ export abstract class Behavior extends PropReceiver() {
 			await Promise.race([this.#whenDefined, new Promise(r => setTimeout(r, 1000))])
 
 			if (!this.#elementDefined) {
-				const errorMessage = `
-					Either the element you're using the behavior on
-					(<${element.tagName.toLowerCase()}>) is not an instance of one
-					of the allowed classes, or there was a 1-second timeout waiting
-					for the element to be defined. Please make sure all elements
-					you intend to use are defined. The allowed classes are:
-				`
-				queueMicrotask(() => console.error(errorMessage, classes))
-				throw new Error(`${errorMessage}
-
-					${classes}
-				`)
+				// const errorMessage = `
+				// 	Either the element you're using the behavior on
+				// 	(<${element.tagName.toLowerCase()}>) is not an instance of one
+				// 	of the allowed classes, or there was a 1-second timeout waiting
+				// 	for the element to be defined. Please make sure all elements
+				// 	you intend to use are defined. The allowed classes are:
+				// `
+				// queueMicrotask(() => console.error(errorMessage, classes))
+				// throw new Error(`${errorMessage}
+				// 	${classes}
+				// `)
 			}
 		} else {
 			const errorMessage = `

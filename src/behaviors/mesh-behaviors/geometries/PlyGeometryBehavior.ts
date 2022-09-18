@@ -2,7 +2,7 @@ import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
 import {PLYLoader} from '../../../lib/three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
-import {Events} from '../../../core/Events.js'
+import {Events, ModelLoadEvent} from '../../../core/Events.js'
 import {Points} from '../../../meshes/Points.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
@@ -99,7 +99,9 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		this.loader!.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -112,12 +114,26 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		const err = error instanceof ErrorEvent && error.error ? error.error : error
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(
+			error instanceof ErrorEvent
+				? error
+				: new ErrorEvent(
+						'error',
+						error instanceof Error
+							? {
+									error,
+									message: error.message,
+							  }
+							: {},
+				  ),
+		)
 	}
 
 	#setModel(model: BufferGeometry) {
 		model.computeVertexNormals()
 		this.model = model // triggers the resetMeshComponent effect
 		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
+		this.element.dispatchEvent(new ModelLoadEvent('modelload', {format: 'ply', model}))
 	}
 }
 

@@ -25,6 +25,8 @@ export type StandardMaterialBehaviorAttributes =
 
 @reactive
 export class StandardMaterialBehavior extends MaterialBehavior {
+	// TODO a way to get docs for properties from lume/glas once we switch from three.
+
 	// alphaMap?: Texture | null;
 	@stringAttribute('') aoMap = ''
 	@numberAttribute(1) aoMapIntensity = 1

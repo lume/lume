@@ -61,3 +61,21 @@ export function makeEnumFromClassProperties<T>(Class: Constructor<T>) {
 
 	return Object.freeze(Enum as {[k in keyof T]: k})
 }
+
+export class ModelLoadEvent extends Event {
+	model: Group | GLTF | Collada | BufferGeometry
+	format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply'
+
+	constructor(
+		type: string,
+		options: EventInit & {
+			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply'
+			model: Group | GLTF | Collada | BufferGeometry
+		},
+	) {
+		super(type, options)
+
+		this.format = options.format
+		this.model = options.model
+	}
+}

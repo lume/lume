@@ -70,8 +70,13 @@ class _Motor {
 	// An Element3D calls this any time its properties have been modified (f.e. by the end user).
 	needsUpdate(element: SharedAPI) {
 		// delete so it goes to the end
+		// TODO need this line? Reordering matters? Maybe only while in an
+		// animation frame, so modified element goes to the end and hence will be
+		// updated again if it was already passed in the update iteration.
+		// Come up with an example that breaks without this line.
 		if (this.#elementsToUpdate.has(element)) this.#elementsToUpdate.delete(element)
 
+		// console.log('set element to update', element)
 		this.#elementsToUpdate.add(element)
 
 		// noop if the loop's already started
@@ -163,7 +168,11 @@ class _Motor {
 	#updateElements(timestamp: number, deltaTime: number) {
 		if (this.#elementsToUpdate.size === 0) return
 
+		// console.log('elements to update:', [...this.#elementsToUpdate])
+
 		for (const el of this.#elementsToUpdate) {
+			// if (el.id === 'one') debugger
+
 			// Skip any element that no longer participates in rendering of a scene.
 			if (!el.scene) continue
 

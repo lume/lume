@@ -1,0 +1,45 @@
+<script src="./wrapper.js" title="square"></script>
+
+<!-- <lume-scene>
+	<lume-element3d size="100 100" align-point="0.5 0.5" mount-point="0.5 0.5"></lume-element3d>
+</lume-scene> -->
+
+<script>
+	LUME.defineElements()
+
+	// Both work now (2 didn't work before)
+	// makeScene1()
+	makeScene2()
+
+	function makeScene1() {
+		const {Node, Scene} = LUME
+
+		const scene = document.createElement('lume-scene')
+
+		const n = scene.appendChild(document.createElement('lume-element3d'))
+
+		n.alignPoint = [0.5, 0.5]
+		n.mountPoint = [0.5, 0.5]
+		n.size = [100, 100]
+		n.style = `border: 5px solid cyan`
+
+		document.body.append(scene)
+	}
+
+	function makeScene2() {
+		const {Node, Scene} = LUME
+
+		const scene = new Scene()
+
+		const n = scene.appendChild(
+			new Node().set({
+				alignPoint: [0.5, 0.5],
+				mountPoint: [0.5, 0.5],
+				size: [100, 100],
+				style: `border: 5px solid deeppink`,
+			}),
+		)
+
+		document.body.append(scene)
+	}
+</script>

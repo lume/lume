@@ -2,7 +2,7 @@ import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
 import {ColladaLoader, Collada} from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
-import {Events} from '../../../core/Events.js'
+import {Events, ModelLoadEvent} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
@@ -61,7 +61,9 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		this.loader!.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -74,12 +76,28 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		const err = error instanceof ErrorEvent && error.error ? error.error : error
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(
+			error instanceof ErrorEvent
+				? error
+				: new ErrorEvent(
+						'error',
+						// @ts-expect-error WHYYYYYYYYYYYYYYYYY TypeScript
+						error instanceof Error
+							? {
+									error,
+									// @ts-expect-error WHYYYYYYYYYYYYYYYYY TypeScript
+									message: error.message,
+							  }
+							: {},
+				  ),
+		)
 	}
 
 	#setModel(model: Collada) {
 		this.model = model
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
+		this.element.dispatchEvent(new ModelLoadEvent('modelload', {format: 'collada', model}))
 		this.element.needsUpdate()
 	}
 }

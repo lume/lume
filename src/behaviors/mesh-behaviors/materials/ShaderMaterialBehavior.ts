@@ -49,6 +49,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 	@stringAttribute(default_fragment) fragmentShader = default_fragment
 
 	override _createComponent() {
+		console.log('CREATE COMPONENT -')
 		// untrack because we update the properties on the material instance in the effect in loadGL
 		return untrack(() => {
 			return new ShaderMaterial({
@@ -72,6 +73,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 			this.element.needsUpdate()
 		})
 
+		// TODO comment why this super method call is after and not first
 		super.loadGL()
 	}
 }

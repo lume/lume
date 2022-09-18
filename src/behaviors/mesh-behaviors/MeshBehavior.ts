@@ -30,6 +30,7 @@ export abstract class MeshBehavior extends RenderableBehavior {
 	 * update the instance instead, while in other cases constructing a new
 	 * object is the only (or easier) way).
 	 */
+	// TODO convert to abstract?
 	_createComponent(): BufferGeometry | Material {
 		throw new Error('`_createComponent()` is not implemented by subclass.')
 	}

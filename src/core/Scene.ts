@@ -2,6 +2,8 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
+// TODO touch-action none auto-applied to scenes for interaction with elements like camera-rig, etc.
+
 import {untrack} from 'solid-js'
 import html from 'solid-js/html'
 import {booleanAttribute, attribute, numberAttribute, element, stringAttribute, reactive} from '@lume/element'
@@ -13,7 +15,7 @@ import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
 import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
-import {SharedAPI} from './SharedAPI.js'
+import {getElementFromThree, SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -27,6 +29,7 @@ import type {Element3D} from './Element3D.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
+// defer because `version` is not yet initialized here
 queueMicrotask(() => console.info(magic()))
 
 export type SceneAttributes =
@@ -534,6 +537,7 @@ export class Scene extends SharedAPI {
 	@reactive __localClipping = false
 
 	constructor() {
+		// debugger
 		super()
 
 		// Used by the `scene` getter in SharedAPI
@@ -689,8 +693,11 @@ export class Scene extends SharedAPI {
 
 	static override observedAttributes = ['slot']
 
-	override attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
-		super.attributeChangedCallback!(name, oldV, newV)
+	override attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+		// CONTINUE: find out why initial attributes like size-mode are not firing
+		debugger
+		console.log(`SCENE ATTRIBUTE CHANGED: ${name} - ${oldValue} - ${newValue}`)
+		super.attributeChangedCallback!(name, oldValue, newValue)
 
 		if (name === 'slot') {
 			queueMicrotask(() => {
@@ -774,7 +781,7 @@ export class Scene extends SharedAPI {
 			// We apply Three perspective the same way as CSS3D perspective here.
 			// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
 			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-			// TODO update with calculatedSize in autorun
+			// TODO update with calculatedSize in an effect
 			this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000)
 			this.__threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${
 				this.__threeCamera.type
@@ -868,7 +875,7 @@ export class Scene extends SharedAPI {
 		this.#glRenderer = this.#getGLRenderer('three')
 
 		// If _loadGL is firing, then this.webgl must be true, therefore
-		// this.#glRenderer must be defined in any of the below autoruns.
+		// this.#glRenderer must be defined in any of the below effects.
 
 		this.createGLEffect(() => {
 			if (this.fogMode === 'none') {
@@ -1102,7 +1109,10 @@ export class Scene extends SharedAPI {
 		// TODO use a single ResizeObserver for all scenes.
 
 		this.#resizeObserver = new ResizeObserver(changes => {
-			for (const change of changes) {
+			// prettier-ignore
+			// Attempted to see if looking at the last change only prevented the weird resize issue causing the scene to flicker.
+			// for (const change of changes) {
+			{ const change = changes[changes.length - 1]
 				// Use the newer API if available.
 				// NOTE We care about the contentBoxSize (not the
 				// borderBoxSize) because the content box is the area in
