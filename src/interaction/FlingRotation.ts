@@ -7,6 +7,7 @@ type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 		Pick<
 			FlingRotation,
 			| 'rotationXTarget'
+			| 'rotationSensitivity'
 			| 'interactionInitiator'
 			| 'minFlingRotationX'
 			| 'maxFlingRotationX'
@@ -25,6 +26,12 @@ export class FlingRotation {
 	 * rotationYTarget (it's like a gimball).
 	 */
 	readonly rotationXTarget!: Node
+
+	/**
+	 * How much to rotate when the user clicks and drags, in degrees
+	 * per pixel.
+	 */
+	rotationSensitivity: number = 0.2
 
 	/**
 	 * The element on which the pointer should be placed down on in order to
@@ -85,19 +92,22 @@ export class FlingRotation {
 		let deltaX = 0
 		let deltaY = 0
 
+		let moveTimestamp = performance.now()
+
 		this.#onMove = (event: PointerEvent) => {
-			deltaX = event.movementY * 0.2
+			deltaX = event.movementY * this.rotationSensitivity
 			this.rotationXTarget.rotation.x = clamp(
 				this.rotationXTarget.rotation.x + deltaX,
 				this.minFlingRotationX,
 				this.maxFlingRotationX,
 			)
-			deltaY = -event.movementX * 0.2
+			deltaY = -event.movementX * this.rotationSensitivity
 			this.rotationYTarget.rotation.y = clamp(
 				this.rotationYTarget.rotation.y + deltaY,
 				this.minFlingRotationY,
 				this.maxFlingRotationY,
 			)
+			moveTimestamp = performance.now()
 		}
 
 		// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
@@ -110,7 +120,8 @@ export class FlingRotation {
 				// @ts-ignore, whyyyy TypeScript TODO fix TypeScript lib.dom types.
 				this.interactionContainer.removeEventListener('pointermove', this.#onMove)
 
-				if (deltaX === 0 && deltaY === 0) return
+				// Return if no movement or last time there was movement was over 100 milliseconds ago
+				if ((deltaX === 0 && deltaY === 0) || performance.now() - moveTimestamp > 100) return
 
 				// slow the rotation down based on former drag speed
 				this.rotationXTarget.rotation = (x, y, z) => {
