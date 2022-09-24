@@ -7,7 +7,7 @@ type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
 		Pick<
 			FlingRotation,
 			| 'rotationXTarget'
-			| 'rotationSensitivity'
+			| 'rotationSpeed'
 			| 'interactionInitiator'
 			| 'minFlingRotationX'
 			| 'maxFlingRotationX'
@@ -31,7 +31,7 @@ export class FlingRotation {
 	 * How much to rotate when the user clicks and drags, in degrees
 	 * per pixel.
 	 */
-	rotationSensitivity: number = 0.2
+	rotationSpeed: number = 0.2
 
 	/**
 	 * The element on which the pointer should be placed down on in order to
@@ -95,13 +95,13 @@ export class FlingRotation {
 		let moveTimestamp = performance.now()
 
 		this.#onMove = (event: PointerEvent) => {
-			deltaX = event.movementY * this.rotationSensitivity
+			deltaX = event.movementY * this.rotationSpeed
 			this.rotationXTarget.rotation.x = clamp(
 				this.rotationXTarget.rotation.x + deltaX,
 				this.minFlingRotationX,
 				this.maxFlingRotationX,
 			)
-			deltaY = -event.movementX * this.rotationSensitivity
+			deltaY = -event.movementX * this.rotationSpeed
 			this.rotationYTarget.rotation.y = clamp(
 				this.rotationYTarget.rotation.y + deltaY,
 				this.minFlingRotationY,
