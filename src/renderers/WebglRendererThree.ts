@@ -4,6 +4,7 @@ import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
+import {Motor} from '../core/Motor.js'
 
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
@@ -139,17 +140,25 @@ export class WebglRendererThree {
 	// as well. Putting this logic in the loop depends on putting _calcSize in
 	// the loop. #66
 	updateResolution(scene: Scene) {
-		const state = sceneStates.get(scene)
+		// There seems to be a bug causing the canvas to flicker if this size
+		// change handling happens during a `ResizeObserver` callback. So we use
+		// `Motor.once` to defer it one frame. It doesn't work with
+		// `requestAnimationFrame` directly, only with `Motor.once`, which may
+		// be a clue to something. https://github.com/lume/lume/issues/253
+		// requestAnimationFrame(() => {
+		Motor.once(() => {
+			const state = sceneStates.get(scene)
 
-		if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
+			if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
-		scene._updateCameraAspect()
-		scene._updateCameraPerspective()
-		scene._updateCameraProjection()
+			scene._updateCameraAspect()
+			scene._updateCameraPerspective()
+			scene._updateCameraProjection()
 
-		const {x, y} = scene.calculatedSize
-		state.renderer.setSize(x, y)
-		scene.needsUpdate()
+			const {x, y} = scene.calculatedSize
+			state.renderer.setSize(x, y)
+			scene.needsUpdate()
+		}, false)
 	}
 
 	setClearColor(scene: Scene, color: any, opacity: number) {
