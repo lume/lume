@@ -848,14 +848,14 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	 */
 	@reactive version = 0
 
-	updateWorldMatrices(): void {
+	updateWorldMatrices(traverse = true): void {
 		this.three.updateWorldMatrix(false, false)
 		for (const child of this.three.children) if (!isManagedByUs(child)) child.updateMatrixWorld(true)
 
 		this.threeCSS.updateWorldMatrix(false, false)
 		for (const child of this.threeCSS.children) if (!isManagedByUs(child)) child.updateMatrixWorld(true)
 
-		this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(), false)
+		if (traverse) this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(false), false)
 
 		this.version++
 	}
