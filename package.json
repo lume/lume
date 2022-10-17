@@ -126,7 +126,7 @@
 		"live-server": "^1.2.1",
 		"mkdirp": "^0.5.1",
 		"prettier": "^2.3.2",
-		"readem": "^0.2.1",
+		"readem": "^0.2.7",
 		"rimraf": "^3.0.0",
 		"surge": "^0.23.0",
 		"typescript": "4.6.3",

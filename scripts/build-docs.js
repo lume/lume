@@ -23,7 +23,7 @@ async function fileExists(filePath) {
 }
 
 async function main() {
-	const docsMeta = await new CommentAnalyzer().analyze('./src')
+	const docsMeta = await new CommentAnalyzer().analyze('./src', file => !file.startsWith('./src/lib/'))
 	const renderer = new MarkdownRenderer()
 
 	await new Promise((done, error) =>
