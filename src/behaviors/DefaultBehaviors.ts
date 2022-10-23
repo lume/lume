@@ -5,9 +5,7 @@ export function DefaultBehaviors<T extends Constructor<HTMLElement>>(Base: T) {
 	// TODO This is here for now. Make it an extension to
 	// element-behaviors so that it can be applied to any element
 	// generically.
-	return class DefaultBehaviors extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor & T>(
-		Base,
-	) {
+	return class DefaultBehaviors extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor & T>(Base) {
 		// override in subclasses
 		static defaultBehaviors: any = []
 

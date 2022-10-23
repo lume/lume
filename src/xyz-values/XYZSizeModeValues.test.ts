@@ -183,9 +183,7 @@ describe('XYZNumberValues', () => {
 		expect(() => new XYZSizeModeValues({x: 5 as any, y: 'literal', z: 'proportional'})).toThrowError(TypeError)
 
 		expect(() => new XYZSizeModeValues({x: 'literal', y: 'literal', z: 'hooray' as any})).toThrowError(TypeError)
-		expect(() => new XYZSizeModeValues({x: 'literal', y: 'hoorah' as any, z: 'proportional'})).toThrowError(
-			TypeError,
-		)
+		expect(() => new XYZSizeModeValues({x: 'literal', y: 'hoorah' as any, z: 'proportional'})).toThrowError(TypeError)
 		expect(() => new XYZSizeModeValues({x: 'yeah' as any, y: 'literal', z: 'proportional'})).toThrowError(TypeError)
 
 		const a = new XYZSizeModeValues()

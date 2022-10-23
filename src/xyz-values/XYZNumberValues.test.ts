@@ -80,18 +80,12 @@ describe('XYZNumberValues', () => {
 			let string = '1 foo false'
 
 			// Should throw a runtime error because "foo" is not a number
-			expect(() => a.fromString(string)).toThrowError(
-				TypeError,
-				'Expected y to be a finite number. Received: NaN',
-			)
+			expect(() => a.fromString(string)).toThrowError(TypeError, 'Expected y to be a finite number. Received: NaN')
 
 			string = '1 2 false'
 
 			// Should throw a runtime error because "false" is not a number
-			expect(() => a.fromString(string)).toThrowError(
-				TypeError,
-				'Expected z to be a finite number. Received: NaN',
-			)
+			expect(() => a.fromString(string)).toThrowError(TypeError, 'Expected z to be a finite number. Received: NaN')
 
 			string = '1 2 3.456'
 			expect(() => a.fromString(string)).not.toThrowError(TypeError)

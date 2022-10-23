@@ -23,8 +23,7 @@ function html(parts, ...expressions) {
 		string += parts[i]
 
 		// if we have an array of html`` strings
-		if (Array.isArray(expressions[i]) && htmlStrings.has(expressions[i][0]))
-			expressions[i] = expressions[i].join('')
+		if (Array.isArray(expressions[i]) && htmlStrings.has(expressions[i][0])) expressions[i] = expressions[i].join('')
 
 		string += expressions[i]
 	}

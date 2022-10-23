@@ -4,11 +4,7 @@ import {GeometryBehavior} from './GeometryBehavior.js'
 
 export class BoxGeometryBehavior extends GeometryBehavior {
 	override _createComponent() {
-		return new BoxGeometry(
-			this.element.calculatedSize.x,
-			this.element.calculatedSize.y,
-			this.element.calculatedSize.z,
-		)
+		return new BoxGeometry(this.element.calculatedSize.x, this.element.calculatedSize.y, this.element.calculatedSize.z)
 	}
 }
 

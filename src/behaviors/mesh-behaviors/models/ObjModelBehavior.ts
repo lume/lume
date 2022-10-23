@@ -115,9 +115,9 @@ export class ObjModelBehavior extends RenderableBehavior {
 	}
 
 	#onError(error: ErrorEvent) {
-		const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${
-			this.obj
-		}" and mtl value "${this.mtl}". See the following error.`
+		const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${this.obj}" and mtl value "${
+			this.mtl
+		}". See the following error.`
 		console.warn(message)
 		const err = error instanceof ErrorEvent && error.error ? error.error : error
 		console.error(err)
@@ -130,8 +130,7 @@ export class ObjModelBehavior extends RenderableBehavior {
 			// TODO Simplify this by getting based on type.
 			let materialBehavior = this.element.behaviors.get('basic-material') as MaterialBehavior
 			if (!materialBehavior) materialBehavior = this.element.behaviors.get('phong-material') as MaterialBehavior
-			if (!materialBehavior)
-				materialBehavior = this.element.behaviors.get('standard-material') as MaterialBehavior
+			if (!materialBehavior) materialBehavior = this.element.behaviors.get('standard-material') as MaterialBehavior
 			if (!materialBehavior) materialBehavior = this.element.behaviors.get('lambert-material') as MaterialBehavior
 
 			if (materialBehavior) {

@@ -104,9 +104,9 @@ export class GltfModelBehavior extends RenderableBehavior {
 	}
 
 	#onError(error: ErrorEvent | Error) {
-		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
-			this.src
-		}" and dracoDecoder "${this.dracoDecoder}". See the following error.`
+		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${
+			this.dracoDecoder
+		}". See the following error.`
 		console.warn(message)
 		const err = error instanceof ErrorEvent && error.error ? error.error : error
 		console.error(err)

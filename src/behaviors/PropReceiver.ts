@@ -106,8 +106,7 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		__forwardedProps(): string[] {
 			const props = (this.constructor as typeof PropReceiver).receivedProperties || []
 			// @prod-prune
-			if (!Array.isArray(props))
-				throw new TypeError('Expected protected static receivedProperties to be an array.')
+			if (!Array.isArray(props)) throw new TypeError('Expected protected static receivedProperties to be an array.')
 			return props
 		}
 
