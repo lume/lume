@@ -81,44 +81,28 @@ export class App extends Component {
 				<fieldset style={styles.fieldset}>
 					<legend style={styles.legend}>Rotation</legend>
 					<label>
-						<input type="checkbox" checked={this.state.rotationEnabled} onChange={this.toggleRotation} />{' '}
-						Enable rotation.
+						<input type="checkbox" checked={this.state.rotationEnabled} onChange={this.toggleRotation} /> Enable
+						rotation.
 					</label>
 					<br />
 					<label>
-						<input
-							type="checkbox"
-							checked={this.state.rotationDirection < 0}
-							onChange={this.toggleRotationDirection}
-						/>{' '}
+						<input type="checkbox" checked={this.state.rotationDirection < 0} onChange={this.toggleRotationDirection} />{' '}
 						Clockwise rotation.
 					</label>
 				</fieldset>
 				<fieldset style={styles.fieldset2}>
 					<legend style={styles.legend2}>View</legend>
 					<label>
-						<input
-							type="radio"
-							name="side"
-							checked={this.state.view === 'side'}
-							onChange={this.changeView}
-						/>{' '}
-						Side view.
+						<input type="radio" name="side" checked={this.state.view === 'side'} onChange={this.changeView} /> Side
+						view.
 					</label>
 					<br />
 					<label>
-						<input type="radio" name="top" checked={this.state.view === 'top'} onChange={this.changeView} />{' '}
-						Top view
+						<input type="radio" name="top" checked={this.state.view === 'top'} onChange={this.changeView} /> Top view
 					</label>
 					<br />
 					<label>
-						<input
-							type="radio"
-							name="free"
-							checked={this.state.view === 'free'}
-							onChange={this.changeView}
-						/>{' '}
-						Free view
+						<input type="radio" name="free" checked={this.state.view === 'free'} onChange={this.changeView} /> Free view
 					</label>
 				</fieldset>
 			</div>
