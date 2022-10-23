@@ -206,6 +206,8 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		// Helpful for debugging when looking in devtools.
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`
+		// Save LUME element ref to Three.js object
+		o.userData.lumeElement = this
 		ourThreeObjects.add(o)
 		return o
 	}

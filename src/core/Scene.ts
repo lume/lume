@@ -20,6 +20,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 import {version} from '../index.js' // TODO replace with version.ts
 
 import type {TColor} from '../utils/three.js'
+import {Raycaster, Vector2} from 'three'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
@@ -606,6 +607,8 @@ export class Scene extends SharedAPI {
 
 		this.shadowRoot!.prepend(new Comment(magic()))
 
+		this.addEventListener('click', this.#handleClick, true)
+
 		this.createEffect(() => {
 			if (this.webgl) this._triggerLoadGL()
 			else this._triggerUnloadGL()
@@ -685,6 +688,7 @@ export class Scene extends SharedAPI {
 	override disconnectedCallback() {
 		super.disconnectedCallback()
 		this.#stopParentSizeObservation()
+		this.removeEventListener('click', this.#handleClick)
 	}
 
 	static override observedAttributes = ['slot']
@@ -1157,6 +1161,27 @@ export class Scene extends SharedAPI {
 
 			this.__elementParentSize = parentSize
 		}
+	}
+
+	#caster = new Raycaster()
+
+	#handleClick(ev: MouseEvent) {
+		const pointer = new Vector2()
+
+		pointer.x = (ev.clientX / this.clientWidth) * 2 - 1
+		pointer.y = -(ev.clientY / this.clientHeight) * 2 + 1
+
+		// Setup raycaster
+		this.#caster.setFromCamera(pointer, this.__threeCamera)
+		const intersections = this.#caster.intersectObject(this.three, true)
+		if (intersections.length == 0) return
+
+		// Create custom event with detail of the exact XYZ position of the click
+		const newEvent = new CustomEvent('click', {
+			detail: {position: intersections[0].point},
+		})
+		// Dispatch custom event on the LUME element saved on the intersection Three.js object
+		intersections[0].object.userData.lumeElement.dispatchEvent(newEvent)
 	}
 
 	override template = () => html`
