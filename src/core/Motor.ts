@@ -128,11 +128,7 @@ class _Motor {
 	}
 
 	#runRenderTasks(timestamp: number, deltaTime: number) {
-		for (
-			this.#taskIterationIndex = 0;
-			this.#taskIterationIndex < this.#numberOfTasks;
-			this.#taskIterationIndex += 1
-		) {
+		for (this.#taskIterationIndex = 0; this.#taskIterationIndex < this.#numberOfTasks; this.#taskIterationIndex += 1) {
 			const task = this.#allRenderTasks[this.#taskIterationIndex]
 
 			if (task(timestamp, deltaTime) === false) this.removeRenderTask(task)
