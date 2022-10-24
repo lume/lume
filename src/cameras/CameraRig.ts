@@ -22,6 +22,7 @@ export type CameraRigAttributes =
 	| 'rotationSpeed'
 	| 'dynamicRotation'
 
+
 // TODO allow overriding the camera props, and make the default camera overridable via <slot>
 
 /**
@@ -212,6 +213,18 @@ export class CameraRig extends Node {
 	@numberAttribute(0.2) rotationSpeed = 0.2
 
 	/**
+	 * @property {boolean} interactive
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.2`
+	 *
+	 * How much the camera rotates when the user clicks and drags, in degrees
+	 * per pixel.
+	 */
+	@numberAttribute(0.2) rotationSpeed = 0.2
+
+	/**
 	 * @property {boolean} dynamicDolly
 	 *
 	 * *attribute*
@@ -232,6 +245,28 @@ export class CameraRig extends Node {
 	 * sensitivity, while zooming out effectively raises it.
 	 */
 	@booleanAttribute(false) dynamicRotation = false
+
+	/**
+	 * @property {boolean} dynamicDolly
+	 *
+	 * *attribute*
+	 *
+	 * When `true`, dolly speed is limited based on how close the camera's
+	 * position is to `minDistance`. Zooming in effectively lowers the
+	 * dolly speed, while zooming out effectively raises it.
+	 */
+	@booleanAttribute(false) dynamicDolly = false
+
+	/**
+	 * @property {boolean} dynamicSensitivity
+	 *
+	 * *attribute*
+	 *
+	 * When `true`, rotation sensitivity is limited based on how close the camera's
+	 * position is to `minDistance`. Zooming in effectively lowers the
+	 * sensitivity, while zooming out effectively raises it.
+	 */
+	@booleanAttribute(false) dynamicSensitivity = false
 
 	@reactive cam?: PerspectiveCamera
 
@@ -303,12 +338,7 @@ export class CameraRig extends Node {
 
 				createEffect(() => {
 					const cam = this.cam
-
 					if (!cam || !this.dynamicRotation) return
-
-					// const estimatedPlaneSize = (this.scene!.perspective / cam.position.z) * (2 * this.minDistance)
-					// const baseSpeed = 180 / estimatedPlaneSize
-					// const modifiedSpeed = this.rotationSpeed * 5 * baseSpeed
 
 					const sens =
 						(this.rotationSpeed * 5 * 180 * (cam.position.z - this.minDistance)) /
@@ -316,6 +346,14 @@ export class CameraRig extends Node {
 
 					// Don't let the sensitivity reach 0 (ie `cam.position.z` reaches `minDistance`)
 					this.flingRotation!.rotationSpeed = sens < 0.0001 ? 0.0001 : sens
+          
+					if (!cam || !this.dynamicSensitivity) return
+					const sens =
+						(this.rotationSensitivity * 5 * (180 * (cam.position.z - this.minDistance))) /
+						(this.scene!.perspective * 2 * this.minDistance)
+
+					// Don't let the sensitivity reach 0 (ie `cam.position.z` reaches `minDistance`)
+					this.flingRotation!.rotationSensitivity = sens < 0.0001 ? 0.0001 : sens
 				})
 
 				onCleanup(() => this.flingRotation?.stop())
@@ -337,7 +375,6 @@ export class CameraRig extends Node {
 
 					this.scrollFling!.y
 					const setScrollFactor = this.dynamicDolly
-
 					untrack(() => {
 						cam.position.z = this.scrollFling!.y
 
