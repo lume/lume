@@ -22,7 +22,6 @@ export type CameraRigAttributes =
 	| 'rotationSpeed'
 	| 'dynamicRotation'
 
-
 // TODO allow overriding the camera props, and make the default camera overridable via <slot>
 
 /**
@@ -201,18 +200,6 @@ export class CameraRig extends Node {
 	@numberAttribute(1) dollySpeed = 1
 
 	/**
-	 * @property {number} rotationSpeed
-	 *
-	 * *attribute*
-	 *
-	 * Default: `0.2`
-	 *
-	 * How much the camera rotates when the user clicks and drags, in degrees
-	 * per pixel.
-	 */
-	@numberAttribute(0.2) rotationSpeed = 0.2
-
-	/**
 	 * @property {boolean} interactive
 	 *
 	 * *attribute*
@@ -245,17 +232,6 @@ export class CameraRig extends Node {
 	 * sensitivity, while zooming out effectively raises it.
 	 */
 	@booleanAttribute(false) dynamicRotation = false
-
-	/**
-	 * @property {boolean} dynamicDolly
-	 *
-	 * *attribute*
-	 *
-	 * When `true`, dolly speed is limited based on how close the camera's
-	 * position is to `minDistance`. Zooming in effectively lowers the
-	 * dolly speed, while zooming out effectively raises it.
-	 */
-	@booleanAttribute(false) dynamicDolly = false
 
 	/**
 	 * @property {boolean} dynamicSensitivity
@@ -346,14 +322,6 @@ export class CameraRig extends Node {
 
 					// Don't let the sensitivity reach 0 (ie `cam.position.z` reaches `minDistance`)
 					this.flingRotation!.rotationSpeed = sens < 0.0001 ? 0.0001 : sens
-          
-					if (!cam || !this.dynamicSensitivity) return
-					const sens =
-						(this.rotationSensitivity * 5 * (180 * (cam.position.z - this.minDistance))) /
-						(this.scene!.perspective * 2 * this.minDistance)
-
-					// Don't let the sensitivity reach 0 (ie `cam.position.z` reaches `minDistance`)
-					this.flingRotation!.rotationSensitivity = sens < 0.0001 ? 0.0001 : sens
 				})
 
 				onCleanup(() => this.flingRotation?.stop())
