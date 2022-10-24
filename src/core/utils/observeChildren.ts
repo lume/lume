@@ -60,7 +60,6 @@ export function createChildObserver(onConnect: any, onDisconnect: any, skipTextN
 				// number of times it was removed, then the net result is that
 				// it was added, so we call onConnect just once.
 				if (weight > 0 && typeof onConnect == 'function') {
-					console.log(' - Child Observer, child connected', target.id, child.id)
 					onConnect.call(target, child)
 					// addedTo.set(child, target)
 				}
