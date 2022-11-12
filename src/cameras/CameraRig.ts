@@ -1,9 +1,13 @@
+// TODO the interaction in here can be separated into a DragFling class, then
+// this class can apply DragFling to X and Y rotations. We can use DragFling for
+// implementing a scrollable area.
+
 import {createEffect, onCleanup} from 'solid-js'
 import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
-import {FlingRotation, ScrollFling} from '../interaction/index.js'
+import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
@@ -191,8 +195,8 @@ export class CameraRig extends Element3D {
 	 *
 	 * *attribute*
 	 *
-	 * When `false`, the user can zoom or rotate the camera, useful for static
-	 * positioning of the camera programmatically.
+	 * When `false`, user interaction (ability to zoom or rotate the camera) is
+	 * disabled, but the camera rig can still be manipulated programmatically.
 	 */
 	@booleanAttribute(true) interactive = true
 
@@ -233,8 +237,10 @@ export class CameraRig extends Element3D {
 		<slot></slot>
 	`
 
-	flingRotation?: FlingRotation
-	scrollFling?: ScrollFling
+	@reactive flingRotation: FlingRotation | null = null
+	@reactive scrollFling: ScrollFling | null = null
+	@reactive pinchFling: PinchFling | null = null
+
 	autorunStoppers?: StopFunction[]
 
 	#startedInteraction = false
@@ -249,48 +255,69 @@ export class CameraRig extends Element3D {
 			autorun(() => {
 				if (!(this.scene && this.rotationYTarget)) return
 
-				this.flingRotation = new FlingRotation({
+				const flingRotation = (this.flingRotation = new FlingRotation({
 					interactionInitiator: this.scene,
 					rotationYTarget: this.rotationYTarget,
 					minFlingRotationX: this.minPolarAngle,
 					maxFlingRotationX: this.maxPolarAngle,
 					minFlingRotationY: this.minHorizontalAngle,
 					maxFlingRotationY: this.maxHorizontalAngle,
-				}).start()
+				}).start())
 
 				createEffect(() => {
-					if (this.interactive) this.flingRotation!.start()
-					else this.flingRotation!.stop()
+					if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
+					else flingRotation.stop()
 				})
 
-				onCleanup(() => this.flingRotation?.stop())
+				onCleanup(() => flingRotation?.stop())
 			}),
 			autorun(() => {
 				if (!this.scene) return
 
-				this.scrollFling = new ScrollFling({
+				const scrollFling = (this.scrollFling = new ScrollFling({
 					target: this.scene,
 					y: this.initialDistance,
 					minY: this.minDistance,
 					maxY: this.maxDistance,
 					scrollFactor: this.dollySpeed,
-				}).start()
+				}).start())
+
+				const pinchFling = (this.pinchFling = new PinchFling({
+					target: this.scene,
+					x: this.initialDistance,
+					minX: this.minDistance,
+					maxX: this.maxDistance,
+					factor: this.dollySpeed,
+				}).start())
 
 				createEffect(() => {
 					const cam = this.cam
 					if (!cam) return
 
-					this.scrollFling!.y
-
-					untrack(() => (cam.position.z = this.scrollFling!.y))
+					untrack(() => cam.position).z = scrollFling.y
 				})
 
 				createEffect(() => {
-					if (this.interactive) this.scrollFling!.start()
-					else this.scrollFling!.stop()
+					const cam = this.cam
+					if (!cam) return
+
+					untrack(() => cam.position).z = pinchFling.x
 				})
 
-				onCleanup(() => this.scrollFling?.stop())
+				createEffect(() => {
+					if (this.interactive) {
+						scrollFling.start()
+						pinchFling.start()
+					} else {
+						scrollFling.stop()
+						pinchFling.stop()
+					}
+				})
+
+				onCleanup(() => {
+					scrollFling.stop()
+					pinchFling.stop()
+				})
 			}),
 		)
 	}

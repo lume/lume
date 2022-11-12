@@ -1,3 +1,4 @@
+import {createSignal, untrack} from 'solid-js'
 import {reactive} from '@lume/element'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
@@ -35,6 +36,15 @@ export class ScrollFling {
 
 	#task?: RenderTask
 
+	#isStarted = (() => {
+		const {0: get, 1: set} = createSignal(false)
+		return {get, set}
+	})()
+
+	get isStarted() {
+		return this.#isStarted.get()
+	}
+
 	constructor(options: ScrollFlingOptions) {
 		Object.assign(this, options)
 	}
@@ -66,28 +76,24 @@ export class ScrollFling {
 		})
 	}
 
-	#isStarted = false
-
-	// TODO switch to Pointer Events
-
 	start(): this {
-		if (this.#isStarted) return this
-		this.#isStarted = true
+		if (untrack(this.#isStarted.get)) return this
+		this.#isStarted.set(true)
 
-		// @ts-ignore, whyyyyy TypeScript
+		// @ts-expect-error, whyyyyy TypeScript
 		this.target.addEventListener('wheel', this.#onWheel)
 
 		return this
 	}
 
 	stop(): this {
-		if (!this.#isStarted) return this
-		this.#isStarted = false
+		if (!untrack(this.#isStarted.get)) return this
+		this.#isStarted.set(false)
 
 		// Stop any current animation, if any.
 		if (this.#task) Motor.removeRenderTask(this.#task)
 
-		// @ts-ignore, whyyyyy TypeScript
+		// @ts-expect-error, whyyyyy TypeScript
 		this.target.removeEventListener('wheel', this.#onWheel)
 
 		return this
