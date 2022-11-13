@@ -15,7 +15,9 @@ Sphere:
     <lume-point-light align-point="0.5 0.5 0.5" color="pink" intensity="0.6" position="-500 300 -500"></lume-point-light>
 		<lume-sphere align-point="0.5 0.5 0.5" mount-point="0.5 0.5 0.5" size="200 200 200" color="white"></lume-sphere>
 	</lume-scene>
-  <link rel="stylesheet", href="for some reason this dummy link tag causes the next style tag not to be deleted. TODO fix Docsify parsing bug." />
+  <!-- this dummy link tag with comma attribute causes the next style tag not to be deleted.
+  TODO fix Docsify parsing bug. -->
+  <link , />
   <style>
     #sphereScene {
       width: 400px; height: 300px;
