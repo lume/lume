@@ -1,15 +1,9 @@
 {
-	const {Node, element, html, createEffect, untrack} = LUME
+	const {Node, element, html, createEffect} = LUME
 
 	element('av-layout')(
 		class Layout extends Node {
 			hasShadow = true
-
-			// static observedAttributes = {
-			// 	activated: attribute.boolean(false),
-			// }
-
-			// activated = false
 
 			#slideout
 			#content

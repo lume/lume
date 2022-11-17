@@ -28,9 +28,12 @@
 <script src="./elements/Featured.js"></script>
 <script src="./elements/Layout.js"></script>
 <script src="./elements/Menu.js"></script>
+<script src="./elements/Header.js"></script>
+<script src="./elements/CategoryButtons.js"></script>
+<script src="./elements/Categories.js"></script>
+<script src="./elements/Hero.js"></script>
 <script src="./elements/Content.js"></script>
 <script src="./elements/SkillsBanner.js"></script>
-<script src="./elements/Hero.js"></script>
 
 <lume-scene id="scene" size-mode="l p" size="1000 1" perspective="1200" touch-action="none" webgl="false">
 	<lume-ambient-light color="white" intensity="0.2"></lume-ambient-light>
@@ -53,7 +56,7 @@
 		<av-menu id="menu" slot="menu" size-mode="p p" size="1 1"></av-menu>
 
 		<!-- Main Content ###############################################################################################-->
-		<av-content slot="content" size-mode="p p" size="1 1"></av-content>
+		<av-content id="content" slot="content" size-mode="p p" size="1 1"></av-content>
 	</av-layout>
 </lume-scene>
 
@@ -66,6 +69,7 @@
 	// LUME.defineElements()
 
 	menu.layout = layout
+	content.layout = layout
 
 	// Light ////////////////////////////////////////////////////////////////////////
 

@@ -6,30 +6,28 @@
 		class Content extends Node {
 			hasShadow = true
 
-			// static observedAttributes = {
-			// 	activated: attribute.boolean(false),
-			// }
+			// the slideout layout, assigned from by parent element
+			layout = null
 
-			// activated = false
-
-			#menuBtnOpen
-			#scrollContent
+			// #menuBtnOpen
+			#scrollContainer
 			#scrollknob
-			#logo
-			#categoriesInner
+			// #logo
 			#featured
 			#otherProjects
 
 			connectedCallback() {
 				super.connectedCallback()
 
-				this.#menuBtnOpen.onclick = () => this.layout?.toggle()
+				// this.#menuBtnOpen.onclick = () => this.layout?.toggle()
 
-				createEffect(() => {
-					this.#menuBtnOpen.opacity = 1 - layout.drawerPosition * (1 - 0)
-				})
+				// createEffect(() => {
+				// 	this.#menuBtnOpen.opacity = 1 - layout.drawerPosition * (1 - 0)
+				// })
 
-				// BEFORE making fling reactive ////////////////////////////////////////////
+				// Scroll implementation //////////////////////////////////////////////////////////////////////
+
+				// BEFORE making fling reactive ////////////////////////
 
 				// const fling = new ScrollFling({
 				// 	target: scene,
@@ -43,42 +41,45 @@
 				// 	fling.y
 
 				// 	untrack(() => {
-				// 		this.#scrollContent.position.y = -fling.y
+				// 		this.#scrollContainer.position.y = -fling.y
 				// 		this.#scrollknob.alignPoint.y = fling.y / 2000
 				// 		this.#scrollknob.mountPoint.y = fling.y / 2000
 				// 	})
 				// })
 
-				// AFTER making fling reactive ////////////////////////////////////////////
+				// AFTER making fling reactive ////////////////////////
 
 				let scrollRatio = 0
+				let amountScrolled = 0
 
 				const tiny = 0.000000000000000000001
 				const scrollableAmount = variable(0)
 				const contentHeight = variable(0)
 
-				// Scroll implementation //////////////////////////////////////////////////////////////////////
 				createEffect(() => {
 					let _contentHeight = 0
 
 					// reactive dependencies (child.calculatedSize)
-					for (const child of Array.from(this.#scrollContent.children)) {
+					for (const child of Array.from(this.#scrollContainer.children)) {
 						_contentHeight += child.calculatedSize.y
 					}
 
 					contentHeight(_contentHeight)
 
 					// Using Math.max here to prevent negative numbers in case content is smaller than scroll area.
-					scrollableAmount(Math.max(0, _contentHeight - this.#scrollContent.calculatedSize.y))
+					scrollableAmount(Math.max(0, _contentHeight - this.#scrollContainer.calculatedSize.y))
 
 					// In firefox scene is initially null here, but not in Safari. Huh.
 					if (!this.scene) return
 
 					// debugger
-					// TODO make scrollfling fully updateable, avoid creating a new one each time.
+					// TODO make scrollfling (and other flings) fully updateable, avoid creating a new one each time.
+					console.log('make new fling', amountScrolled, scrollRatio, scrollRatio * untrack(scrollableAmount))
 					const fling = new ScrollFling({
 						target: untrack(() => this.scene),
-						y: scrollRatio * untrack(scrollableAmount),
+						// y: scrollRatio * untrack(scrollableAmount),
+						// Use Math.min in case the page is at the end, so that the viewport won't be scrolled beyond the end of content in case content height shrunk.
+						y: Math.min(amountScrolled, untrack(scrollableAmount)),
 						minY: 0,
 						// The `|| tiny` prevents divide by zero errors.
 						maxY: untrack(scrollableAmount) || tiny,
@@ -93,11 +94,13 @@
 						fling.y
 
 						untrack(() => {
-							this.#scrollContent.position.y = -(fling.y || 0)
+							this.#scrollContainer.position.y = -(fling.y || 0)
+							console.log('scroll content Y:', this.#scrollContainer.position.y)
 
-							// FIXME
-							// scrollRatio = (fling.y || 0) / (scrollableAmount() || tiny) // fling.y is undefined for some weird reason after making a new instance, and sets scrollRatio to 0.
-							scrollRatio = fling.y ? fling.y / (scrollableAmount() || tiny) : scrollRatio // so instead set to the previous value, but we shouldn't need to do this || trick.
+							// FIXME, this conditional checking is because of values-in-the-past, which should be fixed in Solid 1.5
+							scrollRatio = fling.y ? fling.y / (scrollableAmount() || tiny) : scrollRatio
+							amountScrolled = fling.y ?? amountScrolled
+							console.log('scroll content Y:', fling.y, amountScrolled)
 
 							this.#scrollknob.alignPoint.y = scrollRatio
 							this.#scrollknob.mountPoint.y = scrollRatio
@@ -108,13 +111,16 @@
 				})
 
 				createEffect(() => {
-					if (this.#scrollContent.calculatedSize.y / (contentHeight() || tiny) >= 1) {
+					// if y size is 0, the || tiny prevents NaN
+					if (this.#scrollContainer.calculatedSize.y / (contentHeight() || tiny) >= 1) {
 						untrack(() => this.#scrollknob.size).y = 0
 						return
 					}
+					console.log('scroll content size changed')
 					untrack(() => this.#scrollknob.size).y = Math.max(
 						10,
-						(this.#scrollContent.calculatedSize.y / (contentHeight() || tiny)) * this.#scrollContent.calculatedSize.y,
+						(this.#scrollContainer.calculatedSize.y / (contentHeight() || tiny)) *
+							this.#scrollContainer.calculatedSize.y,
 					)
 				})
 
@@ -125,75 +131,20 @@
 
 				// Logo ////////////////////////////////////////////////////////////////////////
 
-				/** @param {HTMLImageElement} img */
-				function onLoad(img, fn) {
-					if (img.complete) fn()
-					else img.addEventListener('load', fn, {once: true})
-				}
+				// /** @param {HTMLImageElement} img */
+				// function onLoad(img, fn) {
+				// 	if (img.complete) fn()
+				// 	else img.addEventListener('load', fn, {once: true})
+				// }
 
-				/** @type {HTMLImageElement} */
-				onLoad(this.#logo, () => {
-					createEffect(() => {})
-				})
+				// /** @type {HTMLImageElement} */
+				// onLoad(this.#logo, () => {
+				// 	createEffect(() => {})
+				// })
 
 				// categories layout //////////////////////////////////////////////////////////////////////////////////////////////
-				categoriesLayout.call(this)
-				async function categoriesLayout() {
-					const {default: yoga} = await import('https://jspm.dev/yoga-layout')
-					const {Node: YogaNode} = yoga
 
-					const yogaRoot = YogaNode.create()
-					yogaRoot.setJustifyContent(yoga.JUSTIFY_SPACE_EVENLY)
-					yogaRoot.setAlignItems(yoga.ALIGN_CENTER)
-					yogaRoot.setFlexDirection(yoga.FLEX_DIRECTION_ROW)
-
-					const children = Array.from(this.#categoriesInner.children)
-
-					const yogaNodes = []
-
-					let i = 0
-					for (const child of children) {
-						const yogaNode = YogaNode.create()
-
-						yogaNodes.push(yogaNode)
-						yogaRoot.insertChild(yogaNode, i)
-
-						i++
-					}
-
-					createEffect(() => {
-						const parentSize = this.#categoriesInner.calculatedSize
-
-						yogaRoot.setWidth(parentSize.x)
-						yogaRoot.setHeight(parentSize.y)
-
-						let i = 0
-						for (const child of children) {
-							const {x, y} = child.calculatedSize
-
-							const node = yogaNodes[i]
-							node.setWidth(x)
-							node.setHeight(y)
-
-							i++
-						}
-
-						yogaRoot.calculateLayout(parentSize.x, parentSize.y, yoga.DIRECTION_LTR)
-
-						i = 0
-						for (const child of children) {
-							const yogaNode = yogaNodes[i]
-							yogaNode.calculateLayout()
-							const {left, top, width, height} = yogaNode.getComputedLayout()
-
-							untrack(() => child.position).set(left, top)
-							// untrack(() => child.position).set(top, left)
-							// child.size.set(width, height)
-
-							i++
-						}
-					})
-				}
+				/////////////////////////////////////////////////////////////
 
 				let queuedLayout = false
 
@@ -213,7 +164,7 @@
 							H:|[other]|
 							H:|[letsconnect]|
 						`
-						this.#scrollContent.visualFormat = visualFormat
+						this.#scrollContainer.visualFormat = visualFormat
 					})
 				}
 
@@ -356,11 +307,11 @@
 						// },
 					)
 
-					const children = this.#scrollContent.children
+					const children = this.#scrollContainer.children
 
 					for (let i = 0; i < children.length; i++) observer.observe(children[i])
 
-					const cards = this.#scrollContent.querySelectorAll('.card')
+					const cards = this.#scrollContainer.querySelectorAll('.card')
 
 					for (let i = 0; i < cards.length; i++) observer.observe(cards[i])
 				}
@@ -380,71 +331,24 @@
 					size="1 1"
 					size-mode="p p"
 				>
-					<style>
-						#headerbody {
-							/* Flattens 3D CSS rendering */
-							/* overflow: hidden; */
-
-							background: #0a131f;
-						}
-					</style>
-
 					${
 						'' /*<!-- Header ###############################################################################################-->*/
 					}
-					${'' /*<!-- <lume-element3d id="header" slot="header" size="1 1" size-mode="p p" position="0 0 0.1"> -->*/}
-					<lume-mixed-plane id="header" slot="header" size="1 1" size-mode="p p" position="0 0 0.1">
-						<div class="bg"></div>
+					<av-header
+						id="header"
+						slot="header"
+						size="1 1"
+						size-mode="p p"
+						position="0 0 0.1"
+						on:menubtnclick=${e => this.layout?.toggle()}
+						on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
+					></av-header>
 
-						<style>
-							#header > .bg {
-								width: 100%;
-								height: 100%;
-								background: rgba(0, 0, 0, 0.45);
-								backdrop-filter: blur(20px);
-							}
-						</style>
-
-						${
-							'' /*<!-- Logo ###############################################################################################-->*/
-						}
-						<lume-element3d align-point="0 0.5" mount-point="0 0.5" position="25">
-							${'' /*<!-- TODO replace with webgl circle -->*/}
-							<lume-element3d ref=${e => (this.#logo = e)} id="logo" mount-point="0 0.5">
-								<img src="./logo.svg" />
-							</lume-element3d>
-							<style>
-								#logo img {
-									scale: 0.5;
-								}
-								#logo {
-									display: flex !important;
-									justify-content: flex-start;
-									align-items: center;
-								}
-							</style>
-						</lume-element3d>
-
-						${
-							/*<!-- Menu Button ############################################################################################### -->*/ ''
-						}
-						<av-menu-btn
-							ref=${e => (this.#menuBtnOpen = e)}
-							id="menuBtnOpen"
-							activated="false"
-							TODO="scaled sizes"
-							size="36 36"
-							align-point="1 0.5"
-							mount-point="1 0.5"
-							position="-25"
-						></av-menu-btn>
-					</lume-mixed-plane>
-					${'' /*<!-- </lume-element3d> -->*/}
-
+					<lume-scroller></lume-scroller>
 					<lume-element3d id="scroller" slot="body" size="1 1" size-mode="p p">
 						<lume-autolayout
-							ref=${e => (this.#scrollContent = e)}
-							id="scrollContent"
+							ref=${e => (this.#scrollContainer = e)}
+							id="scrollContainer"
 							slot="content"
 							visual-format="
 								V:|[hero(85%)][categories(125)][featured(0)][skills(282)][other(1200)][letsconnect(540)]
@@ -460,139 +364,18 @@
 							size-mode="p p"
 						>
 							<av-hero opacity="0" slot="hero" size="1 1" size-mode="p p"></av-hero>
+
 							${
 								/*<!-- Categories ###############################################################################################-->*/ ''
 							}
-							${/*<!-- <lume-mixed-plane -->*/ ''}
-							<lume-element3d
-								id="categories"
+							<av-categories
 								slot="categories"
-								opacity="0"
-								has="clip-planes"
-								clip-planes="#bottomClip"
 								size-mode="p p"
 								size="1 1"
-								receive-shadow="false"
-							>
-								<lume-element3d size="100 64" class="heading centerContent">
-									<span>01.</span><span>&nbsp;Work</span>
-								</lume-element3d>
+								opacity="0"
+								on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
+							></av-categories>
 
-								${/*<!-- layout is calculated in JS -->*/ ''}
-								<lume-element3d
-									ref=${e => (this.#categoriesInner = e)}
-									id="categoriesInner"
-									size-mode="p p"
-									size="0.8 1"
-									align-point="0.5 0.5"
-									mount-point="0.5 0.5"
-								>
-									<lume-element3d class="centerContent" size="200 100">
-										<a
-											href="experiential"
-											onclick=${e => {
-												e.preventDefault()
-												this.isos.forEach(iso => iso.arrange({filter: '.typeExperiential'}))
-											}}
-											>Experiential</a
-										>
-									</lume-element3d>
-									<lume-element3d class="centerContent" size="200 100">
-										<a
-											href="industrial"
-											onclick=${e => {
-												e.preventDefault()
-												this.isos.forEach(iso => iso.arrange({filter: '.typeIndustrial'}))
-											}}
-											>Industrial</a
-										>
-									</lume-element3d>
-									<lume-element3d class="centerContent" size="200 100">
-										<a
-											href="visual"
-											onclick=${e => {
-												e.preventDefault()
-												this.isos.forEach(iso => iso.arrange({filter: '.typeVisual'}))
-											}}
-											>Visual / Digital</a
-										>
-									</lume-element3d>
-
-									${
-										/*<!-- <div class="centerContent" size="200 100">
-										<a href="./TODO.html">Experiential</a>
-									</div>
-									<div class="centerContent" size="200 100">
-										<a href="./TODO.html">Industrial</a>
-									</div>
-									<div class="centerContent" size="200 100">
-										<a href="./TODO.html">Visual / Digital</a>
-									</div> -->*/ ''
-									}
-								</lume-element3d>
-
-								<style>
-									#categories > div {
-										width: 100%;
-										height: 100%;
-										text-transform: uppercase;
-										display: flex;
-										justify-content: center;
-										align-items: center;
-									}
-
-									#categories a {
-										padding-left: 4px;
-										padding-right: 4px;
-
-										text-transform: uppercase;
-										text-decoration: none;
-
-										font-family: 'Open Sans', sans-serif;
-										font-weight: 600;
-										font-size: calc(20px * var(--scale));
-									}
-
-									#categories a:last-child {
-									}
-
-									#categories a.active,
-									#categories a:hover,
-									#categories a:focus,
-									#categories a:active {
-										outline: none;
-										font-family: 'Austin-Semibold', serif;
-										font-size: calc(22px * var(--scale));
-										text-decoration: underline;
-										text-decoration-color: var(--purple);
-										text-underline-offset: calc(9px * var(--scale));
-										text-decoration-thickness: calc(4px * var(--scale));
-									}
-
-									#categories .heading {
-										color: var(--purple);
-										font-size: calc(30px * var(--scale));
-										font-family: 'Austin-MediumItalic', serif;
-										text-transform: uppercase;
-									}
-									#categories .heading span:first-child {
-										font-family: 'Austin-LightItalic', serif;
-									}
-
-									#categoriesInner {
-										/* display: flex !important;
-										flex-direction: row;
-										justify-content: space-evenly;
-										align-items: center; */
-									}
-
-									#categoriesInner > * {
-										/* width: 300px;
-										height: 100px; */
-									}
-								</style>
-							</lume-element3d>
-							${/*<!-- </lume-mixed-plane> -->*/ ''}
 							${
 								/*<!-- Featured Products ########################################################################################## -->*/ ''
 							}
@@ -616,9 +399,9 @@
 								size="1 1"
 							>
 								<div>
-									<div>Featured</div>
+									<div class="featuredLabel">Featured projects:</div>
 									<div class="flex-row featuredGrid">
-										<div class="card hide typeExperiential">
+										<div class="card hide type-experiential">
 											<div class="cardContent">
 												<img src="./imgs/Dreamforce thumb big.jpeg" />
 												<h2>Dreamforce 2019</h2>
@@ -628,7 +411,7 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide typeIndustrial">
+										<div class="card hide type-industrial">
 											<div class="cardContent">
 												<img src="./imgs/Google NEXT thumb big.jpeg" />
 												<h2>Google Next</h2>
@@ -638,7 +421,7 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide typeVisual">
+										<div class="card hide type-visual">
 											<div class="cardContent">
 												<img src="./imgs/Salesforce Connections thumb big.jpeg" />
 												<h2>Salesforce Connections 2019</h2>
@@ -648,21 +431,21 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide typeExperiential">
+										<div class="card hide type-experiential">
 											<div class="cardContent">
 												<img src="./imgs/Funimation thumb big.jpeg" />
 												<h2>Funimation</h2>
 												<p>Funimation event experience creates the portal to a world of extraordinary anime.</p>
 											</div>
 										</div>
-										<div class="card hide typeIndustrial">
+										<div class="card hide type-industrial">
 											<div class="cardContent">
 												<img src="./imgs/Wisk thumb big.jpeg" />
 												<h2>Wisk</h2>
 												<p>Product reveal of a vertical takeoff flying aircraft.</p>
 											</div>
 										</div>
-										<div class="card hide typeVisual">
+										<div class="card hide type-visual">
 											<div class="cardContent">
 												<img src="./imgs/GE LOGIQ thumb big.jpeg" />
 												<h2>GE Logiq Ultrasound</h2>
@@ -672,6 +455,11 @@
 									</div>
 								</div>
 								<style>
+									.featuredLabel {
+										font-size: calc(30px * var(--scale));
+										font-family: 'Austin-LightItalic', serif;
+									}
+
 									/* flex layout inspired by https://codepen.io/AaronTeering/pen/GRdoLMW */
 									.flex-row {
 										/* position: absolute; */
@@ -769,34 +557,34 @@
 								size="1 1"
 							>
 								<div class="flex-row otherProjectsGrid">
-									<div class="card hide typeExperiential">
+									<div class="card hide type-experiential">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeIndustrial">
+									<div class="card hide type-industrial">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeVisual">
+									<div class="card hide type-visual">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeExperiential">
+									<div class="card hide type-experiential">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeIndustrial">
+									<div class="card hide type-industrial">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeVisual">
+									<div class="card hide type-visual">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeExperiential">
+									<div class="card hide type-experiential">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeIndustrial">
+									<div class="card hide type-industrial">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeVisual">
+									<div class="card hide type-visual">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
-									<div class="card hide typeExperiential">
+									<div class="card hide type-experiential">
 										<img src="./dreamforce-tree.jpg" />
 									</div>
 								</div>
@@ -927,111 +715,11 @@
 			`
 
 			css = /*css*/ `
-				#menu {
-					padding: 10px;
-				}
+				#headerbody {
+					/* Flattens 3D CSS rendering */
+					/* overflow: hidden; */
 
-				#menuBg {
-					/*original not looking like design*/
-					/* background: transparent linear-gradient(207deg, rgba(10, 19, 31, 1) 45%, rgba(86, 28, 165, 1) 145%) 0% 0%
-						no-repeat padding-box; */
-					/*modified looks better*/
-					background: transparent linear-gradient(207deg, rgba(10, 19, 31, 1) 65%, rgba(86, 28, 165, 1) 100%) 0% 0%
-						no-repeat padding-box;
-
-					backdrop-filter: blur(20px);
-				}
-
-				#menu nav {
-					width: 100%;
-					height: 100%;
-
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-					align-items: center;
-				}
-
-				#menu a {
-					display: block;
-					position: relative;
-					text-decoration: none;
-					text-transform: uppercase;
-					text-underline-offset: 0.3em;
-				}
-				#menu [clickArea] {
-					/* border: 1px solid #532c79; */
-					position: absolute;
-					width: 120%;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-				}
-
-				#menu header [clickArea] {
-					height: 200%;
-				}
-
-				#menu section [clickArea] {
-					height: 300%;
-				}
-
-				#menu header {
-					position: relative;
-
-					margin-bottom: calc(59px * var(--scale));
-				}
-
-				#menu header + header {
-					margin-top: calc(141px * var(--scale));
-				}
-
-				#menu .navLink:first-child {
-					font-family: 'Open Sans', sans-serif;
-					font-weight: 600;
-					font-size: calc(39px * var(--scale));
-				}
-				#menu .navLink:nth-child(2) {
-					font-family: 'Austin-MediumItalic', serif;
-					font-weight: 500;
-					font-size: calc(43px * var(--scale));
-					position: absolute;
-					top: 0;
-					left: 0;
-					transform: translateY(0.13em);
-					opacity: 0;
-				}
-
-				#menu header:hover .navLink:first-child {
-					opacity: 0;
-				}
-				#menu header:hover .navLink:nth-child(2) {
-					opacity: 1;
-				}
-				#menu header:active .navLink:nth-child(2) {
-					text-decoration: underline;
-				}
-
-				#menu .sublinks {
-					display: contents;
-				}
-
-				#menu .navSublink {
-					font-family: 'Open Sans', sans-serif;
-					font-weight: 600;
-					font-size: calc(20px * var(--scale));
-
-					margin-bottom: calc(59px * var(--scale));
-				}
-				#menu .navSublink:hover {
-					font-style: italic;
-				}
-				#menu .navSublink:active {
-					text-decoration: underline;
-				}
-
-				#menu .navSublink:last-of-type {
-					margin-bottom: calc(100px * var(--scale));
+					background: #0a131f;
 				}
 			`
 		},

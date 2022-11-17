@@ -11,15 +11,8 @@
 
 			// foo = false
 
+			// the slideout layout, assigned from by parent element
 			layout = null
-
-			#menuBtnClose
-
-			connectedCallback() {
-				super.connectedCallback()
-
-				this.#menuBtnClose.onclick = () => this.layout?.toggle()
-			}
 
 			template = () => html`
 				<link rel="stylesheet" href="./global.css" />
@@ -79,7 +72,7 @@
 					</nav>
 
 					<av-menu-btn
-						ref=${e => (this.#menuBtnClose = e)}
+						onclick=${e => this.layout?.toggle()}
 						id="menuBtnClose"
 						activated="true"
 						size="36 36"
