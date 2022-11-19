@@ -83,6 +83,10 @@ export class FlingRotation {
 	#mainPointer = -1
 	#pointerCount = 0
 
+	// The last X/Y only for a single pointer (the rest are ignored).
+	#lastX = 0
+	#lastY = 0
+
 	#onPointerDown = (event: PointerEvent) => {
 		this.#pointerCount++
 		if (this.#pointerCount === 1) this.#mainPointer = event.pointerId
@@ -92,20 +96,30 @@ export class FlingRotation {
 		this.rotationXTarget.rotation = () => false
 		this.rotationYTarget.rotation = () => false
 
+		this.#lastX = event.x
+		this.#lastY = event.y
 		let deltaX = 0
 		let deltaY = 0
 
 		this.#onMove = (event: PointerEvent) => {
 			if (event.pointerId !== this.#mainPointer) return
 
-			deltaX = event.movementY * 0.15 * this.factor
+			// We're not simply using event.movementX and event.movementY
+			// because of a Safari bug:
+			// https://bugs.webkit.org/show_bug.cgi?id=248119
+			const movementX = event.x - this.#lastX
+			const movementY = event.y - this.#lastY
+			this.#lastX = event.x
+			this.#lastY = event.y
+
+			deltaX = movementY * 0.15 * this.factor
 			this.rotationXTarget.rotation.x = clamp(
 				this.rotationXTarget.rotation.x + deltaX,
 				this.minFlingRotationX,
 				this.maxFlingRotationX,
 			)
 
-			deltaY = -event.movementX * 0.15 * this.factor
+			deltaY = -movementX * 0.15 * this.factor
 			this.rotationYTarget.rotation.y = clamp(
 				this.rotationYTarget.rotation.y + deltaY,
 				this.minFlingRotationY,
