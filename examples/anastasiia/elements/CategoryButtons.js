@@ -130,6 +130,7 @@
 				}
 				.heading span:first-child {
 					font-family: 'Austin-LightItalic', serif;
+					font-weight: 100;
 				}
 
 				#categoriesInner {

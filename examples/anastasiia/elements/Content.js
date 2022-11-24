@@ -1,4 +1,13 @@
+// CONTINUE:
+// - separate featured projects and other projects into custom elements, encapsulate slightly differing grid sizing styles.
+// - Try other projects having 4 across instead of 3.
+// - hover text for other projects items
+// - contact/footer section at bottom
+
 /* @checkJs */
+
+const scale = 0.5
+
 {
 	const {Node, element, html, ScrollFling, createEffect, untrack, onCleanup, variable, Motor} = LUME
 
@@ -15,6 +24,7 @@
 			// #logo
 			#featured
 			#otherProjects
+			#rainbow
 
 			connectedCallback() {
 				super.connectedCallback()
@@ -25,29 +35,18 @@
 				// 	this.#menuBtnOpen.opacity = 1 - layout.drawerPosition * (1 - 0)
 				// })
 
+				createEffect(() => {
+					let _contentHeight = 0
+
+					// reactive dependencies (child.calculatedSize)
+					for (const child of Array.from(this.#scrollContainer.children)) {
+						_contentHeight += child.calculatedSize.y
+					}
+
+					// this.#scrollContainer.size.y = _contentHeight
+				})
+
 				// Scroll implementation //////////////////////////////////////////////////////////////////////
-
-				// BEFORE making fling reactive ////////////////////////
-
-				// const fling = new ScrollFling({
-				// 	target: scene,
-				// 	y: 0,
-				// 	minY: 0,
-				// 	maxY: 2000,
-				// 	scrollFactor: 0.3,
-				// }).start()
-
-				// createEffect(() => {
-				// 	fling.y
-
-				// 	untrack(() => {
-				// 		this.#scrollContainer.position.y = -fling.y
-				// 		this.#scrollknob.alignPoint.y = fling.y / 2000
-				// 		this.#scrollknob.mountPoint.y = fling.y / 2000
-				// 	})
-				// })
-
-				// AFTER making fling reactive ////////////////////////
 
 				let scrollRatio = 0
 				let amountScrolled = 0
@@ -155,7 +154,7 @@
 						queuedLayout = false
 
 						const visualFormat = /*vfl*/ `
-							V:|[hero(85%)][categories(125)][featured(${featuredHeight})][skills(282)][other(${otherHeight})][letsconnect(540)]
+							V:|[hero(85%)][categories(125)][featured(${featuredHeight})][skills(282)][other(${otherHeight})][letsconnect(540)][shoes(100)]
 
 							H:|[hero]|
 							H:|[categories]|
@@ -163,6 +162,7 @@
 							H:|[skills]|
 							H:|[other]|
 							H:|[letsconnect]|
+							H:|[shoes]|
 						`
 						this.#scrollContainer.visualFormat = visualFormat
 					})
@@ -170,10 +170,15 @@
 
 				this.isos = []
 
-				const isotopeLayout = gridEl => {
+				const isotopeLayout = (gridEl, gutter) => {
 					const iso = new Isotope(gridEl, {
 						itemSelector: '.card',
 						layoutMode: 'fitRows',
+						stagger: 150,
+
+						fitRows: {
+							gutter: gutter * scale,
+						},
 					})
 
 					this.isos.push(iso)
@@ -229,7 +234,7 @@
 					observer.observe(container)
 
 					const grid = this.shadowRoot.querySelector('.featuredGrid')
-					isotopeLayout(grid)
+					isotopeLayout(grid, 112)
 				}
 
 				// Other Projects sizing based on children ///////////////////////////////////////////////////////////////////////////
@@ -256,10 +261,10 @@
 					observer.observe(container)
 
 					const grid = this.shadowRoot.querySelector('.otherProjectsGrid')
-					isotopeLayout(grid)
+					isotopeLayout(grid, 22)
 				}
 
-				// Animate things in
+				// fade things in ///////////////////////////////////////////////////////////
 				if (true) {
 					function fadeIn(element, delay) {
 						setTimeout(() => {
@@ -274,7 +279,7 @@
 									}
 								})
 							} else {
-								element.classList.remove('hide')
+								element.classList.remove('hidden')
 
 								// let opacity = 0
 								// element.style.opacity = opacity
@@ -307,13 +312,39 @@
 						// },
 					)
 
-					const children = this.#scrollContainer.children
+					const thingsToFadeIn = [
+						...Array.from(this.shadowRoot.querySelectorAll('.fadeIn')),
+						...Array.from(this.#scrollContainer.querySelectorAll('.hidden')),
+					]
 
-					for (let i = 0; i < children.length; i++) observer.observe(children[i])
+					for (let i = 0; i < thingsToFadeIn.length; i++) observer.observe(thingsToFadeIn[i])
+				}
 
-					const cards = this.#scrollContainer.querySelectorAll('.card')
+				// shader ///////////////////////////////////////////////////////////////////
 
-					for (let i = 0; i < cards.length; i++) observer.observe(cards[i])
+				animateShader(this.#rainbow)
+
+				async function animateShader(el) {
+					createEffect(() => {
+						const mat = el.behaviors.get('shader-material')
+
+						if (!mat?.meshComponent) return
+
+						// *0.5 to make the pattern size smaller
+						mat.uniforms.iResolution.value.x = el.calculatedSize.x * 0.5
+						mat.uniforms.iResolution.value.y = el.calculatedSize.y * 0.5
+
+						el.needsUpdate()
+					})
+
+					Motor.addRenderTask(t => {
+						const mat = el.behaviors.get('shader-material')
+
+						if (!mat?.meshComponent) return
+
+						mat.uniforms.iTime.value = t * 0.001
+						el.needsUpdate()
+					})
 				}
 			}
 
@@ -344,14 +375,17 @@
 						on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
 					></av-header>
 
-					<lume-scroller></lume-scroller>
+					<lume-scroller>
+						${'' /*TODO move the autolayout into here and remove scroller code from here. */}
+					</lume-scroller>
+
 					<lume-element3d id="scroller" slot="body" size="1 1" size-mode="p p">
 						<lume-autolayout
 							ref=${e => (this.#scrollContainer = e)}
 							id="scrollContainer"
 							slot="content"
 							visual-format="
-								V:|[hero(85%)][categories(125)][featured(0)][skills(282)][other(1200)][letsconnect(540)]
+								V:|[hero(85%)][categories(125)][featured(0)][skills(282)][other(1200)][letsconnect(540)][shoes(100)]
 
 								H:|[hero]|
 								H:|[categories]|
@@ -359,16 +393,18 @@
 								H:|[skills]|
 								H:|[other]|
 								H:|[letsconnect]|
+								H:|[shoes]|
 							"
 							size="1 1"
 							size-mode="p p"
 						>
-							<av-hero opacity="0" slot="hero" size="1 1" size-mode="p p"></av-hero>
+							<av-hero class="fadeIn" opacity="0" slot="hero" size="1 1" size-mode="p p"></av-hero>
 
 							${
 								/*<!-- Categories ###############################################################################################-->*/ ''
 							}
 							<av-categories
+								class="fadeIn"
 								slot="categories"
 								size-mode="p p"
 								size="1 1"
@@ -393,6 +429,7 @@
 							<lume-element3d
 								ref=${e => (this.#featured = e)}
 								id="featured"
+								class="fadeIn"
 								slot="featured"
 								opacity="0"
 								size-mode="p p"
@@ -401,7 +438,7 @@
 								<div>
 									<div class="featuredLabel">Featured projects:</div>
 									<div class="flex-row featuredGrid">
-										<div class="card hide type-experiential">
+										<div class="card hidden type-experiential">
 											<div class="cardContent">
 												<img src="./imgs/Dreamforce thumb big.jpeg" />
 												<h2>Dreamforce 2019</h2>
@@ -411,7 +448,7 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide type-industrial">
+										<div class="card hidden type-industrial">
 											<div class="cardContent">
 												<img src="./imgs/Google NEXT thumb big.jpeg" />
 												<h2>Google Next</h2>
@@ -421,7 +458,7 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide type-visual">
+										<div class="card hidden type-visual">
 											<div class="cardContent">
 												<img src="./imgs/Salesforce Connections thumb big.jpeg" />
 												<h2>Salesforce Connections 2019</h2>
@@ -431,21 +468,21 @@
 												</p>
 											</div>
 										</div>
-										<div class="card hide type-experiential">
+										<div class="card hidden type-experiential">
 											<div class="cardContent">
 												<img src="./imgs/Funimation thumb big.jpeg" />
 												<h2>Funimation</h2>
 												<p>Funimation event experience creates the portal to a world of extraordinary anime.</p>
 											</div>
 										</div>
-										<div class="card hide type-industrial">
+										<div class="card hidden type-industrial">
 											<div class="cardContent">
 												<img src="./imgs/Wisk thumb big.jpeg" />
 												<h2>Wisk</h2>
 												<p>Product reveal of a vertical takeoff flying aircraft.</p>
 											</div>
 										</div>
-										<div class="card hide type-visual">
+										<div class="card hidden type-visual">
 											<div class="cardContent">
 												<img src="./imgs/GE LOGIQ thumb big.jpeg" />
 												<h2>GE Logiq Ultrasound</h2>
@@ -455,9 +492,16 @@
 									</div>
 								</div>
 								<style>
+									#featured {
+										--gutter: calc(112px * var(--scale));
+										padding: 0px calc(165px * var(--scale));
+									}
+
 									.featuredLabel {
 										font-size: calc(30px * var(--scale));
 										font-family: 'Austin-LightItalic', serif;
+										font-weight: 100;
+										margin-bottom: calc(62px * var(--scale));
 									}
 
 									/* flex layout inspired by https://codepen.io/AaronTeering/pen/GRdoLMW */
@@ -473,9 +517,14 @@
 									}
 
 									.flex-row .card {
-										max-width: calc(25% - (var(--flex-margin) * 2 + 1px));
-										width: calc(25% - (var(--flex-margin) * 2 + 1px));
-										margin: var(--flex-margin);
+										max-width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
+										width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
+
+										/* replace with isotope fitRows.gutter option */
+										/* margin: var(--flex-margin); */
+
+										margin-bottom: var(--gutter);
+
 										/* background: #fafafa; */
 										/* border-radius: 10px; */
 										/* transition: var(--transition-time); */
@@ -505,22 +554,22 @@
 
 									@media screen and (max-width: 1600px) {
 										.flex-row .card {
-											max-width: calc(33% - (var(--flex-margin) * 2 + 1px));
-											width: calc(33% - (var(--flex-margin) * 2 + 1px));
+											max-width: calc(0.333333 * (100% - var(--gutter) * 2));
+											width: calc(0.333333 * (100% - var(--gutter) * 2));
 										}
 									}
 
 									@media screen and (max-width: 1080px) {
 										.flex-row .card {
-											max-width: calc(50% - (var(--flex-margin) * 2 + 1px));
-											width: calc(50% - (var(--flex-margin) * 2 + 1px));
+											max-width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
+											width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
 										}
 									}
 
-									@media screen and (max-width: 600px) {
+									@media screen and (max-width: 800px) {
 										.flex-row .card {
-											max-width: calc(100% - (var(--flex-margin) * 2 + 1px));
-											width: calc(100% - (var(--flex-margin) * 2 + 1px));
+											max-width: calc(1 * (100% - var(--gutter) * 0) - 1px);
+											width: calc(1 * (100% - var(--gutter) * 0) - 1px);
 										}
 									}
 
@@ -543,7 +592,7 @@
 							${
 								/*<!-- Skills description ######################################################################################### -->*/ ''
 							}
-							<av-skills-banner opacity="0" size-mode="p p" size="1 1" slot="skills"></av-skills-banner>
+							<av-skills-banner class="fadeIn" opacity="0" size-mode="p p" size="1 1" slot="skills"></av-skills-banner>
 
 							${
 								/*<!-- Other projects ############################################################################################# -->*/ ''
@@ -551,44 +600,50 @@
 							<lume-element3d
 								ref=${e => (this.#otherProjects = e)}
 								id="otherProjects"
+								class="fadeIn"
 								slot="other"
 								opacity="0"
 								size-mode="p p"
 								size="1 1"
 							>
-								<div class="flex-row otherProjectsGrid">
-									<div class="card hide type-experiential">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-industrial">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-visual">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-experiential">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-industrial">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-visual">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-experiential">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-industrial">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-visual">
-										<img src="./dreamforce-tree.jpg" />
-									</div>
-									<div class="card hide type-experiential">
-										<img src="./dreamforce-tree.jpg" />
+								<div>
+									<div class="featuredLabel">Other projects:</div>
+									<div class="flex-row otherProjectsGrid">
+										<div class="card hidden type-experiential">
+											<img src="./imgs/medical device.jpg" />
+										</div>
+										<div class="card hidden type-industrial">
+											<img src="./imgs/airport project.jpg" />
+										</div>
+										<div class="card hidden type-visual">
+											<img src="./imgs/transplant machine.jpg" />
+										</div>
+										<div class="card hidden type-experiential">
+											<img src="./imgs/Pervuy Moscovsky.jpg" />
+										</div>
+										<div class="card hidden type-industrial">
+											<img src="./imgs/linkedin-logo.jpg" />
+										</div>
+										<div class="card hidden type-visual">
+											<img src="./imgs/polydance.jpeg" />
+										</div>
+										<div class="card hidden type-experiential">
+											<img src="./imgs/adobe express logo.png" />
+										</div>
+										<div class="card hidden type-industrial">
+											<img src="./imgs/library.jpg" />
+										</div>
+										<div class="card hidden type-visual">
+											<img src="./imgs/yakama.jpg" />
+										</div>
 									</div>
 								</div>
 								<style>
+									#otherProjects {
+										--gutter: calc(22px * var(--scale));
+										padding: 0px calc(83px * var(--scale));
+									}
+
 									#otherProjects .flex-row {
 										--flex-margin: 10px;
 									}
@@ -598,39 +653,90 @@
 							${
 								/*<!-- Connect #################################################################################################### -->*/ ''
 							}
-							<lume-element3d id="letsconnect" slot="letsconnect" opacity="0" size-mode="p p" size="1 1">
-								<div left>
-									<h2>
-										<span>Ready to make something</span>
-										<br />
-										<span>Awesome?</span>
-									</h2>
-									<p>
-										I AM ALWAYS CURIOUS TO MEET NEW PEOPLE AND VALUE KEEPING RELATIONSHIPS. IF YOU WANT TO CHAT ABOUT
-										WORK OR LIFE, SEND ME A NOTE TO
-									</p>
-									<p>
-										<a href="mailto:vnastasia@gmail.com"><span>vnastasia@gmail.com</span> </a>
-									</p>
-								</div>
-								<div right>
-									<div>
-										<a href="https://twitter.com/vedernikova">@vedernikova</a>
-									</div>
-									<div>
-										<a href="https://www.instagram.com/anastasia.vpea/">@anastasia.vpea</a>
-									</div>
-								</div>
+							<lume-element3d id="letsconnect" slot="letsconnect" size-mode="p p" size="1 1">
+								<lume-scene>
+									<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
+										<div left>
+											<h2>
+												<span class="getReady">Ready to make something</span>
+												<br />
+												<span class="forAwesome">Awesome</span><span class="areYouReady">?</span>
+											</h2>
+											<div class="sayHello">
+												<a href="mailto:vnastasia@gmail.com">Contact</a>
+											</div>
+										</div>
+									</lume-element3d>
+									<lume-element3d
+										class="fadeIn"
+										opacity="0"
+										align-point="0 0.5"
+										position=${[659 * scale, 0, -10]}
+										mount-point="0.5 0.5"
+										size=${[260 * scale, 443 * scale]}
+									>
+										<lume-scene webgl>
+											<lume-plane
+												ref=${e => (this.#rainbow = e)}
+												has="shader-material"
+												size-mode="p p"
+												size="1 1"
+												scale="1 1"
+												uniforms='{
+													"iTime": { "value": 0 },
+													"iResolution": { "value": {"x": 1, "y": 1, "z": 1} }
+												}'
+												vertex-shader="
+													varying vec2 vUv;
+
+													void main() {
+														vUv = uv;
+														gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+													}
+												"
+												fragment-shader="
+													#include <common>
+
+													uniform vec3 iResolution;
+													uniform float iTime;
+
+													// The following is the default shader when you start a new shadertoy example.
+													// By iq: https://www.shadertoy.com/user/iq
+													// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
+													// BEGIN SHADERTOY CODE {
+
+													void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+														// Normalized pixel coordinates (from 0 to 1)
+														vec2 uv = fragCoord/iResolution.xy;
+
+														// Time varying pixel color
+														vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+
+														// Output to screen
+														fragColor = vec4(col,1.0);
+														//fragColor = vec4(1.0, 0.3, 0.1, 1.0);
+													}
+
+													// END SHADERTOY CODE }
+
+													varying vec2 vUv;
+
+													void main() {
+														mainImage(gl_FragColor, vUv / 2.0 * gl_FragCoord.xy);
+													}
+												"
+											></lume-plane>
+										</lume-scene>
+									</lume-element3d>
+								</lume-scene>
 								<style>
-									#letsconnect {
-										display: flex !important;
-										align-items: flex-end;
+									.thatsAWrap {
 										padding: 0 calc(157px * var(--scale)) calc(157px * var(--scale));
 									}
 
 									#letsconnect [left] {
-										width: 80%;
-										padding-left: 20px;
+										width: 100%;
 
 										display: flex;
 										flex-direction: column;
@@ -639,10 +745,6 @@
 									/* TODO scaled sizes */
 									#letsconnect [left] h2 {
 										font-size: 90px;
-									}
-
-									#letsconnect [left] span:nth-of-type(2) {
-										padding-left: 84px;
 									}
 
 									#letsconnect [left] p {
@@ -656,11 +758,47 @@
 										padding: 10px;
 									}
 
-									#letsconnect [right] {
-										width: 20%;
+									.getReady {
+										font-family: 'Austin-LightItalic', serif;
+										font-size: calc(165px * var(--scale));
+										font-weight: 100;
+									}
 
+									.forAwesome {
+										padding-left: calc(650px * var(--scale));
+										font-family: 'Open Sans', sans-serif;
+										font-weight: 700;
+										font-size: calc(165px * var(--scale));
+										text-transform: uppercase;
+									}
+
+									.areYouReady {
+										font-family: 'Austin-LightItalic', serif;
+										font-size: calc(170px * var(--scale));
+										font-weight: 100;
+									}
+
+									.sayHello {
 										display: flex;
-										flex-direction: column;
+										justify-content: center;
+									}
+
+									.sayHello a {
+									}
+								</style>
+							</lume-element3d>
+							<lume-element3d class="fadeIn" opacity="0" slot="shoes" size-mode="p p" size="1 1">
+								<div class="onlyTheBeginning">
+									<span class="original">Copyright © 2022 <span class="avp">Anastasiia.V.Pea</span></span>
+								</div>
+								<style>
+									.onlyTheBeginning {
+										height: 100%;
+										background: black;
+										padding: calc(71px * var(--scale)) calc(165px * var(--scale));
+									}
+
+									.avp {
 									}
 								</style>
 							</lume-element3d>

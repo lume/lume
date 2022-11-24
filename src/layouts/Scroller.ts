@@ -1,7 +1,15 @@
+// TODO we need to be able to easily calculate the min/max X/Y position of
+// elements, taking into account both regular position as well as mount point
+// and align point. Perhaps all elements can have a calculatedPosition, similar
+// to calculatedSize, that gives us absolute X/Y/Z relative to a parent taking
+// into account mount/align points.
+
 import {element, ElementAttributes, variable} from '@lume/element'
 import {html} from '@lume/element/dist/html.js'
 import {createEffect, onCleanup, untrack} from 'solid-js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import type {SharedAPI} from '../core/SharedAPI.js'
+import {ScrollFling} from '../interaction/ScrollFling.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 export type ScrollerAttributes = Element3DAttributes
@@ -21,7 +29,6 @@ export type ScrollerAttributes = Element3DAttributes
  */
 @element('lume-scroller', autoDefineElements)
 export class Scroller extends Element3D {
-	// Use a ShadowRoot
 	// override readonly hasShadow = true
 
 	#scrollContainer: Element3D | null = null
@@ -37,12 +44,21 @@ export class Scroller extends Element3D {
 		const scrollableAmount = variable(0)
 		const contentHeight = variable(0)
 
+		// Trigger reactivity whenever slotted children change.
+		const slotChildrenChangeCount = variable(0)
+		const scrollContainerSlot = this.#scrollContainer?.children[0] as HTMLSlotElement
+		scrollContainerSlot.addEventListener('slotchange', () => slotChildrenChangeCount(slotChildrenChangeCount() + 1))
+
 		// Scroll implementation //////////////////////////////////////////////////////////////////////
 		createEffect(() => {
 			let _contentHeight = 0
 
+			// Re-run when slotted children change.
+			slotChildrenChangeCount()
+
 			// reactive dependencies (child.calculatedSize)
-			for (const child of Array.from(this.#scrollContainer!.children)) {
+			// for (const child of Array.from(this.#scrollContainer!.children) as SharedAPI[]) {
+			for (const child of Array.from(this.#scrollContainer!.composedLumeChildren) as SharedAPI[]) {
 				_contentHeight += child.calculatedSize.y
 			}
 
@@ -58,7 +74,7 @@ export class Scroller extends Element3D {
 			// TODO make scrollfling (and other flings) fully updateable, avoid creating a new one each time.
 			console.log('make new fling', amountScrolled, scrollRatio, scrollRatio * untrack(scrollableAmount))
 			const fling = new ScrollFling({
-				target: untrack(() => this.scene),
+				target: untrack(() => this.scene!),
 				// y: scrollRatio * untrack(scrollableAmount),
 				// Use Math.min in case the page is at the end, so that the viewport won't be scrolled beyond the end of content in case content height shrunk.
 				y: Math.min(amountScrolled, untrack(scrollableAmount)),

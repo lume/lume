@@ -1,6 +1,8 @@
 {
 	const {Node, element, html, createEffect, untrack} = LUME
 
+	const scale = 0.5
+
 	class Categories extends Node {
 		hasShadow = true
 
@@ -11,7 +13,7 @@
 			const padding = this.shadowRoot.querySelector('#categoriesPadding')
 
 			createEffect(() => {
-				untrack(() => padding.size).x = Math.max(0, categories.calculatedSize.x - 60 * 2)
+				untrack(() => padding.size).x = Math.max(0, categories.calculatedSize.x - 165 * scale * 2)
 			})
 		}
 
@@ -90,6 +92,7 @@
 			}
 			#categories .heading span:first-child {
 				font-family: 'Austin-LightItalic', serif;
+				font-weight: 100;
 			}
 		`
 	}

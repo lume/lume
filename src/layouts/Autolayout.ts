@@ -59,6 +59,8 @@ export class Autolayout extends Element3D {
 		strict: false,
 	}
 
+	// TODO there was a bug with shadowdom stuff that prevented autolayout docs
+	// examples from switching layouts properly. is that still a problem?
 	override hasShadow = true
 
 	@attribute visualFormat: string | null = ''

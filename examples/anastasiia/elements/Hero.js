@@ -72,7 +72,7 @@
 				}
 				#hero .first {
 					font-family: 'Austin-LightItalic', serif;
-					font-weight: 300;
+					font-weight: 100;
 					font-size: 90px;
 				}
 				#hero .middlelast {
