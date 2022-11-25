@@ -1,4 +1,4 @@
-import {element, numberAttribute} from '@lume/element'
+import {element} from '@lume/element'
 import {Light} from './Light.js'
 import {AmbientLight as ThreeAmbientLight} from 'three/src/lights/AmbientLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -18,19 +18,23 @@ export type AmbientLightAttributes = LightAttributes
  */
 @element('lume-ambient-light', autoDefineElements)
 export class AmbientLight extends Light {
-	/**
-	 * @property {number} intensity -
-	 *
-	 * `attribute`
-	 *
-	 * Default: `1`
-	 *
-	 * The intensity of the light.
-	 *
-	 * The intensity of this element does not change behavior when [physically
-	 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
-	 */
-	@numberAttribute(1) intensity: number = 1
+	constructor() {
+		super()
+
+		/**
+		 * @property {number} intensity -
+		 *
+		 * `attribute`
+		 *
+		 * Default: `1`
+		 *
+		 * The intensity of the light.
+		 *
+		 * The intensity of this element does not change behavior when [physically
+		 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
+		 */
+		this.intensity = 1
+	}
 
 	override makeThreeObject3d() {
 		return new ThreeAmbientLight()

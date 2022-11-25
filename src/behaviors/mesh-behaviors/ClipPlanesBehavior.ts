@@ -4,7 +4,12 @@ import {ClipPlane} from '../../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
 import type {MaterialBehavior} from './index.js'
 
-export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipShadows' | 'flipClip' | 'clipDisabled'
+export type ClipPlanesBehaviorAttributes =
+	| 'clipPlanes'
+	| 'clipIntersection'
+	| 'clipShadows'
+	| 'flipClip'
+	| 'clipDisabled'
 
 let refCount = 0
 
@@ -27,6 +32,18 @@ let refCount = 0
  */
 @reactive
 export class ClipPlanesBehavior extends MeshBehavior {
+	/**
+	 * @property {boolean} clipIntersection
+	 *
+	 * `attribute`
+	 *
+	 * Default: 'false'
+	 *
+	 * Changes the behavior of clipping planes so that only their intersection
+	 * is clipped, rather than their union.
+	 */
+	@booleanAttribute(false) clipIntersection = false
+
 	/**
 	 * @property {boolean} clipShadows
 	 *
@@ -102,6 +119,9 @@ export class ClipPlanesBehavior extends MeshBehavior {
 			if (typeof v !== 'string') {
 				if (v instanceof ClipPlane && v.scene) this.#clipPlanes.push(v)
 				continue
+			} else if (!v) {
+				// skip empty strings, they cause an error with querySelector
+				continue
 			}
 
 			let root = this.element.getRootNode() as Document | ShadowRoot | null
@@ -122,6 +142,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 					// composed)
 					if (el instanceof ClipPlane && el.scene) this.#clipPlanes.push(el)
 
+					// TODO check the target is in the same scene
 					// TODO We aren't observing el.scene, so if the element
 					// becomes a particpant in the scene later nothing will
 					// happen.
@@ -192,7 +213,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 			this.#observer.observe(this.element.getRootNode(), {childList: true, subtree: true})
 
 			createEffect(() => {
-				const {clipPlanes, clipShadows, flipClip} = this
+				const {clipPlanes, clipIntersection, clipShadows, flipClip} = this
 
 				const mat = this.material
 				if (!mat) return
@@ -213,6 +234,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 				if (!mat.clippingPlanes) mat.clippingPlanes = []
 
 				mat.clippingPlanes.length = 0
+				mat.clipIntersection = clipIntersection
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
@@ -220,6 +242,8 @@ export class ClipPlanesBehavior extends MeshBehavior {
 					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
 				}
 			})
+
+			// No onCleanup for this.#observer needed here because unloadGL handles it.
 		})
 	}
 

@@ -13,7 +13,9 @@
 		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
 		"skipLibCheck": true,
 
+		// TODO move to cli base config
 		"noImplicitOverride": true
+		// "noUncheckedIndexedAccess": true // TODO enable, fix errors
 	},
 
 	// TODO Ideally we don't want test API type defs showing up in source code,

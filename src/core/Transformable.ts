@@ -1,7 +1,7 @@
 import {createEffect, createRoot, on} from 'solid-js'
 import {attribute, element} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
-import {SinglePropertyFunction, Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
+import {Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
 import type {SizeableAttributes} from './Sizeable.js'
 
@@ -13,7 +13,6 @@ export type TransformableAttributes =
 	| 'origin'
 	| 'alignPoint'
 	| 'mountPoint'
-	| 'opacity'
 
 const position = new WeakMap<Transformable, XYZNumberValues>()
 const rotation = new WeakMap<Transformable, XYZNumberValues>()
@@ -21,7 +20,6 @@ const scale = new WeakMap<Transformable, XYZNumberValues>()
 const origin = new WeakMap<Transformable, XYZNumberValues>()
 const alignPoint = new WeakMap<Transformable, XYZNumberValues>()
 const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
-const opacity = new WeakMap<Transformable, number>()
 
 /**
  * @class Transformable - A class containing transform-related features for all
@@ -227,27 +225,5 @@ export class Transformable extends Sizeable {
 	get mountPoint(): XYZNumberValues {
 		if (!mountPoint.has(this)) mountPoint.set(this, new XYZNumberValues(0, 0, 0))
 		return mountPoint.get(this)!
-	}
-
-	/**
-	 * @property {string | number | null} opacity -
-	 *
-	 * *attribute*
-	 *
-	 * Default: `1`
-	 *
-	 * Set the object's opacity.
-	 *
-	 * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
-	 */
-	// TODO opacity doesn't belong in Transformable
-	@attribute
-	set opacity(newValue: number | SinglePropertyFunction) {
-		if (!opacity.has(this)) opacity.set(this, 1)
-		this._setPropertySingle('opacity', v => opacity.set(this, v), newValue)
-	}
-	get opacity(): number {
-		if (!opacity.has(this)) opacity.set(this, 1)
-		return opacity.get(this)!
 	}
 }

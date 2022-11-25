@@ -1,6 +1,6 @@
 import {Color} from 'three/src/math/Color.js'
 import {Light as ThreeLight} from 'three/src/lights/Light.js'
-import {attribute, element} from '@lume/element'
+import {attribute, element, numberAttribute} from '@lume/element'
 import {Element3D} from '../core/Element3D.js'
 
 import type {TColor} from '../utils/three.js'
@@ -12,11 +12,14 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
  * @abstract
  * @class Light -
  *
- * An abstract base class for light elements.
+ * `abstract`
+ *
+ * An abstract base class for light elements. This class has properties common
+ * to all types of light.
  *
  * @extends Element3D
  */
-// @ts-expect-error decorator type doesn't work on abstract class
+// @ts-expect-error decorator type doesn't work on abstract class (yet, todo)
 @element
 export abstract class Light extends Element3D {
 	/**
@@ -50,9 +53,9 @@ export abstract class Light extends Element3D {
 	 *
 	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
 	 * is enabled, the units of intensity depend on the type of light (f.e.
-	 * [`PointLight`](./PointLight) <!-- or [`SpotLight`]() -->).
+	 * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
 	 */
-	abstract intensity: number
+	@numberAttribute(1) intensity: number = 1
 
 	// This is not used in practice because this class is abstract, but this enforces
 	// (in TypeScript) that subclasses that override this will return a subtype of

@@ -1,19 +1,14 @@
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
-import {numberAttribute, booleanAttribute, element} from '@lume/element'
-import {Light} from './Light.js'
+import {numberAttribute, element} from '@lume/element'
+import {LightWithShadow, LightWithShadowAttributes} from './LightWithShadow.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {LightAttributes} from './Light.js'
-
 export type DirectionalLightAttributes =
-	| LightAttributes
-	| 'castShadow'
-	| 'shadowMapWidth'
-	| 'shadowMapHeight'
-	| 'shadowRadius'
-	| 'shadowBias'
-	| 'shadowCameraNear'
-	| 'shadowCameraFar'
+	| LightWithShadowAttributes
+	| 'shadowCameraTop'
+	| 'shadowCameraRight'
+	| 'shadowCameraBottom'
+	| 'shadowCameraLeft'
 
 // TODO @element jsdoc tag
 /**
@@ -31,6 +26,11 @@ export type DirectionalLightAttributes =
  * The direction of the light is the direction from the light's
  * `position` to the world origin (the center of a scene's viewport).
  *
+ * When casting shadows, an orthographic camera is used, and shadows are limited
+ * to be within the ortho box specified by the `shadowCamera*` properties. While
+ * light color affects all objects in a scene, only objects within the shadow
+ * camera limits will be affects by shadows.
+ *
  * ## Example
  *
  * <div id="example"></div>
@@ -43,34 +43,30 @@ export type DirectionalLightAttributes =
  *   })
  * </script>
  *
- * @extends Light
+ * @extends LightWithShadow
  */
 @element('lume-directional-light', autoDefineElements)
-export class DirectionalLight extends Light {
-	/**
-	 * @property {number} intensity -
-	 *
-	 * `attribute`
-	 *
-	 * Default: `1`
-	 *
-	 * The intensity of the light.
-	 *
-	 * The intensity of this element does not change behavior when [physically
-	 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
-	 */
-	@numberAttribute(1) intensity: number = 1
+export class DirectionalLight extends LightWithShadow {
+	constructor() {
+		super()
 
-	@booleanAttribute(true) castShadow = true
+		/**
+		 * @property {number} intensity -
+		 *
+		 * `attribute`
+		 *
+		 * Default: `1`
+		 *
+		 * The intensity of the light.
+		 *
+		 * The intensity of this element does not change behavior when [physically
+		 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
+		 */
+		this.intensity = 1
+	}
 
-	// These map to THREE.DirectionalLightShadow properties.
+	// These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
-	@numberAttribute(512) shadowMapWidth = 512
-	@numberAttribute(512) shadowMapHeight = 512
-	@numberAttribute(3) shadowRadius = 3
-	@numberAttribute(0) shadowBias = 0
-	@numberAttribute(1) shadowCameraNear = 1
-	@numberAttribute(2000) shadowCameraFar = 2000
 	@numberAttribute(1) shadowCameraTop = 1000
 	@numberAttribute(1) shadowCameraRight = 1000
 	@numberAttribute(1) shadowCameraBottom = -1000
@@ -81,24 +77,12 @@ export class DirectionalLight extends Light {
 
 		this.createGLEffect(() => {
 			const light = this.three
+			const shadow = light.shadow
 
-			light.castShadow = this.castShadow
-
-			const shadow = this.three.shadow
-
-			shadow.mapSize.width = this.shadowMapWidth
-			shadow.mapSize.height = this.shadowMapHeight
-			shadow.radius = this.shadowRadius
-			shadow.bias = this.shadowBias
-			// TODO: auto-adjust near and far planes like we will with Camera,
-			// unless the user supplies a manual value.
-			shadow.camera.near = this.shadowCameraNear
-			shadow.camera.far = this.shadowCameraFar
 			shadow.camera.top = this.shadowCameraTop
 			shadow.camera.right = this.shadowCameraRight
 			shadow.camera.bottom = this.shadowCameraBottom
 			shadow.camera.left = this.shadowCameraLeft
-			// TODO what about top, bottom, right, left values for the OrthoGraphicCamera of DirectionalLightShadow?
 
 			shadow.needsUpdate = true
 			this.needsUpdate()

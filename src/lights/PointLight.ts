@@ -1,21 +1,9 @@
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
-import {numberAttribute, booleanAttribute, element} from '@lume/element'
-import {Light} from './Light.js'
+import {numberAttribute, element} from '@lume/element'
+import {LightWithShadow, type LightWithShadowAttributes} from './LightWithShadow.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {LightAttributes} from './Light.js'
-
-export type PointLightAttributes =
-	| LightAttributes
-	| 'distance'
-	| 'decay'
-	| 'castShadow'
-	| 'shadowMapWidth'
-	| 'shadowMapHeight'
-	| 'shadowRadius'
-	| 'shadowBias'
-	| 'shadowCameraNear'
-	| 'shadowCameraFar'
+export type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'decay'
 
 // TODO @element jsdoc tag
 
@@ -28,6 +16,9 @@ export type PointLightAttributes =
  * An element that illuminates objects near it, casting shadows in any direction
  * away from the light by default. The light element itself is not visible; to
  * visualize it you can place a sphere as a child of the light for example.
+ *
+ * The light's shadow projection camera is a PerspectiveCamera with fov of 90,
+ * with aspect of 1.
  *
  * All mesh elements [receive](../meshes/Mesh#receiveshadow) or
  * [cast](../meshes/Mesh#castshadow) shadows by default.
@@ -44,10 +35,10 @@ export type PointLightAttributes =
  *   })
  * </script>
  *
- * @extends Light
+ * @extends LightWithShadow
  */
 @element('lume-point-light', autoDefineElements)
-export class PointLight extends Light {
+export class PointLight extends LightWithShadow {
 	/**
 	 * @property {number} intensity -
 	 *
@@ -62,11 +53,47 @@ export class PointLight extends Light {
 	 * enabled, intensity is the luminous intensity of the light measured in
 	 * candela (cd).
 	 */
-	@numberAttribute(1) intensity: number = 1
+	@numberAttribute(1) override intensity: number = 1
 
+	// These map to THREE.PointLightShadow properties, which uses a perspective camera for shadow projection.
+	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
+	@numberAttribute(90) shadowCameraFov = 90
+
+	/**
+	 * @property {number} distance -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `0`
+	 *
+	 * In the default lighting mode, when distance is zero, light does not
+	 * attenuate (intensity stays constant as it travels away the light's
+	 * position). When distance is non-zero, light will attenuate linearly from
+	 * maximum intensity at the light's position down to zero at this distance
+	 * from the light.
+	 *
+	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
+	 * is enabled, when distance is zero, light will attenuate according to
+	 * inverse-square law to infinite distance. When distance is non-zero, light
+	 * will attenuate according to inverse-square law until near the distance
+	 * cutoff, where it will then attenuate quickly and smoothly to 0.
+	 * Inherently, cutoffs are not physically correct.
+	 */
 	@numberAttribute(0) distance = 0
+
+	/**
+	 * @property {number} decay
+	 *
+	 * `attribute`
+	 *
+	 * Default: `1`
+	 *
+	 * The amount the light dims along the distance of the light.
+	 *
+	 * In [physically correct mode](../core/Scene#physicallycorrectlights), a
+	 * decay value of `2` leads to physically realistic light falloff.
+	 */
 	@numberAttribute(1) decay = 1
-	@booleanAttribute(true) castShadow = true
 
 	/**
 	 * @property {number} power -
@@ -92,16 +119,9 @@ export class PointLight extends Light {
 		// set the light's intensity (in candela) from the desired luminous power (in lumens)
 		this.intensity = power / (4 * Math.PI)
 	}
-	// TODO @numberAttribute(1) power = computed(() => this.intensity * 4 * Math.PI) // see https://threejs.org/docs/index.html?q=light#api/en/lights/PointLight.power
 
-	// These map to THREE.PointLightShadow properties.
-	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
-	@numberAttribute(512) shadowMapWidth = 512
-	@numberAttribute(512) shadowMapHeight = 512
-	@numberAttribute(3) shadowRadius = 3
-	@numberAttribute(0) shadowBias = 0
-	@numberAttribute(1) shadowCameraNear = 1
-	@numberAttribute(2000) shadowCameraFar = 2000
+	// TODO computed properties, f.e.
+	// @memo @numberAttribute(1) power = this.intensity * 4 * Math.PI
 
 	override _loadGL() {
 		if (!super._loadGL()) return false
@@ -111,20 +131,9 @@ export class PointLight extends Light {
 
 			light.distance = this.distance
 			light.decay = this.decay
-			light.castShadow = this.castShadow
 
-			const shadow = this.three.shadow
+			// We don't need to set three.power here because threejs already maps that itself.
 
-			shadow.mapSize.width = this.shadowMapWidth
-			shadow.mapSize.height = this.shadowMapHeight
-			shadow.radius = this.shadowRadius
-			shadow.bias = this.shadowBias
-			// TODO: auto-adjust near and far planes like we will with Camera,
-			// unless the user supplies a manual value.
-			shadow.camera.near = this.shadowCameraNear
-			shadow.camera.far = this.shadowCameraFar
-
-			shadow.needsUpdate = true
 			this.needsUpdate()
 		})
 

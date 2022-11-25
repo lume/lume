@@ -1,5 +1,5 @@
 import {Object3D} from 'three/src/core/Object3D.js'
-import {reactive, untrack, element} from '@lume/element'
+import {reactive, untrack, element, attribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
@@ -17,6 +17,7 @@ import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
 import type {CompositionType} from './CompositionTracker'
 import type {TransformableAttributes} from './Transformable.js'
+import type {SinglePropertyFunction} from './Sizeable.js'
 
 // Exposes the `has=""` attribute type definition for all elements in TypeScript JSX templates.
 import type {} from 'element-behaviors/src/attribute-types'
@@ -34,7 +35,9 @@ const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
 class GLEffects extends Effectful(Object) {}
 class CSSEffects extends Effectful(Object) {}
 
-export type BaseAttributes = TransformableAttributes
+const opacity = new WeakMap<Transformable, number>()
+
+export type BaseAttributes = TransformableAttributes | 'opacity'
 
 // TODO @abstract jsdoc tag
 /**
@@ -71,6 +74,28 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 	 * @property {boolean} isElement3D - True if a subclass of this class is an `Element3D`.
 	 */
 	override isElement3D = false
+
+	/**
+	 * @property {string | number | null} opacity -
+	 *
+	 * *attribute*
+	 *
+	 * Default: `1`
+	 *
+	 * Set the object's opacity.
+	 *
+	 * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
+	 */
+	// TODO convert opacity to multiplicative down the tree for gl materials.
+	@attribute
+	set opacity(newValue: number | SinglePropertyFunction) {
+		if (!opacity.has(this)) opacity.set(this, 1)
+		this._setPropertySingle('opacity', v => opacity.set(this, v), newValue)
+	}
+	get opacity(): number {
+		if (!opacity.has(this)) opacity.set(this, 1)
+		return opacity.get(this)!
+	}
 
 	/**
 	 * @property {boolean} glLoaded

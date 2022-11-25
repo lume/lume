@@ -148,18 +148,19 @@ export class Scene extends SharedAPI {
 	@booleanAttribute(false) swapLayers = false
 
 	/**
-	 * @property {'pcf' | 'pcfsoft' | 'basic'} shadowmapType -
+	 * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
 	 *
 	 * *attribute*
 	 *
 	 * Default: `'basic'`
 	 *
-	 * Specifies the type of shadows to use. The value can be 'pcf', 'pcfsoft',
-	 * or 'basic'. See the "Shadow Types" section in Three.js [Renderer
+	 * Specifies the type of shadows to use. The value can be `'basic'`,
+	 * `'pcf'`, `'pcfsoft'`, or `'vsm'`. See the "Shadow Types" section in
+	 * Three.js [Renderer
 	 * Constants](https://threejs.org/docs/#api/en/constants/Renderer) for
 	 * descriptions.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@attribute shadowmapType: ShadowMapTypeString | null = 'basic'
 
@@ -173,7 +174,7 @@ export class Scene extends SharedAPI {
 	 * When `true`, enables VR capabilities. The user
 	 * can click a button to enter VR mode.
 	 *
-	 * Applies only if `webgl` is `true`. CSS content can not be natively
+	 * Applies only if [`webgl`](#webgl) is `true`. CSS content can not be natively
 	 * rendered with the browser's WebXR. There exist some tricks to import CSS
 	 * rendering in the form of an SVG image to use as a texture in WebGL and
 	 * hence WebXR, but it has some limitations including low performance if
@@ -195,7 +196,7 @@ export class Scene extends SharedAPI {
 	 * default of `0` or the color won't be visible and instead only the color of
 	 * whatever is behind the `<lume-scene>` will be visible.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@attribute backgroundColor: TColor | null = new Color('white')
 
@@ -213,7 +214,7 @@ export class Scene extends SharedAPI {
 	 * means the background is fully transparent. This is ignored if the
 	 * [`background`](#background) property is set.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@numberAttribute(0) backgroundOpacity = 0
 
@@ -235,7 +236,7 @@ export class Scene extends SharedAPI {
 	 * ignored. Any transparent parts of the image will be rendered
 	 * as color white.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@attribute background: string | null = null
 
@@ -250,7 +251,7 @@ export class Scene extends SharedAPI {
 	 * is equirectangular, set this to `true` so use it like a skybox,
 	 * otherwise the image will be used as a regular 2D background image.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@booleanAttribute(false) equirectangularBackground = false
 
@@ -266,7 +267,7 @@ export class Scene extends SharedAPI {
 	 * be an equirectangular image used for env maps for things like
 	 * reflections on metallic objects in the scene.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@attribute environment: string | null = null
 
@@ -293,7 +294,7 @@ export class Scene extends SharedAPI {
 	 * and far cannot be configured. Instead, expo2 fog is more realistic, and only it's
 	 * overall "physical" density can be configured with the `fogDensity` property.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@stringAttribute('none') fogMode: FogMode = 'none'
 
@@ -308,7 +309,7 @@ export class Scene extends SharedAPI {
 	 * the distance from the camera where fog starts to appear and objects start
 	 * to be less visible.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@numberAttribute(0) fogNear = 0
 
@@ -323,7 +324,7 @@ export class Scene extends SharedAPI {
 	 * the distance from the camera where fog reaches maximum density and
 	 * objects are no longer visible.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@numberAttribute(1000) fogFar = 1000
 
@@ -340,7 +341,7 @@ export class Scene extends SharedAPI {
 	 * You will want to change the value to match that of, or be similar to,
 	 * your scene's `backgroundColor`.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@stringAttribute('gray') fogColor: string = 'gray'
 
@@ -354,7 +355,7 @@ export class Scene extends SharedAPI {
 	 * If `fogMode` is set to `'expo2'`, this
 	 * configures the fog density.
 	 *
-	 * Applies only if `webgl` is `true`.
+	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
 	@numberAttribute(0.0025) fogDensity = 0.0025
 

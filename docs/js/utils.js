@@ -750,6 +750,177 @@ function directionalLightExample() {
 	`)
 }
 
+function spotLightExample() {
+	return stripIndent(html`
+		<script src="${host}global.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js"></script>
+
+		<lume-scene webgl shadowmap-type="soft">
+			<lume-ambient-light color="white" intensity="0.7"></lume-ambient-light>
+
+			<!-- A sphere to visualize the world origin -->
+			<lume-sphere
+				size="20"
+				position="0 0 20"
+				align-point="0.5 0.5"
+				mount-point="0.5 0.5"
+				color="yellow"
+				has="basic-material"
+			>
+				<lume-mixed-plane size="220 50" rotation="-90 0 0" position="0 0 40" align-point="0 1" mount-point="0 1">
+					world origin
+				</lume-mixed-plane>
+			</lume-sphere>
+
+			<lume-plane color="white" size="20000 20000" mount-point="0.5 0.5" rotation="0 0 30" position="600 600">
+				<!-- For simplicity, let's position the light, and a cube,
+				relative to (as children of) the "floor". -->
+
+				<!-- A point in space that determines direction of a cone-shaped
+				light emission. It will be pointed at (targetted at) the
+				#object1. -->
+				<lume-spot-light
+					id="light1"
+					align-point="0.5 0.5"
+					color="deeppink"
+					position="0 0 400"
+					distance="0"
+					intensity="0.3"
+					angle="30"
+					penumbra="0.2"
+					shadow-map-width="1024"
+					shadow-map-height="1024"
+					target="#object1"
+				>
+					<lume-sphere
+						size="10"
+						color="deeppink"
+						has="basic-material"
+						mount-point="0.5 0.5 0.5"
+						cast-shadow="false"
+						receive-shadow="false"
+					></lume-sphere>
+				</lume-spot-light>
+
+				<!-- A second such light pointed at (targetted at) the #object2. -->
+				<lume-spot-light
+					id="light2"
+					align-point="0.5 0.5"
+					color="royalblue"
+					position="0 0 400"
+					distance="0"
+					intensity="0.4"
+					angle="30"
+					penumbra="0.2"
+					shadow-map-width="1024"
+					shadow-map-height="1024"
+				>
+					<lume-sphere
+						size="10"
+						color="royalblue"
+						has="basic-material"
+						mount-point="0.5 0.5 0.5"
+						cast-shadow="false"
+						receive-shadow="false"
+					></lume-sphere>
+				</lume-spot-light>
+
+				<!-- A box that will cast a shadow onto the floor. -->
+				<lume-element3d id="object1" align-point="0.5 0.5" mount-point="0.5 0.5" position="100 100 60">
+					<lume-gltf-model
+						id="model"
+						src="${host}examples/disco-helmet/DamagedHelmet.glb"
+						color="skyblue"
+						scale="50 50 50"
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+						rotation="-90 0 0"
+					></lume-gltf-model>
+				</lume-element3d>
+
+				<!-- A second such box. -->
+				<lume-box
+					id="object2"
+					color="skyblue"
+					size="50 50 50"
+					align-point="0.5 0.5"
+					mount-point="0.5 0.5"
+					position="-100 -100 20"
+					rotation="0 0 10"
+				></lume-box>
+
+				<!-- Add an interactive camera viewpoint. -->
+				<lume-element3d align-point="0.5 0.5" rotation="-90 0 0" position="0 0 60">
+					<lume-camera-rig initial-polar-angle="30" min-polar-angle="5" initial-distance="500"></lume-camera-rig>
+				</lume-element3d>
+			</lume-plane>
+		</lume-scene>
+
+		<style>
+			html,
+			body {
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				background: #b2b2b2;
+				touch-action: none;
+			}
+
+			lume-mixed-plane {
+				font-size: 40px;
+				padding: 0 10px;
+				background: black;
+				color: skyblue;
+			}
+		</style>
+
+		<script>
+			LUME.defineElements()
+
+			const pane = new Tweakpane.Pane()
+			const folder = pane.addFolder({title: 'play with options', expanded: false})
+
+			folder.addInput(light1, 'debug')
+			folder.addInput(light1, 'penumbra', {min: 0, max: 1})
+			folder.addInput(light1, 'angle', {min: 10, max: 32})
+
+			folder
+				.addInput({target: '#object1'}, 'target', {
+					label: 'light1 target',
+					options: {'none (world origin)': '', '#object1': '#object1', '#object2': '#object2'},
+				})
+				.on('change', event => (light1.target = event.value))
+
+			folder
+				.addInput({target: '#object2'}, 'target', {
+					label: 'light2 target',
+					options: {'none (world origin)': '', '#object1': '#object1', '#object2': '#object2'},
+				})
+				.on('change', event => (light2.target = event.value))
+
+			LUME.autorun(() => {
+				light2.debug = light1.debug
+				light2.penumbra = light1.penumbra
+				light2.angle = light1.angle
+			})
+
+			light2.target = [object2]
+
+			object1.rotation = (x, y, z) => [x, y, ++z]
+			object2.rotation = (x, y, z) => [x, y, ++z]
+			light1.position = (x, y, z, t) => [x, Math.sin(t * 0.001) * 400, z]
+			light2.position = (x, y, z, t) => [Math.sin(t * 0.001) * 400, y, z]
+
+			model.on('MODEL_LOAD', () => {
+				model.three.traverse(node => {
+					node.castShadow = true
+					console.log('shadow', node, node.castShadow)
+				})
+			})
+		</script>
+	`)
+}
+
 function perspectiveLayeredImage({bg, fg, bgPosition = {x: 0, y: 0}, fgPosition = {}}) {
 	return stripIndent(html`
 		<script src="${host}global.js"></script>
