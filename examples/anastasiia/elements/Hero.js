@@ -1,9 +1,45 @@
 {
-	const {Node, element, html, attribute} = LUME
+	const {Node, element, html, createEffect, onCleanup, Motor} = LUME
 
 	element('av-hero')(
 		class MenuBtn extends Node {
 			hasShadow = true
+
+			#titlename
+
+			connectedCallback() {
+				super.connectedCallback()
+
+				createEffect(() => {
+					if (!this.scene) return
+
+					const maxDisplacement = 10
+					let targetX = 0
+					let targetY = 0
+
+					const eventAborter = new AbortController()
+					this.scene.addEventListener(
+						'pointermove',
+						event => {
+							// get a value between -maxDisplacement and maxDisplacement
+							targetX = (event.clientX / this.scene.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
+							targetY = (event.clientY / this.scene.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
+						},
+						{signal: eventAborter.signal},
+					)
+
+					const task = Motor.addRenderTask(() => {
+						// Every frame, move the value closer to target by 5%.
+						this.#titlename.rotation.y += 0.05 * (-targetX - this.#titlename.rotation.y)
+						this.#titlename.rotation.x += 0.05 * (targetY - this.#titlename.rotation.x)
+					})
+
+					onCleanup(() => {
+						eventAborter.abort()
+						Motor.removeRenderTask(task)
+					})
+				})
+			}
 
 			template = () => html`
 				<link rel="stylesheet" href="./global.css" />
@@ -24,7 +60,14 @@
 
 					<lume-element3d size-mode="p p" size="1 1" style="background: black" opacity="0.5"></lume-element3d>
 
-					<lume-element3d id="titlename" size="400 300" align-point="0 1" mount-point="0 1" position="30 -30 0.01">
+					<lume-element3d
+						ref=${e => (this.#titlename = e)}
+						id="titlename"
+						size="400 300"
+						align-point="0 1"
+						mount-point="0 1"
+						position="30 -30 0.01"
+					>
 						<h1 class="title">
 							<span>— CREATIVE DIRECTOR —</span>
 						</h1>

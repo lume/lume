@@ -1,8 +1,6 @@
 {
 	const {Node, element, html, createEffect, untrack} = LUME
 
-	const scale = 0.5
-
 	class Categories extends Node {
 		hasShadow = true
 

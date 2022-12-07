@@ -65,13 +65,13 @@
 					}
 
 					// Add some interaction!
-					const displace = 60
+					const maxDisplacement = 60
 					let targetX = 0
 					let targetY = 0
 					this.scene.addEventListener('pointermove', event => {
-						// Rotate the image a little bit too.
-						targetX = (event.clientX / this.scene.calculatedSize.x) * (displace * 2) - displace
-						targetY = (event.clientY / this.scene.calculatedSize.y) * (displace * 2) - displace
+						// get a value between -maxDisplacement and maxDisplacement
+						targetX = (event.clientX / this.scene.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
+						targetY = (event.clientY / this.scene.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
 					})
 					Motor.addRenderTask(() => {
 						this.#magicCircleContainer.position.x += 0.05 * (targetX - this.#magicCircleContainer.position.x)
