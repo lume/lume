@@ -10,8 +10,8 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/Per
 import {Color} from 'three/src/math/Color.js'
 import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
-import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
-import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
+import {WebglRendererThree, ShadowMapTypeString, glSceneStates} from '../renderers/WebglRendererThree.js'
+import {Css3dRendererThree, cssSceneStates} from '../renderers/Css3dRendererThree.js'
 import {SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
@@ -496,6 +496,33 @@ export class Scene extends SharedAPI {
 	 */
 	get camera() {
 		return this.__camera
+	}
+
+	/**
+	 * @property {THREE.WebGLRenderer} glRenderer
+	 *
+	 * *readonly*
+	 *
+	 * Returns the scene's underlying
+	 * [THREE.WebGLRenderer](https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer)
+	 * for custom uses.
+	 */
+	get glRenderer() {
+		return glSceneStates.get(this)?.renderer
+	}
+
+	/**
+	 * @property {CSS3DRendererNested} glRenderer
+	 *
+	 * *readonly*
+	 *
+	 * Returns the scene's underlying `CSS3DRendererNested`, a forked version of
+	 * [THREE.CSS3DRenderer](https://threejs.org/docs/index.html#examples/en/renderers/CSS3DRenderer)
+	 * that allows us to have a nested DOM structure instead of a flat DOM
+	 * structure, for custom uses.
+	 */
+	get cssRenderer() {
+		return cssSceneStates.get(this)?.renderer
 	}
 
 	@reactive __camera: PerspectiveCamera | null = null

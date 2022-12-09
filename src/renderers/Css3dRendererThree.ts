@@ -7,7 +7,7 @@ interface SceneState {
 	sizeChangeHandler: () => void
 }
 
-const sceneStates = new WeakMap<Scene, SceneState>()
+export const cssSceneStates = new WeakMap<Scene, SceneState>()
 
 let instance: Css3dRendererThree | null = null
 let isCreatingSingleton = false
@@ -34,11 +34,11 @@ export class Css3dRendererThree {
 
 	// TODO rename
 	initialize(scene: Scene) {
-		let sceneState = sceneStates.get(scene)
+		let sceneState = cssSceneStates.get(scene)
 
 		if (sceneState) return
 
-		sceneStates.set(
+		cssSceneStates.set(
 			scene,
 			(sceneState = {
 				renderer: new CSS3DRendererNested(),
@@ -56,7 +56,7 @@ export class Css3dRendererThree {
 	}
 
 	uninitialize(scene: Scene) {
-		const sceneState = sceneStates.get(scene)
+		const sceneState = cssSceneStates.get(scene)
 
 		if (!sceneState) return
 
@@ -64,11 +64,11 @@ export class Css3dRendererThree {
 
 		scene._cssLayer?.removeChild(sceneState.renderer.domElement)
 
-		sceneStates.delete(scene)
+		cssSceneStates.delete(scene)
 	}
 
 	drawScene(scene: Scene) {
-		const sceneState = sceneStates.get(scene)
+		const sceneState = cssSceneStates.get(scene)
 
 		if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
 
@@ -78,7 +78,7 @@ export class Css3dRendererThree {
 	}
 
 	updateResolution(scene: Scene) {
-		const state = sceneStates.get(scene)
+		const state = cssSceneStates.get(scene)
 
 		if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
