@@ -24,8 +24,6 @@ interface SceneState {
 	effects: SceneEffects
 }
 
-export const glSceneStates = new WeakMap<Scene, SceneState>()
-
 let instance: WebglRendererThree | null = null
 let isCreatingSingleton = false
 
@@ -58,10 +56,12 @@ export class WebglRendererThree {
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}
 
+	sceneStates = new WeakMap<Scene, SceneState>()
+
 	@reactive localClippingEnabled = false
 
 	initialize(scene: Scene) {
-		let sceneState = glSceneStates.get(scene)
+		let sceneState = this.sceneStates.get(scene)
 
 		if (sceneState) return
 
@@ -90,7 +90,7 @@ export class WebglRendererThree {
 		renderer.shadowMap.enabled = true
 		renderer.shadowMap.type = PCFSoftShadowMap // default PCFShadowMap
 
-		glSceneStates.set(
+		this.sceneStates.set(
 			scene,
 			(sceneState = {
 				renderer,
@@ -109,7 +109,7 @@ export class WebglRendererThree {
 	}
 
 	uninitialize(scene: Scene) {
-		const sceneState = glSceneStates.get(scene)
+		const sceneState = this.sceneStates.get(scene)
 
 		if (!sceneState) return
 
@@ -121,11 +121,11 @@ export class WebglRendererThree {
 		sceneState.pmremgen?.dispose()
 		sceneState.effects.stopEffects()
 
-		glSceneStates.delete(scene)
+		this.sceneStates.delete(scene)
 	}
 
 	drawScene(scene: Scene) {
-		const sceneState = glSceneStates.get(scene)
+		const sceneState = this.sceneStates.get(scene)
 
 		if (!sceneState) throw new ReferenceError('Can not draw scene. Scene state should be initialized first.')
 
@@ -147,7 +147,7 @@ export class WebglRendererThree {
 		// be a clue to something. https://github.com/lume/lume/issues/253
 		// requestAnimationFrame(() => {
 		Motor.once(() => {
-			const state = glSceneStates.get(scene)
+			const state = this.sceneStates.get(scene)
 
 			if (!state) throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.')
 
@@ -162,19 +162,19 @@ export class WebglRendererThree {
 	}
 
 	setClearColor(scene: Scene, color: any, opacity: number) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set clear color. Scene state should be initialized first.')
 		state.renderer.setClearColor(color, opacity)
 	}
 
 	setClearAlpha(scene: Scene, opacity: number) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set clear alpha. Scene state should be initialized first.')
 		state.renderer.setClearAlpha(opacity)
 	}
 
 	setShadowMapType(scene: Scene, type: ShadowMapTypeString | null) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set clear alpha. Scene state should be initialized first.')
 
 		// default
@@ -196,7 +196,7 @@ export class WebglRendererThree {
 	}
 
 	setPhysicallyCorrectLights(scene: Scene, value: boolean) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set value. Scene state should be initialized first.')
 		state.renderer.physicallyCorrectLights = value
 	}
@@ -212,7 +212,7 @@ export class WebglRendererThree {
 	 * background Texture instance.
 	 */
 	enableBackground(scene: Scene, isEquirectangular: boolean, cb: (tex: Texture | undefined) => void): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		this.#bgVersion += 1
@@ -235,7 +235,7 @@ export class WebglRendererThree {
 	 * @param {Scene} scene - The given scene.
 	 */
 	disableBackground(scene: Scene): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		this.#bgVersion += 1
@@ -255,7 +255,7 @@ export class WebglRendererThree {
 	 * was canceled or if other issues.
 	 */
 	#loadBackgroundTexture(scene: Scene, cb: (texture: Texture) => void): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		const version = this.#bgVersion
@@ -283,7 +283,7 @@ export class WebglRendererThree {
 	 * background Texture instance.
 	 */
 	enableEnvironment(scene: Scene, cb: (tex: Texture) => void): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		this.#envVersion += 1
@@ -303,7 +303,7 @@ export class WebglRendererThree {
 	 * @param {Scene} scene - The given scene.
 	 */
 	disableEnvironment(scene: Scene): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		this.#envVersion += 1
@@ -322,7 +322,7 @@ export class WebglRendererThree {
 	 * texture is done loading. It receives the Texture.
 	 */
 	#loadEnvironmentTexture(scene: Scene, cb: (texture: Texture) => void): void {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		const version = this.#envVersion
@@ -338,7 +338,7 @@ export class WebglRendererThree {
 	}
 
 	requestFrame(scene: Scene, fn: FrameRequestCallback) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to request frame. Scene state should be initialized first.')
 
 		const {renderer} = state
@@ -355,7 +355,7 @@ export class WebglRendererThree {
 	// once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
 	// TODO Update to WebXR (WebXRManager in Three)
 	enableVR(scene: Scene, enable: boolean) {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
 
 		const {renderer} = state
@@ -365,7 +365,7 @@ export class WebglRendererThree {
 	// TODO the UI here should be configurable via HTML
 	// TODO Update to WebXR
 	createDefaultVRButton(scene: Scene): HTMLElement {
-		const state = glSceneStates.get(scene)
+		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
 
 		const {renderer} = state
