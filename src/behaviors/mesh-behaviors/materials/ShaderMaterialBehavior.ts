@@ -26,6 +26,7 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 		return this.#uniforms
 	}
 	set uniforms(u: string | Record<string, any> | null) {
+		console.log('set uniforms', this.element.tagName, this.element.id, u)
 		if (!u) {
 			this.#uniforms = {}
 			return
