@@ -15,8 +15,6 @@
 				// Skills description /////////////////////////////////////////////////////////////////////////////////////
 				skills.call(this)
 				async function skills() {
-					const THREE = await import('https://unpkg.com/three@0.145.0/build/three.module.js')
-
 					const span = this.#skills.children[0]
 					let translate = 0
 					Motor.addRenderTask(() => {
@@ -25,27 +23,21 @@
 						span.style.transform = `translate3d(${-translate}px, 0, 0.001px)`
 					})
 
-					const loader = new THREE.TextureLoader()
-					const texture = loader.load('https://threejsfundamentals.org/threejs/resources/images/bayer.png')
-
 					// magicCircle.children[0].rotation = (x, y) => [x, y + 1]
 
 					applyShader(this.#magicCircle, 0.001)
 
 					async function applyShader(el, timeFactor) {
-						const {fragmentShader, vertexShader} = await import('../magicShader.js')
+						const {uniforms, fragmentShader, vertexShader} = await import('../shaders/fluid-marble.js')
 
 						el.fragmentShader = fragmentShader
 						el.vertexShader = vertexShader
 
-						const onLoad = () => {
+						createEffect(() => {
 							const shaderMaterial = el.behaviors.get('shader-material')
-							el.uniforms = {
-								iTime: {value: 0},
-								iResolution: {value: {x: 0, y: 0, z: 0}},
-								// TODO easier attributes, or a new <lume-shadertoy> element.
-								iChannel0: {value: texture},
-							}
+							if (!shaderMaterial?.meshComponent) return
+
+							el.uniforms = uniforms
 
 							createEffect(() => {
 								shaderMaterial.uniforms.iResolution.value.x = el.calculatedSize.x
@@ -57,22 +49,24 @@
 								shaderMaterial.uniforms.iTime.value = t * timeFactor
 								el.needsUpdate()
 							})
-						}
-
-						// Set new values for the shader uniforms when needed.
-						if (el.glLoaded) onLoad()
-						else el.on('GL_LOAD', onLoad)
+						})
 					}
 
 					// Add some interaction!
 					const maxDisplacement = 60
 					let targetX = 0
 					let targetY = 0
-					this.scene.addEventListener('pointermove', event => {
-						// get a value between -maxDisplacement and maxDisplacement
-						targetX = (event.clientX / this.scene.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
-						targetY = (event.clientY / this.scene.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
+
+					createEffect(() => {
+						if (!this.scene) return
+
+						this.scene.addEventListener('pointermove', event => {
+							// get a value between -maxDisplacement and maxDisplacement
+							targetX = (event.clientX / this.scene.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
+							targetY = (event.clientY / this.scene.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
+						})
 					})
+
 					Motor.addRenderTask(() => {
 						this.#magicCircleContainer.position.x += 0.05 * (targetX - this.#magicCircleContainer.position.x)
 						this.#magicCircleContainer.position.y += 0.05 * (targetY - this.#magicCircleContainer.position.y)
@@ -202,6 +196,7 @@
 				}
 
 				#skills > span {
+					font-family: 'Austin-Bold', serif;
 					font-size: 41px;
 					position: absolute;
 					white-space: nowrap;

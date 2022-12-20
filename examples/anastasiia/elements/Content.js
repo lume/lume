@@ -7,7 +7,7 @@
 /* @checkJs */
 
 {
-	const {Node, element, html, ScrollFling, createEffect, untrack, onCleanup, variable, Motor} = LUME
+	const {Node, element, html, ScrollFling, batch, createEffect, untrack, onCleanup, variable, Motor, reactify} = LUME
 
 	element('av-content')(
 		class Content extends Node {
@@ -23,6 +23,25 @@
 			#featured
 			#otherProjects
 			#rainbow
+
+			rainbowUniforms = ''
+			rainbowVert = ''
+			rainbowFrag = ''
+
+			constructor() {
+				super()
+
+				reactify(this, ['rainbowUniforms', 'rainbowVert', 'rainbowFrag'])
+
+				// UGH.
+				import('../shaders/rainbow-gradient.js').then(({uniforms, vertexShader, fragmentShader}) => {
+					batch(() => {
+						this.rainbowUniforms = uniforms
+						this.rainbowVert = vertexShader
+						this.rainbowFrag = fragmentShader
+					})
+				})
+			}
 
 			connectedCallback() {
 				super.connectedCallback()
@@ -312,6 +331,7 @@
 
 					const thingsToFadeIn = [
 						...Array.from(this.shadowRoot.querySelectorAll('.fadeIn')),
+						...Array.from(this.shadowRoot.querySelector('av-hero').shadowRoot.querySelectorAll('.fadeIn')),
 						...Array.from(this.#scrollContainer.querySelectorAll('.hidden')),
 					]
 
@@ -320,7 +340,10 @@
 
 				// shader ///////////////////////////////////////////////////////////////////
 
-				animateShader(this.#rainbow)
+				createEffect(() => {
+					if (!this.rainbowVert || !this.rainbowFrag || !Object.keys(this.rainbowUniforms).length) return
+					animateShader(this.#rainbow)
+				})
 
 				async function animateShader(el) {
 					createEffect(() => {
@@ -367,8 +390,8 @@
 
 					const task = Motor.addRenderTask(() => {
 						// Every frame, move the value closer to target by 5%.
-						this.#letsconnect.rotation.y += 0.05 * (-targetX - this.#letsconnect.rotation.y)
-						this.#letsconnect.rotation.x += 0.05 * (targetY - this.#letsconnect.rotation.x)
+						this.#letsconnect.rotation.y += 0.05 * (targetX - this.#letsconnect.rotation.y)
+						this.#letsconnect.rotation.x += 0.05 * (-targetY - this.#letsconnect.rotation.x)
 					})
 
 					onCleanup(() => {
@@ -380,50 +403,51 @@
 
 			#letsconnect
 
-			template = () => html`
-				<link rel="stylesheet" href="./global.css" />
+			template = () => {
+				return html`
+					<link rel="stylesheet" href="./global.css" />
 
-				<lume-autolayout
-					id="headerbody"
-					visual-format="
+					<lume-autolayout
+						id="headerbody"
+						visual-format="
 						V:|[header(82)]
 						V:|[body]|
 						H:|[header]|
 						H:|[body]|
 					"
-					size="1 1"
-					size-mode="p p"
-				>
-					${
-						'' /*<!-- Header ###############################################################################################-->*/
-					}
-					<av-header
-						id="header"
-						slot="header"
 						size="1 1"
 						size-mode="p p"
-						position="0 0 0.1"
-						on:menubtnclick=${e => this.layout?.toggle()}
-						on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
-					></av-header>
+					>
+						${
+							'' /*<!-- Header ###############################################################################################-->*/
+						}
+						<av-header
+							id="header"
+							slot="header"
+							size="1 1"
+							size-mode="p p"
+							position="0 0 0.1"
+							on:menubtnclick=${e => this.layout?.toggle()}
+							on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
+						></av-header>
 
-					${
-						''
-						/*TODO move the autolayout into here and remove scroller code from here.
-						<lume-scroller></lume-scroller>
-						*/
-					}
+						${
+							''
+							/*TODO move the autolayout into here and remove scroller code from here.
+					<lume-scroller></lume-scroller>
+					*/
+						}
 
-					<lume-element3d id="scroller" slot="body" size="1 1" size-mode="p p">
-						<!-- Using a lume-scene here to make the body content 3D
+						<lume-element3d id="scroller" slot="body" size="1 1" size-mode="p p">
+							<!-- Using a lume-scene here to make the body content 3D
 						within its own surface, so f.e. 3D content will not
 						intersect with the header or slideout menu. -->
-						<lume-scene class="bodyContent" perspective="1200">
-							<lume-autolayout
-								ref=${e => (this.#scrollContainer = e)}
-								id="scrollContainer"
-								xslot="content"
-								visual-format="
+							<lume-scene class="bodyContent" perspective="1200">
+								<lume-autolayout
+									ref=${e => (this.#scrollContainer = e)}
+									id="scrollContainer"
+									xslot="content"
+									visual-format="
 									V:|[hero(85%)][categories(125)][featured(0)][skills(282)][other(1200)][letsconnect(540)][shoes(100)]
 
 									H:|[hero]|
@@ -434,28 +458,28 @@
 									H:|[letsconnect]|
 									H:|[shoes]|
 								"
-								size="1 1"
-								size-mode="p p"
-							>
-								<av-hero class="fadeIn" opacity="0" slot="hero" size="1 1" size-mode="p p"></av-hero>
-
-								${
-									/*<!-- Categories ###############################################################################################-->*/ ''
-								}
-								<av-categories
-									class="fadeIn"
-									slot="categories"
-									size-mode="p p"
 									size="1 1"
-									opacity="0"
-									on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
-								></av-categories>
+									size-mode="p p"
+								>
+									<av-hero slot="hero" size="1 1" size-mode="p p"></av-hero>
 
-								${
-									/*<!-- Featured Products ########################################################################################## -->*/ ''
-								}
-								${
-									/*<!-- <featured-projs
+									${
+										/*<!-- Categories ###############################################################################################-->*/ ''
+									}
+									<av-categories
+										class="fadeIn"
+										slot="categories"
+										size-mode="p p"
+										size="1 1"
+										opacity="0"
+										on:categorychange=${e => this.isos.forEach(iso => iso.arrange({filter: '.type-' + e.detail}))}
+									></av-categories>
+
+									${
+										/*<!-- Featured Products ########################################################################################## -->*/ ''
+									}
+									${
+										/*<!-- <featured-projs
 								ref=${e => (this.#featured = e)}
 								id="featured"
 								slot="featured"
@@ -464,437 +488,397 @@
 								Xhas="clip-planes"
 								Xclip-planes="#bottomClip"
 							> -->*/ ''
-								}
-								<lume-element3d
-									ref=${e => (this.#featured = e)}
-									id="featured"
-									class="fadeIn"
-									slot="featured"
-									opacity="0"
-									size-mode="p p"
-									size="1 1"
-								>
-									<div>
-										<div class="featuredLabel">Featured projects:</div>
-										<div class="flex-row featuredGrid">
-											<div class="card hidden type-experiential">
-												<div class="cardContent">
-													<img src="./imgs/Dreamforce thumb big.jpeg" />
-													<h2>Dreamforce 2019</h2>
-													<p>
-														Campground is the main expo of an annual four day event that brings together global
-														Salesforce community.
-													</p>
-												</div>
-											</div>
-											<div class="card hidden type-industrial">
-												<div class="cardContent">
-													<img src="./imgs/Google NEXT thumb big.jpeg" />
-													<h2>Google Next</h2>
-													<p>
-														Google’s flagship event. The biggest cloud conference of the year for entrepreneurs,
-														business leaders and developers.
-													</p>
-												</div>
-											</div>
-											<div class="card hidden type-visual">
-												<div class="cardContent">
-													<img src="./imgs/Salesforce Connections thumb big.jpeg" />
-													<h2>Salesforce Connections 2019</h2>
-													<p>
-														Salesforce Connections is a conference that is geared towards digital marketing and commerce
-														using Salesforce platform.
-													</p>
-												</div>
-											</div>
-											<div class="card hidden type-experiential">
-												<div class="cardContent">
-													<img src="./imgs/Funimation thumb big.jpeg" />
-													<h2>Funimation</h2>
-													<p>Funimation event experience creates the portal to a world of extraordinary anime.</p>
-												</div>
-											</div>
-											<div class="card hidden type-industrial">
-												<div class="cardContent">
-													<img src="./imgs/Wisk thumb big.jpeg" />
-													<h2>Wisk</h2>
-													<p>Product reveal of a vertical takeoff flying aircraft.</p>
-												</div>
-											</div>
-											<div class="card hidden type-visual">
-												<div class="cardContent">
-													<img src="./imgs/GE LOGIQ thumb big.jpeg" />
-													<h2>GE Logiq Ultrasound</h2>
-													<p>Product launch through marketing website.</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<style>
-										#featured {
-											--gutter: calc(112px * var(--scale));
-											padding: 0px calc(165px * var(--scale));
-										}
-
-										.featuredLabel {
-											font-size: calc(30px * var(--scale));
-											font-family: 'Austin-LightItalic', serif;
-											font-weight: 100;
-											margin-bottom: calc(62px * var(--scale));
-										}
-
-										/* flex layout inspired by https://codepen.io/AaronTeering/pen/GRdoLMW */
-										.flex-row {
-											/* position: absolute; */
-
-											/* display: flex;
-										flex-direction: row;
-										flex-wrap: wrap; */
-
-											--flex-margin: 24px;
-											--transition-time: 0.6s;
-										}
-
-										.flex-row .card {
-											max-width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
-											width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
-
-											/* replace with isotope fitRows.gutter option */
-											/* margin: var(--flex-margin); */
-
-											margin-bottom: var(--gutter);
-
-											/* background: #fafafa; */
-											/* border-radius: 10px; */
-											/* transition: var(--transition-time); */
-											overflow: visible;
-										}
-
-										.flex-row .card img {
-											width: 100%;
-											aspect-ratio: 1;
-											object-fit: cover;
-											border-radius: 0;
-											transition: border-radius var(--transition-time);
-										}
-
-										.flex-row .card:hover .cardContent {
-											transform: scale(1.03);
-											/* box-shadow: 0px 0px 50px -20px #808080; */
-										}
-
-										.flex-row .card:hover img {
-											border-radius: 100%;
-										}
-
-										.cardContent {
-											transition: transform var(--transition-time);
-										}
-
-										@media screen and (max-width: 1600px) {
-											.flex-row .card {
-												max-width: calc(0.333333 * (100% - var(--gutter) * 2));
-												width: calc(0.333333 * (100% - var(--gutter) * 2));
-											}
-										}
-
-										@media screen and (max-width: 1080px) {
-											.flex-row .card {
-												max-width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
-												width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
-											}
-										}
-
-										@media screen and (max-width: 800px) {
-											.flex-row .card {
-												max-width: calc(1 * (100% - var(--gutter) * 0) - 1px);
-												width: calc(1 * (100% - var(--gutter) * 0) - 1px);
-											}
-										}
-
-										.card {
-											transition: opacity var(--fadeInDuration, 0.5s);
-
-											font-family: 'Open Sans', sans-serif;
-											font-weight: 400;
-											font-size: calc(20px * var(--scale));
-										}
-
-										.card h2 {
-											font-weight: 600;
-											font-size: calc(25px * var(--scale));
-											text-transform: uppercase;
-										}
-									</style>
-								</lume-element3d>
-								${/*<!-- </featured-projs> -->*/ ''}
-								${
-									/*<!-- Skills description ######################################################################################### -->*/ ''
-								}
-								<av-skills-banner
-									class="fadeIn"
-									opacity="0"
-									size-mode="p p"
-									size="1 1"
-									slot="skills"
-								></av-skills-banner>
-
-								${
-									/*<!-- Other projects ############################################################################################# -->*/ ''
-								}
-								<lume-element3d
-									ref=${e => (this.#otherProjects = e)}
-									id="otherProjects"
-									class="fadeIn"
-									slot="other"
-									opacity="0"
-									size-mode="p p"
-									size="1 1"
-								>
-									<div>
-										<div class="featuredLabel">Other projects:</div>
-										<div class="flex-row otherProjectsGrid">
-											<div class="card hidden type-experiential">
-												<img src="./imgs/medical device.jpg" />
-											</div>
-											<div class="card hidden type-industrial">
-												<img src="./imgs/airport project.jpg" />
-											</div>
-											<div class="card hidden type-visual">
-												<img src="./imgs/transplant machine.jpg" />
-											</div>
-											<div class="card hidden type-experiential">
-												<img src="./imgs/Pervuy Moscovsky.jpg" />
-											</div>
-											<div class="card hidden type-industrial">
-												<img src="./imgs/linkedin-logo.jpg" />
-											</div>
-											<div class="card hidden type-visual">
-												<img src="./imgs/polydance.jpeg" />
-											</div>
-											<div class="card hidden type-experiential">
-												<img src="./imgs/adobe express logo.png" />
-											</div>
-											<div class="card hidden type-industrial">
-												<img src="./imgs/library.jpg" />
-											</div>
-											<div class="card hidden type-visual">
-												<img src="./imgs/yakama.jpg" />
-											</div>
-										</div>
-									</div>
-									<style>
-										#otherProjects {
-											--gutter: calc(22px * var(--scale));
-											padding: 0px calc(83px * var(--scale));
-										}
-
-										#otherProjects .flex-row {
-											--flex-margin: 10px;
-										}
-									</style>
-								</lume-element3d>
-
-								${
-									/*<!-- Connect #################################################################################################### -->*/ ''
-								}
-								<lume-element3d
-									ref=${e => (this.#letsconnect = e)}
-									id="letsconnect"
-									slot="letsconnect"
-									size-mode="p p"
-									size="1 1"
-								>
-									<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
-										<h2 class="getReady">Ready to make something</h2>
-									</lume-element3d>
+									}
 									<lume-element3d
-										class="fadeIn thatsAWrap"
+										ref=${e => (this.#featured = e)}
+										id="featured"
+										class="fadeIn"
+										slot="featured"
 										opacity="0"
 										size-mode="p p"
 										size="1 1"
-										position=${[0, scale * 200, scale * 200]}
 									>
-										<h2 class="forAwesome">Awesome<span class="areYouReady">?</span></h2>
-									</lume-element3d>
-									<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
-										<div class="sayHello">
-											<a href="mailto:vnastasia@gmail.com">Contact</a>
+										<div>
+											<div class="featuredLabel">Featured projects:</div>
+											<div class="flex-row featuredGrid">
+												<div class="card hidden type-experiential">
+													<div class="cardContent">
+														<img src="./imgs/Dreamforce thumb big.jpeg" />
+														<h2>Dreamforce 2019</h2>
+														<p>
+															Campground is the main expo of an annual four day event that brings together global
+															Salesforce community.
+														</p>
+													</div>
+												</div>
+												<div class="card hidden type-industrial">
+													<div class="cardContent">
+														<img src="./imgs/Google NEXT thumb big.jpeg" />
+														<h2>Google Next</h2>
+														<p>
+															Google’s flagship event. The biggest cloud conference of the year for entrepreneurs,
+															business leaders and developers.
+														</p>
+													</div>
+												</div>
+												<div class="card hidden type-visual">
+													<div class="cardContent">
+														<img src="./imgs/Salesforce Connections thumb big.jpeg" />
+														<h2>Salesforce Connections 2019</h2>
+														<p>
+															Salesforce Connections is a conference that is geared towards digital marketing and
+															commerce using Salesforce platform.
+														</p>
+													</div>
+												</div>
+												<div class="card hidden type-experiential">
+													<div class="cardContent">
+														<img src="./imgs/Funimation thumb big.jpeg" />
+														<h2>Funimation</h2>
+														<p>Funimation event experience creates the portal to a world of extraordinary anime.</p>
+													</div>
+												</div>
+												<div class="card hidden type-industrial">
+													<div class="cardContent">
+														<img src="./imgs/Wisk thumb big.jpeg" />
+														<h2>Wisk</h2>
+														<p>Product reveal of a vertical takeoff flying aircraft.</p>
+													</div>
+												</div>
+												<div class="card hidden type-visual">
+													<div class="cardContent">
+														<img src="./imgs/GE LOGIQ thumb big.jpeg" />
+														<h2>GE Logiq Ultrasound</h2>
+														<p>Product launch through marketing website.</p>
+													</div>
+												</div>
+											</div>
 										</div>
+										<style>
+											#featured {
+												--gutter: calc(112px * var(--scale));
+												padding: 0px calc(165px * var(--scale));
+											}
+
+											.featuredLabel {
+												font-size: calc(30px * var(--scale));
+												font-family: 'Austin-LightItalic', serif;
+												font-weight: 100;
+												margin-bottom: calc(62px * var(--scale));
+											}
+
+											/* flex layout inspired by https://codepen.io/AaronTeering/pen/GRdoLMW */
+											.flex-row {
+												/* position: absolute; */
+
+												/* display: flex;
+										flex-direction: row;
+										flex-wrap: wrap; */
+
+												--flex-margin: 24px;
+												--transition-time: 0.6s;
+											}
+
+											.flex-row .card {
+												max-width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
+												width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
+
+												/* replace with isotope fitRows.gutter option */
+												/* margin: var(--flex-margin); */
+
+												margin-bottom: var(--gutter);
+
+												/* background: #fafafa; */
+												/* border-radius: 10px; */
+												/* transition: var(--transition-time); */
+												overflow: visible;
+											}
+
+											.flex-row .card img {
+												width: 100%;
+												aspect-ratio: 1;
+												object-fit: cover;
+												border-radius: 0;
+												transition: border-radius var(--transition-time);
+											}
+
+											.flex-row .card:hover .cardContent {
+												transform: scale(1.03);
+												/* box-shadow: 0px 0px 50px -20px #808080; */
+											}
+
+											.flex-row .card:hover img {
+												border-radius: 100%;
+											}
+
+											.cardContent {
+												transition: transform var(--transition-time);
+											}
+
+											@media screen and (max-width: 1600px) {
+												.flex-row .card {
+													max-width: calc(0.333333 * (100% - var(--gutter) * 2));
+													width: calc(0.333333 * (100% - var(--gutter) * 2));
+												}
+											}
+
+											@media screen and (max-width: 1080px) {
+												.flex-row .card {
+													max-width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
+													width: calc(0.5 * (100% - var(--gutter) * 1) - 1px);
+												}
+											}
+
+											@media screen and (max-width: 800px) {
+												.flex-row .card {
+													max-width: calc(1 * (100% - var(--gutter) * 0) - 1px);
+													width: calc(1 * (100% - var(--gutter) * 0) - 1px);
+												}
+											}
+
+											.card {
+												transition: opacity var(--fadeInDuration, 0.5s);
+
+												font-family: 'Open Sans', sans-serif;
+												font-weight: 400;
+												font-size: calc(20px * var(--scale));
+											}
+
+											.card h2 {
+												font-weight: 600;
+												font-size: calc(25px * var(--scale));
+												text-transform: uppercase;
+											}
+										</style>
 									</lume-element3d>
-									<lume-element3d
+									${/*<!-- </featured-projs> -->*/ ''}
+									${
+										/*<!-- Skills description ######################################################################################### -->*/ ''
+									}
+									<av-skills-banner
 										class="fadeIn"
 										opacity="0"
-										align-point="0 0.5"
-										position=${[659 * scale, 0, -200]}
-										mount-point="0.5 0.5"
-										size=${[260 * scale, 443 * scale]}
-									>
-										<lume-scene webgl>
-											<lume-plane
-												ref=${e => (this.#rainbow = e)}
-												has="shader-material"
-												size-mode="p p"
-												size="1 1"
-												scale="1 1"
-												uniforms='{
-													"iTime": { "value": 0 },
-													"iResolution": { "value": {"x": 1, "y": 1, "z": 1} }
-												}'
-												vertex-shader="
-													varying vec2 vUv;
+										size-mode="p p"
+										size="1 1"
+										slot="skills"
+									></av-skills-banner>
 
-													void main() {
-														vUv = uv;
-														gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-													}
-												"
-												fragment-shader="
-													#include <common>
-
-													uniform vec3 iResolution;
-													uniform float iTime;
-
-													// The following is the default shader when you start a new shadertoy example.
-													// By iq: https://www.shadertoy.com/user/iq
-													// license: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-													// BEGIN SHADERTOY CODE {
-
-													void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-														// Normalized pixel coordinates (from 0 to 1)
-														vec2 uv = fragCoord/iResolution.xy;
-
-														// Time varying pixel color
-														vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-
-														// Output to screen
-														fragColor = vec4(col,1.0);
-														//fragColor = vec4(1.0, 0.3, 0.1, 1.0);
-													}
-
-													// END SHADERTOY CODE }
-
-													varying vec2 vUv;
-
-													void main() {
-														mainImage(gl_FragColor, vUv / 2.0 * gl_FragCoord.xy);
-													}
-												"
-											></lume-plane>
-										</lume-scene>
-									</lume-element3d>
-									<style>
-										.thatsAWrap {
-											padding: 0 calc(157px * var(--scale)) calc(157px * var(--scale));
-										}
-
-										/* TODO scaled sizes */
-										#letsconnect h2 {
-											font-size: 90px;
-										}
-
-										#letsconnect a {
-											font-size: 30px;
-											text-transform: uppercase;
-											background: #8145bfb3;
-											padding: 10px;
-										}
-
-										.getReady {
-											font-family: 'Austin-LightItalic', serif;
-											font-size: calc(165px * var(--scale));
-											font-weight: 100;
-										}
-
-										.forAwesome {
-											padding-left: calc(650px * var(--scale));
-											font-family: 'Open Sans', sans-serif;
-											font-weight: 700;
-											font-size: calc(165px * var(--scale));
-											text-transform: uppercase;
-										}
-
-										.areYouReady {
-											font-family: 'Austin-LightItalic', serif;
-											font-size: calc(170px * var(--scale));
-											font-weight: 100;
-										}
-
-										.sayHello {
-											display: flex;
-											justify-content: center;
-										}
-
-										.sayHello a {
-										}
-									</style>
-								</lume-element3d>
-								<lume-element3d class="fadeIn" opacity="0" slot="shoes" size-mode="p p" size="1 1">
-									<div class="onlyTheBeginning">
-										<span class="original">Copyright © 2022 <span class="avp">Anastasiia.V.Pea</span></span>
-									</div>
-									<style>
-										.onlyTheBeginning {
-											height: 100%;
-											background: black;
-											padding: calc(71px * var(--scale)) calc(165px * var(--scale));
-										}
-
-										.avp {
-										}
-									</style>
-								</lume-element3d>
-							</lume-autolayout>
-
-							<lume-clip-plane
-								id="topClip"
-								sidedness="double"
-								rotation="90 0 0"
-								align-point="0 0"
-								mount-point="0 0.5"
-								size="1 100"
-								size-mode="p"
-								color="green"
-							></lume-clip-plane>
-							<lume-clip-plane
-								id="bottomClip"
-								sidedness="double"
-								rotation="-90 0 0"
-								align-point="0 1"
-								mount-point="0 0.5"
-								size="1 100"
-								size-mode="p"
-								color=""
-							></lume-clip-plane>
-
-							<lume-element3d
-								ref=${e => (this.#scrollknob = e)}
-								id="scrollknob"
-								size="10 10 0"
-								align-point="1 0"
-								mount-point="1 0"
-								position="0 0 0.2"
-							>
-								<style>
-									#scrollknob {
-										background: rgba(255, 255, 255, 0.2);
+									${
+										/*<!-- Other projects ############################################################################################# -->*/ ''
 									}
-								</style>
-							</lume-element3d>
-						</lume-scene>
-					</lume-element3d>
-				</lume-autolayout>
+									<lume-element3d
+										ref=${e => (this.#otherProjects = e)}
+										id="otherProjects"
+										class="fadeIn"
+										slot="other"
+										opacity="0"
+										size-mode="p p"
+										size="1 1"
+									>
+										<div>
+											<div class="featuredLabel">Other projects:</div>
+											<div class="flex-row otherProjectsGrid">
+												<div class="card hidden type-experiential">
+													<img src="./imgs/medical device.jpg" />
+												</div>
+												<div class="card hidden type-industrial">
+													<img src="./imgs/airport project.jpg" />
+												</div>
+												<div class="card hidden type-visual">
+													<img src="./imgs/transplant machine.jpg" />
+												</div>
+												<div class="card hidden type-experiential">
+													<img src="./imgs/Pervuy Moscovsky.jpg" />
+												</div>
+												<div class="card hidden type-industrial">
+													<img src="./imgs/linkedin-logo.jpg" />
+												</div>
+												<div class="card hidden type-visual">
+													<img src="./imgs/polydance.jpeg" />
+												</div>
+												<div class="card hidden type-experiential">
+													<img src="./imgs/adobe express logo.png" />
+												</div>
+												<div class="card hidden type-industrial">
+													<img src="./imgs/library.jpg" />
+												</div>
+												<div class="card hidden type-visual">
+													<img src="./imgs/yakama.jpg" />
+												</div>
+											</div>
+										</div>
+										<style>
+											#otherProjects {
+												--gutter: calc(22px * var(--scale));
+												padding: 0px calc(83px * var(--scale));
+											}
 
-				<svg>
-					<filter id="wavy">
-						<feTurbulence x="-30" y="0" baseFrequency="0.006" numOctaves="1" speed="1">
-							<!-- <animate attributeName="baseFrequency" dur="3s" values="0.003; 0.009; 0.003" repeatCount="indefinite" /> -->
-						</feTurbulence>
-						<feDisplacementMap in="SourceGraphic" scale="10" />
-					</filter>
-				</svg>
-			`
+											#otherProjects .flex-row {
+												--flex-margin: 10px;
+											}
+										</style>
+									</lume-element3d>
+
+									${
+										/*<!-- Connect #################################################################################################### -->*/ ''
+									}
+									<lume-element3d
+										ref=${e => (this.#letsconnect = e)}
+										id="letsconnect"
+										slot="letsconnect"
+										size-mode="p p"
+										size="1 1"
+									>
+										<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
+											<h2 class="getReady">Ready to make something</h2>
+										</lume-element3d>
+										<lume-element3d
+											class="fadeIn thatsAWrap"
+											opacity="0"
+											size-mode="p p"
+											size="1 1"
+											position=${[0, scale * 200, scale * 200]}
+										>
+											<h2 class="forAwesome">Awesome<span class="areYouReady">?</span></h2>
+										</lume-element3d>
+										<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
+											<div class="sayHello">
+												<a href="mailto:vnastasia@gmail.com">Contact</a>
+											</div>
+										</lume-element3d>
+										<lume-element3d
+											class="fadeIn"
+											opacity="0"
+											align-point="0 0.5"
+											position=${[659 * scale, 0, -200]}
+											mount-point="0.5 0.5"
+											size=${[260 * scale, 443 * scale]}
+										>
+											<lume-scene webgl>
+												<lume-plane
+													ref=${e => (this.#rainbow = e)}
+													has="shader-material"
+													size-mode="p p"
+													size="1 1"
+													scale="1 1"
+													uniforms=${() => this.rainbowUniforms}
+													vertex-shader=${() => this.rainbowVert}
+													fragment-shader=${() => this.rainbowFrag}
+												></lume-plane>
+											</lume-scene>
+										</lume-element3d>
+										<style>
+											.thatsAWrap {
+												padding: 0 calc(157px * var(--scale)) calc(157px * var(--scale));
+											}
+
+											/* TODO scaled sizes */
+											#letsconnect h2 {
+												font-size: 90px;
+											}
+
+											#letsconnect a {
+												font-size: 30px;
+												text-transform: uppercase;
+												background: #8145bfb3;
+												padding: 10px;
+											}
+
+											.getReady {
+												font-family: 'Austin-LightItalic', serif;
+												font-size: calc(165px * var(--scale));
+												font-weight: 100;
+											}
+
+											.forAwesome {
+												padding-left: calc(650px * var(--scale));
+												font-family: 'Open Sans', sans-serif;
+												font-weight: 700;
+												font-size: calc(165px * var(--scale));
+												text-transform: uppercase;
+											}
+
+											.areYouReady {
+												font-family: 'Austin-LightItalic', serif;
+												font-size: calc(170px * var(--scale));
+												font-weight: 100;
+											}
+
+											.sayHello {
+												display: flex;
+												justify-content: center;
+											}
+
+											.sayHello a {
+											}
+										</style>
+									</lume-element3d>
+									<lume-element3d class="fadeIn" opacity="0" slot="shoes" size-mode="p p" size="1 1">
+										<div class="onlyTheBeginning">
+											<span class="original">Copyright © 2022 <span class="avp">Anastasiia.V.Pea</span></span>
+										</div>
+										<style>
+											.onlyTheBeginning {
+												height: 100%;
+												background: black;
+												padding: calc(71px * var(--scale)) calc(165px * var(--scale));
+											}
+
+											.avp {
+											}
+										</style>
+									</lume-element3d>
+								</lume-autolayout>
+
+								<lume-clip-plane
+									id="topClip"
+									sidedness="double"
+									rotation="90 0 0"
+									align-point="0 0"
+									mount-point="0 0.5"
+									size="1 100"
+									size-mode="p"
+									color="green"
+								></lume-clip-plane>
+								<lume-clip-plane
+									id="bottomClip"
+									sidedness="double"
+									rotation="-90 0 0"
+									align-point="0 1"
+									mount-point="0 0.5"
+									size="1 100"
+									size-mode="p"
+									color=""
+								></lume-clip-plane>
+
+								<lume-element3d
+									ref=${e => (console.log('set scrollknob'), (this.#scrollknob = e))}
+									id="scrollknob"
+									size="10 10 0"
+									align-point="1 0"
+									mount-point="1 0"
+									position="0 0 0.2"
+								>
+									<style>
+										#scrollknob {
+											background: rgba(255, 255, 255, 0.2);
+										}
+									</style>
+								</lume-element3d>
+							</lume-scene>
+						</lume-element3d>
+					</lume-autolayout>
+
+					<svg>
+						<filter id="wavy">
+							<feTurbulence x="-30" y="0" baseFrequency="0.006" numOctaves="1" speed="1">
+								<!-- <animate attributeName="baseFrequency" dur="3s" values="0.003; 0.009; 0.003" repeatCount="indefinite" /> -->
+							</feTurbulence>
+							<feDisplacementMap in="SourceGraphic" scale="10" />
+						</filter>
+					</svg>
+				`
+			}
 
 			css = /*css*/ `
 				#headerbody {
@@ -903,7 +887,11 @@
 				}
 
 				.bodyContent {
-					background: #0a131f;
+					background: var(--background);
+				}
+
+				av-categories {
+					background: var(--background);
 				}
 			`
 		},

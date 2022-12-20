@@ -1,11 +1,12 @@
 {
-	const {Node, element, html, createEffect, onCleanup, Motor} = LUME
+	const {Node, element, html, createEffect, onCleanup, Motor, untrack} = LUME
 
 	element('av-hero')(
 		class MenuBtn extends Node {
 			hasShadow = true
 
 			#titlename
+			#titlenameEvents
 
 			connectedCallback() {
 				super.connectedCallback()
@@ -18,20 +19,31 @@
 					let targetY = 0
 
 					const eventAborter = new AbortController()
-					this.scene.addEventListener(
+					this.#titlenameEvents.addEventListener(
 						'pointermove',
 						event => {
+							// if (event.currentTarget !== this.#titlenameEvents) return
+							console.log('target:', event.target)
+							console.log('currentTarget:', event.currentTarget)
+
 							// get a value between -maxDisplacement and maxDisplacement
-							targetX = (event.clientX / this.scene.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
-							targetY = (event.clientY / this.scene.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
+							targetX =
+								(event.offsetX / this.#titlenameEvents.calculatedSize.x) * (maxDisplacement * 2) - maxDisplacement
+							targetY =
+								(event.offsetY / this.#titlenameEvents.calculatedSize.y) * (maxDisplacement * 2) - maxDisplacement
 						},
 						{signal: eventAborter.signal},
 					)
 
+					this.#titlenameEvents.addEventListener('pointerleave', event => {
+						targetX = 0
+						targetY = 0
+					})
+
 					const task = Motor.addRenderTask(() => {
 						// Every frame, move the value closer to target by 5%.
-						this.#titlename.rotation.y += 0.05 * (-targetX - this.#titlename.rotation.y)
-						this.#titlename.rotation.x += 0.05 * (targetY - this.#titlename.rotation.x)
+						this.#titlename.rotation.y += 0.05 * (targetX - this.#titlename.rotation.y)
+						this.#titlename.rotation.x += 0.05 * (-targetY - this.#titlename.rotation.x)
 					})
 
 					onCleanup(() => {
@@ -39,7 +51,19 @@
 						Motor.removeRenderTask(task)
 					})
 				})
+
+				createEffect(() => {
+					if (!this.scene) return
+
+					untrack(() => this.#bg.size).x =
+						((this.scene.perspective + Math.abs(this.#bg.position.z)) / this.scene.perspective) * 1
+
+					untrack(() => this.#bg.size).y =
+						((this.scene.perspective + Math.abs(this.#bg.position.z)) / this.scene.perspective) * 1
+				})
 			}
+
+			#bg
 
 			template = () => html`
 				<link rel="stylesheet" href="./global.css" />
@@ -56,27 +80,47 @@
 					size="1 1"
 					size-mode="p p"
 				>
-					<img src="./dreamforce-tree.jpg" />
+					<lume-element3d
+						ref=${e => (this.#bg = e)}
+						size-mode="p p"
+						size="1 1"
+						position=${[0, 0, -250 * scale]}
+						align-point="0.5 0.5"
+						mount-point="0.5 0.5"
+					>
+						<lume-element3d size-mode="p p" size="1 1" opacity="0.5" style="background: black"></lume-element3d>
 
-					<lume-element3d size-mode="p p" size="1 1" style="background: black" opacity="0.5"></lume-element3d>
+						${'' /* fadeIn is handled by the parent */}
+						<lume-element3d class="fadeIn" opacity="0" size="1 1" size-mode="p p" position="0 0 -1">
+							<img src="./dreamforce-tree.jpg" />
+						</lume-element3d>
+					</lume-element3d>
 
 					<lume-element3d
-						ref=${e => (this.#titlename = e)}
-						id="titlename"
+						ref=${e => (this.#titlenameEvents = e)}
 						size="400 300"
 						align-point="0 1"
 						mount-point="0 1"
-						position="30 -30 0.01"
+						position=${[200 * scale, -60 * scale, 0]}
 					>
-						<h1 class="title">
-							<span>— CREATIVE DIRECTOR —</span>
-						</h1>
-						<h1 class="first">
-							<span>Anastasiia</span>
-						</h1>
-						<h1 class="middlelast">
-							<span>V. Pea</span>
-						</h1>
+						<lume-element3d
+							ref=${e => (this.#titlename = e)}
+							id="titlename"
+							class="fadeIn"
+							opacity="0"
+							size-mode="p p"
+							size="1 1"
+						>
+							<h1 class="title">
+								<span>— CREATIVE DIRECTOR —</span>
+							</h1>
+							<h1 class="first">
+								<span>Anastasiia</span>
+							</h1>
+							<h1 class="middlelast">
+								<span>V. Pea</span>
+							</h1>
+						</lume-element3d>
 					</lume-element3d>
 
 					${
@@ -104,6 +148,7 @@
 					flex-direction: column;
 					justify-content: center;
 					align-items: center;
+					pointer-events: none;
 				}
 				#hero h1 {
 					margin: 0;
@@ -112,16 +157,18 @@
 					font-size: 15px;
 					font-weight: 300;
 					line-height: 2.8;
+					transform: translateZ(0px);
 				}
 				#hero .first {
 					font-family: 'Austin-LightItalic', serif;
 					font-weight: 100;
 					font-size: 90px;
+					transform: translate3d(0, -5px, 20px);
 				}
 				#hero .middlelast {
 					font-size: 90px;
 					font-weight: 700;
-					transform: translate(24px, 0);
+					transform: translate3d(24px, 0, 0);
 				}
 			`
 		},
