@@ -127,6 +127,17 @@ class _Motor {
 
 			this.#runRenderTasks(timestamp, deltaTime)
 			this.#onces.clear()
+
+			// Wait one more microtask in case reactivity (f.e. not just lume
+			// reactivity, but any reactivity outside of lume that may be
+			// microtask deferred like Vue's, Svelte's, React's, etc) needs
+			// another chance to run.
+			//
+			// TODO continue to queue element updates with a microtasks until tasks
+			// settle, similar to ResizeObserver, with a loop limit, before running all
+			// element updates.
+			await null
+
 			this.#updateElements(timestamp, deltaTime)
 
 			// If no tasks are left, stop the animation loop.
