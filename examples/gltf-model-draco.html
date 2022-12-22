@@ -28,19 +28,32 @@
 		size="4000"
 		mount-point="0.5 0.5 0.5"
 	></lume-sphere>
-
-	<!-- The model is 1/50th of one unit across, so scale by 50. -->
-	<lume-gltf-model
-		id="model"
-		rotation="0 45 0"
-		size="1 1 0"
-		src="./models/boombox/BoomBox.gltf"
-		draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
-		scale="50 50 50"
-	></lume-gltf-model>
 </lume-scene>
 
 <script>
+	const {html, For} = LUME
+
+	const positions = [-3, -2, -1, 0, 1, 2, 3]
+
+	// The model is 1/50th of one unit across, so scale by 50
+	LUME.render(
+		() => html`
+			<${For} each=${() => positions}>
+				${pos => html`
+					<lume-gltf-model
+						rotation="0 45 0"
+						size="1 1 0"
+						src="./models/boombox/BoomBox.gltf"
+						draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
+						scale="50 50 50"
+						position=${pos * 1.2}
+					></lume-gltf-model>
+				`}
+			</${For}>
+		`,
+		scene,
+	)
+
 	// Define all the LUME elements with their default names.
 	LUME.defineElements()
 </script>
