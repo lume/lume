@@ -59,5 +59,5 @@ export class MixedPlaneMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('mixedplane-material'))
+if (globalThis.window?.document && !elementBehaviors.has('mixedplane-material'))
 	elementBehaviors.define('mixedplane-material', MixedPlaneMaterialBehavior)

@@ -86,4 +86,5 @@ export class FbxModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('fbx-model')) elementBehaviors.define('fbx-model', FbxModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('fbx-model'))
+	elementBehaviors.define('fbx-model', FbxModelBehavior)

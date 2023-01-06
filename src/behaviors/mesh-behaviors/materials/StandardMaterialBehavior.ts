@@ -125,7 +125,8 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('standard-material')) elementBehaviors.define('standard-material', StandardMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('standard-material'))
+	elementBehaviors.define('standard-material', StandardMaterialBehavior)
 
 // This prevents errors with mixins. https://discord.com/channels/508357248330760243/508357248330760249/954526657312604180
 export type MixinBaseClass<T> = T extends new (..._: any) => infer I

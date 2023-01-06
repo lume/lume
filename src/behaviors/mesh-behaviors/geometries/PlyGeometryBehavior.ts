@@ -121,4 +121,5 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('ply-geometry')) elementBehaviors.define('ply-geometry', PlyGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('ply-geometry'))
+	elementBehaviors.define('ply-geometry', PlyGeometryBehavior)

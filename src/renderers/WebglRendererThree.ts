@@ -6,6 +6,7 @@ import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Motor} from '../core/Motor.js'
 
+import './handle-DOM-absence.js'
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
 

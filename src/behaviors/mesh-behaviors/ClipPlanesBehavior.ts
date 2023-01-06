@@ -258,4 +258,5 @@ export class ClipPlanesBehavior extends MeshBehavior {
 	}
 }
 
-if (!elementBehaviors.has('clip-planes')) elementBehaviors.define('clip-planes', ClipPlanesBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('clip-planes'))
+	elementBehaviors.define('clip-planes', ClipPlanesBehavior)

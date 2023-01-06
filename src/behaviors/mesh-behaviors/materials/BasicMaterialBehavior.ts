@@ -30,4 +30,5 @@ export class BasicMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('basic-material')) elementBehaviors.define('basic-material', BasicMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('basic-material'))
+	elementBehaviors.define('basic-material', BasicMaterialBehavior)

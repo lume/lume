@@ -263,4 +263,5 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('shape-geometry')) elementBehaviors.define('shape-geometry', ShapeGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('shape-geometry'))
+	elementBehaviors.define('shape-geometry', ShapeGeometryBehavior)

@@ -36,4 +36,5 @@ export class PointsMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('points-material')) elementBehaviors.define('points-material', PointsMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('points-material'))
+	elementBehaviors.define('points-material', PointsMaterialBehavior)

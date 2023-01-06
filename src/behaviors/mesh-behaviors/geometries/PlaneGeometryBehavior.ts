@@ -56,4 +56,5 @@ export class PlaneGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('plane-geometry')) elementBehaviors.define('plane-geometry', PlaneGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('plane-geometry'))
+	elementBehaviors.define('plane-geometry', PlaneGeometryBehavior)

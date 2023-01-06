@@ -84,4 +84,5 @@ export class ColladaModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('collada-model')) elementBehaviors.define('collada-model', ColladaModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('collada-model'))
+	elementBehaviors.define('collada-model', ColladaModelBehavior)

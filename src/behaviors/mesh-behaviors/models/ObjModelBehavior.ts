@@ -161,7 +161,8 @@ export class ObjModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('obj-model')) elementBehaviors.define('obj-model', ObjModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('obj-model'))
+	elementBehaviors.define('obj-model', ObjModelBehavior)
 
 const thro = (err: any) => {
 	throw err

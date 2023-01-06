@@ -166,4 +166,5 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('phong-material')) elementBehaviors.define('phong-material', PhongMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('phong-material'))
+	elementBehaviors.define('phong-material', PhongMaterialBehavior)

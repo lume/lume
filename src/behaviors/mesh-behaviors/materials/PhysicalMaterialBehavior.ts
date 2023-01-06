@@ -69,4 +69,5 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('physical-material')) elementBehaviors.define('physical-material', PhysicalMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('physical-material'))
+	elementBehaviors.define('physical-material', PhysicalMaterialBehavior)

@@ -76,4 +76,5 @@ export class ShaderMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('shader-material')) elementBehaviors.define('shader-material', ShaderMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('shader-material'))
+	elementBehaviors.define('shader-material', ShaderMaterialBehavior)

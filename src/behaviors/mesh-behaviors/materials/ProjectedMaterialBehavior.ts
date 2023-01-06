@@ -264,5 +264,5 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('projected-material'))
+if (globalThis.window?.document && !elementBehaviors.has('projected-material'))
 	elementBehaviors.define('projected-material', ProjectedMaterialBehavior)

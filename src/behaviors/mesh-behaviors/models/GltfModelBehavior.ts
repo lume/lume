@@ -146,7 +146,8 @@ export class GltfModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('gltf-model')) elementBehaviors.define('gltf-model', GltfModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('gltf-model'))
+	elementBehaviors.define('gltf-model', GltfModelBehavior)
 
 function getDracoLoader(url: string) {
 	let dracoLoader: DRACOLoader

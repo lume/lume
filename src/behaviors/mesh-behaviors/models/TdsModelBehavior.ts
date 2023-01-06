@@ -86,4 +86,5 @@ export class TdsModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('3ds-model')) elementBehaviors.define('3ds-model', TdsModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('3ds-model'))
+	elementBehaviors.define('3ds-model', TdsModelBehavior)

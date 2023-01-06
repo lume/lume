@@ -51,4 +51,5 @@ export class LambertMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('lambert-material')) elementBehaviors.define('lambert-material', LambertMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('lambert-material'))
+	elementBehaviors.define('lambert-material', LambertMaterialBehavior)
