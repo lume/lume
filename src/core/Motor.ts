@@ -103,7 +103,8 @@ class _Motor {
 	#treesToUpdate = new Set<SharedAPI>()
 
 	// default to requestAnimationFrame for regular non-VR/AR scenes.
-	#requestFrame = globalThis.requestAnimationFrame.bind(globalThis)
+	// Using ?. here in case of a non-DOM env.
+	#requestFrame = globalThis.requestAnimationFrame?.bind(globalThis)
 
 	/**
 	 * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
