@@ -4,9 +4,9 @@
 // to calculatedSize, that gives us absolute X/Y/Z relative to a parent taking
 // into account mount/align points.
 
-import {element, ElementAttributes, variable} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {createEffect, onCleanup, untrack} from 'solid-js'
+import html from 'solid-js/html'
+import {element, ElementAttributes, variable} from '@lume/element'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import type {SharedAPI} from '../core/SharedAPI.js'
 import {ScrollFling} from '../interaction/ScrollFling.js'

@@ -17,11 +17,12 @@
 // - Make an <lume-visual-format> element that can contain visual format code to
 // re-use in multiple layouts. Or perhaps wait until CSS support and make it a CSS prop.
 // - Allow visual-format to be fetched by path (like img src attribute).
+// - figure why shadow DOM distribution doesn't fully work here yet. x_x
 
 import {createEffect, createMemo, createSignal, For, Index, Show, untrack} from 'solid-js'
+import html from 'solid-js/html'
 import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
 import {attribute, element} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -185,7 +186,7 @@ export class Autolayout extends Element3D {
 
 	#queued = false
 	#queue(fn: () => void) {
-		// Motor.once(fn, false)
+		// Motor.once(fn, false) // Why did I comment this out again? Take notes JOE!
 		if (this.#queued) return
 		this.#queued = true
 		queueMicrotask(() => {

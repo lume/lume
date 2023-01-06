@@ -1,5 +1,5 @@
+import html from 'solid-js/html'
 import {booleanAttribute, element, numberAttribute, reactive, stringAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Motor} from '../core/Motor.js'
