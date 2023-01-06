@@ -152,8 +152,6 @@ function getDracoLoader(url: string) {
 	let dracoLoader: DRACOLoader
 
 	if (!dracoLoaders.has(url)) {
-		console.log('MAKE DRACO LOADER', url)
-
 		dracoLoader = new DRACOLoader()
 		dracoLoader.setDecoderPath(url)
 		dracoLoaders.set(url, {count: 1, dracoLoader})
@@ -172,7 +170,6 @@ function disposeDracoLoader(url: string) {
 	const ref = dracoLoaders.get(url)!
 	ref.count--
 	if (!ref.count) {
-		console.log('DISPOSE DRACO LOADER', url)
 		ref.dracoLoader.dispose()
 		dracoLoaders.delete(url)
 	}

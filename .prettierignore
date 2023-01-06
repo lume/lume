@@ -20,3 +20,4 @@ docs/guide/includes/*.md
 src/lib
 
 examples/models
+examples/global.js
