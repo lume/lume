@@ -1,6 +1,5 @@
-import {createEffect, createRoot, on} from 'solid-js'
-import {reactive} from '@lume/variable'
-import {attribute, untrack, element} from '@lume/element'
+import {createEffect, createRoot, on, untrack} from 'solid-js'
+import {attribute, element, reactive} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'

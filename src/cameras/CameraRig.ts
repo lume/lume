@@ -2,9 +2,9 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {createEffect, onCleanup} from 'solid-js'
-import {element, numberAttribute, untrack, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
+import {createEffect, onCleanup, untrack} from 'solid-js'
+import html from 'solid-js/html'
+import {element, numberAttribute, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'

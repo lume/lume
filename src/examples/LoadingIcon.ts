@@ -3,8 +3,8 @@
 // Find a standalone version of this loading icon at
 // https://codepen.io/trusktr/pen/poNxzqJ
 
+import html from 'solid-js/html'
 import {Element, element, stringAttribute} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 const defaultColor = '120,130,140'

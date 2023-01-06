@@ -1,6 +1,6 @@
+import {createEffect, createRoot, untrack} from 'solid-js'
+import {numberAttribute, booleanAttribute, element} from '@lume/element'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
-import {createEffect, createRoot} from 'solid-js'
-import {numberAttribute, booleanAttribute, untrack, element} from '@lume/element'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 

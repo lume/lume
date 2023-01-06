@@ -2,8 +2,9 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
-import {booleanAttribute, attribute, numberAttribute, untrack, element, stringAttribute, reactive} from '@lume/element'
-import {html} from '@lume/element/dist/html.js'
+import {untrack} from 'solid-js'
+import html from 'solid-js/html'
+import {booleanAttribute, attribute, numberAttribute, element, stringAttribute, reactive} from '@lume/element'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'

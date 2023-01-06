@@ -1,7 +1,47 @@
+export {
+	createEffect,
+	createComputed,
+	createContext,
+	createMemo,
+	createResource,
+	createRoot,
+	createSelector,
+	createSignal,
+	$DEVCOMP,
+	$PROXY,
+	$TRACK,
+	For,
+	Index,
+	Match,
+	Show,
+	ErrorBoundary,
+	SplitProps,
+	Suspense,
+	SuspenseList,
+	Switch,
+	getListener,
+	getOwner,
+	indexArray,
+	mapArray,
+	mergeProps,
+	on,
+	onCleanup,
+	onError,
+	onMount,
+	runWithOwner,
+	splitProps,
+	startTransition,
+	untrack,
+	useContext,
+	useTransition,
+} from 'solid-js'
+export {render} from 'solid-js/web'
+export {default as html} from 'solid-js/html'
+
 import {Class, Mixin} from 'lowclass'
 export {Class, Mixin}
+
 export * from '@lume/element'
-export * from '@lume/element/dist/html.js'
 
 export * from './behaviors/index.js'
 export * from './cameras/index.js'

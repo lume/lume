@@ -1,5 +1,6 @@
+import {untrack} from 'solid-js'
+import {reactive, element, attribute} from '@lume/element'
 import {Object3D} from 'three/src/core/Object3D.js'
-import {reactive, untrack, element, attribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'

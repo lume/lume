@@ -10,7 +10,7 @@ import {
 import {decoratorAbstraction, receiver} from './PropReceiver.js'
 import type {AttributeHandler} from '@lume/element'
 
-export {reactive, untrack} from '@lume/element'
+export {reactive} from '@lume/element'
 
 export function attribute(prototype: any, propName: string, descriptor?: PropertyDescriptor): any
 export function attribute(handler?: AttributeHandler): (proto: any, propName: string) => any
