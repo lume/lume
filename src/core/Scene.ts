@@ -97,10 +97,12 @@ export class Scene extends SharedAPI {
 	// TODO @readonly jsdoc tag
 	override readonly isScene = true
 
-	// Skip ShadowRoot observation for Scene instances. Only Scene actual
-	// children or distributed children are considered in the LUME scene
-	// graph because Scene's ShadowRoot already exists and serves in the
-	// rendering implementation and is not the user's.
+	// Skip ShadowRoot observation for Scene instances, and consider composed
+	// children to always be the Scene's direct children, not any in its
+	// ShadowRoot. Only a Scene's actual children or distributed children are
+	// considered to be in the LUME scene graph because Scene's ShadowRoot
+	// serves a specific purpose in the rendering implementation and is not the
+	// user's.
 	override skipShadowObservation = this.isScene
 
 	/**
@@ -586,36 +588,22 @@ export class Scene extends SharedAPI {
 	}
 
 	static override css = /*css*/ `
+		${
+			// FIXME super.css is not handled properly by our Babel setup, fix it or remove that feature.
+			// super.css
+			SharedAPI.css
+		}
+
 		:host {
 			/*
-			 * All items of the scene graph are hidden until they are mounted in
-			 * a scene (this changes to display:block). 'display' gets toggled
-			 * between "none" and "block" by SharedAPI depending on if CSS
-			 * rendering is enabled.
+			 * A Scene is strict: it does not leak content, its rendering is not
+			 * affected by external layout, and its size is not affected by its
+			 * content. It is an absolutely contained drawing area.
 			 */
-			display: none;
-
-			/*
-			A Scene is strict: it does not leak content, its rendering is not
-			affected by external layout, and its size is not affected by its
-			content. It is an absolutely contained drawing area.
-			*/
-			contain: size layout paint; /*fallback, TODO remove once Safari goers are caught up*/
-			contain: strict;
-
-			box-sizing: border-box;
-			position: static;
+			contain: size layout paint; /*fallback, TODO remove once Safari is caught up*/
+			contain: strict; /*override*/
 			overflow: hidden;
-			top: 0;
-			left: 0;
-
-			/*
-				Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
-				but will for 3D objects in WebGL.)
-			*/
-			transform-origin: 50% 50% 0; /* default */
-
-			transform-style: preserve-3d;
+			position: static; /*override*/
 		}
 
 		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
