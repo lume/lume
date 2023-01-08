@@ -1186,11 +1186,7 @@ export class Scene extends SharedAPI {
 	`
 
 	static override css = /*css*/ `
-		${
-			// FIXME super.css is not handled properly by our Babel setup, fix it or remove that feature.
-			// super.css
-			SharedAPI.css
-		}
+		${super.css}
 
 		:host {
 			/*

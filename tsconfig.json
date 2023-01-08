@@ -13,9 +13,13 @@
 		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
 		"skipLibCheck": true,
 
-		// TODO move to cli base config
-		"noImplicitOverride": true
-		// "noUncheckedIndexedAccess": true // TODO enable, fix errors
+		// TODO make the following options default in lume/cli
+
+		"noImplicitOverride": true,
+		// "noUncheckedIndexedAccess": true // TODO enable, fix errors,
+		"useDefineForClassFields": true,
+		"lib": ["es2022", "dom"],
+		"target": "es2022" // must be done at cli v0.11, because 0.10 is for classy-solid, and develop is on 0.9 so we can't increment to 0.10.
 	},
 
 	// TODO Ideally we don't want test API type defs showing up in source code,
