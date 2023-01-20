@@ -4,13 +4,12 @@
 	"description": "A CSS3D/WebGL UI toolkit.",
 	"license": "MIT",
 	"homepage": "http://lume.io",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"type": "module",
-	"exports COMMENT:": "This removes 'dist' from import statements, as well as replaces the 'main' field. See https://github.com/nodejs/node/issues/14970#issuecomment-571887546",
 	"exports": {
 		".": "./dist/index.js",
-		"./": "./dist/"
+		"./*": "./*"
 	},
 	"engines": {
 		"node": ">=14"
