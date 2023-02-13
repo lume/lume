@@ -645,6 +645,7 @@ export class Scene extends SharedAPI {
 			}
 		})
 
+		// TODO consolidate texture handling with behaviors (_handleTexture())
 		this.createEffect(() => {
 			if (!this.webgl || !this.environment) {
 				if (isDisposable(this.three.environment)) this.three.environment.dispose()
@@ -695,7 +696,6 @@ export class Scene extends SharedAPI {
 
 	override attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
 		// CONTINUE: find out why initial attributes like size-mode are not firing
-		debugger
 		console.log(`SCENE ATTRIBUTE CHANGED: ${name} - ${oldValue} - ${newValue}`)
 		super.attributeChangedCallback!(name, oldValue, newValue)
 

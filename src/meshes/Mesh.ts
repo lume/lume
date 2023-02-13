@@ -123,12 +123,15 @@ import type {
 	PhysicalMaterialBehaviorAttributes,
 	StandardMaterialBehavior,
 	StandardMaterialBehaviorAttributes,
+	TransmissionMaterialBehavior,
+	TransmissionMaterialBehaviorAttributes,
 } from '../index.js'
 
 type BehaviorInstanceTypes = PhongMaterialBehavior &
 	LambertMaterialBehavior &
 	StandardMaterialBehavior &
 	PhysicalMaterialBehavior &
+	TransmissionMaterialBehavior &
 	ClipPlanesBehavior
 
 type BehaviorAttributes =
@@ -137,6 +140,7 @@ type BehaviorAttributes =
 	| StandardMaterialBehaviorAttributes
 	| PhysicalMaterialBehaviorAttributes
 	| ClipPlanesBehaviorAttributes
+	| TransmissionMaterialBehaviorAttributes
 
 export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 

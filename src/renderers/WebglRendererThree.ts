@@ -12,6 +12,7 @@ import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/textures/Texture.js'
+import type {TColor} from '../utils/three.js'
 
 class SceneEffects extends Effectful(Object) {}
 
@@ -23,6 +24,7 @@ interface SceneState {
 	hasEnvironment?: boolean
 	sizeChangeHandler: () => void
 	effects: SceneEffects
+	envVersion: number
 }
 
 let instance: WebglRendererThree | null = null
@@ -97,6 +99,7 @@ export class WebglRendererThree {
 				renderer,
 				sizeChangeHandler: () => this.updateResolution(scene),
 				effects,
+				envVersion: 0,
 			}),
 		)
 
@@ -187,10 +190,10 @@ export class WebglRendererThree {
 		}, false)
 	}
 
-	setClearColor(scene: Scene, color: any, opacity: number) {
+	setClearColor(scene: Scene, color: TColor | null, opacity: number) {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set clear color. Scene state should be initialized first.')
-		state.renderer.setClearColor(color, opacity)
+		state.renderer.setClearColor(color ?? 'black', opacity)
 	}
 
 	setClearAlpha(scene: Scene, opacity: number) {
@@ -299,8 +302,6 @@ export class WebglRendererThree {
 		})
 	}
 
-	#envVersion = 0
-
 	/**
 	 * @method enableEnvironment - Enable environment texture handling for the given scene.
 	 * @param {Scene} scene - The given scene.
@@ -312,7 +313,7 @@ export class WebglRendererThree {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.#envVersion += 1
+		state.envVersion++
 
 		// Load the PMREM machinery only if needed.
 		if (!state.pmremgen) {
@@ -332,7 +333,7 @@ export class WebglRendererThree {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		this.#envVersion += 1
+		state.envVersion++
 
 		if (!state.hasBackground && !state.hasEnvironment) {
 			state.pmremgen?.dispose()
@@ -351,12 +352,12 @@ export class WebglRendererThree {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
-		const version = this.#envVersion
+		const version = state.envVersion
 
 		new TextureLoader().load(scene.environment ?? '', tex => {
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
-			if (version !== this.#envVersion) return
+			if (version !== state.envVersion) return
 
 			cb(state.pmremgen!.fromEquirectangular(tex).texture)
 			tex.dispose() // Three.js demos do this. Not sure if it is really needed.

@@ -37,6 +37,8 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	// specularColorMap
 	@numberAttribute(0) transmission = 0
 	@stringAttribute('') transmissionMap = ''
+	@numberAttribute(0) thickness = 0
+	@stringAttribute('') thicknessMap = ''
 
 	override _createComponent() {
 		return new MeshPhysicalMaterial({})
@@ -54,6 +56,7 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 			mat.ior = this.refractiveIndex
 			mat.reflectivity = this.reflectivity
 			mat.transmission = this.transmission
+			mat.thickness = this.thickness
 
 			// TODO Needed?
 			// mat.needsUpdate = true
@@ -65,6 +68,12 @@ export class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 			() => this.transmissionMap,
 			(mat, tex) => (mat.transmissionMap = tex),
 			mat => !!mat.transmissionMap,
+		)
+
+		this._handleTexture(
+			() => this.thicknessMap,
+			(mat, tex) => (mat.thicknessMap = tex),
+			mat => !!mat.thicknessMap,
 		)
 	}
 }

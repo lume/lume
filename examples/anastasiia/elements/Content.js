@@ -23,6 +23,7 @@
 			#featured
 			#otherProjects
 			#rainbow
+			#rainbow2
 
 			rainbowUniforms = ''
 			rainbowVert = ''
@@ -102,7 +103,7 @@
 						scrollFactor: 0.3,
 					})
 
-					if (untrack(() => fling.y === undefined)) debugger
+					// if (untrack(() => fling.y === undefined)) debugger
 
 					fling.start()
 
@@ -343,6 +344,7 @@
 				createEffect(() => {
 					if (!this.rainbowVert || !this.rainbowFrag || !Object.keys(this.rainbowUniforms).length) return
 					animateShader(this.#rainbow)
+					// animateShader(this.#rainbow2)
 				})
 
 				async function animateShader(el) {
@@ -399,6 +401,9 @@
 						Motor.removeRenderTask(task)
 					})
 				})
+
+				////////////////////////////////////////////////////////////////////////
+				naturalSize(this.shadowRoot.querySelector('#contactButton'))
 			}
 
 			#letsconnect
@@ -737,20 +742,15 @@
 											opacity="0"
 											size-mode="p p"
 											size="1 1"
-											position=${[0, scale * 200, scale * 200]}
+											position=${[0, scale * 200, scale * 130]}
 										>
 											<h2 class="forAwesome">Awesome<span class="areYouReady">?</span></h2>
-										</lume-element3d>
-										<lume-element3d class="fadeIn thatsAWrap" opacity="0" size-mode="p p" size="1 1">
-											<div class="sayHello">
-												<a href="mailto:vnastasia@gmail.com">Contact</a>
-											</div>
 										</lume-element3d>
 										<lume-element3d
 											class="fadeIn"
 											opacity="0"
 											align-point="0 0.5"
-											position=${[659 * scale, 0, -200]}
+											position=${[659 * scale, 0, -130 * scale]}
 											mount-point="0.5 0.5"
 											size=${[260 * scale, 443 * scale]}
 										>
@@ -767,6 +767,41 @@
 												></lume-plane>
 											</lume-scene>
 										</lume-element3d>
+										<lume-mixed-plane
+											id="contactButton"
+											xsize-mode="p l"
+											xsize="1 50"
+											align-point="0.5 1 0"
+											mount-point="0.5 1 0"
+											position=${[0, -237 * scale, 0]}
+										>
+											<div class="sayHello">
+												<a href="mailto:vnastasia@gmail.com">Contact</a>
+											</div>
+
+											<lume-element3d
+												opacity="0"
+												class="fadeIn"
+												align-point="0.5 0.5"
+												mount-point="0.5 0.5"
+												size-mode="p p"
+												size="1.05 1.1"
+												position="0 0 -5"
+											>
+												<lume-scene webgl>
+													<lume-plane
+														ref=${e => (this.#rainbow2 = e)}
+														has="shader-material"
+														size-mode="p p"
+														size="1 1"
+														scale="1 1"
+														uniforms=${() => this.rainbowUniforms}
+														vertex-shader=${() => this.rainbowVert}
+														fragment-shader=${() => this.rainbowFrag}
+													></lume-plane>
+												</lume-scene>
+											</lume-element3d>
+										</lume-mixed-plane>
 										<style>
 											.thatsAWrap {
 												padding: 0 calc(157px * var(--scale)) calc(157px * var(--scale));
@@ -775,13 +810,6 @@
 											/* TODO scaled sizes */
 											#letsconnect h2 {
 												font-size: 90px;
-											}
-
-											#letsconnect a {
-												font-size: 30px;
-												text-transform: uppercase;
-												background: #8145bfb3;
-												padding: 10px;
 											}
 
 											.getReady {
@@ -805,26 +833,59 @@
 											}
 
 											.sayHello {
+												position: absolute;
+												/* height: 100%; */
 												display: flex;
 												justify-content: center;
+												align-items: flex-end;
+												background: #0a131f;
+												cursor: pointer;
 											}
 
 											.sayHello a {
+												font-family: 'Open Sans', sans-serif;
+												font-size: calc(50px * var(--scale));
+												text-transform: uppercase;
+												text-decoration: none;
+												padding: calc(40px * var(--scale)) calc(100px * var(--scale));
+												/* border: calc(2px * var(--scale)) solid white; */
 											}
 										</style>
 									</lume-element3d>
+
 									<lume-element3d class="fadeIn" opacity="0" slot="shoes" size-mode="p p" size="1 1">
 										<div class="onlyTheBeginning">
-											<span class="original">Copyright © 2022 <span class="avp">Anastasiia.V.Pea</span></span>
+											<span class="original">
+												Copyright ©&nbsp;
+												<span class="avp"
+													>2022 Anastasiia<span dot></span><span shrink>&nbsp;</span>V<span dot></span
+													><span shrink>&nbsp;</span>Pea</span
+												>
+											</span>
 										</div>
 										<style>
 											.onlyTheBeginning {
+												font-family: 'Open Sans', sans-serif;
+												font-size: calc(20px * var(--scale));
 												height: 100%;
 												background: black;
 												padding: calc(71px * var(--scale)) calc(165px * var(--scale));
 											}
 
+											[shrink] {
+												display: inline-block;
+												width: 0;
+												height: 0;
+											}
+
+											[dot]::before {
+												content: '.';
+												display: inline;
+											}
+
 											.avp {
+												font-weight: bold;
+												text-transform: uppercase;
 											}
 										</style>
 									</lume-element3d>
@@ -898,18 +959,45 @@
 	)
 }
 
-const {Element3D} = LUME
+// // Use only on element with literal size of 0,0,0 (imply this when we add natural size mode).
+// function naturalSize(element) {
+// 	const {Element3D} = LUME
+// 	let minSizeX = 0
+// 	let minSizeY = 0
 
-// Use only on element with literal size of 0,0,0 (imply this when we add natural size mode).
-function naturalSize(element) {
-	let minSizeX = 0
-	let minSizeY = 0
+// 	createEffect(() => {
+// 		for (const child of Array.from(element.children)) {
+// 			if (child instanceof Element3D) {
+// 				// if (child)
+// 			}
+// 		}
+// 	})
+// }
 
-	createEffect(() => {
-		for (const child of Array.from(element.children)) {
-			if (child instanceof Element3D) {
-				// if (child)
-			}
+// Initial version of natural size based on DOM content. Children must be
+// position:absolute, and not sized as portion of their parent.
+function naturalSize(element3d) {
+	const {Motor, Element3D} = LUME
+
+	/** @type {Array<HTMLElement>} */
+	const children = Array.from(element3d.children)
+		// non-lume nodes for now
+		.filter(el => !(el instanceof Element3D))
+
+	Motor.addRenderTask(() => {
+		let totalBound = {left: 0, top: 0, bottom: 0, right: 0}
+
+		for (const child of children) {
+			totalBound.left = Math.max(0, Math.min(totalBound.left, child.offsetLeft))
+			totalBound.top = Math.max(0, Math.min(totalBound.top, child.offsetTop))
+			totalBound.bottom = Math.max(totalBound.bottom, child.offsetTop + child.offsetHeight)
+			totalBound.right = Math.max(totalBound.right, child.offsetLeft + child.offsetWidth)
 		}
+
+		const width = totalBound.right - totalBound.left
+		const height = totalBound.bottom - totalBound.top
+
+		element3d.size.x = width
+		element3d.size.y = height
 	})
 }

@@ -317,6 +317,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 					this.element.needsUpdate()
 
 					onLoad?.()
+					this.element.dispatchEvent(new TextureLoadEvent())
 				})
 
 				onCleanup(() => {
@@ -330,5 +331,23 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 			mat.needsUpdate = true // Three.js needs to update the material in the GPU
 			this.element.needsUpdate() // LUME needs to re-render
 		})
+	}
+}
+
+export class TextureLoadEvent extends Event {
+	static readonly type = 'lume-texture-load'
+
+	constructor() {
+		super(TextureLoadEvent.type, {
+			bubbles: true,
+			composed: true,
+			cancelable: false,
+		})
+	}
+}
+
+declare global {
+	interface HTMLElementEventMap {
+		[TextureLoadEvent.type]: TextureLoadEvent
 	}
 }

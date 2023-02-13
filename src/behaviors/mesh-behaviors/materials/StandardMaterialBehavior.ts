@@ -12,6 +12,8 @@ export type StandardMaterialBehaviorAttributes =
 	| 'displacementMap'
 	| 'displacementScale'
 	| 'displacementBias'
+	| 'envMap'
+	| 'envMapIntensity'
 	| 'texture' // map
 	| 'normalMap'
 	| 'normalScale'
@@ -36,8 +38,8 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 	@numberAttribute(1) displacementScale = 1
 	@numberAttribute(0) displacementBias = 0
 	// emissive?: Color | string | number;
-	// envMap?: Texture | null;
-	// @numberAttribute(1) envMapIntensity?: number
+	@stringAttribute('') envMap = ''
+	@numberAttribute(1) envMapIntensity = 1
 	// @numberAttribute(1) emissiveIntensity?: number
 	// emissiveMap?: Texture | null;
 	// lightMap?: Texture | null;
@@ -76,6 +78,7 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 			mat.bumpScale = this.bumpScale
 			mat.displacementScale = this.displacementScale
 			mat.displacementBias = this.displacementBias
+			mat.envMapIntensity = this.envMapIntensity
 			mat.normalScale.set(this.normalScale, this.normalScale)
 			mat.metalness = this.metalness
 			// mat.morphNormals = this.morphNormals
@@ -103,6 +106,11 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 			() => this.displacementMap,
 			(mat, tex) => (mat.displacementMap = tex),
 			mat => !!mat.displacementMap,
+		)
+		this._handleTexture(
+			() => this.envMap,
+			(mat, tex) => (mat.envMap = tex),
+			mat => !!mat.envMap,
 		)
 		this._handleTexture(
 			() => this.texture, // map
