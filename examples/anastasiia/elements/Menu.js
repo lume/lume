@@ -20,7 +20,8 @@
 				<lume-element3d id="menu" size-mode="p p" size="1 1">
 					<lume-element3d id="menuBg" opacity="0.8" size="1 1" size-mode="p p"></lume-element3d>
 					<nav>
-						<div style="position: absolute">
+						${'' /* wrapper div is a trick so that centered flex content is left aligned in the middle of the menu */}
+						<div>
 							<header>
 								<a class="navLink" href="./TODO.html">
 									Work
@@ -30,6 +31,7 @@
 									Work
 									<div clickArea></div>
 								</a>
+								<span class="pageNumber">01.</span>
 							</header>
 
 							<section class="sublinks">
@@ -56,6 +58,7 @@
 									About
 									<div clickArea></div>
 								</a>
+								<span class="pageNumber">02.</span>
 							</header>
 
 							<header>
@@ -67,6 +70,7 @@
 									Contact
 									<div clickArea></div>
 								</a>
+								<span class="pageNumber">03.</span>
 							</header>
 						</div>
 					</nav>
@@ -85,7 +89,7 @@
 
 			css = /*css*/ `
 				#menu {
-					padding: 10px;
+					padding: calc(20px * var(--scale));
 				}
 
 				#menuBg {
@@ -99,7 +103,7 @@
 					backdrop-filter: blur(20px);
 				}
 
-				#menu nav {
+				nav {
 					width: 100%;
 					height: 100%;
 
@@ -109,15 +113,37 @@
 					align-items: center;
 				}
 
-				#menu a {
+				a {
 					display: block;
 					position: relative;
 					text-decoration: none;
 					text-transform: uppercase;
 					text-underline-offset: 0.3em;
 				}
-				#menu [clickArea] {
-					/* border: 1px solid #532c79; */
+
+				header,
+				section {
+					position: relative;
+				}
+
+				header {
+					position: relative;
+
+					margin-bottom: calc(59px * var(--scale));
+				}
+
+				header + header {
+					margin-top: calc(141px * var(--scale));
+				}
+
+				.pageNumber {
+					position: absolute;
+					bottom: 64%;
+					right: 102%;
+				}
+
+				[clickArea] {
+					/* border: 1px solid #532c79; */ /* debug */
 					position: absolute;
 					width: 120%;
 					top: 50%;
@@ -125,33 +151,27 @@
 					transform: translate(-50%, -50%);
 				}
 
-				#menu header [clickArea] {
+				header [clickArea] {
 					height: 200%;
 				}
 
-				#menu section [clickArea] {
+				section [clickArea] {
 					height: 300%;
 				}
 
-				#menu header {
-					position: relative;
-
-					margin-bottom: calc(59px * var(--scale));
-				}
-
-				#menu header + header {
-					margin-top: calc(141px * var(--scale));
-				}
-
-				#menu .navLink:first-child {
+				.navLink:first-child {
 					font-family: 'Open Sans', sans-serif;
-					font-weight: 600;
+					font-weight: 600; /*semibold*/
 					font-size: calc(39px * var(--scale));
+					letter-spacing: calc(0.58px * var(--scale));
 				}
-				#menu .navLink:nth-child(2) {
+				.navLink:nth-child(2) {
 					font-family: 'Austin-MediumItalic', sans-serif;
 					font-weight: 500;
 					font-size: calc(43px * var(--scale));
+					letter-spacing: calc(0.65px * var(--scale));
+					text-decoration: underline;
+					text-decoration-thickness: calc(2px * var(--scale));;
 					position: absolute;
 					top: 0;
 					left: 0;
@@ -159,35 +179,36 @@
 					opacity: 0;
 				}
 
-				#menu header:hover .navLink:first-child {
+				header:hover .navLink:first-child {
 					opacity: 0;
 				}
-				#menu header:hover .navLink:nth-child(2) {
+				header:hover .navLink:nth-child(2) {
 					opacity: 1;
 				}
-				#menu header:active .navLink:nth-child(2) {
+				header:active .navLink:nth-child(2) {
 					text-decoration: underline;
 				}
 
-				#menu .sublinks {
+				.sublinks {
 					display: contents;
 				}
 
-				#menu .navSublink {
+				.navSublink {
 					font-family: 'Open Sans', sans-serif;
-					font-weight: 600;
+					font-weight: 600; /*semibold*/
 					font-size: calc(20px * var(--scale));
+					letter-spacing: calc(0.3px * var(--scale));
 
 					margin-bottom: calc(59px * var(--scale));
 				}
-				#menu .navSublink:hover {
+				.navSublink:hover {
 					font-style: italic;
-				}
-				#menu .navSublink:active {
+				/*}
+				.navSublink:active {*/
 					text-decoration: underline;
 				}
 
-				#menu .navSublink:last-of-type {
+				.navSublink:last-of-type {
 					margin-bottom: calc(100px * var(--scale));
 				}
 			`

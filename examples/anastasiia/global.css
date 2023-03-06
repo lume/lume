@@ -11,3 +11,11 @@ a {
 .hidden {
 	opacity: 0;
 }
+
+.pageNumber {
+	color: var(--purple);
+	font-family: 'Austin-LightItalic', serif;
+	font-weight: 100;
+	font-size: calc(30px * var(--scale));
+	letter-spacing: calc(0.6px * var(--scale));
+}

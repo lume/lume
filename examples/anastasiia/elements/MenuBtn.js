@@ -63,7 +63,7 @@
 				:host .square {
 					width: 100%;
 					height: 100%;
-					border: 1.5px solid white;
+					border: calc(3px * var(--scale)) solid white;
 					box-sizing: border-box;
 				}
 

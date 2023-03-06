@@ -385,17 +385,16 @@
 				}
 
 				#skills {
-					padding: 0 82px;
+					padding: 0 calc(164px * var(--scale));
 
 					/* background disabled, replaced with gl plane */
 					/*background: #8145bf33;*/ /* purple */
-
-					font-size: 20px;
 				}
 
 				#text {
 					font-family: 'Austin-Bold', serif;
-					font-size: 41px;
+					font-size: calc(82px * var(--scale));
+					letter-spacing: calc(1.23px * var(--scale));
 					position: absolute;
 					white-space: nowrap;
 					left: 0;

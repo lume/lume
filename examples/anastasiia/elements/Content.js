@@ -431,8 +431,6 @@
 				///////////////////////////////////////////////////////////////////////
 				// On scroll, "snap" category buttons into the header.
 
-				// Quick and sketchy reach and grab. The great thing about DOM.
-				// Sometimes you just need to get things done.
 				const bodyCatButtons = this.shadowRoot
 					.querySelector('av-categories')
 					.shadowRoot.querySelector('av-category-buttons')
@@ -659,35 +657,24 @@
 
 											.featuredLabel {
 												font-size: calc(30px * var(--scale));
+												letter-spacing: calc(0.6px * var(--scale));
 												font-family: 'Austin-LightItalic', serif;
 												font-weight: 100;
 												margin-bottom: calc(62px * var(--scale));
 											}
 
-											/* flex layout inspired by https://codepen.io/AaronTeering/pen/GRdoLMW */
+											#featured div {
+												transform-style: preserve-3d;
+											}
+
 											.flex-row {
-												/* position: absolute; */
-
-												/* display: flex;
-										flex-direction: row;
-										flex-wrap: wrap; */
-
-												--flex-margin: 24px;
 												--transition-time: 0.6s;
 											}
 
 											.flex-row .card {
 												max-width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
 												width: calc(0.25 * (100% - var(--gutter) * 3) - 1px);
-
-												/* replace with isotope fitRows.gutter option */
-												/* margin: var(--flex-margin); */
-
 												margin-bottom: var(--gutter);
-
-												/* background: #fafafa; */
-												/* border-radius: 10px; */
-												/* transition: var(--transition-time); */
 												overflow: visible;
 											}
 
@@ -696,20 +683,23 @@
 												aspect-ratio: 1;
 												object-fit: cover;
 												border-radius: 0;
-												transition: border-radius var(--transition-time);
+												/* box-shadow: 0px 0px calc(100px * var(--scale)) 0px rgba(0, 0, 0, 0); */
+												transition: border-radius var(--transition-time) /* , box-shadow var(--transition-time) */;
+											}
+
+											.cardContent {
+												transform-style: preserve-3d;
+												transform: translate3d(0, 0, 0.1px) scale(1);
+												transition: transform var(--transition-time);
 											}
 
 											.flex-row .card:hover .cardContent {
-												transform: scale(1.03);
-												/* box-shadow: 0px 0px 50px -20px #808080; */
+												transform: translate3d(0, 0, 0.1px) scale(1.03);
 											}
 
 											.flex-row .card:hover img {
 												border-radius: 100%;
-											}
-
-											.cardContent {
-												transition: transform var(--transition-time);
+												/* box-shadow: 0px 0px calc(100px * var(--scale)) 0px #808080; */
 											}
 
 											@media screen and (max-width: 1600px) {
@@ -737,13 +727,15 @@
 												transition: opacity var(--fadeInDuration, 0.5s);
 
 												font-family: 'Open Sans', sans-serif;
-												font-weight: 400;
+												font-weight: 400; /*regular*/
 												font-size: calc(20px * var(--scale));
+												letter-spacing: calc(0px * var(--scale));
 											}
 
 											.card h2 {
-												font-weight: 600;
+												font-weight: 600; /*semibold*/
 												font-size: calc(25px * var(--scale));
+												letter-spacing: calc(0.38px * var(--scale));
 												text-transform: uppercase;
 											}
 										</style>
@@ -809,10 +801,6 @@
 												--gutter: calc(22px * var(--scale));
 												padding: 0px calc(83px * var(--scale));
 											}
-
-											#otherProjects .flex-row {
-												--flex-margin: 10px;
-											}
 										</style>
 									</lume-element3d>
 
@@ -836,7 +824,7 @@
 											size="1 1"
 											position=${[0, scale * 200, scale * 130]}
 										>
-											<h2 class="forAwesome">Awesome<span class="areYouReady">?</span></h2>
+											<h2 class="forAwesome">Awesome <span class="areYouReady">?</span></h2>
 										</lume-element3d>
 										<lume-element3d
 											class="fadeIn"
@@ -899,14 +887,10 @@
 												padding: 0 calc(157px * var(--scale)) calc(157px * var(--scale));
 											}
 
-											/* TODO scaled sizes */
-											#letsconnect h2 {
-												font-size: 90px;
-											}
-
 											.getReady {
 												font-family: 'Austin-LightItalic', serif;
 												font-size: calc(165px * var(--scale));
+												letter-spacing: calc(0px * var(--scale));
 												font-weight: 100;
 											}
 
@@ -915,12 +899,14 @@
 												font-family: 'Open Sans', sans-serif;
 												font-weight: 700;
 												font-size: calc(165px * var(--scale));
+												letter-spacing: calc(4.95px * var(--scale));
 												text-transform: uppercase;
 											}
 
 											.areYouReady {
 												font-family: 'Austin-LightItalic', serif;
 												font-size: calc(170px * var(--scale));
+												letter-spacing: calc(0px * var(--scale));
 												font-weight: 100;
 											}
 
@@ -959,6 +945,7 @@
 											.onlyTheBeginning {
 												font-family: 'Open Sans', sans-serif;
 												font-size: calc(20px * var(--scale));
+												letter-spacing: calc(0.3px * var(--scale));
 												height: 100%;
 												background: black;
 												padding: calc(71px * var(--scale)) calc(165px * var(--scale));

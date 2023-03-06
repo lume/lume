@@ -154,7 +154,8 @@
 					margin: 0;
 				}
 				#hero .title {
-					font-size: 15px;
+					font-size: calc(30px * var(--scale));
+					letter-spacing: calc(0.45px * var(--scale));
 					font-weight: 300;
 					line-height: 2.8;
 					transform: translateZ(0px);
@@ -162,11 +163,13 @@
 				#hero .first {
 					font-family: 'Austin-LightItalic', serif;
 					font-weight: 100;
-					font-size: 90px;
+					font-size: calc(180px * var(--scale));
+					letter-spacing: calc(0px * var(--scale));
 					transform: translate3d(0, -5px, 20px);
 				}
 				#hero .middlelast {
-					font-size: 90px;
+					font-size: calc(180px * var(--scale));
+					letter-spacing: calc(5.4px * var(--scale));
 					font-weight: 700;
 					transform: translate3d(24px, 0, 0);
 				}

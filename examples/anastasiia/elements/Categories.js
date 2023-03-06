@@ -28,7 +28,9 @@
 				receive-shadow="false"
 			>
 				<lume-element3d id="categoriesPadding" size-mode="l p" size="0 1" align-point="0.5" mount-point="0.5">
-					<lume-element3d size="100 64" class="heading"> <span>01.</span><span>&nbsp;Work</span> </lume-element3d>
+					<lume-element3d size="100 64" class="heading">
+						<span class="pageNumber">01.</span><span>&nbsp;Work</span>
+					</lume-element3d>
 				</lume-element3d>
 
 				<av-category-buttons
@@ -43,54 +45,14 @@
 		`
 
 		css = /*css*/ `
-			#categories > div {
-				width: 100%;
-				height: 100%;
-				text-transform: uppercase;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			#categories a {
-				padding-left: 4px;
-				padding-right: 4px;
-
-				text-transform: uppercase;
-				text-decoration: none;
-
-				font-family: 'Open Sans', sans-serif;
-				font-weight: 600;
-				font-size: calc(20px * var(--scale));
-			}
-
-			#categories a:last-child {
-			}
-
-			#categories a.active,
-			#categories a:hover,
-			#categories a:focus,
-			#categories a:active {
-				outline: none;
-				font-family: 'Austin-Semibold', serif;
-				font-size: calc(22px * var(--scale));
-				text-decoration: underline;
-				text-decoration-color: var(--purple);
-				text-underline-offset: calc(9px * var(--scale));
-				text-decoration-thickness: calc(4px * var(--scale));
-			}
-
 			#categories .heading {
 				display: flex !important;
 				align-items: center;
 				color: var(--purple);
 				font-size: calc(30px * var(--scale));
+				letter-spacing: calc(0.6px * var(--scale));
 				font-family: 'Austin-MediumItalic', serif;
 				text-transform: uppercase;
-			}
-			#categories .heading span:first-child {
-				font-family: 'Austin-LightItalic', serif;
-				font-weight: 100;
 			}
 		`
 	}
