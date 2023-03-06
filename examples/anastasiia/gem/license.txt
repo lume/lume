@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gem
+* source:	https://sketchfab.com/3d-models/gem-638e3c18ad2f4b0a919ce2d94ce0d795
+* author:	Multipainkiller Studio (https://sketchfab.com/Multipainkiller_Studio)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gem" (https://sketchfab.com/3d-models/gem-638e3c18ad2f4b0a919ce2d94ce0d795) by Multipainkiller Studio (https://sketchfab.com/Multipainkiller_Studio) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

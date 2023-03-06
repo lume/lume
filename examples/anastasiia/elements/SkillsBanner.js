@@ -1,5 +1,5 @@
 {
-	const {Node, element, html, createEffect, Motor, reactify, autorun, TextureLoadEvent} = LUME
+	const {Node, element, html, Motor, reactify, autorun, TextureLoadEvent, MeshTransmissionMaterial} = LUME
 
 	const numberOfRepeatingItems = 2
 
@@ -14,8 +14,11 @@
 			textImageUrl = ''
 
 			#skills
-			#magicCircle
-			#magicCircleContainer
+			#gltfGem
+			#gem
+			#gemBack
+			#gemWire
+			#gemContainer
 
 			constructor() {
 				super()
@@ -26,12 +29,46 @@
 				super.connectedCallback()
 
 				this.marquee()
-				// this.applyShader(this.#magicCircle, 0.001)
-				this.sphereAnim()
+				this.#mouseFollow()
 
 				this.html2canvas()
 
-				this.#magicCircle.rotation = (x, y, z) => [++x, ++y, ++z]
+				this.#handleGlftGem()
+
+				this.#rotateGem()
+
+				this.#applyShader(this.#gemWire, 0.001)
+			}
+
+			#handleGlftGem() {
+				let model = this.#gltfGem.behaviors.get('gltf-model')?.model
+
+				const onGemLoad = () => {
+					model = this.#gltfGem.behaviors.get('gltf-model')?.model
+					model.scene.traverse(n => {
+						if (n.isMesh) {
+							n.geometry.scale(100, 100, 100)
+
+							// TODO make it officially easy to provide custom
+							// geometries via LUME interface
+							this.#gem.three.geometry.dispose()
+							this.#gem.three.geometry = n.geometry
+							this.#gemBack.three.geometry.dispose()
+							this.#gemBack.three.geometry = n.geometry
+							this.#gemWire.three.geometry.dispose()
+							this.#gemWire.three.geometry = n.geometry
+						}
+					})
+				}
+
+				if (!model) this.#gltfGem.on('MODEL_LOAD', onGemLoad)
+				else onGemLoad()
+			}
+
+			#rotateGem() {
+				this.#gem.rotation = (x, y, z) => [x, y + 0.3, z]
+				this.#gemBack.rotation = (x, y, z) => [x, y + 0.3, z]
+				this.#gemWire.rotation = (x, y, z) => [x, y + 0.3, z]
 			}
 
 			async html2canvas() {
@@ -64,13 +101,13 @@
 				})
 			}
 
-			sphereAnim() {
+			#mouseFollow() {
 				// Add some interaction!
 				const maxDisplacement = 60
 				let targetX = 0
 				let targetY = 0
 
-				createEffect(() => {
+				autorun(() => {
 					if (!this.scene) return
 
 					this.scene.addEventListener('pointermove', event => {
@@ -81,33 +118,24 @@
 				})
 
 				Motor.addRenderTask(() => {
-					this.#magicCircleContainer.position.x += 0.05 * (targetX - this.#magicCircleContainer.position.x)
-					this.#magicCircleContainer.position.y += 0.05 * (targetY - this.#magicCircleContainer.position.y)
+					this.#gemContainer.position.x += 0.05 * (targetX - this.#gemContainer.position.x)
+					this.#gemContainer.position.y += 0.05 * (targetY - this.#gemContainer.position.y)
 				})
-
-				// magicCircle.children[0].rotation = (x, y) => [x, y + 1]
-
-				// this.#magicCircle.rotation = (x, y, z) => [x + 0.5, y + 0.5, z + 0.5]
-				// Motor.addRenderTask(() => {
-				// 	this.#magicCircle.rotation.x += 0.5
-				// 	this.#magicCircle.rotation.y += 0.5
-				// 	this.#magicCircle.rotation.z += 0.5
-				// })
 			}
 
-			async applyShader(el, timeFactor) {
+			async #applyShader(el, timeFactor) {
 				const {uniforms, fragmentShader, vertexShader} = await import('../shaders/fluid-marble.js')
 
 				el.fragmentShader = fragmentShader
 				el.vertexShader = vertexShader
 
-				createEffect(() => {
+				autorun(() => {
 					const shaderMaterial = el.behaviors.get('shader-material')
 					if (!shaderMaterial?.meshComponent) return
 
 					el.uniforms = uniforms
 
-					createEffect(() => {
+					autorun(() => {
 						shaderMaterial.uniforms.iResolution.value.x = el.calculatedSize.x
 						shaderMaterial.uniforms.iResolution.value.y = el.calculatedSize.y
 						el.needsUpdate()
@@ -168,7 +196,8 @@
 								webgl
 								perspective="1400"
 								xenvironment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-								environment="./empty-warehouse-equirect.jpg"
+								xenvironment="./empty-warehouse-equirect.jpg"
+								environment="./luna-station-equirect.jpg"
 							>
 								<lume-ambient-light color="white" intensity="1"></lume-ambient-light>
 
@@ -202,53 +231,59 @@
 									mount-point="0 0.5"
 									size-mode="p l"
 									size="1 0"
-									position="0 0 0"
+									position="0 0 1"
 								>
 									<div id="text">
-										${Array(numberOfRepeatingItems)
-											.fill(0)
-											.map(
-												() => html`
-													<span comment="repeated multiple times for marquee effect">
-														| A MULTIDISCIPLINARY CREATIVE AND ART DIRECTOR AND DESIGNER | WORK IN BRAND EXPERIENCE AND
-														CREATES DIGITAL AND IN-PERSON EXPERIENCES | BRING THE ESSENCE OF THE BRAND THROUGH STORIES
-														AND IMPACTFUL VISUAL EXPRESSION | A WIDE VARIETY OF SKILLS FROM VISUAL AND 2D CREATION TO
-														SKETCHING AND 3D MODELING PLUS PROJECT MANAGEMENT AND STORYTELLING
-													</span>
-												`,
-											)}
-									</div>
-									${Array(numberOfRepeatingItems)
-										.fill(0)
-										.map(
+										${Array.from({length: numberOfRepeatingItems}).map(
 											() => html`
-												<lume-plane
-													class="glText"
-													xalign-point="0 0.5"
-													texture=${() => this.textImageUrl}
-													has="phong-material"
-													color="white"
-													opacity="0.9999"
-													xenv-map="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-												></lume-plane>
+												<span comment="repeated multiple times for marquee effect">
+													| A MULTIDISCIPLINARY CREATIVE AND ART DIRECTOR AND DESIGNER | WORK IN BRAND EXPERIENCE AND
+													CREATES DIGITAL AND IN-PERSON EXPERIENCES | BRING THE ESSENCE OF THE BRAND THROUGH STORIES AND
+													IMPACTFUL VISUAL EXPRESSION | A WIDE VARIETY OF SKILLS FROM VISUAL AND 2D CREATION TO
+													SKETCHING AND 3D MODELING PLUS PROJECT MANAGEMENT AND STORYTELLING
+												</span>
 											`,
 										)}
+									</div>
+									${Array.from({length: numberOfRepeatingItems}).map(
+										() => html`
+											<lume-plane
+												class="glText"
+												xalign-point="0 0.5"
+												texture=${() => this.textImageUrl}
+												xhas="phong-material"
+												has="basic-material"
+												color="white"
+												opacity="0.9999"
+												xenv-map="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+											></lume-plane>
+										`,
+									)}
 								</lume-element3d>
 
 								<lume-element3d
-									ref=${e => (this.#magicCircleContainer = e)}
-									id="magicCircleContainer"
+									ref=${e => (this.#gemContainer = e)}
+									id="gemContainer"
 									size="312 312"
 									align-point="0.1 0.5"
 									mount-point="0.1 0.5"
 									position="0 0 20"
 								>
-									<lume-sphere
-										ref=${e => (this.#magicCircle = e)}
-										id="magicCircle"
+									<lume-gltf-model
+										visible="false"
+										ref=${e => (this.#gltfGem = e)}
+										src="./gem/scene.gltf"
+										align-point="0.5 0.5"
+										scale="100 100 100"
+									></lume-gltf-model>
+									<lume-mesh
+										visible="false"
+										ref=${e => (this.#gem = e)}
+										id="gem"
 										size="150 150 150"
 										align-point="0.5 0.5"
 										mount-point="0.5 0.5"
+										rotation="-10 0 0"
 										xxxxxxxxxxxxxxxxxxxx
 										xhas="physical-material"
 										xmetalness="0"
@@ -262,14 +297,76 @@
 										xmetalness="0"
 										reflectivity="1"
 										clearcoat="1"
-										transmission="1"
+										transmission="0.8"
 										roughness="0"
-										thickness="40"
-										chromatic-aberration="0.06"
+										thickness="100"
+										refractive-index="1.5"
+										chromatic-aberration="0.10"
 										anisotropy="0"
 										distortion="0"
 										distortion-scale="100"
-										xbackside="not working?"
+										xbackside="not working well at all"
+									></lume-mesh>
+									<lume-mesh
+										visible="false"
+										ref=${e => (this.#gemBack = e)}
+										id="gemBack"
+										size="150 150 150"
+										align-point="0.5 0.5"
+										mount-point="0.5 0.5"
+										rotation="-10 0 0"
+										xxxxxxxxxxxxxxxxxxxx
+										has="transmission-material"
+										xmetalness="0"
+										reflectivity="1"
+										clearcoat="1"
+										transmission="0.8"
+										roughness="0"
+										thickness="100"
+										refractive-index="1.5"
+										chromatic-aberration="0.10"
+										anisotropy="0"
+										distortion="0"
+										distortion-scale="100"
+										xbackside="not working well at all"
+										sidedness="back"
+									></lume-mesh>
+
+									<lume-mesh
+										visible="false"
+										ref=${e => (this.#gemWire = e)}
+										id="gemWire"
+										size="150 150 150"
+										align-point="0.5 0.5"
+										mount-point="0.5 0.5"
+										rotation="-10 0 0"
+										wireframe
+										xxxxxxxxxxxxxxxxxxxx
+										has="shader-material"
+										color="deeppink"
+									></lume-mesh>
+
+									<lume-sphere
+										visible="true"
+										id="ball"
+										size="150 150 150"
+										align-point="0.5 0.5"
+										mount-point="0.5 0.5"
+										rotation="-10 0 0"
+										xxxxxxxxxxxxxxxxxxxx
+										has="transmission-material"
+										xmetalness="0"
+										reflectivity="1"
+										clearcoat="1"
+										transmission="0.8"
+										roughness="0"
+										thickness="50"
+										refractive-index="1.5"
+										chromatic-aberration="0.10"
+										anisotropy="0"
+										distortion="0"
+										distortion-scale="100"
+										xbackside="not working well at all"
 									></lume-sphere>
 								</lume-element3d>
 							</lume-scene>

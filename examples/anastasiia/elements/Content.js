@@ -7,7 +7,20 @@
 /* @checkJs */
 
 {
-	const {Node, element, html, ScrollFling, batch, createEffect, untrack, onCleanup, variable, Motor, reactify} = LUME
+	const {
+		Node,
+		element,
+		html,
+		ScrollFling,
+		batch,
+		createEffect,
+		createMemo,
+		untrack,
+		onCleanup,
+		variable,
+		Motor,
+		reactify,
+	} = LUME
 
 	element('av-content')(
 		class Content extends Node {
@@ -44,6 +57,10 @@
 				})
 			}
 
+			// These should be properties on lume-scroller
+			scrollRatio = variable(0)
+			amountScrolled = variable(0)
+
 			connectedCallback() {
 				super.connectedCallback()
 
@@ -66,8 +83,8 @@
 
 				// Scroll implementation //////////////////////////////////////////////////////////////////////
 
-				let scrollRatio = 0
-				let amountScrolled = 0
+				const scrollRatio = this.scrollRatio
+				const amountScrolled = this.amountScrolled
 
 				const tiny = 0.000000000000000000001
 				const scrollableAmount = variable(0)
@@ -91,12 +108,17 @@
 
 					// debugger
 					// TODO make scrollfling (and other flings) fully updateable, avoid creating a new one each time.
-					console.log('make new fling', amountScrolled, scrollRatio, scrollRatio * untrack(scrollableAmount))
+					console.log(
+						'make new fling',
+						untrack(amountScrolled),
+						untrack(scrollRatio),
+						untrack(scrollRatio) * untrack(scrollableAmount),
+					)
 					const fling = new ScrollFling({
 						target: untrack(() => this.scene),
 						// y: scrollRatio * untrack(scrollableAmount),
 						// Use Math.min in case the page is at the end, so that the viewport won't be scrolled beyond the end of content in case content height shrunk.
-						y: Math.min(amountScrolled, untrack(scrollableAmount)),
+						y: Math.min(untrack(amountScrolled), untrack(scrollableAmount)),
 						minY: 0,
 						// The `|| tiny` prevents divide by zero errors.
 						maxY: untrack(scrollableAmount) || tiny,
@@ -115,12 +137,12 @@
 							console.log('scroll content Y:', this.#scrollContainer.position.y)
 
 							// FIXME, this conditional checking is because of values-in-the-past, which should be fixed in Solid 1.5
-							scrollRatio = fling.y ? fling.y / (scrollableAmount() || tiny) : scrollRatio
-							amountScrolled = fling.y ?? amountScrolled
-							console.log('scroll content Y:', fling.y, amountScrolled)
+							scrollRatio(fling.y ? fling.y / (scrollableAmount() || tiny) : scrollRatio())
+							amountScrolled(fling.y ?? amountScrolled())
+							console.log('scroll content Y:', fling.y, amountScrolled())
 
-							this.#scrollknob.alignPoint.y = scrollRatio
-							this.#scrollknob.mountPoint.y = scrollRatio
+							this.#scrollknob.alignPoint.y = scrollRatio()
+							this.#scrollknob.mountPoint.y = scrollRatio()
 						})
 					})
 
@@ -403,7 +425,77 @@
 				})
 
 				////////////////////////////////////////////////////////////////////////
+
 				naturalSize(this.shadowRoot.querySelector('#contactButton'))
+
+				///////////////////////////////////////////////////////////////////////
+				// On scroll, "snap" category buttons into the header.
+
+				// Quick and sketchy reach and grab. The great thing about DOM.
+				// Sometimes you just need to get things done.
+				const bodyCatButtons = this.shadowRoot
+					.querySelector('av-categories')
+					.shadowRoot.querySelector('av-category-buttons')
+				const bodyCategoryLinkWrapper = bodyCatButtons.shadowRoot.querySelector('.centerContent')
+
+				const headerCatButtons = this.shadowRoot
+					.querySelector('av-header')
+					.shadowRoot.querySelector('av-category-buttons')
+				const headerCategoryLinks = Array.from(headerCatButtons.shadowRoot.querySelectorAll('a'))
+				const headerCategoryLinkWrappers = Array.from(headerCatButtons.shadowRoot.querySelectorAll('.centerContent'))
+
+				//////////////////
+				// Method 1, a single effect
+
+				// createEffect(() => {
+				// 	amountScrolled() // Any time scrolled amount changes
+
+				// 	console.log('>>>>> update all at once')
+
+				// 	const bodyButtonBounds = bodyCategoryLinkWrapper.getBoundingClientRect()
+				// 	const headerButtonBounds = headerCategoryLinkWrappers[0].getBoundingClientRect()
+
+				// 	const showLinks = bodyButtonBounds.top <= headerButtonBounds.bottom
+				// 	const wentPast = bodyButtonBounds.top <= headerButtonBounds.top
+				// 	const diff = bodyButtonBounds.top - headerButtonBounds.top
+
+				// 	const y = showLinks && !wentPast ? diff : 0
+				// 	for (const link of headerCategoryLinks) link.style.transform = `translate3d(0, ${y}px, 0)`
+
+				// 	// If the body category links move past the header links, show the header links.
+				// 	if (showLinks) headerCatButtons.opacity = 1
+				// 	else headerCatButtons.opacity = 0
+				// })
+
+				//////////////////
+				// Method 2, memos
+
+				const bodyButtonBounds = createMemo(() => {
+					amountScrolled() // Any time scrolled amount changes
+					return bodyCategoryLinkWrapper.getBoundingClientRect()
+				})
+				const headerButtonBounds = createMemo(() => {
+					amountScrolled() // Any time scrolled amount changes
+					return headerCategoryLinkWrappers[0].getBoundingClientRect()
+				})
+
+				const showLinks = createMemo(() => bodyButtonBounds().top <= headerButtonBounds().bottom)
+				const wentPast = createMemo(() => bodyButtonBounds().top <= headerButtonBounds().top)
+				const diff = createMemo(() => bodyButtonBounds().top - headerButtonBounds().top)
+				const y = createMemo(() => (showLinks() && !wentPast() ? diff() : 0))
+
+				createEffect(() => {
+					const _y = y()
+					for (const link of headerCategoryLinks) link.style.transform = `translate3d(0, ${_y}px, 0)`
+				})
+
+				createEffect(() => {
+					// If the body category links move past the header links, show the header links.
+					if (showLinks()) headerCatButtons.opacity = 1
+					else headerCatButtons.opacity = 0
+				})
+
+				///////////////////////////////////////////////////////////////////////
 			}
 
 			#letsconnect
@@ -958,21 +1050,6 @@
 		},
 	)
 }
-
-// // Use only on element with literal size of 0,0,0 (imply this when we add natural size mode).
-// function naturalSize(element) {
-// 	const {Element3D} = LUME
-// 	let minSizeX = 0
-// 	let minSizeY = 0
-
-// 	createEffect(() => {
-// 		for (const child of Array.from(element.children)) {
-// 			if (child instanceof Element3D) {
-// 				// if (child)
-// 			}
-// 		}
-// 	})
-// }
 
 // Initial version of natural size based on DOM content. Children must be
 // position:absolute, and not sized as portion of their parent.

@@ -92,6 +92,10 @@
 			`
 
 			css = /*css*/ `
+				#categoriesInner {
+					overflow: hidden;
+				}
+
 				a {
 					padding-left: 4px;
 					padding-right: 4px;
