@@ -58,7 +58,7 @@
 		"dev:all": "echo TODO run everything in dev mode with rebuild on changed files",
 		"clean:all": "(lerna run clean) || true",
 		"clean:packages": "(lerna run clean && npm run unbootstrap -- --ignore lume) || true",
-		"test:all": "lerna run test --scope '{element,element-behaviors,lume,james-bond,lowclass,variable,glas,eventful,custom-attributes}'",
+		"test:all": "lerna run test --scope '{@lume/element,element-behaviors,lume,james-bond,lowclass,@lume/variable,glas,@lume/eventful,custom-attributes}'",
 		"test:all:ci": "npm run test:all -- --concurrency 1",
 		"// ^ test:all:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
 		"submodules:sync": "git submodule update --init --recursive",
