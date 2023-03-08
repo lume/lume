@@ -60,4 +60,4 @@
 	url = https://github.com/LUMECraft/mapapp.git
 [submodule "apps/docs"]
 	path = apps/docs
-	url = git@github.com:lume/lume.github.io.git
+	url = https://github.com/lume/lume.github.io.git
