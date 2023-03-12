@@ -84,7 +84,7 @@
 		"docs:publish": "cd apps/docs && git push"
 	},
 	"dependencies": {
-		"@lume/autolayout": "^0.8.0",
+		"@lume/autolayout": "^0.9.0",
 		"@lume/element": "^0.7.1",
 		"@lume/eventful": "^0.2.2",
 		"@lume/three-projected-material": "^0.2.2",
