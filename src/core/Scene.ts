@@ -607,7 +607,7 @@ export class Scene extends SharedAPI {
 
 		this.shadowRoot!.prepend(new Comment(magic()))
 
-		this.addEventListener('click', this.#handleClick, true)
+		this.addEventListener('click', this.#handleClick)
 
 		this.createEffect(() => {
 			if (this.webgl) this._triggerLoadGL()
@@ -1164,8 +1164,13 @@ export class Scene extends SharedAPI {
 	}
 
 	#caster = new Raycaster()
+	#dispatchingElementEvent = false
 
 	#handleClick(ev: MouseEvent) {
+		if (this.#dispatchingElementEvent) return
+
+		console.log('SCENE CLICK', ev.clientX, ev.currentTarget, ev.target)
+
 		const pointer = new Vector2()
 
 		pointer.x = (ev.clientX / this.clientWidth) * 2 - 1
@@ -1174,14 +1179,56 @@ export class Scene extends SharedAPI {
 		// Setup raycaster
 		this.#caster.setFromCamera(pointer, this.__threeCamera)
 		const intersections = this.#caster.intersectObject(this.three, true)
-		if (intersections.length == 0) return
+		if (intersections.length == 0) {
+			console.log('SCENE CLICK intersections < 0')
+			return
+		}
+
+		console.log(
+			'SCENE CLICK intersections > 0',
+			intersections[0].point.x,
+			intersections[0].object.userData.lumeElement.calculatedSize.x,
+		)
 
 		// Create custom event with detail of the exact XYZ position of the click
-		const newEvent = new CustomEvent('click', {
-			detail: {position: intersections[0].point},
-		})
+		// TODO new MouseEvent('click', {....})
+		const newEvent = Object.defineProperties(
+			new MouseEvent('click', {
+				bubbles: true,
+				composed: true,
+				cancelable: true,
+			}),
+			{
+				clientX: {
+					value: this.calculatedSize.x / 2 + intersections[0].point.x,
+				},
+				clientY: {
+					value: this.calculatedSize.y / 2 + -intersections[0].point.y,
+				},
+				clientZ: {
+					value: intersections[0].point.z,
+				},
+				// vector3: intersections[0].point,
+			},
+		)
+
+		// TODO
+		// - What to do with pointer-events and avoiding the CSS events from being duplicates with the GL events.
+		// - extend from native events so new classes have types and we know the new properties
+		// - `PointerEvent`s
+		//   - PointerEvent.pointerId
+		// - `TouchEvent`s?
+		// - MouseEvent
+		//   - movementX/Y, add Z
+		//   - clientX/clientY will remain just like original events
+		//     - x/y are aliases to clientX/Y
+		//   - sceneX/sceneY/sceneZ are world positions in the 3d scene
+		//   - offsetX/offsetY/offsetZ are local coordinates of the event.target (thing we clicked)
+
+		this.#dispatchingElementEvent = true
 		// Dispatch custom event on the LUME element saved on the intersection Three.js object
 		intersections[0].object.userData.lumeElement.dispatchEvent(newEvent)
+		this.#dispatchingElementEvent = false
 	}
 
 	override template = () => html`
@@ -1214,6 +1261,8 @@ export class Scene extends SharedAPI {
 		${super.css}
 
 		:host {
+			pointer-events: auto;
+
 			/*
 			 * A Scene is strict: it does not leak content, its rendering is not
 			 * affected by external layout, and its size is not affected by its

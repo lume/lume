@@ -1038,6 +1038,9 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 
 	static override css = /*css*/ `
 		:host {
+			/* How can we prevent the CSS click and have only the WebGL click? */
+			/*pointer-events: none;*/
+
 			/*
 			 * All items of the scene graph are hidden until they are mounted in
 			 * a scene (this changes to display:block). This gets toggled
