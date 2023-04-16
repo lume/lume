@@ -49,27 +49,33 @@
 >
 	<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-	<lume-mixed-plane size-mode="proportional proportional" size="1 1 0" style="background: #0e99d9" color="#252525">
+	<lume-mixed-plane size-mode="p p" size="1 1 0" style="background: #0e99d9" color="#252525">
 		<h1>HTML content, with lighting and shadows!</h1>
-		<div style="position: absolute; top: 100px; left: 100px; width: 100px; height: 100px; background: blue"></div>
+		<div
+			id="div"
+			style="position: absolute; top: 100px; left: 100px; width: 100px; height: 100px; background: blue"
+		></div>
 
 		<lume-mixed-plane position="100 100 1" size="70 21 0" color="#333333">
 			<button>A button!</button>
 		</lume-mixed-plane>
 	</lume-mixed-plane>
 
-	<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 350">
+	<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100" rotation="0 -10 0">
 		<lume-mixed-plane id="green" size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
 			<h1>Hello</h1>
 		</lume-mixed-plane>
 
 		<lume-sphere
-			size="50 50 50"
+			style="background: cornflowerblue"
+			size="50 200 50"
 			mount-point="0.5 0.5 0.5"
-			position="60 30 80"
+			position="60 30 150"
 			color="#e96699"
 			material-opacity="0.5"
-		></lume-sphere>
+		>
+			<lume-mixed-plane size-mode="p p" size="1 1" align-point="0 0 0.5"></lume-mixed-plane>
+		</lume-sphere>
 
 		<lume-plane
 			size="50 50 50"
@@ -85,7 +91,7 @@
 			mount-point="0.5 0.5 0.5"
 			position="20 30 110"
 			rotation="0 0 0"
-			style="background: #d490a1"
+			style="background: lime"
 			color="#444444"
 		>
 			3D!
@@ -95,10 +101,20 @@
 			</lume-mixed-plane>
 		</lume-mixed-plane>
 
-		<lume-box id="cube" size="50 50 50" mount-point="0.5 0 0.5" position="-60 20 80" color="#ff6157"></lume-box>
+		<lume-box
+			id="cube"
+			material-opacity="0.5"
+			style="background: blue"
+			size="50 50 50"
+			mount-point="0.5 0 0.5"
+			position="-60 20 80"
+			color="#ff6157"
+		></lume-box>
 
 		<lume-mesh
 			id="lightMesh"
+			style="background-color: deeppink"
+			material-opacity="0.5"
 			has="sphere-geometry basic-material"
 			size="10 10 10"
 			color="#ffffcc"
@@ -121,11 +137,27 @@
 	const {Motor, Events} = LUME
 
 	cube.addEventListener('click', event => {
-		console.log('click cube', event.clientX, event.clientY, event.clientZ)
+		console.log('click cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+
+		// This works!
+		// document.body.requestFullscreen()
 	})
 
 	green.addEventListener('click', event => {
-		console.log('click green plane', event.clientX, event.clientY, event.clientZ)
+		console.log('click green plane', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	cube.addEventListener('pointermove', event => {
+		console.log('hover cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ, event.isTrusted)
+	})
+
+	green.addEventListener('pointermove', event => {
+		console.log('hover green', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	div.addEventListener('click', () => {
+		// Not working yet.
+		console.log('clicked div')
 	})
 
 	// LUME.defineElements()
