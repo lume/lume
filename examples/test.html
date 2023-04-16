@@ -129,7 +129,22 @@
 	const {Motor, Events} = LUME
 
 	cube.addEventListener('click', event => {
-		console.log('click cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+		console.log(
+			'click cube',
+
+			// These only work correctly if the event happens within the DOM CSS
+			// surface, but otherwise on the cube byt outisde the surface
+			// offsetX/Y are relative to the scene, which is incorrect.
+			// TODO make sure it is always relative to the mesh element.
+			event.offsetX,
+			event.offsetY,
+
+			event.clientX,
+			event.clientY,
+			event.worldX,
+			event.worldY,
+			event.worldZ,
+		)
 
 		// This works!
 		// document.body.requestFullscreen()
