@@ -66,22 +66,16 @@
 			<h1>Hello</h1>
 		</lume-mixed-plane>
 
-		<lume-sphere
-			style="background: cornflowerblue"
-			size="50 200 50"
-			mount-point="0.5 0.5 0.5"
-			position="60 30 150"
-			color="#e96699"
-			material-opacity="0.5"
-		>
-			<lume-mixed-plane size-mode="p p" size="1 1" align-point="0 0 0.5"></lume-mixed-plane>
+		<lume-sphere size="50 50 50" mount-point="0.5 0.5 0.5" position="60 30 150" color="purple">
+			<!-- <lume-mixed-plane size-mode="p p" size="1 1" align-point="0 0 0.5"></lume-mixed-plane> -->
 		</lume-sphere>
 
 		<lume-plane
+			id="cyanPlane"
 			size="50 50 50"
 			mount-point="0.5 0.5 0.5"
 			position="80 20 80"
-			color="pink"
+			color="cyan"
 			rotation="0 0 0"
 		></lume-plane>
 
@@ -113,12 +107,10 @@
 
 		<lume-mesh
 			id="lightMesh"
-			style="background-color: deeppink"
-			material-opacity="0.5"
 			has="sphere-geometry basic-material"
 			size="10 10 10"
 			color="#ffffcc"
-			position="10 0 130"
+			position="10 0 230"
 			receive-shadow="false"
 			cast-shadow="false"
 		>
@@ -143,20 +135,24 @@
 		// document.body.requestFullscreen()
 	})
 
-	green.addEventListener('click', event => {
-		console.log('click green plane', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
-	})
+	// cube.addEventListener('pointermove', event => {
+	// 	console.log('hover cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ, event.isTrusted)
+	// })
 
-	cube.addEventListener('pointermove', event => {
-		console.log('hover cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ, event.isTrusted)
+	green.addEventListener('click', event => {
+		console.log('click green plane', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
 	})
 
 	green.addEventListener('pointermove', event => {
 		console.log('hover green', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
 	})
 
+	cyanPlane.addEventListener('pointermove', event => {
+		console.log('hover cyan', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	// TODO Not working yet.
 	div.addEventListener('click', () => {
-		// Not working yet.
 		console.log('clicked div')
 	})
 
@@ -168,8 +164,8 @@
 	light.three.distance = 800
 
 	Motor.addRenderTask(t => {
-		// lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
-		// lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
+		lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
+		lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
 		// root.rotation.y = 15 * Math.cos(t * 0.002)
 		// root.rotation.y += 1
 		// cube.rotation.y += 1
