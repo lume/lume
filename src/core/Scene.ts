@@ -607,8 +607,13 @@ export class Scene extends SharedAPI {
 
 		this.shadowRoot!.prepend(new Comment(magic()))
 
+		// TODO: Don't fire click if we moved out of the object we pressed down on.
+		// @ts-expect-error click events should be PointerEvents now
 		this.addEventListener('click', this.#handleClick, {capture: true})
+
 		this.addEventListener('pointermove', this.#handlePointermove, {capture: true})
+		this.addEventListener('pointerup', this.#handlePointerup, {capture: true})
+		this.addEventListener('pointerdown', this.#handlePointerdown, {capture: true})
 
 		this.createEffect(() => {
 			if (this.webgl) this._triggerLoadGL()
@@ -1174,6 +1179,14 @@ export class Scene extends SharedAPI {
 
 	#handlePointermove(ev: PointerEvent) {
 		this.#handlePointerEvent(ev, 'pointermove')
+	}
+
+	#handlePointerup(ev: PointerEvent) {
+		this.#handlePointerEvent(ev, 'pointerup')
+	}
+
+	#handlePointerdown(ev: PointerEvent) {
+		this.#handlePointerEvent(ev, 'pointerdown')
 	}
 
 	#handlePointerEvent(

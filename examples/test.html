@@ -20,6 +20,9 @@
 <!-- WORKS ======================================================== -->
 
 <style>
+	* {
+		user-select: none;
+	}
 	lume-mixed-plane {
 		text-align: center;
 	}
@@ -66,7 +69,7 @@
 			<h1>Hello</h1>
 		</lume-mixed-plane>
 
-		<lume-sphere size="50 50 50" mount-point="0.5 0.5 0.5" position="60 30 150" color="purple">
+		<lume-sphere id="purpleSphere" size="50 50 50" mount-point="0.5 0.5 0.5" position="60 30 150" color="purple">
 			<!-- <lume-mixed-plane size-mode="p p" size="1 1" align-point="0 0 0.5"></lume-mixed-plane> -->
 		</lume-sphere>
 
@@ -159,11 +162,40 @@
 	})
 
 	green.addEventListener('pointermove', event => {
-		console.log('hover green', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+		console.log('MOVE green', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
 	})
 
 	cyanPlane.addEventListener('pointermove', event => {
-		console.log('hover cyan', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+		console.log('MOVE cyan', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	// scene.addEventListener('pointerdown', event => {
+	// 	// scene.setPointerCapture(event.pointerId)
+	// 	console.log('MOVE scene')
+	// })
+	// scene.addEventListener('pointermove', () => {
+	// 	console.log('MOVE scene')
+	// })
+
+	purpleSphere.addEventListener('pointerdown', event => {
+		// TODO Pointer capture does not work so long as we have
+		// event.stopImmediatePropagation in the scene's #handlePointerEvent
+		// method. Can we get this working somehow?
+		purpleSphere.setPointerCapture(event.pointerId)
+
+		console.log('DOWN purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('pointermove', event => {
+		console.log('MOVE purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('pointerup', event => {
+		console.log('UP purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('click', event => {
+		console.log('CLICK purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
 	})
 
 	// TODO Not working yet.
@@ -194,8 +226,6 @@
 	Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(plane => {
 		plane.materialOpacity = 0.3
 	})
-
-	const scene = document.querySelector('lume-scene')
 
 	// This setInterval shows that
 	//
