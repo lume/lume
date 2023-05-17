@@ -186,6 +186,67 @@ export class InstancedMesh extends Mesh {
 		return mesh
 	}
 
+	#instancesNeedUpdate = false
+
+	setInstancePosition(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.positions[arrIndex] = x
+		this.positions[arrIndex + 1] = y
+		this.positions[arrIndex + 2] = z
+
+		// Might just be able to set the position component of the matrix without recalculating rotation and scale
+		this._setMatrixComponents(arrIndex)
+	}
+
+	setInstanceScale(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.scales[arrIndex] = x
+		this.scales[arrIndex + 1] = y
+		this.scales[arrIndex + 2] = z
+
+		this._setMatrixComponents(arrIndex)
+	}
+
+	setInstanceRotation(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.rotations[arrIndex] = x
+		this.rotations[arrIndex + 1] = y
+		this.rotations[arrIndex + 2] = z
+
+		this._setMatrixComponents(arrIndex)
+	}
+
+	setInstanceColor(index: number, r: number, g: number, b: number) {
+		const arrIndex = index * 3
+
+		this.colors[arrIndex] = r
+		this.colors[arrIndex + 1] = g
+		this.colors[arrIndex + 2] = b
+
+		_color.setRGB(r, g, b)
+		this.three.setColorAt(index, _color)
+
+		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
+		super.needsUpdate()
+	}
+
+	_setMatrixComponents(index: number) {
+		_rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0)
+		_quat.setFromEuler(_rot)
+		_pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0)
+		_scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1)
+
+		this._calculateInstanceMatrix()
+
+		this.three.setMatrixAt(index / 3, _mat)
+		this.three.instanceMatrix.needsUpdate = true
+
+		super.needsUpdate()
+	}
+
 	updateInstances() {
 		const mesh = this.three
 
@@ -345,12 +406,16 @@ export class InstancedMesh extends Mesh {
 	override needsUpdate() {
 		this.three.instanceMatrix.needsUpdate = true
 		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
+		this.#instancesNeedUpdate = true
 		super.needsUpdate()
 	}
 
 	override update(t: number, dt: number) {
 		super.update(t, dt)
-		this.updateInstances()
+		if (this.#instancesNeedUpdate) {
+			this.#instancesNeedUpdate = false
+			this.updateInstances()
+		}
 	}
 }
 
