@@ -12,6 +12,7 @@ import {Euler} from 'three/src/math/Euler.js'
 import {Mesh, MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {stringToNumberArray} from './utils.js'
+import {queueMicrotaskOnceOnly} from '../utils/queueMicrotaskOnceOnly.js'
 
 import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
 
@@ -201,7 +202,7 @@ export class InstancedMesh extends Mesh {
 		// Might just be able to set the position component of the matrix without recalculating rotation and scale
 		this._setMatrixComponents(arrIndex)
 
-		queueMicrotaskIfNotQueued(this.#triggerPositions)
+		queueMicrotaskOnceOnly(this.#triggerPositions)
 	}
 
 	#triggerPositions = () => {
@@ -218,7 +219,7 @@ export class InstancedMesh extends Mesh {
 
 		this._setMatrixComponents(arrIndex)
 
-		queueMicrotaskIfNotQueued(this.#triggerScales)
+		queueMicrotaskOnceOnly(this.#triggerScales)
 	}
 
 	#triggerScales = () => {
@@ -235,7 +236,7 @@ export class InstancedMesh extends Mesh {
 
 		this._setMatrixComponents(arrIndex)
 
-		queueMicrotaskIfNotQueued(this.#triggerRotations)
+		queueMicrotaskOnceOnly(this.#triggerRotations)
 	}
 
 	#triggerRotations = () => {
@@ -254,7 +255,7 @@ export class InstancedMesh extends Mesh {
 		this.three.setColorAt(index, _color)
 		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
 
-		queueMicrotaskIfNotQueued(this.#triggerColors)
+		queueMicrotaskOnceOnly(this.#triggerColors)
 	}
 
 	#triggerColors = () => {
@@ -497,22 +498,4 @@ declare global {
 	interface HTMLElementTagNameMap {
 		'lume-instanced-mesh': InstancedMesh
 	}
-}
-
-const tasks = new Set<() => void>()
-let microtask = false
-
-/**
- * Like queueMicrotask, except will not queue the same function more than once.
- */
-function queueMicrotaskIfNotQueued(task: () => void) {
-	tasks.add(task)
-	if (microtask) return
-	microtask = true
-	queueMicrotask(() => {
-		microtask = false
-		const _tasks = [...tasks]
-		tasks.clear() // Allow tasks to queue more tasks, including themselves.
-		for (const task of _tasks) task()
-	})
 }
