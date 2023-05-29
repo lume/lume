@@ -15,7 +15,7 @@ import {stringToNumberArray} from './utils.js'
 
 import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
 
-export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales'
+export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales' | 'colors'
 
 const _quat = new Quaternion()
 const _pos = new Vector3()
@@ -155,6 +155,7 @@ export class InstancedMesh extends Mesh {
 		},
 	}
 
+	// This class will have a THREE.InstancedMesh for its .three property.
 	override makeThreeObject3d() {
 		let geometryBehavior: GeometryBehavior | null = null
 		let materialBehavior: MaterialBehavior | null = null
@@ -186,7 +187,94 @@ export class InstancedMesh extends Mesh {
 		return mesh
 	}
 
-	updateInstances() {
+	#allMatricesNeedUpdate = false
+	#allColorsNeedUpdate = false
+	#updateSingleInstanceOnly = false
+
+	setInstancePosition(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.positions[arrIndex] = x
+		this.positions[arrIndex + 1] = y
+		this.positions[arrIndex + 2] = z
+
+		// Might just be able to set the position component of the matrix without recalculating rotation and scale
+		this._setMatrixComponents(arrIndex)
+
+		queueMicrotaskIfNotQueued(this.#triggerPositions)
+	}
+
+	#triggerPositions = () => {
+		this.#updateSingleInstanceOnly = true
+		this.positions = this.positions // trigger reactivity
+	}
+
+	setInstanceScale(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.scales[arrIndex] = x
+		this.scales[arrIndex + 1] = y
+		this.scales[arrIndex + 2] = z
+
+		this._setMatrixComponents(arrIndex)
+
+		queueMicrotaskIfNotQueued(this.#triggerScales)
+	}
+
+	#triggerScales = () => {
+		this.#updateSingleInstanceOnly = true
+		this.scales = this.scales // trigger reactivity
+	}
+
+	setInstanceRotation(index: number, x: number, y: number, z: number) {
+		const arrIndex = index * 3
+
+		this.rotations[arrIndex] = x
+		this.rotations[arrIndex + 1] = y
+		this.rotations[arrIndex + 2] = z
+
+		this._setMatrixComponents(arrIndex)
+
+		queueMicrotaskIfNotQueued(this.#triggerRotations)
+	}
+
+	#triggerRotations = () => {
+		this.#updateSingleInstanceOnly = true
+		this.rotations = this.rotations // trigger reactivity
+	}
+
+	setInstanceColor(index: number, r: number, g: number, b: number) {
+		const arrIndex = index * 3
+
+		this.colors[arrIndex] = r
+		this.colors[arrIndex + 1] = g
+		this.colors[arrIndex + 2] = b
+
+		_color.setRGB(r, g, b)
+		this.three.setColorAt(index, _color)
+		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
+
+		queueMicrotaskIfNotQueued(this.#triggerColors)
+	}
+
+	#triggerColors = () => {
+		this.#updateSingleInstanceOnly = true
+		this.colors = this.colors // trigger reactivity
+	}
+
+	_setMatrixComponents(index: number) {
+		_rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0)
+		_quat.setFromEuler(_rot)
+		_pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0)
+		_scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1)
+
+		this._calculateInstanceMatrix()
+
+		this.three.setMatrixAt(index / 3, _mat)
+		this.three.instanceMatrix.needsUpdate = true
+	}
+
+	updateAllMatrices() {
 		const mesh = this.three
 
 		for (let i = 0, l = this.count; i < l; i += 1) {
@@ -197,16 +285,27 @@ export class InstancedMesh extends Mesh {
 			_pos.set(this.positions[j + 0] ?? 0, this.positions[j + 1] ?? 0, this.positions[j + 2] ?? 0)
 			_scale.set(this.scales[j + 0] ?? 1, this.scales[j + 1] ?? 1, this.scales[j + 2] ?? 1)
 
-			// _mat.compose(_pos, _quat, _scale)
 			this._calculateInstanceMatrix()
 
 			mesh.setMatrixAt(i, _mat)
+		}
+
+		this.three.instanceMatrix.needsUpdate = true
+	}
+
+	updateAllColors() {
+		const mesh = this.three
+
+		for (let i = 0, l = this.count; i < l; i += 1) {
+			const j = i * 3
 
 			// TODO a colorMode variable can specify whether colors are RGB triplets, or CSS string/hex values.
 			_color.setRGB(this.colors[j + 0] ?? 1, this.colors[j + 1] ?? 1, this.colors[j + 2] ?? 1)
 
 			mesh.setColorAt(i, _color)
 		}
+
+		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
 	}
 
 	// This is very similar to _calculateMatrix, without the threeCSS parts.
@@ -321,7 +420,16 @@ export class InstancedMesh extends Mesh {
 			if (this.count > this.#biggestCount) {
 				this.#biggestCount = this.count
 
-				untrack(() => this.recreateThree())
+				untrack(() => {
+					this.recreateThree()
+
+					// Be sure to trigger all the instance components so that the new
+					// InstancedMesh will be up-to-date.
+					this.rotations = this.rotations
+					this.positions = this.positions
+					this.scales = this.scales
+					this.colors = this.colors
+				})
 			}
 
 			untrack(() => (this.three.count = this.count))
@@ -331,26 +439,46 @@ export class InstancedMesh extends Mesh {
 
 		this.createGLEffect(() => {
 			this.rotations
+			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
+			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
 
 		this.createGLEffect(() => {
 			this.positions
+			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
+			this.#updateSingleInstanceOnly = false
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.scales
+			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
+			this.#updateSingleInstanceOnly = false
+			this.needsUpdate()
+		})
+
+		this.createGLEffect(() => {
+			this.colors
+			if (!this.#updateSingleInstanceOnly) this.#allColorsNeedUpdate = true
+			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
 
 		return true
 	}
 
-	override needsUpdate() {
-		this.three.instanceMatrix.needsUpdate = true
-		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
-		super.needsUpdate()
-	}
-
 	override update(t: number, dt: number) {
 		super.update(t, dt)
-		this.updateInstances()
+
+		if (this.#allMatricesNeedUpdate) {
+			this.#allMatricesNeedUpdate = false
+			this.updateAllMatrices()
+		}
+		if (this.#allColorsNeedUpdate) {
+			this.#allColorsNeedUpdate = false
+			this.updateAllColors()
+		}
 	}
 }
 
@@ -369,4 +497,22 @@ declare global {
 	interface HTMLElementTagNameMap {
 		'lume-instanced-mesh': InstancedMesh
 	}
+}
+
+const tasks = new Set<() => void>()
+let microtask = false
+
+/**
+ * Like queueMicrotask, except will not queue the same function more than once.
+ */
+function queueMicrotaskIfNotQueued(task: () => void) {
+	tasks.add(task)
+	if (microtask) return
+	microtask = true
+	queueMicrotask(() => {
+		microtask = false
+		const _tasks = [...tasks]
+		tasks.clear() // Allow tasks to queue more tasks, including themselves.
+		for (const task of _tasks) task()
+	})
 }
