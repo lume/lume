@@ -195,12 +195,15 @@ export class InstancedMesh extends Mesh {
 	setInstancePosition(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.positions[arrIndex] = x
-		this.positions[arrIndex + 1] = y
-		this.positions[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.positions[arrIndex] = x
+			this.positions[arrIndex + 1] = y
+			this.positions[arrIndex + 2] = z
 
-		// Might just be able to set the position component of the matrix without recalculating rotation and scale
-		this._setMatrixComponents(arrIndex)
+			// Might just be able to set the position component of the matrix without recalculating rotation and scale
+			this._setMatrixComponents(arrIndex)
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerPositions)
 	}
@@ -213,11 +216,14 @@ export class InstancedMesh extends Mesh {
 	setInstanceScale(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.scales[arrIndex] = x
-		this.scales[arrIndex + 1] = y
-		this.scales[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.scales[arrIndex] = x
+			this.scales[arrIndex + 1] = y
+			this.scales[arrIndex + 2] = z
 
-		this._setMatrixComponents(arrIndex)
+			this._setMatrixComponents(arrIndex)
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerScales)
 	}
@@ -230,11 +236,14 @@ export class InstancedMesh extends Mesh {
 	setInstanceRotation(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.rotations[arrIndex] = x
-		this.rotations[arrIndex + 1] = y
-		this.rotations[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.rotations[arrIndex] = x
+			this.rotations[arrIndex + 1] = y
+			this.rotations[arrIndex + 2] = z
 
-		this._setMatrixComponents(arrIndex)
+			this._setMatrixComponents(arrIndex)
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerRotations)
 	}
@@ -247,9 +256,12 @@ export class InstancedMesh extends Mesh {
 	setInstanceColor(index: number, r: number, g: number, b: number) {
 		const arrIndex = index * 3
 
-		this.colors[arrIndex] = r
-		this.colors[arrIndex + 1] = g
-		this.colors[arrIndex + 2] = b
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.colors[arrIndex] = r
+			this.colors[arrIndex + 1] = g
+			this.colors[arrIndex + 2] = b
+		})
 
 		_color.setRGB(r, g, b)
 		this.three.setColorAt(index, _color)
