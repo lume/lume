@@ -752,8 +752,6 @@ export class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transforma
 		// NOTE We negate Y translation in several places below so that Y
 		// goes downward like in DOM's CSS transforms.
 
-		// TODO Make an option that configures whether Y goes up or down.
-
 		this.three.position.set(
 			appliedPosition[0] + threeJsPostAdjustment[0],
 			// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
