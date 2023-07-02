@@ -1,4 +1,4 @@
-import {untrack} from 'solid-js'
+import {batch, untrack} from 'solid-js'
 import {element, numberAttribute, stringAttribute} from '@lume/element'
 import {InstancedMesh as ThreeInstancedMesh} from 'three/src/objects/InstancedMesh.js'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
@@ -195,12 +195,15 @@ export class InstancedMesh extends Mesh {
 	setInstancePosition(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.positions[arrIndex] = x
-		this.positions[arrIndex + 1] = y
-		this.positions[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.positions[arrIndex] = x
+			this.positions[arrIndex + 1] = y
+			this.positions[arrIndex + 2] = z
 
-		// Might just be able to set the position component of the matrix without recalculating rotation and scale
-		this._setMatrixComponents(arrIndex)
+			this.#setMatrix(arrIndex)
+			this.three.instanceMatrix.needsUpdate = true
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerPositions)
 	}
@@ -213,11 +216,15 @@ export class InstancedMesh extends Mesh {
 	setInstanceScale(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.scales[arrIndex] = x
-		this.scales[arrIndex + 1] = y
-		this.scales[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.scales[arrIndex] = x
+			this.scales[arrIndex + 1] = y
+			this.scales[arrIndex + 2] = z
 
-		this._setMatrixComponents(arrIndex)
+			this.#setMatrix(arrIndex)
+			this.three.instanceMatrix.needsUpdate = true
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerScales)
 	}
@@ -230,11 +237,15 @@ export class InstancedMesh extends Mesh {
 	setInstanceRotation(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
-		this.rotations[arrIndex] = x
-		this.rotations[arrIndex + 1] = y
-		this.rotations[arrIndex + 2] = z
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.rotations[arrIndex] = x
+			this.rotations[arrIndex + 1] = y
+			this.rotations[arrIndex + 2] = z
 
-		this._setMatrixComponents(arrIndex)
+			this.#setMatrix(arrIndex)
+			this.three.instanceMatrix.needsUpdate = true
+		})
 
 		queueMicrotaskOnceOnly(this.#triggerRotations)
 	}
@@ -247,13 +258,15 @@ export class InstancedMesh extends Mesh {
 	setInstanceColor(index: number, r: number, g: number, b: number) {
 		const arrIndex = index * 3
 
-		this.colors[arrIndex] = r
-		this.colors[arrIndex + 1] = g
-		this.colors[arrIndex + 2] = b
+		// Untrack because the purpose of the method is to update this, not read it.
+		untrack(() => {
+			this.colors[arrIndex] = r
+			this.colors[arrIndex + 1] = g
+			this.colors[arrIndex + 2] = b
+		})
 
-		_color.setRGB(r, g, b)
-		this.three.setColorAt(index, _color)
-		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
+		this.#setColor(index, r, g, b)
+		this.three.instanceColor!.needsUpdate = true
 
 		queueMicrotaskOnceOnly(this.#triggerColors)
 	}
@@ -263,57 +276,53 @@ export class InstancedMesh extends Mesh {
 		this.colors = this.colors // trigger reactivity
 	}
 
-	_setMatrixComponents(index: number) {
+	// TODO Might just be able to set individual components of the matrix
+	// without recalculating other components (f.e. if only an instance position
+	// changed but not rotation)
+	#setMatrix(index: number) {
 		_rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0)
 		_quat.setFromEuler(_rot)
 		_pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0)
 		_scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1)
 
-		this._calculateInstanceMatrix()
+		// Modifies _mat in place.
+		this._calculateInstanceMatrix(_pos, _quat, _scale, _pivot, _mat)
 
 		this.three.setMatrixAt(index / 3, _mat)
-		this.three.instanceMatrix.needsUpdate = true
+	}
+
+	// TODO a colorMode variable can specify whether colors are RGB triplets, or CSS string/hex values.
+	// TODO Set an update range so that if we're updating only one instance, we're not uploading the whole array each time.
+	#setColor(index: number, r: number, g: number, b: number) {
+		_color.setRGB(r, g, b)
+		this.three.setColorAt(index, _color)
 	}
 
 	updateAllMatrices() {
-		const mesh = this.three
-
-		for (let i = 0, l = this.count; i < l; i += 1) {
-			const j = i * 3
-
-			_rot.set(this.rotations[j + 0] ?? 0, this.rotations[j + 1] ?? 0, this.rotations[j + 2] ?? 0)
-			_quat.setFromEuler(_rot)
-			_pos.set(this.positions[j + 0] ?? 0, this.positions[j + 1] ?? 0, this.positions[j + 2] ?? 0)
-			_scale.set(this.scales[j + 0] ?? 1, this.scales[j + 1] ?? 1, this.scales[j + 2] ?? 1)
-
-			this._calculateInstanceMatrix()
-
-			mesh.setMatrixAt(i, _mat)
-		}
-
+		for (let i = 0, l = this.count; i < l; i += 1) this.#setMatrix(i * 3)
 		this.three.instanceMatrix.needsUpdate = true
 	}
 
 	updateAllColors() {
-		const mesh = this.three
-
 		for (let i = 0, l = this.count; i < l; i += 1) {
 			const j = i * 3
+			const r = this.colors[j + 0] ?? 1
+			const g = this.colors[j + 1] ?? 1
+			const b = this.colors[j + 2] ?? 1
 
-			// TODO a colorMode variable can specify whether colors are RGB triplets, or CSS string/hex values.
-			_color.setRGB(this.colors[j + 0] ?? 1, this.colors[j + 1] ?? 1, this.colors[j + 2] ?? 1)
-
-			mesh.setColorAt(i, _color)
+			this.#setColor(i, r, g, b)
 		}
 
-		if (this.three.instanceColor) this.three.instanceColor.needsUpdate = true
+		this.three.instanceColor!.needsUpdate = true
 	}
 
-	// This is very similar to _calculateMatrix, without the threeCSS parts.
-	_calculateInstanceMatrix(): void {
+	/**
+	 * This is very similar to SharedAPI._calculateMatrix, without the threeCSS parts.
+	 */
+	_calculateInstanceMatrix(pos: Vector3, quat: Quaternion, scale: Vector3, pivot: Vector3, result: Matrix4): void {
 		// const align = new Vector3(0, 0, 0) // TODO
 		// const mountPoint = new Vector3(0, 0, 0) // TODO
-		const position = _pos
+		const position = pos
 		const origin = new Vector3(0.5, 0.5, 0.5) // TODO
 
 		const size = this.calculatedSize
@@ -363,7 +372,6 @@ export class InstancedMesh extends Mesh {
 		// NOTE We negate Y translation in several places below so that Y
 		// goes downward like in DOM's CSS transforms.
 
-		// TODO Make an option that configures whether Y goes up or down.
 		position.set(
 			appliedPosition[0] /*+ threeJsPostAdjustment[0]*/,
 			// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
@@ -378,7 +386,7 @@ export class InstancedMesh extends Mesh {
 			// centered around (0,0,0) meaning Three.js origin goes from
 			// -0.5 to 0.5 instead of from 0 to 1.
 
-			_pivot.set(
+			pivot.set(
 				origin.x * size.x - size.x / 2,
 				// THREE-COORDS-TO-DOM-COORDS negate the Y value so that
 				// positive Y means down instead of up (because Three,js Y
@@ -390,20 +398,18 @@ export class InstancedMesh extends Mesh {
 		// otherwise, use default Three.js origin of (0,0,0) which is
 		// equivalent to our (0.5,0.5,0.5), by removing the pivot value.
 		else {
-			_pivot.set(0, 0, 0)
+			pivot.set(0, 0, 0)
 		}
 
 		// effectively the same as Object3DWithPivot.updateMatrix() {
 
-		_mat.compose(position, _quat, _scale)
-
-		const pivot = _pivot
+		result.compose(position, quat, scale)
 
 		if (pivot.x !== 0 || pivot.y !== 0 || pivot.z !== 0) {
 			const px = pivot.x,
 				py = pivot.y,
 				pz = pivot.z
-			const te = _mat.elements
+			const te = result.elements
 
 			te[12] += px - te[0] * px - te[4] * py - te[8] * pz
 			te[13] += py - te[1] * px - te[5] * py - te[9] * pz
@@ -421,15 +427,17 @@ export class InstancedMesh extends Mesh {
 			if (this.count > this.#biggestCount) {
 				this.#biggestCount = this.count
 
-				untrack(() => {
-					this.recreateThree()
+				this.recreateThree()
 
-					// Be sure to trigger all the instance components so that the new
-					// InstancedMesh will be up-to-date.
-					this.rotations = this.rotations
-					this.positions = this.positions
-					this.scales = this.scales
-					this.colors = this.colors
+				// Be sure to trigger all the instance components so that the new
+				// InstancedMesh will be up-to-date.
+				untrack(() => {
+					batch(() => {
+						this.rotations = this.rotations
+						this.positions = this.positions
+						this.scales = this.scales
+						this.colors = this.colors
+					})
 				})
 			}
 
