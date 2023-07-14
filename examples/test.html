@@ -19,161 +19,231 @@
 
 <!-- WORKS ======================================================== -->
 
-<!-- <style>
-			lume-mixed-plane {
-				text-align: center;
-			}
-			lume-element3d {
-				color: royalblue;
-			}
-			button {
-				background: #e96699;
-				color: white;
-				width: 100%;
-				height: 100%;
-				outline: none;
-				border: none;
-			}
-		</style>
+<style>
+	* {
+		user-select: none;
+	}
+	lume-mixed-plane {
+		text-align: center;
+	}
+	lume-element3d {
+		color: royalblue;
+	}
+	button {
+		background: #e96699;
+		color: white;
+		width: 100%;
+		height: 100%;
+		outline: none;
+		border: none;
+	}
+</style>
 
-		<script>
-			LUME.defineElements()
-		</script>
+<script>
+	LUME.defineElements()
+</script>
 
-		<lume-scene
-			webgl="true"
-			id="scene"
-			perspective="500"
-			shadowmap-type="pcfsoft"
-			shadowmap-type-comment="It should be one of basic, pcf, or pcfsoft"
+<lume-scene
+	webgl="true"
+	id="scene"
+	perspective="500"
+	shadowmap-type="pcfsoft"
+	shadowmap-type-comment="It should be one of basic, pcf, or pcfsoft"
+>
+	<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
+
+	<lume-mixed-plane size-mode="p p" size="1 1 0" style="background: #0e99d9" color="#252525">
+		<h1>HTML content, with lighting and shadows!</h1>
+		<div
+			id="div"
+			style="position: absolute; top: 100px; left: 100px; width: 100px; height: 100px; background: blue"
+		></div>
+
+		<lume-mixed-plane position="100 100 1" size="70 21 0" color="#333333">
+			<button>A button!</button>
+		</lume-mixed-plane>
+	</lume-mixed-plane>
+
+	<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100" rotation="0 -10 0">
+		<lume-mixed-plane id="green" size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
+			<h1>Hello</h1>
+		</lume-mixed-plane>
+
+		<lume-sphere id="purpleSphere" size="50 50 50" mount-point="0.5 0.5 0.5" position="60 30 150" color="purple">
+			<!-- <lume-mixed-plane size-mode="p p" size="1 1" align-point="0 0 0.5"></lume-mixed-plane> -->
+		</lume-sphere>
+
+		<lume-plane
+			id="cyanPlane"
+			size="50 50 50"
+			mount-point="0.5 0.5 0.5"
+			position="80 20 80"
+			color="cyan"
+			rotation="0 0 0"
+		></lume-plane>
+
+		<lume-mixed-plane
+			id="little"
+			size="50 50 50"
+			mount-point="0.5 0.5 0.5"
+			position="20 30 110"
+			rotation="0 0 0"
+			style="background: lime"
+			color="#444444"
 		>
-			<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
+			3D!
 
-			<lume-mixed-plane size-mode="proportional proportional" size="1 1 0" style="background: #0e99d9" color="#252525">
-				<h1>HTML content, with lighting and shadows!</h1>
-
-				<lume-mixed-plane
-					position="0 100 10"
-					size="70 21 0"
-					align-point="0.5 0 0"
-					mount-point="0.5 0 0"
-					color="#333333"
-				>
-					<button>A button!</button>
-				</lume-mixed-plane>
+			<lume-mixed-plane id="little2" size="50 50 50" position="20 30 110" style="background: #e96699" color="#444444">
+				Yeah!
 			</lume-mixed-plane>
+		</lume-mixed-plane>
 
-			<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
-				<lume-mixed-plane size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
-					<h1>Hello</h1>
-				</lume-mixed-plane>
+		<lume-box
+			id="cube"
+			material-opacity="0.5"
+			style="background: blue"
+			size="50 50 50"
+			mount-point="0.5 0 0.5"
+			position="-60 20 80"
+			color="#ff6157"
+		></lume-box>
 
-				<lume-sphere
-					size="50 50 50"
-					mount-point="0.5 0.5 0.5"
-					position="60 30 80"
-					color="#e96699"
-					material-opacity="0.5"
-				></lume-sphere>
+		<lume-mesh
+			id="lightMesh"
+			has="sphere-geometry basic-material"
+			size="10 10 10"
+			color="#ffffcc"
+			position="10 0 230"
+			receive-shadow="false"
+			cast-shadow="false"
+		>
+			<lume-point-light
+				id="light"
+				color="#ffffff"
+				align-point="0.5 0.5 0.5"
+				size="0 0 0"
+				intensity="0.5"
+			></lume-point-light>
+		</lume-mesh>
+	</lume-element3d>
+</lume-scene>
 
-				<lume-plane
-					size="50 50 50"
-					mount-point="0.5 0.5 0.5"
-					position="80 20 80"
-					color="pink"
-					rotation="0 0 0"
-				></lume-plane>
+<script>
+	const {Motor, Events} = LUME
 
-				<lume-mixed-plane
-					id="little"
-					size="50 50 50"
-					mount-point="0.5 0.5 0.5"
-					position="20 30 110"
-					rotation="0 0 0"
-					style="background: #d490a1"
-					color="#444444"
-				>
-					3D!
+	cube.addEventListener('click', event => {
+		console.log(
+			'click cube',
 
-					<lume-mixed-plane
-						id="little2"
-						size="50 50 50"
-						position="20 30 110"
-						style="background: #e96699"
-						color="#444444"
-					>
-						Yeah!
-					</lume-mixed-plane>
-				</lume-mixed-plane>
+			// These only work correctly if the event happens within the DOM CSS
+			// surface, but otherwise on the cube byt outisde the surface
+			// offsetX/Y are relative to the scene, which is incorrect.
+			// TODO make sure it is always relative to the mesh element.
+			event.offsetX,
+			event.offsetY,
 
-				<lume-box id="cube" size="50 50 50" mount-point="0.5 0 0.5" position="-60 20 80" color="#ff6157"></lume-box>
+			event.clientX,
+			event.clientY,
+			event.worldX,
+			event.worldY,
+			event.worldZ,
+		)
 
-				<lume-mesh
-					id="lightMesh"
-					has="sphere-geometry basic-material"
-					size="10 10 10"
-					color="#ffffcc"
-					position="10 0 130"
-					receive-shadow="false"
-					cast-shadow="false"
-				>
-					<lume-point-light
-						id="light"
-						color="#ffffff"
-						align-point="0.5 0.5 0.5"
-						size="0 0 0"
-						intensity="0.5"
-					></lume-point-light>
-				</lume-mesh>
-			</lume-element3d>
-		</lume-scene>
+		// This works!
+		// document.body.requestFullscreen()
+	})
 
-		<script>
-			const {Motor, Events} = LUME
+	// cube.addEventListener('pointermove', event => {
+	// 	console.log('hover cube', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ, event.isTrusted)
+	// })
 
-			// LUME.defineElements()
+	green.addEventListener('click', event => {
+		console.log('click green plane', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
 
-			// TODO expose as props/attributes
-			light.three.shadow.radius = 5
-			light.three.shadow.bias = -0.0001
-			light.three.distance = 800
+	green.addEventListener('pointermove', event => {
+		console.log('MOVE green', event.clientX, event.clientY, event.worldX, event.worldY, event.worldZ)
+	})
 
-			Motor.addRenderTask(t => {
-				lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
-				lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
-				root.rotation.y = 15 * Math.cos(t * 0.002)
-				root.rotation.y += 1
-				cube.rotation.y += 1
-				cube.rotation.x += 1
-				little.rotation.z += 1
-				little.rotation.x += 1
-				little2.rotation.x += 1
-			})
+	cyanPlane.addEventListener('pointermove', event => {
+		console.log('MOVE cyan', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
 
-			// TODO replace with CSS, once that's ready
-			Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(plane => {
-				plane.materialOpacity = 0.3
-			})
+	// scene.addEventListener('pointerdown', event => {
+	// 	// scene.setPointerCapture(event.pointerId)
+	// 	console.log('MOVE scene')
+	// })
+	// scene.addEventListener('pointermove', () => {
+	// 	console.log('MOVE scene')
+	// })
 
-			const scene = document.querySelector('lume-scene')
+	purpleSphere.addEventListener('pointerdown', event => {
+		// TODO Pointer capture does not work so long as we have
+		// event.stopImmediatePropagation in the scene's #handlePointerEvent
+		// method. Can we get this working somehow?
+		purpleSphere.setPointerCapture(event.pointerId)
 
-			// This setInterval shows that
-			//
-			// - that turning GL rendering off and on makes the animation
-			// stutter for a small moment, because destroying and re-creating
-			// all the GPU stuff is a heavy operation. Generally you'll want to
-			// start with webgl attribute set to an initial value
-			// and leave it that way, without changing it.
-			//
-			// - that turning CSS rendering off and on is not very expensive.
-			// This is because the DOM (the custom elements) aren't being
-			// destroyed and re-created, only the CSS styling is being removed
-			// and then added back but otherwise the DOM objects are already instantiated.
-			setInterval(() => {
-				if ((!scene.enableCss && !scene.webgl) || (scene.enableCss && scene.webgl)) scene.enableCss = !scene.enableCss
-				else scene.webgl = !scene.webgl
-			}, 2000)
-		</script> -->
+		console.log('DOWN purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('pointermove', event => {
+		console.log('MOVE purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('pointerup', event => {
+		console.log('UP purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	purpleSphere.addEventListener('click', event => {
+		console.log('CLICK purple', event.offsetX, event.offsetY, event.worldX, event.worldY, event.worldZ)
+	})
+
+	// TODO Not working yet.
+	div.addEventListener('click', () => {
+		console.log('clicked div')
+	})
+
+	// LUME.defineElements()
+
+	// TODO expose as props/attributes
+	light.three.shadow.radius = 5
+	light.three.shadow.bias = -0.0001
+	light.three.distance = 800
+
+	Motor.addRenderTask(t => {
+		lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
+		lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
+		// root.rotation.y = 15 * Math.cos(t * 0.002)
+		// root.rotation.y += 1
+		// cube.rotation.y += 1
+		// cube.rotation.x += 1
+		// little.rotation.z += 1
+		// little.rotation.x += 1
+		// little2.rotation.x += 1
+	})
+
+	// TODO replace with CSS, once that's ready
+	Array.from(document.querySelectorAll('lume-mixed-plane')).forEach(plane => {
+		plane.materialOpacity = 0.3
+	})
+
+	// This setInterval shows that
+	//
+	// - that turning GL rendering off and on makes the animation
+	// stutter for a small moment, because destroying and re-creating
+	// all the GPU stuff is a heavy operation. Generally you'll want to
+	// start with webgl attribute set to an initial value
+	// and leave it that way, without changing it.
+	//
+	// - that turning CSS rendering off and on is not very expensive.
+	// This is because the DOM (the custom elements) aren't being
+	// destroyed and re-created, only the CSS styling is being removed
+	// and then added back but otherwise the DOM objects are already instantiated.
+	// setInterval(() => {
+	// 	if ((!scene.enableCss && !scene.webgl) || (scene.enableCss && scene.webgl)) scene.enableCss = !scene.enableCss
+	// 	else scene.webgl = !scene.webgl
+	// }, 2000)
+</script>
 
 <!-- TEST ======================================================== -->
 
@@ -265,7 +335,7 @@
 
 <!-- WORKS ======================================================== -->
 
-<script>
+<!-- <script>
 	LUME.defineElements()
 </script>
 <style>
@@ -281,7 +351,7 @@
 			<p>there</p>
 		</lume-element3d>
 	</lume-element3d>
-</lume-scene>
+</lume-scene> -->
 
 <!-- WORKS ======================================================== -->
 <!--<lume-scene>-->
