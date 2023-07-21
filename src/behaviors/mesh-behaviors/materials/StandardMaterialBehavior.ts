@@ -23,6 +23,15 @@ export type StandardMaterialBehaviorAttributes =
 	| 'roughnessMap'
 	| 'vertexTangents'
 
+/**
+ * @class StandardMaterialBehavior -
+ *
+ * A standard physically based material, using Metallic-Roughness workflow.
+ *
+ * Backed by Three.js [`THREE.MeshStandardMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshStandardMaterial)
+ *
+ * @extends MaterialBehavior
+ */
 @reactive
 export class StandardMaterialBehavior extends MaterialBehavior {
 	// alphaMap?: Texture | null;

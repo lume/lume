@@ -1,5 +1,6 @@
 export * from './BasicMaterialBehavior.js'
 export * from './LambertMaterialBehavior.js'
+export * from './LineBasicMaterialBehavior.js'
 export * from './MaterialBehavior.js'
 export * from './MixedPlaneMaterialBehavior.js'
 export * from './PhongMaterialBehavior.js'

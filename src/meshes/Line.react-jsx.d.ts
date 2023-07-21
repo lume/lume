@@ -1,5 +1,5 @@
+import type {Line, LineAttributes} from './Line'
 import type {ReactElementAttributes} from '@lume/element/src/react'
-import type {InstancedMesh, InstancedMeshAttributes} from './InstancedMesh.js'
 import type {
 	PhongMaterialBehavior,
 	PhongMaterialBehaviorAttributes,
@@ -13,7 +13,7 @@ import type {
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-instanced-mesh': ReactElementAttributes<InstancedMesh, InstancedMeshAttributes> &
+			'lume-line': ReactElementAttributes<Line, LineAttributes> &
 				ReactElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes> &
 				ReactElementAttributes<LambertMaterialBehavior, LambertMaterialBehaviorAttributes>
 		}

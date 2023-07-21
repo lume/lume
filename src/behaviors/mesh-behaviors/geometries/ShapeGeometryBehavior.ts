@@ -36,7 +36,7 @@ export type ShapeGeometryBehaviorAttributes =
 @class ShapeGeometryBehavior -
 
 Provides a 2D extrudable shape geometry for mesh
-elements. The [`<lume-shape>`](../../meshes/Shape.md) element has this behavior
+elements. The [`<lume-shape>`](../../../meshes/Shape.md) element has this behavior
 on it by default.
 
 The shape defined by the [`shape`](#shape) attribute property will be centered within the
@@ -55,6 +55,8 @@ only.
     data: { code: shapesExample },
   })
 </script>
+
+@extends GeometryBehavior
 */
 @reactive
 export class ShapeGeometryBehavior extends GeometryBehavior {
@@ -76,12 +78,12 @@ export class ShapeGeometryBehavior extends GeometryBehavior {
 	 * execute `el.shape = el.shape` to trigger reactivity.
 	 * <!-- TODO investigate using Solid createMutable to make the THREE.Shape reactive. -->
 	 *
-	 * A string value should be a list of numbers separated by any amount space
+	 * A string value should be a list of numbers separated by any amount of space
 	 * (commas are optional, for organizational use), every two numbers forming
 	 * one point in the 2D shape. Similar to the rest of LUME's coordinate
 	 * system, +X goes rightward, and +Y goes downward.
 	 *
-	 * An array of numbers is similar to the string value: every two numbers
+	 * A number array value is similar to the string value: every two numbers
 	 * form a point in the shape.
 	 * <!-- TODO investigate reacting to reactive arrays -->
 	 *

@@ -12,7 +12,7 @@ export type PointsAttributes = Element3DAttributes
  *
  * Element: `<lume-points>`
  *
- * Extends from `Mesh` to apply default behaviors of
+ * Applies default behaviors of
  * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
  * and
  * [`points-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
@@ -25,7 +25,7 @@ export type PointsAttributes = Element3DAttributes
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
  * behavior on this element to load a set of points from a file for example.
  *
- * @extends Mesh
+ * @extends Element3D
  */
 @element('lume-points', autoDefineElements)
 export class Points extends Element3D {

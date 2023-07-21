@@ -1,0 +1,39 @@
+<script src="./wrapper.js" title="<lume-line>"></script>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-point-light intensity="0.4" color="white" position="300 400 500"></lume-point-light>
+	<lume-ambient-light intensity="0.5" color="white" position="300 400 500"></lume-ambient-light>
+
+	<lume-camera-rig active initial-distance="1000" max-distance="6000" min-distance="10"></lume-camera-rig>
+
+	<lume-line id="line" has="line-geometry line-material" color="deeppink" points=""></lume-line>
+</lume-scene>
+
+<script type="module">
+	// Define all the LUME elements with their default names.
+	LUME.defineElements()
+
+	// FIXME We currently need to skip a turn or else setting the points below
+	// will be overwritten by the empty points attribute.
+	await new Promise(r => setTimeout(r))
+
+	// Generate points for a spiral-shaped line.
+	const points = []
+	let angle = 0
+	let distance = 0
+	let z = 0
+	for (const _ of Array(300).map((_, i) => i)) {
+		const x = distance * Math.cos(angle)
+		const y = distance * Math.sin(angle)
+		points.push(x, y, 400 * Math.sin(z))
+
+		angle += Math.PI / 16
+		distance += 10
+		z += Math.PI / 5
+	}
+
+	line.points = points
+
+	// Give the spiral some rotation around Z.
+	line.rotation = (x, y, z) => [x, y, z - 1]
+</script>

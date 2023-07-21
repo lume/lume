@@ -11,9 +11,8 @@
 		-->
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- pointer events polyfill (touch-action support for Safari 13 (2019) and lower) -->
-		<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
-
+		<!-- Some examples `import ... from 'three'` (the three.js lib), this
+		specifies where 'three' comes from. -->
 		<script type="importmap">
 			{
 				"imports": {
@@ -23,9 +22,16 @@
 			}
 		</script>
 
-		<!-- <script src="https://assets.codepen.io/191583/lume-global-crbug-1350382.js"></script> -->
+		<!-- Load Lume as a global `LUME` variable by running Lume's `global.js`
+		file via a script tag. Note, this is the easy legacy way to get started,
+		but more advanced users who know ES Modules or use build tools will want
+		to `import` from `'lume'` instead of using the global script method. -->
 		<script src="/examples/global.js"></script>
 
+		<!-- Style the top level web app's html and body elements to be full
+		width/height of the viewport, with a dark background, with no edge
+		padding, with no scrolling, and with default browser touch interactions
+		disabled. -->
 		<style>
 			html,
 			body {

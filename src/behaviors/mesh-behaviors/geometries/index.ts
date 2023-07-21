@@ -1,5 +1,6 @@
 export * from './BoxGeometryBehavior.js'
 export * from './GeometryBehavior.js'
+export * from './LineGeometryBehavior.js'
 export * from './MixedPlaneGeometryBehavior.js'
 export * from './PlaneGeometryBehavior.js'
 export * from './PlyGeometryBehavior.js'
