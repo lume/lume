@@ -1,4 +1,4 @@
-import {defineElements, Node, XYZNumberValuesPropertyFunction} from 'lume'
+import {Node, XYZNumberValuesPropertyFunction} from 'lume'
 
 // For React TypeScript users, import the React JSX type defs.
 import type {} from 'lume/dist/index.react-jsx'
@@ -13,8 +13,6 @@ import pmcBumperModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrob
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
 import lunaStation from '../../../docs/examples/nasa-astrobee-robot/luna-station.jpg'
-
-defineElements()
 
 type View = 'top' | 'side' | 'free'
 

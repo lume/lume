@@ -1087,8 +1087,10 @@ if (isDomEnvironment()) {
 		if (/Illegal constructor/i.test(error.message)) {
 			console.error(`
 				One of the reasons the following error can happen is if a Custom
-				Element is called with 'new' before being defined. Did you forget
-				to call 'LUME.defineElements()'?  For other reasons, see:
+				Element is called with 'new' before being defined. Did you set
+				window.$lume.autoDefineElements to false and then forget to call
+				'LUME.defineElements()' or to call '.defineElement()' on
+				individual Lume classes?  For other reasons, see:
 				https://www.google.com/search?q=chrome%20illegal%20constructor
 			`)
 		}

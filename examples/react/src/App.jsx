@@ -1,4 +1,4 @@
-import {defineElements} from 'lume'
+import 'lume'
 
 import * as React from 'react'
 import {Component, createRef} from 'react'
@@ -10,8 +10,6 @@ import pmcBumperModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrob
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
 import lunaStation from '../../../docs/examples/nasa-astrobee-robot/luna-station.jpg'
-
-defineElements()
 
 // Long live class components!
 export class App extends Component {

@@ -6,16 +6,11 @@
 
 	<lume-camera-rig active initial-distance="1000" max-distance="6000" min-distance="10"></lume-camera-rig>
 
-	<lume-line id="line" has="line-geometry line-material" color="deeppink" points=""></lume-line>
+	<lume-line id="line" color="deeppink"></lume-line>
 </lume-scene>
 
 <script type="module">
-	// Define all the LUME elements with their default names.
-	LUME.defineElements()
-
-	// FIXME We currently need to skip a turn or else setting the points below
-	// will be overwritten by the empty points attribute.
-	await new Promise(r => setTimeout(r))
+	import 'lume'
 
 	// Generate points for a spiral-shaped line.
 	const points = []

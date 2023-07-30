@@ -1,4 +1,4 @@
-<script src="./wrapper.js" title="<lume-instanced-mesh>"></script>
+<script src="./wrapper.js" use-lume-global title="<lume-instanced-mesh>"></script>
 
 <!-- See https://cocopon.github.io/tweakpane/ -->
 <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js"></script>
@@ -25,10 +25,7 @@
 </lume-scene>
 
 <script>
-	const {html, defineElements} = LUME
-
-	// Define all the LUME elements with their default names.
-	defineElements()
+	const {html} = LUME
 
 	const numberOfObjects = 50_000
 	const maxObjects = 200_000

@@ -1,10 +1,8 @@
 import html from 'solid-js/html'
-import {defineElements} from '../../index.js'
+import '../../index.js'
 import {hasShadow} from '../CompositionTracker.js'
 import type {Element3D} from '../Element3D.js'
 import type {Scene} from '../Scene.js'
-
-defineElements()
 
 describe('ShadowDOM support', () => {
 	let container: HTMLDivElement = document.createElement('div')

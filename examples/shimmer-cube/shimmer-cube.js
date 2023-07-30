@@ -1,7 +1,7 @@
-const {reactify, attribute, autorun, element, html} = LUME
+import {attribute, autorun, element, html, Element3D} from 'lume'
 
-const ShimmerSurface = element('shimmer-surface')(
-	class ShimmerSurface extends LUME.Element3D {
+export const ShimmerSurface = element('shimmer-surface')(
+	class ShimmerSurface extends Element3D {
 		static observedAttributes = {
 			color: attribute.string('#ffff0045'),
 		}
@@ -54,8 +54,8 @@ const ShimmerSurface = element('shimmer-surface')(
 	},
 )
 
-const ShimmerCube = element('shimmer-cube')(
-	class ShimmerCube extends LUME.Element3D {
+export const ShimmerCube = element('shimmer-cube')(
+	class ShimmerCube extends Element3D {
 		static observedAttributes = {
 			color: attribute.string('#ffff0045'),
 		}

@@ -7,12 +7,6 @@
 	}
 </style>
 
-<script src="./shimmer-cube.js"></script>
-
-<script>
-	LUME.defineElements()
-</script>
-
 <lume-scene webgl="true">
 	<lume-ambient-light intensity="0.7"></lume-ambient-light>
 
@@ -29,7 +23,9 @@
 	></shimmer-cube>
 </lume-scene>
 
-<script>
+<script type="module">
+	import './shimmer-cube.js'
+
 	const cube = document.querySelector('shimmer-cube')
 	cube.rotation = (x, y, z, t) => [x, 90 * Math.sin(t * 0.001), z]
 </script>

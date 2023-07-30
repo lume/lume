@@ -12,7 +12,6 @@
 		<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
 	</lume-camera-rig>
 
-	<!-- TODO THREE BUG fixing bug where on mobile the image is stretched. https://discourse.threejs.org/t/40262/3 -->
 	<lume-fbx-model
 		id="model"
 		rotation="0 45 0"
@@ -23,7 +22,8 @@
 
 	<!-- Background -->
 	<lume-sphere
-		has="basic-material"
+		id="env"
+		has="basic-material sphere-geometry"
 		color="white"
 		sidedness="double"
 		texture="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
@@ -32,19 +32,10 @@
 	></lume-sphere>
 </lume-scene>
 
-<!-- <script>
-	// CONTINUE FIXME: auto define changes order of behavior vs elements definitions and it breaks.
-	window.$LUME = {autoDefineElements: false}
-	// window.$LUME = {autoDefineElements: true}
-</script>
-<script src="global.js"></script> -->
-
 <script type="module">
-	import * as THREE from 'three'
+	import 'lume'
+	import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
 	import {toCreasedNormals} from 'three/examples/jsm/utils/BufferGeometryUtils.js'
-
-	// Define all the LUME elements with their default names.
-	LUME.defineElements()
 
 	model.on('MODEL_LOAD', () => {
 		model.three.traverse(obj => {
@@ -52,10 +43,10 @@
 				// Make the parts of the helmet look metallic or plastic.
 				if (obj.material.name.startsWith('Chrome') || obj.material.name.startsWith('Steel')) {
 					// metal
-					obj.material = new THREE.MeshPhysicalMaterial({color: 'white', metalness: 1, roughness: 0.15})
+					obj.material = new MeshPhysicalMaterial({color: 'white', metalness: 1, roughness: 0.15})
 				} else {
 					// black plastic visor
-					obj.material = new THREE.MeshPhysicalMaterial({
+					obj.material = new MeshPhysicalMaterial({
 						color: '#111111',
 						metalness: 0.2,
 						roughness: 0.2,

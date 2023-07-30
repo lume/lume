@@ -17,7 +17,7 @@ import {SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {version} from '../index.js' // TODO replace with version.ts
+import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 
 import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
@@ -27,6 +27,8 @@ import type {Element3D} from './Element3D.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
+// Queue a microtask because otherwise this fires before the module graph has
+// executed the version variable initializer.
 queueMicrotask(() => console.info(magic()))
 
 export type SceneAttributes =
@@ -604,7 +606,10 @@ export class Scene extends SharedAPI {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this.shadowRoot!.prepend(new Comment(magic()))
+		// Queue a microtask because with autoDefineElements true then
+		// connectedCallback fires before the module graph has executed the
+		// version variable initializer.
+		queueMicrotask(() => this.shadowRoot!.prepend(new Comment(magic())))
 
 		this.createEffect(() => {
 			if (this.webgl) this._triggerLoadGL()

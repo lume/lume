@@ -1,9 +1,7 @@
 import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
-import {defineElements} from '../index.js'
+import '../index.js'
 import {Object3D} from 'three/src/core/Object3D.js'
-
-defineElements()
 
 describe('Element3D', () => {
 	const root = document.createElement('div')

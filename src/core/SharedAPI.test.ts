@@ -1,9 +1,7 @@
 import {autorun} from '@lume/element'
 import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
-import {defineElements} from '../index.js'
-
-defineElements()
+import '../index.js'
 
 describe('SharedAPI', () => {
 	const root = document.createElement('div')

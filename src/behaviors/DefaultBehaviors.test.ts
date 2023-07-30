@@ -1,8 +1,6 @@
-import {defineElements} from '../defineElements.js'
+import '../defineElements.js'
 
 // import type {ElementWithBehaviors} from 'element-behaviors'
-
-defineElements()
 
 describe('DefaultBehaviors', () => {
 	// This test re-creates the same test as in element-behaviors, but ensures

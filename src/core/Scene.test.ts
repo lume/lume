@@ -1,6 +1,4 @@
-import {defineElements} from '../index.js'
-
-defineElements()
+import '../index.js'
 
 describe('Scene', () => {
 	let container: HTMLDivElement = document.createElement('div')

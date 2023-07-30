@@ -85,11 +85,11 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.9.0",
-		"@lume/element": "^0.7.1",
+		"@lume/element": "^0.8.1",
 		"@lume/eventful": "^0.2.2",
 		"@lume/three-projected-material": "^0.2.2",
 		"@lume/variable": "^0.8.0",
-		"element-behaviors": "^3.0.0",
+		"element-behaviors": "^3.1.0",
 		"james-bond": "^0.5.0",
 		"lowclass": "^5.0.0",
 		"regexr": "^1.5.1",

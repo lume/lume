@@ -1,7 +1,7 @@
 /**
  * This loads the outer HTML template used for all the examples.
  */
-function wrapper() {
+{
 	// The first thing the HTML parser encounters in each example is a script
 	// tag with this code.
 
@@ -20,9 +20,15 @@ function wrapper() {
 	// top-level template!
 	document.write(r.responseText)
 
+	const useLumeGlobal = document.currentScript.hasAttribute('use-lume-global')
+
+	// Remove the type="disabled" attribute so `LUME` will be loaded globally.
+	if (useLumeGlobal) {
+		const template = document.getElementById('lumeGlobalScript')
+		document.write(template.content.firstElementChild.outerHTML)
+	}
+
 	// Each example specifies the title for its tab by putting a title="foo"
 	// attribute on the tag that is executing this code.
 	document.title = 'LUME - ' + document.currentScript.getAttribute('title')
 }
-
-wrapper()

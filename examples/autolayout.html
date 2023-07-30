@@ -1,4 +1,4 @@
-<script src="./wrapper.js" title="mount-point"></script>
+<script src="./wrapper.js" use-lume-global title="mount-point"></script>
 
 <style>
 	body {
@@ -68,8 +68,6 @@
 </lume-scene>
 
 <script>
-	LUME.defineElements()
-
 	const vfl1 = /*js*/ `
 		//viewport aspect-ratio:3/1 max-height:300
 		H:|-[row:[child1(child2,child5)]-[child2]-[child5]]-|

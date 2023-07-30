@@ -38,18 +38,11 @@ The code below is commented to describe which parts correlate to the above list 
 	}
 </style>
 
-<script>
-	// Make sure this one works too, before HTML parsing.
-	// LUME.defineElements()
-</script>
-
 <!-- Body will have a ShadowRoot, and this lume-box will be distributed to (render relative to) the following LUME Scene inside the ShadowRoot. -->
 <lume-box color="purple" slot="outsidenode" size="30 30 30" align-point="0.3 0.3"></lume-box>
 
-<script>
-	LUME.defineElements()
-
-	const {html} = LUME
+<script type="module">
+	import {html} from 'lume'
 
 	const bodyRoot = document.body.attachShadow({mode: 'open'})
 	let innerContainer
@@ -86,7 +79,7 @@ The code below is commented to describe which parts correlate to the above list 
 							size="40 40 40"
 							color="white"
 							COMMENT-otherwise-the-material-will-be-tinted-random-color
-							texture="../docs/textures/cement.jpg"
+							texture="../apps/docs/textures/cement.jpg"
 						>
 							<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
 							<lume-sphere
@@ -96,7 +89,7 @@ The code below is commented to describe which parts correlate to the above list 
 								slot="plane"
 								size="40 40 40"
 								position="-30 -30 -30"
-								texture="../docs/textures/cement.jpg"
+								texture="../apps/docs/textures/cement.jpg"
 							>
 								<lume-camera-rig align-point="0.5 0.5 0.5"></lume-camera-rig>
 							</lume-sphere>
@@ -207,7 +200,13 @@ The code below is commented to describe which parts correlate to the above list 
 			setTimeout(() => {
 				let nodes = []
 				scene.traverseSceneGraph(n => nodes.push(n))
-				if (nodes.length !== 11) throw new Error('Composed tree size not as expected.')
+				if (nodes.length !== 11) {
+					// TODO This error happens. Not sure if this broke, or if I
+					// forgot to update it, but ShadowDOM tests pass and
+					// examples work.
+					console.error(nodes)
+					throw new Error('Composed tree size not as expected. Got: ' + nodes.length)
+				}
 			})
 
 			let i = 0
