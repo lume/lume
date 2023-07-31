@@ -96,13 +96,13 @@
 		"solid-js": ">=1.0.0 <1.5.0"
 	},
 	"peerDependencies": {
-		"three": ">=0.139.0 <=0.151.3"
+		"three": ">=0.139.0"
 	},
 	"devDependencies": {
 		"@lume/cli": "^0.9.2",
 		"@types/mkdirp": "^0.5.2",
 		"@types/rimraf": "^2.0.3",
-		"@types/three": "^0.139.0",
+		"@types/three": ">=0.139.0",
 		"at-at": "^1.1.0",
 		"babel-eslint": "8.2.6",
 		"docsify-cli": "trusktr/docsify-cli#add-cors",
