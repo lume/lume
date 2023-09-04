@@ -17,19 +17,13 @@ export function handleInvertedGeometry(geometry: BufferGeometry) {
 		z = normals[i * 9 + 2]
 
 		// overwrite a with c
-		// @ts-expect-error
 		normals[i * 9] = normals[i * 9 + 6]
-		// @ts-expect-error
 		normals[i * 9 + 1] = normals[i * 9 + 7]
-		// @ts-expect-error
 		normals[i * 9 + 2] = normals[i * 9 + 8]
 
 		// overwrite c with stored a values
-		// @ts-expect-error
 		normals[i * 9 + 6] = x
-		// @ts-expect-error
 		normals[i * 9 + 7] = y
-		// @ts-expect-error
 		normals[i * 9 + 8] = z
 	}
 
@@ -43,19 +37,13 @@ export function handleInvertedGeometry(geometry: BufferGeometry) {
 		z = verts[i * 9 + 2]
 
 		// overwrite a with c
-		// @ts-expect-error
 		verts[i * 9] = verts[i * 9 + 6]
-		// @ts-expect-error
 		verts[i * 9 + 1] = verts[i * 9 + 7]
-		// @ts-expect-error
 		verts[i * 9 + 2] = verts[i * 9 + 8]
 
 		// overwrite c with stored a values
-		// @ts-expect-error
 		verts[i * 9 + 6] = x
-		// @ts-expect-error
 		verts[i * 9 + 7] = y
-		// @ts-expect-error
 		verts[i * 9 + 8] = z
 	}
 
@@ -68,15 +56,11 @@ export function handleInvertedGeometry(geometry: BufferGeometry) {
 		y = uvs[i * 6 + 1]
 
 		// overwrite a with c
-		// @ts-expect-error
 		uvs[i * 6] = uvs[i * 6 + 4]
-		// @ts-expect-error
 		uvs[i * 6 + 1] = uvs[i * 6 + 5]
 
 		// overwrite c with stored a values
-		// @ts-expect-error
 		uvs[i * 6 + 4] = x
-		// @ts-expect-error
 		uvs[i * 6 + 5] = y
 	}
 

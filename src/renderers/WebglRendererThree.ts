@@ -199,7 +199,10 @@ export class WebglRendererThree {
 	setPhysicallyCorrectLights(scene: Scene, value: boolean) {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set value. Scene state should be initialized first.')
-		state.renderer.physicallyCorrectLights = value
+		// @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
+		state.renderer.physicallyCorrectLights = value // <0.150
+		state.renderer.useLegacyLights = !value // >=0.150
+ 
 	}
 
 	#bgVersion = 0

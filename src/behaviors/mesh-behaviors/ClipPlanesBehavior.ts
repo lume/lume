@@ -221,6 +221,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 				this.element.needsUpdate()
 
 				if (!clipPlanes.length || this.clipDisabled) {
+					// @ts-expect-error the 3rd-party @types/three authors decided to make the nullable property non-nullable for some very odd reason.
 					mat.clippingPlanes = null
 
 					// FIXME upstream: don't forget this or Three.js has a bug that
@@ -238,7 +239,7 @@ export class ClipPlanesBehavior extends MeshBehavior {
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
-					if (!plane.__clip) continue
+					if (!plane.__clip || !plane.__inverseClip) continue
 					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
 				}
 			})

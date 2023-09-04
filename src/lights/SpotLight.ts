@@ -217,6 +217,7 @@ export class SpotLight extends PointLight {
 		return true
 	}
 
+	// @ts-expect-error FIXME probably better for spotlight not to extend from pointlight, make a common shared class if needed.
 	override makeThreeObject3d() {
 		return new ThreeSpotLight()
 	}

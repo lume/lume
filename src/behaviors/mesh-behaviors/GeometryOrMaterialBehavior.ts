@@ -48,6 +48,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 
 		// untrack in case we make .three reactive later
 		untrack(() => {
+			// @ts-expect-error FIXME
 			this.element.three[this.type] = newComponent
 		})
 

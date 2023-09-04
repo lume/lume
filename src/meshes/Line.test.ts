@@ -1,7 +1,6 @@
 import {Scene} from '../core/Scene.js'
 import '../index.js'
 import {Line} from './Line.js'
-// @ts-expect-error incorrect Three.js type name declared
 import {Line as ThreeLine} from 'three/src/objects/Line.js'
 
 describe('Line', () => {
