@@ -111,7 +111,7 @@
 		"at-at": "^1.1.0",
 		"babel-eslint": "8.2.6",
 		"docsify-cli": "trusktr/docsify-cli#add-cors",
-		"electron": "14.0.1",
+		"electron": "18.3.7",
 		"eslint": "5.2.0",
 		"eslint-config-prettier": "^3.1.0",
 		"eslint-friendly-formatter": "4.0.1",
