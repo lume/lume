@@ -7,6 +7,7 @@
 	Xbackground="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 	Xequirectangular-background="true"
 	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+	xenvironment="./anastasiia/empty-warehouse-equirect.jpg"
 >
 	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
@@ -29,9 +30,25 @@
 		size="2 2 0"
 		src="./models/DamagedHelmet.glb"
 		scale="50 50 50"
+		xenv-map="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 		style="background: blue"
 	>
 	</lume-gltf-model>
+
+	<lume-sphere
+		id="model"
+		rotation="0 45 0"
+		position="30 30 30"
+		size="100"
+		has="physical-material"
+		metalness="0"
+		reflectivity="1"
+		roughness="0"
+		transmission="1"
+		clearcoat="1"
+		thickness="40"
+	>
+	</lume-sphere>
 </lume-scene>
 
 <script>

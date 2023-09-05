@@ -84,7 +84,7 @@ export class Scroller extends Element3D {
 				scrollFactor: 0.3,
 			})
 
-			if (untrack(() => fling.y === undefined)) debugger
+			// if (untrack(() => fling.y === undefined)) debugger
 
 			fling.start()
 

@@ -8,10 +8,10 @@
 			#categoriesInner
 
 			async categoriesLayout() {
-				const {default: yoga} = await import('https://jspm.dev/yoga-layout')
-				const {Node: YogaNode} = yoga
+				// Note, yoga 2.0 breaks the layout, needs migration
+				const {default: yoga} = await import('https://jspm.dev/yoga-layout@1.9.3')
 
-				const yogaRoot = YogaNode.create()
+				const yogaRoot = yoga.Node.create()
 				yogaRoot.setJustifyContent(yoga.JUSTIFY_SPACE_EVENLY)
 				yogaRoot.setAlignItems(yoga.ALIGN_CENTER)
 				yogaRoot.setFlexDirection(yoga.FLEX_DIRECTION_ROW)
@@ -22,7 +22,7 @@
 
 				let i = 0
 				for (const child of children) {
-					const yogaNode = YogaNode.create()
+					const yogaNode = yoga.Node.create()
 
 					yogaNodes.push(yogaNode)
 					yogaRoot.insertChild(yogaNode, i)

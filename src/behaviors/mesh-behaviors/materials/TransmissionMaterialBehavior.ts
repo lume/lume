@@ -2,6 +2,7 @@
 
 import type {IUniform, Shader, Texture} from 'three'
 import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
+// import {Mesh} from 'three/src/materials/Mesh.js'
 import {Color} from 'three/src/math/Color.js'
 import {BackSide, NoToneMapping} from 'three/src/constants.js'
 import {WebGLRenderTarget} from 'three/src/renderers/WebGLRenderTarget.js'
@@ -13,6 +14,8 @@ import {onCleanup} from 'solid-js'
 import {Motor} from '../../../core/Motor.js'
 
 let discardMaterial: DiscardMaterial | null = null
+
+// export class TransmissionMesh extends Mesh
 
 /**
  * A material with similar refraction abilities as MeshPhysicalMaterial, except
