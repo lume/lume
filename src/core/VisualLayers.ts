@@ -78,7 +78,9 @@ export class VisualLayers {
 
 		if (!layer) {
 			layer = {name: layerName, backingScene: new this.__Scene(), order: 0, visible: true}
-			layer.backingScene.autoUpdate = false
+			// @ts-expect-error legacy
+			layer.backingScene.autoUpdate = false // three <0.144
+			layer.backingScene.matrixWorldAutoUpdate = false // three >=0.144
 			this.__layers.push(layer)
 		}
 

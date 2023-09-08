@@ -46,9 +46,7 @@ export class LineBasicMaterialBehavior extends MaterialBehavior {
 
 		this._handleTexture(
 			() => this.texture,
-			// @ts-expect-error .map property def is missing
 			(mat, tex) => (mat.map = tex),
-			// @ts-expect-error .map property def is missing
 			mat => !!mat.map,
 		)
 	}

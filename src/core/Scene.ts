@@ -863,7 +863,9 @@ export class Scene extends SharedAPI {
 
 		// We don't let Three update any matrices, we supply our own world
 		// matrices.
-		this.three.autoUpdate = false
+		// @ts-expect-error legacy
+		this.three.autoUpdate = false // three <0.144
+		this.three.matrixWorldAutoUpdate = false // three >=0.144
 
 		// TODO: default ambient light when no AmbientLight elements are
 		// present in the Scene.

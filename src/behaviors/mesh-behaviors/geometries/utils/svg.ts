@@ -383,11 +383,14 @@ export function parseSvgPathDAttribute(d: string | null) {
 
 			case 'Z':
 			case 'z':
+				// @ts-expect-error FIXME
 				path.currentPath.autoClose = true
 
+				// @ts-expect-error FIXME
 				if (path.currentPath.curves.length > 0) {
 					// Reset point to beginning of Path
 					point.copy(firstPoint)
+					// @ts-expect-error FIXME
 					path.currentPath.currentPoint.copy(point)
 					isFirstPoint = true
 				}
@@ -660,6 +663,7 @@ function parseArcCommand(
 	const theta = svgAngle(1, 0, (x1p - cxp) / rx, (y1p - cyp) / ry)
 	const delta = svgAngle((x1p - cxp) / rx, (y1p - cyp) / ry, (-x1p - cxp) / rx, (-y1p - cyp) / ry) % (Math.PI * 2)
 
+	// @ts-expect-error FIXME
 	path.currentPath.absellipse(cx, cy, rx, ry, theta, theta + delta, sweep_flag === 0, x_axis_rotation)
 }
 

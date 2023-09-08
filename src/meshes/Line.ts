@@ -1,5 +1,4 @@
 import {element} from '@lume/element'
-// @ts-expect-error incorrect Three.js type name declared
 import {Line as ThreeLine} from 'three/src/objects/Line.js'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'

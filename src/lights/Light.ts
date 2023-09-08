@@ -61,6 +61,7 @@ export abstract class Light extends Element3D {
 	// (in TypeScript) that subclasses that override this will return a subtype of
 	// ThreeLight.
 	override makeThreeObject3d() {
+		// @ts-expect-error Threelight is abstract
 		return new ThreeLight()
 	}
 
