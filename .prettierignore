@@ -2,8 +2,6 @@ node_modules/
 .vscode
 
 dist/
-packages/
-apps/
 
 # files imported from other libs, don't format or else it is harder to tell the
 # diff for merging new features.

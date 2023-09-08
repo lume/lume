@@ -1,0 +1,1 @@
+//# sourceMappingURL=handle-DOM-absence.d.ts.map

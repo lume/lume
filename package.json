@@ -41,7 +41,6 @@
 		"version": "lume versionHook",
 		"postversion": "lume postVersionHook",
 		"// OTHER SCRIPTS --------------------------------------": "",
-		"prepare": "npm run build -- --noFail",
 		"examples": "live-server . --watch=dist/global.js,examples --open=./examples",
 		"lint-format": "npm run lint-all && npm run prettier:check && npm run build && echo 'implement tests'",
 		"lint": "esw --format codeframe --config ./.eslintrc.js",
