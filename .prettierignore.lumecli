@@ -1,0 +1,14 @@
+node_modules/
+.vscode
+
+dist/
+
+# files imported from other libs, don't format or else it is harder to tell the
+# diff for merging new features.
+src/lib
+
+examples/models
+examples/global.js
+
+/apps
+/packages
