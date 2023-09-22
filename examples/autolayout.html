@@ -42,9 +42,21 @@
 		align-point=" 0.5 0.5 0"
 		mount-point=" 0.5 0.5 0"
 		visual-format="
-			// Set in JS
+			// This is set in JS
 		"
 		style="background: rgba(0, 0, 0, 0.3)"
+		data-small="
+			//viewport aspect-ratio:3/1 max-height:300
+			H:|-[row:[child1(child2,child5)]-[child2]-[child5]]-|
+			V:|-[row]-|
+		"
+		data-big="
+			V:|-[child1(child3)]-[child3]-|
+			V:|-[child2(child4)]-[child4]-|
+			V:[child5(child4)]-|
+			|-[child1(child2)]-[child2]-|
+			|-[child3(child4,child5)]-[child4]-[child5]-|
+		"
 	>
 		<lume-mixed-plane size="1 1 0" color="deeppink" class="child1"
 			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
@@ -75,21 +87,8 @@
 	// At this point the 'lume' module has been loaded (i.e. Lume elements have been defined).
 	document.body.style.setProperty('visibility', 'visible')
 
-	const vfl1 = /*js*/ `
-		//viewport aspect-ratio:3/1 max-height:300
-		H:|-[row:[child1(child2,child5)]-[child2]-[child5]]-|
-		V:|-[row]-|
-	`
-	const vfl2 = /*js*/ `
-		V:|-[child1(child3)]-[child3]-|
-		V:|-[child2(child4)]-[child4]-|
-		V:[child5(child4)]-|
-		|-[child1(child2)]-[child2]-|
-		|-[child3(child4,child5)]-[child4]-[child5]-|
-	`
-
 	const layout = document.querySelector('#layout')
-	layout.visualFormat = vfl2
+	layout.visualFormat = layout.dataset.big
 	layout.size = (x, y, z, t) => [600 + 200 * Math.sin(t / 1000), 400 + 200 * Math.sin(t / 1000), z]
 
 	const light = document.querySelector('#light')
@@ -105,5 +104,5 @@
 		else return 'big'
 	})
 
-	LUME.createEffect(() => (layout.visualFormat = size() === 'small' ? vfl1 : vfl2))
+	LUME.createEffect(() => (layout.visualFormat = size() === 'small' ? layout.dataset.small : layout.dataset.big))
 </script>
