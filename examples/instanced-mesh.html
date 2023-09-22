@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="<lume-instanced-mesh>"></script>
+<script src="./wrapper.js" title="<lume-instanced-mesh>"></script>
 
 <!-- See https://cocopon.github.io/tweakpane/ -->
 <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js"></script>
@@ -24,8 +24,8 @@
 	<lume-instanced-mesh id="mesh" color="white" count="0" size="30 30 30"></lume-instanced-mesh>
 </lume-scene>
 
-<script>
-	const {html} = LUME
+<script type="module">
+	import {html, Motor} from 'lume'
 
 	const numberOfObjects = 50_000
 	const maxObjects = 200_000
@@ -53,7 +53,7 @@
 
 	makeOptionsUI()
 
-	LUME.Motor.addRenderTask(t => {
+	Motor.addRenderTask(t => {
 		const rotations = mesh.rotations
 
 		if (demoOptions.animateAll) {

@@ -1,8 +1,10 @@
-<script src="./wrapper.js" use-lume-global title="mount-point"></script>
+<script src="./wrapper.js" title="mount-point"></script>
 
 <style>
 	body {
 		background: pink;
+		/* keep content invisible until Lume has been loaded (i.e. until Lume elements have been defined) */
+		visibility: hidden;
 	}
 
 	#layout > * {
@@ -67,7 +69,12 @@
 	</lume-autolayout-node>
 </lume-scene>
 
-<script>
+<script type="module">
+	import * as LUME from 'lume'
+
+	// At this point the 'lume' module has been loaded (i.e. Lume elements have been defined).
+	document.body.style.setProperty('visibility', 'visible')
+
 	const vfl1 = /*js*/ `
 		//viewport aspect-ratio:3/1 max-height:300
 		H:|-[row:[child1(child2,child5)]-[child2]-[child5]]-|

@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="mount-point"></script>
+<script src="./wrapper.js" title="mount-point"></script>
 
 <style>
 	html,
@@ -69,7 +69,9 @@
 	</lume-element3d>
 </lume-scene>
 
-<script>
+<script type="module">
+	import 'lume'
+
 	setInterval(() => {
 		scene.webgl = !scene.webgl
 		scene.needsUpdate()

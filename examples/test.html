@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="test"></script>
+<script src="./wrapper.js" title="test"></script>
 
 <!-- TODO: fix this pen, it gets a "script error": https://codepen.io/trusktr/pen/438171a66db3a0597171483f9ee2eaa5?editors=1010 -->
 
@@ -15,6 +15,7 @@
 
 <script>
 	console.log('--- beginning of body')
+	import('lume')
 </script>
 
 <!-- WORKS ======================================================== -->
@@ -124,8 +125,8 @@
 			</lume-element3d>
 		</lume-scene>
 
-		<script>
-			const {Motor, Events} = LUME
+		<script type="module">
+			import {Motor, Events} from 'lume'
 
 			// TODO expose as props/attributes
 			light.three.shadow.radius = 5

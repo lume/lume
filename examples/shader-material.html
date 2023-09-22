@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="shader-material"></script>
+<script src="./wrapper.js" title="shader-material"></script>
 
 <lume-scene
 	id="scene"
@@ -84,7 +84,9 @@
 	</lume-box>
 </lume-scene>
 
-<script>
+<script type="module">
+	import * as LUME from 'lume'
+
 	const outerCubes = true
 	const outerCubeGlows = false
 

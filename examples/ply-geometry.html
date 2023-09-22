@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="ply-geometry"></script>
+<script src="./wrapper.js" title="ply-geometry"></script>
 
 <style>
 	body {
@@ -39,7 +39,9 @@ contrast between dark and bright points for effect. -->
 	></lume-points>
 </lume-scene>
 
-<script>
+<script type="module">
+	import 'lume'
+
 	const lightDisplacement = 100
 	const movementRate = 0.002
 

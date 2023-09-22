@@ -1,4 +1,4 @@
-<script src="./wrapper.js" use-lume-global title="<lume-gltf-model>"></script>
+<script src="./wrapper.js" title="<lume-gltf-model>"></script>
 
 <lume-scene
 	id="scene"
@@ -30,13 +30,13 @@
 	></lume-sphere>
 </lume-scene>
 
-<script>
-	const {html, For} = LUME
+<script type="module">
+	import {html, For, render} from 'lume'
 
 	const positions = [-3, -2, -1, 0, 1, 2, 3]
 
 	// The model is 1/50th of one unit across, so scale by 50
-	LUME.render(
+	render(
 		() => html`
 			<${For} each=${() => positions}>
 				${pos => html`
