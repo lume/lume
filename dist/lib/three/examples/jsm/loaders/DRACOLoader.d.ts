@@ -1,4 +1,4 @@
-export class DRACOLoader extends Loader {
+export class DRACOLoader extends Loader<any, string> {
     constructor(manager: any);
     decoderPath: string;
     decoderConfig: {};

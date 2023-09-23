@@ -1,4 +1,4 @@
-export class GLTFLoader extends Loader {
+export class GLTFLoader extends Loader<any, string> {
     constructor(manager: any);
     dracoLoader: any;
     ktx2Loader: any;

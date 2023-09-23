@@ -1,4 +1,4 @@
-export class PLYLoader extends Loader {
+export class PLYLoader extends Loader<any, string> {
     constructor(manager: any);
     propertyNameMapping: {};
     load(url: any, onLoad: any, onProgress: any, onError: any): void;

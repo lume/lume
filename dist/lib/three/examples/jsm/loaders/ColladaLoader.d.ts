@@ -1,4 +1,4 @@
-export class ColladaLoader extends Loader {
+export class ColladaLoader extends Loader<any, string> {
     constructor(manager: any);
     load(url: any, onLoad: any, onProgress: any, onError: any): void;
     parse(text: any, path: any): {

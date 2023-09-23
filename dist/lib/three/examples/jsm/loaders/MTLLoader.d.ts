@@ -1,4 +1,4 @@
-export class MTLLoader extends Loader {
+export class MTLLoader extends Loader<any, string> {
     constructor(manager: any);
     load(url: string, onLoad?: Function | undefined, onProgress?: Function | undefined, onError?: Function | undefined): void;
     setMaterialOptions(value: any): MTLLoader;

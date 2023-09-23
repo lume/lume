@@ -1,4 +1,4 @@
-export class FBXLoader extends Loader {
+export class FBXLoader extends Loader<any, string> {
     constructor(manager: any);
     load(url: any, onLoad: any, onProgress: any, onError: any): void;
     parse(FBXBuffer: any, path: any): any;

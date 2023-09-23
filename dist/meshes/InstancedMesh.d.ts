@@ -1,6 +1,4 @@
 import { InstancedMesh as ThreeInstancedMesh } from 'three/src/objects/InstancedMesh.js';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry.js';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
 import { Quaternion } from 'three/src/math/Quaternion.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { Matrix4 } from 'three/src/math/Matrix4.js';
@@ -20,7 +18,7 @@ export declare class InstancedMesh extends Mesh {
     static defaultBehaviors: {
         [k: string]: any;
     };
-    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes> | BoxGeometry, import("three").Material | MeshPhongMaterial>;
+    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material>;
     setInstancePosition(index: number, x: number, y: number, z: number): void;
     setInstanceScale(index: number, x: number, y: number, z: number): void;
     setInstanceRotation(index: number, x: number, y: number, z: number): void;

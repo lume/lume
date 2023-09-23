@@ -30,9 +30,7 @@ const appliedPosition = [0, 0, 0];
 const elOps = new WeakMap();
 const ourThreeObjects = new WeakSet();
 const isManagedByUs = (obj) => ourThreeObjects.has(obj);
-class GLEffects extends Effectful(Object) {
-}
-class CSSEffects extends Effectful(Object) {
+class Effects extends Effectful(Object) {
 }
 const opacity = new WeakMap();
 let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
@@ -154,6 +152,7 @@ let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTrac
     }
     disconnectedCallback() {
         super.disconnectedCallback();
+        this.stopEffects();
         this.__unloadThree(this);
         this._scene = null;
     }
@@ -259,7 +258,7 @@ let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTrac
             return this.parentLumeElement;
         return composedLumeParent;
     }
-    #glEffects = new GLEffects();
+    #glEffects = new Effects();
     createGLEffect(fn) {
         this.#glEffects.createEffect(fn);
     }
@@ -287,7 +286,7 @@ let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTrac
         this._glLoaded = false;
         return true;
     }
-    #cssEffects = new CSSEffects();
+    #cssEffects = new Effects();
     createCSSEffect(fn) {
         this.#cssEffects.createEffect(fn);
     }

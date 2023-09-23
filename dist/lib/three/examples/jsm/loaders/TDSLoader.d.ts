@@ -1,7 +1,7 @@
-export class TDSLoader extends Loader {
+export class TDSLoader extends Loader<any, string> {
     constructor(manager: any);
     debug: boolean;
-    group: Group | null;
+    group: Group<import("three").Object3DEventMap> | null;
     materials: any[];
     meshes: any[];
     load(url: [type], onLoad: Function, onProgress: Function, onError: Function): void;
