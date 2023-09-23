@@ -1,4 +1,6 @@
+/** @type {import('@lume/cli/config/getUserConfig.js').UserConfig} */
 module.exports = {
+	skipGlobal: true,
 	globalName: 'LUME',
 
 	/**
