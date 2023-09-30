@@ -45,6 +45,8 @@ export class ScrollFling {
 		return this.#isStarted.get()
 	}
 
+	#aborter = new AbortController()
+
 	constructor(options: ScrollFlingOptions) {
 		Object.assign(this, options)
 	}
@@ -81,7 +83,7 @@ export class ScrollFling {
 		this.#isStarted.set(true)
 
 		// @ts-expect-error, whyyyyy TypeScript
-		this.target.addEventListener('wheel', this.#onWheel)
+		this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
 
 		return this
 	}
@@ -93,8 +95,7 @@ export class ScrollFling {
 		// Stop any current animation, if any.
 		if (this.#task) Motor.removeRenderTask(this.#task)
 
-		// @ts-expect-error, whyyyyy TypeScript
-		this.target.removeEventListener('wheel', this.#onWheel)
+		this.#aborter.abort()
 
 		return this
 	}
