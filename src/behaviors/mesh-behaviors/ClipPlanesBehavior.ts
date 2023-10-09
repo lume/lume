@@ -194,6 +194,14 @@ export class ClipPlanesBehavior extends MeshBehavior {
 		this.createEffect(() => {
 			if (!this.element.scene) return
 
+			// Trigger the setter again in case it returned early if there was
+			// no scene. Depending on code load order, el.scene inside of set
+			// clipPlanes might be null despite that it is a valid Lume element.
+			// TODO: Instead of this hack, move away from getters/setters, make
+			// all logic fully reactive to avoid worrying about code execution
+			// order.
+			this.clipPlanes = this.#rawClipPlanes
+
 			if (!refCount) this.element.scene.__localClipping = true
 			refCount++
 

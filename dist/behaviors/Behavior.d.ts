@@ -11,15 +11,15 @@ declare const Behavior_base: {
         connectedCallback(): void;
         disconnectedCallback(): void;
         readonly observedObject: object;
-        _propChangedCallback(propName: string, value: any): void;
+        _propChangedCallback(propName: PropertyKey, value: any): void;
         "__#5@#observeProps"(): void;
         "__#5@#unobserveProps"(): void;
-        __forwardedProps(): string[];
+        __forwardedProps(): never[];
         __forwardInitialProps(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
-    receivedProperties?: string[] | undefined;
+    receivedProperties?: PropertyKey[] | undefined;
 } & (new (...a: any[]) => import("./PropReceiver.js").CustomElementLike);
 export declare abstract class Behavior extends Behavior_base {
     #private;

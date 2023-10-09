@@ -62,9 +62,10 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		}
 
 		/**
+		 * @abstract
 		 * @property {object} observedObject
 		 *
-		 * `protected` `readonly`
+		 * `abstract` `protected` `readonly`
 		 *
 		 * A subclass should specify the object to observe by defining a `get observedObject` getter.
 		 */
@@ -76,7 +77,7 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
             `)
 		}
 
-		_propChangedCallback(propName: string, value: any) {
+		_propChangedCallback(propName: PropertyKey, value: any) {
 			;(this as any)[propName] = value
 		}
 
@@ -84,10 +85,6 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 			observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
-
-			if (this.__forwardedProps().includes('clipPlanes')) {
-				// debugger // FIXME with this debugger, things don't load properly once unpaused, indicating code load order race conditions or something.
-			}
 		}
 
 		#unobserveProps() {
@@ -101,10 +98,11 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		 *
 		 * An array of strings, the properties of observedObject to observe.
 		 */
-		static receivedProperties?: string[]
+		static receivedProperties?: PropertyKey[]
 
-		__forwardedProps(): string[] {
-			const props = (this.constructor as typeof PropReceiver).receivedProperties || []
+		__forwardedProps(): (keyof this['observedObject'])[] {
+			const ctor = this.constructor as typeof PropReceiver
+			const props = (ctor.receivedProperties || []) as (keyof this['observedObject'])[]
 			// @prod-prune
 			if (!Array.isArray(props)) throw new TypeError('Expected protected static receivedProperties to be an array.')
 			return props

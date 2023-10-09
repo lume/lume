@@ -28,15 +28,14 @@ export function PropReceiver(Base = Object) {
         }
         #observeProps() {
             observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {});
-            if (this.__forwardedProps().includes('clipPlanes')) {
-            }
         }
         #unobserveProps() {
             unobserve(this.observedObject, this.__forwardedProps(), this._propChangedCallback);
         }
         static receivedProperties;
         __forwardedProps() {
-            const props = this.constructor.receivedProperties || [];
+            const ctor = this.constructor;
+            const props = (ctor.receivedProperties || []);
             if (!Array.isArray(props))
                 throw new TypeError('Expected protected static receivedProperties to be an array.');
             return props;

@@ -67,6 +67,7 @@ let ClipPlanesBehavior = class ClipPlanesBehavior extends MeshBehavior {
         this.createEffect(() => {
             if (!this.element.scene)
                 return;
+            this.clipPlanes = this.#rawClipPlanes;
             if (!refCount)
                 this.element.scene.__localClipping = true;
             refCount++;
