@@ -28,6 +28,7 @@ let ScrollFling = class ScrollFling {
     get isStarted() {
         return this.#isStarted.get();
     }
+    #aborter = new AbortController();
     constructor(options) {
         Object.assign(this, options);
     }
@@ -54,7 +55,7 @@ let ScrollFling = class ScrollFling {
         if (untrack(this.#isStarted.get))
             return this;
         this.#isStarted.set(true);
-        this.target.addEventListener('wheel', this.#onWheel);
+        this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
         return this;
     }
     stop() {
@@ -63,7 +64,7 @@ let ScrollFling = class ScrollFling {
         this.#isStarted.set(false);
         if (this.#task)
             Motor.removeRenderTask(this.#task);
-        this.target.removeEventListener('wheel', this.#onWheel);
+        this.#aborter.abort();
         return this;
     }
 };
