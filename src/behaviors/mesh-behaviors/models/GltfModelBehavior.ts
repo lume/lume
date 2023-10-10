@@ -38,6 +38,11 @@ export class GltfModelBehavior extends RenderableBehavior {
 	 * @attribute
 	 * @property {boolean} centerGeometry - When `true`, all geometry of the
 	 * loaded model will be centered at the local origin.
+	 *
+	 * Note, changing this value at runtime is expensive because the whole model
+	 * will be re-created. We improve this by tracking the initial center
+	 * position to revert to when centerGeometry goes back to `false` (PRs
+	 * welcome!).
 	 */
 	@booleanAttribute(false) centerGeometry = false
 

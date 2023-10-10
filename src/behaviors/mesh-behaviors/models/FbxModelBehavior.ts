@@ -1,5 +1,8 @@
 import 'element-behaviors'
-import {reactive, stringAttribute} from '../../attribute.js'
+import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
+import {Box3} from 'three/src/math/Box3.js'
+import {Vector3} from 'three/src/math/Vector3.js'
+import {reactive, stringAttribute, booleanAttribute} from '../../attribute.js'
 import {FBXLoader} from '../../../lib/three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
@@ -7,12 +10,24 @@ import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 import type {Group} from 'three/src/objects/Group.js'
 
-export type FbxModelBehaviorAttributes = 'src'
+export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry'
 
 @reactive
 export class FbxModelBehavior extends RenderableBehavior {
 	/** Path to a .fbx file. */
 	@stringAttribute('') src = ''
+
+	/**
+	 * @attribute
+	 * @property {boolean} centerGeometry - When `true`, all geometry of the
+	 * loaded model will be centered at the local origin.
+	 *
+	 * Note, changing this value at runtime is expensive because the whole model
+	 * will be re-created. We improve this by tracking the initial center
+	 * position to revert to when centerGeometry goes back to `false` (PRs
+	 * welcome!).
+	 */
+	@booleanAttribute(false) centerGeometry = false
 
 	loader?: FBXLoader
 	model?: Group
@@ -26,12 +41,20 @@ export class FbxModelBehavior extends RenderableBehavior {
 		this.loader = new FBXLoader()
 
 		this.createEffect(() => {
-			this.src
+			// Using memos here because re-creating models on same-value updates
+			// would cost a lot.
+			const src = createMemo(() => this.src) // TODO use @memo from classy-solid
+			const center = createMemo(() => this.centerGeometry)
 
-			this.#cleanupModel()
+			createEffect(() => {
+				src()
+				center()
 
-			this.#version++
-			this.#loadModel()
+				this.#version++
+				untrack(() => this.#loadModel())
+
+				onCleanup(() => this.#cleanupModel())
+			})
 		})
 	}
 
@@ -80,6 +103,15 @@ export class FbxModelBehavior extends RenderableBehavior {
 
 	#setModel(model: Group) {
 		this.model = model
+
+		if (this.centerGeometry) {
+			const box = new Box3()
+			box.setFromObject(model)
+			const center = new Vector3()
+			box.getCenter(center)
+			model.position.copy(center.negate())
+		}
+
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
 		this.element.needsUpdate()

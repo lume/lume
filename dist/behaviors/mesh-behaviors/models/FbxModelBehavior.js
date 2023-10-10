@@ -8,23 +8,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import 'element-behaviors';
-import { reactive, stringAttribute } from '../../attribute.js';
+import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
+import { Box3 } from 'three/src/math/Box3.js';
+import { Vector3 } from 'three/src/math/Vector3.js';
+import { reactive, stringAttribute, booleanAttribute } from '../../attribute.js';
 import { FBXLoader } from '../../../lib/three/examples/jsm/loaders/FBXLoader.js';
 import { disposeObjectTree } from '../../../utils/three.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 let FbxModelBehavior = class FbxModelBehavior extends RenderableBehavior {
     src = '';
+    centerGeometry = false;
     loader;
     model;
     #version = 0;
     loadGL() {
         this.loader = new FBXLoader();
         this.createEffect(() => {
-            this.src;
-            this.#cleanupModel();
-            this.#version++;
-            this.#loadModel();
+            const src = createMemo(() => this.src);
+            const center = createMemo(() => this.centerGeometry);
+            createEffect(() => {
+                src();
+                center();
+                this.#version++;
+                untrack(() => this.#loadModel());
+                onCleanup(() => this.#cleanupModel());
+            });
         });
     }
     unloadGL() {
@@ -53,6 +62,13 @@ let FbxModelBehavior = class FbxModelBehavior extends RenderableBehavior {
     }
     #setModel(model) {
         this.model = model;
+        if (this.centerGeometry) {
+            const box = new Box3();
+            box.setFromObject(model);
+            const center = new Vector3();
+            box.getCenter(center);
+            model.position.copy(center.negate());
+        }
         this.element.three.add(model);
         this.element.emit(Events.MODEL_LOAD, { format: 'fbx', model });
         this.element.needsUpdate();
@@ -62,6 +78,10 @@ __decorate([
     stringAttribute(''),
     __metadata("design:type", Object)
 ], FbxModelBehavior.prototype, "src", void 0);
+__decorate([
+    booleanAttribute(false),
+    __metadata("design:type", Object)
+], FbxModelBehavior.prototype, "centerGeometry", void 0);
 FbxModelBehavior = __decorate([
     reactive
 ], FbxModelBehavior);
