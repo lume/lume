@@ -1,7 +1,7 @@
 import 'element-behaviors'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
+import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
 import {NoBlending /*, DoubleSide*/} from 'three/src/constants.js'
-import {MaterialBehavior} from './MaterialBehavior.js'
+import {PhysicalMaterialBehavior} from './PhysicalMaterialBehavior.js'
 import type {ElementWithBehaviors} from 'element-behaviors'
 
 /**
@@ -15,11 +15,18 @@ import type {ElementWithBehaviors} from 'element-behaviors'
  *   new Vue({ el: '#mixedPlaneExample', data: { code: buttonsWithShadowExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
  * </script>
  *
- * @extends MaterialBehavior
+ * @extends PhysicalMaterialBehavior
  */
-export class MixedPlaneMaterialBehavior extends MaterialBehavior {
+export class MixedPlaneMaterialBehavior extends PhysicalMaterialBehavior {
 	constructor(element: ElementWithBehaviors) {
 		super(element)
+
+		// TODO, these should be class field overrides instead of constructor
+		// properties, so that they include new defaults for attribute removal
+		// from the decorators. At the moment, it isn't easy to override color
+		// because it is a getter/setter and we have to copy over the logic,
+		// which fails because the getter is accessed in the super class before
+		// this subclass has a chance to define its private fields.
 
 		/**
 		 * @property {number} materialOpacity -
@@ -29,7 +36,7 @@ export class MixedPlaneMaterialBehavior extends MaterialBehavior {
 		 * Default: `0.3`
 		 *
 		 * Overrides
-		 * [`MaterialBehavior.materialOpacity`](./MaterialBehavior#materialOpacity)
+		 * [`PhysicalMaterialBehavior.materialOpacity`](./PhysicalMaterialBehavior#materialOpacity)
 		 * to give mixed planes a nice default for viewing DOM content behind
 		 * the WebGL canvas, while allowing some light to be caught on the
 		 * partially opaque surface for effect. This may require tweaking
@@ -44,7 +51,7 @@ export class MixedPlaneMaterialBehavior extends MaterialBehavior {
 		 *
 		 * Default: `0.3`
 		 *
-		 * Overrides [`MaterialBehavior.color`](./MaterialBehavior#color) to
+		 * Overrides [`PhysicalMaterialBehavior.color`](./PhysicalMaterialBehavior#color) to
 		 * give mixed planes a default tinted transparent surface over regular
 		 * DOM content, on which light effects can be drawn.
 		 */
@@ -52,10 +59,7 @@ export class MixedPlaneMaterialBehavior extends MaterialBehavior {
 	}
 
 	override _createComponent() {
-		// TODO PERFORMANCE we can re-use a single material for
-		// all the mixed planes rather than a new material per
-		// plane.
-		return new MeshPhongMaterial({blending: NoBlending})
+		return new MeshPhysicalMaterial({blending: NoBlending})
 	}
 }
 

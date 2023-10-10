@@ -18,7 +18,7 @@ let LineBasicMaterialBehavior = class LineBasicMaterialBehavior extends Material
     }
     loadGL() {
         super.loadGL();
-        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map);
+        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
     }
 };
 __decorate([

@@ -21,6 +21,6 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
     get transparent(): boolean;
     loadGL(): void;
     _createComponent(): Material;
-    _handleTexture(textureUrl: () => string, setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void, hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean, onLoad?: () => void): void;
+    _handleTexture(textureUrl: () => string, setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void, hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean, onLoad?: () => void, isColor?: boolean): void;
 }
 //# sourceMappingURL=MaterialBehavior.d.ts.map

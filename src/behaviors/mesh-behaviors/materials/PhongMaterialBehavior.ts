@@ -151,6 +151,8 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.emissiveMap,
 			(mat, tex) => (mat.emissiveMap = tex),
 			mat => !!mat.emissiveMap,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.envMap,
@@ -166,6 +168,8 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.texture, // map
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.normalMap,
@@ -176,6 +180,8 @@ export class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.specularMap,
 			(mat, tex) => (mat.specularMap = tex),
 			mat => !!mat.specularMap,
+			() => {},
+			true,
 		)
 	}
 }

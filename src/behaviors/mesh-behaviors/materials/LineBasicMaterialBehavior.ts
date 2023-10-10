@@ -48,6 +48,8 @@ export class LineBasicMaterialBehavior extends MaterialBehavior {
 			() => this.texture,
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 	}
 }

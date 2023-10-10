@@ -1,9 +1,9 @@
 import 'element-behaviors';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
-import { MaterialBehavior } from './MaterialBehavior.js';
+import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial.js';
+import { PhysicalMaterialBehavior } from './PhysicalMaterialBehavior.js';
 import type { ElementWithBehaviors } from 'element-behaviors';
-export declare class MixedPlaneMaterialBehavior extends MaterialBehavior {
+export declare class MixedPlaneMaterialBehavior extends PhysicalMaterialBehavior {
     constructor(element: ElementWithBehaviors);
-    _createComponent(): MeshPhongMaterial;
+    _createComponent(): MeshPhysicalMaterial;
 }
 //# sourceMappingURL=MixedPlaneMaterialBehavior.d.ts.map

@@ -28,7 +28,7 @@ let PointsMaterialBehavior = class PointsMaterialBehavior extends MaterialBehavi
             mat.size = this.pointSize;
             this.element.needsUpdate();
         });
-        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map);
+        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
     }
 };
 __decorate([

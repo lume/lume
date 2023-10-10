@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { untrack } from 'solid-js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Color } from 'three/src/math/Color.js';
-import { DoubleSide, FrontSide, BackSide } from 'three/src/constants.js';
+import { DoubleSide, FrontSide, BackSide, SRGBColorSpace } from 'three/src/constants.js';
 import { Material } from 'three/src/materials/Material.js';
 import { reactive, booleanAttribute, stringAttribute, numberAttribute } from '../../attribute.js';
 import { onCleanup } from 'solid-js';
@@ -103,7 +103,7 @@ let MaterialBehavior = class MaterialBehavior extends GeometryOrMaterialBehavior
     _createComponent() {
         return new Material();
     }
-    _handleTexture(textureUrl, setTexture, hasTexture, onLoad) {
+    _handleTexture(textureUrl, setTexture, hasTexture, onLoad, isColor = false) {
         this.createEffect(() => {
             const mat = this.meshComponent;
             if (!mat)
@@ -120,6 +120,8 @@ let MaterialBehavior = class MaterialBehavior extends GeometryOrMaterialBehavior
                     this.element.needsUpdate();
                     onLoad?.();
                 });
+                if (isColor)
+                    texture.colorSpace = SRGBColorSpace;
                 onCleanup(() => {
                     cleaned = true;
                     texture.dispose();

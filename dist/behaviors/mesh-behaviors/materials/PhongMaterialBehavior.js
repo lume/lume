@@ -88,12 +88,12 @@ let PhongMaterialBehavior = class PhongMaterialBehavior extends MaterialBehavior
         this._handleTexture(() => this.aoMap, (mat, tex) => (mat.aoMap = tex), mat => !!mat.aoMap);
         this._handleTexture(() => this.bumpMap, (mat, tex) => (mat.bumpMap = tex), mat => !!mat.bumpMap);
         this._handleTexture(() => this.displacementMap, (mat, tex) => (mat.displacementMap = tex), mat => !!mat.displacementMap);
-        this._handleTexture(() => this.emissiveMap, (mat, tex) => (mat.emissiveMap = tex), mat => !!mat.emissiveMap);
+        this._handleTexture(() => this.emissiveMap, (mat, tex) => (mat.emissiveMap = tex), mat => !!mat.emissiveMap, () => { }, true);
         this._handleTexture(() => this.envMap, (mat, tex) => (mat.envMap = tex), mat => !!mat.envMap);
         this._handleTexture(() => this.lightMap, (mat, tex) => (mat.lightMap = tex), mat => !!mat.lightMap);
-        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map);
+        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
         this._handleTexture(() => this.normalMap, (mat, tex) => (mat.normalMap = tex), mat => !!mat.normalMap);
-        this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap);
+        this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);
     }
 };
 __decorate([

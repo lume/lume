@@ -163,6 +163,8 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 			() => this.projectedTextures[0]?.src ?? '',
 			(mat, tex) => (mat.texture = tex || new Texture()),
 			mat => !!mat.texture,
+			() => {},
+			true,
 		)
 
 		this.createEffect(() => {

@@ -50,7 +50,7 @@ let StandardMaterialBehavior = class StandardMaterialBehavior extends MaterialBe
         this._handleTexture(() => this.aoMap, (mat, tex) => (mat.aoMap = tex), mat => !!mat.aoMap);
         this._handleTexture(() => this.bumpMap, (mat, tex) => (mat.bumpMap = tex), mat => !!mat.bumpMap);
         this._handleTexture(() => this.displacementMap, (mat, tex) => (mat.displacementMap = tex), mat => !!mat.displacementMap);
-        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map);
+        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
         this._handleTexture(() => this.normalMap, (mat, tex) => (mat.normalMap = tex), mat => !!mat.normalMap);
         this._handleTexture(() => this.metalnessMap, (mat, tex) => (mat.metalnessMap = tex), mat => !!mat.metalnessMap);
         this._handleTexture(() => this.roughnessMap, (mat, tex) => (mat.roughnessMap = tex), mat => !!mat.roughnessMap);

@@ -71,7 +71,7 @@ let ProjectedMaterialBehavior = class ProjectedMaterialBehavior extends Physical
             }, 0);
         });
         this.#observer.observe(this.element.getRootNode(), { childList: true, subtree: true });
-        this._handleTexture(() => this.projectedTextures[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture);
+        this._handleTexture(() => this.projectedTextures[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
         this.createEffect(() => {
             const mat = this.meshComponent;
             if (!mat)

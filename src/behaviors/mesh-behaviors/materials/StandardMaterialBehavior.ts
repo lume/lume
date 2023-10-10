@@ -115,6 +115,8 @@ export class StandardMaterialBehavior extends MaterialBehavior {
 			() => this.texture, // map
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.normalMap,

@@ -19,8 +19,8 @@ let LambertMaterialBehavior = class LambertMaterialBehavior extends MaterialBeha
     }
     loadGL() {
         super.loadGL();
-        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map);
-        this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap);
+        this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
+        this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);
     }
 };
 __decorate([

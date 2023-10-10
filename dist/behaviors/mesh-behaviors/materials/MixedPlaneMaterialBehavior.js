@@ -1,15 +1,15 @@
 import 'element-behaviors';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
+import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial.js';
 import { NoBlending } from 'three/src/constants.js';
-import { MaterialBehavior } from './MaterialBehavior.js';
-export class MixedPlaneMaterialBehavior extends MaterialBehavior {
+import { PhysicalMaterialBehavior } from './PhysicalMaterialBehavior.js';
+export class MixedPlaneMaterialBehavior extends PhysicalMaterialBehavior {
     constructor(element) {
         super(element);
         this.materialOpacity = 0.3;
         this.color = '#444';
     }
     _createComponent() {
-        return new MeshPhongMaterial({ blending: NoBlending });
+        return new MeshPhysicalMaterial({ blending: NoBlending });
     }
 }
 if (globalThis.window?.document && !elementBehaviors.has('mixedplane-material'))
