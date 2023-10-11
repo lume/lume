@@ -7,12 +7,12 @@ export function PropReceiver(Base = Object) {
             this._propChangedCallback = this._propChangedCallback.bind(this);
         }
         connectedCallback() {
-            super.connectedCallback && super.connectedCallback();
+            super.connectedCallback?.();
             this.__forwardInitialProps();
             this.#observeProps();
         }
         disconnectedCallback() {
-            super.disconnectedCallback && super.disconnectedCallback();
+            super.disconnectedCallback?.();
             this.#unobserveProps();
         }
         get observedObject() {

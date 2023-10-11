@@ -1,5 +1,5 @@
 import type { Constructor } from 'lowclass';
-export declare function PropReceiver<T extends Constructor<CustomElementLike>>(Base?: T): {
+export declare function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base?: T): {
     new (...args: any[]): {
         connectedCallback(): void;
         disconnectedCallback(): void;
@@ -14,7 +14,7 @@ export declare function PropReceiver<T extends Constructor<CustomElementLike>>(B
     };
     receivedProperties?: PropertyKey[] | undefined;
 } & T;
-export interface CustomElementLike {
+export interface PossiblyCustomElement {
     connectedCallback?(): void;
     disconnectedCallback?(): void;
     adoptedCallback?(): void;

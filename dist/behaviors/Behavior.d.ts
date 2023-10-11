@@ -20,7 +20,7 @@ declare const Behavior_base: {
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
     receivedProperties?: PropertyKey[] | undefined;
-} & (new (...a: any[]) => import("./PropReceiver.js").CustomElementLike);
+} & (new (...a: any[]) => import("./PropReceiver.js").PossiblyCustomElement);
 export declare abstract class Behavior extends Behavior_base {
     #private;
     static awaitElementDefined: boolean;

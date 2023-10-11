@@ -39,7 +39,7 @@ const isPropReceiverClass: unique symbol = Symbol()
  * console.log(behavior.foo) // 123
  * ```
  */
-export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T = Object as any) {
+export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
 	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
 	// from PossibleCustomElement), and we can have a separate mixin for that.
 
@@ -51,13 +51,13 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		}
 
 		override connectedCallback() {
-			super.connectedCallback && super.connectedCallback()
+			super.connectedCallback?.()
 			this.__forwardInitialProps()
 			this.#observeProps()
 		}
 
 		override disconnectedCallback() {
-			super.disconnectedCallback && super.disconnectedCallback()
+			super.disconnectedCallback?.()
 			this.#unobserveProps()
 		}
 
@@ -122,7 +122,7 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 	return PropReceiver
 }
 
-export interface CustomElementLike {
+export interface PossiblyCustomElement {
 	connectedCallback?(): void
 	disconnectedCallback?(): void
 	adoptedCallback?(): void
