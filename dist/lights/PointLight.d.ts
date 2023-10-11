@@ -2,8 +2,8 @@ import { PointLight as ThreePointLight } from 'three/src/lights/PointLight.js';
 import { LightWithShadow, type LightWithShadowAttributes } from './LightWithShadow.js';
 export declare type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'decay';
 export declare class PointLight extends LightWithShadow {
-    intensity: number;
     shadowCameraFov: number;
+    constructor();
     distance: number;
     decay: number;
     get power(): number;

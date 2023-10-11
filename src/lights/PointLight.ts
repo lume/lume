@@ -39,25 +39,29 @@ export type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'dec
  */
 @element('lume-point-light', autoDefineElements)
 export class PointLight extends LightWithShadow {
-	/**
-	 * @property {number} intensity -
-	 *
-	 * `attribute`
-	 *
-	 * Default: `1`
-	 *
-	 * This light's intensity. Changing the intensity will also change the light's
-	 * [`power`](#power) according to the formula `intensity * 4 * Math.PI`.
-	 *
-	 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
-	 * enabled, intensity is the luminous intensity of the light measured in
-	 * candela (cd).
-	 */
-	@numberAttribute(1) override intensity: number = 1
-
 	// These map to THREE.PointLightShadow properties, which uses a perspective camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
 	@numberAttribute(90) shadowCameraFov = 90
+
+	constructor() {
+		super()
+
+		/**
+		 * @property {number} intensity -
+		 *
+		 * `attribute`
+		 *
+		 * Default: `1`
+		 *
+		 * This light's intensity. Changing the intensity will also change the light's
+		 * [`power`](#power) according to the formula `intensity * 4 * Math.PI`.
+		 *
+		 * When [physically correct lighting](../core/Scene#physicallycorrectlights)
+		 * enabled, intensity is the luminous intensity of the light measured in
+		 * candela (cd) with world units in meters.
+		 */
+		this.intensity = 1
+	}
 
 	/**
 	 * @property {number} distance -

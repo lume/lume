@@ -12,8 +12,11 @@ import { numberAttribute, element } from '@lume/element';
 import { LightWithShadow } from './LightWithShadow.js';
 import { autoDefineElements } from '../LumeConfig.js';
 let PointLight = class PointLight extends LightWithShadow {
-    intensity = 1;
     shadowCameraFov = 90;
+    constructor() {
+        super();
+        this.intensity = 1;
+    }
     distance = 0;
     decay = 1;
     get power() {
@@ -38,10 +41,6 @@ let PointLight = class PointLight extends LightWithShadow {
     }
 };
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Number)
-], PointLight.prototype, "intensity", void 0);
-__decorate([
     numberAttribute(90),
     __metadata("design:type", Object)
 ], PointLight.prototype, "shadowCameraFov", void 0);
@@ -59,7 +58,8 @@ __decorate([
     __metadata("design:paramtypes", [Object])
 ], PointLight.prototype, "power", null);
 PointLight = __decorate([
-    element('lume-point-light', autoDefineElements)
+    element('lume-point-light', autoDefineElements),
+    __metadata("design:paramtypes", [])
 ], PointLight);
 export { PointLight };
 //# sourceMappingURL=PointLight.js.map
