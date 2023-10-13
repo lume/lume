@@ -91,6 +91,7 @@ let SpotLight = class SpotLight extends PointLight {
         this.createEffect(() => {
             if (!this.scene)
                 return;
+            this.target = this.#rawTarget;
             this.#observer = new MutationObserver(() => {
                 this.target = this.#rawTarget;
             });

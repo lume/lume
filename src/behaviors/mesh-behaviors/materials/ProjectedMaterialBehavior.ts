@@ -82,7 +82,12 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
+				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof TextureProjector && v.scene) this.#projectedTextures.push(v)
+				continue
+			} else if (!v) {
+				// skip empty strings, they cause an error with querySelectorAll
 				continue
 			}
 
@@ -102,6 +107,8 @@ export class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
+					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof TextureProjector && el.scene) this.#projectedTextures.push(el)
 
 					// TODO We aren't observing el.scene, so if the element

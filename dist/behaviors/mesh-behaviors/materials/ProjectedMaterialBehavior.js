@@ -40,6 +40,9 @@ let ProjectedMaterialBehavior = class ProjectedMaterialBehavior extends Physical
                     this.#projectedTextures.push(v);
                 continue;
             }
+            else if (!v) {
+                continue;
+            }
             let root = this.element.getRootNode();
             while (root) {
                 const els = root.querySelectorAll(v);
