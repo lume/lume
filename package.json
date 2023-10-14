@@ -126,7 +126,7 @@
 		"lerna": "4.0.0",
 		"lint-staged": "^14.0.1",
 		"mkdirp": "^0.5.1",
-		"prettier": "^2.3.2",
+		"prettier": "3.0.3",
 		"readem": "^0.2.7",
 		"rimraf": "^3.0.0",
 		"surge": "^0.23.0",
