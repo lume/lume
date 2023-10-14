@@ -21,7 +21,7 @@ jobs:
             - name: Use Node.js latest
               uses: actions/setup-node@v3
               with:
-                  node-version: lts/-2 # the last two lts versions is good enough
+                  node-version: lts/* # Test on the current LTS version.
             - name: npm install, build, and test
               run: |
                   npm run fresh
