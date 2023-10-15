@@ -1,10 +1,10 @@
 <script src="./wrapper.js" title="<lume-3ds-model>"></script>
 
-<lume-scene id="scene" perspective="800" webgl>
+<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active initial-distance="1000" max-distance="3000" min-distance="400">
-		<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
+		<lume-point-light position="200 -200 200" intensity="300" color="white" slot="camera-child"></lume-point-light>
 	</lume-camera-rig>
 
 	<lume-element3d rotation="90 0 0" position="0 500 0">
@@ -19,4 +19,9 @@
 
 <script type="module">
 	import 'lume'
+
+	const models = Array.from(document.querySelectorAll('lume-3ds-model'))
+
+	for (const model of models)
+		model.on('MODEL_LOAD', () => model.three.traverse(n => n.isMesh && (n.material.shininess = 8)))
 </script>

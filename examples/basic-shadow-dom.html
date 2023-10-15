@@ -54,7 +54,7 @@ The code below is commented to describe which parts correlate to the above list 
 				slot="scene"
 				TODO="try without this wrapper div to see that slotting a scene does not work (and try to fix)"
 			>
-				<lume-scene id="scene" webgl style="background: skyblue">
+				<lume-scene id="scene" webgl physically-correct-lights style="background: skyblue">
 					<slot name="outsidenode">
 						<!-- The lume-box from the main document should render relative to here. -->
 					</slot>
@@ -67,7 +67,7 @@ The code below is commented to describe which parts correlate to the above list 
 						position="300 300 400"
 						size="0 0 0"
 						cast-shadow="true"
-						intensity="0.8"
+						intensity="600"
 					>
 					</lume-point-light>
 

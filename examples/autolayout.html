@@ -12,7 +12,7 @@
 	}
 </style>
 
-<lume-scene id="scene" webgl>
+<lume-scene id="scene" webgl physically-correct-lights>
 	<lume-ambient-light intensity="0.1"></lume-ambient-light>
 	<lume-point-light
 		id="light"
@@ -20,7 +20,7 @@
 		position="300 300 120"
 		size="0 0 0"
 		cast-shadow="true"
-		intensity="0.5"
+		intensity="200"
 		shadow-radius="2"
 		distance="800"
 		shadow-bias="-0.01"

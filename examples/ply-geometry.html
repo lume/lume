@@ -10,10 +10,10 @@
 points shimmer, coupled with the dark color of the points, makes a higher
 contrast between dark and bright points for effect. -->
 
-<lume-scene id="scene" perspective="800" webgl>
-	<lume-point-light id="light" position="200 -200 200" intensity="6" color="cyan" align-point="0.5 0.5">
+<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
+	<lume-point-light id="light" position="200 -200 200" intensity="6000" color="cyan" align-point="0.5 0.5">
 		<!-- uncomment the sphere to visualize the light position -->
-		<!-- <lume-sphere has="basic-material" color="cyan" size="10" align-point="0.5 0.5"></lume-sphere> -->
+		<lume-sphere has="basic-material" color="cyan" size="10" align-point="0.5 0.5"></lume-sphere>
 	</lume-point-light>
 
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
@@ -46,8 +46,8 @@ contrast between dark and bright points for effect. -->
 	const movementRate = 0.002
 
 	light.position = (x, y, z, t) => [
-		lightDisplacement * (Math.sin(t * movementRate) - 0.5),
-		lightDisplacement * (Math.cos(t * movementRate) - 0.5),
-		lightDisplacement * (Math.sin(t * movementRate) - 0.5),
+		-lightDisplacement * Math.cos(t * movementRate),
+		lightDisplacement * Math.cos(t * movementRate),
+		lightDisplacement * Math.sin(t * movementRate),
 	]
 </script>

@@ -6,11 +6,12 @@
 	environment="../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg"
 	background="../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg"
 	equirectangular-background="true"
+	physically-correct-lights
 >
 	<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
 	<lume-camera-rig align-point="0.5 0.5 0.5">
-		<lume-point-light slot="camera-child" position="500 500 200" intensity="0.4"></lume-point-light>
+		<lume-point-light slot="camera-child" position="500 500 200" intensity="3000"></lume-point-light>
 	</lume-camera-rig>
 
 	<lume-box

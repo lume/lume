@@ -365,6 +365,14 @@ export class Scene extends SharedAPI {
 	@numberAttribute(0.0025) fogDensity = 0.0025
 
 	/**
+	 * @deprecated This property/attribute will be removed when Three.js r165 is
+	 * released (estimated), and physically correct lighting will become the
+	 * default option for enhanced interoperability with other graphics engines
+	 * (f.e. Blender).  To be ready for the removal, set this to true, and
+	 * adjust lighting (intensity values may need to be notably higher as they
+	 * are now in candela units assuming world units are in meters) to achieve a
+	 * similar effect as before.
+	 *
 	 * @property {boolean} physicallyCorrectLights -
 	 *
 	 * `attribute`

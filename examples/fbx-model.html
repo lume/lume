@@ -4,12 +4,13 @@
 	id="scene"
 	perspective="800"
 	webgl
+	physically-correct-lights
 	environment="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
 >
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active initial-distance="200" max-distance="1700" min-distance="100">
-		<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
+		<lume-point-light position="200 -200 200" intensity="600" color="white" slot="camera-child"></lume-point-light>
 	</lume-camera-rig>
 
 	<lume-fbx-model
@@ -17,6 +18,7 @@
 		rotation="0 45 0"
 		size="0 0 0"
 		src="./models/mando-helmet.fbx"
+		center-geometry
 		style="background: blue"
 	></lume-fbx-model>
 
