@@ -66,4 +66,4 @@ There's various ways to get involved!
 
 ## Status
 
-![](https://github.com/lume/lume/workflows/tests/badge.svg)
+[![tests](https://github.com/lume/lume/actions/workflows/tests.yml/badge.svg)](https://github.com/lume/lume/actions/workflows/tests.yml)
