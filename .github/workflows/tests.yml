@@ -21,6 +21,7 @@ jobs:
                   node-version: lts/* # Test on the current LTS version.
             - name: npm install, build, and test
               run: |
+                  git config core.eol lf && git config core.autocrlf input
                   npm run fresh
                   npm run test:all:ci
               env:
