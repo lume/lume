@@ -14,6 +14,11 @@
 	"engines": {
 		"node": ">=14"
 	},
+	"workspaces": [
+		".",
+		"apps/*",
+		"packages/!(glas|docsifyjs+docsify)"
+	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {
 		"// THIS PACKAGE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
@@ -44,30 +49,21 @@
 		"examples": "five-server . --watch='dist,examples' --open=./examples",
 		"postinstall": "husky install",
 		"// OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
+		"CONTINUE: new bootstrap with yarn install is working well and FAST compared to Lerna bootstrap! Finish cleaning up scripts.": "",
+		"fresh": "npm run submodules:sync && npm run link",
+		"refresh": "npm run unlink && npm run link",
+		"link": "corepack yarn install || true && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . apps/docs/node_modules/lume && echo 'Done linking. If any Yarn errors above, handle if needed.'",
+		"unlink": "npx --yes rimraf '**/node_modules' || rm -r -f ./**/node_modules",
+		"//                                              ^ Best-effort fallback, which might not work in Windows PowerShell, try manually in that case.": "",
+		"submodules:sync": "git submodule update --init --recursive",
 		"// Note, ignoring classy-solid in the dev process for now, we'll add it back in the separate branch where we're updating Lume to use it.": "",
 		"build:all": "npm run clean:all && lerna run build --ignore '{,glas,classy-solid}'",
 		"build:all:noFail": "npm run clean:all && lerna run build --ignore '{,glas,classy-solid}' -- -- --noFail",
 		"dev:all": "echo TODO run everything in dev mode with rebuild on changed files",
-		"clean:all": "lerna run clean || echo 'clean:all: missing executables, skipping.'",
-		"clean:packages": "npm run _clean:packages || echo 'clean:packages: missing executables, skipping.'",
-		"_clean:packages": "rimraf --glob './packages/**/package-lock.json' && git -C packages/docsifyjs+docsify checkout '**package-lock.json' && lerna run clean && npm run unbootstrap -- --ignore lume",
-		"// ^ Note, we delete package-locks (we don't track then to begin with) because we want to catch in-range breaking changes in dependencies sooner than later, hopefully before an end user reports an issue, and locking dependencies on our end means a user will inevitably find every in-range breaking change first which is less ideal.": "",
+		"clean:all": "lerna run clean --ignore '{,glas,classy-solid}' || echo 'clean:all: missing executables, skipping.'",
 		"test:all": "lerna run test --scope '{lume,@lume/element,element-behaviors,@lume/variable,@lume/eventful,@lume/autolayout,@lume/kiwi,@lume/three-projected-material,custom-attributes,james-bond,lowclass}'",
-		"^ removed glas from tests, it is paused, needs work (esp in Windows)": "",
 		"test:all:ci": "npm run test:all -- --concurrency 1",
-		"// ^ test:all:ci": "Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.",
-		"submodules:sync": "git submodule update --init --recursive",
-		"fresh": "npm run submodules:sync && npm install --ignore-scripts && npm run bootstrap && npm run build:all:noFail",
-		"refresh": "npm run purge && npm install --ignore-scripts && npm run bootstrap && npm run build:all:noFail",
-		"purge": "npm run _purge || echo 'purge: missing executables, skipping.'",
-		"_purge": "npm run clean:packages && npm run unbootstrap -- --scope lume",
-		"bootstrap": "lerna bootstrap --ignore '{,readem,glas,classy-solid}' --no-ci --ignore-scripts && lerna bootstrap --scope '{,readem}' --no-ci --ignore-scripts",
-		"^ removed glas from bootstrap, it is paused, needs work (esp in Windows), restore with '&& lerna bootstrap --scope '{,glas}' --no-ci' after readem": "",
-		"// ^ bootstrap": "Bootstrap everything except readem, and then readem by itself, to avoid a circular link. (lume->readem->lume).",
-		"// ^ bootstrap 2": "TODO bootstrap readem along with cli (somehow?), so that cli is linked into it. Maybe the scope would be {,readem,cli}?",
-		"// ^ bootstrap 3": "We use --ignore-scripts so that the bootstrap doesn't run prepare scripts (except with the glas package which requires a postinstall step for webgl-raub). We want it to only put dependencies in place. A subsequent lerna build step builds everything in correct order. Otherwise some packages will try to build themselves before dependencies are in place.",
-		"unbootstrap": "lerna clean --yes",
-		"// ^ unbootstrap": "'lerna clean --yes' removes all node_modules while 'lerna run clean' runs each project's particular 'clean' script.",
+		"//                                      ^ Concurrency needs to be 1 in CI for some reason, but I forgot to comment why.": "",
 		"// WEBSITE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"website": "(npm run docs:serve & p1=$!; npm run website:serve & p2=$!; wait $p1 $p2)",
 		"website:serve": "cd apps/website && meteor",
@@ -109,6 +105,7 @@
 		"readem": "^0.2.7",
 		"rimraf": "^3.0.0",
 		"surge": "^0.23.0",
+		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
 		"typescript": "4.6.3"
 	},
@@ -197,5 +194,6 @@
 		"WebComponent",
 		"web-component",
 		"webcomponent"
-	]
+	],
+	"packageManager": "yarn@3.6.4"
 }
