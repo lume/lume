@@ -8,7 +8,6 @@ dist/
 src/lib
 
 examples/models
-examples/global.js
 
 /apps
 /packages
