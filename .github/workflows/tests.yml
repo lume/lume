@@ -23,6 +23,7 @@ jobs:
               run: |
                   git config core.eol lf && git config core.autocrlf input
                   npm run fresh
+                  npm run build:all
                   npm run test:all:ci
               env:
                   CI: true
