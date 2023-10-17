@@ -16528,7 +16528,7 @@ __metadata:
     meteor-node-stubs: ^1.0.0
     prettier: 3.0.3
     solid-js: 1.3.14
-    three: "trusktr/three.js#d2fbde04e079890747e318adb2b3b88f8c556d38"
+    three: ">=0.139.0"
   languageName: unknown
   linkType: soft
 
@@ -32492,13 +32492,6 @@ __metadata:
   version: 0.139.2
   resolution: "three@npm:0.139.2"
   checksum: 9e016065b31a2a69bba730a32bd5b61354365bf0f5072121b8695aac38c9585e4e46361275967fbb58d21e001e5189128107c3ecbf24338ca951d11b524df992
-  languageName: node
-  linkType: hard
-
-"three@trusktr/three.js#d2fbde04e079890747e318adb2b3b88f8c556d38":
-  version: 0.139.1
-  resolution: "three@https://github.com/trusktr/three.js.git#commit=d2fbde04e079890747e318adb2b3b88f8c556d38"
-  checksum: 5677d2b4d002b825463141b9980ddd74b2b0ca61d0e5fefb363b6c444436ae79f21b3dd6ef66542d42f8e634771b6cdb7c6eedd07b41e404f0bebf081e130c08
   languageName: node
   linkType: hard
 
