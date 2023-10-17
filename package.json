@@ -15,9 +15,9 @@
 		"node": ">=14"
 	},
 	"workspaces": [
-		".",
+		"./",
 		"apps/*",
-		"packages/!(glas|docsifyjs+docsify)"
+		"packages/*"
 	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {
