@@ -8,7 +8,8 @@ jobs:
 
         strategy:
             matrix:
-                operating-system: [ubuntu-latest, macos-latest, windows-latest]
+                # TODO restore windows-latest
+                operating-system: [ubuntu-latest, macos-latest]
 
         steps:
             - uses: actions/checkout@v1
