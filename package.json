@@ -15,7 +15,6 @@
 		"node": ">=14"
 	},
 	"workspaces": [
-		"./",
 		"apps/*",
 		"packages/*"
 	],
