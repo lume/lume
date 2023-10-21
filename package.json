@@ -50,7 +50,7 @@
 		"// OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link",
 		"refresh": "npm run unlink && npm run link",
-		"link": "corepack yarn install || echo '' && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . apps/docs/node_modules/lume && echo 'Done linking. Handle any above Yarn errors if needed.'",
+		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . apps/docs/node_modules/lume && echo 'Done linking. Handle any above Yarn errors if needed.'",
 		"unlink": "npx --yes rimraf '**/node_modules' || rm -rf ./**/node_modules || npm run --script-shell=pwsh unlink:pwsh",
 		"unlink:pwsh": "rm -r -fo ./**/node_modules",
 		"//                                              ^ Best-effort fallback, which might not work in Windows PowerShell, try manually in that case.": "",
