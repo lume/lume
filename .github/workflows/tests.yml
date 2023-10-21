@@ -11,6 +11,11 @@ jobs:
                 operating-system: [ubuntu-latest, macos-latest, windows-latest]
 
         steps:
+            # Ensure that git always checkouts out with LF (to avoid issues in Windows, https://github.com/prettier/prettier/issues/7825#issuecomment-602171740)
+            - name: Set git to use LF
+              run: |
+                  git config --global core.autocrlf false
+                  git config --global core.eol lf
             - uses: actions/checkout@v1
               with:
                   submodules: 'recursive'
@@ -21,7 +26,6 @@ jobs:
                   node-version: lts/* # Test on the current LTS version.
             - name: npm install, build, and test
               run: |
-                  git config core.eol lf && git config core.autocrlf input
                   npm run fresh
                   npm run build:all
                   npm run test:all:ci
