@@ -8,15 +8,14 @@ jobs:
 
         strategy:
             matrix:
-                # TODO restore windows-latest
-                operating-system: [ubuntu-latest, macos-latest]
+                operating-system: [ubuntu-latest, macos-latest, windows-latest]
 
         steps:
             - uses: actions/checkout@v1
               with:
                   submodules: 'recursive'
                   token: ${{ secrets.ACCESS_TOKEN }}
-            - name: Use Node.js latest
+            - name: Use Node.js latest LTS
               uses: actions/setup-node@v3
               with:
                   node-version: lts/* # Test on the current LTS version.
