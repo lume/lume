@@ -56,7 +56,7 @@ A first-person shooter game foundation made with LUME, Solid.js, and Meteor.
 
 ## Getting involved
 
-There's various ways to get involved!
+There are various ways to get involved!
 
 - Visit the [documentation](//lume.io/docs) and make something awesome!
 - Submit fixes or new features to any packages or the website! See the
