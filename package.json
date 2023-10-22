@@ -89,7 +89,6 @@
 	"devDependencies": {
 		"@lume/cli": "^0.9.2",
 		"@types/mkdirp": "^0.5.2",
-		"@types/rimraf": "^2.0.3",
 		"@types/three": ">=0.139.0",
 		"at-at": "^1.1.0",
 		"docsify-cli": "trusktr/docsify-cli#add-cors",
@@ -101,7 +100,6 @@
 		"mkdirp": "^0.5.1",
 		"prettier": "3.0.3",
 		"readem": "^0.2.7",
-		"rimraf": "^3.0.0",
 		"surge": "^0.23.0",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
