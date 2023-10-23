@@ -65,7 +65,7 @@ export declare class Scene extends SharedAPI {
     _unloadCSS(): boolean;
     __setCamera(camera?: PerspectiveCamera): void;
     __elementParentSize: XYZValuesObject<number>;
-    template: () => Node | Node[];
+    template: () => any;
     static css: string;
 }
 import type { ElementAttributes } from '@lume/element';
