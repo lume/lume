@@ -2,7 +2,7 @@ import { Element3D, Element3DAttributes } from '../core/Element3D.js';
 export declare type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias';
 export declare class FlickeringOrbs extends Element3D {
     shadowBias: number;
-    template: () => Node | Node[];
+    template: () => any;
 }
 import type { ElementAttributes } from '@lume/element';
 declare module '@lume/element' {

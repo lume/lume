@@ -8,7 +8,7 @@ export declare class FlickeringOrb extends Element3D {
     shadowBias: number;
     light?: PointLight;
     sphere?: Sphere;
-    template: () => Node | Node[];
+    template: () => any;
     connectedCallback(): void;
 }
 import type { ElementAttributes } from '@lume/element';

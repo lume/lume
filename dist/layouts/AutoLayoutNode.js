@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var AutoLayoutNode_1;
-import AutoLayout from '@lume/autolayout/es/AutoLayout.js';
+import AutoLayout from '@lume/autolayout';
 import { attribute, element } from '@lume/element';
 import { Element3D } from '../core/Element3D.js';
 import { Motor } from '../core/Motor.js';

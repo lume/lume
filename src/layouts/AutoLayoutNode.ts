@@ -19,7 +19,7 @@
 // re-use in multiple layouts.
 // - Allow visual-format to be fetch by path (like img src attribute).
 
-import AutoLayout from '@lume/autolayout/es/AutoLayout.js'
+import AutoLayout from '@lume/autolayout'
 import {attribute, element} from '@lume/element'
 import {Element3D, Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'

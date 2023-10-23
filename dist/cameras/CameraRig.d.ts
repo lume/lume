@@ -19,7 +19,7 @@ export declare class CameraRig extends Element3D {
     interactive: boolean;
     cam?: PerspectiveCamera;
     rotationYTarget?: Element3D;
-    template: () => Node | Node[];
+    template: () => any;
     flingRotation: FlingRotation | null;
     scrollFling: ScrollFling | null;
     pinchFling: PinchFling | null;

@@ -1,4 +1,4 @@
-import AutoLayout from '@lume/autolayout/es/AutoLayout.js';
+import AutoLayout from '@lume/autolayout';
 import { Element3D, Element3DAttributes } from '../core/Element3D.js';
 export { AutoLayout };
 export declare type AutoLayoutNodeAttributes = Element3DAttributes | 'visualFormat';
