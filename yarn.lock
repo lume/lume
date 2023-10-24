@@ -3022,11 +3022,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lume/autolayout@^0.9.0, @lume/autolayout@workspace:packages/autolayout":
+"@lume/autolayout@^0.10.0, @lume/autolayout@workspace:packages/autolayout":
   version: 0.0.0-use.local
   resolution: "@lume/autolayout@workspace:packages/autolayout"
   dependencies:
-    "@lume/kiwi": ^0.3.2
+    "@lume/kiwi": ^0.4.0
     babel-eslint: ^7.1.1
     babel-preset-es2015: ^6.18.0
     babelify: ^7.3.0
@@ -3059,6 +3059,15 @@ __metadata:
   dependencies:
     "@lume/kiwi": ^0.1.0
   checksum: f314450db9a341704b8f9d07d32d820c110535ad7f889a0d228bcaff3a5104a7a0523dc401a5db731d7ac8ac1f63119f526887a542d0f7c2c0a14e995f6b6f05
+  languageName: node
+  linkType: hard
+
+"@lume/autolayout@npm:^0.9.0":
+  version: 0.9.1
+  resolution: "@lume/autolayout@npm:0.9.1"
+  dependencies:
+    "@lume/kiwi": ^0.3.2
+  checksum: a388e56a9808dd50a0034892e9f402500b966929c9dca2431bada1abb42100aeea4d170628b83623d2b1145b1be39931763762f77c483496ad251aa599b04d1e
   languageName: node
   linkType: hard
 
@@ -3161,7 +3170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lume/custom-attributes@^0.1.2, @lume/custom-attributes@^0.1.7, @lume/custom-attributes@workspace:packages/custom-attributes":
+"@lume/custom-attributes@^0.2.0, @lume/custom-attributes@workspace:packages/custom-attributes":
   version: 0.0.0-use.local
   resolution: "@lume/custom-attributes@workspace:packages/custom-attributes"
   dependencies:
@@ -3173,23 +3182,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/element@^0.9.0, @lume/element@workspace:packages/element":
-  version: 0.0.0-use.local
-  resolution: "@lume/element@workspace:packages/element"
+"@lume/custom-attributes@npm:^0.1.2, @lume/custom-attributes@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "@lume/custom-attributes@npm:0.1.7"
   dependencies:
-    "@lume/cli": ^0.9.0
-    "@lume/variable": ^0.9.0
-    "@types/react": ^17.0.0
-    babel-preset-solid: ^1.0.0
     lowclass: ^5.0.0
-    ncp: ^2.0.0
-    prettier: 3.0.3
-    solid-js: <1.5.0
-    typescript: 4.4.3
-  peerDependencies:
-    "@types/react": "*"
-  languageName: unknown
-  linkType: soft
+  checksum: f803a68fb44f4668e68d9f44572e6910cf77791c6e566a0c2daff0f65cdbeb97192ff00698ea024fee93bb4fa1cec302e49bd248ce47d09f38b9e1d22d3a3d52
+  languageName: node
+  linkType: hard
 
 "@lume/element@npm:^0.6.0":
   version: 0.6.5
@@ -3205,18 +3205,59 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lume/eventful@^0.2.2, @lume/eventful@^0.2.5, @lume/eventful@workspace:packages/eventful":
+"@lume/element@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@lume/element@npm:0.9.0"
+  dependencies:
+    "@lume/variable": ^0.9.0
+    babel-preset-solid: ^1.0.0
+    lowclass: ^5.0.0
+    solid-js: <1.5.0
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 45cb6bcdbb2b29b27384a8081e28c581d1dd5d650654894aa206fad74281036aeabd05e00650b1445834da191e35eb902997f3ada4af45f0ae31070cddd78292
+  languageName: node
+  linkType: hard
+
+"@lume/element@workspace:packages/element":
+  version: 0.0.0-use.local
+  resolution: "@lume/element@workspace:packages/element"
+  dependencies:
+    "@lume/cli": ^0.9.0
+    "@lume/variable": ^0.10.0
+    "@types/react": ^17.0.0
+    babel-preset-solid: ^1.0.0
+    lowclass: ^6.0.0
+    ncp: ^2.0.0
+    prettier: 3.0.3
+    solid-js: <1.5.0
+    typescript: 4.4.3
+  peerDependencies:
+    "@types/react": "*"
+  languageName: unknown
+  linkType: soft
+
+"@lume/eventful@npm:^0.2.2, @lume/eventful@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "@lume/eventful@npm:0.2.5"
+  dependencies:
+    lowclass: ^5.0.0
+  checksum: a17bbeba985912476174dc04b9028d9b834b65059db51997d958b653e653d8eac2ee254fa6cf78d168d4d2ca262e8fdd58a3347399184bb7cb87175bbf62ea44
+  languageName: node
+  linkType: hard
+
+"@lume/eventful@workspace:packages/eventful":
   version: 0.0.0-use.local
   resolution: "@lume/eventful@workspace:packages/eventful"
   dependencies:
     "@lume/cli": ^0.9.0
-    lowclass: ^5.0.0
+    lowclass: ^6.0.0
     prettier: 3.0.3
     typescript: ^4.3.0-beta
   languageName: unknown
   linkType: soft
 
-"@lume/kiwi@^0.3.2, @lume/kiwi@^0.3.4, @lume/kiwi@workspace:packages/kiwi":
+"@lume/kiwi@^0.4.0, @lume/kiwi@workspace:packages/kiwi":
   version: 0.0.0-use.local
   resolution: "@lume/kiwi@workspace:packages/kiwi"
   dependencies:
@@ -3238,6 +3279,13 @@ __metadata:
   version: 0.1.0
   resolution: "@lume/kiwi@npm:0.1.0"
   checksum: f6795dfff63d45102de3690f824ead7d8b9923851a551345f939c6bb7b03b6e0715e796b716e48058e51af85c9644894bd122b25fca382bfe575fc697b0c7a90
+  languageName: node
+  linkType: hard
+
+"@lume/kiwi@npm:^0.3.2, @lume/kiwi@npm:^0.3.4":
+  version: 0.3.4
+  resolution: "@lume/kiwi@npm:0.3.4"
+  checksum: 0571e75237eb90a1e593d0ce1416852284818bcbb2fdb4b8f149aaada67848e1b619915d3b0241ef577ee66d0933cc443b828b142295ab0e43e3050d3da2516d
   languageName: node
   linkType: hard
 
@@ -3264,7 +3312,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/three-projected-material@^0.2.2, @lume/three-projected-material@^0.2.5, @lume/three-projected-material@workspace:packages/three-projected-material":
+"@lume/three-projected-material@npm:^0.2.2, @lume/three-projected-material@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "@lume/three-projected-material@npm:0.2.5"
+  peerDependencies:
+    three: ">=0.124.0"
+  checksum: fbd80d603f6d377a8bd1a0bdb0ef2fe6d2a82c94a5071264e4e49373f6c5c8b7e135bc4f21eeca7dcae2967f1b5dc0bbb39d0fa40b9b5ed34ff4ed185aea3d5e
+  languageName: node
+  linkType: hard
+
+"@lume/three-projected-material@workspace:packages/three-projected-material":
   version: 0.0.0-use.local
   resolution: "@lume/three-projected-material@workspace:packages/three-projected-material"
   dependencies:
@@ -3284,12 +3341,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/variable@^0.9.0, @lume/variable@workspace:packages/variable":
+"@lume/variable@^0.10.0, @lume/variable@workspace:packages/variable":
   version: 0.0.0-use.local
   resolution: "@lume/variable@workspace:packages/variable"
   dependencies:
     "@lume/cli": ^0.9.0
-    lowclass: ^4.9.4
+    lowclass: ^6.0.0
     prettier: 3.0.3
     solid-js: <1.5.0
     typescript: 4.4.3
@@ -3303,6 +3360,16 @@ __metadata:
     lowclass: ^4.9.4
     solid-js: ^1.0.0
   checksum: 78b913d0b52dd02b83dc077fe1b3f7783628b7d48224e0134a522f3326ab762f91ab6f25916c4027ed3c609b6d08936cc4da8b18f3f08e37882d96b2529c1b91
+  languageName: node
+  linkType: hard
+
+"@lume/variable@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@lume/variable@npm:0.9.0"
+  dependencies:
+    lowclass: ^4.9.4
+    solid-js: <1.5.0
+  checksum: e10963c9d050c6bc481459c362464e3303667030a8f699ff2ff1f6a9ab28cb2b1b8fec6b672c8fcc87b6b5f9d9604dce4e8a383ae71ca70d68b3c3d076f1d311
   languageName: node
   linkType: hard
 
@@ -12624,22 +12691,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-behaviors@^4.0.0, element-behaviors@workspace:packages/element-behaviors":
-  version: 0.0.0-use.local
-  resolution: "element-behaviors@workspace:packages/element-behaviors"
-  dependencies:
-    "@lume/cli": ^0.9.0
-    "@lume/custom-attributes": ^0.1.2
-    five-server: ^0.3.1
-    lowclass: ^5.0.0
-    prettier: 3.0.3
-    solid-js: ">=1.0.0 <1.5.0"
-    typescript: 4.4.3
-  peerDependencies:
-    solid-js: "*"
-  languageName: unknown
-  linkType: soft
-
 "element-behaviors@npm:^2.2.3, element-behaviors@npm:^2.3.4":
   version: 2.3.4
   resolution: "element-behaviors@npm:2.3.4"
@@ -12650,6 +12701,34 @@ __metadata:
   checksum: 67219569fb4359a5f38629402b3d5609d21e33ebfde1161a511aaa283566e79f63f7e385e642e0bbf18fec4619faf195195b2c1905d67b31597a8ac5918f79ae
   languageName: node
   linkType: hard
+
+"element-behaviors@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "element-behaviors@npm:4.0.0"
+  dependencies:
+    "@lume/custom-attributes": ^0.1.2
+    solid-js: <1.5.0
+  peerDependencies:
+    solid-js: "*"
+  checksum: 124e24a7618301a3040882279ca7f8442b1f71cde2505b7c9e169e3770bee6cbf7f830e0ad27206d300f9f71931edcff291109937c4e162ef55783ada11d602d
+  languageName: node
+  linkType: hard
+
+"element-behaviors@workspace:packages/element-behaviors":
+  version: 0.0.0-use.local
+  resolution: "element-behaviors@workspace:packages/element-behaviors"
+  dependencies:
+    "@lume/cli": ^0.9.0
+    "@lume/custom-attributes": ^0.2.0
+    five-server: ^0.3.1
+    lowclass: ^5.0.0
+    prettier: 3.0.3
+    solid-js: ">=1.0.0 <1.5.0"
+    typescript: 4.4.3
+  peerDependencies:
+    solid-js: "*"
+  languageName: unknown
+  linkType: soft
 
 "elliptic@npm:^6.5.3, elliptic@npm:^6.5.4":
   version: 6.5.4
@@ -17748,16 +17827,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"james-bond@^0.6.0, james-bond@workspace:packages/james-bond":
-  version: 0.0.0-use.local
-  resolution: "james-bond@workspace:packages/james-bond"
-  dependencies:
-    "@lume/cli": ^0.9.0
-    lowclass: ^5.0.0
-    prettier: 3.0.3
-  languageName: unknown
-  linkType: soft
-
 "james-bond@npm:^0.4.4":
   version: 0.4.5
   resolution: "james-bond@npm:0.4.5"
@@ -17775,6 +17844,25 @@ __metadata:
   checksum: 1e99cddae322100c73fa41d661483fe1ae974b9c07b8c90528f93f50afe38cc24325a9af3e3a180d25935ea4e508c09541040ad0d0333a83933540c40868f10e
   languageName: node
   linkType: hard
+
+"james-bond@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "james-bond@npm:0.6.0"
+  dependencies:
+    lowclass: ^5.0.0
+  checksum: 33d0c84cbfaaadb50d8a457d2c905658d65b9882e73a2449b09b558cd2d634d14e7b8e238103f8b6619b9baba4ff11dbc170eed3b520f73dbaf35222f897c580
+  languageName: node
+  linkType: hard
+
+"james-bond@workspace:packages/james-bond":
+  version: 0.0.0-use.local
+  resolution: "james-bond@workspace:packages/james-bond"
+  dependencies:
+    "@lume/cli": ^0.9.0
+    lowclass: ^6.0.0
+    prettier: 3.0.3
+  languageName: unknown
+  linkType: soft
 
 "jasmine-core@npm:3.9.0":
   version: 3.9.0
@@ -20106,7 +20194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lowclass@^5.0.0, lowclass@^5.0.1, lowclass@workspace:packages/lowclass":
+"lowclass@^6.0.0, lowclass@workspace:packages/lowclass":
   version: 0.0.0-use.local
   resolution: "lowclass@workspace:packages/lowclass"
   dependencies:
@@ -20121,6 +20209,13 @@ __metadata:
   version: 4.9.6
   resolution: "lowclass@npm:4.9.6"
   checksum: d80d800dd2b377b91ebd3ffd9a218323387a777d7ca56a530f0d8dc6b4ba4585a350751ab85808cfd78dc158656533334f1d205690b5eccd3e2718861963e438
+  languageName: node
+  linkType: hard
+
+"lowclass@npm:^5.0.0, lowclass@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "lowclass@npm:5.0.1"
+  checksum: e7d82cae56c7e7d461c4ea84b5ff7867bcd0f06a5f77c63e5a44e4bd4c973057397cb190a2d3c7d74252c53719302266eba9c2bfbd239af9ad82d7555a63323b
   languageName: node
   linkType: hard
 
@@ -20200,7 +20295,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
   dependencies:
-    "@lume/autolayout": ^0.9.0
+    "@lume/autolayout": ^0.10.0
     "@lume/cli": ^0.9.2
     "@lume/element": ^0.9.0
     "@lume/eventful": ^0.2.2
@@ -20220,7 +20315,6 @@ __metadata:
     lowclass: ^5.0.0
     mkdirp: ^0.5.1
     prettier: 3.0.3
-    readem: ^0.2.7
     regexr: ^2.0.0
     solid-js: ">=1.0.0 <1.5.0"
     surge: ^0.23.0
@@ -24756,7 +24850,7 @@ __metadata:
     ejs: ^2.2.4
     highlight.js: ^8.4.0
     jsdoctypeparser: ^6.1.0
-    lowclass: ^5.0.0
+    lowclass: ^6.0.0
     lume: 0.0.0-rc.0
     mkdirp: ^0.5.1
     prettier: 3.0.3
