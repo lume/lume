@@ -2,7 +2,7 @@ import { Element } from '@lume/element';
 export declare type LoadingIconAttributes = 'color';
 export declare class LoadingIcon extends Element {
     color: string;
-    template: () => any;
+    template: () => Node | Node[];
     css: string;
 }
 import type { ElementAttributes } from '@lume/element';
