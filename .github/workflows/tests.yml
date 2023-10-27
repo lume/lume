@@ -28,6 +28,6 @@ jobs:
               run: |
                   npm run fresh
                   npm run build:all
-                  npm run test:all:ci
+                  npm run test:all
               env:
                   CI: true
