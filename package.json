@@ -61,7 +61,7 @@
 		"build:all:noFail": "npm run clean:all && corepack yarn lerna run build --ignore classy-solid -- -- --noFail",
 		"dev:all": "echo TODO run everything in dev mode with rebuild on changed files",
 		"clean:all": "corepack yarn lerna run clean --ignore classy-solid || echo 'clean:all: missing executables, skipping.'",
-		"test:all": "corepack yarn lerna run test --scope lume --include-dependencies",
+		"test:all": "corepack yarn workspaces foreach -Rtp --from 'lume' run test",
 		"// WEBSITE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"website": "(npm run docs:serve & p1=$!; npm run website:serve & p2=$!; wait $p1 $p2)",
 		"website:serve": "cd apps/website && meteor",
