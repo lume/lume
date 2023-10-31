@@ -8,24 +8,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import html from 'solid-js/html';
-import { element, numberAttribute } from '@lume/element';
+import { element, attribute, numberAttribute } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
 import { Element3D } from '../core/Element3D.js';
 let FlickeringOrbs = class FlickeringOrbs extends Element3D {
     shadowBias = 0;
+    intensity = 1.3;
+    flickerRange = 0.4;
+    color = null;
     template = () => html `
-		<flickering-orb color="yellow" position="500 0 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
-		<flickering-orb color="deeppink" position="-500 0 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
-		<flickering-orb color="cyan" position="0 0 500" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
-		<flickering-orb color="limegreen" position="0 0 -500" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
-		<flickering-orb color="white" position="0 -500 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
-		<flickering-orb color="white" position="0 250 0" attr:shadow-bias=${() => this.shadowBias}></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "yellow"} position="500 0 0"></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "deeppink"} position="-500 0 0"></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "cyan"} position="0 0 500"></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "limegreen"} position="0 0 -500"></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "white"} position="0 -500 0"></flickering-orb>
+		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ?? "white"} position="0 250 0"></flickering-orb>
 	`;
 };
 __decorate([
     numberAttribute(0),
     __metadata("design:type", Object)
 ], FlickeringOrbs.prototype, "shadowBias", void 0);
+__decorate([
+    numberAttribute(1.3),
+    __metadata("design:type", Object)
+], FlickeringOrbs.prototype, "intensity", void 0);
+__decorate([
+    numberAttribute(0.4),
+    __metadata("design:type", Object)
+], FlickeringOrbs.prototype, "flickerRange", void 0);
+__decorate([
+    attribute,
+    __metadata("design:type", Object)
+], FlickeringOrbs.prototype, "color", void 0);
 FlickeringOrbs = __decorate([
     element('flickering-orbs', autoDefineElements)
 ], FlickeringOrbs);

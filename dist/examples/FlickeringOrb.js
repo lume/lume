@@ -16,20 +16,24 @@ let FlickeringOrb = class FlickeringOrb extends Element3D {
     color = 'royalblue';
     intensity = 1.3;
     shadowBias = 0;
+    flickerRange = 0.4;
+    shadowMapWidth = 512;
+    shadowMapHeight = 512;
     light;
     sphere;
     template = () => html `
 		<lume-point-light
 			ref=${(l) => (this.light = l)}
-			attr:color=${() => this.color}
-			attr:intensity=${() => this.intensity}
-			attr:shadow-bias=${() => this.shadowBias}
-			distance="10000"
+			color=${() => this.color}
+			intensity=${() => this.intensity}
+			shadow-bias=${() => this.shadowBias}
+			shadow-map-width=${() => this.shadowMapWidth}
+			shadow-map-height=${() => this.shadowMapHeight}
 		>
 			<lume-sphere
 				ref=${(s) => (this.sphere = s)}
 				has="basic-material"
-				attr:color=${() => this.color}
+				color=${() => this.color}
 				opacity="0.5"
 				mount-point="0.5 0.5 0.5"
 				size="10 10 10"
@@ -43,9 +47,9 @@ let FlickeringOrb = class FlickeringOrb extends Element3D {
         const initialIntensity = this.intensity;
         const initialOpacity = this.opacity;
         const flickerFunction = () => {
-            const flicker = (Math.random() - 1) * 0.4;
-            this.light.intensity = initialIntensity + flicker;
-            this.sphere.opacity = initialOpacity + flicker;
+            const flicker = Math.random() - 1;
+            this.light.intensity = initialIntensity + flicker * this.flickerRange;
+            this.sphere.opacity = initialOpacity + flicker * 0.4;
             setTimeout(() => Motor.once(flickerFunction), Math.random() * 100);
         };
         Motor.once(flickerFunction);
@@ -63,6 +67,18 @@ __decorate([
     numberAttribute(0),
     __metadata("design:type", Object)
 ], FlickeringOrb.prototype, "shadowBias", void 0);
+__decorate([
+    numberAttribute(0.4),
+    __metadata("design:type", Object)
+], FlickeringOrb.prototype, "flickerRange", void 0);
+__decorate([
+    numberAttribute(512),
+    __metadata("design:type", Object)
+], FlickeringOrb.prototype, "shadowMapWidth", void 0);
+__decorate([
+    numberAttribute(512),
+    __metadata("design:type", Object)
+], FlickeringOrb.prototype, "shadowMapHeight", void 0);
 FlickeringOrb = __decorate([
     element('flickering-orb', autoDefineElements)
 ], FlickeringOrb);

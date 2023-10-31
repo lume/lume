@@ -7,30 +7,40 @@ import {Motor} from '../core/Motor.js'
 import type {PointLight} from '../lights/PointLight.js'
 import type {Sphere} from '../meshes/Sphere.js'
 
-export type FlickeringOrbAttributes = Element3DAttributes | 'color' | 'intensity' | 'shadowBias'
+export type FlickeringOrbAttributes =
+	| Element3DAttributes
+	| 'color'
+	| 'intensity'
+	| 'shadowBias'
+	| 'flickerRange'
+	| 'shadowMapWidth'
+	| 'shadowMapHeight'
 
 @element('flickering-orb', autoDefineElements)
 export class FlickeringOrb extends Element3D {
 	@stringAttribute('royalblue') color = 'royalblue'
 	@numberAttribute(1.3) intensity = 1.3
 	@numberAttribute(0) shadowBias = 0
+	@numberAttribute(0.4) flickerRange = 0.4
+	@numberAttribute(512) shadowMapWidth = 512
+	@numberAttribute(512) shadowMapHeight = 512
 
 	light?: PointLight
 	sphere?: Sphere
 
-	// FIXME 'attr:' is used to work around an issue with default property behavior
 	override template = () => html`
 		<lume-point-light
 			ref=${(l: PointLight) => (this.light = l)}
-			attr:color=${() => this.color}
-			attr:intensity=${() => this.intensity}
-			attr:shadow-bias=${() => this.shadowBias}
-			distance="10000"
+			color=${() => this.color}
+			intensity=${() => this.intensity}
+			shadow-bias=${() => this.shadowBias}
+			shadow-map-width=${() => this.shadowMapWidth}
+			shadow-map-height=${() => this.shadowMapHeight}
 		>
 			<lume-sphere
 				ref=${(s: Sphere) => (this.sphere = s)}
 				has="basic-material"
-				attr:color=${() => this.color}
+				color=${() => this.color}
 				opacity="0.5"
 				mount-point="0.5 0.5 0.5"
 				size="10 10 10"
@@ -48,9 +58,9 @@ export class FlickeringOrb extends Element3D {
 
 		// Prior art: https://www.instructables.com/Realistic-Fire-Effect-with-Arduino-and-LEDs/
 		const flickerFunction = () => {
-			const flicker = (Math.random() - 1) * 0.4
-			this.light!.intensity = initialIntensity + flicker
-			this.sphere!.opacity = initialOpacity + flicker
+			const flicker = Math.random() - 1
+			this.light!.intensity = initialIntensity + flicker * this.flickerRange
+			this.sphere!.opacity = initialOpacity + flicker * 0.4
 
 			setTimeout(() => Motor.once(flickerFunction), Math.random() * 100)
 		}

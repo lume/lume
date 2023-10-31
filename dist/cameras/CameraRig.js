@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { createEffect, onCleanup, untrack } from 'solid-js';
+import { batch, createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { element, numberAttribute, autorun, booleanAttribute, reactive } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -15,11 +15,16 @@ import { Element3D } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 let CameraRig = class CameraRig extends Element3D {
     hasShadow = true;
+    verticalAngle = 0;
     initialPolarAngle = 0;
+    minVerticalAngle = -90;
     minPolarAngle = -90;
+    maxVerticalAngle = 90;
     maxPolarAngle = 90;
+    horizontalAngle = 0;
     minHorizontalAngle = -Infinity;
     maxHorizontalAngle = Infinity;
+    distance = 1000;
     initialDistance = 1000;
     minDistance = 200;
     maxDistance = 2000;
@@ -31,14 +36,15 @@ let CameraRig = class CameraRig extends Element3D {
     template = () => html `
 		<lume-element3d
 			id="cameraY"
-			size="1 1 1"
 			ref=${(el) => (this.rotationYTarget = el)}
+			size="1 1 1"
 			size-mode="proportional proportional proportional"
+			rotation=${() => untrack(() => [0, this.horizontalAngle, 0])}
 		>
 			<lume-element3d
 				id="cameraX"
 				size="1 1 1"
-				rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
+				rotation=${() => untrack(() => [this.verticalAngle, 0, 0])}
 				size-mode="proportional proportional proportional"
 			>
 				<slot
@@ -48,7 +54,7 @@ let CameraRig = class CameraRig extends Element3D {
 					<lume-perspective-camera
 						ref=${(cam) => (this.cam = cam)}
 						active=${() => this.active}
-						position=${[0, 0, this.initialDistance]}
+						position=${[0, 0, this.distance]}
 						align-point="0.5 0.5 0.5"
 						far="10000"
 					>
@@ -71,13 +77,20 @@ let CameraRig = class CameraRig extends Element3D {
         this.#startedInteraction = true;
         this.autorunStoppers = [];
         this.autorunStoppers.push(autorun(() => {
+            batch(() => {
+                this.verticalAngle = this.initialPolarAngle;
+                this.minVerticalAngle = this.minPolarAngle;
+                this.maxVerticalAngle = this.maxPolarAngle;
+                this.distance = this.initialDistance;
+            });
+        }), autorun(() => {
             if (!(this.scene && this.rotationYTarget))
                 return;
             const flingRotation = (this.flingRotation = new FlingRotation({
                 interactionInitiator: this.scene,
                 rotationYTarget: this.rotationYTarget,
-                minFlingRotationX: this.minPolarAngle,
-                maxFlingRotationX: this.maxPolarAngle,
+                minFlingRotationX: this.minVerticalAngle,
+                maxFlingRotationX: this.maxVerticalAngle,
                 minFlingRotationY: this.minHorizontalAngle,
                 maxFlingRotationY: this.maxHorizontalAngle,
             }).start());
@@ -93,14 +106,14 @@ let CameraRig = class CameraRig extends Element3D {
                 return;
             const scrollFling = (this.scrollFling = new ScrollFling({
                 target: this.scene,
-                y: this.initialDistance,
+                y: this.distance,
                 minY: this.minDistance,
                 maxY: this.maxDistance,
                 scrollFactor: this.dollySpeed,
             }).start());
             const pinchFling = (this.pinchFling = new PinchFling({
                 target: this.scene,
-                x: this.initialDistance,
+                x: this.distance,
                 minX: this.minDistance,
                 maxX: this.maxDistance,
                 factor: this.dollySpeed,
@@ -175,7 +188,15 @@ let CameraRig = class CameraRig extends Element3D {
 __decorate([
     numberAttribute(0),
     __metadata("design:type", Object)
+], CameraRig.prototype, "verticalAngle", void 0);
+__decorate([
+    numberAttribute(0),
+    __metadata("design:type", Object)
 ], CameraRig.prototype, "initialPolarAngle", void 0);
+__decorate([
+    numberAttribute(-90),
+    __metadata("design:type", Object)
+], CameraRig.prototype, "minVerticalAngle", void 0);
 __decorate([
     numberAttribute(-90),
     __metadata("design:type", Object)
@@ -183,7 +204,15 @@ __decorate([
 __decorate([
     numberAttribute(90),
     __metadata("design:type", Object)
+], CameraRig.prototype, "maxVerticalAngle", void 0);
+__decorate([
+    numberAttribute(90),
+    __metadata("design:type", Object)
 ], CameraRig.prototype, "maxPolarAngle", void 0);
+__decorate([
+    numberAttribute(0),
+    __metadata("design:type", Object)
+], CameraRig.prototype, "horizontalAngle", void 0);
 __decorate([
     numberAttribute(-Infinity),
     __metadata("design:type", Object)
@@ -192,6 +221,10 @@ __decorate([
     numberAttribute(Infinity),
     __metadata("design:type", Object)
 ], CameraRig.prototype, "maxHorizontalAngle", void 0);
+__decorate([
+    numberAttribute(1000),
+    __metadata("design:type", Object)
+], CameraRig.prototype, "distance", void 0);
 __decorate([
     numberAttribute(1000),
     __metadata("design:type", Object)

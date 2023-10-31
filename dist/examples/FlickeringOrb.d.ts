@@ -1,11 +1,14 @@
 import { Element3D, Element3DAttributes } from '../core/Element3D.js';
 import type { PointLight } from '../lights/PointLight.js';
 import type { Sphere } from '../meshes/Sphere.js';
-export declare type FlickeringOrbAttributes = Element3DAttributes | 'color' | 'intensity' | 'shadowBias';
+export declare type FlickeringOrbAttributes = Element3DAttributes | 'color' | 'intensity' | 'shadowBias' | 'flickerRange' | 'shadowMapWidth' | 'shadowMapHeight';
 export declare class FlickeringOrb extends Element3D {
     color: string;
     intensity: number;
     shadowBias: number;
+    flickerRange: number;
+    shadowMapWidth: number;
+    shadowMapHeight: number;
     light?: PointLight;
     sphere?: Sphere;
     template: () => Node | Node[];
