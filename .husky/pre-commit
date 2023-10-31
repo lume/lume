@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# If a previous commit attempt's stash still exists, notify, and exit.
+(git stash list | grep COMMIT_HOOK_STASH) && echo "A previous git stash named "COMMIT_HOOK_STASH" exists. Please handle and remove the stash then try again." && exit 1
+
 git reset dist
 git checkout dist
 git stash save -k COMMIT_HOOK_STASH
