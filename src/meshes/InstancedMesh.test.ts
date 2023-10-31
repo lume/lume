@@ -4,6 +4,12 @@ import type {Scene} from '../core/Scene.js'
 import {html} from '../index.js'
 import type {InstancedMesh} from './InstancedMesh.js'
 
+// TODO move type def to @lume/cli
+declare global {
+	const beforeAll: typeof before
+	const afterAll: typeof after
+}
+
 describe('InstancedMesh', () => {
 	let style: HTMLStyleElement
 

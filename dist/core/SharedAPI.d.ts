@@ -450,7 +450,7 @@ declare const SharedAPI_base: {
         contains(other: Node | null): boolean;
         getRootNode(options?: GetRootNodeOptions | undefined): Node;
         hasChildNodes(): boolean;
-        insertBefore<T_1 extends Node>(node: T_1, child: Node | null): T_1;
+        insertBefore<T_4 extends Node>(node: T_4, child: Node | null): T_4;
         isDefaultNamespace(namespace: string | null): boolean;
         isEqualNode(otherNode: Node | null): boolean;
         isSameNode(otherNode: Node | null): boolean;
@@ -646,7 +646,7 @@ declare const SharedAPI_base: {
     observedAttributes?: string[] | undefined;
 } & {
     new (...a: any[]): {
-        set<T_4 extends any, K_16 extends keyof T_4, V extends T_4[K_16]>(props: Partial<Record<K_16, V>>): any;
+        set<T_5 extends any, K_16 extends keyof T_5, V extends T_5[K_16]>(props: Partial<Record<K_16, V>>): any;
     };
 } & typeof Transformable;
 export declare class SharedAPI extends SharedAPI_base {

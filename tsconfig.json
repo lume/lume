@@ -4,8 +4,8 @@
 		// Good practice: start with 'types' empty, then add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
 
-		// This is needed for Jasmine types inside test files
-		"types": ["jasmine"],
+		// TODO we need Jest `expect()` types. For now it is declared as (...a: any[]) => any in tests.
+		// "types": ["jest"],
 
 		// TypeScript 4.4 broke many applications because they removed or
 		// modified a ton of interfaces from lib.dom.d.ts, so skip type errors in
