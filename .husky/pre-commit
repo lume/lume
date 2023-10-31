@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+git reset dist
+git checkout dist
+git stash save -k COMMIT_HOOK_STASH
 npx lint-staged
