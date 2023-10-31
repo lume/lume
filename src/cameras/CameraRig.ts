@@ -2,7 +2,7 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {batch, createEffect, onCleanup, untrack} from 'solid-js'
+import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
 import {element, numberAttribute, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -13,19 +13,22 @@ import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
 export type CameraRigAttributes =
 	| Element3DAttributes
-	| 'initialPolarAngle' // deprecated
 	| 'verticalAngle'
-	| 'minPolarAngle' // deprecated
 	| 'minVerticalAngle'
-	| 'maxPolarAngle' // deprecated
 	| 'maxVerticalAngle'
-	| 'initialDistance' // deprecated
+	| 'horizontalAngle'
+	| 'minHorizontalAngle'
+	| 'maxHorizontalAngle'
 	| 'distance'
 	| 'minDistance'
 	| 'maxDistance'
 	| 'active'
 	| 'dollySpeed'
 	| 'interactive'
+	| 'initialPolarAngle' // deprecated
+	| 'minPolarAngle' // deprecated
+	| 'maxPolarAngle' // deprecated
+	| 'initialDistance' // deprecated
 
 // TODO allow overriding the camera props, and make the default camera overridable via <slot>
 
@@ -80,7 +83,13 @@ export class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialPolarAngle has been renamed to verticalAngle.
 	 */
-	@numberAttribute(0) initialPolarAngle = 0
+	@numberAttribute(0)
+	get initialPolarAngle() {
+		return this.verticalAngle
+	}
+	set initialPolarAngle(value: number) {
+		this.verticalAngle = value
+	}
 
 	/**
 	 * @property {number} minVerticalAngle
@@ -99,7 +108,13 @@ export class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: minPolarAngle has been renamed to minVerticalAngle.
 	 */
-	@numberAttribute(-90) minPolarAngle = -90
+	@numberAttribute(-90)
+	get minPolarAngle() {
+		return this.minVerticalAngle
+	}
+	set minPolarAngle(value: number) {
+		this.minVerticalAngle = value
+	}
 
 	/**
 	 * @property {number} maxVerticalAngle
@@ -133,7 +148,13 @@ export class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: maxPolarAngle has been renamed to maxVerticalAngle.
 	 */
-	@numberAttribute(90) maxPolarAngle = 90
+	@numberAttribute(90)
+	get maxPolarAngle() {
+		return this.maxVerticalAngle
+	}
+	set maxPolarAngle(value: number) {
+		this.maxVerticalAngle = value
+	}
 
 	/**
 	 * @property {number} horizontalAngle
@@ -193,7 +214,13 @@ export class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialDistance has been renamed to distance.
 	 */
-	@numberAttribute(1000) initialDistance = 1000
+	@numberAttribute(1000)
+	get initialDistance() {
+		return this.distance
+	}
+	set initialDistance(value: number) {
+		this.distance = value
+	}
 
 	/**
 	 * @property {number} minDistance
@@ -303,15 +330,10 @@ export class CameraRig extends Element3D {
 
 		this.autorunStoppers.push(
 			autorun(() => {
-				batch(() => {
-					this.verticalAngle = this.initialPolarAngle
-					this.minVerticalAngle = this.minPolarAngle
-					this.maxVerticalAngle = this.maxPolarAngle
-					this.distance = this.initialDistance
-				})
-			}),
-			autorun(() => {
 				if (!(this.scene && this.rotationYTarget)) return
+
+				console.log('WTF', this.minVerticalAngle)
+				console.log('WTF', this.maxVerticalAngle)
 
 				const flingRotation = (this.flingRotation = new FlingRotation({
 					interactionInitiator: this.scene,

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { batch, createEffect, onCleanup, untrack } from 'solid-js';
+import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { element, numberAttribute, autorun, booleanAttribute, reactive } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -16,16 +16,36 @@ import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js'
 let CameraRig = class CameraRig extends Element3D {
     hasShadow = true;
     verticalAngle = 0;
-    initialPolarAngle = 0;
+    get initialPolarAngle() {
+        return this.verticalAngle;
+    }
+    set initialPolarAngle(value) {
+        this.verticalAngle = value;
+    }
     minVerticalAngle = -90;
-    minPolarAngle = -90;
+    get minPolarAngle() {
+        return this.minVerticalAngle;
+    }
+    set minPolarAngle(value) {
+        this.minVerticalAngle = value;
+    }
     maxVerticalAngle = 90;
-    maxPolarAngle = 90;
+    get maxPolarAngle() {
+        return this.maxVerticalAngle;
+    }
+    set maxPolarAngle(value) {
+        this.maxVerticalAngle = value;
+    }
     horizontalAngle = 0;
     minHorizontalAngle = -Infinity;
     maxHorizontalAngle = Infinity;
     distance = 1000;
-    initialDistance = 1000;
+    get initialDistance() {
+        return this.distance;
+    }
+    set initialDistance(value) {
+        this.distance = value;
+    }
     minDistance = 200;
     maxDistance = 2000;
     active = true;
@@ -77,15 +97,10 @@ let CameraRig = class CameraRig extends Element3D {
         this.#startedInteraction = true;
         this.autorunStoppers = [];
         this.autorunStoppers.push(autorun(() => {
-            batch(() => {
-                this.verticalAngle = this.initialPolarAngle;
-                this.minVerticalAngle = this.minPolarAngle;
-                this.maxVerticalAngle = this.maxPolarAngle;
-                this.distance = this.initialDistance;
-            });
-        }), autorun(() => {
             if (!(this.scene && this.rotationYTarget))
                 return;
+            console.log('WTF', this.minVerticalAngle);
+            console.log('WTF', this.maxVerticalAngle);
             const flingRotation = (this.flingRotation = new FlingRotation({
                 interactionInitiator: this.scene,
                 rotationYTarget: this.rotationYTarget,
@@ -191,24 +206,27 @@ __decorate([
 ], CameraRig.prototype, "verticalAngle", void 0);
 __decorate([
     numberAttribute(0),
-    __metadata("design:type", Object)
-], CameraRig.prototype, "initialPolarAngle", void 0);
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], CameraRig.prototype, "initialPolarAngle", null);
 __decorate([
     numberAttribute(-90),
     __metadata("design:type", Object)
 ], CameraRig.prototype, "minVerticalAngle", void 0);
 __decorate([
     numberAttribute(-90),
-    __metadata("design:type", Object)
-], CameraRig.prototype, "minPolarAngle", void 0);
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], CameraRig.prototype, "minPolarAngle", null);
 __decorate([
     numberAttribute(90),
     __metadata("design:type", Object)
 ], CameraRig.prototype, "maxVerticalAngle", void 0);
 __decorate([
     numberAttribute(90),
-    __metadata("design:type", Object)
-], CameraRig.prototype, "maxPolarAngle", void 0);
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], CameraRig.prototype, "maxPolarAngle", null);
 __decorate([
     numberAttribute(0),
     __metadata("design:type", Object)
@@ -227,8 +245,9 @@ __decorate([
 ], CameraRig.prototype, "distance", void 0);
 __decorate([
     numberAttribute(1000),
-    __metadata("design:type", Object)
-], CameraRig.prototype, "initialDistance", void 0);
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [Number])
+], CameraRig.prototype, "initialDistance", null);
 __decorate([
     numberAttribute(200),
     __metadata("design:type", Object)
