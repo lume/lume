@@ -24,14 +24,21 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: lts/* # Test on the current LTS version.
-            - name: npm install, build, and test
+            - name: install
               run: |
                   npm run fresh
+            - name: check formatting
+              run: |
                   npm run prettier:check:all
+            - name: build
+              run: |
                   npm run clean:all
                   npm run build:all
+            - name: test
+              run: |
                   npm run test:all
-            - name: ensure no modifications
-              run: git add . && git diff --quiet && git diff --cached --quiet
+            - name: check repo is clean
+              run: |
+                  git add . && git diff --quiet && git diff --cached --quiet
               env:
                   CI: true
