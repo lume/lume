@@ -3139,6 +3139,7 @@ __metadata:
     "@babel/runtime": "npm:7.11.2"
     "@web/dev-server-import-maps": "npm:^0.1.3"
     "@web/test-runner": "npm:^0.17.2"
+    "@web/test-runner-playwright": "npm:^0.10.2"
     babel-preset-solid: "npm:^1.0.0"
     chalk: "npm:4.1.2"
     commander: "npm:8.2.0"
@@ -6272,6 +6273,17 @@ __metadata:
     "@types/mocha": "npm:^10.0.1"
     "@web/test-runner-core": "npm:^0.11.1"
   checksum: 567f129a2093385cf2a0c79ec0c049cba705e167555206d9bef75c3682f2311e4e24185a7a351d7eba305f6610a58835c7a4f4435a0a79e3928fcc6a277d02e4
+  languageName: node
+  linkType: hard
+
+"@web/test-runner-playwright@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "@web/test-runner-playwright@npm:0.10.2"
+  dependencies:
+    "@web/test-runner-core": "npm:^0.11.6"
+    "@web/test-runner-coverage-v8": "npm:^0.7.2"
+    playwright: "npm:^1.22.2"
+  checksum: 7c54e04910ac3bfbdde06e99a349a59e1792753609ee0577a38f76d028d77bf47d2c284dd646e9a7be4ae6d49e17d7bb65ce009d5029068a7be437aff4367d93
   languageName: node
   linkType: hard
 
@@ -23468,7 +23480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.39.0":
+"playwright@npm:1.39.0, playwright@npm:^1.22.2":
   version: 1.39.0
   resolution: "playwright@npm:1.39.0"
   dependencies:

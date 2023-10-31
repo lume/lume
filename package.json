@@ -45,7 +45,7 @@
 		"examples": "five-server . --watch='dist,examples' --open=./examples",
 		"postinstall": "husky install",
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
-		"fresh": "npm run submodules:sync && npm run link",
+		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
 		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . apps/docs/node_modules/lume",
 		"unlink": "npm run unlink:unix || npm run --script-shell=pwsh unlink:windows",
