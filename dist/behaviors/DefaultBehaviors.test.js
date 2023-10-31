@@ -23,9 +23,9 @@ describe('DefaultBehaviors', () => {
         box.setAttribute('has', 'foo-bar phong-material');
         await new Promise(r => setTimeout(r));
         expect(box.behaviors.size).toBe(2);
-        expect(box.behaviors.has('foo-bar')).toBeTrue();
-        expect(box.behaviors.has('box-geometry')).toBeFalse();
-        expect(box.behaviors.has('phong-material')).toBeTrue();
+        expect(box.behaviors.has('foo-bar')).toBe(true);
+        expect(box.behaviors.has('box-geometry')).toBe(false);
+        expect(box.behaviors.has('phong-material')).toBe(true);
         container.innerHTML = '';
         container.remove();
     });

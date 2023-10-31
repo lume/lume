@@ -45,9 +45,9 @@ describe('Element3D', () => {
 
 		expect(n.opacity).toEqual(1)
 
-		expect(n.size.x).toEqual(0, 'default size value not as expected')
-		expect(n.size.y).toEqual(0, 'default size value not as expected')
-		expect(n.size.z).toEqual(0, 'default size value not as expected')
+		expect(n.size.x).toEqual(0)
+		expect(n.size.y).toEqual(0)
+		expect(n.size.z).toEqual(0)
 
 		expect(n.sizeMode.x).toEqual('literal')
 		expect(n.sizeMode.y).toEqual('literal')

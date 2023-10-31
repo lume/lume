@@ -27,7 +27,11 @@ jobs:
             - name: npm install, build, and test
               run: |
                   npm run fresh
+                  npm run prettier:check:all
+                  npm run clean:all
                   npm run build:all
                   npm run test:all
+            - name: ensure no modifications
+              run: git add . && git diff --quiet && git diff --cached --quiet
               env:
                   CI: true
