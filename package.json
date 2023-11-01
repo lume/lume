@@ -43,7 +43,7 @@
 		"postversion": "lume postVersionHook",
 		"---- OTHER SCRIPTS ------------------------------------": "",
 		"examples": "five-server . --watch='dist,examples' --open=./examples",
-		"postinstall": "husky install",
+		"prepare": "husky install",
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
