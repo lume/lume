@@ -3083,6 +3083,36 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lume/cli@lume/cli#v0.9":
+  version: 0.9.3
+  resolution: "@lume/cli@https://github.com/lume/cli.git#commit=aaba32570300f18b023db95ff0e5748fb652ed60"
+  dependencies:
+    "@babel/cli": "npm:7.11.6"
+    "@babel/core": "npm:7.11.6"
+    "@babel/plugin-proposal-class-properties": "npm:7.10.4"
+    "@babel/plugin-proposal-decorators": "npm:7.10.5"
+    "@babel/preset-typescript": "npm:7.12.7"
+    "@babel/runtime": "npm:7.11.2"
+    "@web/dev-server-import-maps": "npm:^0.1.3"
+    "@web/test-runner": "npm:^0.17.2"
+    "@web/test-runner-playwright": "npm:^0.10.2"
+    babel-preset-solid: "npm:^1.0.0"
+    chalk: "npm:4.1.2"
+    commander: "npm:8.2.0"
+    figlet: "npm:1.5.2"
+    gulp: "npm:4.0.2"
+    jest-browser-globals: "npm:^25.1.0-beta"
+    lit-dom-expressions: "npm:^0.35.9"
+    prettier: "npm:3.0.3"
+    rimraf: "npm:3.0.0"
+    sinon: "npm:^17.0.0"
+    typescript: "npm:4.6.3"
+  bin:
+    lume: bin/cli.js
+  checksum: a15a40ed47ff397501e6edd3bd1a706e7a29f7ccf327181d00d05291936ab945880b87144b0217fe77fc21d9e8a7dcd56168156259593a93b0d1018f0d7b14f1
+  languageName: node
+  linkType: hard
+
 "@lume/cli@npm:^0.10.0":
   version: 0.10.0
   resolution: "@lume/cli@npm:0.10.0"
@@ -3127,7 +3157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lume/cli@npm:^0.9.0, @lume/cli@npm:^0.9.2, @lume/cli@npm:^0.9.3, @lume/cli@workspace:packages/cli":
+"@lume/cli@npm:^0.9.0, @lume/cli@npm:^0.9.2, @lume/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@lume/cli@workspace:packages/cli"
   dependencies:
@@ -12571,7 +12601,7 @@ __metadata:
   resolution: "docs@workspace:apps/docs"
   dependencies:
     "@lume/autolayout": "npm:^0.10.0"
-    "@lume/cli": "npm:^0.9.3"
+    "@lume/cli": "lume/cli#v0.9"
     "@lume/custom-attributes": "npm:^0.2.0"
     "@lume/element": "npm:^0.10.0"
     "@lume/eventful": "npm:^0.3.0"
@@ -12598,6 +12628,7 @@ __metadata:
     regexr: "npm:^2.0.0"
     rimraf: "npm:^3.0.2"
     solid-js: "npm:<1.5.0"
+    symlink-dir: "npm:^5.2.0"
     three: "npm:>=0.139.0"
     tinycolor2: "npm:^1.4.1"
     tween.js: "npm:^16.6.0"
