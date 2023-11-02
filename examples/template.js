@@ -19,9 +19,8 @@
 	// This script executes during parsing, and this line writes the HTML
 	// template synchronously, creating the <head> and <body> elements. When the
 	// parser continues parsing after this code runs, any further content it
-	// encounters while parsing will then be placed into the <body> that this
-	// line added wrote into the DOM. A nifty way to share a re-usable HTML
-	// top-level template!
+	// encounters while parsing will then be placed into the created <body>.
+	// This is a nifty trick for sharing a top-level re-usable HTML template!
 	document.write(r.responseText)
 
 	// Each example specifies the title for its tab by putting a title="foo"
