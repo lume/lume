@@ -1,0 +1,55 @@
+<!-- <base href="https://docs.lume.io/" /><script src="./importmap.js"></script> -->
+<script src="./wrapper.js" title="<lume-instanced-mesh>"></script>
+
+<!-- This example shows how to use vanilla Three.js code in a Lume scene. -->
+
+<lume-scene id="scene" webgl>
+	<lume-camera-rig min-distance="90" max-distance="1000" initial-distance="200"></lume-camera-rig>
+
+	<lume-element3d id="fireContainer" size="180 180" mount-point="0.5 0.5 0.5"></lume-element3d>
+</lume-scene>
+
+<style>
+	html,
+	body {
+		background: #111;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		overflow: hidden;
+	}
+
+	lume-scene {
+		/* Prevent touch scrolling from interfering with our pointermove handler. */
+		touch-action: none;
+	}
+</style>
+
+<script type="module">
+	import {Motor} from 'lume'
+	import {PlaneGeometry, DoubleSide} from 'three'
+
+	// Fire2D.js exports a class written with vanilla Three.js.
+	import {Fire2D} from './js/Fire2D.js'
+
+	const plane = new PlaneGeometry(180, 180)
+	const fire = new Fire2D(plane, {
+		textureWidth: 512,
+		textureHeight: 512,
+	})
+	const fireContainer = document.getElementById('fireContainer')
+	fire.position.z = 1
+
+	// Add the vanilla Three.js object to the Lume element's three object.
+	fireContainer.three.add(fire)
+
+	fire.clearSources()
+	fire.addSource(0.5, 0.1, 0.1, 1.0, 0.0, 1.0)
+
+	Motor.addRenderTask(() => {
+		// Normally the Lume scene re-draws only if something has changed, but
+		// the vanilla-threejs Fire2D will only update on scene re-render, so
+		// force a scene re-draw every frame to trigger the fire update.
+		scene.drawScene()
+	})
+</script>
