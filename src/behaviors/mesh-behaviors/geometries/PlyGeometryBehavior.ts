@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {PLYLoader} from '../../../lib/three/examples/jsm/loaders/PLYLoader.js'
+import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {Points} from '../../../meshes/Points.js'
@@ -104,7 +104,7 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent | Error) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`

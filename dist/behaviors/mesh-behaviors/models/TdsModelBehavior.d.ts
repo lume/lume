@@ -1,5 +1,5 @@
 import 'element-behaviors';
-import { TDSLoader } from '../../../lib/three/examples/jsm/loaders/TDSLoader.js';
+import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
 export declare type TdsModelBehaviorAttributes = 'src';

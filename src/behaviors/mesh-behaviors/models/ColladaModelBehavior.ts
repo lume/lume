@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {ColladaLoader, Collada} from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js'
+import {ColladaLoader, Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
@@ -66,7 +66,7 @@ export class ColladaModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`

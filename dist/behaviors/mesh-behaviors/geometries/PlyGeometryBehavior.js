@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import 'element-behaviors';
 import { reactive, stringAttribute } from '../../attribute.js';
-import { PLYLoader } from '../../../lib/three/examples/jsm/loaders/PLYLoader.js';
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 import { Events } from '../../../core/Events.js';
 import { Points } from '../../../meshes/Points.js';

@@ -3,7 +3,7 @@ import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {reactive, stringAttribute, booleanAttribute} from '../../attribute.js'
-import {FBXLoader} from '../../../lib/three/examples/jsm/loaders/FBXLoader.js'
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
@@ -91,7 +91,7 @@ export class FbxModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`

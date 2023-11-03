@@ -4,7 +4,21 @@
 # If a previous commit attempt's stash still exists, notify, and exit.
 (git stash list | grep COMMIT_HOOK_STASH) && echo "A previous git stash named "COMMIT_HOOK_STASH" exists. Please handle and remove the stash then try again." && exit 1
 
+echo ""
+echo "Undo dist changes..."
+echo ""
 git reset dist
 git checkout dist
-git stash save -k COMMIT_HOOK_STASH
+
+echo ""
+echo "Stash unstaged/untracked files if any..."
+echo ""
+# commit staged changes temporarily
+git commit --no-verify -m "TMP_COMMIT_HOOK_COMMIT"
+# stash only untstaged and untracked files
+git stash save -u COMMIT_HOOK_STASH
+git reset --soft HEAD~
+
+# NOTE: The post-commit hook will unstash the COMMIT_HOOK_STASH
+
 npx lint-staged

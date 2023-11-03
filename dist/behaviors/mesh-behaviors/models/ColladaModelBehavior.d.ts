@@ -1,5 +1,5 @@
 import 'element-behaviors';
-import { ColladaLoader, Collada } from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js';
+import { ColladaLoader, Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 export declare type ColladaModelBehaviorAttributes = 'src';
 export declare class ColladaModelBehavior extends RenderableBehavior {

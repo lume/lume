@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import 'element-behaviors';
 import { reactive, stringAttribute } from '../../attribute.js';
 import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
-import { OBJLoader } from '../../../lib/three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from '../../../lib/three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 let ObjModelBehavior = class ObjModelBehavior extends RenderableBehavior {

@@ -2,8 +2,8 @@ import 'element-behaviors'
 import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {reactive, attribute, booleanAttribute, stringAttribute} from '../../attribute.js'
 import {Scene} from 'three/src/scenes/Scene.js'
-import {DRACOLoader} from '../../../lib/three/examples/jsm/loaders/DRACOLoader.js'
-import {GLTFLoader, GLTF} from '../../../lib/three/examples/jsm/loaders/GLTFLoader.js'
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
+import {GLTFLoader, GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../../utils/three.js'
@@ -123,7 +123,7 @@ export class GltfModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent | Error) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${
 			this.dracoDecoder
 		}". See the following error.`

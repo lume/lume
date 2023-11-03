@@ -1,4 +1,4 @@
-const buildSteps = ['npm run build', 'git add dist']
+const buildSteps = ['npm run build:clean', 'git add dist']
 
 export default {
 	'./src/**/*': () => buildSteps,

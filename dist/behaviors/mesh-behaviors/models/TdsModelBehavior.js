@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import 'element-behaviors';
 import { reactive, stringAttribute } from '../../attribute.js';
-import { TDSLoader } from '../../../lib/three/examples/jsm/loaders/TDSLoader.js';
+import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
 import { disposeObjectTree } from '../../../utils/three.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';

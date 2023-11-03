@@ -1,6 +1,6 @@
 import 'element-behaviors';
-import { OBJLoader } from '../../../lib/three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from '../../../lib/three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
 import type { ElementBehaviors } from 'element-behaviors';
