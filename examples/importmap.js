@@ -1,8 +1,8 @@
 {
 	const localMap = {
 		imports: {
-			lume: '../dist/index.js',
-			'lume/': '../',
+			lume: '/dist/index.js',
+			'lume/': '/',
 			'@lume/element': '/node_modules/@lume/element/dist/index.js',
 			'@lume/variable': '/node_modules/@lume/variable/dist/index.js',
 			'@lume/eventful': '/node_modules/@lume/eventful/dist/index.js',
