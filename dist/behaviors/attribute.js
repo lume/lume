@@ -1,4 +1,4 @@
-import { attribute as _attribute, } from '@lume/element';
+import { attribute as _attribute, stringAttribute as _stringAttribute, numberAttribute as _numberAttribute, booleanAttribute as _booleanAttribute, } from '@lume/element';
 import { decoratorAbstraction, receiver } from './PropReceiver.js';
 export { reactive } from '@lume/element';
 export function attribute(handlerOrProtoOrArg, propName, descriptor) {

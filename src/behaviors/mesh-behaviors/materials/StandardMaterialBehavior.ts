@@ -1,7 +1,7 @@
 import 'element-behaviors'
 import {MeshStandardMaterial} from 'three/src/materials/MeshStandardMaterial.js'
 import {booleanAttribute, numberAttribute, reactive, stringAttribute} from '../../attribute.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type StandardMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes

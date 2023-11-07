@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var AutoLayoutNode_1;
 import AutoLayout from '@lume/autolayout';
 import { attribute, element } from '@lume/element';
@@ -14,7 +11,8 @@ import { Element3D } from '../core/Element3D.js';
 import { Motor } from '../core/Motor.js';
 import { autoDefineElements } from '../LumeConfig.js';
 export { AutoLayout };
-let AutoLayoutNode = AutoLayoutNode_1 = class AutoLayoutNode extends Element3D {
+let AutoLayoutNode = class AutoLayoutNode extends Element3D {
+    static { AutoLayoutNode_1 = this; }
     static DEFAULT_PARSE_OPTIONS = {
         extended: true,
         strict: false,
@@ -251,12 +249,10 @@ let AutoLayoutNode = AutoLayoutNode_1 = class AutoLayoutNode extends Element3D {
     }
 };
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], AutoLayoutNode.prototype, "visualFormat", void 0);
 AutoLayoutNode = AutoLayoutNode_1 = __decorate([
-    element('lume-autolayout-node', autoDefineElements),
-    __metadata("design:paramtypes", [Object])
+    element('lume-autolayout-node', autoDefineElements)
 ], AutoLayoutNode);
 export { AutoLayoutNode };
 //# sourceMappingURL=AutoLayoutNode.js.map

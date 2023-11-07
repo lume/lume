@@ -1,6 +1,6 @@
 import { ClipPlane } from '../../core/ClipPlane.js';
 import { MeshBehavior } from './MeshBehavior.js';
-export declare type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipIntersection' | 'clipShadows' | 'flipClip' | 'clipDisabled';
+export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipIntersection' | 'clipShadows' | 'flipClip' | 'clipDisabled';
 export declare class ClipPlanesBehavior extends MeshBehavior {
     #private;
     clipIntersection: boolean;

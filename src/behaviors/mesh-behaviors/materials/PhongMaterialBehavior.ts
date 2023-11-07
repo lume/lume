@@ -1,7 +1,7 @@
 import 'element-behaviors'
 import {Color} from 'three/src/math/Color.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 import {numberAttribute, stringAttribute, booleanAttribute, reactive} from '../../attribute.js'
 
 export type PhongMaterialBehaviorAttributes =

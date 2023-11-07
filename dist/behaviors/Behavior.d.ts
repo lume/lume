@@ -1,11 +1,5 @@
 import 'element-behaviors';
-import type { Constructor } from 'lowclass';
 import type { ElementWithBehaviors } from 'element-behaviors';
-declare type ElementTypeArrayToInstArray<T extends Constructor[]> = {
-    [K in keyof T]: InstanceType<T[number & K]>;
-};
-declare type ArrayValues<T extends any[]> = T[number & keyof T];
-declare type ElementTypes<T extends Constructor[]> = ArrayValues<ElementTypeArrayToInstArray<T>>;
 declare const Behavior_base: {
     new (...args: any[]): {
         connectedCallback(): void;
@@ -24,13 +18,13 @@ declare const Behavior_base: {
 export declare abstract class Behavior extends Behavior_base {
     #private;
     static awaitElementDefined: boolean;
-    element: ElementTypes<ReturnType<this['requiredElementType']>>;
+    element: Element;
     constructor(element: ElementWithBehaviors);
     requiredElementType(): {
         new (): Element;
         prototype: Element;
     }[];
-    get observedObject(): ElementTypes<ReturnType<this["requiredElementType"]>>;
+    get observedObject(): Element;
     __forwardInitialProps(): void;
 }
 export {};

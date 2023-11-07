@@ -4,7 +4,7 @@ import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
 import {onCleanup, createEffect} from 'solid-js'
 import {Texture} from 'three/src/textures/Texture.js'
 import {stringAttribute, reactive} from '../../attribute.js'
-import {PhysicalMaterialBehavior, PhysicalMaterialBehaviorAttributes} from './PhysicalMaterialBehavior.js'
+import {PhysicalMaterialBehavior, type PhysicalMaterialBehaviorAttributes} from './PhysicalMaterialBehavior.js'
 import {TextureProjector} from '../../../textures/TextureProjector.js'
 
 export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttributes | 'projectedTextures'

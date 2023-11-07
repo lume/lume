@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { untrack } from 'solid-js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Color } from 'three/src/math/Color.js';
@@ -136,45 +133,34 @@ let MaterialBehavior = class MaterialBehavior extends GeometryOrMaterialBehavior
     }
 };
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], MaterialBehavior.prototype, "alphaTest", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], MaterialBehavior.prototype, "colorWrite", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], MaterialBehavior.prototype, "depthTest", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], MaterialBehavior.prototype, "depthWrite", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], MaterialBehavior.prototype, "dithering", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], MaterialBehavior.prototype, "fog", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], MaterialBehavior.prototype, "wireframe", void 0);
 __decorate([
-    stringAttribute('front'),
-    __metadata("design:type", String)
+    stringAttribute('front')
 ], MaterialBehavior.prototype, "sidedness", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], MaterialBehavior.prototype, "materialOpacity", void 0);
 __decorate([
-    stringAttribute('white'),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    stringAttribute('white')
 ], MaterialBehavior.prototype, "color", null);
 MaterialBehavior = __decorate([
     reactive

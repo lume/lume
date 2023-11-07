@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import html from 'solid-js/html';
 import { element, attribute, numberAttribute } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -26,20 +23,16 @@ let FlickeringOrbs = class FlickeringOrbs extends Element3D {
 	`;
 };
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], FlickeringOrbs.prototype, "shadowBias", void 0);
 __decorate([
-    numberAttribute(1.3),
-    __metadata("design:type", Object)
+    numberAttribute(1.3)
 ], FlickeringOrbs.prototype, "intensity", void 0);
 __decorate([
-    numberAttribute(0.4),
-    __metadata("design:type", Object)
+    numberAttribute(0.4)
 ], FlickeringOrbs.prototype, "flickerRange", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], FlickeringOrbs.prototype, "color", void 0);
 FlickeringOrbs = __decorate([
     element('flickering-orbs', autoDefineElements)

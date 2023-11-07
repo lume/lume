@@ -1,7 +1,7 @@
 import html from 'solid-js/html'
 import {element, attribute, numberAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 
 export type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias' | 'intensity'
 

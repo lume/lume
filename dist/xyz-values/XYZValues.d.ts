@@ -1,12 +1,12 @@
-export declare type XYZValuesArray<T> = [T, T, T];
-export declare type XYZPartialValuesArray<T> = [T] | [T, T] | [T, T, T];
-export declare type XYZValuesObject<T> = {
+export type XYZValuesArray<T> = [T, T, T];
+export type XYZPartialValuesArray<T> = [T] | [T, T] | [T, T, T];
+export type XYZValuesObject<T> = {
     x: T;
     y: T;
     z: T;
 };
-export declare type XYZPartialValuesObject<T> = Partial<XYZValuesObject<T>>;
-export declare type XYZValuesParameters<T> = XYZPartialValuesArray<T> | XYZPartialValuesObject<T> | string | T;
+export type XYZPartialValuesObject<T> = Partial<XYZValuesObject<T>>;
+export type XYZValuesParameters<T> = XYZPartialValuesArray<T> | XYZPartialValuesObject<T> | string | T;
 export declare abstract class XYZValues<T = any> extends Object {
     #private;
     set x(value: T);

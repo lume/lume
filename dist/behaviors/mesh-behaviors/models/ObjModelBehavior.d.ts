@@ -8,7 +8,7 @@ declare global {
     interface Element extends ElementBehaviors {
     }
 }
-export declare type ObjModelBehaviorAttributes = 'obj' | 'mtl';
+export type ObjModelBehaviorAttributes = 'obj' | 'mtl';
 export declare class ObjModelBehavior extends RenderableBehavior {
     #private;
     obj: string;

@@ -1,10 +1,10 @@
 // Useful info on THREE.Plane not covered in Three.js docs:
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
-import {booleanAttribute, element, ElementAttributes, reactive, stringAttribute} from '@lume/element'
+import {booleanAttribute, element, type ElementAttributes, reactive, stringAttribute} from '@lume/element'
 import {createEffect} from 'solid-js'
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial'

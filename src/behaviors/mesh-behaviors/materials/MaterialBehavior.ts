@@ -6,14 +6,14 @@
 import {untrack} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
-import {DoubleSide, FrontSide, BackSide, Side, SRGBColorSpace} from 'three/src/constants.js'
+import {DoubleSide, FrontSide, BackSide, type Side, SRGBColorSpace} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
 import {reactive, booleanAttribute, stringAttribute, numberAttribute} from '../../attribute.js'
 import {onCleanup} from 'solid-js'
 import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
 import type {MeshComponentType} from '../MeshBehavior.js'
-import type {MeshPhongMaterial, Texture} from 'three'
+import type {Texture} from 'three'
 
 export type MaterialBehaviorAttributes =
 	| 'alphaTest'
@@ -237,7 +237,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		this.createEffect(() => {
 			const mat = this.meshComponent
 			if (!(mat && 'wireframe' in mat)) return
-			;(mat as MeshPhongMaterial).wireframe = this.wireframe
+			mat.wireframe = this.wireframe
 			this.element.needsUpdate()
 		})
 
@@ -267,7 +267,7 @@ export class MaterialBehavior extends GeometryOrMaterialBehavior {
 		this.createEffect(() => {
 			const mat = this.meshComponent
 			if (!(mat && 'color' in mat)) return
-			;(mat as MeshPhongMaterial).color = this.color
+			mat.color = this.color
 			this.element.needsUpdate()
 		})
 

@@ -1,6 +1,6 @@
 import { DirectionalLight as ThreeDirectionalLight } from 'three/src/lights/DirectionalLight.js';
-import { LightWithShadow, LightWithShadowAttributes } from './LightWithShadow.js';
-export declare type DirectionalLightAttributes = LightWithShadowAttributes | 'shadowCameraTop' | 'shadowCameraRight' | 'shadowCameraBottom' | 'shadowCameraLeft';
+import { LightWithShadow, type LightWithShadowAttributes } from './LightWithShadow.js';
+export type DirectionalLightAttributes = LightWithShadowAttributes | 'shadowCameraTop' | 'shadowCameraRight' | 'shadowCameraBottom' | 'shadowCameraLeft';
 export declare class DirectionalLight extends LightWithShadow {
     constructor();
     shadowCameraTop: number;

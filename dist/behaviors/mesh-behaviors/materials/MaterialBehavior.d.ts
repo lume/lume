@@ -3,7 +3,7 @@ import { Material } from 'three/src/materials/Material.js';
 import { GeometryOrMaterialBehavior } from '../GeometryOrMaterialBehavior.js';
 import type { MeshComponentType } from '../MeshBehavior.js';
 import type { Texture } from 'three';
-export declare type MaterialBehaviorAttributes = 'alphaTest' | 'colorWrite' | 'depthTest' | 'depthWrite' | 'dithering' | 'wireframe' | 'sidedness' | 'color' | 'materialOpacity';
+export type MaterialBehaviorAttributes = 'alphaTest' | 'colorWrite' | 'depthTest' | 'depthWrite' | 'dithering' | 'wireframe' | 'sidedness' | 'color' | 'materialOpacity';
 export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
     #private;
     type: MeshComponentType;

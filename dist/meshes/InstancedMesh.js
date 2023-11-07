@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { batch, untrack } from 'solid-js';
 import { element, numberAttribute, stringAttribute } from '@lume/element';
 import { InstancedMesh as ThreeInstancedMesh } from 'three/src/objects/InstancedMesh.js';
@@ -262,28 +259,19 @@ let InstancedMesh = class InstancedMesh extends Mesh {
     }
 };
 __decorate([
-    numberAttribute(10),
-    __metadata("design:type", Object)
+    numberAttribute(10)
 ], InstancedMesh.prototype, "count", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    stringAttribute('')
 ], InstancedMesh.prototype, "rotations", null);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Array),
-    __metadata("design:paramtypes", [Array])
+    stringAttribute('')
 ], InstancedMesh.prototype, "positions", null);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Array),
-    __metadata("design:paramtypes", [Array])
+    stringAttribute('')
 ], InstancedMesh.prototype, "scales", null);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Array),
-    __metadata("design:paramtypes", [Array])
+    stringAttribute('')
 ], InstancedMesh.prototype, "colors", null);
 InstancedMesh = __decorate([
     element('lume-instanced-mesh', autoDefineElements)

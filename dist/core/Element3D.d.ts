@@ -1,6 +1,6 @@
 import { SharedAPI } from './SharedAPI.js';
 import type { BaseAttributes } from './SharedAPI.js';
-export declare type Element3DAttributes = BaseAttributes | 'visible';
+export type Element3DAttributes = BaseAttributes | 'visible';
 export declare class Element3D extends SharedAPI {
     readonly hasShadow: boolean;
     readonly isElement3D = true;

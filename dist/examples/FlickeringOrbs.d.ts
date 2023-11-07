@@ -1,5 +1,5 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
-export declare type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias' | 'intensity';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+export type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias' | 'intensity';
 export declare class FlickeringOrbs extends Element3D {
     shadowBias: number;
     intensity: number;

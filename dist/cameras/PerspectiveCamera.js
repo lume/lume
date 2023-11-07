@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { createEffect, createRoot, untrack } from 'solid-js';
 import { numberAttribute, booleanAttribute, element } from '@lume/element';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
@@ -97,28 +94,22 @@ let PerspectiveCamera = class PerspectiveCamera extends Element3D {
     }
 };
 __decorate([
-    numberAttribute(50),
-    __metadata("design:type", Object)
+    numberAttribute(50)
 ], PerspectiveCamera.prototype, "fov", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], PerspectiveCamera.prototype, "aspect", void 0);
 __decorate([
-    numberAttribute(0.1),
-    __metadata("design:type", Object)
+    numberAttribute(0.1)
 ], PerspectiveCamera.prototype, "near", void 0);
 __decorate([
-    numberAttribute(3000),
-    __metadata("design:type", Object)
+    numberAttribute(3000)
 ], PerspectiveCamera.prototype, "far", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], PerspectiveCamera.prototype, "zoom", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], PerspectiveCamera.prototype, "active", void 0);
 PerspectiveCamera = __decorate([
     element('lume-perspective-camera', autoDefineElements)

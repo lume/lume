@@ -1,7 +1,7 @@
 import html from 'solid-js/html'
 import {element, numberAttribute, stringAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
 
 import type {PointLight} from '../lights/PointLight.js'

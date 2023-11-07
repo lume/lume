@@ -7,6 +7,6 @@ export function calcKoverI(k: any, i: any): number;
 export function calcRationalCurveDerivatives(Pders: any): Vector3[];
 export function calcNURBSDerivatives(p: any, U: any, P: any, u: any, nd: any): Vector3[];
 export function calcSurfacePoint(p: any, q: any, U: any, V: any, P: any, u: any, v: any, target: any): void;
-import { Vector4 } from "three/src/math/Vector4.js";
-import { Vector3 } from "three/src/math/Vector3.js";
+import { Vector4 } from 'three/src/math/Vector4.js';
+import { Vector3 } from 'three/src/math/Vector3.js';
 //# sourceMappingURL=NURBSUtils.d.ts.map

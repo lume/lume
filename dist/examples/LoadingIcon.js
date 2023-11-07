@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import html from 'solid-js/html';
 import { Element, element, stringAttribute } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -58,8 +55,7 @@ let LoadingIcon = class LoadingIcon extends Element {
 	`;
 };
 __decorate([
-    stringAttribute(defaultColor),
-    __metadata("design:type", Object)
+    stringAttribute(defaultColor)
 ], LoadingIcon.prototype, "color", void 0);
 LoadingIcon = __decorate([
     element('loading-icon', autoDefineElements)

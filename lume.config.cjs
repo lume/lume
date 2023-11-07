@@ -6,6 +6,10 @@ module.exports = {
 	 */
 	prettierIgnorePath: '.prettierignore.lumecli',
 
+	testFiles: process.env.TEST_ALL
+		? ['dist/**/*.test.js', 'packages/*/dist/**/*.test.js', '!packages/{classy-solid,readem}/dist/**/*.test.js']
+		: 'dist/**/*.test.js',
+
 	importMap: {
 		imports: {
 			lume: '/dist/index.js',

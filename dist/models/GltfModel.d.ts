@@ -1,6 +1,6 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { GltfModelBehavior, GltfModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/GltfModelBehavior.js';
-export declare type GltfModelAttributes = Element3DAttributes;
+export type GltfModelAttributes = Element3DAttributes;
 export declare class GltfModel extends Element3D {
     static defaultBehaviors: string[];
 }

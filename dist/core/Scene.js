@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { booleanAttribute, attribute, numberAttribute, element, stringAttribute, reactive } from '@lume/element';
@@ -515,97 +512,73 @@ let Scene = class Scene extends SharedAPI {
 	`;
 };
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], Scene.prototype, "enableCss", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], Scene.prototype, "webgl", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], Scene.prototype, "swapLayers", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], Scene.prototype, "shadowmapType", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], Scene.prototype, "vr", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], Scene.prototype, "backgroundColor", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], Scene.prototype, "backgroundOpacity", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], Scene.prototype, "background", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], Scene.prototype, "equirectangularBackground", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], Scene.prototype, "environment", void 0);
 __decorate([
-    stringAttribute('none'),
-    __metadata("design:type", String)
+    stringAttribute('none')
 ], Scene.prototype, "fogMode", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], Scene.prototype, "fogNear", void 0);
 __decorate([
-    numberAttribute(1000),
-    __metadata("design:type", Object)
+    numberAttribute(1000)
 ], Scene.prototype, "fogFar", void 0);
 __decorate([
-    stringAttribute('gray'),
-    __metadata("design:type", String)
+    stringAttribute('gray')
 ], Scene.prototype, "fogColor", void 0);
 __decorate([
-    numberAttribute(0.0025),
-    __metadata("design:type", Object)
+    numberAttribute(0.0025)
 ], Scene.prototype, "fogDensity", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], Scene.prototype, "physicallyCorrectLights", void 0);
 __decorate([
-    numberAttribute(0.1),
-    __metadata("design:type", Object)
+    numberAttribute(0.1)
 ], Scene.prototype, "cameraNear", void 0);
 __decorate([
-    numberAttribute(10000),
-    __metadata("design:type", Object)
+    numberAttribute(10000)
 ], Scene.prototype, "cameraFar", void 0);
 __decorate([
-    numberAttribute(400),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    numberAttribute(400)
 ], Scene.prototype, "perspective", null);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], Scene.prototype, "__camera", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], Scene.prototype, "__localClipping", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], Scene.prototype, "__elementParentSize", void 0);
 Scene = __decorate([
-    element('lume-scene', autoDefineElements),
-    __metadata("design:paramtypes", [])
+    element('lume-scene', autoDefineElements)
 ], Scene);
 export { Scene };
 Scene.prototype.isScene = true;

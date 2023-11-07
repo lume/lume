@@ -1,5 +1,5 @@
 import { XYZStringValues } from './XYZStringValues.js';
-export declare type SizeModeValue = 'literal' | 'l' | 'proportional' | 'p';
+export type SizeModeValue = 'literal' | 'l' | 'proportional' | 'p';
 export declare class XYZSizeModeValues extends XYZStringValues {
     get default(): {
         x: string;

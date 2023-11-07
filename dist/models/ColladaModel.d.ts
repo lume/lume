@@ -1,6 +1,6 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { ColladaModelBehavior, ColladaModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/ColladaModelBehavior.js';
-export declare type ColladaModelAttributes = Element3DAttributes;
+export type ColladaModelAttributes = Element3DAttributes;
 export declare class ColladaModel extends Element3D {
     static defaultBehaviors: string[];
 }

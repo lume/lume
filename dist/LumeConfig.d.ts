@@ -1,4 +1,4 @@
-declare type LumeConfig = {
+type LumeConfig = {
     autoDefineElements?: boolean;
 };
 declare global {

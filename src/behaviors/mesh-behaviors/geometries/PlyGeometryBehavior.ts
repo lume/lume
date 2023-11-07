@@ -39,6 +39,8 @@ export class PlyGeometryBehavior extends GeometryBehavior {
 	loader: PLYLoader | null = null
 	@reactive model: BufferGeometry | null = null
 
+	declare element: Points
+
 	override requiredElementType(): [typeof Points] {
 		return [Points]
 	}

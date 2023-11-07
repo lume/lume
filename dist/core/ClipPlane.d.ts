@@ -1,7 +1,7 @@
-import { ElementAttributes } from '@lume/element';
+import { type ElementAttributes } from '@lume/element';
 import { Plane } from 'three/src/math/Plane.js';
-import { Element3D, Element3DAttributes } from './Element3D.js';
-declare type ClipPlaneAttributes = Element3DAttributes;
+import { Element3D, type Element3DAttributes } from './Element3D.js';
+type ClipPlaneAttributes = Element3DAttributes;
 export declare class ClipPlane extends Element3D {
     #private;
     get __clip(): Readonly<Plane> | null;

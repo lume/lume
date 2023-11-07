@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
-export declare type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitment';
+export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitment';
 export declare class LineGeometryBehavior extends GeometryBehavior {
     __points: number[];
     get points(): number[];

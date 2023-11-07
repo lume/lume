@@ -1,5 +1,5 @@
-import { Mesh, MeshAttributes } from './Mesh.js';
-export declare type RoundedRectangleAttributes = MeshAttributes;
+import { Mesh, type MeshAttributes } from './Mesh.js';
+export type RoundedRectangleAttributes = MeshAttributes;
 export declare class RoundedRectangle extends Mesh {
     static defaultBehaviors: {
         'rounded-rectangle-geometry': (initialBehaviors: any) => boolean;

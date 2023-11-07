@@ -1,7 +1,7 @@
 import { Light } from './Light.js';
 import { AmbientLight as ThreeAmbientLight } from 'three/src/lights/AmbientLight.js';
 import type { LightAttributes } from './Light.js';
-export declare type AmbientLightAttributes = LightAttributes;
+export type AmbientLightAttributes = LightAttributes;
 export declare class AmbientLight extends Light {
     constructor();
     makeThreeObject3d(): ThreeAmbientLight;

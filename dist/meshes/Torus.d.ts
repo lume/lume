@@ -1,6 +1,6 @@
 import { Mesh } from './Mesh.js';
 import type { MeshAttributes } from './Mesh.js';
-export declare type TorusAttributes = MeshAttributes;
+export type TorusAttributes = MeshAttributes;
 export declare class Torus extends Mesh {
     static defaultBehaviors: {
         'torus-geometry': (initialBehaviors: any) => boolean;

@@ -1,5 +1,5 @@
 import type { Element3D } from '../core/Element3D.js';
-declare type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> & Partial<Pick<FlingRotation, 'rotationXTarget' | 'interactionInitiator' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'interactionContainer' | 'factor'>>;
+type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> & Partial<Pick<FlingRotation, 'rotationXTarget' | 'interactionInitiator' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'interactionContainer' | 'factor'>>;
 export declare class FlingRotation {
     #private;
     readonly rotationYTarget: Element3D;

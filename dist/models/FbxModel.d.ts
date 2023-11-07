@@ -1,6 +1,6 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/FbxModelBehavior.js';
-export declare type FbxModelAttributes = Element3DAttributes;
+export type FbxModelAttributes = Element3DAttributes;
 export declare class FbxModel extends Element3D {
     static defaultBehaviors: string[];
 }

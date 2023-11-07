@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var SharedAPI_1;
 import { untrack } from 'solid-js';
 import { reactive, element, attribute } from '@lume/element';
@@ -33,7 +30,8 @@ const isManagedByUs = (obj) => ourThreeObjects.has(obj);
 class Effects extends Effectful(Object) {
 }
 const opacity = new WeakMap();
-let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
+let SharedAPI = class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
+    static { SharedAPI_1 = this; }
     static define(name) {
         this.defineElement(name);
     }
@@ -518,25 +516,19 @@ let SharedAPI = SharedAPI_1 = class SharedAPI extends DefaultBehaviors(ChildTrac
 	`;
 };
 __decorate([
-    attribute,
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    attribute
 ], SharedAPI.prototype, "opacity", null);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], SharedAPI.prototype, "_scene", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], SharedAPI.prototype, "_glLoaded", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], SharedAPI.prototype, "_cssLoaded", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], SharedAPI.prototype, "version", void 0);
 SharedAPI = SharedAPI_1 = __decorate([
     element

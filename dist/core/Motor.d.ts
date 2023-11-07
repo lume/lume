@@ -1,5 +1,5 @@
 import type { SharedAPI } from './SharedAPI.js';
-export declare type RenderTask = (timestamp: number, deltaTime: number) => false | void;
+export type RenderTask = (timestamp: number, deltaTime: number) => false | void;
 declare class _Motor {
     #private;
     addRenderTask(fn: RenderTask): RenderTask;

@@ -2,7 +2,7 @@ import {SpotLight as ThreeSpotLight} from 'three/src/lights/SpotLight.js'
 import {SpotLightHelper} from 'three/src/helpers/SpotLightHelper.js'
 import {numberAttribute, element, booleanAttribute, stringAttribute} from '@lume/element'
 import {createEffect, onCleanup} from 'solid-js'
-import {PointLight, PointLightAttributes} from './PointLight.js'
+import {PointLight, type PointLightAttributes} from './PointLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, toRadians} from '../core/index.js'
 

@@ -6,11 +6,11 @@ import type { Quaternion } from 'three/src/math/Quaternion.js';
 import type { Camera } from 'three/src/cameras/Camera.js';
 import type { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
 import type { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-export declare type TColor = Color | string | number;
+export type TColor = Color | string | number;
 export declare function isRenderItem(obj: any): obj is RenderItem;
 export declare function disposeMaterial(obj: Object3D): void;
 export declare function disposeObject(obj: Object3D, removeFromParent?: boolean, destroyGeometry?: boolean, destroyMaterial?: boolean): void;
-declare type DisposeOptions = Partial<{
+type DisposeOptions = Partial<{
     removeFromParent: boolean;
     destroyGeometry: boolean;
     destroyMaterial: boolean;

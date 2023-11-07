@@ -2,8 +2,8 @@ import { InstancedMesh as ThreeInstancedMesh } from 'three/src/objects/Instanced
 import { Quaternion } from 'three/src/math/Quaternion.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { Matrix4 } from 'three/src/math/Matrix4.js';
-import { Mesh, MeshAttributes } from './Mesh.js';
-export declare type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales' | 'colors';
+import { Mesh, type MeshAttributes } from './Mesh.js';
+export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales' | 'colors';
 export declare class InstancedMesh extends Mesh {
     #private;
     count: number;

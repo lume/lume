@@ -10,6 +10,7 @@ declare const RenderableBehavior_base: {
 } & typeof Behavior;
 export declare abstract class RenderableBehavior extends RenderableBehavior_base {
     #private;
+    element: Element3D;
     requiredElementType(): (typeof Element3D)[];
     connectedCallback(): void;
     disconnectedCallback(): void;

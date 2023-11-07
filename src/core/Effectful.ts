@@ -1,6 +1,6 @@
 // TODO move Effectful to to classy-solid
 
-import {createEffect, createRoot, getOwner, Owner, runWithOwner} from 'solid-js'
+import {createEffect, createRoot, getOwner, type Owner, runWithOwner} from 'solid-js'
 import type {Constructor} from 'lowclass'
 
 /**

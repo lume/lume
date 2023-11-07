@@ -1,4 +1,4 @@
-import { Owner } from 'solid-js';
+import { type Owner } from 'solid-js';
 import type { Constructor } from 'lowclass';
 export declare function Effectful<T extends Constructor | AbstractConstructor>(Base: T): {
     new (...a: any[]): {
@@ -8,7 +8,7 @@ export declare function Effectful<T extends Constructor | AbstractConstructor>(B
         stopEffects(): void;
     };
 } & T;
-declare type StopFunction = () => void;
-export declare type AbstractConstructor<T = object, A extends any[] = any[], Static = {}> = (abstract new (...a: A) => T) & Static;
+type StopFunction = () => void;
+export type AbstractConstructor<T = object, A extends any[] = any[], Static = {}> = (abstract new (...a: A) => T) & Static;
 export {};
 //# sourceMappingURL=Effectful.d.ts.map

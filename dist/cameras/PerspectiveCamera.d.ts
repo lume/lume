@@ -1,6 +1,6 @@
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
-export declare type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active';
 export declare class PerspectiveCamera extends Element3D {
     #private;
     fov: number;

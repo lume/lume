@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import 'element-behaviors';
 import { reactive, attribute, stringAttribute } from '../../attribute.js';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial.js';
@@ -63,17 +60,13 @@ let ShaderMaterialBehavior = class ShaderMaterialBehavior extends MaterialBehavi
     }
 };
 __decorate([
-    attribute,
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    attribute
 ], ShaderMaterialBehavior.prototype, "uniforms", null);
 __decorate([
-    stringAttribute(default_vertex),
-    __metadata("design:type", Object)
+    stringAttribute(default_vertex)
 ], ShaderMaterialBehavior.prototype, "vertexShader", void 0);
 __decorate([
-    stringAttribute(default_fragment),
-    __metadata("design:type", Object)
+    stringAttribute(default_fragment)
 ], ShaderMaterialBehavior.prototype, "fragmentShader", void 0);
 ShaderMaterialBehavior = __decorate([
     reactive

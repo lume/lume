@@ -1,7 +1,7 @@
 import {createEffect, createRoot, on, untrack} from 'solid-js'
 import {attribute, element, reactive} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
-import {XYZSizeModeValues, SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
+import {XYZSizeModeValues, type SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {Motor} from './Motor.js'
 import {CompositionTracker} from './CompositionTracker.js'

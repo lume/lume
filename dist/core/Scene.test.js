@@ -14,9 +14,9 @@ describe('Scene', () => {
             const scene = document.createElement('lume-scene');
             container.append(scene);
             expect(scene.swapLayers).toBe(false);
-            expect(scene.shadowRoot?.querySelector('.CSS3DLayer').style.zIndex).toBe('');
+            expect((scene.shadowRoot?.querySelector('.CSS3DLayer')).style.zIndex).toBe('');
             scene.swapLayers = true;
-            expect(scene.shadowRoot?.querySelector('.CSS3DLayer').style.zIndex).toBe('1');
+            expect((scene.shadowRoot?.querySelector('.CSS3DLayer')).style.zIndex).toBe('1');
         });
     });
 });

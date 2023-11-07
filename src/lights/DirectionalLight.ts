@@ -1,6 +1,6 @@
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {numberAttribute, element} from '@lume/element'
-import {LightWithShadow, LightWithShadowAttributes} from './LightWithShadow.js'
+import {LightWithShadow, type LightWithShadowAttributes} from './LightWithShadow.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 export type DirectionalLightAttributes =

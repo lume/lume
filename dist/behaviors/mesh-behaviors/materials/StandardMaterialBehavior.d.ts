@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial.js';
-import { MaterialBehavior, MaterialBehaviorAttributes } from './MaterialBehavior.js';
-export declare type StandardMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'displacementScale' | 'displacementBias' | 'texture' | 'normalMap' | 'normalScale' | 'metalness' | 'metalnessMap' | 'morphNormals' | 'morphTargets' | 'roughness' | 'roughnessMap' | 'vertexTangents';
+import { MaterialBehavior, type MaterialBehaviorAttributes } from './MaterialBehavior.js';
+export type StandardMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'displacementScale' | 'displacementBias' | 'texture' | 'normalMap' | 'normalScale' | 'metalness' | 'metalnessMap' | 'morphNormals' | 'morphTargets' | 'roughness' | 'roughnessMap' | 'vertexTangents';
 export declare class StandardMaterialBehavior extends MaterialBehavior {
     aoMap: string;
     aoMapIntensity: number;
@@ -23,7 +23,7 @@ export declare class StandardMaterialBehavior extends MaterialBehavior {
     _createComponent(): MeshStandardMaterial;
     loadGL(): void;
 }
-export declare type MixinBaseClass<T> = T extends new (..._: any) => infer I ? {
+export type MixinBaseClass<T> = T extends new (..._: any) => infer I ? {
     [K in keyof T]: T[K];
 } & (new (...args: any[]) => I) : new (...args: any[]) => T;
 //# sourceMappingURL=StandardMaterialBehavior.d.ts.map

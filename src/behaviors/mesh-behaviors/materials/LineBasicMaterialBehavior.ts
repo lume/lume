@@ -1,7 +1,7 @@
 import {reactive, stringAttribute} from '../../attribute.js'
 import 'element-behaviors'
 import {LineBasicMaterial} from 'three/src/materials/LineBasicMaterial.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type LineBasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture'
 

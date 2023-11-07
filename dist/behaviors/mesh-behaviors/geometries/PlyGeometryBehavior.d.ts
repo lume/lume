@@ -8,6 +8,7 @@ export declare class PlyGeometryBehavior extends GeometryBehavior {
     src: string;
     loader: PLYLoader | null;
     model: BufferGeometry | null;
+    element: Points;
     requiredElementType(): [typeof Points];
     _createComponent(): BufferGeometry<import("three/src/core/BufferGeometry.js").NormalBufferAttributes>;
     loadGL(): void;

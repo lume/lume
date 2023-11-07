@@ -1,4 +1,4 @@
-declare type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>;
+type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>;
 export declare class PinchFling {
     #private;
     x: number;

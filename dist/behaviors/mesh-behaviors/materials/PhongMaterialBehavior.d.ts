@@ -1,8 +1,8 @@
 import 'element-behaviors';
 import { Color } from 'three/src/math/Color.js';
 import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
-import { MaterialBehavior, MaterialBehaviorAttributes } from './MaterialBehavior.js';
-export declare type PhongMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'alphaMap' | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'emissiveMap' | 'emissive' | 'emissiveIntensity' | 'envMap' | 'flatShading' | 'lightMap' | 'lightMapIntensity' | 'texture' | 'normalMap' | 'normalScale' | 'reflectivity' | 'specularMap' | 'specular' | 'shininess';
+import { MaterialBehavior, type MaterialBehaviorAttributes } from './MaterialBehavior.js';
+export type PhongMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'alphaMap' | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'emissiveMap' | 'emissive' | 'emissiveIntensity' | 'envMap' | 'flatShading' | 'lightMap' | 'lightMapIntensity' | 'texture' | 'normalMap' | 'normalScale' | 'reflectivity' | 'specularMap' | 'specular' | 'shininess';
 export declare class PhongMaterialBehavior extends MaterialBehavior {
     #private;
     alphaMap: string;

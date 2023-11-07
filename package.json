@@ -47,7 +47,7 @@
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
-		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . apps/docs/node_modules/lume",
+		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume",
 		"unlink": "npm run unlink:unix || npm run --script-shell=pwsh unlink:windows",
 		"unlink:unix": "rm -rf `find . -name node_modules`",
 		"unlink:windows": "Get-ChildItem -r -i node_modules | rm -r -fo",
@@ -57,7 +57,8 @@
 		"dev:all": "corepack yarn lerna run dev --parallel --scope lume --include-dependencies",
 		"clean:all": "corepack yarn lerna run clean --parallel --ignore classy-solid || echo 'clean:all: missing executables, skipping.'",
 		"// Note, we don't run tests in topological order with the -t option because all packages are already built in topological order first.": "",
-		"test:all": "corepack yarn lerna run test --parallel --scope lume --include-dependencies",
+		"// Note, we run all web test-runner tests first, then other packages' tests second, otherwise other packages somehow causes web test-runner to have module-not-found errors.": "",
+		"test:all": "cross-env TEST_ALL=true npm test && corepack yarn lerna run test --parallel --scope '{readem,@lume/kiwi,@lume/autolayout,@lume/three-projected-material,@lume/live-code}'",
 		"test:watch:all": "echo TODO corepack yarn lerna run test:watch --parallel --scope lume --include-dependencies # https://github.com/modernweb-dev/web/discussions/2522",
 		"prettier:all": "corepack yarn lerna run prettier --parallel --ignore classy-solid",
 		"prettier:check:all": "corepack yarn lerna run prettier:check --parallel --ignore classy-solid",
@@ -70,7 +71,6 @@
 		"docs:publish": "cd apps/docs && git push"
 	},
 	"dependencies": {
-		"@esm-bundle/chai": "^4.3.4-fix.0",
 		"@lume/autolayout": "^0.10.0",
 		"@lume/element": "^0.10.0",
 		"@lume/eventful": "^0.3.0",
@@ -86,8 +86,9 @@
 		"three": ">=0.139.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.9.2",
+		"@lume/cli": "^0.10.0",
 		"@types/three": ">=0.139.0",
+		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",
 		"husky": "^8.0.3",
 		"lerna": "^7.3.1",
@@ -96,7 +97,7 @@
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
-		"typescript": "4.6.3"
+		"typescript": "^5.0.0"
 	},
 	"repository": {
 		"type": "git",

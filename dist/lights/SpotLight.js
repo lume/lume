@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
 import { SpotLightHelper } from 'three/src/helpers/SpotLightHelper.js';
 import { numberAttribute, element, booleanAttribute, stringAttribute } from '@lume/element';
@@ -119,21 +116,16 @@ let SpotLight = class SpotLight extends PointLight {
     }
 };
 __decorate([
-    numberAttribute(60),
-    __metadata("design:type", Object)
+    numberAttribute(60)
 ], SpotLight.prototype, "angle", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], SpotLight.prototype, "penumbra", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    stringAttribute('')
 ], SpotLight.prototype, "target", null);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], SpotLight.prototype, "debug", void 0);
 SpotLight = __decorate([
     element('lume-spot-light', autoDefineElements)

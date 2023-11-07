@@ -22,7 +22,7 @@ interface SceneState {
     sizeChangeHandler: () => void;
     effects: SceneEffects;
 }
-export declare type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic';
+export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic';
 export declare class WebglRendererThree {
     #private;
     static singleton(): WebglRendererThree;

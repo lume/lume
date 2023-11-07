@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var Sizeable_1;
 import { createEffect, createRoot, on, untrack } from 'solid-js';
 import { attribute, element, reactive } from '@lume/element';
@@ -179,22 +176,16 @@ let Sizeable = Sizeable_1 = class Sizeable extends CompositionTracker(TreeNode) 
     }
 };
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], Sizeable.prototype, "__calculatedSize", void 0);
 __decorate([
-    attribute,
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    attribute
 ], Sizeable.prototype, "sizeMode", null);
 __decorate([
-    attribute,
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
+    attribute
 ], Sizeable.prototype, "size", null);
 Sizeable = Sizeable_1 = __decorate([
-    element,
-    __metadata("design:paramtypes", [])
+    element
 ], Sizeable);
 export { Sizeable };
 function isXYZPropertyFunction(f) {

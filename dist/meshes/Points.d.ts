@@ -1,7 +1,7 @@
 import { Points as ThreePoints } from 'three/src/objects/Points.js';
 import { Element3D } from '../core/Element3D.js';
 import type { Element3DAttributes } from '../core/Element3D.js';
-export declare type PointsAttributes = Element3DAttributes;
+export type PointsAttributes = Element3DAttributes;
 export declare class Points extends Element3D {
     static defaultBehaviors: {
         [k: string]: any;

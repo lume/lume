@@ -30,16 +30,16 @@ export declare class VisualLayers {
     __defaultBeforeEachCallback: () => void;
     __defaultAfterEachCallback: () => void;
 }
-declare type LayerName = string;
-declare type LayerNames = LayerName | LayerName[];
-declare type Layer = {
+type LayerName = string;
+type LayerNames = LayerName | LayerName[];
+type Layer = {
     name: LayerName;
     backingScene: THREE.Scene;
     order: number;
     visible: boolean;
 };
-declare type BeforeEachCallback = (layerName: LayerName) => void;
-declare type BeforeAllCallback = () => void;
-declare type AfterEachCallback = (layerName: LayerName) => void;
+type BeforeEachCallback = (layerName: LayerName) => void;
+type BeforeAllCallback = () => void;
+type AfterEachCallback = (layerName: LayerName) => void;
 export {};
 //# sourceMappingURL=VisualLayers.d.ts.map

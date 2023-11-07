@@ -1,8 +1,8 @@
-import { StopFunction } from '@lume/element';
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { type StopFunction } from '@lume/element';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 import type { PerspectiveCamera } from './PerspectiveCamera.js';
-export declare type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
+export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
 export declare class CameraRig extends Element3D {
     #private;
     readonly hasShadow: true;

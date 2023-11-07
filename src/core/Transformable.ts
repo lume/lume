@@ -1,7 +1,7 @@
 import {createEffect, createRoot, on} from 'solid-js'
 import {attribute, element} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
-import {Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction} from './Sizeable.js'
+import {Sizeable, type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
 import type {SizeableAttributes} from './Sizeable.js'
 

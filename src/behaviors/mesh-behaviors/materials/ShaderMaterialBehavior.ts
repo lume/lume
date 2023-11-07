@@ -5,7 +5,7 @@ import {ShaderMaterial} from 'three/src/materials/ShaderMaterial.js'
 import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vertex.glsl.js'
 // @ts-ignore, no type def
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 import {untrack} from 'solid-js'
 
 export type ShaderMaterialBehaviorAttributes =

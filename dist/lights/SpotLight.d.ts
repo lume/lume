@@ -1,7 +1,7 @@
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
-import { PointLight, PointLightAttributes } from './PointLight.js';
+import { PointLight, type PointLightAttributes } from './PointLight.js';
 import { Element3D } from '../core/index.js';
-export declare type SpotLightAttributes = PointLightAttributes;
+export type SpotLightAttributes = PointLightAttributes;
 export declare class SpotLight extends PointLight {
     #private;
     angle: number;

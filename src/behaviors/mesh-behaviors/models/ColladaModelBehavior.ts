@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {reactive, stringAttribute} from '../../attribute.js'
-import {ColladaLoader, Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
+import {ColladaLoader, type Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'

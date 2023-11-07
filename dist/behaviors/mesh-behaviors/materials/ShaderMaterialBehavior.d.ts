@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial.js';
-import { MaterialBehavior, MaterialBehaviorAttributes } from './MaterialBehavior.js';
-export declare type ShaderMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'uniforms' | 'vertexShader' | 'fragmentShader';
+import { MaterialBehavior, type MaterialBehaviorAttributes } from './MaterialBehavior.js';
+export type ShaderMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'uniforms' | 'vertexShader' | 'fragmentShader';
 export declare class ShaderMaterialBehavior extends MaterialBehavior {
     #private;
     get uniforms(): Record<string, any>;

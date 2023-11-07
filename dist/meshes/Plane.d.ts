@@ -1,5 +1,5 @@
-import { Mesh, MeshAttributes } from './Mesh.js';
-export declare type PlaneAttributes = MeshAttributes;
+import { Mesh, type MeshAttributes } from './Mesh.js';
+export type PlaneAttributes = MeshAttributes;
 export declare class Plane extends Mesh {
     static defaultBehaviors: {
         'plane-geometry': (initialBehaviors: string[]) => boolean;

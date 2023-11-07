@@ -1,7 +1,7 @@
 import { XYZNumberValues } from '../xyz-values/XYZNumberValues.js';
-import { Sizeable, XYZNumberValuesProperty, XYZNumberValuesPropertyFunction } from './Sizeable.js';
+import { Sizeable, type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction } from './Sizeable.js';
 import type { SizeableAttributes } from './Sizeable.js';
-export declare type TransformableAttributes = SizeableAttributes | 'position' | 'rotation' | 'scale' | 'origin' | 'alignPoint' | 'mountPoint';
+export type TransformableAttributes = SizeableAttributes | 'position' | 'rotation' | 'scale' | 'origin' | 'alignPoint' | 'mountPoint';
 export declare class Transformable extends Sizeable {
     constructor();
     set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction);

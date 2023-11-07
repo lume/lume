@@ -1,7 +1,7 @@
 import {stringAttribute, reactive} from '../../attribute.js'
 import 'element-behaviors'
 import {MeshLambertMaterial} from 'three/src/materials/MeshLambertMaterial.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 

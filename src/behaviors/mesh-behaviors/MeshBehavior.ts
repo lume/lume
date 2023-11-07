@@ -16,6 +16,8 @@ export type MeshComponentType = 'geometry' | 'material'
  */
 @reactive
 export abstract class MeshBehavior extends RenderableBehavior {
+	declare element: Mesh | Points | InstancedMesh | Line
+
 	override requiredElementType(): (typeof Mesh | typeof Points | typeof InstancedMesh | typeof Line)[] {
 		// At the moment, a "mesh" behavior can be used on Mesh, Points, or anything that has a geometry and a material.
 		// XXX An alternative to using arrays with multiple types is we could branch the class

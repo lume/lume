@@ -1,7 +1,7 @@
 import 'element-behaviors';
-import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
-export declare type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry';
+export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry';
 export declare class GltfModelBehavior extends RenderableBehavior {
     #private;
     src: string | null;

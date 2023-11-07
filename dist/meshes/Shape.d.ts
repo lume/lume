@@ -1,6 +1,6 @@
 import { Mesh } from './Mesh.js';
 import type { MeshAttributes } from './Mesh.js';
-export declare type ShapeAttributes = MeshAttributes;
+export type ShapeAttributes = MeshAttributes;
 export declare class Shape extends Mesh {
     static defaultBehaviors: {
         'shape-geometry': (initialBehaviors: any) => boolean;

@@ -7,7 +7,7 @@ export {
 	Index,
 	Match,
 	Show,
-	SplitProps,
+	type SplitProps,
 	Suspense,
 	SuspenseList,
 	Switch,

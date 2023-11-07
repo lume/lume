@@ -4,9 +4,9 @@
 
 import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
-import {element, numberAttribute, autorun, booleanAttribute, StopFunction, reactive} from '@lume/element'
+import {element, numberAttribute, autorun, booleanAttribute, type StopFunction, reactive} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'

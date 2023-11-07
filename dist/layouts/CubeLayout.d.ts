@@ -1,6 +1,6 @@
-import { ElementAttributes } from '@lume/element';
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
-declare type CubeLayoutAttributes = Element3DAttributes;
+import { type ElementAttributes } from '@lume/element';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+type CubeLayoutAttributes = Element3DAttributes;
 export declare class CubeLayout extends Element3D {
     #private;
     readonly hasShadow = true;

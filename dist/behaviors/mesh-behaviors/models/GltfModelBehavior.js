@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import 'element-behaviors';
 import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
 import { reactive, attribute, booleanAttribute, stringAttribute } from '../../attribute.js';
@@ -92,16 +89,13 @@ let GltfModelBehavior = class GltfModelBehavior extends RenderableBehavior {
     }
 };
 __decorate([
-    attribute,
-    __metadata("design:type", Object)
+    attribute
 ], GltfModelBehavior.prototype, "src", void 0);
 __decorate([
-    stringAttribute(defaultDracoDecoder),
-    __metadata("design:type", Object)
+    stringAttribute(defaultDracoDecoder)
 ], GltfModelBehavior.prototype, "dracoDecoder", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Object)
+    booleanAttribute(false)
 ], GltfModelBehavior.prototype, "centerGeometry", void 0);
 GltfModelBehavior = __decorate([
     reactive

@@ -1,13 +1,13 @@
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-import { ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
+import { type ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
 import type { TColor } from '../utils/three.js';
 import type { PerspectiveCamera } from '../cameras/PerspectiveCamera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
-export declare type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
 export declare class Scene extends SharedAPI {
     #private;
     readonly isScene = true;
@@ -81,6 +81,6 @@ declare global {
         'lume-scene': Scene;
     }
 }
-declare type FogMode = 'none' | 'linear' | 'expo2';
+type FogMode = 'none' | 'linear' | 'expo2';
 export {};
 //# sourceMappingURL=Scene.d.ts.map

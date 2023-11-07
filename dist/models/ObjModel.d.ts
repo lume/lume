@@ -1,6 +1,6 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { ObjModelBehavior, ObjModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/ObjModelBehavior.js';
-export declare type ObjModelAttributes = Element3DAttributes;
+export type ObjModelAttributes = Element3DAttributes;
 export declare class ObjModel extends Element3D {
     static defaultBehaviors: string[];
 }

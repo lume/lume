@@ -2,7 +2,7 @@ import { Mesh as ThreeMesh } from 'three/src/objects/Mesh.js';
 import { Element3D } from '../core/Element3D.js';
 import type { Material } from 'three/src/materials/Material.js';
 import type { Element3DAttributes } from '../core/Element3D.js';
-export declare type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow';
+export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow';
 export declare class Mesh extends Element3D {
     static defaultBehaviors: {
         [k: string]: any;
@@ -14,8 +14,8 @@ export declare class Mesh extends Element3D {
 }
 import type { ElementAttributes } from '@lume/element';
 import type { PhongMaterialBehavior, PhongMaterialBehaviorAttributes, LambertMaterialBehavior, LambertMaterialBehaviorAttributes, ElementWithBehaviors, ClipPlanesBehavior, ClipPlanesBehaviorAttributes, PhysicalMaterialBehavior, PhysicalMaterialBehaviorAttributes, StandardMaterialBehavior, StandardMaterialBehaviorAttributes } from '../index.js';
-declare type BehaviorInstanceTypes = PhongMaterialBehavior & LambertMaterialBehavior & StandardMaterialBehavior & PhysicalMaterialBehavior & ClipPlanesBehavior;
-declare type BehaviorAttributes = PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes | StandardMaterialBehaviorAttributes | PhysicalMaterialBehaviorAttributes | ClipPlanesBehaviorAttributes;
+type BehaviorInstanceTypes = PhongMaterialBehavior & LambertMaterialBehavior & StandardMaterialBehavior & PhysicalMaterialBehavior & ClipPlanesBehavior;
+type BehaviorAttributes = PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes | StandardMaterialBehaviorAttributes | PhysicalMaterialBehaviorAttributes | ClipPlanesBehaviorAttributes;
 export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {
 }
 declare module '@lume/element' {

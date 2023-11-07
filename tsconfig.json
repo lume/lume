@@ -1,25 +1,19 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
+		// legacy decorators until we switch to classy-solid and standard (non-legacy) decorators
+		"experimentalDecorators": true,
+
 		// Good practice: start with 'types' empty, then add types as needed. This
 		// prevents unwanted global types from polluting our space by default.
 
 		// TODO we need Jest `expect()` types. For now it is declared as (...a: any[]) => any in tests.
 		// "types": ["jest"],
 
-		// TypeScript 4.4 broke many applications because they removed or
-		// modified a ton of interfaces from lib.dom.d.ts, so skip type errors in
-		// node_modules. :(
-		// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1029
-		"skipLibCheck": true,
-
 		// TODO make the following options default in lume/cli
 
-		"noImplicitOverride": true,
+		"noImplicitOverride": true // TODO move to lume/cli
 		// "noUncheckedIndexedAccess": true // TODO enable, fix errors,
-		"useDefineForClassFields": true,
-		"lib": ["es2022", "dom"],
-		"target": "es2022" // must be done at cli v0.11, because 0.10 is for classy-solid, and develop is on 0.9 so we can't increment to 0.10.
 	},
 
 	// TODO Ideally we don't want test API type defs showing up in source code,

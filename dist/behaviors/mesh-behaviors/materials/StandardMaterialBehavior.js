@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import 'element-behaviors';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial.js';
 import { booleanAttribute, numberAttribute, reactive, stringAttribute } from '../../attribute.js';
@@ -57,72 +54,55 @@ let StandardMaterialBehavior = class StandardMaterialBehavior extends MaterialBe
     }
 };
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "aoMap", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], StandardMaterialBehavior.prototype, "aoMapIntensity", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "bumpMap", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], StandardMaterialBehavior.prototype, "bumpScale", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "displacementMap", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], StandardMaterialBehavior.prototype, "displacementScale", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], StandardMaterialBehavior.prototype, "displacementBias", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "texture", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "normalMap", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], StandardMaterialBehavior.prototype, "normalScale", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], StandardMaterialBehavior.prototype, "metalness", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "metalnessMap", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], StandardMaterialBehavior.prototype, "roughness", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], StandardMaterialBehavior.prototype, "roughnessMap", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Boolean)
+    booleanAttribute(false)
 ], StandardMaterialBehavior.prototype, "vertexTangents", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Boolean)
+    booleanAttribute(false)
 ], StandardMaterialBehavior.prototype, "morphTargets", void 0);
 __decorate([
-    booleanAttribute(false),
-    __metadata("design:type", Boolean)
+    booleanAttribute(false)
 ], StandardMaterialBehavior.prototype, "morphNormals", void 0);
 StandardMaterialBehavior = __decorate([
     reactive

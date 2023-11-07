@@ -3,7 +3,7 @@ import { ExtrudeGeometry } from 'three/src/geometries/ExtrudeGeometry.js';
 import { Shape } from 'three/src/extras/core/Shape.js';
 import { ShapeGeometry } from 'three/src/geometries/ShapeGeometry.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
-export declare type ShapeGeometryBehaviorAttributes = 'shape' | 'curveSegments' | 'bevel' | 'bevelSegments' | 'bevelThickness' | 'centerGeometry' | 'fitment';
+export type ShapeGeometryBehaviorAttributes = 'shape' | 'curveSegments' | 'bevel' | 'bevelSegments' | 'bevelThickness' | 'centerGeometry' | 'fitment';
 export declare class ShapeGeometryBehavior extends GeometryBehavior {
     __shape: Shape;
     get shape(): Shape;

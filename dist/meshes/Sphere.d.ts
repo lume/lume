@@ -1,5 +1,5 @@
-import { Mesh, MeshAttributes } from './Mesh.js';
-export declare type SphereAttributes = MeshAttributes;
+import { Mesh, type MeshAttributes } from './Mesh.js';
+export type SphereAttributes = MeshAttributes;
 export declare class Sphere extends Mesh {
     static defaultBehaviors: {
         'sphere-geometry': (initialBehaviors: string[]) => boolean;

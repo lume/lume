@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { element, numberAttribute, autorun, booleanAttribute, reactive } from '@lume/element';
@@ -201,92 +198,67 @@ let CameraRig = class CameraRig extends Element3D {
     }
 };
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], CameraRig.prototype, "verticalAngle", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Number),
-    __metadata("design:paramtypes", [Number])
+    numberAttribute(0)
 ], CameraRig.prototype, "initialPolarAngle", null);
 __decorate([
-    numberAttribute(-90),
-    __metadata("design:type", Object)
+    numberAttribute(-90)
 ], CameraRig.prototype, "minVerticalAngle", void 0);
 __decorate([
-    numberAttribute(-90),
-    __metadata("design:type", Number),
-    __metadata("design:paramtypes", [Number])
+    numberAttribute(-90)
 ], CameraRig.prototype, "minPolarAngle", null);
 __decorate([
-    numberAttribute(90),
-    __metadata("design:type", Object)
+    numberAttribute(90)
 ], CameraRig.prototype, "maxVerticalAngle", void 0);
 __decorate([
-    numberAttribute(90),
-    __metadata("design:type", Number),
-    __metadata("design:paramtypes", [Number])
+    numberAttribute(90)
 ], CameraRig.prototype, "maxPolarAngle", null);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], CameraRig.prototype, "horizontalAngle", void 0);
 __decorate([
-    numberAttribute(-Infinity),
-    __metadata("design:type", Object)
+    numberAttribute(-Infinity)
 ], CameraRig.prototype, "minHorizontalAngle", void 0);
 __decorate([
-    numberAttribute(Infinity),
-    __metadata("design:type", Object)
+    numberAttribute(Infinity)
 ], CameraRig.prototype, "maxHorizontalAngle", void 0);
 __decorate([
-    numberAttribute(1000),
-    __metadata("design:type", Object)
+    numberAttribute(1000)
 ], CameraRig.prototype, "distance", void 0);
 __decorate([
-    numberAttribute(1000),
-    __metadata("design:type", Number),
-    __metadata("design:paramtypes", [Number])
+    numberAttribute(1000)
 ], CameraRig.prototype, "initialDistance", null);
 __decorate([
-    numberAttribute(200),
-    __metadata("design:type", Object)
+    numberAttribute(200)
 ], CameraRig.prototype, "minDistance", void 0);
 __decorate([
-    numberAttribute(2000),
-    __metadata("design:type", Object)
+    numberAttribute(2000)
 ], CameraRig.prototype, "maxDistance", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], CameraRig.prototype, "active", void 0);
 __decorate([
-    numberAttribute(1),
-    __metadata("design:type", Object)
+    numberAttribute(1)
 ], CameraRig.prototype, "dollySpeed", void 0);
 __decorate([
-    booleanAttribute(true),
-    __metadata("design:type", Object)
+    booleanAttribute(true)
 ], CameraRig.prototype, "interactive", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Function)
+    reactive
 ], CameraRig.prototype, "cam", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Element3D)
+    reactive
 ], CameraRig.prototype, "rotationYTarget", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], CameraRig.prototype, "flingRotation", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], CameraRig.prototype, "scrollFling", void 0);
 __decorate([
-    reactive,
-    __metadata("design:type", Object)
+    reactive
 ], CameraRig.prototype, "pinchFling", void 0);
 CameraRig = __decorate([
     element('lume-camera-rig', autoDefineElements)

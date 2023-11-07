@@ -1,6 +1,6 @@
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { TdsModelBehavior, TdsModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/TdsModelBehavior.js';
-export declare type TdsModelAttributes = Element3DAttributes;
+export type TdsModelAttributes = Element3DAttributes;
 export declare class TdsModel extends Element3D {
     static defaultBehaviors: string[];
 }

@@ -1,8 +1,8 @@
 import 'element-behaviors';
 import { ProjectedMaterial } from '@lume/three-projected-material/dist/ProjectedMaterial.js';
-import { PhysicalMaterialBehavior, PhysicalMaterialBehaviorAttributes } from './PhysicalMaterialBehavior.js';
+import { PhysicalMaterialBehavior, type PhysicalMaterialBehaviorAttributes } from './PhysicalMaterialBehavior.js';
 import { TextureProjector } from '../../../textures/TextureProjector.js';
-export declare type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttributes | 'projectedTextures';
+export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttributes | 'projectedTextures';
 export declare class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
     #private;
     get projectedTextures(): Array<TextureProjector>;

@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial.js';
-import { MaterialBehavior, MaterialBehaviorAttributes } from './MaterialBehavior.js';
-export declare type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap';
+import { MaterialBehavior, type MaterialBehaviorAttributes } from './MaterialBehavior.js';
+export type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap';
 export declare class BasicMaterialBehavior extends MaterialBehavior {
     texture: string;
     specularMap: string;

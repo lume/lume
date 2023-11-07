@@ -11,7 +11,7 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/Per
 import {Color} from 'three/src/math/Color.js'
 import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
-import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
+import {WebglRendererThree, type ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'

@@ -1,6 +1,6 @@
 import {numberAttribute, booleanAttribute, element} from '@lume/element'
 import type {OrthographicCamera, PerspectiveCamera} from 'three'
-import {Light, LightAttributes} from './Light.js'
+import {Light, type LightAttributes} from './Light.js'
 
 export type LightWithShadowAttributes =
 	| LightAttributes

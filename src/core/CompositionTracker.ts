@@ -46,12 +46,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			for (const child of children) {
 				if (!(child instanceof CompositionTracker)) continue
 
-				// FIXME type narrowing not working, child is instanceof CompositionTracker
-
-				// @ts-expect-error broken type narrow
 				child.__isPossiblyDistributedToShadowRoot = true
-
-				// @ts-expect-error broken type narrow
 				this.__triggerChildUncomposedCallback(child, 'actual')
 			}
 
@@ -89,9 +84,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			for (const child of Array.from(this.__shadowRoot?.children || [])) {
 				if (child instanceof HTMLSlotElement && !child.assignedSlot) {
 					for (const distributed of child.assignedElements({flatten: true})) {
-						if (distributed instanceof CompositionTracker)
-							// @ts-expect-error FIXME type narrowing broken
-							result.push(distributed)
+						if (distributed instanceof CompositionTracker) result.push(distributed)
 					}
 				}
 			}
@@ -234,9 +227,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			// NOTE Logic here is similar to childConnectedCallback
 
 			if (child instanceof CompositionTracker) {
-				// @ts-expect-error FIXME broken type narrow
 				child.__shadowRootParent = this
-				// @ts-expect-error FIXME broken type narrow
 				this.__triggerChildComposedCallback(child, 'root')
 			} else if (child instanceof HTMLSlotElement) {
 				child.addEventListener('slotchange', this.__onChildSlotChange)
@@ -250,9 +241,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			// NOTE Logic here is similar to childDisconnectedCallback
 
 			if (child instanceof CompositionTracker) {
-				// @ts-expect-error FIXME broken type narrow
 				child.__shadowRootParent = null
-				// @ts-expect-error FIXME broken type narrow
 				this.__triggerChildUncomposedCallback(child, 'root')
 			} else if (child instanceof HTMLSlotElement) {
 				child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
@@ -338,7 +327,6 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 				// exist in multiple distributedChildren lists when there is a
 				// chain of assigned slots. For more info, see
 				// https://github.com/w3c/webcomponents/issues/611
-				// @ts-expect-error FIXME broken type narrow
 				const distributedParent = addedNode.__distributedParent
 				if (distributedParent) {
 					const distributedChildren = distributedParent.__distributedChildren
@@ -349,13 +337,10 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 				}
 
 				// The node is now distributed to `this` element.
-				// @ts-expect-error FIXME broken type narrow
 				addedNode.__distributedParent = this
 				if (!this.__distributedChildren) this.__distributedChildren = new Set()
-				// @ts-expect-error FIXME broken type narrow
 				this.__distributedChildren.add(addedNode)
 
-				// @ts-expect-error FIXME broken type narrow
 				this.__triggerChildComposedCallback(addedNode, 'slot')
 			}
 
@@ -365,13 +350,10 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 
 				if (!(removedNode instanceof CompositionTracker)) continue
 
-				// @ts-expect-error FIXME broken type narrow
 				removedNode.__distributedParent = null
-				// @ts-expect-error FIXME broken type narrow
 				this.__distributedChildren!.delete(removedNode)
 				if (!this.__distributedChildren!.size) this.__distributedChildren = undefined
 
-				// @ts-expect-error FIXME broken type narrow
 				this.__triggerChildUncomposedCallback(removedNode, 'slot')
 			}
 		}

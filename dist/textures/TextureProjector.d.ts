@@ -1,9 +1,9 @@
-import { ElementAttributes } from '@lume/element';
+import { type ElementAttributes } from '@lume/element';
 import { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
-import { Element3D, Element3DAttributes } from '../core/Element3D.js';
+import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { Fitment } from '@lume/three-projected-material/dist/ProjectedMaterial';
 import type { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-declare type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment';
+type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment';
 export declare class TextureProjector extends Element3D {
     src: string;
     fitment: Fitment;

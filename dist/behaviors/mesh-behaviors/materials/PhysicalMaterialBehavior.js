@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { numberAttribute, reactive, stringAttribute } from '../../attribute.js';
 import 'element-behaviors';
 import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial.js';
@@ -38,28 +35,22 @@ let PhysicalMaterialBehavior = class PhysicalMaterialBehavior extends StandardMa
     }
 };
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], PhysicalMaterialBehavior.prototype, "clearcoat", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], PhysicalMaterialBehavior.prototype, "clearcoatRoughness", void 0);
 __decorate([
-    numberAttribute(1.5),
-    __metadata("design:type", Object)
+    numberAttribute(1.5)
 ], PhysicalMaterialBehavior.prototype, "refractiveIndex", void 0);
 __decorate([
-    numberAttribute(0.5),
-    __metadata("design:type", Object)
+    numberAttribute(0.5)
 ], PhysicalMaterialBehavior.prototype, "reflectivity", void 0);
 __decorate([
-    numberAttribute(0),
-    __metadata("design:type", Object)
+    numberAttribute(0)
 ], PhysicalMaterialBehavior.prototype, "transmission", void 0);
 __decorate([
-    stringAttribute(''),
-    __metadata("design:type", Object)
+    stringAttribute('')
 ], PhysicalMaterialBehavior.prototype, "transmissionMap", void 0);
 PhysicalMaterialBehavior = __decorate([
     reactive
