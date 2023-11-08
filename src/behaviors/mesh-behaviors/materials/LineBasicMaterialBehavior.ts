@@ -1,7 +1,8 @@
-import {reactive, stringAttribute} from '../../attribute.js'
+import {stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {LineBasicMaterial} from 'three/src/materials/LineBasicMaterial.js'
 import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {behavior} from '../../Behavior.js'
 
 export type LineBasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture'
 
@@ -27,7 +28,7 @@ backed by Three.js `LineBasicMaterial` underneath. This is typically paired with
 
 @extends MaterialBehavior
 */
-@reactive
+@behavior
 export class LineBasicMaterialBehavior extends MaterialBehavior {
 	/**
 	 * @property {string} texture - A texture to set color along the line.
@@ -35,7 +36,7 @@ export class LineBasicMaterialBehavior extends MaterialBehavior {
 	 * material. Most likely you'll supply UVs by copying data from a modeling
 	 * program like Blender, probably not something you'd program manually.
 	 */
-	@stringAttribute('') texture = ''
+	@stringAttribute texture = ''
 
 	override _createComponent() {
 		return new LineBasicMaterial()

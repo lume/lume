@@ -6,7 +6,7 @@
 import {untrack, onCleanup} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
-import {DoubleSide, FrontSide, BackSide, type Side, type SRGBColorSpace} from 'three/src/constants.js'
+import {DoubleSide, FrontSide, BackSide, type Side, SRGBColorSpace} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
 import {booleanAttribute, stringAttribute, numberAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'

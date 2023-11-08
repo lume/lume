@@ -1,10 +1,12 @@
-import {attribute, booleanAttribute, reactive, stringAttribute} from '../../attribute.js'
+import {attribute, booleanAttribute, stringAttribute} from '@lume/element'
 import 'element-behaviors'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
+import {Float32BufferAttribute} from 'three/src/core/BufferAttribute.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {stringToNumberArray} from '../../../meshes/utils.js'
 // import {handleInvertedGeometry} from './utils/handleInvertedGeometry.js'
-import {Float32BufferAttribute} from 'three/src/core/BufferAttribute.js'
+import { behavior } from '../../Behavior.js'
+
 
 export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitment'
 
@@ -29,7 +31,7 @@ default. This is typically paired with
 
 @extends GeometryBehavior
 */
-@reactive
+@behavior
 export class LineGeometryBehavior extends GeometryBehavior {
 	__points: number[] = []
 
@@ -95,7 +97,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * around the local origin of the element.
 	 * @default false
 	 */
-	@booleanAttribute(false) centerGeometry = false
+	@booleanAttribute centerGeometry = false
 
 	/* TODO
 	 * @property {string} fitment - Determines how to fit the line within the
@@ -104,7 +106,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values for
 	 * details.
 	 */
-	@stringAttribute('none') fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
+	@stringAttribute fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
 
 	override _createComponent() {
 		const geometry = new BufferGeometry()
