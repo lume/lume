@@ -2,8 +2,8 @@ import 'element-behaviors'
 import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {attribute, booleanAttribute, stringAttribute} from '@lume/element'
 import {Scene} from 'three/src/scenes/Scene.js'
-import {DRACOLoader} from '../../../lib/three/examples/jsm/loaders/DRACOLoader.js'
-import {GLTFLoader, GLTF} from '../../../lib/three/examples/jsm/loaders/GLTFLoader.js'
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
+import {GLTFLoader, type GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {disposeObjectTree} from '../../../utils/three.js'
@@ -47,6 +47,11 @@ class GltfModelBehavior extends RenderableBehavior {
 	 *
 	 * When `true`, all geometry of the
 	 * loaded model will be centered at the local origin.
+	 *
+	 * Note, changing this value at runtime is expensive because the whole model
+	 * will be re-created. We improve this by tracking the initial center
+	 * position to revert to when centerGeometry goes back to `false` (PRs
+	 * welcome!).
 	 */
 	@booleanAttribute @receiver centerGeometry = false
 
@@ -127,7 +132,7 @@ class GltfModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent | Error) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${
 			this.dracoDecoder
 		}". See the following error.`
@@ -155,14 +160,13 @@ class GltfModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('gltf-model')) elementBehaviors.define('gltf-model', GltfModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('gltf-model'))
+	elementBehaviors.define('gltf-model', GltfModelBehavior)
 
 function getDracoLoader(url: string) {
 	let dracoLoader: DRACOLoader
 
 	if (!dracoLoaders.has(url)) {
-		console.log('MAKE DRACO LOADER', url)
-
 		dracoLoader = new DRACOLoader()
 		dracoLoader.setDecoderPath(url)
 		dracoLoaders.set(url, {count: 1, dracoLoader})
@@ -181,7 +185,6 @@ function disposeDracoLoader(url: string) {
 	const ref = dracoLoaders.get(url)!
 	ref.count--
 	if (!ref.count) {
-		console.log('DISPOSE DRACO LOADER', url)
 		ref.dracoLoader.dispose()
 		dracoLoaders.delete(url)
 	}

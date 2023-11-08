@@ -1,5 +1,5 @@
 import {untrack, onCleanup} from 'solid-js'
-import {MeshBehavior, MeshComponentType} from './MeshBehavior.js'
+import {MeshBehavior, type MeshComponentType} from './MeshBehavior.js'
 
 import type {Material} from 'three/src/materials/Material.js'
 import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
@@ -9,7 +9,7 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
  * Abstract base class for Geometry and Material behaviors, not intended for direct use.
  *
  * Subclasses should implement:
- * _createComponent() - return a geometry or material instance.
+ * _createComponent() - return a BufferGeometry or Material instance.
  *
  * @extends MeshBehavior
  */
@@ -48,7 +48,7 @@ export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 
 		// untrack in case we make .three reactive later
 		untrack(() => {
-			// @ts-expect-error not type safe, but shows what we intend
+			// @ts-expect-error FIXME
 			this.element.three[this.type] = newComponent
 		})
 

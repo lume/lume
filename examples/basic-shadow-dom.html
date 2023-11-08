@@ -1,4 +1,4 @@
-<script src="./wrapper.js" title="ShadowDOM"></script>
+<script src="./template.js" template="./template.html" title="ShadowDOM"></script>
 
 <!--
 
@@ -38,74 +38,65 @@ The code below is commented to describe which parts correlate to the above list 
 	}
 </style>
 
-<script>
-	// Make sure this one works too, before HTML parsing.
-	// LUME.defineElements()
-</script>
-
 <!-- Body will have a ShadowRoot, and this lume-box will be distributed to (render relative to) the following LUME Scene inside the ShadowRoot. -->
 <lume-box color="purple" slot="outsidenode" size="30 30 30" align-point="0.3 0.3"></lume-box>
 
-<script>
-	LUME.defineElements()
-
-	const {html} = LUME
+<script type="module">
+	import {html} from 'lume'
 
 	const bodyRoot = document.body.attachShadow({mode: 'open'})
 	let innerContainer
 
-	bodyRoot.append(
-		html`
-			<div ref=${el => (innerContainer = el)} style="width: 100%; height: 100%; border: 5px solid blue;">
-				<div
-					style="width: 100%; height: 100%; border: 5px solid pink;"
-					slot="scene"
-					TODO="try without this wrapper div to see that slotting a scene does not work (and try to fix)"
-				>
-					<lume-scene id="scene" webgl style="background: skyblue">
-						<slot name="outsidenode">
-							<!-- The lume-box from the main document should render relative to here. -->
-						</slot>
+	bodyRoot.append(html`
+		<div ref=${el => (innerContainer = el)} style="width: 100%; height: 100%; border: 5px solid blue;">
+			<div
+				style="width: 100%; height: 100%; border: 5px solid pink;"
+				slot="scene"
+				TODO="try without this wrapper div to see that slotting a scene does not work (and try to fix)"
+			>
+				<lume-scene id="scene" webgl physically-correct-lights style="background: skyblue">
+					<slot name="outsidenode">
+						<!-- The lume-box from the main document should render relative to here. -->
+					</slot>
 
-						<lume-ambient-light intensity="0.7" color="skyblue"></lume-ambient-light>
+					<lume-ambient-light intensity="0.7" color="skyblue"></lume-ambient-light>
 
-						<lume-point-light
-							id="light"
-							color="white"
-							position="300 300 400"
-							size="0 0 0"
-							cast-shadow="true"
-							intensity="0.8"
-						>
-						</lume-point-light>
+					<lume-point-light
+						id="light"
+						color="white"
+						position="300 300 400"
+						size="0 0 0"
+						cast-shadow="true"
+						intensity="600"
+					>
+					</lume-point-light>
 
-						<lume-box
-							id="lightdom"
-							rotation="40 40 0"
-							align-point="0.5 0.5 0"
+					<lume-box
+						id="lightdom"
+						rotation="40 40 0"
+						align-point="0.5 0.5 0"
+						size="40 40 40"
+						color="white"
+						COMMENT-otherwise-the-material-will-be-tinted-random-color
+						texture="../apps/docs/textures/cement.jpg"
+					>
+						<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
+						<lume-sphere
+							id="distributedSphere"
+							color="pink"
+							Xslot="box"
+							slot="plane"
 							size="40 40 40"
-							color="white"
-							COMMENT-otherwise-the-material-will-be-tinted-random-color
-							texture="../docs/textures/cement.jpg"
+							position="-30 -30 -30"
+							texture="../apps/docs/textures/cement.jpg"
 						>
-							<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
-							<lume-sphere
-								id="distributedSphere"
-								color="pink"
-								Xslot="box"
-								slot="plane"
-								size="40 40 40"
-								position="-30 -30 -30"
-								texture="../docs/textures/cement.jpg"
-							>
-								<lume-camera-rig align-point="0.5 0.5 0.5"></lume-camera-rig>
-							</lume-sphere>
-						</lume-box>
-					</lume-scene>
-				</div>
+							<lume-camera-rig align-point="0.5 0.5 0.5"></lume-camera-rig>
+						</lume-sphere>
+					</lume-box>
+				</lume-scene>
 			</div>
-		`,
-	)
+		</div>
+	`)
 
 	const light = bodyRoot.querySelector('#light')
 	const sphere = bodyRoot.querySelector('#distributedSphere')
@@ -207,7 +198,13 @@ The code below is commented to describe which parts correlate to the above list 
 			setTimeout(() => {
 				let nodes = []
 				scene.traverseSceneGraph(n => nodes.push(n))
-				if (nodes.length !== 11) throw new Error('Composed tree size not as expected.')
+				if (nodes.length !== 11) {
+					// TODO This error happens. Not sure if this broke, or if I
+					// forgot to update it, but ShadowDOM tests pass and
+					// examples work.
+					console.error(nodes)
+					throw new Error('Composed tree size not as expected. Got: ' + nodes.length)
+				}
 			})
 
 			let i = 0

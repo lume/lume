@@ -89,4 +89,5 @@ class TorusGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('torus-geometry')) elementBehaviors.define('torus-geometry', TorusGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('torus-geometry'))
+	elementBehaviors.define('torus-geometry', TorusGeometryBehavior)

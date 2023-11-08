@@ -8,4 +8,5 @@ export class BoxGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('box-geometry')) elementBehaviors.define('box-geometry', BoxGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('box-geometry'))
+	elementBehaviors.define('box-geometry', BoxGeometryBehavior)

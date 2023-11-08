@@ -3,7 +3,7 @@ import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {PLYLoader} from '../../../lib/three/examples/jsm/loaders/PLYLoader.js'
+import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {Points} from '../../../meshes/Points.js'
@@ -42,6 +42,8 @@ class PlyGeometryBehavior extends GeometryBehavior {
 
 	loader: PLYLoader | null = null
 	@signal model: BufferGeometry | null = null
+
+	declare element: Points
 
 	override requiredElementType(): [typeof Points] {
 		return [Points]
@@ -108,7 +110,7 @@ class PlyGeometryBehavior extends GeometryBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent | Error) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`
@@ -125,4 +127,5 @@ class PlyGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('ply-geometry')) elementBehaviors.define('ply-geometry', PlyGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('ply-geometry'))
+	elementBehaviors.define('ply-geometry', PlyGeometryBehavior)

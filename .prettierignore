@@ -2,18 +2,6 @@ node_modules/
 .vscode
 
 dist/
-packages/
-apps/
-
-# ignore auto-generated docs files.
-docs/api
-docs/global.js
-
-# ignore _sidebar.md because part of it is auto-generated.
-docs/_sidebar.md
-
-# ignore auto-linked files
-docs/guide/includes/*.md
 
 # files imported from other libs, don't format or else it is harder to tell the
 # diff for merging new features.

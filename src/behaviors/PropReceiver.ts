@@ -40,7 +40,7 @@ const isPropReceiverClass: unique symbol = Symbol()
  * console.log(behavior.foo) // 123
  * ```
  */
-export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T = Object as any) {
+export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
 	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
 	// from PossibleCustomElement), and we can have a separate mixin for that.
 
@@ -57,19 +57,20 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		}
 
 		override connectedCallback() {
-			super.connectedCallback && super.connectedCallback()
+			super.connectedCallback?.()
 			this.#observeProps()
 		}
 
 		override disconnectedCallback() {
-			super.disconnectedCallback && super.disconnectedCallback()
+			super.disconnectedCallback?.()
 			this.#unobserveProps()
 		}
 
 		/**
+		 * @abstract
 		 * @property {object} observedObject
 		 *
-		 * `protected` `readonly`
+		 * `abstract` `protected` `readonly`
 		 *
 		 * A subclass should specify the object to observe by defining a `get observedObject` getter.
 		 */
@@ -119,9 +120,9 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 		 */
 		static receivedProperties?: PropertyKey[]
 
-		__forwardedProps(): PropertyKey[] {
+		__forwardedProps(): (keyof this['observedObject'])[] {
 			const ctor = this.constructor as typeof PropReceiver
-			const props = ctor.receivedProperties || []
+			const props = (ctor.receivedProperties || []) as (keyof this['observedObject'])[]
 			// @prod-prune
 			if (!Array.isArray(props)) throw new TypeError('Expected static receivedProperties to be an array.')
 			return props
@@ -137,7 +138,7 @@ export function PropReceiver<T extends Constructor<CustomElementLike>>(Base: T =
 	}
 }
 
-export interface CustomElementLike {
+export interface PossiblyCustomElement {
 	connectedCallback?(): void
 	disconnectedCallback?(): void
 	adoptedCallback?(): void

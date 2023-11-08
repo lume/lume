@@ -3,7 +3,7 @@ import 'element-behaviors'
 import {MeshLambertMaterial} from 'three/src/materials/MeshLambertMaterial.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 
@@ -45,13 +45,18 @@ class LambertMaterialBehavior extends MaterialBehavior {
 			() => this.texture,
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.specularMap,
 			(mat, tex) => (mat.specularMap = tex),
 			mat => !!mat.specularMap,
+			() => {},
+			true,
 		)
 	}
 }
 
-if (!elementBehaviors.has('lambert-material')) elementBehaviors.define('lambert-material', LambertMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('lambert-material'))
+	elementBehaviors.define('lambert-material', LambertMaterialBehavior)

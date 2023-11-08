@@ -3,13 +3,13 @@ import {defineElements} from 'lume'
 import * as React from 'react'
 import {Component, createRef} from 'react'
 
-import bodyModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/body.dae'
-import pmcModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc.dae'
-import pmcSkinModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc_skin_.dae'
-import pmcBumperModelUrl from '../../../docs/examples/nasa-astrobee-robot/astrobee/pmc_bumper.dae'
+import bodyModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/body.dae'
+import pmcModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc.dae'
+import pmcSkinModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc_skin_.dae'
+import pmcBumperModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc_bumper.dae'
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
-import lunaStation from '../../../docs/examples/nasa-astrobee-robot/luna-station.jpg'
+import lunaStation from '../../../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg'
 
 defineElements()
 

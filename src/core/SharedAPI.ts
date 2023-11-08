@@ -34,8 +34,7 @@ const elOps = new WeakMap<SharedAPI, ElementOperations>()
 const ourThreeObjects = new WeakSet<Object3D>()
 const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
 
-class GLEffects extends Effectful(Object) {}
-class CSSEffects extends Effectful(Object) {}
+class Effects extends Effectful(Object) {}
 
 const opacity = new WeakMap<Transformable, number>()
 
@@ -352,6 +351,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	override disconnectedCallback(): void {
 		super.disconnectedCallback()
 
+		this.stopEffects()
 		this.__unloadThree(this)
 		this._scene = null
 	}
@@ -586,7 +586,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		return composedLumeParent
 	}
 
-	#glEffects = new GLEffects()
+	#glEffects = new Effects()
 
 	createGLEffect(fn: () => void) {
 		this.#glEffects.createEffect(fn)
@@ -633,7 +633,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		return true
 	}
 
-	#cssEffects = new CSSEffects()
+	#cssEffects = new Effects()
 
 	createCSSEffect(fn: () => void) {
 		this.#cssEffects.createEffect(fn)
@@ -776,8 +776,6 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 
 		// NOTE We negate Y translation in several places below so that Y
 		// goes downward like in DOM's CSS transforms.
-
-		// TODO Make an option that configures whether Y goes up or down.
 
 		this.three.position.set(
 			appliedPosition[0] + threeJsPostAdjustment[0],
@@ -1059,6 +1057,50 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 			]
 		}
 	}
+
+	static override css = /*css*/ `
+		:host {
+			/*
+			 * All items of the scene graph are hidden until they are mounted in
+			 * a scene (this changes to display:block). This gets toggled
+			 * between "none" and "block" by SharedAPI depending on if CSS
+			 * rendering is enabled.
+			 */
+			display: none;
+
+			/*
+			Layout of a node's CSS rectangle is never affected by anything
+			outside of it. We don't contain paint because CSS content can
+			overflow if desired, or size because eventually we'll add natural
+			sizing to let the node be sized by its content.
+			*/
+			contain: layout;
+
+			/* TODO see how content-visibility affects CSS performance with nodes that are off-screen. */
+			/* content-visibility: auto; implies contain:strict */
+
+			box-sizing: border-box;
+			position: absolute;
+			top: 0;
+			left: 0;
+
+			/*
+			 * Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM
+			 * elements, but does for 3D objects in WebGL that have any size
+			 * along Z.)
+			 */
+			transform-origin: 50% 50% 0; /* default */
+
+			transform-style: preserve-3d;
+
+			/*
+			 * Force anti-aliasing of 3D element edges using an invisible shadow.
+			 * https://stackoverflow.com/questions/6492027
+			 * Perhaps allow this to be configured with an antialiased attribute?
+			 */
+			/*box-shadow: 0 0 1px rgba(255, 255, 255, 0); currently is very very slow, https://crbug.com/1405629*/
+		}
+	`
 }
 
 if (isDomEnvironment()) {
@@ -1071,8 +1113,10 @@ if (isDomEnvironment()) {
 		if (/Illegal constructor/i.test(error.message)) {
 			console.error(`
 				One of the reasons the following error can happen is if a Custom
-				Element is called with 'new' before being defined. Did you forget
-				to call 'LUME.defineElements()'?  For other reasons, see:
+				Element is called with 'new' before being defined. Did you set
+				window.$lume.autoDefineElements to false and then forget to call
+				'LUME.defineElements()' or to call '.defineElement()' on
+				individual Lume classes?  For other reasons, see:
 				https://www.google.com/search?q=chrome%20illegal%20constructor
 			`)
 		}

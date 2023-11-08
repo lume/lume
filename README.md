@@ -23,7 +23,7 @@ together as a whole:
 ### [`lume`](./README.md) - HTML elements for rich graphics
 
 HTML elements for easily defining rich and interactive 2D or 3D applications
-powered by CSS3D, WebGL, or both mixed together.
+powered by CSS3D, WebGL, or a combination of both.
 
 This package uses and re-exports features from the below packages.
 
@@ -56,7 +56,7 @@ A first-person shooter game foundation made with LUME, Solid.js, and Meteor.
 
 ## Getting involved
 
-There's various ways to get involved!
+There are various ways to get involved!
 
 - Visit the [documentation](//lume.io/docs) and make something awesome!
 - Submit fixes or new features to any packages or the website! See the
@@ -66,4 +66,4 @@ There's various ways to get involved!
 
 ## Status
 
-![](https://github.com/lume/lume/workflows/tests/badge.svg)
+[![tests](https://github.com/lume/lume/actions/workflows/tests.yml/badge.svg)](https://github.com/lume/lume/actions/workflows/tests.yml)

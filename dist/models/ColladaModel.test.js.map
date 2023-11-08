@@ -1,0 +1,1 @@
+{"version":3,"file":"ColladaModel.test.js","sourceRoot":"","sources":["../../src/models/ColladaModel.test.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,YAAY,EAAC,MAAM,mBAAmB,CAAA;AAE9C,QAAQ,CAAC,cAAc,EAAE,GAAG,EAAE;IAC7B,EAAE,CAAC,wDAAwD,EAAE,GAAG,EAAE;QACjE,CAAC,KAAM,SAAQ,YAAY;YAC1B,IAAI;gBACH,IAAI,CAAC,GAAG,CAAA;YACT,CAAC;SACD,CAAA;IAGF,CAAC,CAAC,CAAA;AACH,CAAC,CAAC,CAAA"}

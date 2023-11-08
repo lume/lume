@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import {Mesh, MeshAttributes} from './Mesh.js'
+import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 // TODO We need attributes from behaviors too.

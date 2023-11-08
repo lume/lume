@@ -1,4 +1,4 @@
-<script src="../wrapper.js" title="ShimmerCube"></script>
+<script src="../template.js" template="../template.html" importmap="../importmap.js" title="ShimmerCube"></script>
 
 <style>
 	html,
@@ -7,17 +7,11 @@
 	}
 </style>
 
-<script src="./shimmer-cube.js"></script>
-
-<script>
-	LUME.defineElements()
-</script>
-
-<lume-scene webgl="true">
+<lume-scene webgl="true" physically-correct-lights>
 	<lume-ambient-light intensity="0.7"></lume-ambient-light>
 
 	<lume-camera-rig min-distance="250" max-distance="1000" initial-distance="400" align-point="0.5 0.5 0.5">
-		<lume-point-light position="0 0 600" slot="camera-child"></lume-point-light>
+		<lume-point-light intensity="4000" position="0 0 600" slot="camera-child"></lume-point-light>
 	</lume-camera-rig>
 
 	<shimmer-cube
@@ -29,7 +23,9 @@
 	></shimmer-cube>
 </lume-scene>
 
-<script>
+<script type="module">
+	import './shimmer-cube.js'
+
 	const cube = document.querySelector('shimmer-cube')
 	cube.rotation = (x, y, z, t) => [x, 90 * Math.sin(t * 0.001), z]
 </script>

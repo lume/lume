@@ -1,6 +1,10 @@
-import {defineElements} from '../index.js'
+import '../index.js'
 
-defineElements()
+// TODO move type def to @lume/cli, map @types/jest's `expect` type into the
+// global env.
+declare global {
+	function expect(...args: any[]): any
+}
 
 describe('Scene', () => {
 	let container: HTMLDivElement = document.createElement('div')

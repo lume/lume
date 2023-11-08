@@ -8,7 +8,7 @@ import default_vertex from 'three/src/renderers/shaders/ShaderChunk/default_vert
 import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fragment.glsl.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type ShaderMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -86,4 +86,5 @@ class ShaderMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('shader-material')) elementBehaviors.define('shader-material', ShaderMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('shader-material'))
+	elementBehaviors.define('shader-material', ShaderMaterialBehavior)

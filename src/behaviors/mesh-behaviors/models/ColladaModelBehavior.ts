@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
-import {ColladaLoader, Collada} from '../../../lib/three/examples/jsm/loaders/ColladaLoader.js'
+import {ColladaLoader, type Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
@@ -69,7 +69,7 @@ class ColladaModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`
@@ -87,4 +87,5 @@ class ColladaModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('collada-model')) elementBehaviors.define('collada-model', ColladaModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('collada-model'))
+	elementBehaviors.define('collada-model', ColladaModelBehavior)

@@ -16,6 +16,15 @@ export type PhysicalMaterialBehaviorAttributes =
 	| 'transmission'
 	| 'transmissionMap'
 
+/**
+ * @class PhysicalMaterialBehavior -
+ *
+ * An extension of the [`StandardMaterialBehavior`](./StandardMaterialBehavior), providing more advanced physically-based rendering properties.
+ *
+ * Backed by Three.js [`THREE.MeshPhysicalMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshPhysicalMaterial)
+ *
+ * @extends MaterialBehavior
+ */
 export {PhysicalMaterialBehavior}
 @behavior
 class PhysicalMaterialBehavior extends StandardMaterialBehavior {
@@ -72,4 +81,5 @@ class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('physical-material')) elementBehaviors.define('physical-material', PhysicalMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('physical-material'))
+	elementBehaviors.define('physical-material', PhysicalMaterialBehavior)

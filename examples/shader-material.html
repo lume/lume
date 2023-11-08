@@ -1,16 +1,17 @@
-<script src="./wrapper.js" title="shader-material"></script>
+<script src="./template.js" template="./template.html" title="shader-material"></script>
 
 <lume-scene
 	id="scene"
 	webgl
-	environment="../docs/examples/nasa-astrobee-robot/luna-station.jpg"
-	background="../docs/examples/nasa-astrobee-robot/luna-station.jpg"
+	environment="../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg"
+	background="../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg"
 	equirectangular-background="true"
+	physically-correct-lights
 >
 	<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
 	<lume-camera-rig align-point="0.5 0.5 0.5">
-		<lume-point-light slot="camera-child" position="500 500 200" intensity="0.4"></lume-point-light>
+		<lume-point-light slot="camera-child" position="500 500 200" intensity="3000"></lume-point-light>
 	</lume-camera-rig>
 
 	<lume-box
@@ -84,8 +85,8 @@
 	</lume-box>
 </lume-scene>
 
-<script>
-	LUME.defineElements()
+<script type="module">
+	import * as LUME from 'lume'
 
 	const outerCubes = true
 	const outerCubeGlows = false

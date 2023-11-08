@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# unstash only if there was a stash
+(git stash list | grep COMMIT_HOOK_STASH) && git stash pop

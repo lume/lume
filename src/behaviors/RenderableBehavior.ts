@@ -12,7 +12,10 @@ import {Effectful} from '../core/Effectful.js'
  *
  * @extends Behavior
  */
+// @Xts-expect-error broken type checking in latest TypeScript (https://github.com/microsoft/TypeScript/issues/56330)
 export abstract class RenderableBehavior extends Effectful(Behavior) {
+	declare element: Element3D
+
 	override requiredElementType() {
 		return [Element3D]
 	}

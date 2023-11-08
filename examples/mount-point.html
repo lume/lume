@@ -1,4 +1,4 @@
-<script src="./wrapper.js" title="mount-point"></script>
+<script src="./template.js" template="./template.html" title="mount-point"></script>
 
 <style>
 	html,
@@ -34,9 +34,9 @@
 	}
 </style>
 
-<lume-scene id="scene" perspective="800" webgl>
+<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
-	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 400" intensity="0.5"></lume-point-light>
+	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 400" intensity="1500"></lume-point-light>
 
 	<lume-element3d id="root" size="0 0 0" align-point="0.5 0.5 0.5" rotation="-10 30 0">
 		<!-- prettier-ignore -->
@@ -69,8 +69,8 @@
 	</lume-element3d>
 </lume-scene>
 
-<script>
-	LUME.defineElements()
+<script type="module">
+	import 'lume'
 
 	setInterval(() => {
 		scene.webgl = !scene.webgl

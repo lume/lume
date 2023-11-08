@@ -29,5 +29,5 @@ export class MixedPlaneGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('mixedplane-geometry'))
+if (globalThis.window?.document && !elementBehaviors.has('mixedplane-geometry'))
 	elementBehaviors.define('mixedplane-geometry', MixedPlaneGeometryBehavior)

@@ -1,6 +1,6 @@
-import {Element3D, Element3DAttributes} from './Element3D.js'
+import {Element3D, type Element3DAttributes} from './Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {element, ElementAttributes} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 
 /** @deprecated Use `Element3DAttributes` instead. */
 export type NodeAttributes = Element3DAttributes

@@ -54,7 +54,8 @@ class PointLight extends LightWithShadow {
 	 * enabled, intensity is the luminous intensity of the light measured in
 	 * candela (cd).
 	 */
-	@numberAttribute override intensity: number = 1
+	// CONTINUE make sure reactivity works, in develop we moved the override into constructor to fix broken reactivity.
+	@numberAttribute override intensity = 1
 
 	// These map to THREE.PointLightShadow properties, which uses a perspective camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow

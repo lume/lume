@@ -62,7 +62,7 @@ class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('rounded-rectangle-geometry'))
+if (globalThis.window?.document && !elementBehaviors.has('rounded-rectangle-geometry'))
 	elementBehaviors.define('rounded-rectangle-geometry', RoundedRectangleGeometryBehavior)
 
 // Based on Three.js example: https://github.com/mrdoob/three.js/blob/159a40648ee86755220491d4f0bae202235a341c/examples/webgl_geometry_shapes.html#L237

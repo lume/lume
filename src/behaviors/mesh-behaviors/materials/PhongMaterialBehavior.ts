@@ -4,7 +4,7 @@ import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {numberAttribute, stringAttribute, booleanAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type PhongMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -29,6 +29,20 @@ export type PhongMaterialBehaviorAttributes =
 	| 'specular'
 	| 'shininess'
 
+/**
+ * @class PhongMaterialBehavior -
+ *
+ * A cheaper type of material with less realism, based on older principles,
+ * [named after computer graphics pioneer Bui Tuong
+ * Phong](https://en.wikipedia.org/wiki/Phong_shading), not as realistic as
+ * [`StandardMaterialBehavior`](./StandardMaterialBehavior) or
+ * [`PhysicalMaterialBehavior`](./PhysicalMaterialBehavior) can be with their
+ * "physically-based rendering (PBR)" algorithms.
+ *
+ * Backed by Three.js [`THREE.MeshPhongMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshPhongMaterial).
+ *
+ * @extends MaterialBehavior
+ */
 export {PhongMaterialBehavior}
 @behavior
 class PhongMaterialBehavior extends MaterialBehavior {
@@ -146,6 +160,8 @@ class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.emissiveMap,
 			(mat, tex) => (mat.emissiveMap = tex),
 			mat => !!mat.emissiveMap,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.envMap,
@@ -161,6 +177,8 @@ class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.texture, // map
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.normalMap,
@@ -171,8 +189,11 @@ class PhongMaterialBehavior extends MaterialBehavior {
 			() => this.specularMap,
 			(mat, tex) => (mat.specularMap = tex),
 			mat => !!mat.specularMap,
+			() => {},
+			true,
 		)
 	}
 }
 
-if (!elementBehaviors.has('phong-material')) elementBehaviors.define('phong-material', PhongMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('phong-material'))
+	elementBehaviors.define('phong-material', PhongMaterialBehavior)

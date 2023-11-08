@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
-import {TDSLoader} from '../../../lib/three/examples/jsm/loaders/TDSLoader.js'
+import {TDSLoader} from 'three/examples/jsm/loaders/TDSLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
@@ -71,7 +71,7 @@ class TdsModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${
 			this.src
 		}". See the following error.`
@@ -89,4 +89,5 @@ class TdsModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('3ds-model')) elementBehaviors.define('3ds-model', TdsModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('3ds-model'))
+	elementBehaviors.define('3ds-model', TdsModelBehavior)

@@ -1,8 +1,8 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
-import {OBJLoader} from '../../../lib/three/examples/jsm/loaders/OBJLoader.js'
-import {MTLLoader} from '../../../lib/three/examples/jsm/loaders/MTLLoader.js'
+import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
@@ -117,7 +117,7 @@ class ObjModelBehavior extends RenderableBehavior {
 		)
 	}
 
-	#onError(error: ErrorEvent) {
+	#onError(error: unknown) {
 		const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${this.obj}" and mtl value "${
 			this.mtl
 		}". See the following error.`
@@ -164,7 +164,8 @@ class ObjModelBehavior extends RenderableBehavior {
 	}
 }
 
-if (!elementBehaviors.has('obj-model')) elementBehaviors.define('obj-model', ObjModelBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('obj-model'))
+	elementBehaviors.define('obj-model', ObjModelBehavior)
 
 const thro = (err: any) => {
 	throw err

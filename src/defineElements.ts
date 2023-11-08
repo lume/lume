@@ -11,9 +11,14 @@ export function defineElements() {
 	defined = true
 
 	for (const key in elementClasses) {
-		const PossibleElementClass = (elementClasses as any)[key] as typeof Element | undefined
-		if (PossibleElementClass?.elementName) PossibleElementClass.defineElement?.()
+		const PossibleElementClass = (elementClasses as Record<string, unknown>)[key]
+		if (isLumeElementClass(PossibleElementClass)) PossibleElementClass.defineElement()
 	}
+}
+
+function isLumeElementClass(o: any): o is typeof Element {
+	if (typeof o?.defineElement === 'function' && o?.elementName) return true
+	return false
 }
 
 /** @deprecated */

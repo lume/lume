@@ -3,7 +3,7 @@ import {MeshStandardMaterial} from 'three/src/materials/MeshStandardMaterial.js'
 import {booleanAttribute, numberAttribute, stringAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type StandardMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
@@ -25,6 +25,15 @@ export type StandardMaterialBehaviorAttributes =
 	| 'roughnessMap'
 	| 'vertexTangents'
 
+/**
+ * @class StandardMaterialBehavior -
+ *
+ * A standard physically based material, using Metallic-Roughness workflow.
+ *
+ * Backed by Three.js [`THREE.MeshStandardMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshStandardMaterial)
+ *
+ * @extends MaterialBehavior
+ */
 export {StandardMaterialBehavior}
 @behavior
 class StandardMaterialBehavior extends MaterialBehavior {
@@ -109,6 +118,8 @@ class StandardMaterialBehavior extends MaterialBehavior {
 			() => this.texture, // map
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 		this._handleTexture(
 			() => this.normalMap,
@@ -128,7 +139,8 @@ class StandardMaterialBehavior extends MaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('standard-material')) elementBehaviors.define('standard-material', StandardMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('standard-material'))
+	elementBehaviors.define('standard-material', StandardMaterialBehavior)
 
 // This prevents errors with mixins. https://discord.com/channels/508357248330760243/508357248330760249/954526657312604180
 export type MixinBaseClass<T> = T extends new (..._: any) => infer I

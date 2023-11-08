@@ -1,0 +1,1 @@
+{"version":3,"file":"BoxGeometryBehavior.d.ts","sourceRoot":"","sources":["../../../../src/behaviors/mesh-behaviors/geometries/BoxGeometryBehavior.ts"],"names":[],"mappings":"AAAA,OAAO,mBAAmB,CAAA;AAC1B,OAAO,EAAC,WAAW,EAAC,MAAM,qCAAqC,CAAA;AAC/D,OAAO,EAAC,gBAAgB,EAAC,MAAM,uBAAuB,CAAA;AAEtD,qBAAa,mBAAoB,SAAQ,gBAAgB;IAC/C,gBAAgB;CAGzB"}

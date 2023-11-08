@@ -6,7 +6,7 @@ import {Texture} from 'three/src/textures/Texture.js'
 import {stringAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {PhysicalMaterialBehavior, PhysicalMaterialBehaviorAttributes} from './PhysicalMaterialBehavior.js'
+import {PhysicalMaterialBehavior, type PhysicalMaterialBehaviorAttributes} from './PhysicalMaterialBehavior.js'
 import {TextureProjector} from '../../../textures/TextureProjector.js'
 
 export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttributes | 'projectedTextures'
@@ -86,7 +86,12 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
+				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof TextureProjector && v.scene) this.#projectedTextures.push(v)
+				continue
+			} else if (!v) {
+				// skip empty strings, they cause an error with querySelectorAll
 				continue
 			}
 
@@ -106,6 +111,8 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
+					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof TextureProjector && el.scene) this.#projectedTextures.push(el)
 
 					// TODO We aren't observing el.scene, so if the element
@@ -167,6 +174,8 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 			() => this.projectedTextures[0]?.src ?? '',
 			(mat, tex) => (mat.texture = tex || new Texture()),
 			mat => !!mat.texture,
+			() => {},
+			true,
 		)
 
 		this.createEffect(() => {
@@ -268,5 +277,5 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	}
 }
 
-if (!elementBehaviors.has('projected-material'))
+if (globalThis.window?.document && !elementBehaviors.has('projected-material'))
 	elementBehaviors.define('projected-material', ProjectedMaterialBehavior)

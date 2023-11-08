@@ -2,7 +2,7 @@ import {SpotLight as ThreeSpotLight} from 'three/src/lights/SpotLight.js'
 import {SpotLightHelper} from 'three/src/helpers/SpotLightHelper.js'
 import {numberAttribute, element, booleanAttribute, stringAttribute} from '@lume/element'
 import {createEffect, onCleanup} from 'solid-js'
-import {PointLight, PointLightAttributes} from './PointLight.js'
+import {PointLight, type PointLightAttributes} from './PointLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, toRadians} from '../core/index.js'
 
@@ -102,10 +102,12 @@ class SpotLight extends PointLight {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
+				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof Element3D && v.scene) this.#target.push(v)
 				continue
 			} else if (!v) {
-				// skip empty strings, they cause an error with querySelector
+				// skip empty strings, they cause an error with querySelectorAll
 				continue
 			}
 
@@ -125,6 +127,8 @@ class SpotLight extends PointLight {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
+					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof Element3D && el.scene) this.#target.push(el)
 
 					// TODO check the target is in the same scene
@@ -179,6 +183,14 @@ class SpotLight extends PointLight {
 		this.createEffect(() => {
 			if (!this.scene) return
 
+			// Trigger the setter again in case it returned early if there was
+			// no scene. Depending on code load order, el.scene inside of set
+			// clipPlanes might be null despite that it is a valid Lume element.
+			// TODO #279: Instead of this hack, move away
+			// from getters/setters, make all logic fully reactive to avoid
+			// worrying about code execution order. https://github.com/lume/lume/issues/279
+			this.target = this.#rawTarget
+
 			// loadGL may fire during parsing before children exist. This
 			// MutationObserver will also fire during parsing. This allows us to
 			// re-run the query logic whenever DOM in the current root changes.
@@ -218,6 +230,7 @@ class SpotLight extends PointLight {
 		return true
 	}
 
+	// @ts-expect-error FIXME probably better for spotlight not to extend from pointlight, make a common shared class if needed.
 	override makeThreeObject3d() {
 		return new ThreeSpotLight()
 	}

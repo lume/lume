@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/mesh-behaviors/models/ObjModelBehavior.js'

@@ -1,0 +1,1 @@
+{"version":3,"file":"Behavior.d.ts","sourceRoot":"","sources":["../../src/behaviors/Behavior.ts"],"names":[],"mappings":"AAAA,OAAO,mBAAmB,CAAA;AAI1B,OAAO,KAAK,EAAC,oBAAoB,EAAC,MAAM,mBAAmB,CAAA;;;;;;;;;;;;;;;;AAc3D,8BAAsB,QAAS,SAAQ,aAAc;;IAKpD,MAAM,CAAC,mBAAmB,UAAO;IAEjC,OAAO,EAAE,OAAO,CAAA;gBAEJ,OAAO,EAAE,oBAAoB;IAwBzC,mBAAmB;;;;IAKnB,IAAa,cAAc,YAE1B;IAMQ,qBAAqB;CAsE9B"}

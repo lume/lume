@@ -6,7 +6,7 @@
 import {untrack, onCleanup} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
-import {DoubleSide, FrontSide, BackSide, Side} from 'three/src/constants.js'
+import {DoubleSide, FrontSide, BackSide, type Side, type SRGBColorSpace} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
 import {booleanAttribute, stringAttribute, numberAttribute} from '@lume/element'
 import {behavior} from '../../Behavior.js'
@@ -294,6 +294,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 		setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void,
 		hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean,
 		onLoad?: () => void,
+		isColor = false,
 	) {
 		this.createEffect(() => {
 			const mat = this.meshComponent
@@ -321,6 +322,8 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 
 					onLoad?.()
 				})
+
+				if (isColor) texture.colorSpace = SRGBColorSpace
 
 				onCleanup(() => {
 					cleaned = true

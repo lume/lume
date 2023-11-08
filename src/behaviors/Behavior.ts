@@ -3,7 +3,6 @@ import {element} from '@lume/element'
 import {PropReceiver} from './PropReceiver.js'
 
 import type {Element as LumeElement} from '@lume/element'
-import type {Constructor} from 'lowclass'
 import type {ElementWithBehaviors} from 'element-behaviors'
 
 /**
@@ -37,14 +36,6 @@ export const behavior = (nameOrClass?: any, context?: any) => {
 		)
 	}
 }
-
-type ElementTypeArrayToInstArray<T extends Constructor[]> = {
-	// Pick only the number keys (array values, not array methods and properties).
-	[K in keyof T]: InstanceType<T[number & K]>
-}
-type ArrayValues<T extends any[]> = T[number & keyof T]
-type ElementTypes<T extends Constructor[]> = ArrayValues<ElementTypeArrayToInstArray<T>>
-
 /**
  * @class Behavior
  * Base class for all LUME behaviors.
@@ -64,7 +55,7 @@ export abstract class Behavior extends PropReceiver() {
 	// before the life cycle hooks run.
 	static awaitElementDefined = true
 
-	element: ElementTypes<ReturnType<this['requiredElementType']>>
+	element: Element
 
 	constructor(element: ElementWithBehaviors) {
 		super()
@@ -73,7 +64,7 @@ export abstract class Behavior extends PropReceiver() {
 		// @prod-prune
 		this.#checkElementIsLibraryElement(element)
 
-		this.element = element as ElementTypes<ReturnType<this['requiredElementType']>>
+		this.element = element
 	}
 
 	/**

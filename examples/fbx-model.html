@@ -1,30 +1,62 @@
-<script src="./wrapper.js" title="<lume-fbx-model>"></script>
+<script src="./template.js" template="./template.html" title="<lume-fbx-model>"></script>
 
-<lume-scene id="scene" perspective="800" webgl>
+<lume-scene
+	id="scene"
+	perspective="800"
+	webgl
+	physically-correct-lights
+	environment="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
+>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active initial-distance="200" max-distance="1700" min-distance="100">
-		<lume-point-light position="200 -200 200" intensity="0.6" color="white" slot="camera-child"></lume-point-light>
+		<lume-point-light position="200 -200 200" intensity="600" color="white" slot="camera-child"></lume-point-light>
 	</lume-camera-rig>
 
-	<!-- TODO THREE BUG fixing bug where on mobile the image is stretched. https://discourse.threejs.org/t/40262/3 -->
 	<lume-fbx-model
 		id="model"
 		rotation="0 45 0"
 		size="0 0 0"
 		src="./models/mando-helmet.fbx"
+		center-geometry
 		style="background: blue"
 	></lume-fbx-model>
+
+	<!-- Background -->
+	<lume-sphere
+		id="env"
+		has="basic-material sphere-geometry"
+		color="white"
+		sidedness="double"
+		texture="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
+		size="4000"
+		mount-point="0.5 0.5 0.5"
+	></lume-sphere>
 </lume-scene>
 
-<!-- <script>
-	// CONTINUE FIXME: auto define changes order of definitions and it breaks.
-	window.$LUME = {autoDefineElements: false}
-	// window.$LUME = {autoDefineElements: true}
-</script>
-<script src="global.js"></script> -->
+<script type="module">
+	import 'lume'
+	import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
+	import {toCreasedNormals} from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-<script>
-	// Define all the LUME elements with their default names.
-	LUME.defineElements()
+	model.on('MODEL_LOAD', () => {
+		model.three.traverse(obj => {
+			if (obj.isMesh) {
+				// Make the parts of the helmet look metallic or plastic.
+				if (obj.material.name.startsWith('Chrome') || obj.material.name.startsWith('Steel')) {
+					// metal
+					obj.material = new MeshPhysicalMaterial({color: 'white', metalness: 1, roughness: 0.15})
+				} else {
+					// black plastic visor
+					obj.material = new MeshPhysicalMaterial({
+						color: '#111111',
+						metalness: 0.2,
+						roughness: 0.2,
+						clearcoat: 1,
+					})
+					obj.geometry = toCreasedNormals(obj.geometry, 360) // smooth out the visor normals (the imported model has strange normals)
+				}
+			}
+		})
+	})
 </script>

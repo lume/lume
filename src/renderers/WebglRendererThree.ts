@@ -6,6 +6,7 @@ import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Motor} from '../core/Motor.js'
 
+import './handle-DOM-absence.js'
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
 
@@ -199,7 +200,9 @@ class WebglRendererThree {
 	setPhysicallyCorrectLights(scene: Scene, value: boolean) {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Unable to set value. Scene state should be initialized first.')
-		state.renderer.physicallyCorrectLights = value
+		// @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
+		state.renderer.physicallyCorrectLights = value // <0.150
+		state.renderer.useLegacyLights = !value // >=0.150
 	}
 
 	#bgVersion = 0

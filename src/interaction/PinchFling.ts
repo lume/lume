@@ -44,6 +44,8 @@ class PinchFling {
 		return this.#isStarted.get()
 	}
 
+	#aborter = new AbortController()
+
 	constructor(options: ScrollFlingOptions) {
 		Object.assign(this, options)
 	}
@@ -83,7 +85,7 @@ class PinchFling {
 		if (this.#pointers.size === 2) {
 			// go two fingers
 
-			document.addEventListener('pointermove', this.#onMove)
+			document.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
 			this.#interacting.set(true)
 		}
 	}
@@ -128,9 +130,9 @@ class PinchFling {
 		this.#isStarted.set(true)
 
 		// @ts-expect-error, whyyyyy TypeScript
-		this.target.addEventListener('pointerdown', this.#onDown)
+		this.target.addEventListener('pointerdown', this.#onDown, {signal: this.#aborter.signal})
 		// @ts-expect-error, whyyyyy TypeScript
-		this.target.addEventListener('pointerup', this.#onUp)
+		this.target.addEventListener('pointerup', this.#onUp, {signal: this.#aborter.signal})
 
 		return this
 	}
@@ -142,8 +144,7 @@ class PinchFling {
 		// Stop any current animation, if any.
 		if (this.#task) Motor.removeRenderTask(this.#task)
 
-		// @ts-expect-error, whyyyyy TypeScript
-		this.target.removeEventListener('wheel', this.#onPinch)
+		this.#aborter.abort()
 
 		return this
 	}

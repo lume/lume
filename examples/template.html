@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- This is the top-level template used for all the examples. -->
+<html>
+	<head>
+		<title>LUME</title>
+
+		<!--
+		Render at device's natural width (not desktop mode on mobile) with
+		width=device-width, and prevent orientation change from zooming with
+		initial-scale=1.
+		https://css-tricks.com/snippets/html/responsive-meta-tag/
+		https://css-tricks.com/probably-use-initial-scale1/
+		-->
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- Tell the browser's ES Module system where to find certain packages
+		(f.e. the "lume" in "import {defineElements} from 'lume'", etc. -->
+		<script src="./importmap.js"></script>
+
+		<!-- Style the top level web app's html and body elements to be full
+		width/height of the viewport, with a dark background, with no edge
+		padding, with no scrolling, and with default browser touch interactions
+		disabled. -->
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				background: #222;
+				touch-action: none;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body></body>
+</html>

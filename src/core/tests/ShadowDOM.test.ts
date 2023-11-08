@@ -1,10 +1,8 @@
 import html from 'solid-js/html'
-import {defineElements} from '../../index.js'
+import '../../index.js'
 import {hasShadow} from '../CompositionTracker.js'
 import type {Element3D} from '../Element3D.js'
 import type {Scene} from '../Scene.js'
-
-defineElements()
 
 describe('ShadowDOM support', () => {
 	let container: HTMLDivElement = document.createElement('div')
@@ -49,11 +47,11 @@ describe('ShadowDOM support', () => {
 		// Although a Scene has ShadowDOM, child Nodes are considered
 		// composed to the Scene instead of the ShadowDOM for our 3D
 		// rendering purposes.
-		expect(node.composedParent).withContext('composedParent').toBe(scene)
-		expect(node.composedLumeParent).withContext('composedLumeParent').toBe(scene)
+		expect(node.composedParent).toBe(scene)
+		expect(node.composedLumeParent).toBe(scene)
 
-		expect(node.three.parent).withContext('three.parent').toBe(scene.three)
-		expect(node.threeCSS.parent).withContext('threeCSS.parent').toBe(scene.threeCSS)
+		expect(node.three.parent).toBe(scene.three)
+		expect(node.threeCSS.parent).toBe(scene.threeCSS)
 	})
 
 	it('composes outer tree Nodes to a ShadowRoot Scene via slotted slot', async () => {
@@ -120,15 +118,15 @@ describe('ShadowDOM support', () => {
 		expect(node2.parentLumeElement).toBe(null)
 		expect(node2.composedParent).toBe(node)
 		expect(node2.composedLumeParent).toBe(node)
-		expect(node2.three.parent).withContext('three should be connected to parent').toBe(node.three)
-		expect(node2.threeCSS.parent).withContext('threeCSS should be connected to parent').toBe(node.threeCSS)
+		expect(node2.three.parent).toBe(node.three)
+		expect(node2.threeCSS.parent).toBe(node.threeCSS)
 
 		expect(node.composedLumeChildren.length).toBe(1)
 		expect(node.composedLumeChildren[0]).toBe(node2)
 		expect(node.three.children.length).toBe(1)
-		expect(node.three.children[0]).withContext('three should have child').toBe(node2.three)
+		expect(node.three.children[0]).toBe(node2.three)
 		expect(node.threeCSS.children.length).toBe(1)
-		expect(node.threeCSS.children[0]).withContext('threeCSS should have child').toBe(node2.threeCSS)
+		expect(node.threeCSS.children[0]).toBe(node2.threeCSS)
 	})
 
 	it('does not compose Nodes that are not distributed to a slot of a Node in a ShadowRoot', async () => {
@@ -154,15 +152,15 @@ describe('ShadowDOM support', () => {
 		await new Promise(r => setTimeout(r, 10))
 
 		expect(node.parentNode).toBe(container)
-		expect(node.parentLumeElement).withContext('no lume parent').toBe(null)
+		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(null)
-		expect(node.composedParent).withContext('no composed parent').toBe(null)
-		expect(node.composedLumeParent).withContext('no composed LUME parent').toBe(null)
+		expect(node.composedParent).toBe(null)
+		expect(node.composedLumeParent).toBe(null)
 		expect(node.three.parent).toBe(null)
 		expect(node.threeCSS.parent).toBe(null)
 
-		expect(node2._composedChildren.length).withContext('no composed children').toBe(0)
-		expect(node2.composedLumeChildren.length).withContext('no composed LUME children').toBe(0)
+		expect(node2._composedChildren.length).toBe(0)
+		expect(node2.composedLumeChildren.length).toBe(0)
 		expect(node2.three.children.length).toBe(0)
 		expect(node2.threeCSS.children.length).toBe(0)
 	})
@@ -268,19 +266,19 @@ describe('ShadowDOM support', () => {
 		expect(sphere.parentElement).toBe(slot)
 		expect(sphere.parentLumeElement).toBe(null)
 		expect(sphere.assignedSlot).toBe(null)
-		expect(sphere.composedParent).withContext('composed parent').toBe(scene)
-		expect(sphere.composedLumeParent).withContext('composed lume parent').toBe(scene)
-		expect(sphere.three.parent).withContext('three parent').toBe(scene.three)
-		expect(sphere.threeCSS.parent).withContext('threeCSS parent').toBe(scene.threeCSS)
+		expect(sphere.composedParent).toBe(scene)
+		expect(sphere.composedLumeParent).toBe(scene)
+		expect(sphere.three.parent).toBe(scene.three)
+		expect(sphere.threeCSS.parent).toBe(scene.threeCSS)
 
 		expect(scene.children.length).toBe(1)
 		expect(scene.children[0]).toBe(slot)
-		expect(scene.composedLumeChildren.length).withContext('sphere composed children').toBe(1)
-		expect(scene.composedLumeChildren[0]).withContext('scene composed child').toBe(sphere)
-		expect(scene.three.children.length).withContext('scene three children').toBe(1)
-		expect(scene.three.children[0]).withContext('scene three child').toBe(sphere.three)
-		expect(scene.threeCSS.children.length).withContext('scene threeCSS children').toBe(1)
-		expect(scene.threeCSS.children[0]).withContext('scene threeCSS child').toBe(sphere.threeCSS)
+		expect(scene.composedLumeChildren.length).toBe(1)
+		expect(scene.composedLumeChildren[0]).toBe(sphere)
+		expect(scene.three.children.length).toBe(1)
+		expect(scene.three.children[0]).toBe(sphere.three)
+		expect(scene.threeCSS.children.length).toBe(1)
+		expect(scene.threeCSS.children[0]).toBe(sphere.threeCSS)
 	})
 
 	it("prevents a slot's default content from being composed if the slot has distributed nodes", async () => {
@@ -329,19 +327,19 @@ describe('ShadowDOM support', () => {
 		expect(sphere.parentElement).toBe(slot)
 		expect(sphere.parentLumeElement).toBe(null)
 		expect(sphere.assignedSlot).toBe(null)
-		expect(sphere.composedParent).withContext('composed parent').toBe(null)
-		expect(sphere.composedLumeParent).withContext('composed lume parent').toBe(null)
-		expect(sphere.three.parent).withContext('three parent').toBe(null)
-		expect(sphere.threeCSS.parent).withContext('threeCSS parent').toBe(null)
+		expect(sphere.composedParent).toBe(null)
+		expect(sphere.composedLumeParent).toBe(null)
+		expect(sphere.three.parent).toBe(null)
+		expect(sphere.threeCSS.parent).toBe(null)
 
 		expect(scene.children.length).toBe(1)
 		expect(scene.children[0]).toBe(slot)
-		expect(scene.composedLumeChildren.length).withContext('scene composed children').toBe(1)
-		expect(scene.composedLumeChildren[0]).withContext('scene composed child').toBe(node)
-		expect(scene.three.children.length).withContext('scene three children').toBe(1)
-		expect(scene.three.children[0]).withContext('scene three child').toBe(node.three)
-		expect(scene.threeCSS.children.length).withContext('scene threeCSS children').toBe(1)
-		expect(scene.threeCSS.children[0]).withContext('scene threeCSS child').toBe(node.threeCSS)
+		expect(scene.composedLumeChildren.length).toBe(1)
+		expect(scene.composedLumeChildren[0]).toBe(node)
+		expect(scene.three.children.length).toBe(1)
+		expect(scene.three.children[0]).toBe(node.three)
+		expect(scene.threeCSS.children.length).toBe(1)
+		expect(scene.threeCSS.children[0]).toBe(node.threeCSS)
 	})
 
 	it('composes a distributed node of a ShadowRoot child slot to the shadow host', async () => {
@@ -374,8 +372,8 @@ describe('ShadowDOM support', () => {
 		expect(box.assignedSlot).toBe(slot)
 		expect(box.composedParent).toBe(node)
 		expect(box.composedLumeParent).toBe(node)
-		expect(box.three.parent).withContext('box three parent').toBe(node.three)
-		expect(box.threeCSS.parent).withContext('box threeCSS parent').toBe(node.threeCSS)
+		expect(box.three.parent).toBe(node.three)
+		expect(box.threeCSS.parent).toBe(node.threeCSS)
 
 		// The sphere is not composed because it is not slotted into the ShadowRoot
 		expect(sphere.parentElement).toBe(node)
@@ -383,15 +381,15 @@ describe('ShadowDOM support', () => {
 		expect(sphere.assignedSlot).toBe(null)
 		expect(sphere.composedParent).toBe(null)
 		expect(sphere.composedLumeParent).toBe(null)
-		expect(sphere.three.parent).withContext('sphere three parent').toBe(null)
-		expect(sphere.threeCSS.parent).withContext('sphere threeCSS parent').toBe(null)
+		expect(sphere.three.parent).toBe(null)
+		expect(sphere.threeCSS.parent).toBe(null)
 
-		expect(node.composedLumeChildren.length).withContext('node composed children').toBe(1)
-		expect(node.composedLumeChildren[0]).withContext('node composed child').toBe(box)
-		expect(node.three.children.length).withContext('node three children').toBe(1)
-		expect(node.three.children[0]).withContext('node three child').toBe(box.three)
-		expect(node.threeCSS.children.length).withContext('node threeCSS children').toBe(1)
-		expect(node.threeCSS.children[0]).withContext('node threeCSS child').toBe(box.threeCSS)
+		expect(node.composedLumeChildren.length).toBe(1)
+		expect(node.composedLumeChildren[0]).toBe(box)
+		expect(node.three.children.length).toBe(1)
+		expect(node.three.children[0]).toBe(box.three)
+		expect(node.threeCSS.children.length).toBe(1)
+		expect(node.threeCSS.children[0]).toBe(box.threeCSS)
 	})
 
 	it('composes a distributed node of a ShadowRoot child slot to the shadow host when the shadow host has a slot assigned to the ShadowRoot child slot', async () => {
@@ -432,12 +430,12 @@ describe('ShadowDOM support', () => {
 
 		expect(middleNode.children.length).toBe(1)
 		expect(middleNode.children[0]).toBe(middleSlot)
-		expect(middleNode.composedLumeChildren.length).withContext('middleNode composed children').toBe(1)
-		expect(middleNode.composedLumeChildren[0]).withContext('middleNode composed child').toBe(node)
-		expect(middleNode.three.children.length).withContext('middleNode three children').toBe(1)
-		expect(middleNode.three.children[0]).withContext('middleNode three child').toBe(node.three)
-		expect(middleNode.threeCSS.children.length).withContext('middleNode threeCSS children').toBe(1)
-		expect(middleNode.threeCSS.children[0]).withContext('middleNode threeCSS child').toBe(node.threeCSS)
+		expect(middleNode.composedLumeChildren.length).toBe(1)
+		expect(middleNode.composedLumeChildren[0]).toBe(node)
+		expect(middleNode.three.children.length).toBe(1)
+		expect(middleNode.three.children[0]).toBe(node.three)
+		expect(middleNode.threeCSS.children.length).toBe(1)
+		expect(middleNode.threeCSS.children[0]).toBe(node.threeCSS)
 	})
 
 	////// TODO /////////////////////////////////////////////////////////////////////////////

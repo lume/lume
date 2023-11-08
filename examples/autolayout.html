@@ -1,0 +1,108 @@
+<script src="./template.js" template="./template.html" title="mount-point"></script>
+
+<style>
+	body {
+		background: pink;
+		/* keep content invisible until Lume has been loaded (i.e. until Lume elements have been defined) */
+		visibility: hidden;
+	}
+
+	#layout > * {
+		overflow: hidden;
+	}
+</style>
+
+<lume-scene id="scene" webgl physically-correct-lights>
+	<lume-ambient-light intensity="0.1"></lume-ambient-light>
+	<lume-point-light
+		id="light"
+		color="white"
+		position="300 300 120"
+		size="0 0 0"
+		cast-shadow="true"
+		intensity="200"
+		shadow-radius="2"
+		distance="800"
+		shadow-bias="-0.01"
+	>
+		<lume-mesh
+			has="sphere-geometry basic-material"
+			size="10 10 10"
+			color="white"
+			receive-shadow="false"
+			cast-shadow="false"
+			mount-point="0.5 0.5 0.5"
+			style="pointer-events: none"
+		>
+		</lume-mesh>
+	</lume-point-light>
+	<lume-autolayout-node
+		id="layout"
+		size="100 100 0"
+		align-point=" 0.5 0.5 0"
+		mount-point=" 0.5 0.5 0"
+		visual-format="
+			// This is set in JS
+		"
+		style="background: rgba(0, 0, 0, 0.3)"
+		data-small="
+			//viewport aspect-ratio:3/1 max-height:300
+			H:|-[row:[child1(child2,child5)]-[child2]-[child5]]-|
+			V:|-[row]-|
+		"
+		data-big="
+			V:|-[child1(child3)]-[child3]-|
+			V:|-[child2(child4)]-[child4]-|
+			V:[child5(child4)]-|
+			|-[child1(child2)]-[child2]-|
+			|-[child3(child4,child5)]-[child4]-[child5]-|
+		"
+	>
+		<lume-mixed-plane size="1 1 0" color="deeppink" class="child1"
+			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.</lume-mixed-plane
+		>
+		<lume-mixed-plane size="1 1 0" color="deeppink" class="child2"
+			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.</lume-mixed-plane
+		>
+		<lume-mixed-plane size="1 1 0" color="deeppink" class="child3"
+			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.</lume-mixed-plane
+		>
+		<lume-mixed-plane size="1 1 0" color="deeppink" class="child4"
+			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.</lume-mixed-plane
+		>
+		<lume-mixed-plane size="1 1 0" color="deeppink" class="child5"
+			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.</lume-mixed-plane
+		>
+	</lume-autolayout-node>
+</lume-scene>
+
+<script type="module">
+	import * as LUME from 'lume'
+
+	// At this point the 'lume' module has been loaded (i.e. Lume elements have been defined).
+	document.body.style.setProperty('visibility', 'visible')
+
+	const layout = document.querySelector('#layout')
+	layout.visualFormat = layout.dataset.big
+	layout.size = (x, y, z, t) => [600 + 200 * Math.sin(t / 1000), 400 + 200 * Math.sin(t / 1000), z]
+
+	const light = document.querySelector('#light')
+	document.addEventListener('pointermove', function (e) {
+		e.preventDefault()
+		light.position.x = e.clientX
+		light.position.y = e.clientY
+	})
+
+	const size = LUME.createMemo(() => {
+		const {x} = layout.calculatedSize
+		if (x <= 600) return 'small'
+		else return 'big'
+	})
+
+	LUME.createEffect(() => (layout.visualFormat = size() === 'small' ? layout.dataset.small : layout.dataset.big))
+</script>

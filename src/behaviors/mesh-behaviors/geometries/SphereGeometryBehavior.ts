@@ -53,4 +53,5 @@ class SphereGeometryBehavior extends GeometryBehavior {
 	}
 }
 
-if (!elementBehaviors.has('sphere-geometry')) elementBehaviors.define('sphere-geometry', SphereGeometryBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('sphere-geometry'))
+	elementBehaviors.define('sphere-geometry', SphereGeometryBehavior)

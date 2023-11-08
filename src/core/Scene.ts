@@ -12,13 +12,13 @@ import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/Per
 import {Color} from 'three/src/math/Color.js'
 import {Fog} from 'three/src/scenes/Fog.js'
 import {FogExp2} from 'three/src/scenes/FogExp2.js'
-import {WebglRendererThree, ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
+import {WebglRendererThree, type ShadowMapTypeString} from '../renderers/WebglRendererThree.js'
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {SharedAPI} from './SharedAPI.js'
 import {isDisposable} from '../utils/three.js'
 import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import {version} from '../index.js' // TODO replace with version.ts
+import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 
 import type {TColor} from '../utils/three.js'
 import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
@@ -28,6 +28,8 @@ import type {Element3D} from './Element3D.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
+// Queue a microtask because otherwise this fires before the module graph has
+// executed the version variable initializer.
 queueMicrotask(() => console.info(magic()))
 
 export type SceneAttributes =
@@ -99,10 +101,12 @@ class Scene extends SharedAPI {
 	// TODO @readonly jsdoc tag
 	override readonly isScene = true
 
-	// Skip ShadowRoot observation for Scene instances. Only Scene actual
-	// children or distributed children are considered in the LUME scene
-	// graph because Scene's ShadowRoot already exists and serves in the
-	// rendering implementation and is not the user's.
+	// Skip ShadowRoot observation for Scene instances, and consider composed
+	// children to always be the Scene's direct children, not any in its
+	// ShadowRoot. Only a Scene's actual children or distributed children are
+	// considered to be in the LUME scene graph because Scene's ShadowRoot
+	// serves a specific purpose in the rendering implementation and is not the
+	// user's.
 	override skipShadowObservation = this.isScene
 
 	/**
@@ -363,6 +367,14 @@ class Scene extends SharedAPI {
 	@numberAttribute fogDensity = 0.0025
 
 	/**
+	 * @deprecated This property/attribute will be removed when Three.js r165 is
+	 * released (estimated), and physically correct lighting will become the
+	 * default option for enhanced interoperability with other graphics engines
+	 * (f.e. Blender).  To be ready for the removal, set this to true, and
+	 * adjust lighting (intensity values may need to be notably higher as they
+	 * are now in candela units assuming world units are in meters) to achieve a
+	 * similar effect as before.
+	 *
 	 * @property {boolean} physicallyCorrectLights -
 	 *
 	 * `attribute`
@@ -587,90 +599,6 @@ class Scene extends SharedAPI {
 		this.needsUpdate()
 	}
 
-	static override css = /*css*/ `
-		:host {
-			/*
-			 * All items of the scene graph are hidden until they are mounted in
-			 * a scene (this changes to display:block). 'display' gets toggled
-			 * between "none" and "block" by SharedAPI depending on if CSS
-			 * rendering is enabled.
-			 */
-			display: none;
-
-			/*
-			A Scene is strict: it does not leak content, its rendering is not
-			affected by external layout, and its size is not affected by its
-			content. It is an absolutely contained drawing area.
-			*/
-			contain: size layout paint; /*fallback, TODO remove once Safari goers are caught up*/
-			contain: strict;
-
-			box-sizing: border-box;
-			position: static;
-			overflow: hidden;
-			top: 0;
-			left: 0;
-
-			/*
-				Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
-				but will for 3D objects in WebGL.)
-			*/
-			transform-origin: 50% 50% 0; /* default */
-
-			transform-style: preserve-3d;
-		}
-
-		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
-		.container {
-			position: relative
-		}
-
-		.container,
-		.CSS3DLayer,
-		.MiscellaneousLayer,
-		.WebGLLayer,
-		.WebGLLayer > canvas  {
-			margin: 0; padding: 0;
-			width: 100%; height: 100%;
-			display: block;
-		}
-
-		.CSS3DLayer,
-		.MiscellaneousLayer,
-		.WebGLLayer {
-			/* make sure all layers are stacked on top of each other */
-			position: absolute; top: 0; left: 0;
-		}
-
-		.CSS3DLayer {
-			transform-style: preserve-3d;
-		}
-
-		.container {
-			pointer-events: none;
-		}
-
-		.MiscellaneousLayer > * {
-			/* Allow children of the Misc layer to have pointer events.	Needed for the WebXR button, for example */
-			pointer-events: auto;
-		}
-
-		/*
-		 * This trick is needed in Firefox to remove pointer events from the
-		 * transparent cameraElement from interfering with pointer events on the
-		 * scene objects. We do not wish to interact with this element anyway, as
-		 * it serves only for positioning the view.
-		 */
-		.cameraElement > * {
-			pointer-events: auto;
-		}
-
-		.vrButton {
-			color: black;
-			border-color: black;
-		}
-	`
-
 	// WebGLRendererThree appends its content into here.
 	_glLayer: HTMLDivElement | null = null
 
@@ -679,32 +607,6 @@ class Scene extends SharedAPI {
 
 	// Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
 	_miscLayer: HTMLDivElement | null = null
-
-	override template = () => html`
-		<div class="container">
-			<div
-				ref=${(el: any) => (this._cssLayer = el)}
-				class="CSS3DLayer"
-				style=${() => (this.swapLayers ? 'z-index: 1' : '')}
-			>
-				${
-					/* WebGLRendererThree places the CSS3DRendererNested domElement
-					here, which contains a <slot> element that child elements of
-					a Scene are distributed into (rendered relative to).
-					*/ ''
-				}
-			</div>
-
-			<div ref=${(el: any) => (this._glLayer = el)} class="WebGLLayer">
-				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
-			</div>
-
-			<div ref=${(el: any) => (this._miscLayer = el)} class="MiscellaneousLayer">
-				${/* This layer is used by WebXR to insert UI like the Enter VR/AR button. */ ''}
-				<slot name="misc"></slot>
-			</div>
-		</div>
-	`
 
 	drawScene() {
 		this.#glRenderer && this.#glRenderer.drawScene(this)
@@ -716,8 +618,10 @@ class Scene extends SharedAPI {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		// this.shadowRoot!.prepend(new Comment(magic()))
-		;(this.root as Element | ShadowRoot).prepend(new Comment(magic()))
+		// Queue a microtask because with autoDefineElements true then
+		// connectedCallback fires before the module graph has executed the
+		// version variable initializer.
+		queueMicrotask(() => this.shadowRoot!.prepend(new Comment(magic())))
 
 		this.createEffect(() => {
 			console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& webgl effect:', this.webgl)
@@ -975,7 +879,9 @@ class Scene extends SharedAPI {
 
 		// We don't let Three update any matrices, we supply our own world
 		// matrices.
-		this.three.autoUpdate = false
+		// @ts-expect-error legacy
+		this.three.autoUpdate = false // three <0.144
+		this.three.matrixWorldAutoUpdate = false // three >=0.144
 
 		// TODO: default ambient light when no AmbientLight elements are
 		// present in the Scene.
@@ -1276,6 +1182,98 @@ class Scene extends SharedAPI {
 			this.__elementParentSize = parentSize
 		}
 	}
+
+	override template = () => html`
+		<div class="container">
+			<div
+				ref=${(el: any) => (this._cssLayer = el)}
+				class="CSS3DLayer"
+				style=${() => (this.swapLayers ? 'z-index: 1' : '')}
+			>
+				${
+					/* WebGLRendererThree places the CSS3DRendererNested domElement
+					here, which contains a <slot> element that child elements of
+					a Scene are distributed into (rendered relative to).
+					*/ ''
+				}
+			</div>
+
+			<div ref=${(el: any) => (this._glLayer = el)} class="WebGLLayer">
+				${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+			</div>
+
+			<div ref=${(el: any) => (this._miscLayer = el)} class="MiscellaneousLayer">
+				${/* This layer is used by WebXR to insert UI like the Enter VR/AR button. */ ''}
+				<slot name="misc"></slot>
+			</div>
+		</div>
+	`
+
+	static override css = /*css*/ `
+		${super.css}
+
+		:host {
+			/*
+			 * A Scene is strict: it does not leak content, its rendering is not
+			 * affected by external layout, and its size is not affected by its
+			 * content. It is an absolutely contained drawing area.
+			 */
+			contain: size layout paint; /*fallback, TODO remove once Safari is caught up*/
+			contain: strict; /*override*/
+			overflow: hidden;
+			position: static; /*override*/
+		}
+
+		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
+		.container {
+			position: relative
+		}
+
+		.container,
+		.CSS3DLayer,
+		.MiscellaneousLayer,
+		.WebGLLayer,
+		.WebGLLayer > canvas  {
+			margin: 0; padding: 0;
+			width: 100%; height: 100%;
+			display: block;
+		}
+
+		.CSS3DLayer,
+		.MiscellaneousLayer,
+		.WebGLLayer {
+			/* make sure all layers are stacked on top of each other */
+			position: absolute; top: 0; left: 0;
+		}
+
+		.CSS3DLayer {
+			transform-style: preserve-3d;
+		}
+
+		.container {
+			pointer-events: none;
+		}
+
+		.MiscellaneousLayer > * {
+			/* Allow children of the Misc layer to have pointer events.	Needed for the WebXR button, for example */
+			pointer-events: auto;
+		}
+
+		/*
+		 * This trick is needed in Firefox to remove pointer events from the
+		 * transparent cameraElement from interfering with pointer events on the
+		 * scene objects. We do not wish to interact with this element anyway, as
+		 * it serves only for positioning the view.
+		 */
+		.cameraElement > * {
+			pointer-events: auto;
+		}
+
+		.vrButton {
+			color: black;
+			border-color: black;
+		}
+	`
 }
 
 // Put initial value on the prototype to make it available during construction

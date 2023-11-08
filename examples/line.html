@@ -1,0 +1,33 @@
+<script src="./template.js" template="./template.html" title="<lume-line>"></script>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-ambient-light intensity="0.5" color="white" position="300 400 500"></lume-ambient-light>
+
+	<lume-camera-rig active initial-distance="1000" max-distance="6000" min-distance="10"></lume-camera-rig>
+
+	<lume-line id="line" color="deeppink"></lume-line>
+</lume-scene>
+
+<script type="module">
+	import 'lume'
+
+	// Generate points for a spiral-shaped line.
+	const points = []
+	let angle = 0
+	let distance = 0
+	let z = 0
+	for (const _ of Array(300).map((_, i) => i)) {
+		const x = distance * Math.cos(angle)
+		const y = distance * Math.sin(angle)
+		points.push(x, y, 400 * Math.sin(z))
+
+		angle += Math.PI / 16
+		distance += 10
+		z += Math.PI / 5
+	}
+
+	line.points = points
+
+	// Give the spiral some rotation around Z.
+	line.rotation = (x, y, z) => [x, y, z - 1]
+</script>

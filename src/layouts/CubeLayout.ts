@@ -1,5 +1,5 @@
-import {element, ElementAttributes} from '@lume/element'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {element, type ElementAttributes} from '@lume/element'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'

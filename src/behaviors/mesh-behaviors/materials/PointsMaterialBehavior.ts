@@ -3,7 +3,7 @@ import 'element-behaviors'
 import {PointsMaterial} from 'three/src/materials/PointsMaterial.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
-import {MaterialBehavior, MaterialBehaviorAttributes} from './MaterialBehavior.js'
+import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 
 export type PointsMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'sizeAttenuation' | 'pointSize'
 
@@ -35,8 +35,11 @@ class PointsMaterialBehavior extends MaterialBehavior {
 			() => this.texture,
 			(mat, tex) => (mat.map = tex),
 			mat => !!mat.map,
+			() => {},
+			true,
 		)
 	}
 }
 
-if (!elementBehaviors.has('points-material')) elementBehaviors.define('points-material', PointsMaterialBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('points-material'))
+	elementBehaviors.define('points-material', PointsMaterialBehavior)

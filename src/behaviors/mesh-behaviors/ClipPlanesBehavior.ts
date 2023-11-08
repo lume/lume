@@ -122,10 +122,12 @@ class ClipPlanesBehavior extends MeshBehavior {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
+				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof ClipPlane && v.scene) this.#clipPlanes.push(v)
 				continue
 			} else if (!v) {
-				// skip empty strings, they cause an error with querySelector
+				// skip empty strings, they cause an error with querySelectorAll
 				continue
 			}
 
@@ -145,6 +147,8 @@ class ClipPlanesBehavior extends MeshBehavior {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
+					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof ClipPlane && el.scene) this.#clipPlanes.push(el)
 
 					// TODO check the target is in the same scene
@@ -199,6 +203,14 @@ class ClipPlanesBehavior extends MeshBehavior {
 		this.createEffect(() => {
 			if (!this.element.scene) return
 
+			// Trigger the setter again in case it returned early if there was
+			// no scene. Depending on code load order, el.scene inside of set
+			// clipPlanes might be null despite that it is a valid Lume element.
+			// TODO #279: Instead of this hack, move away
+			// from getters/setters, make all logic fully reactive to avoid
+			// worrying about code execution order. https://github.com/lume/lume/issues/279
+			this.clipPlanes = this.#rawClipPlanes
+
 			if (!refCount) this.element.scene.__localClipping = true
 			refCount++
 
@@ -243,7 +255,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
-					if (!plane.__clip) continue
+					if (!plane.__clip || !plane.__inverseClip) continue
 					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
 				}
 			})
@@ -263,4 +275,5 @@ class ClipPlanesBehavior extends MeshBehavior {
 	}
 }
 
-if (!elementBehaviors.has('clip-planes')) elementBehaviors.define('clip-planes', ClipPlanesBehavior)
+if (globalThis.window?.document && !elementBehaviors.has('clip-planes'))
+	elementBehaviors.define('clip-planes', ClipPlanesBehavior)

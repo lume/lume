@@ -1,11 +1,11 @@
 // Useful info on THREE.Plane not covered in Three.js docs:
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
-import {element, ElementAttributes} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Plane} from 'three/src/math/Plane.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {createSignal} from 'solid-js'
-import {Element3D, Element3DAttributes} from './Element3D.js'
+import {Element3D, type Element3DAttributes} from './Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 // Make the clip plane clip anything in front of it (towards the default

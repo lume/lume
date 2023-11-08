@@ -2,27 +2,34 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {createEffect, createRoot, createSignal, onCleanup, untrack} from 'solid-js'
+import {createEffect, createRoot, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
 import {signal} from 'classy-solid'
 import {element, numberAttribute, booleanAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
 export type CameraRigAttributes =
 	| Element3DAttributes
-	| 'initialPolarAngle'
-	| 'minPolarAngle'
-	| 'maxPolarAngle'
-	| 'initialDistance'
+	| 'verticalAngle'
+	| 'minVerticalAngle'
+	| 'maxVerticalAngle'
+	| 'horizontalAngle'
+	| 'minHorizontalAngle'
+	| 'maxHorizontalAngle'
+	| 'distance'
 	| 'minDistance'
 	| 'maxDistance'
 	| 'active'
 	| 'dollySpeed'
 	| 'interactive'
+	| 'initialPolarAngle' // deprecated
+	| 'minPolarAngle' // deprecated
+	| 'maxPolarAngle' // deprecated
+	| 'initialDistance' // deprecated
 
 // TODO allow overriding the camera props, and make the default camera overridable via <slot>
 
@@ -60,20 +67,34 @@ class CameraRig extends Element3D {
 	override readonly hasShadow: true = true
 
 	/**
-	 * @property {number} initialPolarAngle
+	 * @property {number} verticalAngle
 	 *
 	 * *attribute*
 	 *
 	 * Default: `0`
 	 *
-	 * The initial vertical rotation of the camera. When the user drags up or
+	 * The vertical angle of the camera (rotation around a horizontal axis). When the user drags up or
 	 * down, the camera will move up and down as it rotates around the center.
 	 * The camera is always looking at the center.
 	 */
-	@numberAttribute initialPolarAngle = 0
+	@numberAttribute verticalAngle = 0
 
 	/**
-	 * @property {number} minPolarAngle
+	 * @deprecated initialPolarAngle has been renamed to verticalAngle.
+	 * @property {number} initialPolarAngle
+	 *
+	 * *deprecated*: initialPolarAngle has been renamed to verticalAngle.
+	 */
+	@numberAttribute // CONTINUE does this work without a default value?
+	get initialPolarAngle() {
+		return this.verticalAngle
+	}
+	set initialPolarAngle(value: number) {
+		this.verticalAngle = value
+	}
+
+	/**
+	 * @property {number} minVerticalAngle
 	 *
 	 * *attribute*
 	 *
@@ -81,10 +102,24 @@ class CameraRig extends Element3D {
 	 *
 	 * The lowest angle that the camera will rotate vertically.
 	 */
-	@numberAttribute minPolarAngle = -90
+	@numberAttribute minVerticalAngle = -90
 
 	/**
-	 * @property {number} maxPolarAngle
+	 * @deprecated minPolarAngle has been renamed to minVerticalAngle.
+	 * @property {number} minPolarAngle
+	 *
+	 * *deprecated*: minPolarAngle has been renamed to minVerticalAngle.
+	 */
+	@numberAttribute // CONTINUE does this work without an initial value? Need to use `accessor`?
+	get minPolarAngle() {
+		return this.minVerticalAngle
+	}
+	set minPolarAngle(value: number) {
+		this.minVerticalAngle = value
+	}
+
+	/**
+	 * @property {number} maxVerticalAngle
 	 *
 	 * *attribute*
 	 *
@@ -107,7 +142,34 @@ class CameraRig extends Element3D {
 	 *   })
 	 * </script>
 	 */
-	@numberAttribute maxPolarAngle = 90
+	@numberAttribute maxVerticalAngle = 90
+
+	/**
+	 * @deprecated maxPolarAngle has been renamed to maxVerticalAngle.
+	 * @property {number} maxPolarAngle
+	 *
+	 * *deprecated*: maxPolarAngle has been renamed to maxVerticalAngle.
+	 */
+	@numberAttribute // CONTINUE initial value?
+	get maxPolarAngle() {
+		return this.maxVerticalAngle
+	}
+	set maxPolarAngle(value: number) {
+		this.maxVerticalAngle = value
+	}
+
+	/**
+	 * @property {number} horizontalAngle
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0`
+	 *
+	 * The horizontal angle of the camera (rotation around a vertical axis). When the user drags left or
+	 * right, the camera will move left or right as it rotates around the center.
+	 * The camera is always looking at the center.
+	 */
+	@numberAttribute horizontalAngle = 0
 
 	/**
 	 * @property {number} minHorizontalAngle
@@ -136,17 +198,31 @@ class CameraRig extends Element3D {
 	@numberAttribute maxHorizontalAngle = Infinity
 
 	/**
-	 * @property {number} initialDistance
+	 * @property {number} distance
 	 *
 	 * *attribute*
 	 *
 	 * Default: `1000`
 	 *
-	 * The initial distance that the camera will be away from the center point.
+	 * The distance that the camera will be away from the center point.
 	 * When the performing a scroll gesture, the camera will zoom by moving
 	 * towards or away from the center point (i.e. dollying).
 	 */
-	@numberAttribute initialDistance = 1000
+	@numberAttribute distance = 1000
+
+	/**
+	 * @deprecated initialDistance has been renamed to distance.
+	 * @property {number} initialDistance
+	 *
+	 * *deprecated*: initialDistance has been renamed to distance.
+	 */
+	@numberAttribute // CONTINUE initial value?
+	get initialDistance() {
+		return this.distance
+	}
+	set initialDistance(value: number) {
+		this.distance = value
+	}
 
 	/**
 	 * @property {number} minDistance
@@ -211,14 +287,15 @@ class CameraRig extends Element3D {
 	override template = () => html`
 		<lume-element3d
 			id="cameraY"
-			size="1 1 1"
 			ref=${(el: Element3D) => (this.rotationYTarget = el)}
+			size="1 1 1"
 			size-mode="proportional proportional proportional"
+			rotation=${() => untrack(() => [0, this.horizontalAngle, 0])}
 		>
 			<lume-element3d
 				id="cameraX"
 				size="1 1 1"
-				rotation=${() => untrack(() => [this.initialPolarAngle, 0, 0])}
+				rotation=${() => untrack(() => [this.verticalAngle, 0, 0])}
 				size-mode="proportional proportional proportional"
 			>
 				<slot
@@ -228,7 +305,7 @@ class CameraRig extends Element3D {
 					<lume-perspective-camera
 						ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
 						active=${() => this.active}
-						position=${[0, 0, this.initialDistance]}
+						position=${[0, 0, this.distance]}
 						align-point="0.5 0.5 0.5"
 						far="10000"
 					>
@@ -295,8 +372,8 @@ class CameraRig extends Element3D {
 					const flingRotation = (this.flingRotation = new FlingRotation({
 						interactionInitiator: this.scene,
 						rotationYTarget: this.rotationYTarget,
-						minFlingRotationX: this.minPolarAngle,
-						maxFlingRotationX: this.maxPolarAngle,
+						minFlingRotationX: this.minVerticalAngle,
+						maxFlingRotationX: this.maxVerticalAngle,
 						minFlingRotationY: this.minHorizontalAngle,
 						maxFlingRotationY: this.maxHorizontalAngle,
 					}).start())
@@ -306,7 +383,7 @@ class CameraRig extends Element3D {
 						else flingRotation.stop()
 					})
 
-					onCleanup(() => flingRotation?.stop())
+					onCleanup(() => flingRotation.stop())
 				})
 
 				createEffect(() => {
@@ -314,7 +391,7 @@ class CameraRig extends Element3D {
 
 					const scrollFling = (this.scrollFling = new ScrollFling({
 						target: this.scene,
-						y: this.initialDistance,
+						y: this.distance,
 						minY: this.minDistance,
 						maxY: this.maxDistance,
 						scrollFactor: this.dollySpeed,
@@ -322,7 +399,7 @@ class CameraRig extends Element3D {
 
 					const pinchFling = (this.pinchFling = new PinchFling({
 						target: this.scene,
-						x: this.initialDistance,
+						x: this.distance,
 						minX: this.minDistance,
 						maxX: this.maxDistance,
 						factor: this.dollySpeed,

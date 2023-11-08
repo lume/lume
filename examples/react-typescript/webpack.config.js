@@ -25,7 +25,7 @@ module.exports = {
 			/**
 			 * TypeScript
 			 */
-			{test: /\.ts$/, exclude: /node_modules/, use: [{loader: 'ts-loader'}]},
+			{test: /\.ts$/, exclude: /node_modules/, use: [{loader: 'ts-loader', options: {transpileOnly: true}}]},
 
 			/**
 			 * TypeScript with React-flavored JSX
@@ -33,7 +33,10 @@ module.exports = {
 			{
 				test: /\.tsx$/,
 				exclude: /node_modules/,
-				use: [{loader: 'babel-loader', options: {presets: ['@babel/preset-react']}}, {loader: 'ts-loader'}],
+				use: [
+					{loader: 'babel-loader', options: {presets: ['@babel/preset-react']}},
+					{loader: 'ts-loader', options: {transpileOnly: true}},
+				],
 			},
 
 			/**

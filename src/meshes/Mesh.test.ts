@@ -1,9 +1,7 @@
 import {Scene} from '../core/Scene.js'
-import {defineElements} from '../index.js'
+import '../index.js'
 import {Mesh} from './Mesh.js'
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
-
-defineElements()
 
 describe('Mesh', () => {
 	const root = document.createElement('div')

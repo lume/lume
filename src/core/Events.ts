@@ -1,6 +1,6 @@
 import type {Constructor} from 'lowclass'
-import type {GLTF} from '../lib/three/examples/jsm/loaders/GLTFLoader.js'
-import type {Collada} from '../lib/three/examples/jsm/loaders/ColladaLoader.js'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import type {Group} from 'three/src/objects/Group.js'
 import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 

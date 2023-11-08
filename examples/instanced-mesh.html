@@ -1,0 +1,117 @@
+<script src="./template.js" template="./template.html" title="<lume-instanced-mesh>"></script>
+
+<!-- See https://cocopon.github.io/tweakpane/ -->
+<script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js"></script>
+
+<style>
+	body {
+		background: black;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
+	<lume-point-light position="200 -200 200" intensity="3000" color="white"></lume-point-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+	<lume-camera-rig
+		active
+		initial-distance="2000"
+		max-distance="3000"
+		min-distance="100"
+		position="1000 1000 1000"
+	></lume-camera-rig>
+
+	<lume-instanced-mesh id="mesh" color="white" count="0" size="30 30 30"></lume-instanced-mesh>
+</lume-scene>
+
+<script type="module">
+	import {html, Motor} from 'lume'
+
+	const numberOfObjects = 50_000
+	const maxObjects = 200_000
+
+	mesh.count = numberOfObjects
+	mesh.rotations = Array.from({length: maxObjects * 3}).map(() => Math.random())
+	mesh.positions = Array.from({length: maxObjects * 3}).map(() => 2000 * Math.random())
+	mesh.scales = Array.from({length: maxObjects * 3}).map(() => Math.random())
+	const colorPhases = Array.from({length: maxObjects * 3}).map(() => 2 * Math.random())
+	mesh.colors = Array.from({length: maxObjects * 3}).map(() => 0)
+
+	const demoOptions = {
+		// When true, all instances are animated, which is the most costly.
+		// When false, only some instances are updated, and this shows how to bypass updating all matrices.
+		animateAll: false,
+	}
+
+	function makeOptionsUI() {
+		const pane = new Tweakpane.Pane()
+		const folder = pane.addFolder({title: 'demo options', expanded: false})
+
+		folder.addInput(demoOptions, 'animateAll')
+		folder.addInput(mesh, 'count', {min: 10, max: maxObjects, step: 1})
+	}
+
+	makeOptionsUI()
+
+	Motor.addRenderTask(t => {
+		const rotations = mesh.rotations
+
+		if (demoOptions.animateAll) {
+			let i = 0
+
+			for (const rot of rotations) {
+				rotations[i] += 0.01
+				i++
+			}
+
+			i = 0
+			const colors = mesh.colors
+
+			for (const col of colors) {
+				// formula: https://www.desmos.com/calculator/soatbmcram
+				colors[i] = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i]) + 0.5
+				i++
+			}
+
+			// Modifying the arrays in place does not trigger reactivity (arrays are
+			// currently not reactive) so we need to trigger reactivity to make the
+			// instances re-render. The trick is to set them to the same values.
+			//
+			// NOTE: Triggering an update this way is fine if you are updating
+			// all instances. However if you wish to update on some instances,
+			// this approach is not ideal because it re-calculates all matrices
+			// and coloes of all instances even if they all didn't change.
+			mesh.rotations = mesh.rotations
+			mesh.colors = mesh.colors
+		} else {
+			for (let i = 0; i < numberOfObjects; i += 1) {
+				// Animate only every 50th instance.
+				if (i % 50 !== 0) continue
+
+				// Set an individual instance.
+				//
+				// NOTE: When you need to set only some instances, doing it this
+				// way will be more performant, otherwise triggering reactivity
+				// by assignment will update all matrices instead of only the
+				// ones you modify directly.
+				mesh.setInstanceRotation(
+					i,
+					rotations[i * 3 + 0] + 0.01,
+					rotations[i * 3 + 1] + 0.01,
+					rotations[i * 3 + 2] + 0.01,
+				)
+				mesh.setInstanceColor(
+					i,
+					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 0]) + 0.5,
+					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 1]) + 0.5,
+					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 2]) + 0.5,
+				)
+
+				// NOTE! If you use this method to update *all* instances, it
+				// will *not* be faster than updating the array directly and
+				// then triggering the reactive setter. It depends on what
+				// you're doing!
+			}
+		}
+	})
+</script>

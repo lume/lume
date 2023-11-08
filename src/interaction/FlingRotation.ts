@@ -68,6 +68,8 @@ export class FlingRotation {
 
 	factor = 1
 
+	#aborter = new AbortController()
+
 	constructor(options: FlingRotationOptions) {
 		Object.assign(this, options)
 
@@ -128,7 +130,7 @@ export class FlingRotation {
 		}
 
 		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionContainer.addEventListener('pointermove', this.#onMove)
+		this.interactionContainer.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
 
 		this.interactionContainer.addEventListener(
 			'pointerup',
@@ -174,6 +176,7 @@ export class FlingRotation {
 					return [x, clamp(y + deltaY, this.minFlingRotationY, this.maxFlingRotationY), z]
 				}
 			}),
+			{signal: this.#aborter.signal},
 		)
 	}
 
@@ -186,16 +189,20 @@ export class FlingRotation {
 		this.#isStarted = true
 
 		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown)
+		this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
 
 		// Hack needed for Chrome (works fine in Firefox) otherwise
 		// pointercancel breaks the drag handling. See
 		// https://crbug.com/1166044
 		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart)
-		this.interactionInitiator.addEventListener('pointercancel', () => {
-			throw new Error('Pointercancel should not be happening. If so, please open a bug report.')
-		})
+		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
+		this.interactionInitiator.addEventListener(
+			'pointercancel',
+			() => {
+				throw new Error('Pointercancel should not be happening. If so, please open a bug report.')
+			},
+			{signal: this.#aborter.signal},
+		)
 
 		return this
 	}
@@ -211,14 +218,7 @@ export class FlingRotation {
 		this.rotationXTarget.rotation = () => false
 		this.rotationYTarget.rotation = () => false
 
-		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.removeEventListener('pointerdown', this.#onPointerDown)
-		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.removeEventListener('dragstart', this.#onDragStart)
-		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		if (this.#onMove) this.interactionContainer.removeEventListener('pointermove', this.#onMove)
-		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		if (this.#onPointerUp) this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp)
+		this.#aborter.abort()
 
 		return this
 	}

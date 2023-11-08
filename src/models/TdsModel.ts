@@ -1,5 +1,5 @@
 import {element} from '@lume/element'
-import {Element3D, Element3DAttributes} from '../core/Element3D.js'
+import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
 import type {TdsModelBehavior, TdsModelBehaviorAttributes} from '../behaviors/mesh-behaviors/models/TdsModelBehavior.js'

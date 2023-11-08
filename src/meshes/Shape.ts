@@ -7,13 +7,14 @@ import type {MeshAttributes} from './Mesh.js'
 export type ShapeAttributes = MeshAttributes
 
 /**
-@element lume-shape
 @class Shape - Allows creating a 2D shape that can be extruded.
+
+Element: `<lume-shape>`
 
 Default behaviors:
 
-- [`shape-geometry`](../behaviors/geometries/ShapeGeometryBehavior.md)
-- [`phong-material`](../behaviors/materials/PhongMaterialBehavior.md)
+- [`shape-geometry`](../behaviors/mesh-behaviors/geometries/ShapeGeometryBehavior.md)
+- [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior.md)
 
 <div id="example"></div>
 <script>

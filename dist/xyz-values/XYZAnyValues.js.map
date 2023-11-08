@@ -1,0 +1,1 @@
+{"version":3,"file":"XYZAnyValues.js","sourceRoot":"","sources":["../../src/xyz-values/XYZAnyValues.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,gBAAgB,CAAA;AAExC,MAAM,OAAO,YAAa,SAAQ,SAAc;IAC/C,IAAI,OAAO;QACV,OAAO,EAAC,CAAC,EAAE,SAAS,EAAE,CAAC,EAAE,SAAS,EAAE,CAAC,EAAE,SAAS,EAAC,CAAA;IAClD,CAAC;CACD"}

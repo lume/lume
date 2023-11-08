@@ -28,9 +28,6 @@
 [submodule "packages/variable"]
 	path = packages/variable
 	url = https://github.com/lume/variable.git
-[submodule "packages/glas"]
-	path = packages/glas
-	url = https://github.com/lume/glas.git
 [submodule "packages/eventful"]
 	path = packages/eventful
 	url = https://github.com/lume/eventful.git
@@ -58,3 +55,6 @@
 [submodule "packages/mapapp"]
 	path = apps/mapapp
 	url = https://github.com/LUMECraft/mapapp.git
+[submodule "apps/docs"]
+	path = apps/docs
+	url = https://github.com/lume/lume.github.io.git
