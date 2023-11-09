@@ -63,11 +63,11 @@ class PerspectiveCamera extends Element3D {
 	 *
 	 * *attribute*
 	 *
-	 * Default: `0.1`
+	 * Default: `1`
 	 *
 	 * Anything closer to the camera than this value will not be rendered.
 	 */
-	@numberAttribute near = 0.1
+	@numberAttribute near = 1
 
 	/**
 	 * @property {number} far
