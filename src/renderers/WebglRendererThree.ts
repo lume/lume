@@ -36,7 +36,7 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
-export {WebglRendererThree}
+export
 @reactive
 class WebglRendererThree {
 	static singleton() {
@@ -53,7 +53,7 @@ class WebglRendererThree {
 		}
 	}
 
-	private constructor() {
+	constructor() {
 		if (!isCreatingSingleton)
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}

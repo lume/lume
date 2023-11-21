@@ -15,7 +15,7 @@ declare global {
         'lume-rounded-rectangle': RoundedRectangle;
     }
 }
-declare module '@lume/element' {
+declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
             'lume-rounded-rectangle': JSX.IntrinsicElements['lume-mesh'] & ElementAttributes<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes>;

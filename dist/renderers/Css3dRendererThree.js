@@ -23,6 +23,7 @@ export class Css3dRendererThree {
             throw new Error('class is a singleton, use the static .singleton() method to get an instance');
     }
     sceneStates = new WeakMap();
+    // TODO rename
     initialize(scene) {
         let sceneState = this.sceneStates.get(scene);
         if (sceneState)

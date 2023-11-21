@@ -1,6 +1,29 @@
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { ObjModelBehavior, ObjModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/ObjModelBehavior.js';
 export type ObjModelAttributes = Element3DAttributes;
+/**
+ * @element lume-obj-model
+ * @class ObjModel - Defines the `<lume-obj-model>` element, which is short for `<lume-element3d has="obj-model">`.
+ *
+ * HTML Example:
+ *
+ * ```html
+ * <lume-scene>
+ *   <lume-obj-model obj="path/to/model.obj" mtl="path/to/model.mtl"></lume-obj-model>
+ * </lume-scene>
+ * ```
+ *
+ * JavaScript Example:
+ *
+ * ```js
+ * const scene = new Scene
+ * document.body.append(scene)
+ * const model = new ObjModel
+ * model.obj = 'path/to/model.obj'
+ * model.mtl = 'path/to/model.mtl'
+ * scene.add(model)
+ * ```
+ */
 export declare class ObjModel extends Element3D {
     static defaultBehaviors: string[];
 }
@@ -13,7 +36,7 @@ declare global {
         'lume-obj-model': ObjModel;
     }
 }
-declare module '@lume/element' {
+declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
             'lume-obj-model': JSX.IntrinsicElements['lume-element3d'] & ElementAttributes<ObjModelBehavior, ObjModelBehaviorAttributes>;

@@ -42,7 +42,7 @@ export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow
  * @element lume-mesh TODO @element jsdoc tag
  *
  */
-export {Mesh}
+export
 @element('lume-mesh', autoDefineElements)
 class Mesh extends Element3D {
 	// TODO NAMING: It would be neat to be able to return an array of classes
@@ -134,9 +134,7 @@ type BehaviorAttributes =
 	| PhysicalMaterialBehaviorAttributes
 	| ClipPlanesBehaviorAttributes
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work?
-interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
+export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
 declare module 'solid-js' {
 	namespace JSX {

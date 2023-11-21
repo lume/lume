@@ -22,7 +22,7 @@ export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttrib
  *
  * @extends PhysicalMaterialBehavior
  */
-export {ProjectedMaterialBehavior}
+export
 @behavior
 class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	#projectedTextures: Array<TextureProjector> = []

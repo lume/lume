@@ -25,7 +25,7 @@ export type PhysicalMaterialBehaviorAttributes =
  *
  * @extends MaterialBehavior
  */
-export {PhysicalMaterialBehavior}
+export
 @behavior
 class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 	// WIP

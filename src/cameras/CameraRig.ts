@@ -2,13 +2,14 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {createEffect, createRoot, onCleanup, untrack} from 'solid-js'
+import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
 import {signal} from 'classy-solid'
 import {element, numberAttribute, booleanAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
+import {Effects} from '../core/Effectful.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
@@ -53,7 +54,7 @@ export type CameraRigAttributes =
  * - `camera-child`: Allows children of the camera rig to render relative to the
  * camera rig's underlying camera.
  */
-export {CameraRig}
+export
 @element('lume-camera-rig', autoDefineElements)
 class CameraRig extends Element3D {
 	/**
@@ -85,7 +86,7 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialPolarAngle has been renamed to verticalAngle.
 	 */
-	@numberAttribute // CONTINUE does this work without a default value?
+	@numberAttribute
 	get initialPolarAngle() {
 		return this.verticalAngle
 	}
@@ -110,7 +111,7 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: minPolarAngle has been renamed to minVerticalAngle.
 	 */
-	@numberAttribute // CONTINUE does this work without an initial value? Need to use `accessor`?
+	@numberAttribute
 	get minPolarAngle() {
 		return this.minVerticalAngle
 	}
@@ -150,7 +151,7 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: maxPolarAngle has been renamed to maxVerticalAngle.
 	 */
-	@numberAttribute // CONTINUE initial value?
+	@numberAttribute
 	get maxPolarAngle() {
 		return this.maxVerticalAngle
 	}
@@ -216,7 +217,7 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialDistance has been renamed to distance.
 	 */
-	@numberAttribute // CONTINUE initial value?
+	@numberAttribute
 	get initialDistance() {
 		return this.distance
 	}
@@ -322,131 +323,91 @@ class CameraRig extends Element3D {
 	@signal scrollFling: ScrollFling | null = null
 	@signal pinchFling: PinchFling | null = null
 
-	override connectedCallback(): void {
-		super.connectedCallback?.()
-
-		// CONTINUE debugging
-		// this.createEffect(() => {
-		// 	console.log('camera effect,', this.cam!.position) // CONTINUE no loop here, but see the one in startInteraction
-		// })
-	}
-
-	autorunStoppers?: Array<() => void>
-
 	#startedInteraction = false
+
+	#interactionEffects = new Effects()
 
 	startInteraction() {
 		if (this.#startedInteraction) return
 		this.#startedInteraction = true
 
-		// // DEBUG {{{
-		// this.createEffect(() => {
-		// 	console.log('initialDistance effect,', this.initialDistance)
-		// })
+		this.#interactionEffects.createEffect(() => {
+			createEffect(() => {
+				if (!(this.scene && this.rotationYTarget)) return
 
-		// let count = 0
+				const flingRotation = (this.flingRotation = new FlingRotation({
+					interactionInitiator: this.scene,
+					rotationYTarget: this.rotationYTarget,
+					minFlingRotationX: this.minVerticalAngle,
+					maxFlingRotationX: this.maxVerticalAngle,
+					minFlingRotationY: this.minHorizontalAngle,
+					maxFlingRotationY: this.maxHorizontalAngle,
+				}).start())
 
-		// this.createEffect(() => {
-		// 	// if (!this.cam) return
-		// 	debugger
-		// 	this.cam!.position
-		// 	if (++count % 100 === 0) {
-		// 		debugger
-		// 		this.cam!.position = this.cam!.position
-		// 	}
-		// 	// console.log('camera effect,', this.cam!.position) // CONTINUE infinite reactivity loop
-		// 	console.log('camera effect,') // no loop
-		// })
-		// // }}} DEBUG
-
-		this.autorunStoppers = []
-
-		console.log('START INTERACTION ================================================================== ')
-
-		this.autorunStoppers.push(
-			// CONTINUE converted to solid/classy-solid, ensure it works.
-			createRoot(stop => {
 				createEffect(() => {
-					if (!(this.scene && this.rotationYTarget)) return
+					if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
+					else flingRotation.stop()
+				})
 
-					const flingRotation = (this.flingRotation = new FlingRotation({
-						interactionInitiator: this.scene,
-						rotationYTarget: this.rotationYTarget,
-						minFlingRotationX: this.minVerticalAngle,
-						maxFlingRotationX: this.maxVerticalAngle,
-						minFlingRotationY: this.minHorizontalAngle,
-						maxFlingRotationY: this.maxHorizontalAngle,
-					}).start())
+				onCleanup(() => flingRotation.stop())
+			})
 
-					createEffect(() => {
-						if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
-						else flingRotation.stop()
-					})
+			createEffect(() => {
+				if (!this.scene) return
 
-					onCleanup(() => flingRotation.stop())
+				const scrollFling = (this.scrollFling = new ScrollFling({
+					target: this.scene,
+					y: this.distance,
+					minY: this.minDistance,
+					maxY: this.maxDistance,
+					scrollFactor: this.dollySpeed,
+				}).start())
+
+				const pinchFling = (this.pinchFling = new PinchFling({
+					target: this.scene,
+					x: this.distance,
+					minX: this.minDistance,
+					maxX: this.maxDistance,
+					factor: this.dollySpeed,
+				}).start())
+
+				createEffect(() => {
+					const cam = this.cam
+					if (!cam) return
+
+					untrack(() => cam.position).z = scrollFling.y
 				})
 
 				createEffect(() => {
-					if (!this.scene) return
+					const cam = this.cam
+					if (!cam) return
 
-					const scrollFling = (this.scrollFling = new ScrollFling({
-						target: this.scene,
-						y: this.distance,
-						minY: this.minDistance,
-						maxY: this.maxDistance,
-						scrollFactor: this.dollySpeed,
-					}).start())
+					untrack(() => cam.position).z = pinchFling.x
+				})
 
-					const pinchFling = (this.pinchFling = new PinchFling({
-						target: this.scene,
-						x: this.distance,
-						minX: this.minDistance,
-						maxX: this.maxDistance,
-						factor: this.dollySpeed,
-					}).start())
-
-					createEffect(() => {
-						const cam = this.cam
-						if (!cam) return
-
-						untrack(() => cam.position).z = scrollFling.y
-					})
-
-					createEffect(() => {
-						const cam = this.cam
-						if (!cam) return
-
-						untrack(() => cam.position).z = pinchFling.x
-					})
-
-					createEffect(() => {
-						if (this.interactive) {
-							scrollFling.start()
-							pinchFling.start()
-						} else {
-							scrollFling.stop()
-							pinchFling.stop()
-						}
-					})
-
-					onCleanup(() => {
+				createEffect(() => {
+					if (this.interactive) {
+						scrollFling.start()
+						pinchFling.start()
+					} else {
 						scrollFling.stop()
 						pinchFling.stop()
-					})
+					}
 				})
 
-				return stop
-			}),
-		)
+				onCleanup(() => {
+					scrollFling.stop()
+					pinchFling.stop()
+				})
+			})
+		})
 	}
 
 	stopInteraction() {
 		if (!this.#startedInteraction) return
 		this.#startedInteraction = false
 
-		console.log('STOP INTERACTION |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ')
-
-		if (this.autorunStoppers) for (const stop of this.autorunStoppers) stop()
+		this.#interactionEffects.stopEffects()
 	}
 
 	override _loadGL(): boolean {

@@ -1,4 +1,7 @@
 import type { SharedAPI } from './SharedAPI';
+/**
+ * @private
+ */
 export declare class ElementOperations {
     #private;
     constructor(element: SharedAPI);

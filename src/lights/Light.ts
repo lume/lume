@@ -19,7 +19,7 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
  *
  * @extends Element3D
  */
-export {Light}
+export
 @element
 abstract class Light extends Element3D {
 	/**

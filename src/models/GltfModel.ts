@@ -35,7 +35,7 @@ export type GltfModelAttributes = Element3DAttributes
  * scene.add(model)
  * ```
  */
-export {GltfModel}
+export
 @element('lume-gltf-model', autoDefineElements)
 class GltfModel extends Element3D {
 	static override defaultBehaviors = ['gltf-model']
@@ -44,11 +44,7 @@ class GltfModel extends Element3D {
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors} from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work? Maybe we need to just put the export
-// directly on the class now that we're on TS 5 (and maybe there's a TS bug when
-// that isn't the case).
-interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}
+export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {

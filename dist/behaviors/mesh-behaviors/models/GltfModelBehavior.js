@@ -1,105 +1,214 @@
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
+    var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+    var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+    var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+    var _, done = false;
+    for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+            if (result === void 0) continue;
+            if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+            if (_ = accept(result.get)) descriptor.get = _;
+            if (_ = accept(result.set)) descriptor.set = _;
+            if (_ = accept(result.init)) initializers.unshift(_);
+        }
+        else if (_ = accept(result)) {
+            if (kind === "field") initializers.unshift(_);
+            else descriptor[key] = _;
+        }
+    }
+    if (target) Object.defineProperty(target, contextIn.name, descriptor);
+    done = true;
+};
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
 };
 import 'element-behaviors';
 import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
-import { reactive, attribute, booleanAttribute, stringAttribute } from '../../attribute.js';
+import { attribute, booleanAttribute, stringAttribute } from '@lume/element';
 import { Scene } from 'three/src/scenes/Scene.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Box3 } from 'three/src/math/Box3.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { disposeObjectTree } from '../../../utils/three.js';
+import { behavior } from '../../Behavior.js';
+import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+/**
+ * The recommended CDN for retrieving Draco decoder files.
+ * More info: https://github.com/google/draco#wasm-and-javascript-decoders
+ */
 const defaultDracoDecoder = 'https://www.gstatic.com/draco/v1/decoders/';
+/** One DRACOLoader per draco decoder URL. */
 let dracoLoaders = new Map();
-let GltfModelBehavior = class GltfModelBehavior extends RenderableBehavior {
-    src = '';
-    dracoDecoder = defaultDracoDecoder;
-    centerGeometry = false;
-    gltfLoader;
-    model = null;
-    #version = 0;
-    loadGL() {
-        this.gltfLoader = new GLTFLoader();
-        this.createEffect(() => {
-            const decoderPath = createMemo(() => this.dracoDecoder);
-            createEffect(() => {
-                if (!decoderPath())
-                    return;
-                const dracoLoader = getDracoLoader(decoderPath());
-                this.gltfLoader.dracoLoader = dracoLoader;
-                onCleanup(() => {
-                    disposeDracoLoader(decoderPath());
-                    this.gltfLoader.dracoLoader = null;
+let GltfModelBehavior = (() => {
+    let _classDecorators = [behavior];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = RenderableBehavior;
+    let _instanceExtraInitializers = [];
+    let _src_decorators;
+    let _src_initializers = [];
+    let _dracoDecoder_decorators;
+    let _dracoDecoder_initializers = [];
+    let _centerGeometry_decorators;
+    let _centerGeometry_initializers = [];
+    var GltfModelBehavior = class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _src_decorators = [attribute, receiver];
+            _dracoDecoder_decorators = [stringAttribute, receiver];
+            _centerGeometry_decorators = [booleanAttribute, receiver];
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dracoDecoder_decorators, { kind: "field", name: "dracoDecoder", static: false, private: false, access: { has: obj => "dracoDecoder" in obj, get: obj => obj.dracoDecoder, set: (obj, value) => { obj.dracoDecoder = value; } }, metadata: _metadata }, _dracoDecoder_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _instanceExtraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            GltfModelBehavior = _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
+        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''
+        /**
+         * @property {string | null} dracoDecoder -
+         *
+         * `attribute`
+         *
+         * Path to the draco decoder that
+         * will unpack decode compressed assets of the GLTF file. This does not need
+         * to be supplied unless you explicitly know you need it.
+         */
+        ));
+        /**
+         * @property {string | null} dracoDecoder -
+         *
+         * `attribute`
+         *
+         * Path to the draco decoder that
+         * will unpack decode compressed assets of the GLTF file. This does not need
+         * to be supplied unless you explicitly know you need it.
+         */
+        dracoDecoder = __runInitializers(this, _dracoDecoder_initializers, defaultDracoDecoder
+        /**
+         * @property {boolean} centerGeometry -
+         *
+         * `attribute`
+         *
+         * When `true`, all geometry of the
+         * loaded model will be centered at the local origin.
+         *
+         * Note, changing this value at runtime is expensive because the whole model
+         * will be re-created. We improve this by tracking the initial center
+         * position to revert to when centerGeometry goes back to `false` (PRs
+         * welcome!).
+         */
+        );
+        /**
+         * @property {boolean} centerGeometry -
+         *
+         * `attribute`
+         *
+         * When `true`, all geometry of the
+         * loaded model will be centered at the local origin.
+         *
+         * Note, changing this value at runtime is expensive because the whole model
+         * will be re-created. We improve this by tracking the initial center
+         * position to revert to when centerGeometry goes back to `false` (PRs
+         * welcome!).
+         */
+        centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
+        gltfLoader;
+        model = null;
+        // This is incremented any time we need a pending load() to cancel (f.e. on
+        // src change, or unloadGL cycle), so that the loader will ignore the
+        // result when a version change has happened.
+        #version = 0;
+        loadGL() {
+            this.gltfLoader = new GLTFLoader();
+            this.createEffect(() => {
+                const decoderPath = createMemo(() => this.dracoDecoder);
+                createEffect(() => {
+                    if (!decoderPath())
+                        return;
+                    const dracoLoader = getDracoLoader(decoderPath());
+                    this.gltfLoader.dracoLoader = dracoLoader;
+                    onCleanup(() => {
+                        disposeDracoLoader(decoderPath());
+                        this.gltfLoader.dracoLoader = null;
+                    });
+                });
+                // Use memos to avoid effect re-runs triggered by same-value
+                // changes, or else models may be loaded multiple times (expensive).
+                const gltfPath = createMemo(() => this.src);
+                const center = createMemo(() => this.centerGeometry);
+                createEffect(() => {
+                    gltfPath();
+                    decoderPath();
+                    center();
+                    this.#version++;
+                    untrack(() => this.#loadModel());
+                    onCleanup(() => this.#cleanupModel());
                 });
             });
-            const gltfPath = createMemo(() => this.src);
-            const center = createMemo(() => this.centerGeometry);
-            createEffect(() => {
-                gltfPath();
-                decoderPath();
-                center();
-                this.#version++;
-                untrack(() => this.#loadModel());
-                onCleanup(() => this.#cleanupModel());
-            });
-        });
-    }
-    unloadGL() {
-        this.gltfLoader = undefined;
-        this.#version++;
-    }
-    #cleanupModel() {
-        if (this.model)
-            disposeObjectTree(this.model.scene);
-        this.model = null;
-    }
-    #loadModel() {
-        const { src } = this;
-        const version = this.#version;
-        if (!src)
-            return;
-        this.gltfLoader.load(src, model => version == this.#version && this.#setModel(model), progress => version == this.#version && this.element.emit(Events.PROGRESS, progress), error => version == this.#version && this.#onError(error));
-    }
-    #onError(error) {
-        const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${this.dracoDecoder}". See the following error.`;
-        console.warn(message);
-        const err = error instanceof ErrorEvent && error.error ? error.error : error;
-        console.error(err);
-        this.element.emit(Events.MODEL_ERROR, err);
-    }
-    #setModel(model) {
-        this.model = model;
-        model.scene = model.scene || new Scene().add(...model.scenes);
-        if (this.centerGeometry) {
-            const box = new Box3();
-            box.setFromObject(model.scene);
-            const center = new Vector3();
-            box.getCenter(center);
-            model.scene.position.copy(center.negate());
         }
-        this.element.three.add(model.scene);
-        this.element.emit(Events.MODEL_LOAD, { format: 'gltf', model });
-        this.element.needsUpdate();
-    }
-};
-__decorate([
-    attribute
-], GltfModelBehavior.prototype, "src", void 0);
-__decorate([
-    stringAttribute(defaultDracoDecoder)
-], GltfModelBehavior.prototype, "dracoDecoder", void 0);
-__decorate([
-    booleanAttribute(false)
-], GltfModelBehavior.prototype, "centerGeometry", void 0);
-GltfModelBehavior = __decorate([
-    reactive
-], GltfModelBehavior);
+        unloadGL() {
+            this.gltfLoader = undefined;
+            // Increment this in case the loader is still loading, so it will ignore the result.
+            this.#version++;
+        }
+        #cleanupModel() {
+            if (this.model)
+                disposeObjectTree(this.model.scene);
+            this.model = null;
+        }
+        #loadModel() {
+            const { src } = this;
+            const version = this.#version;
+            if (!src)
+                return;
+            // In the following gltfLoader.load() callbacks, if #version doesn't
+            // match, it means this.src or this.dracoDecoder changed while
+            // a previous model was loading, in which case we ignore that
+            // result and wait for the next model to load.
+            this.gltfLoader.load(src, model => version == this.#version && this.#setModel(model), progress => version == this.#version && this.element.emit(Events.PROGRESS, progress), error => version == this.#version && this.#onError(error));
+        }
+        #onError(error) {
+            const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${this.dracoDecoder}". See the following error.`;
+            console.warn(message);
+            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            console.error(err);
+            this.element.emit(Events.MODEL_ERROR, err);
+        }
+        #setModel(model) {
+            this.model = model;
+            model.scene = model.scene || new Scene().add(...model.scenes);
+            if (this.centerGeometry) {
+                const box = new Box3();
+                box.setFromObject(model.scene);
+                const center = new Vector3();
+                box.getCenter(center);
+                model.scene.position.copy(center.negate());
+            }
+            this.element.three.add(model.scene);
+            this.element.emit(Events.MODEL_LOAD, { format: 'gltf', model });
+            this.element.needsUpdate();
+        }
+    };
+    return GltfModelBehavior = _classThis;
+})();
 export { GltfModelBehavior };
 if (globalThis.window?.document && !elementBehaviors.has('gltf-model'))
     elementBehaviors.define('gltf-model', GltfModelBehavior);

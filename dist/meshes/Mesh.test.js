@@ -26,6 +26,7 @@ describe('Mesh', () => {
                 this.specularMap;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
     it('element is an instance of Mesh, created with `new`', async () => {
         const n = new Mesh();

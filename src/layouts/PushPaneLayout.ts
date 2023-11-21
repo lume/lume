@@ -4,7 +4,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 
 // !! WIP under construction
 
-export {PushPaneLayout}
+export
 @element('lume-push-pane-layout', autoDefineElements)
 class PushPaneLayout extends Node {
 	constructor() {

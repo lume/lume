@@ -95,6 +95,7 @@ describe('XYZAnyValues', () => {
             expect(a.toString(sep)).toEqual(`1${sep} foo${sep} false`);
         });
     });
+    // TODO, this doesn't work because .set currently doesn't accept undefined values.
     describe('.fromDefault', () => {
         it('sets the values to default', () => {
             const a = new XYZAnyValues(1, 2, 3);

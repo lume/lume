@@ -5,7 +5,7 @@ import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 
 export type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias' | 'intensity'
 
-export {FlickeringOrbs}
+export
 @element('flickering-orbs', autoDefineElements)
 class FlickeringOrbs extends Element3D {
 	@numberAttribute shadowBias = 0
@@ -13,9 +13,6 @@ class FlickeringOrbs extends Element3D {
 	@numberAttribute flickerRange = 0.4
 	@attribute color: string | null = null
 
-	// CONTINUE 'attr:' is used to work around an issue with default property
-	// behavior, should be fixed once we switch to classy-solid with latest
-	// solid.js.
 	// prettier-ignore
 	override template = () => html`
 		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ??    "yellow"} position="500 0 0"></flickering-orb>

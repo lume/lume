@@ -7,7 +7,7 @@ import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehav
 
 export type PointsMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'sizeAttenuation' | 'pointSize'
 
-export {PointsMaterialBehavior}
+export
 @behavior
 class PointsMaterialBehavior extends MaterialBehavior {
 	@stringAttribute @receiver texture = ''

@@ -12,7 +12,9 @@
 	},
 	"workspaces": [
 		"apps/*",
-		"packages/*"
+		"packages/*",
+		"examples/react",
+		"examples/react-typescript"
 	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {
@@ -52,16 +54,15 @@
 		"unlink:unix": "rm -rf `find . -name node_modules`",
 		"unlink:windows": "Get-ChildItem -r -i node_modules | rm -r -fo",
 		"submodules:sync": "git submodule update --init --recursive",
-		"// Note, ignoring classy-solid in the dev process for now, we'll add it back in the separate branch where we're updating Lume to use it.": "",
-		"build:all": "corepack yarn lerna run build --ignore classy-solid",
+		"build:all": "corepack yarn lerna run build",
 		"dev:all": "corepack yarn lerna run dev --parallel --scope lume --include-dependencies",
-		"clean:all": "corepack yarn lerna run clean --parallel --ignore classy-solid || echo 'clean:all: missing executables, skipping.'",
+		"clean:all": "corepack yarn lerna run clean --parallel || echo 'clean:all failed, skipping.'",
 		"// Note, we don't run tests in topological order with the -t option because all packages are already built in topological order first.": "",
 		"// Note, we run all web test-runner tests first, then other packages' tests second, otherwise other packages somehow causes web test-runner to have module-not-found errors.": "",
 		"test:all": "cross-env TEST_ALL=true npm test && corepack yarn lerna run test --parallel --scope '{readem,@lume/kiwi,@lume/autolayout,@lume/three-projected-material,@lume/live-code}'",
 		"test:watch:all": "echo TODO corepack yarn lerna run test:watch --parallel --scope lume --include-dependencies # https://github.com/modernweb-dev/web/discussions/2522",
-		"prettier:all": "corepack yarn lerna run prettier --parallel --ignore classy-solid",
-		"prettier:check:all": "corepack yarn lerna run prettier:check --parallel --ignore classy-solid",
+		"prettier:all": "corepack yarn lerna run prettier --parallel",
+		"prettier:check:all": "corepack yarn lerna run prettier:check --parallel",
 		"XXXX WEBSITE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"website": "(npm run docs:serve & p1=$!; npm run website:serve & p2=$!; wait $p1 $p2)",
 		"website:serve": "cd apps/website && meteor",
@@ -72,15 +73,15 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.10.0",
-		"@lume/element": "^0.10.0",
+		"@lume/element": "^0.11.0",
 		"@lume/eventful": "^0.3.0",
 		"@lume/three-projected-material": "^0.3.0",
-		"classy-solid": "^0.2.0",
+		"classy-solid": "^0.3.0",
 		"element-behaviors": "^5.0.0",
 		"james-bond": "^0.7.0",
-		"lowclass": "^6.0.0",
+		"lowclass": "^7.0.0",
 		"regexr": "^2.0.0",
-		"solid-js": ">=1.0.0 <1.5.0"
+		"solid-js": "^1.0.0"
 	},
 	"peerDependencies": {
 		"three": ">=0.139.0"
@@ -93,7 +94,6 @@
 		"husky": "^8.0.3",
 		"lerna": "^7.3.1",
 		"lint-staged": "^14.0.1",
-		"lit-dom-expressions": "^0.35.9",
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",

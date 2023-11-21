@@ -11,7 +11,7 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 export type RoundedRectangleGeometryBehaviorAttributes = 'cornerRadius' | 'thickness' | 'quadraticCorners'
 
-export {RoundedRectangleGeometryBehavior}
+export
 @behavior
 class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 	@attribute({from: Number}) @receiver cornerRadius = 0

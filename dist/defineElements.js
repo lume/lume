@@ -16,5 +16,6 @@ function isLumeElementClass(o) {
         return true;
     return false;
 }
+/** @deprecated */
 export const useDefaultNames = defineElements;
 //# sourceMappingURL=defineElements.js.map

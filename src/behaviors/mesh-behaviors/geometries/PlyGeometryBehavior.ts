@@ -6,7 +6,6 @@ import {receiver} from '../../PropReceiver.js'
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
-import {Points} from '../../../meshes/Points.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
 /**
@@ -26,7 +25,7 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  *
  * @extends GeometryBehavior
  */
-export {PlyGeometryBehavior}
+export
 @behavior
 class PlyGeometryBehavior extends GeometryBehavior {
 	/**
@@ -42,12 +41,6 @@ class PlyGeometryBehavior extends GeometryBehavior {
 
 	loader: PLYLoader | null = null
 	@signal model: BufferGeometry | null = null
-
-	declare element: Points
-
-	override requiredElementType(): [typeof Points] {
-		return [Points]
-	}
 
 	override _createComponent() {
 		// An empty geometry to start with. It will be replaced once the PLY file is loaded.

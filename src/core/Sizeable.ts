@@ -34,12 +34,14 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // Sizeable and its subclass Transformable extend from TreeNode because they know
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
-export {Sizeable}
+export
 @element
 class Sizeable extends CompositionTracker(TreeNode) {
 	constructor() {
 		super()
 
+		// TODO remove this, it causes confusion with infinite loops when doing
+		// this.position.x = 123 in an effect, requiring untrack.
 		createRoot(() => {
 			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
 			// trigger reactivity for the respective properties. See also NOTE REACTIVITY
@@ -225,6 +227,10 @@ class Sizeable extends CompositionTracker(TreeNode) {
 
 		this.#isSettingProperty = true
 
+		if (name === 'rotation') {
+			console.log('new rotation value:', newValue, this.#settingValueFromPropFunction)
+			// debugger
+		}
 		if (isXYZPropertyFunction(newValue)) {
 			this.#handleXYZPropertyFunction(newValue, name, xyz)
 		} else {

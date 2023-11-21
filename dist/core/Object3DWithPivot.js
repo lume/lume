@@ -11,6 +11,10 @@ export class Object3DWithPivot extends Object3D {
     set pivot(v) {
         this.__pivot = v;
     }
+    // This overrides Object3D to have a `.pivot` property of type
+    // THREE.Vector3 that allows the origin (pivot) of rotation and scale to be
+    // specified in local coordinate space. For more info:
+    // https://github.com/mrdoob/three.js/issues/15965
     updateMatrix() {
         this.matrix.compose(this.position, this.quaternion, this.scale);
         const pivot = this.pivot;
@@ -24,6 +28,8 @@ export class Object3DWithPivot extends Object3D {
         this.matrixWorldNeedsUpdate = true;
     }
 }
+// Override updateMatrix for all Three.js Object3D derivatives.
 Object3D.prototype.updateMatrix = Object3DWithPivot.prototype.updateMatrix;
+// Give all Three.js Object3D derivatives the pivot property.
 Object.defineProperty(Object3D.prototype, 'pivot', Object.getOwnPropertyDescriptor(Object3DWithPivot.prototype, 'pivot'));
 //# sourceMappingURL=Object3DWithPivot.js.map

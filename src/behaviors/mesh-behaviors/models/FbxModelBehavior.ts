@@ -14,7 +14,7 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry'
 
-export {FbxModelBehavior}
+export
 @behavior
 class FbxModelBehavior extends RenderableBehavior {
 	/** Path to a .fbx file. */

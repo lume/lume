@@ -4,7 +4,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 
 export type RoundedRectangleAttributes = MeshAttributes
 
-export {RoundedRectangle}
+export
 @element('lume-rounded-rectangle', autoDefineElements)
 class RoundedRectangle extends Mesh {
 	static override defaultBehaviors = {
@@ -24,9 +24,7 @@ import type {
 	RoundedRectangleGeometryBehaviorAttributes,
 } from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work?
-interface RoundedRectangle
+export interface RoundedRectangle
 	extends ElementWithBehaviors<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes> {}
 
 declare global {

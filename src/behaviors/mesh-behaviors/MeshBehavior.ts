@@ -15,7 +15,7 @@ export type MeshComponentType = 'geometry' | 'material'
  *
  * @extends RenderableBehavior
  */
-export {MeshBehavior}
+export
 @behavior
 abstract class MeshBehavior extends RenderableBehavior {
 	declare element: Mesh | Points | InstancedMesh | Line

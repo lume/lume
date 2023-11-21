@@ -7,6 +7,7 @@ describe('ObjModel', () => {
                 this.mtl;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=ObjModel.test.js.map

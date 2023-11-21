@@ -16,7 +16,7 @@ export type FlickeringOrbAttributes =
 	| 'shadowMapWidth'
 	| 'shadowMapHeight'
 
-export {FlickeringOrb}
+export
 @element('flickering-orb', autoDefineElements)
 class FlickeringOrb extends Element3D {
 	@stringAttribute color = 'royalblue'

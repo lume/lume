@@ -34,7 +34,7 @@ export type StandardMaterialBehaviorAttributes =
  *
  * @extends MaterialBehavior
  */
-export {StandardMaterialBehavior}
+export
 @behavior
 class StandardMaterialBehavior extends MaterialBehavior {
 	// alphaMap?: Texture | null;

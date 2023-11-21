@@ -32,7 +32,7 @@ export type FbxModelAttributes = Element3DAttributes
  * scene.add(model)
  * ```
  */
-export {FbxModel}
+export
 @element('lume-fbx-model', autoDefineElements)
 class FbxModel extends Element3D {
 	static override defaultBehaviors = ['fbx-model']
@@ -41,11 +41,7 @@ class FbxModel extends Element3D {
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors} from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work? Maybe we need to just put the export
-// directly on the class now that we're on TS 5 (and maybe there's a TS bug when
-// that isn't the case).
-interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {}
+export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {

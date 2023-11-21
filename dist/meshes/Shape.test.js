@@ -7,6 +7,7 @@ describe('Shape', () => {
                 this.curveSegments;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=Shape.test.js.map

@@ -65,8 +65,10 @@ describe('XYZNumberValues', () => {
         it('can take a string of delimited values, defaulting to space separated', () => {
             const a = new XYZNumberValues();
             let string = '1 foo false';
+            // Should throw a runtime error because "foo" is not a number
             expect(() => a.fromString(string)).toThrowError(TypeError);
             string = '1 2 false';
+            // Should throw a runtime error because "false" is not a number
             expect(() => a.fromString(string)).toThrowError(TypeError);
             string = '1 2 3.456';
             expect(() => a.fromString(string)).not.toThrowError(TypeError);
@@ -95,6 +97,7 @@ describe('XYZNumberValues', () => {
             expect(a.toString(sep)).toEqual(`1.2${sep} 2.3${sep} 3.4`);
         });
     });
+    // TODO, this doesn't work because .set currently doesn't accept undefined values.
     describe('.fromDefault', () => {
         it('sets the values to default', () => {
             const a = new XYZNumberValues(1, 2, 3);
@@ -124,6 +127,7 @@ describe('XYZNumberValues', () => {
     });
     it("doesn't work with values that aren't numbers", () => {
         expect(() => new XYZNumberValues(1, 2, 3)).not.toThrow();
+        // It tries to coerce strings to numbers.
         expect(() => new XYZNumberValues('1', '2', '3')).not.toThrow();
         expect(() => new XYZNumberValues(1, '2', '3')).not.toThrow();
         expect(() => new XYZNumberValues(1, 2, '3')).not.toThrow();
@@ -131,7 +135,7 @@ describe('XYZNumberValues', () => {
         expect(() => new XYZNumberValues([1, 2])).not.toThrow();
         expect(() => new XYZNumberValues([1, 2, 3])).not.toThrow();
         expect(() => new XYZNumberValues([1, 2, false])).toThrowError(TypeError);
-        expect(() => new XYZNumberValues([1, undefined, 3])).not.toThrow();
+        expect(() => new XYZNumberValues([1, undefined, 3])).not.toThrow(); // undefined values are ignored when it comes to XYZNumberValues
         expect(() => new XYZNumberValues(['foo', 2, 3])).toThrowError(TypeError);
         expect(() => new XYZNumberValues([1, undefined, false])).toThrowError(TypeError);
         expect(() => new XYZNumberValues(['foo', undefined, false])).toThrowError(TypeError);

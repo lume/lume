@@ -7,7 +7,7 @@ import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehav
 
 export type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 
-export {BasicMaterialBehavior}
+export
 @behavior
 class BasicMaterialBehavior extends MaterialBehavior {
 	@stringAttribute @receiver texture = ''

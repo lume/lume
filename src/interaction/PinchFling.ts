@@ -7,7 +7,7 @@ import type {RenderTask} from '../core/index.js'
 
 type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>
 
-export {PinchFling}
+export
 @reactive
 class PinchFling {
 	/**

@@ -94,6 +94,7 @@ describe('XYZNumberValues', () => {
             expect(a.toString(sep)).toEqual(`proportional${sep} literal${sep} literal`);
         });
     });
+    // TODO, this doesn't work because .set currently doesn't accept undefined values.
     describe('.fromDefault', () => {
         it('sets the values to default', () => {
             const a = new XYZSizeModeValues('literal', 'proportional', 'literal');
@@ -130,7 +131,7 @@ describe('XYZNumberValues', () => {
         expect(() => new XYZSizeModeValues(['literal', 'proportional'])).not.toThrow();
         expect(() => new XYZSizeModeValues(['literal', 'proportional', 'proportional'])).not.toThrow();
         expect(() => new XYZSizeModeValues(['literal', 'literal', false])).toThrowError(TypeError);
-        expect(() => new XYZSizeModeValues(['literal', undefined, 'proportional'])).not.toThrow();
+        expect(() => new XYZSizeModeValues(['literal', undefined, 'proportional'])).not.toThrow(); // undefined values are ignored when it comes to XYZNumberValues
         expect(() => new XYZSizeModeValues([5, 'literal', 'proportional'])).toThrowError(TypeError);
         expect(() => new XYZSizeModeValues(['literal', undefined, false])).toThrowError(TypeError);
         expect(() => new XYZSizeModeValues([5, undefined, false])).toThrowError(TypeError);

@@ -29,6 +29,37 @@ the composed DOM tree. We test several things:
 
 The code below is commented to describe which parts correlate to the above list of items.
 
+Composed tree shape before any of the below toggles are fired:
+
+body
+	#shadow
+		div innerContainer
+			#shadow
+				div
+					div (slot=scene)
+						scene
+							box (slot=outsidenode)
+							ambient-light
+							point-light
+							box#lightdom
+								#shadow
+									sphere#default-sphere-orange (slot=root default content)
+									box
+										sphere#default-sphere-white (slot=box default content)
+									element3d
+										mixed-plane
+											#shadow
+												h4 (slot)
+												box#deeperbox
+													sphere#distributedSphere (slot=plane slot=deeper)
+														camera-rig
+															#shadow
+																element3d#cameraY
+																	element3d#cameraX
+																		perspective-camera (slot default content)
+
+Total composed nodes: 15
+
 -->
 
 <style>
@@ -128,122 +159,122 @@ The code below is commented to describe which parts correlate to the above list 
 	let slotContainer
 
 	// XXX Without the timeout, this should still work!
-	setTimeout(() =>
-		//
-		{
-			const root = el.attachShadow({mode: 'open'})
+	setTimeout(() => {
+		const root = el.attachShadow({mode: 'open'})
 
-			root.append(
-				...html`
-					<!-- A slot that is child of a ShadowRoot. Any content (distributed, or fallback) renders relative to the shadow host. -->
-					<slot name="root">
+		root.append(
+			...html`
+				<!-- A slot that is child of a ShadowRoot. Any content (distributed, or fallback) renders relative to the shadow host. -->
+				<slot name="root">
+					<!-- Default content to render when nothing is assigned to this slot. -->
+					<lume-sphere id="default-sphere-orange" color="orange" size="50 50 50" position="10 10 10"></lume-sphere>
+				</slot>
+				<!-- A LUME element as child of a ShadowRoot renders relative to the shadow host. -->
+				<lume-box id="box" size="50 50 50" position="-100 -100 -100" color="royalblue">
+					<slot name="box">
 						<!-- Default content to render when nothing is assigned to this slot. -->
-						<lume-sphere id="default-sphere-orange" color="orange" size="50 50 50" position="10 10 10"></lume-sphere>
+						<lume-sphere id="default-sphere-white" color="white" size="50 50 50" position="10 10 10"></lume-sphere>
 					</slot>
-					<!-- A LUME element as child of a ShadowRoot renders relative to the shadow host. -->
-					<lume-box id="box" size="50 50 50" position="-100 -100 -100" color="royalblue">
-						<slot name="box">
+				</lume-box>
+				<lume-element3d position="10 10 10">
+					<lume-mixed-plane
+						id="shadowdom"
+						color="black"
+						ref=${el => (slotContainer = el)}
+						position="50 50 50"
+						rotation="30 30 30"
+						align-point="1 1 1"
+						size="50 50"
+						style="background: skyblue; padding: 5px; font-size: 0.5rem"
+						material-opacity="0.4"
+					>
+						<h4>This is DOM content.</h4>
+
+						<!-- This slot is further assigned to a deeper slot, so LUME elements assigned here
+						will not render relative to here, but relative to the parent of the deeper slot.  -->
+						<slot name="plane" slot="deeper" ref=${el => (slot = el)}>
 							<!-- Default content to render when nothing is assigned to this slot. -->
-							<lume-sphere id="default-sphere-white" color="white" size="50 50 50" position="10 10 10"></lume-sphere>
+							<lume-sphere id="default-sphere-teal" color="teal" size="50 50 50" position="10 10 10"></lume-sphere>
 						</slot>
-					</lume-box>
-					<lume-element3d position="10 10 10">
-						<lume-mixed-plane
-							id="shadowdom"
-							color="black"
-							ref=${el => (slotContainer = el)}
-							position="50 50 50"
-							rotation="30 30 30"
-							align-point="1 1 1"
-							size="50 50"
-							style="background: skyblue; padding: 5px; font-size: 0.5rem"
-							material-opacity="0.4"
-						>
-							<h4>This is DOM content.</h4>
+					</lume-mixed-plane>
+				</lume-element3d>
+			`,
+		)
 
-							<!-- This slot is further assigned to a deeper slot, so LUME elements assigned here
-									will not render relative to here, but relative to the parent of the deeper slot.  -->
-							<slot name="plane" slot="deeper" ref=${el => (slot = el)}>
-								<!-- Default content to render when nothing is assigned to this slot. -->
-								<lume-sphere id="default-sphere-teal" color="teal" size="50 50 50" position="10 10 10"></lume-sphere>
-							</slot>
-						</lume-mixed-plane>
-					</lume-element3d>
-				`,
-			)
+		// slotContainer.rotation = (x, y, z) => [x, ++y, z]
 
-			slotContainer.rotation = (x, y, z) => [x, ++y, z]
-
-			const root2 = slotContainer.attachShadow({mode: 'open'})
-			root2.append(
-				...html`
-					<slot>
-						<!--
-									Default content to render when nothing is assigned to this slot.
-									The <h4> from the above ShadowRoot is always distributed here, so
-									this yellow sphere will never render.
-								-->
-						<lume-sphere id="default-sphere-yellow" color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
+		const root2 = slotContainer.attachShadow({mode: 'open'})
+		root2.append(
+			...html`
+				<slot>
+					<!--
+					Default content to render when nothing is assigned to this slot.
+					The <h4> from the above ShadowRoot is always distributed here, so
+					this yellow sphere will never render.
+					-->
+					<lume-sphere id="default-sphere-yellow" color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
+				</slot>
+				<lume-box id="deeperbox" size="20 20 20" position="0 0 100">
+					<slot name="deeper">
+						<!-- Default content to render when nothing is assigned to this slot. -->
+						<lume-sphere id="default-sphere-green" color="green" size="50 50 50" position="10 10 10"></lume-sphere>
 					</slot>
-					<lume-box id="deeperbox" size="20 20 20" position="0 0 100">
-						<slot name="deeper">
-							<!-- Default content to render when nothing is assigned to this slot. -->
-							<lume-sphere id="default-sphere-green" color="green" size="50 50 50" position="10 10 10"></lume-sphere>
-						</slot>
-					</lume-box>
-				`,
-			)
+				</lume-box>
+			`,
+		)
 
-			// TODO This should ideally work without the timeout.
-			setTimeout(() => {
-				let nodes = []
-				scene.traverseSceneGraph(n => nodes.push(n))
-				if (nodes.length !== 11) {
-					// TODO This error happens. Not sure if this broke, or if I
-					// forgot to update it, but ShadowDOM tests pass and
-					// examples work.
-					console.error(nodes)
-					throw new Error('Composed tree size not as expected. Got: ' + nodes.length)
-				}
-			})
-
-			let i = 0
-
-			// Alternate which slot the sphere is assigned to to verify
-			// that the sphere moves around to the different distribution
-			// points, including one deeper slot.
-			const toggle1 = () => {
-				i++
-				sphere.setAttribute('slot', i % 3 == 0 ? 'box' : i % 3 == 1 ? 'plane' : 'root')
+		// TODO This should ideally work without the timeout.
+		setTimeout(() => {
+			let nodes = []
+			scene.traverseSceneGraph(n => nodes.push(n))
+			if (nodes.length !== 15) {
+				// TODO This error happens. Not sure if this broke, or if I
+				// forgot to update it, but ShadowDOM tests pass and
+				// examples work.
+				console.error(nodes)
+				throw new Error(
+					`Composed tree size not as expected. Got: ${nodes.length}. Update the number if the markup was modified. Also take into account that some Lume elements have their own ShadowDOM.`,
+				)
 			}
+		})
 
-			// Add and remove a slot to verify that this changes which
-			// distribution point the sphere renders relative to.
-			const toggle2 = () => {
-				if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
-				else slotContainer.appendChild(slot)
-			}
+		let i = 0
 
-			// Turn the scene's webgl rendering on and off to
-			// verify that WebGL rendering based on the composed tree
-			// works when turned on and off (this destroys and
-			// recreates the whole scene graph each time, and each
-			// time it should be properly created in the same
-			// structure as the composed DOM tree).
-			const toggle3 = () => {
-				scene.webgl = !scene.webgl
-			}
+		// Alternate which slot the sphere is assigned to to verify
+		// that the sphere moves around to the different distribution
+		// points, including one deeper slot.
+		const toggle1 = () => {
+			i++
+			sphere.setAttribute('slot', i % 3 == 0 ? 'box' : i % 3 == 1 ? 'plane' : 'root')
+		}
 
-			// Toggle which deeper slot the higher slot is assigned to, to
-			// verify that the sphere will render in the expected place.
-			const toggle4 = () => {
-				if (slot.hasAttribute('slot')) slot.removeAttribute('slot')
-				else slot.setAttribute('slot', 'deeper')
-			}
+		// Add and remove a slot to verify that this changes which
+		// distribution point the sphere renders relative to.
+		const toggle2 = () => {
+			if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
+			else slotContainer.appendChild(slot)
+		}
 
-			setInterval(toggle1, 2000)
-			// setInterval(toggle2, 2000)
-			// setInterval(toggle3, 2000)
-			// setInterval(toggle4, 2500)
-		}, 2000)
+		// Turn the scene's webgl rendering on and off to
+		// verify that WebGL rendering based on the composed tree
+		// works when turned on and off (this destroys and
+		// recreates the whole scene graph each time, and each
+		// time it should be properly created in the same
+		// structure as the composed DOM tree).
+		const toggle3 = () => {
+			scene.webgl = !scene.webgl
+		}
+
+		// Toggle which deeper slot the higher slot is assigned to, to
+		// verify that the sphere will render in the expected place.
+		const toggle4 = () => {
+			if (slot.hasAttribute('slot')) slot.removeAttribute('slot')
+			else slot.setAttribute('slot', 'deeper')
+		}
+
+		// setInterval(toggle1, 2000)
+		// setInterval(toggle2, 2000)
+		// setInterval(toggle3, 2000)
+		// setInterval(toggle4, 2500)
+	}, 2000)
 </script>

@@ -6,6 +6,7 @@ describe('FbxModel', () => {
                 this.src;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=FbxModel.test.js.map

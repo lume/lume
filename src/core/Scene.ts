@@ -88,7 +88,7 @@ export type SceneAttributes =
  * @extends SharedAPI
  */
 // TODO @element jsdoc tag
-export {Scene}
+export
 @element('lume-scene', autoDefineElements)
 class Scene extends SharedAPI {
 	/**
@@ -450,7 +450,7 @@ class Scene extends SharedAPI {
 	 *
 	 * Applies with both CSS and WebGL rendering.
 	 */
-	@numberAttribute // CONTINUE what happens with getters/setters and the default value of the numberAttribute?
+	@numberAttribute
 	set perspective(value) {
 		this.#perspective = value
 		this._updateCameraPerspective()
@@ -705,17 +705,15 @@ class Scene extends SharedAPI {
 		this.#stopParentSizeObservation()
 	}
 
-	// CONTINUE CONTINUE CONTINUE: this overrides the ones defined by @attribute decorator
-	static override observedAttributes = ['slot']
+	static override observedAttributes = [...(super.observedAttributes || []), 'slot']
 
-	override attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
-		console.log('attribute changed!', name, oldV, newV)
-		super.attributeChangedCallback!(name, oldV, newV)
+	override attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
+		super.attributeChangedCallback!(name, oldVal, newVal)
 
 		if (name === 'slot') {
 			queueMicrotask(() => {
 				throw new Error(
-					'Assigning a <lume-scene> to a slot is not currently supported and may not work as expected. Instead, wrap the <lume-scene> in another element like a <div>, then assign the wrapper to the slot.',
+					`Assigning a <lume-scene> to a slot (slot="${newVal}") is not currently supported and may not work as expected. Instead, wrap the <lume-scene> in another element like a <div>, then assign the wrapper to the slot.`,
 				)
 			})
 		}

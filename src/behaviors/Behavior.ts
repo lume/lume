@@ -3,7 +3,8 @@ import {element} from '@lume/element'
 import {PropReceiver} from './PropReceiver.js'
 
 import type {Element as LumeElement} from '@lume/element'
-import type {ElementWithBehaviors} from 'element-behaviors'
+import type {ElementWithBehaviors, PossibleBehaviorConstructor, PossibleBehaviorInstance} from 'element-behaviors'
+import type {AnyConstructor} from 'lowclass/dist/utils.js'
 
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
@@ -24,12 +25,25 @@ import type {ElementWithBehaviors} from 'element-behaviors'
  * }
  * ```
  */
-// TODO avoid `any`
-export const behavior = (nameOrClass?: any, context?: any) => {
+export function behavior(
+	name: string,
+): <T extends AnyConstructor<PossibleBehaviorInstance>>(Class: T, context?: ClassDecoratorContext) => T
+export function behavior<T extends AnyConstructor<PossibleBehaviorInstance>>(
+	Class: T,
+	context?: ClassDecoratorContext,
+): T
+export function behavior(
+	nameOrClass?: string | AnyConstructor<PossibleBehaviorInstance>,
+	context?: ClassDecoratorContext,
+) {
 	if (typeof nameOrClass === 'string' && context == null) {
-		return (Class: any, context: any) => elementBehaviors.define(nameOrClass, element(Class, context))
+		return (Class: AnyConstructor<PossibleBehaviorInstance>, context: ClassDecoratorContext) =>
+			elementBehaviors.define(
+				nameOrClass,
+				element(Class as AnyConstructor<HTMLElement>, context) as PossibleBehaviorConstructor,
+			)
 	} else if (context && context.kind === 'class') {
-		return element(nameOrClass, context)
+		return element(nameOrClass as AnyConstructor<HTMLElement>, context)
 	} else {
 		throw new TypeError(
 			'Invalid decorator usage. Call with a string, or as a plain decorator with, only on a class meant to be used as an element behavior.',

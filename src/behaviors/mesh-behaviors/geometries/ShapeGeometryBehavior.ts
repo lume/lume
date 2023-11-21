@@ -60,7 +60,7 @@ only.
 
 @extends GeometryBehavior
 */
-export {ShapeGeometryBehavior}
+export
 @behavior
 class ShapeGeometryBehavior extends GeometryBehavior {
 	__shape = new Shape().copy(defaultShape)

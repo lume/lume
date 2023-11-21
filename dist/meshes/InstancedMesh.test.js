@@ -23,6 +23,7 @@ describe('InstancedMesh', () => {
     const rotations = Array.from({ length: instanceCount * 3 }).map(() => Math.random());
     const positions = Array.from({ length: instanceCount * 3 }).map(() => 2000 * Math.random());
     const scales = Array.from({ length: instanceCount * 3 }).map(() => Math.random());
+    // const colorPhases = Array.from({length: instanceCount * 3}).map(() => 2 * Math.random())
     const colors = Array.from({ length: instanceCount * 3 }).map(() => Math.random());
     const positions2 = [...positions].fill(0.1);
     const rotations2 = [...positions].fill(0.2);
@@ -74,10 +75,13 @@ describe('InstancedMesh', () => {
     const eul = new Euler();
     const scale = new Vector3();
     const pivot = new Vector3();
+    // Verifies that elements were composed from our data into the instanceMatrix buffer.
     function verifyMatrices(positions, rotations, scales) {
         for (let index = 0; index < mesh.count; index += 1) {
             mesh._calculateInstanceMatrix(position.set(positions[index * 3 + 0], positions[index * 3 + 1], positions[index * 3 + 2]), quat.setFromEuler(eul.set(rotations[index * 3 + 0], rotations[index * 3 + 1], rotations[index * 3 + 2])), scale.set(scales[index * 3 + 0], scales[index * 3 + 1], scales[index * 3 + 2]), pivot, mat1);
             mesh.three.getMatrixAt(index, mat2);
+            // three.getMatrixAt gets the values from the underlying
+            // Float32Array, so we need to cast ours or it will not match.
             expect(Array.from(Float32Array.from(mat1.elements))).toEqual(mat2.elements);
         }
     }
@@ -87,6 +91,7 @@ describe('InstancedMesh', () => {
     it('allows setting instanced components directly', async () => {
         expect(mesh.three.count).toBe(instanceCount);
         expect(mesh.colors.length).toBe(instanceCount * 3);
+        // Updated in the next animation frame after setting the colors
         expect(mesh.three.instanceColor?.array.length).toBe(undefined);
         await nextFrame();
         verifyColors(colors);
@@ -114,8 +119,8 @@ describe('InstancedMesh', () => {
             mesh.count;
         });
         expect(runs).toBe(1);
-        mesh.count = 0;
-        mesh.count = instanceCount;
+        mesh.count = 0; // effect runs again
+        mesh.count = instanceCount; // effect runs again
         expect(runs).toBe(3);
         await nextFrame();
         verifyColors(colors2);
@@ -157,6 +162,7 @@ describe('InstancedMesh', () => {
             let runs2 = 0;
             createEffect(() => {
                 runs++;
+                // These were previously causing an infinite reactivity loop.
                 mesh.setInstancePosition(0, 0, 0.5, 1);
                 mesh.setInstanceRotation(0, 0, 0.5, 1);
                 mesh.setInstanceScale(0, 0, 0.5, 1);

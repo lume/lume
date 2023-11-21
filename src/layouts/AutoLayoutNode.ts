@@ -45,7 +45,7 @@ export type AutoLayoutNodeAttributes = Element3DAttributes | 'visualFormat'
  * An Element3D that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
-export {AutoLayoutNode}
+export
 @element('lume-autolayout-node', autoDefineElements)
 class AutoLayoutNode extends Element3D {
 	static DEFAULT_PARSE_OPTIONS = {

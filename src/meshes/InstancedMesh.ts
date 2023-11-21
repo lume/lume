@@ -59,7 +59,7 @@ const appliedPosition = [0, 0, 0]
  * @extends Mesh
  *
  */
-export {InstancedMesh}
+export
 @element('lume-instanced-mesh', autoDefineElements)
 class InstancedMesh extends Mesh {
 	/**
@@ -78,7 +78,7 @@ class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` rotations, those
 	 * rotations are ignored.
 	 */
-	@stringAttribute // CONTINUE default value for getters/setters?
+	@stringAttribute
 	get rotations(): number[] {
 		return this.#rotations
 	}

@@ -29,7 +29,7 @@ export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect'
  *
  * @extends Element3D
  */
-export {PerspectiveCamera}
+export
 @element('lume-perspective-camera', autoDefineElements)
 class PerspectiveCamera extends Element3D {
 	/**

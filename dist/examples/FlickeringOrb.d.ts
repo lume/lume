@@ -15,7 +15,7 @@ export declare class FlickeringOrb extends Element3D {
     connectedCallback(): void;
 }
 import type { ElementAttributes } from '@lume/element';
-declare module '@lume/element' {
+declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
             'flickering-orb': ElementAttributes<FlickeringOrb, FlickeringOrbAttributes>;

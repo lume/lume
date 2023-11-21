@@ -3,31 +3,32 @@ import 'element-behaviors'
 import {LineBasicMaterial} from 'three/src/materials/LineBasicMaterial.js'
 import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehavior.js'
 import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 
 export type LineBasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture'
 
 /**
-@class LineBasicMaterialBehavior -
-
-Behavior: `line-material`
-
-This is the default material behavior for
-[`<lume-line>`](../../../meshes/Line.md) elements. It renders a series of
-points as a simple colored line, optionally with a texture for coloring. It is
-backed by Three.js `LineBasicMaterial` underneath. This is typically paired with
-[`LineGeometryBehavior`](../geometries/LineGeometryBehavior.md).
-
-<div id="exampleContainer"></div>
-<script>
-  new Vue({
-    el: '#exampleContainer',
-    template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
-    data: { code: lineExample },
-  })
-</script>
-
-@extends MaterialBehavior
-*/
+ * @class LineBasicMaterialBehavior -
+ *
+ * Behavior: `line-material`
+ *
+ * This is the default material behavior for
+ * [`<lume-line>`](../../../meshes/Line.md) elements. It renders a series of
+ * points as a simple colored line, optionally with a texture for coloring. It is
+ * backed by Three.js `LineBasicMaterial` underneath. This is typically paired with
+ * [`LineGeometryBehavior`](../geometries/LineGeometryBehavior.md).
+ *
+ * <div id="exampleContainer"></div>
+ * <script>
+ *   new Vue({
+ *     el: '#exampleContainer',
+ *     template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
+ *     data: { code: lineExample },
+ *   })
+ * </script>
+ *
+ * @extends MaterialBehavior
+ */
 @behavior
 export class LineBasicMaterialBehavior extends MaterialBehavior {
 	/**
@@ -36,7 +37,7 @@ export class LineBasicMaterialBehavior extends MaterialBehavior {
 	 * material. Most likely you'll supply UVs by copying data from a modeling
 	 * program like Blender, probably not something you'd program manually.
 	 */
-	@stringAttribute texture = ''
+	@stringAttribute @receiver texture = ''
 
 	override _createComponent() {
 		return new LineBasicMaterial()

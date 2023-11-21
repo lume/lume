@@ -18,7 +18,7 @@ export type SphereAttributes = MeshAttributes
  *
  * @extends Mesh
  */
-export {Sphere}
+export
 @element('lume-sphere', autoDefineElements)
 class Sphere extends Mesh {
 	static override defaultBehaviors = {

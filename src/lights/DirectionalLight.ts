@@ -45,26 +45,22 @@ export type DirectionalLightAttributes =
  *
  * @extends LightWithShadow
  */
-export {DirectionalLight}
+export
 @element('lume-directional-light', autoDefineElements)
 class DirectionalLight extends LightWithShadow {
-	constructor() {
-		super()
-
-		/**
-		 * @property {number} intensity -
-		 *
-		 * `attribute`
-		 *
-		 * Default: `1`
-		 *
-		 * The intensity of the light.
-		 *
-		 * The intensity of this element does not change behavior when [physically
-		 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
-		 */
-		this.intensity = 1
-	}
+	/**
+	 * @property {number} intensity -
+	 *
+	 * `override` `attribute`
+	 *
+	 * Default: `1`
+	 *
+	 * The intensity of the light.
+	 *
+	 * The intensity of this element does not change behavior when [physically
+	 * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
+	 */
+	@numberAttribute override intensity = 1
 
 	// These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
 	// https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow

@@ -1,20 +1,71 @@
 import { observe, unobserve } from 'james-bond';
+// We use this to enforce that the @receiver decorator is used on PropReceiver
+// classes.
+//
+// We could've used a Symbol instead, which is simpler, but that causes the
+// infamous "has or is using private name" errors due to declaration emit
+// (https://github.com/microsoft/TypeScript/issues/35822)
 const isPropReceiverClass = Symbol();
+/**
+ * @class PropReceiver
+ *
+ * `mixin`
+ *
+ * Forwards properties of a specified `observedObject` onto properties of
+ * `this` object. The properties to be received from `observedObject` are those
+ * listed in the `static receivedProperties` array, or the ones decorated with
+ * `@receiver`.
+ *
+ * In particular, LUME uses this to forward properties of a behavior's host
+ * element onto the behavior.
+ *
+ * Example:
+ *
+ * ```js
+ * class SomeBehavior extends PropReceiver(BaseClass) {
+ *   static receivedProperties = ['foo', 'bar']
+ *   get observedObject() {
+ *     return this.element
+ *   }
+ * }
+ *
+ * const behavior = new SomeBehavior()
+ * const el = document.querySelector('.some-element-with-some-behavior')
+ * el.foo = 123
+ * console.log(behavior.foo) // 123
+ * ```
+ */
 export function PropReceiver(Base = Object) {
-    class PropReceiver extends Base {
+    // TODO Maybe this class should not depend on DOM (i.e. don't use methods
+    // from PossibleCustomElement), and we can have a separate mixin for that.
+    var _a;
+    // TODO Use abstract with TS 4.2
+    return class PropReceiver extends Base {
+        static {
+            // Make this unknown to the type system, otherwise we get errors with the mixin usage downstream. :(
+            ;
+            this[isPropReceiverClass] = true;
+        }
         constructor(...args) {
             super(...args);
             this._propChangedCallback = this._propChangedCallback.bind(this);
         }
         connectedCallback() {
             super.connectedCallback?.();
-            this.__forwardInitialProps();
             this.#observeProps();
         }
         disconnectedCallback() {
             super.disconnectedCallback?.();
             this.#unobserveProps();
         }
+        /**
+         * @abstract
+         * @property {object} observedObject
+         *
+         * `abstract` `protected` `readonly`
+         *
+         * A subclass should specify the object to observe by defining a `get observedObject` getter.
+         */
         get observedObject() {
             throw new TypeError(`
                 The subclass using PropReceiver must define
@@ -26,18 +77,40 @@ export function PropReceiver(Base = Object) {
             ;
             this[propName] = value;
         }
+        #isObserving = false;
         #observeProps() {
-            observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {});
+            if (this.#isObserving)
+                return;
+            this.#isObserving = true;
+            const ctor = this.constructor;
+            // Make it unique, before we pass it to observe(), just in case.
+            if (ctor.receivedProperties)
+                ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties));
+            this.__forwardInitialProps();
+            observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {
+            // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
+            });
         }
         #unobserveProps() {
+            if (!this.#isObserving)
+                return;
+            this.#isObserving = false;
             unobserve(this.observedObject, this.__forwardedProps(), this._propChangedCallback);
         }
+        /**
+         * @property {string[]} receivedProperties
+         *
+         * `static`
+         *
+         * An array of strings, the properties of observedObject to observe.
+         */
         static receivedProperties;
         __forwardedProps() {
             const ctor = this.constructor;
             const props = (ctor.receivedProperties || []);
+            // @prod-prune
             if (!Array.isArray(props))
-                throw new TypeError('Expected protected static receivedProperties to be an array.');
+                throw new TypeError('Expected static receivedProperties to be an array.');
             return props;
         }
         __forwardInitialProps() {
@@ -46,38 +119,38 @@ export function PropReceiver(Base = Object) {
                 prop in observed && this._propChangedCallback(prop, observed[prop]);
             }
         }
-    }
-    ;
-    PropReceiver[isPropReceiverClass] = true;
-    return PropReceiver;
+    };
 }
-export function receiver(...args) {
-    return decoratorAbstraction(decorator, ...args);
-    function decorator(prototype, propName, _descriptor) {
-        const ctor = prototype?.constructor;
-        if (!(ctor && ctor[isPropReceiverClass]))
-            throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver');
-        if (!ctor.hasOwnProperty('receivedProperties'))
-            ctor.receivedProperties = [...(ctor.receivedProperties || [])];
-        ctor.receivedProperties.push(propName);
-    }
+function checkIsObject(o) {
+    if (typeof o !== 'object')
+        throw new Error('cannot use @receiver on class returning a non-object instance');
+    return true;
 }
-export function decoratorAbstraction(decorator, handlerOrProtoOrFactoryArg, propName, descriptor) {
-    const isDecoratorV2 = handlerOrProtoOrFactoryArg && 'kind' in handlerOrProtoOrFactoryArg;
-    if (isDecoratorV2) {
-        const classElement = handlerOrProtoOrFactoryArg;
-        return {
-            ...classElement,
-            finisher(Class) {
-                decorator(Class.prototype, classElement.key);
-                return classElement.finisher?.(Class) ?? Class;
-            },
+export function receiver(_, context) {
+    const { kind, name } = context;
+    if (kind === 'field') {
+        return function (initialValue) {
+            checkIsObject(this);
+            trackSignalProperty(this, name);
+            return initialValue;
         };
     }
-    if (handlerOrProtoOrFactoryArg && propName) {
-        const prototype = handlerOrProtoOrFactoryArg;
-        return decorator(prototype, propName, descriptor);
+    else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
+        context.addInitializer(function () {
+            checkIsObject(this);
+            trackSignalProperty(this, name);
+        });
     }
-    throw new TypeError('Invalid decorator');
+    else {
+        throw new TypeError('@receiver is for use only on class fields, getters/setters, and auto accessors. Also make sure your class extends from PropReceiver.');
+    }
+}
+function trackSignalProperty(obj, name) {
+    const ctor = obj.constructor;
+    if (!ctor[isPropReceiverClass])
+        throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver');
+    if (!ctor.hasOwnProperty('receivedProperties'))
+        ctor.receivedProperties = [...(ctor.receivedProperties || [])];
+    ctor.receivedProperties.push(name);
 }
 //# sourceMappingURL=PropReceiver.js.map

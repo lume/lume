@@ -7,6 +7,7 @@ describe('RoundedRectangle', () => {
                 this.cornerRadius;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=RoundedRectangle.test.js.map

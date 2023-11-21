@@ -9,7 +9,7 @@ import {RenderableBehavior} from '../../RenderableBehavior.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
-export {ColladaModelBehavior}
+export
 @behavior
 class ColladaModelBehavior extends RenderableBehavior {
 	/** Path to a .dae file. */

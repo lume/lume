@@ -15,7 +15,7 @@ module.exports = {
 			lume: '/dist/index.js',
 			'lume/': '/',
 			'@lume/element': '/node_modules/@lume/element/dist/index.js',
-			'@lume/variable': '/node_modules/@lume/variable/dist/index.js',
+			'classy-solid': '/node_modules/classy-solid/dist/index.js',
 			'@lume/eventful': '/node_modules/@lume/eventful/dist/index.js',
 			'@lume/kiwi': '/node_modules/@lume/autolayout/node_modules/@lume/kiwi/dist/kiwi.js',
 			'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
@@ -34,12 +34,3 @@ module.exports = {
 		},
 	},
 }
-
-/*
-CONTINUE:
-
-@lume/element:
-- replace __propsSetAtLeastOnce__ with updated API from classy-solid
-- replace __reactifiedProps__ with updated API from classy-solid
-
-*/

@@ -1,9 +1,12 @@
-import {attribute, autorun, element, html, Element3D} from 'lume'
+import {attribute, element, html, Element3D} from 'lume'
+import {createEffect} from 'solid-js'
+
+// This example show plain JS custom element definitions without usage of decorators.
 
 export const ShimmerSurface = element('shimmer-surface')(
 	class ShimmerSurface extends Element3D {
 		static observedAttributes = {
-			color: attribute.string('#ffff0045'),
+			color: attribute.string(),
 		}
 
 		/** Must be a hex color string */
@@ -14,7 +17,7 @@ export const ShimmerSurface = element('shimmer-surface')(
 		connectedCallback() {
 			super.connectedCallback()
 
-			autorun(() => this.style.setProperty('--shimmer-color', this.color))
+			createEffect(() => this.style.setProperty('--shimmer-color', this.color))
 		}
 
 		// css = /*css*/ `
@@ -57,7 +60,7 @@ export const ShimmerSurface = element('shimmer-surface')(
 export const ShimmerCube = element('shimmer-cube')(
 	class ShimmerCube extends Element3D {
 		static observedAttributes = {
-			color: attribute.string('#ffff0045'),
+			color: attribute.string(),
 		}
 
 		/** Must be a hex color string */

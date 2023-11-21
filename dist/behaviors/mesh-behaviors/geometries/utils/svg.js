@@ -1,5 +1,6 @@
 import { ShapePath } from 'three/src/extras/core/ShapePath.js';
 import { Vector2 } from 'three/src/math/Vector2.js';
+// Functions adapted from https://github.com/mrdoob/three.js/blob/c7d06c02e302ab9c20fe8b33eade4b61c6712654/examples/jsm/loaders/SVGLoader.js#L207
 export function parseSvgPathElement(path) {
     return parseSvgPathDAttribute(path.getAttribute('d'));
 }
@@ -133,6 +134,7 @@ export function parseSvgPathDAttribute(d) {
             case 'A':
                 numbers = parseFloats(data, [3, 4], 7);
                 for (let j = 0, jl = numbers.length; j < jl; j += 7) {
+                    // skip command if start point == end point
                     if (numbers[j + 5] == point.x && numbers[j + 6] == point.y)
                         continue;
                     const start = point.clone();
@@ -249,6 +251,7 @@ export function parseSvgPathDAttribute(d) {
             case 'a':
                 numbers = parseFloats(data, [3, 4], 7);
                 for (let j = 0, jl = numbers.length; j < jl; j += 7) {
+                    // skip command if no displacement
                     if (numbers[j + 5] == 0 && numbers[j + 6] == 0)
                         continue;
                     const start = point.clone();
@@ -263,9 +266,13 @@ export function parseSvgPathDAttribute(d) {
                 break;
             case 'Z':
             case 'z':
+                // @ts-expect-error FIXME
                 path.currentPath.autoClose = true;
+                // @ts-expect-error FIXME
                 if (path.currentPath.curves.length > 0) {
+                    // Reset point to beginning of Path
                     point.copy(firstPoint);
+                    // @ts-expect-error FIXME
                     path.currentPath.currentPoint.copy(point);
                     isFirstPoint = true;
                 }
@@ -281,6 +288,7 @@ function parseFloats(input, flags, stride) {
     if (typeof input !== 'string') {
         throw new TypeError('Invalid input: ' + typeof input);
     }
+    // Character groups
     const RE = {
         SEPARATOR: /[ \t\r\n\,.\-+]/,
         WHITESPACE: /[ \t\r\n]/,
@@ -291,6 +299,7 @@ function parseFloats(input, flags, stride) {
         EXP: /e/i,
         FLAGS: /[01]/,
     };
+    // States
     const SEP = 0;
     const INT = 1;
     const FLOAT = 2;
@@ -321,16 +330,20 @@ function parseFloats(input, flags, stride) {
     const length = input.length;
     for (let i = 0; i < length; i++) {
         current = input[i];
+        // check for flags
         if (Array.isArray(flags) && flags.includes(result.length % stride) && RE.FLAGS.test(current)) {
             state = INT;
             number = current;
             newNumber();
             continue;
         }
+        // parse until next number
         if (state === SEP) {
+            // eat whitespace
             if (RE.WHITESPACE.test(current)) {
                 continue;
             }
+            // start new number
             if (RE.DIGIT.test(current) || RE.SIGN.test(current)) {
                 state = INT;
                 number = current;
@@ -341,6 +354,7 @@ function parseFloats(input, flags, stride) {
                 number = current;
                 continue;
             }
+            // throw on double commas (e.g. "1, , 2")
             if (RE.COMMA.test(current)) {
                 if (seenComma) {
                     throwSyntaxError(current, i, result);
@@ -348,6 +362,7 @@ function parseFloats(input, flags, stride) {
                 seenComma = true;
             }
         }
+        // parse integer part
         if (state === INT) {
             if (RE.DIGIT.test(current)) {
                 number += current;
@@ -362,10 +377,12 @@ function parseFloats(input, flags, stride) {
                 state = EXP;
                 continue;
             }
+            // throw on double signs ("-+1"), but not on sign as separator ("-1-2")
             if (RE.SIGN.test(current) && number.length === 1 && RE.SIGN.test(number[0])) {
                 throwSyntaxError(current, i, result);
             }
         }
+        // parse decimal part
         if (state === FLOAT) {
             if (RE.DIGIT.test(current)) {
                 number += current;
@@ -375,10 +392,12 @@ function parseFloats(input, flags, stride) {
                 state = EXP;
                 continue;
             }
+            // throw on double decimal points (e.g. "1..2")
             if (RE.POINT.test(current) && number[number.length - 1] === '.') {
                 throwSyntaxError(current, i, result);
             }
         }
+        // parse exponent part
         if (state === EXP) {
             if (RE.DIGIT.test(current)) {
                 exponent += current;
@@ -394,6 +413,7 @@ function parseFloats(input, flags, stride) {
                 }
             }
         }
+        // end of number
         if (RE.WHITESPACE.test(current)) {
             newNumber();
             state = SEP;
@@ -418,27 +438,42 @@ function parseFloats(input, flags, stride) {
             throwSyntaxError(current, i, result);
         }
     }
+    // add the last number found (if any)
     newNumber();
     return result;
 }
+/**
+ * https://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
+ * https://mortoray.com/2017/02/16/rendering-an-svg-elliptical-arc-as-bezier-curves/ Appendix: Endpoint to center arc conversion
+ * From
+ * rx ry x-axis-rotation large-arc-flag sweep-flag x y
+ * To
+ * aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation
+ */
 function parseArcCommand(path, rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, start, end) {
     if (rx == 0 || ry == 0) {
+        // draw a line if either of the radii == 0
         path.lineTo(end.x, end.y);
         return;
     }
     x_axis_rotation = (x_axis_rotation * Math.PI) / 180;
+    // Ensure radii are positive
     rx = Math.abs(rx);
     ry = Math.abs(ry);
+    // Compute (x1', y1')
     const dx2 = (start.x - end.x) / 2.0;
     const dy2 = (start.y - end.y) / 2.0;
     const x1p = Math.cos(x_axis_rotation) * dx2 + Math.sin(x_axis_rotation) * dy2;
     const y1p = -Math.sin(x_axis_rotation) * dx2 + Math.cos(x_axis_rotation) * dy2;
+    // Compute (cx', cy')
     let rxs = rx * rx;
     let rys = ry * ry;
     const x1ps = x1p * x1p;
     const y1ps = y1p * y1p;
+    // Ensure radii are large enough
     const cr = x1ps / rxs + y1ps / rys;
     if (cr > 1) {
+        // scale up rx,ry equally so cr == 1
         const s = Math.sqrt(cr);
         rx = s * rx;
         ry = s * ry;
@@ -452,19 +487,23 @@ function parseArcCommand(path, rx, ry, x_axis_rotation, large_arc_flag, sweep_fl
         q = -q;
     const cxp = (q * rx * y1p) / ry;
     const cyp = (-q * ry * x1p) / rx;
+    // Step 3: Compute (cx, cy) from (cx', cy')
     const cx = Math.cos(x_axis_rotation) * cxp - Math.sin(x_axis_rotation) * cyp + (start.x + end.x) / 2;
     const cy = Math.sin(x_axis_rotation) * cxp + Math.cos(x_axis_rotation) * cyp + (start.y + end.y) / 2;
+    // Step 4: Compute θ1 and Δθ
     const theta = svgAngle(1, 0, (x1p - cxp) / rx, (y1p - cyp) / ry);
     const delta = svgAngle((x1p - cxp) / rx, (y1p - cyp) / ry, (-x1p - cxp) / rx, (-y1p - cyp) / ry) % (Math.PI * 2);
+    // @ts-expect-error FIXME
     path.currentPath.absellipse(cx, cy, rx, ry, theta, theta + delta, sweep_flag === 0, x_axis_rotation);
 }
+// http://www.w3.org/TR/SVG11/implnote.html#PathElementImplementationNotes
 function getReflection(a, b) {
     return a - (b - a);
 }
 function svgAngle(ux, uy, vx, vy) {
     const dot = ux * vx + uy * vy;
     const len = Math.sqrt(ux * ux + uy * uy) * Math.sqrt(vx * vx + vy * vy);
-    let ang = Math.acos(Math.max(-1, Math.min(1, dot / len)));
+    let ang = Math.acos(Math.max(-1, Math.min(1, dot / len))); // floating point precision, slightly over values appear
     if (ux * vy - uy * vx < 0)
         ang = -ang;
     return ang;

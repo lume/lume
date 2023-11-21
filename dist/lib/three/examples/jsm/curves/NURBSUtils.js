@@ -1,5 +1,22 @@
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { Vector4 } from 'three/src/math/Vector4.js';
+/**
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ **/
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
+/*
+Finds knot vector span.
+
+p : degree
+u : parametric value
+U : knot vector
+
+returns the span
+*/
 function findSpan(p, u, U) {
     const n = U.length - p - 1;
     if (u >= U[n]) {
@@ -22,6 +39,16 @@ function findSpan(p, u, U) {
     }
     return mid;
 }
+/*
+Calculate basis functions. See The NURBS Book, page 70, algorithm A2.2
+
+span : span in which u lies
+u    : parametric point
+p    : degree
+U    : knot vector
+
+returns array[p+1] with basis functions values.
+*/
 function calcBasisFunctions(span, u, p, U) {
     const N = [];
     const left = [];
@@ -42,6 +69,16 @@ function calcBasisFunctions(span, u, p, U) {
     }
     return N;
 }
+/*
+Calculate B-Spline curve points. See The NURBS Book, page 82, algorithm A3.1.
+
+p : degree of B-Spline
+U : knot vector
+P : control points (x, y, z, w)
+u : parametric point
+
+returns point for given u
+*/
 function calcBSplinePoint(p, U, P, u) {
     const span = findSpan(p, u, U);
     const N = calcBasisFunctions(span, u, p, U);
@@ -57,6 +94,17 @@ function calcBSplinePoint(p, U, P, u) {
     }
     return C;
 }
+/*
+Calculate basis functions derivatives. See The NURBS Book, page 72, algorithm A2.3.
+
+span : span in which u lies
+u    : parametric point
+p    : degree
+n    : number of derivatives to calculate
+U    : knot vector
+
+returns array[n+1][p+1] with basis functions derivatives
+*/
 function calcBasisFunctionDerivatives(span, u, p, n, U) {
     const zeroArr = [];
     for (let i = 0; i <= p; ++i)
@@ -128,6 +176,17 @@ function calcBasisFunctionDerivatives(span, u, p, n, U) {
     }
     return ders;
 }
+/*
+    Calculate derivatives of a B-Spline. See The NURBS Book, page 93, algorithm A3.2.
+
+    p  : degree
+    U  : knot vector
+    P  : control points
+    u  : Parametric points
+    nd : number of derivatives
+
+    returns array[d+1] with derivatives
+    */
 function calcBSplineDerivatives(p, U, P, u, nd) {
     const du = nd < p ? nd : p;
     const CK = [];
@@ -154,6 +213,11 @@ function calcBSplineDerivatives(p, U, P, u, nd) {
     }
     return CK;
 }
+/*
+Calculate "K over I"
+
+returns k!/(i!(k-i)!)
+*/
 function calcKoverI(k, i) {
     let nom = 1;
     for (let j = 2; j <= k; ++j) {
@@ -168,6 +232,13 @@ function calcKoverI(k, i) {
     }
     return nom / denom;
 }
+/*
+Calculate derivatives (0-nd) of rational curve. See The NURBS Book, page 127, algorithm A4.2.
+
+Pders : result of function calcBSplineDerivatives
+
+returns array with derivatives for rational curve.
+*/
 function calcRationalCurveDerivatives(Pders) {
     const nd = Pders.length;
     const Aders = [];
@@ -187,10 +258,31 @@ function calcRationalCurveDerivatives(Pders) {
     }
     return CK;
 }
+/*
+Calculate NURBS curve derivatives. See The NURBS Book, page 127, algorithm A4.2.
+
+p  : degree
+U  : knot vector
+P  : control points in homogeneous space
+u  : parametric points
+nd : number of derivatives
+
+returns array with derivatives.
+*/
 function calcNURBSDerivatives(p, U, P, u, nd) {
     const Pders = calcBSplineDerivatives(p, U, P, u, nd);
     return calcRationalCurveDerivatives(Pders);
 }
+/*
+Calculate rational B-Spline surface point. See The NURBS Book, page 134, algorithm A4.3.
+
+p1, p2 : degrees of B-Spline surface
+U1, U2 : knot vectors
+P      : control points (x, y, z, w)
+u, v   : parametric values
+
+returns point for given (u, v)
+*/
 function calcSurfacePoint(p, q, U, V, P, u, v, target) {
     const uspan = findSpan(p, u, U);
     const vspan = findSpan(q, v, V);

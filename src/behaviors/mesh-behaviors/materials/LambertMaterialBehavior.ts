@@ -28,7 +28,7 @@ export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'te
  *
  * @extends MaterialBehavior
  */
-export {LambertMaterialBehavior}
+export
 @behavior
 class LambertMaterialBehavior extends MaterialBehavior {
 	@stringAttribute @receiver texture = ''

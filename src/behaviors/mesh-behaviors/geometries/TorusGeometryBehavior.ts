@@ -22,7 +22,7 @@ export type TorusGeometryBehaviorAttributes = 'tubeThickness' | 'radialSegments'
  *
  * @extends GeometryBehavior
  */
-export {TorusGeometryBehavior}
+export
 @behavior
 class TorusGeometryBehavior extends GeometryBehavior {
 	// TODO tubeThicknessMode: literal or proportional

@@ -20,7 +20,7 @@ declare global {
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
 
-export {ObjModelBehavior}
+export
 @behavior
 class ObjModelBehavior extends RenderableBehavior {
 	@stringAttribute @receiver obj = ''

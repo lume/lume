@@ -16,6 +16,7 @@ describe('Scene', () => {
             expect(scene.swapLayers).toBe(false);
             expect((scene.shadowRoot?.querySelector('.CSS3DLayer')).style.zIndex).toBe('');
             scene.swapLayers = true;
+            // A z-index of 1 puts CSS on top of WebGL, otherwise its DOM order normally puts it below.
             expect((scene.shadowRoot?.querySelector('.CSS3DLayer')).style.zIndex).toBe('1');
         });
     });

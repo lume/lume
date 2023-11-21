@@ -6,6 +6,7 @@ describe('GltfModel', () => {
                 this.dracoDecoder;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=GltfModel.test.js.map

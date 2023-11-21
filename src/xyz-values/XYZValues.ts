@@ -20,7 +20,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-export {XYZValues}
+export
 @reactive
 abstract class XYZValues<T = any> extends Object {
 	#x: T = undefined!

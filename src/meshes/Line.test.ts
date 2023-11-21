@@ -22,12 +22,14 @@ describe('Line', () => {
 	it('inherits property types from behaviors, for TypeScript', async () => {
 		~class extends Line {
 			test() {
+				this.points
+				this.fitment
+				this.centerGeometry
 				this.wireframe
 				this.sidedness
 				this.color
 				this.texture
-				this.bumpMap
-				this.specularMap
+				this.materialOpacity
 			}
 		}
 	})

@@ -1,3 +1,11 @@
+/**
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ **/
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
 export function findSpan(p: any, u: any, U: any): any;
 export function calcBasisFunctions(span: any, u: any, p: any, U: any): number[];
 export function calcBSplinePoint(p: any, U: any, P: any, u: any): Vector4;

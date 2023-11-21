@@ -33,12 +33,14 @@ const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
  *
  * @extends Sizeable
  */
-export {Transformable}
+export
 @element
 class Transformable extends Sizeable {
 	constructor() {
 		super()
 
+		// TODO remove this, it causes confusion with infinite loops when doing
+		// this.position.x = 123 in an effect, requiring untrack.
 		createRoot(() => {
 			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
 			// trigger reactivity for the respective properties. See also NOTE REACTIVITY

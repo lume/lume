@@ -1,3 +1,6 @@
+/**
+ * @private
+ */
 export class ElementOperations {
     #element;
     constructor(element) {
@@ -12,6 +15,7 @@ export class ElementOperations {
     }
     set shouldRender(shouldRender) {
         this.#shouldRender = shouldRender;
+        // TODO replace this with Motor.once() (might cause a circular dependency)
         requestAnimationFrame(() => {
             this.#applyStyle('display', shouldRender ? 'block' : 'none');
         });
@@ -23,6 +27,7 @@ export class ElementOperations {
         const { x, y } = this.#element.calculatedSize;
         this.#applyStyle('width', `${x}px`);
         this.#applyStyle('height', `${y}px`);
+        // NOTE: we ignore the Z axis on elements, since they are flat.
     }
     #applyOpacity() {
         this.#applyStyle('opacity', this.#element.opacity.toString());

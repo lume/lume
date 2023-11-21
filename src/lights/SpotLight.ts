@@ -34,7 +34,7 @@ export type SpotLightAttributes = PointLightAttributes
  *
  * @extends PointLight
  */
-export {SpotLight}
+export
 @element('lume-spot-light', autoDefineElements)
 class SpotLight extends PointLight {
 	/**

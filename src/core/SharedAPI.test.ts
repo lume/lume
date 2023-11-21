@@ -30,7 +30,6 @@ describe('SharedAPI', () => {
 
 			// It is reactive
 			let count = 0
-			// CONTINUE switched from variable to solid/classy-solid, make sure it works
 			const stop = createRoot(stop => {
 				createEffect(() => {
 					count++

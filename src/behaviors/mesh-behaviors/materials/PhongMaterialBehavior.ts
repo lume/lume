@@ -43,7 +43,7 @@ export type PhongMaterialBehaviorAttributes =
  *
  * @extends MaterialBehavior
  */
-export {PhongMaterialBehavior}
+export
 @behavior
 class PhongMaterialBehavior extends MaterialBehavior {
 	@stringAttribute @receiver alphaMap = ''
@@ -60,16 +60,14 @@ class PhongMaterialBehavior extends MaterialBehavior {
 	// TODO this is not DRY, similar to the .color and .specular properties, consolidate.
 	@stringAttribute
 	@receiver
-	get emissive(): Color {
+	get emissive(): string | number {
 		return this.#emissive
 	}
 	set emissive(val: string | number | Color) {
-		val = val ?? ''
-		if (typeof val === 'string') this.#emissive.set(val)
-		else if (typeof val === 'number') this.#emissive.set(val)
+		if (typeof val === 'object') this.#emissive = val.getStyle()
 		else this.#emissive = val
 	}
-	#emissive = new Color('black')
+	#emissive: string | number = 'black'
 
 	@numberAttribute @receiver emissiveIntensity = 1
 	@stringAttribute @receiver envMap = ''
@@ -83,20 +81,16 @@ class PhongMaterialBehavior extends MaterialBehavior {
 	@numberAttribute @receiver reflectivity = 1
 	@stringAttribute @receiver specularMap = ''
 
-	// CONTINUE envMap
-
 	@stringAttribute
 	@receiver
-	get specular(): Color {
+	get specular(): string | number {
 		return this.#specular
 	}
 	set specular(val: string | number | Color) {
-		val = val ?? ''
-		if (typeof val === 'string') this.#specular.set(val)
-		else if (typeof val === 'number') this.#specular.set(val)
+		if (typeof val === 'object') this.#specular = val.getStyle()
 		else this.#specular = val
 	}
-	#specular = new Color('#111')
+	#specular: string | number = '#111'
 
 	@numberAttribute @receiver shininess = 30
 
@@ -121,18 +115,26 @@ class PhongMaterialBehavior extends MaterialBehavior {
 			mat.bumpScale = this.bumpScale
 			mat.displacementScale = this.displacementScale
 			mat.displacementBias = this.displacementBias
-			mat.emissive = this.emissive
 			mat.emissiveIntensity = this.emissiveIntensity
 			mat.flatShading = this.flatShading
 			mat.lightMapIntensity = this.lightMapIntensity
 			mat.normalScale.set(this.normalScale, this.normalScale)
 			mat.reflectivity = this.reflectivity
-			mat.specular = this.specular
 			mat.shininess = this.shininess
 
 			// TODO Needed?
 			// mat.needsUpdate = true
 
+			this.element.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.meshComponent?.emissive.set(this.emissive)
+			this.element.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			this.meshComponent?.specular.set(this.specular)
 			this.element.needsUpdate()
 		})
 

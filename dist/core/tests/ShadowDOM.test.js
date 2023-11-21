@@ -26,9 +26,15 @@ describe('ShadowDOM support', () => {
 		`;
         const node = scene.querySelector('lume-element3d');
         container.append(scene);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentNode).toBe(scene);
         expect(node.parentLumeElement).toBe(scene);
+        // Although a Scene has ShadowDOM, child Nodes are considered
+        // composed to the Scene instead of the ShadowDOM for our 3D
+        // rendering purposes.
         expect(node.composedParent).toBe(scene);
         expect(node.composedLumeParent).toBe(scene);
         expect(node.three.parent).toBe(scene.three);
@@ -44,6 +50,9 @@ describe('ShadowDOM support', () => {
 		`;
         const root = container.attachShadow({ mode: 'open' });
         root.append(scene);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentElement).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -74,6 +83,9 @@ describe('ShadowDOM support', () => {
         const shadow = node.attachShadow({ mode: 'open' });
         const node2 = html `<lume-element3d></lume-element3d>`;
         shadow.append(node2);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node2.parentNode).toBe(shadow);
         expect(node2.parentLumeElement).toBe(null);
@@ -101,6 +113,9 @@ describe('ShadowDOM support', () => {
         const node2 = scene.querySelector('lume-element3d');
         const root = container.attachShadow({ mode: 'open' });
         root.append(scene);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentNode).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -134,6 +149,9 @@ describe('ShadowDOM support', () => {
         const root2 = middle.attachShadow({ mode: 'open' });
         root2.append(deeper);
         const scene = root2.querySelector('lume-scene');
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentElement).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -180,6 +198,9 @@ describe('ShadowDOM support', () => {
         const scene = root2.querySelector('lume-scene');
         const slot = root2.querySelector('slot');
         const sphere = root2.querySelector('lume-sphere');
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentElement).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -228,6 +249,9 @@ describe('ShadowDOM support', () => {
         const scene = root2.querySelector('lume-scene');
         const slot = root2.querySelector('slot');
         const sphere = root2.querySelector('lume-sphere');
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentElement).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -268,6 +292,9 @@ describe('ShadowDOM support', () => {
         const slot = html `<slot name="root"></slot>`;
         const root = node.attachShadow({ mode: 'open' });
         root.append(slot);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(box.parentElement).toBe(node);
         expect(box.parentLumeElement).toBe(node);
@@ -276,6 +303,7 @@ describe('ShadowDOM support', () => {
         expect(box.composedLumeParent).toBe(node);
         expect(box.three.parent).toBe(node.three);
         expect(box.threeCSS.parent).toBe(node.threeCSS);
+        // The sphere is not composed because it is not slotted into the ShadowRoot
         expect(sphere.parentElement).toBe(node);
         expect(sphere.parentLumeElement).toBe(node);
         expect(sphere.assignedSlot).toBe(null);
@@ -307,6 +335,9 @@ describe('ShadowDOM support', () => {
         const deeper = html `<slot name="deeper"></slot>`;
         const root2 = middleNode.attachShadow({ mode: 'open' });
         root2.append(deeper);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentElement).toBe(container);
         expect(node.parentLumeElement).toBe(null);
@@ -324,6 +355,13 @@ describe('ShadowDOM support', () => {
         expect(middleNode.threeCSS.children.length).toBe(1);
         expect(middleNode.threeCSS.children[0]).toBe(node.threeCSS);
     });
+    ////// TODO /////////////////////////////////////////////////////////////////////////////
+    ////// TODO /////////////////////////////////////////////////////////////////////////////
+    ////// TODO /////////////////////////////////////////////////////////////////////////////
+    ////// TODO /////////////////////////////////////////////////////////////////////////////
+    ////// TODO /////////////////////////////////////////////////////////////////////////////
+    ////// VVVV /////////////////////////////////////////////////////////////////////////////
+    // TODO slotting of scenes is not currently supported.
     xit('supports Scenes slotted to a slot child of a ShadowRoot', async () => {
         const root = container.attachShadow({ mode: 'open' });
         container.append(html `
@@ -334,6 +372,9 @@ describe('ShadowDOM support', () => {
         const scene = container.querySelector('lume-scene');
         const node = container.querySelector('lume-element3d');
         root.append(html `<slot></slot>`);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentLumeElement).toBe(scene);
         expect(node.composedParent).toBe(scene);
@@ -343,6 +384,7 @@ describe('ShadowDOM support', () => {
         expect(scene.composedParent).toBe(container);
         expect(scene.composedLumeParent).toBe(null);
     });
+    // TODO slotting of scenes is not currently supported.
     xit('supports Scenes slotted to a slot child of a div in a ShadowRoot', async () => {
         const root = container.attachShadow({ mode: 'open' });
         container.append(html `
@@ -358,6 +400,9 @@ describe('ShadowDOM support', () => {
 			</div>
 		`;
         root.append(distributedParent);
+        // TODO get it work without a timeout (ths is difficult considering
+        // that the implementation currently relies on MutationObserver
+        // which triggers reactions deferred).
         await new Promise(r => setTimeout(r, 10));
         expect(node.parentLumeElement).toBe(scene);
         expect(node.composedParent).toBe(scene);
@@ -367,6 +412,7 @@ describe('ShadowDOM support', () => {
         expect(scene.composedParent).toBe(distributedParent);
         expect(scene.composedLumeParent).toBe(null);
     });
+    // TODO tests for features that rely on the composed tree
     xit('produces the correct calculated size for a Node based on its composed parent', () => { });
     xit('produces the correct transform for a Node based on its composed parent', () => { });
 });

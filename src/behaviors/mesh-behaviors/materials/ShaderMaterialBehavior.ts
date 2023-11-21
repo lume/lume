@@ -16,7 +16,7 @@ export type ShaderMaterialBehaviorAttributes =
 	| 'vertexShader'
 	| 'fragmentShader'
 
-export {ShaderMaterialBehavior}
+export
 @behavior
 class ShaderMaterialBehavior extends MaterialBehavior {
 	// TODO: Perhaps instead of accepting string objects for HTML attributes,

@@ -27,7 +27,7 @@ export type PointsAttributes = Element3DAttributes
  *
  * @extends Element3D
  */
-export {Points}
+export
 @element('lume-points', autoDefineElements)
 class Points extends Element3D {
 	static override defaultBehaviors: {[k: string]: any} = {
@@ -55,9 +55,7 @@ import type {
 	PointsMaterialBehaviorAttributes,
 } from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work?
-interface Points
+export interface Points
 	extends ElementWithBehaviors<
 		PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
 		PointsMaterialBehaviorAttributes | PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes

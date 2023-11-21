@@ -18,7 +18,7 @@ export type TorusAttributes = MeshAttributes
  *
  * @extends Mesh
  */
-export {Torus}
+export
 @element('lume-torus', autoDefineElements)
 class Torus extends Mesh {
 	static override defaultBehaviors = {

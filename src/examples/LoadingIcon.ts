@@ -11,7 +11,7 @@ const defaultColor = '120,130,140'
 
 export type LoadingIconAttributes = 'color'
 
-export {LoadingIcon}
+export
 @element('loading-icon', autoDefineElements)
 class LoadingIcon extends Element {
 	/** A string with an RGB triplet, comma separated. */

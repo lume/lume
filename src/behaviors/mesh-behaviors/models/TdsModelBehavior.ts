@@ -11,7 +11,7 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type TdsModelBehaviorAttributes = 'src'
 
-export {TdsModelBehavior}
+export
 @behavior
 class TdsModelBehavior extends RenderableBehavior {
 	/** Path to a .3ds file. */

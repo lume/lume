@@ -12,7 +12,7 @@ type ScrollFlingOptions = Partial<
 // @ts-ignore
 window.debug = true
 
-export {ScrollFling}
+export
 @reactive
 class ScrollFling {
 	/**
@@ -27,8 +27,7 @@ class ScrollFling {
 	 * observed. Set this value initially if you want to start at a certain
 	 * value.
 	 */
-	// @signal y = 0
-	@signal y = 0.0000123 // CONTINUE debug why a close-to-zero number has no issue, while zero does.
+	@signal y = 0
 
 	minX = -Infinity
 	maxX = Infinity

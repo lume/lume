@@ -8,7 +8,7 @@ export declare class FlickeringOrbs extends Element3D {
     template: () => Node | Node[];
 }
 import type { ElementAttributes } from '@lume/element';
-declare module '@lume/element' {
+declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
             'flickering-orbs': ElementAttributes<FlickeringOrbs, FlickeringOrbsAttributes>;

@@ -34,7 +34,7 @@ export type MaterialBehaviorAttributes =
  *
  * @extends GeometryOrMaterialBehavior
  */
-export {MaterialBehavior}
+export
 @behavior
 class MaterialBehavior extends GeometryOrMaterialBehavior {
 	type: MeshComponentType = 'material'
@@ -174,7 +174,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 */
 	@numberAttribute @receiver materialOpacity = 1
 
-	#color = new Color('white')
+	#color: string | number = 'white'
 
 	/**
 	 * @property {string | number | Color} color -
@@ -193,14 +193,12 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * object.
 	 */
 	@stringAttribute
-	@receiver // CONTINUE default value
-	get color(): Color {
+	@receiver
+	get color(): string | number {
 		return this.#color
 	}
 	set color(val: string | number | Color) {
-		val = val ?? ''
-		if (typeof val === 'string') this.#color.set(val)
-		else if (typeof val === 'number') this.#color.set(val)
+		if (typeof val === 'object') this.#color = val.getStyle()
 		else this.#color = val
 	}
 
@@ -270,7 +268,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 		this.createEffect(() => {
 			const mat = this.meshComponent
 			if (!(mat && isColoredMaterial(mat))) return
-			mat.color = this.color
+			mat.color.set(this.color)
 			this.element.needsUpdate()
 		})
 

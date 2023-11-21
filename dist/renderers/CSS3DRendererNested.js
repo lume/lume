@@ -1,3 +1,4 @@
+// based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 import { Matrix4 } from 'three/src/math/Matrix4.js';
 import { Object3DWithPivot } from '../core/Object3DWithPivot.js';
 import { isPerspectiveCamera, isOrthographicCamera } from '../utils/three.js';
@@ -5,6 +6,10 @@ export class CSS3DObjectNested extends Object3DWithPivot {
     element;
     type = 'CSS3DObjectNested';
     #initialFrame = requestAnimationFrame(() => {
+        // delay to the next frame because attributes are not allowed be set
+        // inside Custom Element (i.e. Web Component) constructors, otherwise
+        // this can throw an error if called inside a Custom Element
+        // constructor.
         this.element.style.position = 'absolute';
     });
     constructor(element) {
@@ -15,8 +20,10 @@ export class CSS3DObjectNested extends Object3DWithPivot {
         cancelAnimationFrame(this.#initialFrame);
     }
 }
+// TODO Sprite is still untested in this new nested renderer
 export class CSS3DNestedSprite extends CSS3DObjectNested {
 }
+//
 export class CSS3DRendererNested {
     domElement;
     #matrix = new Matrix4();
@@ -61,6 +68,7 @@ export class CSS3DRendererNested {
         if (object instanceof CSS3DObjectNested) {
             let style = '';
             if (object instanceof CSS3DNestedSprite) {
+                // http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
                 this.#matrix.copy(camera.matrixWorldInverse);
                 this.#matrix.transpose();
                 this.#matrix.copyPosition(object.matrixWorld);
@@ -76,6 +84,7 @@ export class CSS3DRendererNested {
             }
             const element = object.element;
             const cachedStyle = this.#cache.objects.get(object);
+            // if ( cachedStyle === undefined || cachedStyle !== style ) { // BUG, https://github.com/mrdoob/three.js/pull/15470
             if (cachedStyle === undefined || cachedStyle.style !== style) {
                 element.style.transform = style;
                 const objectData = { style: style };
@@ -103,6 +112,7 @@ export class CSS3DRendererNested {
             tx = -(camera.right + camera.left) / 2;
             ty = (camera.top + camera.bottom) / 2;
         }
+        // prettier-ignore
         const cameraCSSMatrix = isOrthographicCamera(camera)
             ? 'scale(' + fov + ')' + 'translate(' + epsilon(tx) + 'px,' + epsilon(ty) + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse)
             : 'translateZ(' + fov + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse);
@@ -153,6 +163,8 @@ function getCameraCSSMatrix(matrix) {
 function getObjectCSSMatrix(object, matrix) {
     const parent = object.parent;
     const childOfScene = parent && parent.type === 'Scene';
+    // TODO I don't remember why we negate values based on childOfScene below.
+    // It's been a while and I forgot. This should be documented.
     const elements = matrix.elements;
     const matrix3d = 'matrix3d(' +
         epsilon(elements[0]) +
@@ -180,13 +192,14 @@ function getObjectCSSMatrix(object, matrix) {
         epsilon(elements[11]) +
         ',' +
         epsilon(elements[12]) +
-        ',' +
+        ',' /* X position */ +
         epsilon((childOfScene ? 1 : -1) * elements[13]) +
-        ',' +
+        ',' /* Y position */ +
         epsilon(elements[14]) +
-        ',' +
+        ',' /* Z position */ +
         epsilon(elements[15]) +
         ')';
+    // similar to mountPoint
     return `${childOfScene ? 'translate(-50%, -50%)' : ''} ${matrix3d}`;
 }
 function epsilon(value) {

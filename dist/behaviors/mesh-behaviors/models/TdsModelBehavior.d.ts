@@ -5,6 +5,7 @@ import type { Group } from 'three/src/objects/Group.js';
 export type TdsModelBehaviorAttributes = 'src';
 export declare class TdsModelBehavior extends RenderableBehavior {
     #private;
+    /** Path to a .3ds file. */
     src: string;
     loader?: TDSLoader;
     model?: Group;

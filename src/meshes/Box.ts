@@ -21,7 +21,7 @@ export type BoxAttributes = MeshAttributes
  *
  * @extends Mesh
  */
-export {Box}
+export
 @element('lume-box', autoDefineElements)
 class Box extends Mesh {
 	static override defaultBehaviors = {

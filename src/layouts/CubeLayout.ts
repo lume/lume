@@ -26,7 +26,7 @@ type CubeLayoutAttributes = Element3DAttributes
  */
 // This class is written imperatively, as opposed to declaratively, for sake of
 // example. It would be cleaner written declaratively, but it's not a big class.
-export {CubeLayout}
+export
 @element('lume-cube-layout', autoDefineElements)
 class CubeLayout extends Element3D {
 	#sides: Element3D[] = []

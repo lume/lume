@@ -1,2 +1,2 @@
-import '../defineElements.js';
+import '../index.js';
 //# sourceMappingURL=DefaultBehaviors.test.d.ts.map

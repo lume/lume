@@ -9,11 +9,7 @@ import type {ElementWithBehaviors} from 'element-behaviors'
  *
  * Used as the material for [`<lume-mixed-plane>`](../../../meshes/MixedPlane) elements.
  *
- * <div id="mixedPlaneExample"></div>
- *
- * <script type="application/javascript">
- *   new Vue({ el: '#mixedPlaneExample', data: { code: buttonsWithShadowExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
- * </script>
+ * <live-code src="../../../../../examples/buttons-with-shadow.html"></live-code>
  *
  * @extends PhysicalMaterialBehavior
  */

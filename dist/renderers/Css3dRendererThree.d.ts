@@ -6,7 +6,7 @@ interface SceneState {
 }
 export declare class Css3dRendererThree {
     static singleton(): Css3dRendererThree;
-    private constructor();
+    constructor();
     sceneStates: WeakMap<Scene, SceneState>;
     initialize(scene: Scene): void;
     uninitialize(scene: Scene): void;

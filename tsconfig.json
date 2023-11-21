@@ -1,17 +1,8 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
 	"compilerOptions": {
-		// CONTINUE this is not working, see src/test.tsx
+		// TODO this is not working
 		"jsxImportSource": "solid-js", // TODO move to lume/cli
-
-		// legacy decorators until we switch to classy-solid and standard (non-legacy) decorators
-		"experimentalDecorators": true,
-
-		// Good practice: start with 'types' empty, then add types as needed. This
-		// prevents unwanted global types from polluting our space by default.
-
-		// TODO we need Jest `expect()` types. For now it is declared as (...a: any[]) => any in tests.
-		// "types": ["jest"],
 
 		// TODO make the following options default in lume/cli
 

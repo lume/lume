@@ -51,34 +51,15 @@ export class Line extends Element3D {
 import type {ElementAttributes} from '@lume/element'
 import type {
 	ElementWithBehaviors,
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-	LambertMaterialBehavior,
-	LambertMaterialBehaviorAttributes,
-	PhysicalMaterialBehavior,
-	PhysicalMaterialBehaviorAttributes,
-	StandardMaterialBehavior,
-	StandardMaterialBehaviorAttributes,
-	PointsMaterialBehavior,
-	PointsMaterialBehaviorAttributes,
-	ClipPlanesBehavior,
-	ClipPlanesBehaviorAttributes,
+	LineBasicMaterialBehavior,
+	LineBasicMaterialBehaviorAttributes,
+	LineGeometryBehavior,
+	LineGeometryBehaviorAttributes,
 } from '../index.js'
 
-type BehaviorInstanceTypes = PhongMaterialBehavior &
-	LambertMaterialBehavior &
-	StandardMaterialBehavior &
-	PhysicalMaterialBehavior &
-	PointsMaterialBehavior &
-	ClipPlanesBehavior
+type BehaviorInstanceTypes = LineBasicMaterialBehavior & LineGeometryBehavior
 
-type BehaviorAttributes =
-	| PhongMaterialBehaviorAttributes
-	| LambertMaterialBehaviorAttributes
-	| StandardMaterialBehaviorAttributes
-	| PhysicalMaterialBehaviorAttributes
-	| PointsMaterialBehaviorAttributes
-	| ClipPlanesBehaviorAttributes
+type BehaviorAttributes = LineBasicMaterialBehaviorAttributes | LineGeometryBehaviorAttributes
 
 export interface Line extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 

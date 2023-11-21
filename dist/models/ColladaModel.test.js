@@ -6,6 +6,7 @@ describe('ColladaModel', () => {
                 this.src;
             }
         };
+        // TODO enable TSX and test JSX markup.
     });
 });
 //# sourceMappingURL=ColladaModel.test.js.map

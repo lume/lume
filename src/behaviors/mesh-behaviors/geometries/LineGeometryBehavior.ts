@@ -5,32 +5,32 @@ import {Float32BufferAttribute} from 'three/src/core/BufferAttribute.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {stringToNumberArray} from '../../../meshes/utils.js'
 // import {handleInvertedGeometry} from './utils/handleInvertedGeometry.js'
-import { behavior } from '../../Behavior.js'
-
+import {behavior} from '../../Behavior.js'
+import {receiver} from '../../PropReceiver.js'
 
 export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitment'
 
 /**
-@class LineGeometryBehavior -
-
-Behavior: `line-geometry`
-
-Provides a line geometry (series of points) for mesh elements. The
-[`<lume-line>`](../../../meshes/Line.md) element has this behavior on it by
-default. This is typically paired with
-[`LineBasicMaterialBehavior`](../materials/LineBasicMaterialBehavior.md).
-
-<div id="exampleContainer"></div>
-<script>
-  new Vue({
-    el: '#exampleContainer',
-    template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
-    data: { code: lineExample },
-  })
-</script>
-
-@extends GeometryBehavior
-*/
+ * @class LineGeometryBehavior -
+ *
+ * Behavior: `line-geometry`
+ *
+ * Provides a line geometry (series of points) for mesh elements. The
+ * [`<lume-line>`](../../../meshes/Line.md) element has this behavior on it by
+ * default. This is typically paired with
+ * [`LineBasicMaterialBehavior`](../materials/LineBasicMaterialBehavior.md).
+ *
+ * <div id="exampleContainer"></div>
+ * <script>
+ *   new Vue({
+ *     el: '#exampleContainer',
+ *     template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
+ *     data: { code: lineExample },
+ *   })
+ * </script>
+ *
+ * @extends GeometryBehavior
+ */
 @behavior
 export class LineGeometryBehavior extends GeometryBehavior {
 	__points: number[] = []
@@ -72,6 +72,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * rendered.
 	 */
 	@attribute
+	@receiver
 	get points(): number[] {
 		return this.__points
 	}
@@ -97,7 +98,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * around the local origin of the element.
 	 * @default false
 	 */
-	@booleanAttribute centerGeometry = false
+	@booleanAttribute @receiver centerGeometry = false
 
 	/* TODO
 	 * @property {string} fitment - Determines how to fit the line within the
@@ -106,7 +107,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values for
 	 * details.
 	 */
-	@stringAttribute fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
+	@stringAttribute @receiver fitment: 'none' | 'contain' | 'cover' | 'fill' | 'scale-down' = 'none'
 
 	override _createComponent() {
 		const geometry = new BufferGeometry()

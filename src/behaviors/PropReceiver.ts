@@ -1,7 +1,6 @@
 import {observe, unobserve} from 'james-bond'
 
 import type {Constructor} from 'lowclass'
-import type {DecoratorArgs} from 'classy-solid/dist/decorators/types'
 
 // We use this to enforce that the @receiver decorator is used on PropReceiver
 // classes.
@@ -145,19 +144,24 @@ export interface PossiblyCustomElement {
 	attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
 }
 
-// CONTINUE Update signature with proper types, and destructure directly in the argument list after we update to latest TS 5.0.
-export function receiver(...args: any[]): any {
-	const [_, context] = args as DecoratorArgs
+function checkIsObject(o: unknown): o is object {
+	if (typeof o !== 'object') throw new Error('cannot use @receiver on class returning a non-object instance')
+	return true
+}
+
+export function receiver(_: unknown, context: DecoratorContext): any {
 	const {kind, name} = context
 
 	if (kind === 'field') {
-		return function (this: object, initialValue: unknown) {
-			trackSignalProperty(this, name)
+		return function (this: unknown, initialValue: unknown) {
+			checkIsObject(this)
+			trackSignalProperty(this!, name)
 			return initialValue
 		}
 	} else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
-		context.addInitializer!(function (this: object) {
-			trackSignalProperty(this, name)
+		context.addInitializer!(function (this: unknown) {
+			checkIsObject(this)
+			trackSignalProperty(this!, name)
 		})
 	} else {
 		throw new TypeError(

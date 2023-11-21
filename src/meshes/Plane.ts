@@ -19,7 +19,7 @@ export type PlaneAttributes = MeshAttributes
  *
  * @extends Mesh
  */
-export {Plane}
+export
 @element('lume-plane', autoDefineElements)
 class Plane extends Mesh {
 	static override defaultBehaviors = {

@@ -29,7 +29,7 @@ Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geomet
 
 @extends Mesh
 */
-export {Shape}
+export
 @element('lume-shape', autoDefineElements)
 class Shape extends Mesh {
 	static override defaultBehaviors = {
@@ -45,9 +45,7 @@ class Shape extends Mesh {
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors, ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes} from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work?
-interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {}
+export interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {

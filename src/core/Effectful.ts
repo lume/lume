@@ -75,6 +75,11 @@ export function Effectful<T extends Constructor | AbstractConstructor>(Base: T) 
 	}
 }
 
+/**
+ * Shortcut for instantiating directly instead of using the mixin.
+ */
+export class Effects extends Effectful(Object) {}
+
 type StopFunction = () => void
 
 // TODO move to lowclass

@@ -20,7 +20,7 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  * @extends GeometryBehavior
  * @behavior plane-geometry TODO @behavior jsdoc tag
  */
-export {PlaneGeometryBehavior}
+export
 @behavior
 class PlaneGeometryBehavior extends GeometryBehavior {
 	/**

@@ -43,7 +43,7 @@ type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
  *
  * @extends Element3D
  */
-export {TextureProjector}
+export
 @element('lume-texture-projector', autoDefineElements)
 class TextureProjector extends Element3D {
 	// This element is only a data and camera container, and

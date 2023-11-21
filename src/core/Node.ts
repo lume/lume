@@ -6,7 +6,7 @@ import {element, type ElementAttributes} from '@lume/element'
 export type NodeAttributes = Element3DAttributes
 
 /** @deprecated Use `Element3D` (`<lume-element3d>`) instead. */
-export {Node}
+export
 @element('lume-node', autoDefineElements)
 class Node extends Element3D {
 	/**

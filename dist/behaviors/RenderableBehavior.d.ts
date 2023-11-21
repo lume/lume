@@ -8,6 +8,15 @@ declare const RenderableBehavior_base: {
         stopEffects(): void;
     };
 } & typeof Behavior;
+/**
+ * @class RenderableBehavior
+ * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).
+ *
+ * Subclasses should provide loadGL and unloadGL methods in order to load or
+ * unload WebGL resources when GL is enabled or disabled in a scene.
+ *
+ * @extends Behavior
+ */
 export declare abstract class RenderableBehavior extends RenderableBehavior_base {
     #private;
     element: Element3D;

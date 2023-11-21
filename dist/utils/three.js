@@ -6,6 +6,7 @@ export function isRenderItem(obj) {
 export function disposeMaterial(obj) {
     if (!isRenderItem(obj))
         return;
+    // because obj.material can be a material or array of materials
     const materials = [].concat(obj.material);
     for (const material of materials) {
         material.dispose();
@@ -22,6 +23,8 @@ export function disposeObject(obj, removeFromParent = true, destroyGeometry = tr
     }
     removeFromParent &&
         queueMicrotask(() => {
+            // if we remove children in the same tick then we can't continue traversing,
+            // so we defer to the next microtask
             obj.parent && obj.parent.remove(obj);
         });
 }

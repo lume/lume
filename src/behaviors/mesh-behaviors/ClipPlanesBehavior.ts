@@ -33,7 +33,7 @@ let refCount = 0
  *
  * @extends MeshBehavior
  */
-export {ClipPlanesBehavior}
+export
 @behavior
 class ClipPlanesBehavior extends MeshBehavior {
 	/**
@@ -101,7 +101,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 	 * slot in a ShadowRoot).
 	 */
 	@stringAttribute
-	@receiver // CONTINUE default value
+	@receiver
 	get clipPlanes(): Array<ClipPlane> {
 		return this.#clipPlanes
 	}

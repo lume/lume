@@ -23,7 +23,7 @@ let dracoLoaders = new Map<string, {count: number; dracoLoader: DRACOLoader}>()
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
-export {GltfModelBehavior}
+export
 @behavior
 class GltfModelBehavior extends RenderableBehavior {
 	/** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
@@ -66,8 +66,6 @@ class GltfModelBehavior extends RenderableBehavior {
 	override loadGL() {
 		this.gltfLoader = new GLTFLoader()
 
-		// Using a top level effect here as a createRoot (avoids console
-		// warnings with memos).
 		this.createEffect(() => {
 			const decoderPath = createMemo(() => this.dracoDecoder)
 

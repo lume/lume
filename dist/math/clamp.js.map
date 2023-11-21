@@ -1,1 +1,1 @@
-{"version":3,"file":"clamp.js","sourceRoot":"","sources":["../../src/math/clamp.ts"],"names":[],"mappings":"AAUA,MAAM,UAAU,KAAK,CAAC,CAAS,EAAE,GAAW,EAAE,GAAW;IACxD,OAAO,IAAI,CAAC,GAAG,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC,EAAE,GAAG,CAAC,EAAE,GAAG,CAAC,CAAA;AACvC,CAAC"}
+{"version":3,"file":"clamp.js","sourceRoot":"","sources":["../../src/math/clamp.ts"],"names":[],"mappings":"AAAA;;;;;;;;;GASG;AACH,MAAM,UAAU,KAAK,CAAC,CAAS,EAAE,GAAW,EAAE,GAAW;IACxD,OAAO,IAAI,CAAC,GAAG,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC,EAAE,GAAG,CAAC,EAAE,GAAG,CAAC,CAAA;AACvC,CAAC"}

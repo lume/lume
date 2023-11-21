@@ -39,7 +39,7 @@ type ClipPlaneAttributes = Element3DAttributes
  *
  * @extends Element3D
  */
-export {ClipPlane}
+export
 @element('lume-clip-plane', autoDefineElements)
 class ClipPlane extends Element3D {
 	#plane = createSignal<Plane | null>(null)

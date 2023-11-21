@@ -13,7 +13,7 @@ import {toRadians} from './utils/index.js'
 import {ChildTracker} from './ChildTracker.js'
 import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
 import {isDomEnvironment, isElement3D, isScene} from './utils/isThisOrThat.js'
-import {Effectful} from './Effectful.js'
+import {Effects} from './Effectful.js'
 
 import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
@@ -33,8 +33,6 @@ const elOps = new WeakMap<SharedAPI, ElementOperations>()
 
 const ourThreeObjects = new WeakSet<Object3D>()
 const isManagedByUs = (obj: Object3D) => ourThreeObjects.has(obj)
-
-class Effects extends Effectful(Object) {}
 
 const opacity = new WeakMap<Transformable, number>()
 
@@ -57,7 +55,7 @@ export type BaseAttributes = TransformableAttributes | 'opacity'
  * @extends Settable
  * @extends Transformable
  */
-export {SharedAPI}
+export
 @element
 class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
 	/** @deprecated use `.defineElement()` instead */
@@ -597,15 +595,9 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	_loadGL(): boolean {
-		console.log(
-			' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI _loadGL???',
-			this.scene,
-			this.scene?.webgl,
-		)
 		if (!(this.scene && this.scene.webgl)) return false
 
 		if (this._glLoaded) return false
-		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI _loadGL!!!')
 
 		// create the object in case it isn't already (via the getter)
 		const three = this.three
@@ -644,11 +636,9 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	_loadCSS(): boolean {
-		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load CSS??')
 		if (!(this.scene && this.scene.enableCss)) return false
 
 		if (this._cssLoaded) return false
-		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load CSS!!')
 
 		// create the object in case it isn't already (via the getter)
 		const threeCSS = this.threeCSS
@@ -680,12 +670,11 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	// Scene. It is designed to be a one-way thing: create GL once, then destroy
 	// GL once.
 	_triggerLoadGL(): void {
+		// Use untrack because _loadGL reads and writes _glLoaded.
 		untrack(() => {
-			console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load GL???')
 			if (!this._loadGL()) return
 
 			this.emit(Events.BEHAVIOR_GL_LOAD, this)
-			console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SharedAPI trigger load GL!!')
 
 			queueMicrotask(async () => {
 				// FIXME Can we get rid of the code deferral here? Without the
@@ -705,7 +694,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	_triggerUnloadGL(): void {
-		// CONTINUE document why untrack here?
+		// Use untrack because _unloadGL reads and writes _glLoaded.
 		untrack(() => {
 			if (!this._unloadGL()) return
 
@@ -715,6 +704,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	_triggerLoadCSS(): void {
+		// Use untrack because _loadCSS reads and writes _cssLoaded.
 		untrack(() => {
 			if (!this._loadCSS()) return
 
@@ -723,6 +713,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	_triggerUnloadCSS(): void {
+		// Use untrack because _unloadCSS reads and writes _cssLoaded.
 		untrack(() => {
 			if (!this._unloadCSS()) return
 			this.emit(Events.CSS_UNLOAD, this)
@@ -906,7 +897,6 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 
 		if (traverse) this.traverseSceneGraph(n => n !== this && n.updateWorldMatrices(false), false)
 
-		// CONTINUE find more accidental effect triggers/loops. f.e. shadow dom example is looping for some reason
 		untrack(() => this.version++)
 	}
 

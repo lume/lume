@@ -30,7 +30,7 @@ export type LightWithShadowAttributes =
  *
  * @extends Light
  */
-export {LightWithShadow}
+export
 @element
 abstract class LightWithShadow extends Light {
 	/**

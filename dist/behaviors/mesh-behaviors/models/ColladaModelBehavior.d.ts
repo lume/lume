@@ -4,6 +4,7 @@ import { RenderableBehavior } from '../../RenderableBehavior.js';
 export type ColladaModelBehaviorAttributes = 'src';
 export declare class ColladaModelBehavior extends RenderableBehavior {
     #private;
+    /** Path to a .dae file. */
     src: string;
     loader?: ColladaLoader;
     model?: Collada;

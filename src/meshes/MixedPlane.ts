@@ -23,15 +23,11 @@ export type MixedPlaneAttributes = MeshAttributes
  * See [`MixedPlaneGeometryBehavior`](../behaviors/mesh-behaviors/geometries/MixedPlaneGeometryBehavior) and [`MixedPlaneMaterialBehavior`](../behaviors/mesh-behaviors/materials/MixedPlaneMaterialBehavior) for
  * available properties.
  *
- * <div id="mixedPlaneExample"></div>
- *
- * <script type="application/javascript">
- *   new Vue({ el: '#mixedPlaneExample', data: { code: buttonsWithShadowExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
- * </script>
+ * <live-code src="../../../examples/buttons-with-shadow.html"></live-code>
  *
  * @extends Mesh
  */
-export {MixedPlane}
+export
 @element('lume-mixed-plane', autoDefineElements)
 class MixedPlane extends Mesh {
 	static override defaultBehaviors = {

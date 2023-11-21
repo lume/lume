@@ -2,6 +2,16 @@ import { Behavior } from './Behavior.js';
 import { Events } from '../core/Events.js';
 import { Element3D } from '../core/Element3D.js';
 import { Effectful } from '../core/Effectful.js';
+/**
+ * @class RenderableBehavior
+ * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).
+ *
+ * Subclasses should provide loadGL and unloadGL methods in order to load or
+ * unload WebGL resources when GL is enabled or disabled in a scene.
+ *
+ * @extends Behavior
+ */
+// @Xts-expect-error broken type checking in latest TypeScript (https://github.com/microsoft/TypeScript/issues/56330)
 export class RenderableBehavior extends Effectful(Behavior) {
     requiredElementType() {
         return [Element3D];
@@ -27,6 +37,7 @@ export class RenderableBehavior extends Effectful(Behavior) {
     }
     _cssLoaded = false;
     #triggerLoadGL() {
+        // .three will be undefined if an element is not upgraded yet.
         if (!this.element.three)
             return;
         if (this._glLoaded)
@@ -43,6 +54,7 @@ export class RenderableBehavior extends Effectful(Behavior) {
         this.unloadGL();
         this.element.needsUpdate();
     }
+    // Subclasses override these
     loadGL() { }
     unloadGL() { }
 }

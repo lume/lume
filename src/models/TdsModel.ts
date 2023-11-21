@@ -32,9 +32,7 @@ export type TdsModelAttributes = Element3DAttributes
  * scene.add(model)
  * ```
  */
-// CONTINUE now that we're on TS 5, move export back to the class declaration
-// directly for all similar classes.
-export {TdsModel}
+export
 @element('lume-3ds-model', autoDefineElements)
 class TdsModel extends Element3D {
 	static override defaultBehaviors = ['3ds-model']
@@ -43,11 +41,7 @@ class TdsModel extends Element3D {
 import type {ElementAttributes} from '@lume/element'
 import type {ElementWithBehaviors} from '../index.js'
 
-// CONTINUE export was removed from this statement, but still kept on the above
-// class. Does the type still work? Maybe we need to just put the export
-// directly on the class now that we're on TS 5 (and maybe there's a TS bug when
-// that isn't the case).
-interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {}
+export interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {}
 
 declare global {
 	interface HTMLElementTagNameMap {

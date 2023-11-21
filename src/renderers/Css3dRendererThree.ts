@@ -25,7 +25,7 @@ export class Css3dRendererThree {
 		}
 	}
 
-	private constructor() {
+	constructor() {
 		if (!isCreatingSingleton)
 			throw new Error('class is a singleton, use the static .singleton() method to get an instance')
 	}

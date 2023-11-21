@@ -68,8 +68,10 @@ describe('XYZNonNegativeValues', () => {
         it('can take a string of delimited values, defaulting to space separated', () => {
             const a = new XYZNonNegativeValues();
             let string = '1 foo false';
+            // Should throw a runtime error because "foo" is not a number
             expect(() => a.fromString(string)).toThrowError(TypeError);
             string = '1 2 false';
+            // Should throw a runtime error because "false" is not a number
             expect(() => a.fromString(string)).toThrowError(TypeError);
             string = '1 2 3.456';
             expect(() => a.fromString(string)).not.toThrowError(TypeError);
@@ -98,6 +100,7 @@ describe('XYZNonNegativeValues', () => {
             expect(a.toString(sep)).toEqual(`1.2${sep} 2.3${sep} 3.4`);
         });
     });
+    // TODO, this doesn't work because .set currently doesn't accept undefined values.
     describe('.fromDefault', () => {
         it('sets the values to default', () => {
             const a = new XYZNonNegativeValues(1, 2, 3);
@@ -133,16 +136,17 @@ describe('XYZNonNegativeValues', () => {
         expect(() => new XYZNonNegativeValues([1])).not.toThrow();
         expect(() => new XYZNonNegativeValues([1, 2])).not.toThrow();
         expect(() => new XYZNonNegativeValues([1, 2, 3])).not.toThrow();
+        // Coerces string values to numbers.
         expect(() => new XYZNonNegativeValues(['1'])).not.toThrow();
         expect(() => new XYZNonNegativeValues(['1', '2'])).not.toThrow();
         expect(() => new XYZNonNegativeValues(['1', '2', '3'])).not.toThrow();
         expect(() => new XYZNonNegativeValues([1, 2, false])).toThrowError(TypeError);
-        expect(() => new XYZNonNegativeValues([1, undefined, 3])).not.toThrow();
+        expect(() => new XYZNonNegativeValues([1, undefined, 3])).not.toThrow(); // undefined values are ignored when it comes to XYZNonNegativeValues
         expect(() => new XYZNonNegativeValues(['foo', 2, 3])).toThrowError(TypeError);
         expect(() => new XYZNonNegativeValues([1, undefined, false])).toThrowError(TypeError);
         expect(() => new XYZNonNegativeValues(['foo', undefined, false])).toThrowError(TypeError);
         expect(() => new XYZNonNegativeValues([1, 2, -4])).toThrowError(TypeError);
-        expect(() => new XYZNonNegativeValues([1, -3, 3])).toThrowError(TypeError);
+        expect(() => new XYZNonNegativeValues([1, -3, 3])).toThrowError(TypeError); // undefined values are ignored when it comes to XYZNonNegativeValues
         expect(() => new XYZNonNegativeValues([-2, 2, 3])).toThrowError(TypeError);
         expect(() => new XYZNonNegativeValues([1, -1, -8])).toThrowError(TypeError);
         expect(() => new XYZNonNegativeValues([-9, -2, -0.2])).toThrowError(TypeError);
