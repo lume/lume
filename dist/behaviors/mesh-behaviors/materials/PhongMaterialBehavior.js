@@ -212,9 +212,6 @@ let PhongMaterialBehavior = (() => {
         loadGL() {
             super.loadGL();
             this.createEffect(() => {
-                console.log('bumpScale effect');
-            });
-            this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)
                     return;

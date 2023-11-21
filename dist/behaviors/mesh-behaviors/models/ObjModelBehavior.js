@@ -117,11 +117,9 @@ let ObjModelBehavior = (() => {
                 return;
             if (mtl) {
                 mtlLoader.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1));
-                console.log('load mtl');
                 mtlLoader.load(mtl, materials => {
                     if (version !== this.#version)
                         return;
-                    console.log('loaded mtl:', materials);
                     materials.preload();
                     objLoader.setMaterials(materials);
                     this.#loadObj(version, true);
@@ -160,14 +158,12 @@ let ObjModelBehavior = (() => {
                     // behavior, and other behaviors can use the geometry or
                     // material features.
                     model.traverse((child) => {
-                        console.log('isRenderItem?', isRenderItem(child));
                         if (isRenderItem(child)) {
                             child.material = materialBehavior.meshComponent || thro(new Error('Expected a material'));
                         }
                     });
                 }
                 else {
-                    console.log('Set random material');
                     // if no material, make a default one with random color
                     setRandomColorPhongMaterial(model);
                 }

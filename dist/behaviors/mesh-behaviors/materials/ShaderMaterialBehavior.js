@@ -79,7 +79,6 @@ let ShaderMaterialBehavior = (() => {
             return this.#uniforms;
         }
         set uniforms(u) {
-            console.log('set uniforms', this.element.tagName, this.element.id, u);
             if (!u) {
                 this.#uniforms = {};
                 return;
@@ -97,10 +96,6 @@ let ShaderMaterialBehavior = (() => {
             }
         }
         #uniforms = (__runInitializers(this, _instanceExtraInitializers), {});
-        attributeChangedCallback(name, oldVal, newVal) {
-            console.log('attribute changed:', name, oldVal, newVal);
-            super.attributeChangedCallback?.(name, oldVal, newVal);
-        }
         vertexShader = __runInitializers(this, _vertexShader_initializers, default_vertex);
         fragmentShader = __runInitializers(this, _fragmentShader_initializers, default_fragment);
         _createComponent() {
@@ -118,7 +113,6 @@ let ShaderMaterialBehavior = (() => {
                 const mat = this.meshComponent;
                 if (!mat)
                     return;
-                console.log('uniforms:', this.uniforms);
                 mat.uniforms = this.uniforms;
                 mat.vertexShader = this.vertexShader || default_vertex;
                 mat.fragmentShader = this.fragmentShader || default_fragment;

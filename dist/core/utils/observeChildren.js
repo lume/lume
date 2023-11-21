@@ -51,7 +51,6 @@ export function createChildObserver(onConnect, onDisconnect, skipTextNodes = fal
                 // number of times it was removed, then the net result is that
                 // it was removed, so we call onDisconnect just once.
                 else if (weight < 0 && typeof onDisconnect == 'function') {
-                    console.log(' - Child Observer, child disconnected', target.id, child.id);
                     onDisconnect.call(target, child);
                     // removedFrom.set(child, target)
                 }

@@ -251,8 +251,6 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 			})
 
 			createEffect(() => {
-				console.log('> meshComponent effect', this.element.tagName + '#' + this.element.id)
-
 				const tex = this.projectedTextures[0]
 				if (!tex) return
 

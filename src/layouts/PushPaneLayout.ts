@@ -7,10 +7,5 @@ import {autoDefineElements} from '../LumeConfig.js'
 export
 @element('lume-push-pane-layout', autoDefineElements)
 class PushPaneLayout extends Node {
-	constructor() {
-		super()
-		console.log(' -- PushPaneLayout created (TODO)')
-	}
-
 	// TODO
 }

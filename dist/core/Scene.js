@@ -985,7 +985,6 @@ let Scene = (() => {
             // version variable initializer.
             queueMicrotask(() => this.shadowRoot.prepend(new Comment(magic())));
             this.createEffect(() => {
-                console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& webgl effect:', this.webgl);
                 if (this.webgl)
                     this._triggerLoadGL();
                 else
@@ -1198,7 +1197,6 @@ let Scene = (() => {
         // Basically it has position, frag colors, point light, directional
         // light, and ambient light.
         _loadGL() {
-            console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get scene._loadGL?');
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
             if (!super._loadGL())
@@ -1213,7 +1211,6 @@ let Scene = (() => {
             //const ambientLight = new AmbientLight( 0x353535 )
             //this.three.add( ambientLight )
             this.#glRenderer = this.#getGLRenderer('three');
-            console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get GL renderer');
             // If _loadGL is firing, then this.webgl must be true, therefore
             // this.#glRenderer must be defined in any of the below autoruns.
             this.createGLEffect(() => {
@@ -1268,7 +1265,6 @@ let Scene = (() => {
             this.createGLEffect(() => {
                 this.#glRenderer.enableVR(this, this.vr);
                 if (this.vr) {
-                    console.log('set vr frame requester!');
                     Motor.setFrameRequester(fn => {
                         this.#glRenderer.requestFrame(this, fn);
                         // Mock rAF return value for Motor.setFrameRequester.

@@ -227,10 +227,6 @@ class Sizeable extends CompositionTracker(TreeNode) {
 
 		this.#isSettingProperty = true
 
-		if (name === 'rotation') {
-			console.log('new rotation value:', newValue, this.#settingValueFromPropFunction)
-			// debugger
-		}
 		if (isXYZPropertyFunction(newValue)) {
 			this.#handleXYZPropertyFunction(newValue, name, xyz)
 		} else {

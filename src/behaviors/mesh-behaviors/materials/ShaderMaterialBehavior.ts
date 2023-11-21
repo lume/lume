@@ -30,7 +30,6 @@ class ShaderMaterialBehavior extends MaterialBehavior {
 		return this.#uniforms
 	}
 	set uniforms(u: string | Record<string, any> | null) {
-		console.log('set uniforms', this.element.tagName, this.element.id, u)
 		if (!u) {
 			this.#uniforms = {}
 			return
@@ -48,11 +47,6 @@ class ShaderMaterialBehavior extends MaterialBehavior {
 	}
 
 	#uniforms: Record<string, any> = {}
-
-	override attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null): void {
-		console.log('attribute changed:', name, oldVal, newVal)
-		super.attributeChangedCallback?.(name, oldVal, newVal)
-	}
 
 	@stringAttribute @receiver vertexShader = default_vertex
 	@stringAttribute @receiver fragmentShader = default_fragment
@@ -73,7 +67,6 @@ class ShaderMaterialBehavior extends MaterialBehavior {
 			const mat = this.meshComponent
 			if (!mat) return
 
-			console.log('uniforms:', this.uniforms)
 			mat.uniforms = this.uniforms
 			mat.vertexShader = this.vertexShader || default_vertex
 			mat.fragmentShader = this.fragmentShader || default_fragment

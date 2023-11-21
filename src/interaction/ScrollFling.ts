@@ -52,7 +52,6 @@ class ScrollFling {
 	#aborter = new AbortController()
 
 	constructor(options: ScrollFlingOptions) {
-		console.log('initial scroll fling y', options.y)
 		Object.assign(this, options)
 	}
 

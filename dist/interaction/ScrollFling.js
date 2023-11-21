@@ -95,7 +95,6 @@ let ScrollFling = (() => {
         }
         #aborter = new AbortController();
         constructor(options) {
-            console.log('initial scroll fling y', options.y);
             Object.assign(this, options);
         }
         #onWheel = (event) => {

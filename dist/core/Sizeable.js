@@ -278,10 +278,6 @@ let Sizeable = (() => {
             if (newValue === xyz)
                 return;
             this.#isSettingProperty = true;
-            if (name === 'rotation') {
-                console.log('new rotation value:', newValue, this.#settingValueFromPropFunction);
-                // debugger
-            }
             if (isXYZPropertyFunction(newValue)) {
                 this.#handleXYZPropertyFunction(newValue, name, xyz);
             }

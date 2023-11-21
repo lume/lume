@@ -92,11 +92,8 @@ class ObjModelBehavior extends RenderableBehavior {
 		if (mtl) {
 			mtlLoader!.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
 
-			console.log('load mtl')
 			mtlLoader!.load(mtl, materials => {
 				if (version !== this.#version) return
-
-				console.log('loaded mtl:', materials)
 
 				materials.preload()
 
@@ -145,13 +142,11 @@ class ObjModelBehavior extends RenderableBehavior {
 				// behavior, and other behaviors can use the geometry or
 				// material features.
 				model.traverse((child: Object3D) => {
-					console.log('isRenderItem?', isRenderItem(child))
 					if (isRenderItem(child)) {
 						child.material = materialBehavior.meshComponent || thro(new Error('Expected a material'))
 					}
 				})
 			} else {
-				console.log('Set random material')
 				// if no material, make a default one with random color
 				setRandomColorPhongMaterial(model)
 			}

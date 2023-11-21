@@ -624,7 +624,6 @@ class Scene extends SharedAPI {
 		queueMicrotask(() => this.shadowRoot!.prepend(new Comment(magic())))
 
 		this.createEffect(() => {
-			console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& webgl effect:', this.webgl)
 			if (this.webgl) this._triggerLoadGL()
 			else this._triggerUnloadGL()
 
@@ -870,7 +869,6 @@ class Scene extends SharedAPI {
 	// Basically it has position, frag colors, point light, directional
 	// light, and ambient light.
 	override _loadGL() {
-		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get scene._loadGL?')
 		// THREE
 		// maybe keep this in sceneState in WebGLRendererThree
 		if (!super._loadGL()) return false
@@ -887,7 +885,6 @@ class Scene extends SharedAPI {
 		//this.three.add( ambientLight )
 
 		this.#glRenderer = this.#getGLRenderer('three')
-		console.log(' %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% get GL renderer')
 
 		// If _loadGL is firing, then this.webgl must be true, therefore
 		// this.#glRenderer must be defined in any of the below autoruns.
@@ -950,8 +947,6 @@ class Scene extends SharedAPI {
 			this.#glRenderer!.enableVR(this, this.vr)
 
 			if (this.vr) {
-				console.log('set vr frame requester!')
-
 				Motor.setFrameRequester(fn => {
 					this.#glRenderer!.requestFrame(this, fn)
 
