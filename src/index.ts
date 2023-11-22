@@ -59,4 +59,4 @@ export * from './xyz-values/index.js'
 
 export * from './defineElements.js'
 
-export const version = '0.3.0-alpha.31'
+export const version = '0.3.0-alpha.32'
