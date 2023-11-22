@@ -103,7 +103,6 @@ let PinchFling = (() => {
         };
         #pointers = new Map();
         #onDown = (event) => {
-            event.preventDefault();
             event.clientX;
             this.#pointers.set(event.pointerId, {
                 id: event.pointerId,
@@ -119,7 +118,6 @@ let PinchFling = (() => {
         };
         #lastDistance = -1;
         #onMove = (event) => {
-            event.preventDefault();
             if (!this.#pointers.has(event.pointerId))
                 return;
             if (this.#pointers.size < 2)
@@ -141,7 +139,6 @@ let PinchFling = (() => {
             this.#lastDistance = distance;
         };
         #onUp = (event) => {
-            event.preventDefault();
             if (!this.#pointers.has(event.pointerId))
                 return;
             this.#pointers.delete(event.pointerId);

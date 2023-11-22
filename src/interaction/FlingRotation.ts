@@ -89,8 +89,6 @@ export class FlingRotation {
 	#deltaY = 0
 
 	#onPointerDown = (event: PointerEvent) => {
-		event.preventDefault()
-
 		this.#pointerCount++
 		if (this.#pointerCount === 1) this.#mainPointer = event.pointerId
 		else return
@@ -109,13 +107,10 @@ export class FlingRotation {
 		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
 
-		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.addEventListener('pointerup', this.#onPointerUp, {signal: this.#aborter.signal})
 	}
 
 	#onMove = (event: PointerEvent) => {
-		event.preventDefault()
-
 		if (event.pointerId !== this.#mainPointer) return
 
 		// We're not simply using event.movementX and event.movementY
@@ -141,16 +136,13 @@ export class FlingRotation {
 		)
 	}
 
-	#onPointerUp = (event: PointerEvent) => {
-		event.preventDefault()
-
+	#onPointerUp = () => {
 		this.#pointerCount--
 
 		if (this.#pointerCount === 0) {
 			if (this.interactionContainer.hasPointerCapture(this.#mainPointer))
 				this.interactionContainer.releasePointerCapture(this.#mainPointer)
 			this.#mainPointer = -1
-			// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 			this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp)
 		}
 
@@ -202,8 +194,7 @@ export class FlingRotation {
 		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
 		this.interactionInitiator.addEventListener(
 			'pointercancel',
-			event => {
-				event.preventDefault()
+			() => {
 				console.error(
 					'Pointercancel should not be happening. If so, please kindly open an issue at https://github.com/lume/lume/issues.',
 				)

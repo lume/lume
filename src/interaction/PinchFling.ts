@@ -74,8 +74,6 @@ class PinchFling {
 	#pointers: Map<number, {id: number; x: number; y: number}> = new Map()
 
 	#onDown = (event: PointerEvent) => {
-		event.preventDefault()
-
 		event.clientX
 
 		this.#pointers.set(event.pointerId, {
@@ -96,8 +94,6 @@ class PinchFling {
 	#lastDistance = -1
 
 	#onMove = (event: PointerEvent) => {
-		event.preventDefault()
-
 		if (!this.#pointers.has(event.pointerId)) return
 		if (this.#pointers.size < 2) return
 
@@ -119,8 +115,6 @@ class PinchFling {
 	}
 
 	#onUp = (event: PointerEvent) => {
-		event.preventDefault()
-
 		if (!this.#pointers.has(event.pointerId)) return
 
 		this.#pointers.delete(event.pointerId)
