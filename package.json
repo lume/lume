@@ -87,7 +87,7 @@
 		"three": ">=0.139.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.10.0",
+		"@lume/cli": "^0.11.0",
 		"@types/three": ">=0.139.0",
 		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",
