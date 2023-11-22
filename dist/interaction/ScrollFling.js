@@ -123,6 +123,7 @@ let ScrollFling = (() => {
             if (untrack(this.#isStarted.get))
                 return this;
             this.#isStarted.set(true);
+            this.#aborter = new AbortController();
             // @ts-expect-error, whyyyyy TypeScript
             this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
             return this;

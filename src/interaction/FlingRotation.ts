@@ -188,6 +188,8 @@ export class FlingRotation {
 		if (this.#isStarted) return this
 		this.#isStarted = true
 
+		this.#aborter = new AbortController()
+
 		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
 		this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
 

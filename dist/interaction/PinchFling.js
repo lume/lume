@@ -151,6 +151,7 @@ let PinchFling = (() => {
             if (untrack(this.#isStarted.get))
                 return this;
             this.#isStarted.set(true);
+            this.#aborter = new AbortController();
             // @ts-expect-error, whyyyyy TypeScript
             this.target.addEventListener('pointerdown', this.#onDown, { signal: this.#aborter.signal });
             // @ts-expect-error, whyyyyy TypeScript
