@@ -9,7 +9,7 @@ export declare class PinchFling {
     x: number;
     minX: number;
     maxX: number;
-    target: Document | ShadowRoot | Element;
+    target: Element;
     factor: number;
     get interacting(): boolean;
     get isStarted(): boolean;

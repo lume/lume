@@ -34,7 +34,7 @@ class ScrollFling {
 	minY = -Infinity
 	maxY = Infinity
 
-	target: Document | ShadowRoot | Element = document
+	target: Element = document.documentElement
 
 	scrollFactor = 1
 

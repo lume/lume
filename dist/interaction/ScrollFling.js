@@ -83,7 +83,7 @@ let ScrollFling = (() => {
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
-        target = document;
+        target = document.documentElement;
         scrollFactor = 1;
         #task;
         #isStarted = (() => {

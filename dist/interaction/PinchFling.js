@@ -63,7 +63,7 @@ let PinchFling = (() => {
         x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _x_initializers, 0));
         minX = -Infinity;
         maxX = Infinity;
-        target = document;
+        target = document.documentElement;
         factor = 1;
         #task;
         #interacting = (() => {
@@ -103,6 +103,7 @@ let PinchFling = (() => {
         };
         #pointers = new Map();
         #onDown = (event) => {
+            event.preventDefault();
             event.clientX;
             this.#pointers.set(event.pointerId, {
                 id: event.pointerId,
@@ -111,12 +112,14 @@ let PinchFling = (() => {
             });
             if (this.#pointers.size === 2) {
                 // go two fingers
-                document.addEventListener('pointermove', this.#onMove, { signal: this.#aborter.signal });
+                // @ts-expect-error TypeScript type for `event` is wrong
+                this.target.addEventListener('pointermove', this.#onMove, { signal: this.#aborter.signal });
                 this.#interacting.set(true);
             }
         };
         #lastDistance = -1;
         #onMove = (event) => {
+            event.preventDefault();
             if (!this.#pointers.has(event.pointerId))
                 return;
             if (this.#pointers.size < 2)
@@ -138,12 +141,14 @@ let PinchFling = (() => {
             this.#lastDistance = distance;
         };
         #onUp = (event) => {
+            event.preventDefault();
             if (!this.#pointers.has(event.pointerId))
                 return;
             this.#pointers.delete(event.pointerId);
             this.#lastDistance = -1;
             if (this.#pointers.size === 1) {
-                document.removeEventListener('pointermove', this.#onMove);
+                // @ts-expect-error TypeScript type for `event` is wrong
+                this.target.removeEventListener('pointermove', this.#onMove);
                 this.#interacting.set(false);
             }
         };

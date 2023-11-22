@@ -13,7 +13,7 @@ export declare class FlingRotation {
      * The element on which the pointer should be placed down on in order to
      * initiate drag tracking. This defaults to rotationXTarget.
      */
-    readonly interactionInitiator: Document | ShadowRoot | Element;
+    readonly interactionInitiator: Element;
     /**
      * The X rotation can not go below this value. Defaults to -90 which means
      * facing straight up.
@@ -37,11 +37,10 @@ export declare class FlingRotation {
      */
     readonly maxFlingRotationY: number;
     /**
-     * The area in which drag tacking will happen. Defaults to document because
-     * usually you want to track in the whole viewport, otherwise if the pointer
-     * comes up outside of this area it will leave things in a bad state.
+     * The area in which drag tacking will happen. Defaults to
+     * document.documentElement for tracking in the whole viewport.
      */
-    readonly interactionContainer: Document | ShadowRoot | Element;
+    readonly interactionContainer: Element;
     factor: number;
     constructor(options: FlingRotationOptions);
     start(): this;

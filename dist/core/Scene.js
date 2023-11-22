@@ -1503,6 +1503,9 @@ let Scene = (() => {
 			contain: strict; /*override*/
 			overflow: hidden;
 			position: static; /*override*/
+
+			/* Prevent default browser behaviors like drag-and-drop to avoid pointercancel interfering with interaction features. */
+			touch-action: none;
 		}
 
 		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */

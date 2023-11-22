@@ -337,6 +337,7 @@ class CameraRig extends Element3D {
 
 				const flingRotation = (this.flingRotation = new FlingRotation({
 					interactionInitiator: this.scene,
+					interactionContainer: this.scene,
 					rotationYTarget: this.rotationYTarget,
 					minFlingRotationX: this.minVerticalAngle,
 					maxFlingRotationX: this.maxVerticalAngle,

@@ -20,7 +20,7 @@ class PinchFling {
 	minX = -Infinity
 	maxX = Infinity
 
-	target: Document | ShadowRoot | Element = document
+	target: Element = document.documentElement
 
 	factor = 1
 
@@ -74,6 +74,8 @@ class PinchFling {
 	#pointers: Map<number, {id: number; x: number; y: number}> = new Map()
 
 	#onDown = (event: PointerEvent) => {
+		event.preventDefault()
+
 		event.clientX
 
 		this.#pointers.set(event.pointerId, {
@@ -85,7 +87,8 @@ class PinchFling {
 		if (this.#pointers.size === 2) {
 			// go two fingers
 
-			document.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
+			// @ts-expect-error TypeScript type for `event` is wrong
+			this.target.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
 			this.#interacting.set(true)
 		}
 	}
@@ -93,6 +96,8 @@ class PinchFling {
 	#lastDistance = -1
 
 	#onMove = (event: PointerEvent) => {
+		event.preventDefault()
+
 		if (!this.#pointers.has(event.pointerId)) return
 		if (this.#pointers.size < 2) return
 
@@ -114,13 +119,16 @@ class PinchFling {
 	}
 
 	#onUp = (event: PointerEvent) => {
+		event.preventDefault()
+
 		if (!this.#pointers.has(event.pointerId)) return
 
 		this.#pointers.delete(event.pointerId)
 		this.#lastDistance = -1
 
 		if (this.#pointers.size === 1) {
-			document.removeEventListener('pointermove', this.#onMove)
+			// @ts-expect-error TypeScript type for `event` is wrong
+			this.target.removeEventListener('pointermove', this.#onMove)
 			this.#interacting.set(false)
 		}
 	}

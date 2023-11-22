@@ -17,7 +17,7 @@ export declare class ScrollFling {
     maxX: number;
     minY: number;
     maxY: number;
-    target: Document | ShadowRoot | Element;
+    target: Element;
     scrollFactor: number;
     get isStarted(): boolean;
     constructor(options: ScrollFlingOptions);
