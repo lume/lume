@@ -35,7 +35,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { untrack } from 'solid-js';
+import { onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { signal } from 'classy-solid';
 import { booleanAttribute, attribute, numberAttribute, element, stringAttribute } from '@lume/element';
@@ -928,11 +928,8 @@ let Scene = (() => {
             // it has the same semantics as with Element3D (this.scene is not null when
             // scene is connected and has webgl or css rendering turned on)
             this._scene = this;
-            // this.sizeMode and this.size have to be overriden here inside the
-            // constructor in TS 4. This is because class fields on a
-            // subclass are no longer allowed to be defined outside the
-            // constructor if a base class has the same properties already defined as
-            // accessors.
+            // TODO override size and sizeMode using fields after converting them
+            // from getters/setters in the base class.
             /**
              * @property {XYZSizeModeValues} sizeMode -
              *
@@ -1048,7 +1045,10 @@ let Scene = (() => {
             });
             this.createEffect(() => {
                 this.sizeMode;
-                this.#startOrStopParentSizeObservation();
+                this.#maybeStartParentSizeObservation();
+                onCleanup(() => {
+                    this.#stopParentSizeObservation();
+                });
             });
         }
         disconnectedCallback() {
@@ -1381,7 +1381,7 @@ let Scene = (() => {
         // element parents. In the future, we will allow Scenes to be children of
         // Element3Ds, in order to have nested scene rendering (f.e. a WebGL Scene
         // rendered on a plane inside a parent Scene, to make portals, etc).
-        #startOrStopParentSizeObservation() {
+        #maybeStartParentSizeObservation() {
             const { x, y } = this.sizeMode;
             if (
             // If we will be rendering something...
@@ -1393,9 +1393,6 @@ let Scene = (() => {
                 // ...then observe the parent element size (it may not be a LUME
                 // element, so we observe with ResizeObserver).
                 this.#startParentSizeObservation();
-            }
-            else {
-                this.#stopParentSizeObservation();
             }
         }
         #resizeObserver = null;
