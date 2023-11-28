@@ -32,8 +32,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { reactive, signal } from 'classy-solid';
-import { Effectful } from '../core/Effectful.js';
+import { reactive, signal, Effects } from 'classy-solid';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 import { BasicShadowMap, PCFSoftShadowMap, PCFShadowMap } from 'three/src/constants.js';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator.js';
@@ -41,8 +40,6 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Motor } from '../core/Motor.js';
 import './handle-DOM-absence.js';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
-class SceneEffects extends Effectful(Object) {
-}
 let instance = null;
 let isCreatingSingleton = false;
 /**
@@ -102,7 +99,7 @@ let WebglRendererThree = (() => {
                 premultipliedAlpha: true,
                 antialias: true,
             });
-            const effects = new SceneEffects();
+            const effects = new Effects();
             effects.createEffect(() => {
                 renderer.localClippingEnabled = this.localClippingEnabled;
             });

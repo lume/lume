@@ -37,12 +37,11 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 };
 import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
-import { signal } from 'classy-solid';
+import { signal, Effects } from 'classy-solid';
 import { element, numberAttribute, booleanAttribute } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
 import { Element3D } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
-import { Effects } from '../core/Effectful.js';
 // TODO allow overriding the camera props, and make the default camera overridable via <slot>
 /**
  * @class CameraRig
@@ -55,7 +54,7 @@ import { Effects } from '../core/Effectful.js';
  * particular and specific. In the following example, try draging to rotate,
  * scrolling to zoom:
  *
- * <div id="cameraRigExample"></div>
+ * <live-code id="example"></live-code>
  *
  * ## Slots
  *
@@ -238,19 +237,11 @@ let CameraRig = (() => {
          *
          * The highest angle that the camera will rotate vertically.
          *
-         * <div id="verticalRotationExample"></div>
+         * <live-code id="verticalExample"></live-code>
          *
          * <script>
-         *   new Vue({
-         *     el: '#cameraRigExample',
-         *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
-         *     data: { code: cameraRigExample },
-         *   })
-         *   new Vue({
-         *     el: '#verticalRotationExample',
-         *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
-         *     data: { code: cameraRigVerticalRotationExample },
-         *   })
+         *   example.code = cameraRigExample
+         *   verticalExample.code = cameraRigVerticalRotationExample
          * </script>
          */
         maxVerticalAngle = __runInitializers(this, _maxVerticalAngle_initializers, 90

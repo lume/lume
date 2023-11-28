@@ -10,13 +10,9 @@ export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect'
  * field of view (fov) such that more things in the world are visible further away from
  * the camera, while less can fit into view closer to the camera.
  *
- * <div id="perspectiveCamera"></div>
+ * <live-code id="example"></live-code>
  * <script>
- *   new Vue({
- *     el: '#perspectiveCamera',
- *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: { code: perspectiveCameraExample },
- *   })
+ *   example.code = perspectiveCameraExample
  * </script>
  *
  * @extends Element3D

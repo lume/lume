@@ -55,3 +55,6 @@
 [submodule "apps/docs"]
 	path = apps/docs
 	url = https://github.com/lume/lume.github.io.git
+[submodule "packages/code-mirror-element"]
+	path = packages/code-mirror-el
+	url = https://github.com/lume/code-mirror-element.git

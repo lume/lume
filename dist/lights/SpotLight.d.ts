@@ -16,14 +16,9 @@ export type SpotLightAttributes = PointLightAttributes;
  *
  * ## Example
  *
- * <div id="example"></div>
- *
- * <script type="application/javascript">
- *   new Vue({
- *     el: '#example',
- *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: { code: spotLightExample() },
- *   })
+ * <live-code id="liveExample"></live-code>
+ * <script>
+ *   liveExample.code = spotLightExample()
  * </script>
  *
  * @extends PointLight

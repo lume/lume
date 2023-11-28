@@ -5,31 +5,27 @@ import { ShapeGeometry } from 'three/src/geometries/ShapeGeometry.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
 export type ShapeGeometryBehaviorAttributes = 'shape' | 'curveSegments' | 'bevel' | 'bevelSegments' | 'bevelThickness' | 'centerGeometry' | 'fitment';
 /**
-@class ShapeGeometryBehavior -
-
-Provides a 2D extrudable shape geometry for mesh
-elements. The [`<lume-shape>`](../../../meshes/Shape.md) element has this behavior
-on it by default.
-
-The shape defined by the [`shape`](#shape) attribute property will be centered within the
-size space defined by the host element's `size` and `sizeMode` attribute
-properties.
-
-To extrude the shape, set the host element's Z size to the amount of desired
-extrusion. If the host element Z size is zero, the shape will be flat and 2D
-only.
-
-<div id="exampleContainer"></div>
-<script>
-  new Vue({
-    el: '#exampleContainer',
-    template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
-    data: { code: shapesExample },
-  })
-</script>
-
-@extends GeometryBehavior
-*/
+ * @class ShapeGeometryBehavior -
+ *
+ * Provides a 2D extrudable shape geometry for mesh
+ * elements. The [`<lume-shape>`](../../../meshes/Shape.md) element has this behavior
+ * on it by default.
+ *
+ * The shape defined by the [`shape`](#shape) attribute property will be centered within the
+ * size space defined by the host element's `size` and `sizeMode` attribute
+ * properties.
+ *
+ * To extrude the shape, set the host element's Z size to the amount of desired
+ * extrusion. If the host element Z size is zero, the shape will be flat and 2D
+ * only.
+ *
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.code = shapesExample
+ * </script>
+ *
+ * @extends GeometryBehavior
+ */
 export declare class ShapeGeometryBehavior extends GeometryBehavior {
     __shape: Shape;
     /**

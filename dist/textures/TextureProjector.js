@@ -62,10 +62,9 @@ import { autoDefineElements } from '../LumeConfig.js';
  * dash-case attribute accepts only the string of selectors. Only the first
  * texture is used, for now.
  *
- * <div id="projectedTextureExample"></div>
- *
- * <script type="application/javascript">
- *   new Vue({ el: '#projectedTextureExample', data: { code: projectedTextureExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.code = projectedTextureExample
  * </script>
  *
  * @extends Element3D

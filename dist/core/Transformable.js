@@ -200,13 +200,9 @@ let Transformable = (() => {
          * same, but as you move the sliders, each cube rotates around their
          * specific origin.
          *
-         * <div id="originExample"></div>
-         * <script type="application/javascript">
-         *   new Vue({
-         *     el: '#originExample',
-         *     template: '<live-code class="full" :template="code" mode="html>iframe" :debounce="200" />',
-         *     data: { code: originExample },
-         *   })
+         * <live-code id="example"></live-code>
+         * <script>
+         *   example.code = originExample
          * </script>
          */
         set origin(newValue) {

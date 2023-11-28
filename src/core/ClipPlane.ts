@@ -31,10 +31,9 @@ type ClipPlaneAttributes = Element3DAttributes
  * element with the `has=""` attribute, then assign any number of connected
  * `<lume-clip-plane>` elements to the element's `clipPlanes` property.
  *
- * <div id="clipPlaneExample"></div>
- *
- * <script type="application/javascript">
- *   new Vue({ el: '#clipPlaneExample', data: { code: clipPlaneExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.code = clipPlaneExample
  * </script>
  *
  * @extends Element3D

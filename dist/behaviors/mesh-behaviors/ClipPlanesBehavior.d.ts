@@ -10,10 +10,9 @@ export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipIntersection' | '
  * This class extends from `MeshBehavior`, enforcing that the behavior can be used
  * only on elements that have a geometry and material.
  *
- * <div id="clipPlaneExample"></div>
- *
- * <script type="application/javascript">
- *   new Vue({ el: '#clipPlaneExample', data: { code: clipPlaneExample }, template: '<live-code :template="code" mode="html>iframe" :debounce="200" />' })
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.code = clipPlaneExample
  * </script>
  *
  * @extends MeshBehavior

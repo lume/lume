@@ -75,14 +75,9 @@ export type SceneAttributes =
  * The following example shows how to begin making a LUME scene within an HTML
  * file. To learn more about how to get started, see the [install guide](../../guide/install.md).
  *
- * <div id="example1"></div>
- *
- * <script type="application/javascript">
- *   new Vue({
- *     el: '#example1',
- *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: { code: sceneExample() },
- *   })
+ * <live-code id="liveExample"></live-code>
+ * <script>
+ *   liveExample.code = sceneExample()
  * </script>
  *
  * @extends SharedAPI

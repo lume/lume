@@ -76,7 +76,7 @@
 		"@lume/element": "^0.11.0",
 		"@lume/eventful": "^0.3.0",
 		"@lume/three-projected-material": "^0.3.0",
-		"classy-solid": "^0.3.0",
+		"classy-solid": "^0.3.2",
 		"element-behaviors": "^5.0.0",
 		"james-bond": "^0.7.0",
 		"lowclass": "^7.0.0",

@@ -4,12 +4,11 @@
 
 import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
-import {signal} from 'classy-solid'
+import {signal, Effects} from 'classy-solid'
 import {element, numberAttribute, booleanAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
-import {Effects} from '../core/Effectful.js'
 
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
@@ -45,7 +44,7 @@ export type CameraRigAttributes =
  * particular and specific. In the following example, try draging to rotate,
  * scrolling to zoom:
  *
- * <div id="cameraRigExample"></div>
+ * <live-code id="example"></live-code>
  *
  * ## Slots
  *
@@ -128,19 +127,11 @@ class CameraRig extends Element3D {
 	 *
 	 * The highest angle that the camera will rotate vertically.
 	 *
-	 * <div id="verticalRotationExample"></div>
+	 * <live-code id="verticalExample"></live-code>
 	 *
 	 * <script>
-	 *   new Vue({
-	 *     el: '#cameraRigExample',
-	 *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
-	 *     data: { code: cameraRigExample },
-	 *   })
-	 *   new Vue({
-	 *     el: '#verticalRotationExample',
-	 *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
-	 *     data: { code: cameraRigVerticalRotationExample },
-	 *   })
+	 *   example.code = cameraRigExample
+	 *   verticalExample.code = cameraRigVerticalRotationExample
 	 * </script>
 	 */
 	@numberAttribute maxVerticalAngle = 90

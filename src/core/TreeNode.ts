@@ -1,6 +1,6 @@
 import {Eventful} from '@lume/eventful'
 import {Element as LumeElement} from '@lume/element'
-import {Effectful} from './Effectful.js'
+import {Effectful} from 'classy-solid'
 
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected

@@ -33,7 +33,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     done = true;
 };
 import { untrack } from 'solid-js';
-import { signal } from 'classy-solid';
+import { signal, Effects } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
 import { element, attribute } from '@lume/element';
 import { Transformable } from './Transformable.js';
@@ -47,7 +47,6 @@ import { toRadians } from './utils/index.js';
 import { ChildTracker } from './ChildTracker.js';
 import { DefaultBehaviors } from '../behaviors/DefaultBehaviors.js';
 import { isDomEnvironment, isElement3D, isScene } from './utils/isThisOrThat.js';
-import { Effects } from './Effectful.js';
 const threeJsPostAdjustment = [0, 0, 0];
 const alignAdjustment = [0, 0, 0];
 const mountPointAdjustment = [0, 0, 0];

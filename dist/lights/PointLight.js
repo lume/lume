@@ -55,14 +55,9 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * ## Example
  *
- * <div id="example"></div>
- *
- * <script type="application/javascript">
- *   new Vue({
- *     el: '#example',
- *     template: '<live-code :template="code" mode="html>iframe" :debounce="200" />',
- *     data: { code: pointLightExample() },
- *   })
+ * <live-code id="liveExample"></live-code>
+ * <script>
+ *   liveExample.code = pointLightExample()
  * </script>
  *
  * @extends LightWithShadow

@@ -1,5 +1,4 @@
-import {reactive, signal} from 'classy-solid'
-import {Effectful} from '../core/Effectful.js'
+import {reactive, signal, Effects} from 'classy-solid'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
@@ -13,8 +12,6 @@ import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/textures/Texture.js'
 
-class SceneEffects extends Effectful(Object) {}
-
 interface SceneState {
 	renderer: WebGLRenderer
 	pmremgen?: PMREMGenerator
@@ -22,7 +19,7 @@ interface SceneState {
 	hasBackground?: boolean
 	hasEnvironment?: boolean
 	sizeChangeHandler: () => void
-	effects: SceneEffects
+	effects: Effects
 }
 
 let instance: WebglRendererThree | null = null
@@ -76,7 +73,7 @@ class WebglRendererThree {
 			antialias: true,
 		})
 
-		const effects = new SceneEffects()
+		const effects = new Effects()
 
 		effects.createEffect(() => {
 			renderer.localClippingEnabled = this.localClippingEnabled

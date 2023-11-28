@@ -1,18 +1,9 @@
+import { Effects } from 'classy-solid';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator.js';
 import './handle-DOM-absence.js';
 import type { Scene } from '../core/Scene.js';
 import type { Texture } from 'three/src/textures/Texture.js';
-declare const SceneEffects_base: {
-    new (...a: any[]): {
-        "__#8@#owner": import("solid-js").Owner | null;
-        "__#8@#dispose": (() => void) | null;
-        createEffect(fn: () => void): void;
-        stopEffects(): void;
-    };
-} & ObjectConstructor;
-declare class SceneEffects extends SceneEffects_base {
-}
 interface SceneState {
     renderer: WebGLRenderer;
     pmremgen?: PMREMGenerator;
@@ -20,7 +11,7 @@ interface SceneState {
     hasBackground?: boolean;
     hasEnvironment?: boolean;
     sizeChangeHandler: () => void;
-    effects: SceneEffects;
+    effects: Effects;
 }
 /** @typedef {'pcf' | 'pcfsoft' | 'basic'} ShadowMapTypeString */
 export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic';

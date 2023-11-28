@@ -3,7 +3,7 @@ import { Constructor } from 'lowclass';
 export declare function DefaultBehaviors<T extends Constructor<HTMLElement>>(Base: T): {
     new (...a: any[]): {
         connectedCallback(): void;
-        "__#18@#setDefaultBehaviorsIfNeeded"(): void;
+        "__#17@#setDefaultBehaviorsIfNeeded"(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;

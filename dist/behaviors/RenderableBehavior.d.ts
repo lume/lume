@@ -1,13 +1,11 @@
 import { Behavior } from './Behavior.js';
 import { Element3D } from '../core/Element3D.js';
-declare const RenderableBehavior_base: {
-    new (...a: any[]): {
-        "__#8@#owner": import("solid-js").Owner | null;
-        "__#8@#dispose": (() => void) | null;
-        createEffect(fn: () => void): void;
-        stopEffects(): void;
-    };
-} & typeof Behavior;
+declare const RenderableBehavior_base: (new (...a: any[]) => {
+    "__#1@#owner": import("solid-js").Owner | null;
+    "__#1@#dispose": (() => void) | null;
+    createEffect(fn: () => void): void;
+    stopEffects(): void;
+}) & typeof Behavior;
 /**
  * @class RenderableBehavior
  * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).

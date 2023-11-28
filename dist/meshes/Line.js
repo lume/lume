@@ -50,13 +50,9 @@ import { autoDefineElements } from '../LumeConfig.js';
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
  * behavior on this element to load a set of points from a file.
  *
- * <div id="exampleContainer"></div>
+ * <live-code id="example"></live-code>
  * <script>
- *   new Vue({
- *     el: '#exampleContainer',
- *     template: '<live-code class="full" :template="code" :autorun="true" mode="html>iframe" />',
- *     data: { code: lineExample },
- *   })
+ *   example.code = lineExample
  * </script>
  *
  * @extends Element3D
