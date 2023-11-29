@@ -11,12 +11,12 @@ import type { AnyConstructor } from 'lowclass/dist/utils.js';
  * `attributeChangedCallback`, and makes properties be Solid signals by
  * composing `@reactive` and `@signal` decorators).
  *
- * Example (ignore backslashes):
+ * Example:
  *
  * ```js
- * \@behavior('my-behavior')
+ * ⁣@behavior('my-behavior')
  * class MyBehavior extends Behavior {
- *   \@numberAttribute foo = 123
+ *   ⁣@numberAttribute foo = 123
  * }
  * ```
  */

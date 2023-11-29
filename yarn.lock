@@ -3265,7 +3265,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/live-code@npm:^0.5.0, @lume/live-code@workspace:packages/live-code":
+"@lume/live-code@npm:^0.5.1, @lume/live-code@workspace:packages/live-code":
   version: 0.0.0-use.local
   resolution: "@lume/live-code@workspace:packages/live-code"
   dependencies:
@@ -11610,7 +11610,7 @@ __metadata:
     "@lume/element": "npm:^0.11.0"
     "@lume/eventful": "npm:^0.3.0"
     "@lume/kiwi": "npm:^0.4.0"
-    "@lume/live-code": "npm:^0.5.0"
+    "@lume/live-code": "npm:^0.5.1"
     "@lume/three-projected-material": "npm:^0.3.0"
     "@uiw/codemirror-theme-noctis-lilac": "npm:^4.0.0"
     browser-sync: "npm:^2.27.11"
@@ -11628,7 +11628,7 @@ __metadata:
     james-bond: "npm:^0.7.0"
     lodash-es: "npm:^4.17.0"
     lowclass: "npm:^7.0.0"
-    lume: "npm:^0.3.0-alpha.33"
+    lume: "npm:^0.3.0-alpha.34"
     mkdirp: "npm:^1.0.4"
     prettier: "npm:3.0.3"
     prismjs: "npm:^1.29.0"
@@ -18966,7 +18966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.33, lume@workspace:.":
+"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.34, lume@workspace:.":
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
   dependencies:
