@@ -1,7 +1,6 @@
 import {booleanAttribute, element} from '@lume/element'
 import {SharedAPI} from './SharedAPI.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {BaseAttributes} from './SharedAPI.js'
 
 // TODO Make a way to link to examples that are in separate source files so as
@@ -73,7 +72,7 @@ export type Element3DAttributes = BaseAttributes | 'visible'
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = miniGalaxyDemo()
+ *   liveExample.content = miniGalaxyDemo()
  * </script>
  *
  * @extends SharedAPI
@@ -241,6 +240,16 @@ class Element3D extends SharedAPI {
 
 		return true
 	}
+
+	static override css = /*css*/ `
+		${super.css}
+
+		:host {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	`
 }
 
 // Put initial value on the prototype to make it available during construction

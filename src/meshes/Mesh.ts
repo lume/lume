@@ -15,7 +15,7 @@ export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow
  *
  * An element that renders a particular 3D shape (geometry) along with a
  * particular style (material). This is a generic element with no particular
- * shape. Elements like `<lume-box>` extend from `Mesh` in order to set define
+ * shape. Elements like `<lume-box>` extend from `Mesh` in order to define
  * behaviors they ship with by default. For example a `<lume-box>` element
  * (backed by the [`Box`](./Box) class) extends from this `Mesh` class and
  * applies two default behaviors:
@@ -23,14 +23,15 @@ export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow
  * and
  * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
- * For sake of simplicity, `<lume-mesh>` has a `box-geometry` and
- * `phong-material` by default, just like a `<lume-box>`.
+ * A `<lume-mesh>` does not have any behaviors by default, a geometry behavior
+ * and material behavior need to be added for it to render something, using the
+ * `has=""` attribute, for example `has="box-geometry phong-material"`.
  *
  * ## Example
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = meshExample()
+ *   liveExample.content = meshExample()
  * </script>
  *
  * @extends Element3D
@@ -40,18 +41,6 @@ export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow
 export
 @element('lume-mesh', autoDefineElements)
 class Mesh extends Element3D {
-	// TODO NAMING: It would be neat to be able to return an array of classes
-	// as well, so that it can be agnostic of the naming. Either way should
-	// work.
-	static override defaultBehaviors: {[k: string]: any} = {
-		'box-geometry': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-material'))
-		},
-	}
-
 	/**
 	 * @property {boolean} castShadow
 	 *

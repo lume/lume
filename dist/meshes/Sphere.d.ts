@@ -15,9 +15,9 @@ export type SphereAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Sphere extends Mesh {
-    static defaultBehaviors: {
-        'sphere-geometry': (initialBehaviors: string[]) => boolean;
-        'phong-material': (initialBehaviors: string[]) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 declare global {

@@ -69,20 +69,11 @@ let Points = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Points = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
         }
-        static defaultBehaviors = {
-            'box-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'points-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
+        initialBehaviors = { geometry: 'box', material: 'points' };
         makeThreeObject3d() {
             return new ThreePoints();
-        }
-        static {
-            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return Points = _classThis;

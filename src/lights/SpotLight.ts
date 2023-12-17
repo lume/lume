@@ -24,7 +24,7 @@ export type SpotLightAttributes = PointLightAttributes
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = spotLightExample()
+ *   liveExample.content = spotLightExample()
  * </script>
  *
  * @extends PointLight

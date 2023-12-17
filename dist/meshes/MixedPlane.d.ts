@@ -23,9 +23,9 @@ export type MixedPlaneAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class MixedPlane extends Mesh {
-    static defaultBehaviors: {
-        'mixedplane-geometry': (initialBehaviors: any) => boolean;
-        'mixedplane-material': (initialBehaviors: any) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
     /**
      * @property {true} isMixedPlane - An always-`true` property signaling that

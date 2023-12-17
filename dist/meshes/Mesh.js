@@ -43,7 +43,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * An element that renders a particular 3D shape (geometry) along with a
  * particular style (material). This is a generic element with no particular
- * shape. Elements like `<lume-box>` extend from `Mesh` in order to set define
+ * shape. Elements like `<lume-box>` extend from `Mesh` in order to define
  * behaviors they ship with by default. For example a `<lume-box>` element
  * (backed by the [`Box`](./Box) class) extends from this `Mesh` class and
  * applies two default behaviors:
@@ -51,14 +51,15 @@ import { autoDefineElements } from '../LumeConfig.js';
  * and
  * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
- * For sake of simplicity, `<lume-mesh>` has a `box-geometry` and
- * `phong-material` by default, just like a `<lume-box>`.
+ * A `<lume-mesh>` does not have any behaviors by default, a geometry behavior
+ * and material behavior need to be added for it to render something, using the
+ * `has=""` attribute, for example `has="box-geometry phong-material"`.
  *
  * ## Example
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = meshExample()
+ *   liveExample.content = meshExample()
  * </script>
  *
  * @extends Element3D
@@ -87,18 +88,8 @@ let Mesh = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Mesh = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
         }
-        // TODO NAMING: It would be neat to be able to return an array of classes
-        // as well, so that it can be agnostic of the naming. Either way should
-        // work.
-        static defaultBehaviors = {
-            'box-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some(b => b.endsWith('-geometry'));
-            },
-            'phong-material': (initialBehaviors) => {
-                return !initialBehaviors.some(b => b.endsWith('-material'));
-            },
-        };
         /**
          * @property {boolean} castShadow
          *
@@ -151,9 +142,6 @@ let Mesh = (() => {
         }
         makeThreeObject3d() {
             return new ThreeMesh();
-        }
-        static {
-            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return Mesh = _classThis;

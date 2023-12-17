@@ -1,4 +1,4 @@
-<script src="./template.js" template="./template.html" title="ShadowDOM"></script>
+<script src="../template.js" template="../template.html" importmap="../importmap.js" title="ShadowDOM"></script>
 
 <!--
 
@@ -86,6 +86,8 @@ Total composed nodes: 15
 				TODO="try without this wrapper div to see that slotting a scene does not work (and try to fix)"
 			>
 				<lume-scene id="scene" webgl physically-correct-lights style="background: skyblue">
+					<lume-element3d id="scene-size-viz" size-mode="p p" size="1 1" style="border: 2px solid red"></lume-element3d>
+
 					<slot name="outsidenode">
 						<!-- The lume-box from the main document should render relative to here. -->
 					</slot>
@@ -214,7 +216,7 @@ Total composed nodes: 15
 					-->
 					<lume-sphere id="default-sphere-yellow" color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
 				</slot>
-				<lume-box id="deeperbox" size="20 20 20" position="0 0 100">
+				<lume-box id="deeperbox" size="20 20 20" position="0 0 100" color="deeppink">
 					<slot name="deeper">
 						<!-- Default content to render when nothing is assigned to this slot. -->
 						<lume-sphere id="default-sphere-green" color="green" size="50 50 50" position="10 10 10"></lume-sphere>
@@ -228,12 +230,9 @@ Total composed nodes: 15
 			let nodes = []
 			scene.traverseSceneGraph(n => nodes.push(n))
 			if (nodes.length !== 15) {
-				// TODO This error happens. Not sure if this broke, or if I
-				// forgot to update it, but ShadowDOM tests pass and
-				// examples work.
 				console.error(nodes)
 				throw new Error(
-					`Composed tree size not as expected. Got: ${nodes.length}. Update the number if the markup was modified. Also take into account that some Lume elements have their own ShadowDOM.`,
+					`Composed tree size (${nodes.length}) not as expected (15). Update the number if the markup was modified. Also take into account that some Lume elements have their own ShadowDOM.`,
 				)
 			}
 		})
@@ -243,14 +242,14 @@ Total composed nodes: 15
 		// Alternate which slot the sphere is assigned to to verify
 		// that the sphere moves around to the different distribution
 		// points, including one deeper slot.
-		const toggle1 = () => {
+		window.toggle1 = () => {
 			i++
 			sphere.setAttribute('slot', i % 3 == 0 ? 'box' : i % 3 == 1 ? 'plane' : 'root')
 		}
 
 		// Add and remove a slot to verify that this changes which
 		// distribution point the sphere renders relative to.
-		const toggle2 = () => {
+		window.toggle2 = () => {
 			if ([].includes.call(slotContainer.children, slot)) slotContainer.removeChild(slot)
 			else slotContainer.appendChild(slot)
 		}
@@ -261,20 +260,24 @@ Total composed nodes: 15
 		// recreates the whole scene graph each time, and each
 		// time it should be properly created in the same
 		// structure as the composed DOM tree).
-		const toggle3 = () => {
+		// TODO Camera viewpoint not correct after webgl toggle because
+		// perspective camera is destroyed and re-created, throwing things off.
+		// We'll solve this by simplifying scene.webgl so it only toggles the
+		// renderer, but not element content.
+		window.toggle3 = () => {
 			scene.webgl = !scene.webgl
 		}
 
 		// Toggle which deeper slot the higher slot is assigned to, to
 		// verify that the sphere will render in the expected place.
-		const toggle4 = () => {
+		window.toggle4 = () => {
 			if (slot.hasAttribute('slot')) slot.removeAttribute('slot')
 			else slot.setAttribute('slot', 'deeper')
 		}
 
 		// setInterval(toggle1, 2000)
 		// setInterval(toggle2, 2000)
-		// setInterval(toggle3, 2000)
+		// setInterval(toggle3, 2000) // TODO fix, see toggle3 above.
 		// setInterval(toggle4, 2500)
 	}, 2000)
 </script>

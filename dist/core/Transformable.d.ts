@@ -15,7 +15,6 @@ export type TransformableAttributes = SizeableAttributes | 'position' | 'rotatio
  * @extends Sizeable
  */
 export declare class Transformable extends Sizeable {
-    constructor();
     /**
      * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNumberValues | null} position -
      *
@@ -85,7 +84,7 @@ export declare class Transformable extends Sizeable {
      *
      * <live-code id="example"></live-code>
      * <script>
-     *   example.code = originExample
+     *   example.content = originExample
      * </script>
      */
     set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction);

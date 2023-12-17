@@ -78,6 +78,10 @@ class _Motor {
 		this.#startAnimationLoop()
 	}
 
+	willUpdate(element: SharedAPI) {
+		return this.#elementsToUpdate.has(element)
+	}
+
 	/**
 	 * Set the function that is used for requesting animation frames. The
 	 * default is `globalThis.requestAnimationFrame`. A Scene with WebXR enabled
@@ -172,12 +176,13 @@ class _Motor {
 			// if there is no ancestor of the current element that should be
 			// updated, then the current element is a root element of a subtree
 			// that needs to be updated
-			if (!el.__getNearestAncestorThatShouldBeUpdated()) this.#treesToUpdate.add(el)
+			if (!hasAncestorThatWillUpdate(el)) this.#treesToUpdate.add(el)
 
 			// keep track of which scenes are modified so we can render webgl
 			// only for those scenes.
 			this.#modifiedScenes.add(el.scene)
 		}
+		this.#elementsToUpdate.clear()
 
 		// Update world matrices of the subtrees.
 		for (const el of this.#treesToUpdate) el.updateWorldMatrices()
@@ -186,11 +191,19 @@ class _Motor {
 		// render webgl of modified scenes.
 		for (const scene of this.#modifiedScenes) scene.drawScene()
 		this.#modifiedScenes.clear()
-
-		for (const el of this.#elementsToUpdate) el.__willBeRendered = false
-		this.#elementsToUpdate.clear()
 	}
 }
 
 // export a singleton instance rather than the class directly.
 export const Motor = new _Motor()
+
+function hasAncestorThatWillUpdate(el: SharedAPI): boolean {
+	let composedSceneGraphParent = el.composedSceneGraphParent
+
+	while (composedSceneGraphParent) {
+		if (Motor.willUpdate(composedSceneGraphParent)) return true
+		composedSceneGraphParent = composedSceneGraphParent.composedSceneGraphParent
+	}
+
+	return false
+}

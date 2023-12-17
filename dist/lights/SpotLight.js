@@ -55,7 +55,7 @@ import { Element3D, toRadians } from '../core/index.js';
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = spotLightExample()
+ *   liveExample.content = spotLightExample()
  * </script>
  *
  * @extends PointLight

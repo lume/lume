@@ -20,7 +20,7 @@ export type LineBasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | '
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = lineExample
+ *   example.content = lineExample
  * </script>
  *
  * @extends MaterialBehavior

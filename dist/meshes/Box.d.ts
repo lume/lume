@@ -17,9 +17,9 @@ export type BoxAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Box extends Mesh {
-    static defaultBehaviors: {
-        'box-geometry': (initialBehaviors: any) => boolean;
-        'phong-material': (initialBehaviors: any) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 declare global {

@@ -3,7 +3,7 @@
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
 
-import {untrack, onCleanup} from 'solid-js'
+import {onCleanup} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, type Side, SRGBColorSpace} from 'three/src/constants.js'
@@ -300,39 +300,41 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 
 			const url = textureUrl() // this is a dependency of the effect
 
-			if (url) {
-				// TODO The default material color (if not specified) when
-				// there's a texture should be white
+			if (!url) return
 
-				let cleaned = false
+			// TODO The default material color (if not specified) when
+			// there's a texture should be white
 
-				// TODO onProgress and onError
-				const texture = new TextureLoader().load(url, () => {
-					if (cleaned) return
+			let cleaned = false
 
-					// We only need to re-compile the shader when we first
-					// enable the texture (from null).
-					if (!hasTexture(mat!)) mat.needsUpdate = true
+			// TODO onProgress and onError
+			const texture = new TextureLoader().load(url, () => {
+				if (cleaned) return
 
-					setTexture(mat!, texture)
+				// We only need to re-compile the shader when we first
+				// enable the texture (from null).
+				if (!hasTexture(mat!)) mat.needsUpdate = true
 
-					this.element.needsUpdate()
+				setTexture(mat!, texture)
 
-					onLoad?.()
-				})
+				this.element.needsUpdate()
 
-				if (isColor) texture.colorSpace = SRGBColorSpace
+				onLoad?.()
+			})
 
-				onCleanup(() => {
-					cleaned = true
-					texture.dispose()
-				})
-			} else {
-				untrack(() => setTexture(mat!, null))
-			}
+			if (isColor) texture.colorSpace = SRGBColorSpace
 
 			mat.needsUpdate = true // Three.js needs to update the material in the GPU
 			this.element.needsUpdate() // LUME needs to re-render
+
+			onCleanup(() => {
+				cleaned = true
+				texture.dispose()
+				setTexture(mat!, null)
+
+				mat.needsUpdate = true // Three.js needs to update the material in the GPU
+				this.element.needsUpdate() // LUME needs to re-render
+			})
 		})
 	}
 }

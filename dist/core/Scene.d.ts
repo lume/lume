@@ -1,13 +1,13 @@
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
-import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
+import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { type ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
 import type { TColor } from '../utils/three.js';
-import type { PerspectiveCamera } from '../cameras/PerspectiveCamera.js';
+import type { Camera } from '../cameras/Camera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
-export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'equirectangularBackground' | 'backgroundBlur' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
 /**
  * @class Scene -
  *
@@ -30,7 +30,7 @@ export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'web
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = sceneExample()
+ *   liveExample.content = sceneExample()
  * </script>
  *
  * @extends SharedAPI
@@ -175,15 +175,28 @@ export declare class Scene extends SharedAPI {
      */
     background: string | null;
     /**
-     * @property {string} equirectangularBackground -
+     * @property {number} backgroundBlur -
+     *
+     * **`experimental`** *attribute*
+     *
+     * Default: `0`
+     *
+     * If [`background`](#background) is set, the background will be blurred by
+     * the given amount.
+     *
+     * Applies only if [`webgl`](#webgl) is `true`.
+     */
+    backgroundBlur: number;
+    /**
+     * @property {boolean} equirectangularBackground -
      *
      * *attribute*
      *
      * Default: `false`
      *
-     * If the `background`
-     * is equirectangular, set this to `true` so use it like a skybox,
-     * otherwise the image will be used as a regular 2D background image.
+     * If the [`background`](#background) is equirectangular, set this to `true`
+     * so use it like a skybox, otherwise the image will be used as a regular 2D
+     * background image.
      *
      * Applies only if [`webgl`](#webgl) is `true`.
      */
@@ -384,10 +397,10 @@ export declare class Scene extends SharedAPI {
      *
      * Applies with both CSS and WebGL rendering.
      */
-    get threeCamera(): ThreePerspectiveCamera;
-    __threeCamera: ThreePerspectiveCamera;
+    get threeCamera(): ThreeCamera;
+    __threeCamera: ThreeCamera;
     /**
-     * @property {PerspectiveCamera} camera
+     * @property {Camera} camera
      *
      * *readonly*, *signal*
      *
@@ -405,7 +418,7 @@ export declare class Scene extends SharedAPI {
      * the document space, just like with regular DOM+CSS where everything is
      * positioned starting at the top/left.
      */
-    get camera(): PerspectiveCamera | null;
+    get camera(): Camera | null;
     /**
      * @property {THREE.WebGLRenderer} glRenderer
      *
@@ -427,7 +440,7 @@ export declare class Scene extends SharedAPI {
      * structure) for custom uses, or `null` when CSS rendering is not enabled.
      */
     get cssRenderer(): import("../renderers/CSS3DRendererNested.js").CSS3DRendererNested | undefined;
-    __camera: PerspectiveCamera | null;
+    __camera: Camera | null;
     __localClipping: boolean;
     constructor();
     _glLayer: HTMLDivElement | null;
@@ -476,9 +489,9 @@ export declare class Scene extends SharedAPI {
     _updateCameraPerspective(): void;
     _updateCameraAspect(): void;
     _updateCameraProjection(): void;
-    __activeCameras?: Set<PerspectiveCamera>;
-    _addCamera(camera: PerspectiveCamera): void;
-    _removeCamera(camera: PerspectiveCamera): void;
+    __activeCameras?: Set<Camera>;
+    _addCamera(camera: Camera): void;
+    _removeCamera(camera: Camera): void;
     /**
      * @property {{x: number, y: number, z: number}} parentSize
      *
@@ -494,7 +507,7 @@ export declare class Scene extends SharedAPI {
     _unloadGL(): boolean;
     _loadCSS(): boolean;
     _unloadCSS(): boolean;
-    __setCamera(camera?: PerspectiveCamera): void;
+    __setCamera(camera?: Camera): void;
     __elementParentSize: XYZValuesObject<number>;
     template: () => Node | Node[];
     static css: string;

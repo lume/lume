@@ -83,8 +83,8 @@ export declare class CameraRig extends Element3D {
      * <live-code id="verticalExample"></live-code>
      *
      * <script>
-     *   example.code = cameraRigExample
-     *   verticalExample.code = cameraRigVerticalRotationExample
+     *   example.content = cameraRigExample
+     *   verticalExample.content = cameraRigVerticalRotationExample
      * </script>
      */
     maxVerticalAngle: number;

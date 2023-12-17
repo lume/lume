@@ -51,7 +51,7 @@ let refCount = 0;
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = clipPlaneExample
+ *   example.content = clipPlaneExample
  * </script>
  *
  * @extends MeshBehavior
@@ -166,6 +166,7 @@ let ClipPlanesBehavior = (() => {
          * either in the top level document, in a ShadowRoot, or distributed to a
          * slot in a ShadowRoot).
          */
+        // TODO #279, move setter logic into an effect like we did with ProjectedMaterialBehavior.
         get clipPlanes() {
             return this.#clipPlanes;
         }

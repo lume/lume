@@ -21,7 +21,7 @@ export type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'dec
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = pointLightExample()
+ *   liveExample.content = pointLightExample()
  * </script>
  *
  * @extends LightWithShadow

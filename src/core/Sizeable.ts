@@ -1,6 +1,6 @@
-import {createEffect, createRoot, on, untrack} from 'solid-js'
+import {untrack} from 'solid-js'
 import {signal} from 'classy-solid'
-import {attribute, element} from '@lume/element'
+import {attribute, element, noSignal} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
 import {XYZSizeModeValues, type SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
@@ -37,20 +37,6 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 export
 @element
 class Sizeable extends CompositionTracker(TreeNode) {
-	constructor() {
-		super()
-
-		// TODO remove this, it causes confusion with infinite loops when doing
-		// this.position.x = 123 in an effect, requiring untrack.
-		createRoot(() => {
-			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-			// trigger reactivity for the respective properties. See also NOTE REACTIVITY
-			// below.
-			createEffect(on(this.sizeMode.asDependency, () => (this.sizeMode = this.sizeMode)))
-			createEffect(on(this.size.asDependency, () => (this.size = this.size)))
-		})
-	}
-
 	@signal __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
@@ -78,6 +64,7 @@ class Sizeable extends CompositionTracker(TreeNode) {
 	 * along that axis.
 	 */
 	@attribute
+	@noSignal
 	set sizeMode(newValue: XYZSizeModeValuesProperty) {
 		if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
 		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
@@ -119,6 +106,7 @@ class Sizeable extends CompositionTracker(TreeNode) {
 	 * mix literal and proportional sizes for the different axes.
 	 */
 	@attribute
+	@noSignal
 	set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
 		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
 		this._setPropertyXYZ('size', size.get(this)!, newValue)

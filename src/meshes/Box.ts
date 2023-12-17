@@ -1,7 +1,6 @@
 import {element} from '@lume/element'
 import {Mesh} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {MeshAttributes} from './Mesh.js'
 
 export type BoxAttributes = MeshAttributes
@@ -24,14 +23,7 @@ export type BoxAttributes = MeshAttributes
 export
 @element('lume-box', autoDefineElements)
 class Box extends Mesh {
-	static override defaultBehaviors = {
-		'box-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'box', material: 'physical'}
 }
 
 declare global {

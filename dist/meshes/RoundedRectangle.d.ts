@@ -1,9 +1,9 @@
 import { Mesh, type MeshAttributes } from './Mesh.js';
 export type RoundedRectangleAttributes = MeshAttributes;
 export declare class RoundedRectangle extends Mesh {
-    static defaultBehaviors: {
-        'rounded-rectangle-geometry': (initialBehaviors: any) => boolean;
-        'phong-material': (initialBehaviors: any) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 import type { ElementAttributes } from '@lume/element';

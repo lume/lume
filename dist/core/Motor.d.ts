@@ -31,6 +31,7 @@ declare class _Motor {
      */
     once(fn: RenderTask, allowDuplicates?: boolean): RenderTask | undefined;
     needsUpdate(element: SharedAPI): void;
+    willUpdate(element: SharedAPI): boolean;
     /**
      * Set the function that is used for requesting animation frames. The
      * default is `globalThis.requestAnimationFrame`. A Scene with WebXR enabled

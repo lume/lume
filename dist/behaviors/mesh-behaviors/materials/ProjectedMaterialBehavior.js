@@ -1,10 +1,3 @@
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -32,16 +25,26 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 import 'element-behaviors';
+import { stringAttribute } from '@lume/element';
+import { onCleanup, createEffect } from 'solid-js';
+import { signal } from 'classy-solid';
 import { ProjectedMaterial } from '@lume/three-projected-material/dist/ProjectedMaterial.js';
 import { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
-import { onCleanup, createEffect } from 'solid-js';
 import { Texture } from 'three/src/textures/Texture.js';
-import { stringAttribute } from '@lume/element';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { PhysicalMaterialBehavior } from './PhysicalMaterialBehavior.js';
 import { TextureProjector } from '../../../textures/TextureProjector.js';
+import { upwardRoots } from '../../../utils/upwardRoots.js';
+import { querySelectorUpward } from '../../../utils/querySelectorUpward.js';
 /**
  * @class ProjectedMaterialBehavior
  *
@@ -50,6 +53,21 @@ import { TextureProjector } from '../../../textures/TextureProjector.js';
  * A physical material with the added ability to have additional textures
  * projected onto it with
  * [`<lume-texture-projector>`](../../../textures/TextureProjector) elements.
+ *
+ * Project a texture onto a mesh using a `<lume-texture-projector>` and
+ * associating it with the `texture-projectors` attribute:
+ *
+ * ```html
+ * <!-- Define a texture projector somewhere. -->
+ * <lume-texture-projector src="path/to/image.jpg" class="some-projector"></lume-texture-projector>
+ *
+ * <!-- Use the projected-material on the mesh, and associate it with the projector: -->
+ * <lume-box
+ *   has="projected-material"
+ *   size="100 100 100"
+ *   texture-projectors=".some-projector"
+ * ></lume-box>
+ * ```
  *
  * @extends PhysicalMaterialBehavior
  */
@@ -60,110 +78,127 @@ let ProjectedMaterialBehavior = (() => {
     let _classThis;
     let _classSuper = PhysicalMaterialBehavior;
     let _instanceExtraInitializers = [];
+    let ___associatedProjectors_decorators;
+    let ___associatedProjectors_initializers = [];
+    let _get_textureProjectors_decorators;
     let _get_projectedTextures_decorators;
     var ProjectedMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _get_projectedTextures_decorators = [stringAttribute, receiver];
+            ___associatedProjectors_decorators = [signal];
+            _get_textureProjectors_decorators = [stringAttribute, receiver];
+            _get_projectedTextures_decorators = [stringAttribute];
+            __esDecorate(this, null, _get_textureProjectors_decorators, { kind: "getter", name: "textureProjectors", static: false, private: false, access: { has: obj => "textureProjectors" in obj, get: obj => obj.textureProjectors }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_projectedTextures_decorators, { kind: "getter", name: "projectedTextures", static: false, private: false, access: { has: obj => "projectedTextures" in obj, get: obj => obj.projectedTextures }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, ___associatedProjectors_decorators, { kind: "field", name: "__associatedProjectors", static: false, private: false, access: { has: obj => "__associatedProjectors" in obj, get: obj => obj.__associatedProjectors, set: (obj, value) => { obj.__associatedProjectors = value; } }, metadata: _metadata }, ___associatedProjectors_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ProjectedMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        #projectedTextures = (__runInitializers(this, _instanceExtraInitializers), []);
-        #rawProjectedTextures = [];
+        /** The computed value after the user sets this.textureProjectors. F.e. any strings are queried from DOM, and this array contains only DOM element references. */
+        __associatedProjectors = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, ___associatedProjectors_initializers, []
         /**
-         * @property {string | Array<TextureProjector | string | null>} projectedTextures
+         * @property {Array<TextureProjector>} associatedProjectors
          *
-         * *string attribute*
+         * `readonly` `signal`
+         *
+         * The list of `TextureProjector` elements that are projecting onto the
+         * current owner element, normalized from
+         * [`.textureProjectors`](#textureprojectors) with selectors queried and
+         * null values ignored.
+         *
+         * This returns the currently associated array of `<lume-texture-projector>`
+         * instances, not the original string or array of values passed to
+         * [`.textureProjectors`](#textureprojectors).
+         */
+        ));
+        /**
+         * @property {Array<TextureProjector>} associatedProjectors
+         *
+         * `readonly` `signal`
+         *
+         * The list of `TextureProjector` elements that are projecting onto the
+         * current owner element, normalized from
+         * [`.textureProjectors`](#textureprojectors) with selectors queried and
+         * null values ignored.
+         *
+         * This returns the currently associated array of `<lume-texture-projector>`
+         * instances, not the original string or array of values passed to
+         * [`.textureProjectors`](#textureprojectors).
+         */
+        get associatedProjectors() {
+            return this.__associatedProjectors;
+        }
+        /** The raw value the user set on this.textureProjectors */
+        #textureProjectorsRaw = [];
+        /**
+         * @property {string | Array<TextureProjector | string | null>} textureProjectors
+         *
+         * `string attribute`
          *
          * Default: `[]`
          *
-         * The corresponding `clip-planes` attribute accepts one or more selectors,
-         * comma separated, that define which
-         * [`<lume-clip-plane>`](../../core/TextureProjector) elements are to be used as
-         * clip planes. If a selector matches an element that is not a
-         * `<lume-clip-plane>`, it is ignored. If a selector matches more than one
-         * element, all of them that are clip planes are used.
+         * The `texture-projectors` attribute accepts one or more selectors, comma
+         * separated, that define which
+         * [`<lume-texture-projector>`](../../core/TextureProjector) elements are to
+         * project an image onto the owner element. If a selector matches an element
+         * that is not a `<lume-texture-projector>`, it is ignored (note that
+         * non-upgraded elements will not be detected, make sure to load element
+         * definitions up front which is the default if you're simply importing
+         * `lume`).
+         * If a selector matches
+         * more than one element, only the first `<lume-texture-projector>` will be used
+         * (in the near future we will allow multiple projectors to project).
          *
          * ```html
-         * <lume-box has="clip-planes" clip-planes=".foo, .bar, #baz"></lume-box>
+         * <lume-box has="projected-material" texture-projectors=".foo, .bar, #baz"></lume-box>
          * ```
          *
-         * The property can also be set with a string (comma separated selectors),
-         * or a mixed array of strings (selectors) or `<lume-clip-plane>` element
-         * instances.
+         * The `textureProjectors` JS property can be set with a string of comma
+         * separated selectors, or a mixed array of strings (selectors) or
+         * `<lume-texture-projector>` element instances, making the JS property more
+         * flexible for scenarios where selectors are not enough (f.e. maybe you
+         * need to get a reference to an element from some other part of the DOM,
+         * perhaps from a tree inside a ShadowRoot, or you are programmatically
+         * creating elements, etc).
          *
          * ```js
-         * el.projectedTextures = ".some-projected-texture"
+         * el.textureProjectors = ".some-texture-projector"
          * // or
-         * const plane = document.querySelector('.some-projected-texture')
-         * el.projectedTextures = [plane, "#someOtherTexture"]
+         * const projector = document.querySelector('.some-texture-projector')
+         * el.textureProjectors = [projector, "#someOtherTextureProjector"]
          * ```
          *
-         * The property getter returns the currently applicable collection of
-         * `<lume-clip-plane>` instances, not the original string or array of values
-         * passed into the attribute or setter. Applicable planes are those that are
-         * connected into the document, and that participate in rendering (composed,
-         * either in the top level document, in a ShadowRoot, or distributed to a
-         * slot in a ShadowRoot).
+         * Texture projectors that are not in the composed tree (i.e. not
+         * participating in rendering) will be ignored.  The texture projectors that
+         * will be associated are those that are connected into the document, and
+         * that participate in rendering (i.e.  composed, either in the top level
+         * document, in a ShadowRoot, or distributed to a slot in a ShadowRoot).
+         * This is the same as with the browser's built-in elements: a `<div>`
+         * element that is connected into the DOM but not slotted to its parent's
+         * `.shadowRoot` will not participate in the visual output.
+         */
+        get textureProjectors() {
+            return this.#textureProjectorsRaw;
+        }
+        set textureProjectors(value) {
+            this.#textureProjectorsRaw = value;
+        }
+        /**
+         * @deprecated
+         * @property {string | Array<TextureProjector | string | null>} projectedTextures
+         *
+         * `string attribute`
+         *
+         * *deprecated*: renamed to [`.textureProjectors`](#textureprojectors).
          */
         get projectedTextures() {
-            return this.#projectedTextures;
+            return this.textureProjectors;
         }
         set projectedTextures(value) {
-            this.#rawProjectedTextures = value;
-            let array = [];
-            if (typeof value === 'string') {
-                array = [value.trim()];
-            }
-            else if (Array.isArray(value)) {
-                array = value;
-            }
-            else {
-                throw new TypeError('Invalid value for projectedTextures');
-            }
-            this.#projectedTextures = [];
-            for (const v of array) {
-                if (typeof v !== 'string') {
-                    // TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
-                    // not update if the element becomes composed into a Lume scene.
-                    if (v instanceof TextureProjector && v.scene)
-                        this.#projectedTextures.push(v);
-                    continue;
-                }
-                else if (!v) {
-                    // skip empty strings, they cause an error with querySelectorAll
-                    continue;
-                }
-                let root = this.element.getRootNode();
-                // TODO Should we not search up the composed tree, and stay only
-                // in the current ShadowRoot?
-                while (root) {
-                    const els = root.querySelectorAll(v);
-                    for (let i = 0, l = els.length; i < l; i += 1) {
-                        const el = els.item(i);
-                        if (!el)
-                            continue;
-                        // Find only planes participating in rendering (i.e. in the
-                        // composed tree, noting that .scene is null when not
-                        // composed)
-                        // TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
-                        // not update if the element becomes composed into a Lume scene.
-                        if (el instanceof TextureProjector && el.scene)
-                            this.#projectedTextures.push(el);
-                        // TODO We aren't observing el.scene, so if the element
-                        // becomes a particpant in the scene later nothing will
-                        // happen.
-                        // TODO If an element was not yet upgraded, it will not
-                        // be found here. We need to wait for upgrade.
-                        // TODO We need to also react to added/removed elements.
-                    }
-                    root = root instanceof ShadowRoot ? root.host.getRootNode() : null;
-                }
-            }
+            this.textureProjectors = value;
         }
         _createComponent() {
             // TODO multiple projected textures.
@@ -182,10 +217,6 @@ let ProjectedMaterialBehavior = (() => {
             // loadGL may fire during parsing before children exist. This
             // MutationObserver will also fire during parsing. This allows us to
             // re-run the query logic whenever DOM in the current root changes.
-            //
-            // TODO we need to observe all the way up the composed tree, or we
-            // should make the querying scoped only to the nearest root, for
-            // consistency. This covers most cases, for now.
             this.#observer = new MutationObserver(() => {
                 if (queuedRequery)
                     return;
@@ -195,11 +226,11 @@ let ProjectedMaterialBehavior = (() => {
                     queuedRequery = false;
                     // TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
                     // This triggers the setter logic.
-                    this.projectedTextures = this.#rawProjectedTextures;
+                    this.textureProjectors = this.#textureProjectorsRaw;
                 }, 0);
             });
-            this.#observer.observe(this.element.getRootNode(), { childList: true, subtree: true });
-            this._handleTexture(() => this.projectedTextures[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
+            for (const root of upwardRoots(this.element))
+                this.#observer.observe(root, { childList: true, subtree: true });
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)
@@ -208,7 +239,46 @@ let ProjectedMaterialBehavior = (() => {
                 if (three.material !== mat)
                     return;
                 createEffect(() => {
-                    const tex = this.projectedTextures[0];
+                    this.textureProjectors;
+                    let array = [];
+                    if (typeof this.#textureProjectorsRaw === 'string') {
+                        array = [this.#textureProjectorsRaw.trim()];
+                    }
+                    else if (Array.isArray(this.#textureProjectorsRaw)) {
+                        array = this.#textureProjectorsRaw;
+                    }
+                    else {
+                        throw new TypeError('Invalid value for textureProjectors');
+                    }
+                    const projectors = [];
+                    for (const value of array) {
+                        if (typeof value !== 'string') {
+                            // Consider only elements that participate in rendering (i.e. that are in the composed tree)
+                            if (value.scene && value instanceof TextureProjector)
+                                projectors.push(value);
+                            continue;
+                        }
+                        else if (!value) {
+                            // skip empty strings, they cause an error with querySelectorAll
+                            continue;
+                        }
+                        // TODO Should we not search up the composed tree, and stay only
+                        // in the current ShadowRoot?
+                        for (const el of querySelectorUpward(this.element, value)) {
+                            if (!el)
+                                continue;
+                            // Consider only elements that participate in rendering (i.e. that are in the composed tree)
+                            if (el.scene && el instanceof TextureProjector)
+                                projectors.push(el);
+                            // TODO If an element was not yet upgraded, it will not
+                            // be found here. We could wait for upgrade.
+                        }
+                    }
+                    this.__associatedProjectors = projectors; // trigger
+                });
+                this._handleTexture(() => this.__associatedProjectors[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
+                createEffect(() => {
+                    const tex = this.__associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -218,7 +288,7 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.projectedTextures[0];
+                    const tex = this.__associatedProjectors[0];
                     if (!tex)
                         return;
                     // if the camera changes
@@ -247,7 +317,7 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.projectedTextures[0];
+                    const tex = this.__associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -264,7 +334,7 @@ let ProjectedMaterialBehavior = (() => {
                     mat.project(three, false);
                 });
                 createEffect(() => {
-                    const tex = this.projectedTextures[0];
+                    const tex = this.__associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {

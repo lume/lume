@@ -89,7 +89,7 @@ class CameraRig extends Element3D {
 	get initialPolarAngle() {
 		return this.verticalAngle
 	}
-	set initialPolarAngle(value: number) {
+	set initialPolarAngle(value) {
 		this.verticalAngle = value
 	}
 
@@ -114,7 +114,7 @@ class CameraRig extends Element3D {
 	get minPolarAngle() {
 		return this.minVerticalAngle
 	}
-	set minPolarAngle(value: number) {
+	set minPolarAngle(value) {
 		this.minVerticalAngle = value
 	}
 
@@ -130,8 +130,8 @@ class CameraRig extends Element3D {
 	 * <live-code id="verticalExample"></live-code>
 	 *
 	 * <script>
-	 *   example.code = cameraRigExample
-	 *   verticalExample.code = cameraRigVerticalRotationExample
+	 *   example.content = cameraRigExample
+	 *   verticalExample.content = cameraRigVerticalRotationExample
 	 * </script>
 	 */
 	@numberAttribute maxVerticalAngle = 90
@@ -146,7 +146,7 @@ class CameraRig extends Element3D {
 	get maxPolarAngle() {
 		return this.maxVerticalAngle
 	}
-	set maxPolarAngle(value: number) {
+	set maxPolarAngle(value) {
 		this.maxVerticalAngle = value
 	}
 
@@ -212,7 +212,7 @@ class CameraRig extends Element3D {
 	get initialDistance() {
 		return this.distance
 	}
-	set initialDistance(value: number) {
+	set initialDistance(value) {
 		this.distance = value
 	}
 
@@ -296,6 +296,7 @@ class CameraRig extends Element3D {
 				>
 					<lume-perspective-camera
 						ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
+						id="camera-rig-perspective-camera"
 						active=${() => this.active}
 						position=${[0, 0, this.distance]}
 						align-point="0.5 0.5 0.5"
@@ -367,14 +368,14 @@ class CameraRig extends Element3D {
 					const cam = this.cam
 					if (!cam) return
 
-					untrack(() => cam.position).z = scrollFling.y
+					cam.position.z = scrollFling.y
 				})
 
 				createEffect(() => {
 					const cam = this.cam
 					if (!cam) return
 
-					untrack(() => cam.position).z = pinchFling.x
+					cam.position.z = pinchFling.x
 				})
 
 				createEffect(() => {

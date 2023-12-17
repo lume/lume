@@ -35,7 +35,7 @@ export type FbxModelAttributes = Element3DAttributes
 export
 @element('lume-fbx-model', autoDefineElements)
 class FbxModel extends Element3D {
-	static override defaultBehaviors = ['fbx-model']
+	override initialBehaviors = {model: 'fbx'}
 }
 
 import type {ElementAttributes} from '@lume/element'

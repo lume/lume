@@ -32,9 +32,9 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { createEffect, createRoot, on, untrack } from 'solid-js';
+import { untrack } from 'solid-js';
 import { signal } from 'classy-solid';
-import { attribute, element } from '@lume/element';
+import { attribute, element, noSignal } from '@lume/element';
 import { TreeNode } from './TreeNode.js';
 import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
@@ -70,8 +70,8 @@ let Sizeable = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             ___calculatedSize_decorators = [signal];
-            _set_sizeMode_decorators = [attribute];
-            _set_size_decorators = [attribute];
+            _set_sizeMode_decorators = [attribute, noSignal];
+            _set_size_decorators = [attribute, noSignal];
             __esDecorate(this, null, _set_sizeMode_decorators, { kind: "setter", name: "sizeMode", static: false, private: false, access: { has: obj => "sizeMode" in obj, set: (obj, value) => { obj.sizeMode = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_size_decorators, { kind: "setter", name: "size", static: false, private: false, access: { has: obj => "size" in obj, set: (obj, value) => { obj.size = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, ___calculatedSize_decorators, { kind: "field", name: "__calculatedSize", static: false, private: false, access: { has: obj => "__calculatedSize" in obj, get: obj => obj.__calculatedSize, set: (obj, value) => { obj.__calculatedSize = value; } }, metadata: _metadata }, ___calculatedSize_initializers, _instanceExtraInitializers);
@@ -79,18 +79,6 @@ let Sizeable = (() => {
             Sizeable = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
-        }
-        constructor() {
-            super();
-            // TODO remove this, it causes confusion with infinite loops when doing
-            // this.position.x = 123 in an effect, requiring untrack.
-            createRoot(() => {
-                // NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-                // trigger reactivity for the respective properties. See also NOTE REACTIVITY
-                // below.
-                createEffect(on(this.sizeMode.asDependency, () => (this.sizeMode = this.sizeMode)));
-                createEffect(on(this.size.asDependency, () => (this.size = this.size)));
-            });
         }
         __calculatedSize = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, ___calculatedSize_initializers, { x: 0, y: 0, z: 0 }
         /**

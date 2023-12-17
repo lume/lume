@@ -65,7 +65,7 @@ export type Element3DAttributes = BaseAttributes | 'visible';
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = miniGalaxyDemo()
+ *   liveExample.content = miniGalaxyDemo()
  * </script>
  *
  * @extends SharedAPI
@@ -164,6 +164,7 @@ declare class Element3D extends SharedAPI {
     traverseSceneGraph(visitor: (node: Element3D) => void, waitForUpgrade?: boolean): Promise<void> | void;
     _loadCSS(): boolean;
     _loadGL(): boolean;
+    static css: string;
 }
 import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {

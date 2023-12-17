@@ -71,11 +71,9 @@ let ObjModel = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ObjModel = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = ['obj-model'];
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { model: 'obj' };
     };
     return ObjModel = _classThis;
 })();

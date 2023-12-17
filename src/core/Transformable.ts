@@ -1,5 +1,4 @@
-import {createEffect, createRoot, on} from 'solid-js'
-import {attribute, element} from '@lume/element'
+import {attribute, element, noSignal} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 import {Sizeable, type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction} from './Sizeable.js'
 
@@ -36,24 +35,6 @@ const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
 export
 @element
 class Transformable extends Sizeable {
-	constructor() {
-		super()
-
-		// TODO remove this, it causes confusion with infinite loops when doing
-		// this.position.x = 123 in an effect, requiring untrack.
-		createRoot(() => {
-			// NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-			// trigger reactivity for the respective properties. See also NOTE REACTIVITY
-			// in Sizeable.
-			createEffect(on(this.position.asDependency, () => (this.position = this.position)))
-			createEffect(on(this.rotation.asDependency, () => (this.rotation = this.rotation)))
-			createEffect(on(this.scale.asDependency, () => (this.scale = this.scale)))
-			createEffect(on(this.origin.asDependency, () => (this.origin = this.origin)))
-			createEffect(on(this.alignPoint.asDependency, () => (this.alignPoint = this.alignPoint)))
-			createEffect(on(this.mountPoint.asDependency, () => (this.mountPoint = this.mountPoint)))
-		})
-	}
-
 	// TODO readem's JSDoc parser can not handle the following type if it is
 	// split onto multiple lines.
 
@@ -70,6 +51,7 @@ class Transformable extends Sizeable {
 	// TODO evalute being able to set reactive arrays or objects and
 	// re-rendering based on updates to those arrays.
 	@attribute
+	@noSignal
 	set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!position.has(this)) position.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('position', position.get(this)!, newValue)
@@ -96,6 +78,7 @@ class Transformable extends Sizeable {
 	 * axes, and a Y rotation rotates the object's Z axis.
 	 */
 	@attribute
+	@noSignal
 	set rotation(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!rotation.has(this)) rotation.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('rotation', rotation.get(this)!, newValue)
@@ -116,6 +99,7 @@ class Transformable extends Sizeable {
 	 * by specifying scale along the X, Y, and Z axes.
 	 */
 	@attribute
+	@noSignal
 	set scale(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!scale.has(this)) scale.set(this, new XYZNumberValues(1, 1, 1))
 		this._setPropertyXYZ('scale', scale.get(this)!, newValue)
@@ -152,10 +136,11 @@ class Transformable extends Sizeable {
 	 *
 	 * <live-code id="example"></live-code>
 	 * <script>
-	 *   example.code = originExample
+	 *   example.content = originExample
 	 * </script>
 	 */
 	@attribute
+	@noSignal
 	set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!origin.has(this)) origin.set(this, new XYZNumberValues(0.5, 0.5, 0.5))
 		this._setPropertyXYZ('origin', origin.get(this)!, newValue)
@@ -186,6 +171,7 @@ class Transformable extends Sizeable {
 	 * parent's size space.
 	 */
 	@attribute
+	@noSignal
 	set alignPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!alignPoint.has(this)) alignPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('alignPoint', alignPoint.get(this)!, newValue)
@@ -217,6 +203,7 @@ class Transformable extends Sizeable {
 	 * object's size space.
 	 */
 	@attribute
+	@noSignal
 	set mountPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!mountPoint.has(this)) mountPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('mountPoint', mountPoint.get(this)!, newValue)

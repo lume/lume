@@ -3,13 +3,15 @@ import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator.js';
 import './handle-DOM-absence.js';
 import type { Scene } from '../core/Scene.js';
-import type { Texture } from 'three/src/textures/Texture.js';
+import type { Texture } from 'three/src/Three.js';
 interface SceneState {
     renderer: WebGLRenderer;
     pmremgen?: PMREMGenerator;
-    backgroundIsEquirectangular?: boolean;
-    hasBackground?: boolean;
-    hasEnvironment?: boolean;
+    hasBg?: boolean;
+    bgIsEquirectangular?: boolean;
+    bgTexture?: Texture;
+    hasEnv?: boolean;
+    envTexture?: Texture;
     sizeChangeHandler: () => void;
     effects: Effects;
 }
@@ -42,7 +44,7 @@ export declare class WebglRendererThree {
      * when the background mechanics are done loading. The Callback receives the
      * background Texture instance.
      */
-    enableBackground(scene: Scene, isEquirectangular: boolean, cb: (tex: Texture | undefined) => void): void;
+    enableBackground(scene: Scene, isEquirectangular: boolean, blurAmount: number, cb: (tex: Texture | undefined) => void): void;
     /**
      * @method disableBackground - Disable background for the given scene.
      * @param {Scene} scene - The given scene.

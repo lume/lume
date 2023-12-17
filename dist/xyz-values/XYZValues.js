@@ -35,6 +35,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 import { reactive, signal } from 'classy-solid';
 import { getInheritedDescriptor } from 'lowclass';
 import { stringToArray } from './utils.js';
+import { batch } from 'solid-js';
 const defaultValues = { x: undefined, y: undefined, z: undefined };
 /**
  * @class XYZValues
@@ -260,9 +261,11 @@ let XYZValues = (() => {
          * @returns {this} - Returns the instance for method chaining.
          */
         set(x, y, z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            batch(() => {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            });
             return this;
         }
         /**
@@ -403,6 +406,7 @@ let XYZValues = (() => {
             this.x;
             this.y;
             this.z;
+            return this;
         };
     };
     return XYZValues = _classThis;

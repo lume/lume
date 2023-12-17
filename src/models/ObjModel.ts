@@ -32,7 +32,7 @@ export type ObjModelAttributes = Element3DAttributes
 export
 @element('lume-obj-model', autoDefineElements)
 class ObjModel extends Element3D {
-	static override defaultBehaviors = ['obj-model']
+	override initialBehaviors = {model: 'obj'}
 }
 
 import type {ElementAttributes} from '@lume/element'

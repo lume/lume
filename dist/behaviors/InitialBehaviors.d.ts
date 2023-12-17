@@ -1,9 +1,10 @@
 /// <reference types="webxr" />
 import { Constructor } from 'lowclass';
-export declare function DefaultBehaviors<T extends Constructor<HTMLElement>>(Base: T): {
-    new (...a: any[]): {
-        connectedCallback(): void;
-        "__#17@#setDefaultBehaviorsIfNeeded"(): void;
+export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Base: T): {
+    new (...args: any[]): {
+        initialBehaviors?: Record<string, string> | undefined;
+        "__#17@#setBehaviors"(): void;
+        connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
@@ -332,7 +333,7 @@ export declare function DefaultBehaviors<T extends Constructor<HTMLElement>>(Bas
         blur(): void;
         focus(options?: FocusOptions | undefined): void;
     };
-    defaultBehaviors: any;
     observedAttributes?: string[] | undefined;
 } & T;
-//# sourceMappingURL=DefaultBehaviors.d.ts.map
+export declare function setBehaviors(el: Element, behaviors: Record<string, string>, replace?: boolean): void;
+//# sourceMappingURL=InitialBehaviors.d.ts.map

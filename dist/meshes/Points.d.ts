@@ -23,8 +23,9 @@ export type PointsAttributes = Element3DAttributes;
  * @extends Element3D
  */
 export declare class Points extends Element3D {
-    static defaultBehaviors: {
-        [k: string]: any;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
     makeThreeObject3d(): ThreePoints<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[]>;
 }

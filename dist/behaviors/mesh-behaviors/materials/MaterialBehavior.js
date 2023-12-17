@@ -36,7 +36,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { untrack, onCleanup } from 'solid-js';
+import { onCleanup } from 'solid-js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Color } from 'three/src/math/Color.js';
 import { DoubleSide, FrontSide, BackSide, SRGBColorSpace } from 'three/src/constants.js';
@@ -451,34 +451,34 @@ let MaterialBehavior = (() => {
                 if (!mat)
                     return;
                 const url = textureUrl(); // this is a dependency of the effect
-                if (url) {
-                    // TODO The default material color (if not specified) when
-                    // there's a texture should be white
-                    let cleaned = false;
-                    // TODO onProgress and onError
-                    const texture = new TextureLoader().load(url, () => {
-                        if (cleaned)
-                            return;
-                        // We only need to re-compile the shader when we first
-                        // enable the texture (from null).
-                        if (!hasTexture(mat))
-                            mat.needsUpdate = true;
-                        setTexture(mat, texture);
-                        this.element.needsUpdate();
-                        onLoad?.();
-                    });
-                    if (isColor)
-                        texture.colorSpace = SRGBColorSpace;
-                    onCleanup(() => {
-                        cleaned = true;
-                        texture.dispose();
-                    });
-                }
-                else {
-                    untrack(() => setTexture(mat, null));
-                }
+                if (!url)
+                    return;
+                // TODO The default material color (if not specified) when
+                // there's a texture should be white
+                let cleaned = false;
+                // TODO onProgress and onError
+                const texture = new TextureLoader().load(url, () => {
+                    if (cleaned)
+                        return;
+                    // We only need to re-compile the shader when we first
+                    // enable the texture (from null).
+                    if (!hasTexture(mat))
+                        mat.needsUpdate = true;
+                    setTexture(mat, texture);
+                    this.element.needsUpdate();
+                    onLoad?.();
+                });
+                if (isColor)
+                    texture.colorSpace = SRGBColorSpace;
                 mat.needsUpdate = true; // Three.js needs to update the material in the GPU
                 this.element.needsUpdate(); // LUME needs to re-render
+                onCleanup(() => {
+                    cleaned = true;
+                    texture.dispose();
+                    setTexture(mat, null);
+                    mat.needsUpdate = true; // Three.js needs to update the material in the GPU
+                    this.element.needsUpdate(); // LUME needs to re-render
+                });
             });
         }
     };

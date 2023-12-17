@@ -41,7 +41,7 @@ export type ColladaModelAttributes = Element3DAttributes
 export
 @element('lume-collada-model', autoDefineElements)
 class ColladaModel extends Element3D {
-	static override defaultBehaviors = ['collada-model']
+	override initialBehaviors = {model: 'collada'}
 }
 
 import type {ElementAttributes} from '@lume/element'

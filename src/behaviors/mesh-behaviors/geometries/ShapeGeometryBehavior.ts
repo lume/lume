@@ -51,7 +51,7 @@ export type ShapeGeometryBehaviorAttributes =
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = shapesExample
+ *   example.content = shapesExample
  * </script>
  *
  * @extends GeometryBehavior

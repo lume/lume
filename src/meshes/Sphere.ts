@@ -21,14 +21,7 @@ export type SphereAttributes = MeshAttributes
 export
 @element('lume-sphere', autoDefineElements)
 class Sphere extends Mesh {
-	static override defaultBehaviors = {
-		'sphere-geometry': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'sphere', material: 'physical'}
 }
 
 declare global {

@@ -25,7 +25,7 @@ export type DirectionalLightAttributes = LightWithShadowAttributes | 'shadowCame
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = directionalLightExample()
+ *   liveExample.content = directionalLightExample()
  * </script>
  *
  * @extends LightWithShadow

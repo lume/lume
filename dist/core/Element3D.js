@@ -99,7 +99,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = miniGalaxyDemo()
+ *   liveExample.content = miniGalaxyDemo()
  * </script>
  *
  * @extends SharedAPI
@@ -123,7 +123,6 @@ let Element3D = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Element3D = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
         }
         hasShadow = (__runInitializers(this, _instanceExtraInitializers), false);
         /**
@@ -275,6 +274,18 @@ let Element3D = (() => {
                 this.needsUpdate();
             });
             return true;
+        }
+        static css = /*css*/ `
+		${Reflect.get(_classSuper, "css", _classThis)}
+
+		:host {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	`;
+        static {
+            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return Element3D = _classThis;

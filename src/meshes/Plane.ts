@@ -22,14 +22,7 @@ export type PlaneAttributes = MeshAttributes
 export
 @element('lume-plane', autoDefineElements)
 class Plane extends Mesh {
-	static override defaultBehaviors = {
-		'plane-geometry': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: string[]) => {
-			return !initialBehaviors.some(b => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'plane', material: 'physical'}
 }
 
 declare module 'solid-js' {

@@ -30,14 +30,7 @@ export type PointsAttributes = Element3DAttributes
 export
 @element('lume-points', autoDefineElements)
 class Points extends Element3D {
-	static override defaultBehaviors: {[k: string]: any} = {
-		'box-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'points-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'box', material: 'points'}
 
 	override makeThreeObject3d() {
 		return new ThreePoints()

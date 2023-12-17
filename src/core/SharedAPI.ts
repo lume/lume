@@ -11,7 +11,7 @@ import {Events} from './Events.js'
 import {Settable} from '../utils/Settable.js'
 import {toRadians} from './utils/index.js'
 import {ChildTracker} from './ChildTracker.js'
-import {DefaultBehaviors} from '../behaviors/DefaultBehaviors.js'
+import {InitialBehaviors} from '../behaviors/InitialBehaviors.js'
 import {isDomEnvironment, isElement3D, isScene} from './utils/isThisOrThat.js'
 
 import type {Element3D} from './Element3D.js'
@@ -56,7 +56,7 @@ export type BaseAttributes = TransformableAttributes | 'opacity'
  */
 export
 @element
-class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) {
+class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) {
 	/** @deprecated use `.defineElement()` instead */
 	static define(name?: string) {
 		this.defineElement(name)
@@ -182,6 +182,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	// TODO make this reactive, so that if we replace the three object outside
 	// code will know to clean up anything relying on the old object and adapt
 	// to the new object?
+	// @signal
 	__three?: ReturnType<this['makeThreeObject3d']>
 
 	/**
@@ -284,10 +285,9 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		super.connectedCallback()
 
 		this.createEffect(() => {
-			// if (this.id === 'one' && this.scene) debugger
 			this.scene
-			this.sizeMode
-			this.size
+			this.sizeMode.asDependency()
+			this.size.asDependency()
 
 			untrack(() => {
 				// TODO: Size calculation should happen in a render task
@@ -333,12 +333,12 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		})
 
 		this.createEffect(() => {
-			this.position
-			this.rotation
-			this.scale
-			this.origin
-			this.alignPoint
-			this.mountPoint
+			this.position.asDependency()
+			this.rotation.asDependency()
+			this.scale.asDependency()
+			this.origin.asDependency()
+			this.alignPoint.asDependency()
+			this.mountPoint.asDependency()
 			this.opacity
 
 			this.needsUpdate()
@@ -349,7 +349,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		super.disconnectedCallback()
 
 		this.stopEffects()
-		this.__unloadThree(this)
+		this.#unloadThree(this)
 		this._scene = null
 	}
 
@@ -370,7 +370,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	override childComposedCallback(child: Element, _compositionType: CompositionType): void {
 		if (!(child instanceof SharedAPI)) return
 
-		this.needsUpdate() // TODO needed??????? No harm in adding an extra call.
+		this.needsUpdate() // Maybe not needed but its a no-op if called extra times.
 
 		// This code may run during a super constructor (f.e. while constructing
 		// a Scene and it calls `super()`), therefore a Scene's _scene property
@@ -378,7 +378,11 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		// an alternative.
 		const scene = this._scene ?? (isScene(this) && this)
 
-		if (scene) this.__giveSceneToChildrenAndLoadThree(child, scene)
+		// TODO: This does a traversal of the subtree for each element that gets
+		// composed (a traversal bomb), and we return early in the traversal if
+		// nodes already have a scene to avoid setting an element's scene
+		// multiple times. Is there a better way?
+		if (scene) this.#giveSceneAndLoadThree(child, scene)
 	}
 
 	override childUncomposedCallback(child: Element, _compositionType: CompositionType): void {
@@ -388,18 +392,21 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		// redraw, and we can't update the child because it is already gone.
 		this.needsUpdate()
 
-		if (this._scene) {
-			child.traverseSceneGraph(el => {
-				this.__unloadThree(el)
-				el._scene = null
-			})
-		}
+		if (this._scene) this.#removeSceneAndUnloadThree(child)
 	}
 
-	__giveSceneToChildrenAndLoadThree(el: SharedAPI, scene: Scene) {
-		el.traverseSceneGraph(child => {
-			if (el !== this) child._scene = scene
-			this.__loadThree(child)
+	#giveSceneAndLoadThree(child: SharedAPI, scene: Scene) {
+		child.traverseSceneGraph(descendant => {
+			if (descendant.scene === scene) return
+			descendant._scene = scene
+			this.#loadThree(descendant)
+		})
+	}
+
+	#removeSceneAndUnloadThree(child: SharedAPI) {
+		child.traverseSceneGraph(descendant => {
+			this.#unloadThree(descendant)
+			descendant._scene = null
 		})
 	}
 
@@ -408,7 +415,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		throw 'Element3D and Scene implement this'
 	}
 
-	__loadThree(el: SharedAPI): void {
+	#loadThree(el: SharedAPI): void {
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
 		if (!isElement3D(el)) return
@@ -417,7 +424,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		el._triggerLoadCSS()
 	}
 
-	__unloadThree(el: SharedAPI): void {
+	#unloadThree(el: SharedAPI): void {
 		// Skip scenes because scenes call their own _trigger* methods based on
 		// values of their webgl or enabled-css attributes.
 		if (!isElement3D(el)) return
@@ -470,20 +477,11 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 	 */
 	needsUpdate(): void {
 		if (!this.scene) return
-
-		// we don't need to update until we're connected into a tree with a scene.
-		// if (!this.scene || !this.isConnected) return
-		// TODO make sure we render when connected into a tree with a scene
-
-		// TODO, __willBeRendered can be internal to Motor (f.e. a WeakMap).
-		this.__willBeRendered = true
-
 		Motor.needsUpdate(this)
 	}
 
 	@signal _glLoaded = false
 	@signal _cssLoaded = false
-	__willBeRendered = false
 
 	get _elementOperations(): ElementOperations {
 		if (!elOps.has(this)) elOps.set(this, new ElementOperations(this))
@@ -917,18 +915,6 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 		this._elementOperations.applyProperties()
 	}
 
-	// Internal, this method is used by Motor.#updateElements().
-	__getNearestAncestorThatShouldBeUpdated(): SharedAPI | null {
-		let composedSceneGraphParent = this.composedSceneGraphParent
-
-		while (composedSceneGraphParent) {
-			if (composedSceneGraphParent.__willBeRendered) return composedSceneGraphParent
-			composedSceneGraphParent = composedSceneGraphParent.composedSceneGraphParent
-		}
-
-		return null
-	}
-
 	/** @deprecated Use `addEventListener()` instead. */
 	override on(eventName: string, callback: Function, context?: any) {
 		super.on(eventName, callback, context)
@@ -1069,9 +1055,6 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 			/* content-visibility: auto; implies contain:strict */
 
 			box-sizing: border-box;
-			position: absolute;
-			top: 0;
-			left: 0;
 
 			/*
 			 * Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM
@@ -1085,7 +1068,7 @@ class SharedAPI extends DefaultBehaviors(ChildTracker(Settable(Transformable))) 
 			/*
 			 * Force anti-aliasing of 3D element edges using an invisible shadow.
 			 * https://stackoverflow.com/questions/6492027
-			 * Perhaps allow this to be configured with an antialiased attribute?
+			 * TODO allow to be configured with an antialiased attribute or similar.
 			 */
 			/*box-shadow: 0 0 1px rgba(255, 255, 255, 0); currently is very very slow, https://crbug.com/1405629*/
 		}

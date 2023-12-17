@@ -48,7 +48,7 @@ const appliedPosition = [0, 0, 0]
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = instancedMeshExample
+ *   liveExample.content = instancedMeshExample
  * </script>
  *
  * @extends Mesh
@@ -140,17 +140,7 @@ class InstancedMesh extends Mesh {
 
 	#colors: number[] = []
 
-	// TODO NAMING: It would be neat to be able to return an array of classes
-	// as well, so that it can be agnostic of the naming. Either way should
-	// work.
-	static override defaultBehaviors: {[k: string]: any} = {
-		'box-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'box', material: 'physical'}
 
 	// This class will have a THREE.InstancedMesh for its .three property.
 	override makeThreeObject3d() {

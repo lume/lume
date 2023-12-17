@@ -47,7 +47,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = shapesExample
+ *   example.content = shapesExample
  * </script>
  *
  * Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geometries/ShapeGeometryBehavior.md).
@@ -67,18 +67,9 @@ let Shape = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Shape = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = {
-            'shape-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'phong-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { geometry: 'shape', material: 'physical' };
     };
     return Shape = _classThis;
 })();

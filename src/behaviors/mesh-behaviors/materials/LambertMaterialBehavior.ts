@@ -18,7 +18,7 @@ export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'te
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = meshExample({material: 'lambert', color: 'skyblue'})
+ *   liveExample.content = meshExample({material: 'lambert', color: 'skyblue'})
  * </script>
  *
  * @extends MaterialBehavior

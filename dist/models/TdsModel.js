@@ -74,11 +74,9 @@ let TdsModel = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             TdsModel = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = ['3ds-model'];
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { model: '3ds' };
     };
     return TdsModel = _classThis;
 })();

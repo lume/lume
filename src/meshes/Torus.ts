@@ -21,14 +21,7 @@ export type TorusAttributes = MeshAttributes
 export
 @element('lume-torus', autoDefineElements)
 class Torus extends Mesh {
-	static override defaultBehaviors = {
-		'torus-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'torus', material: 'physical'}
 }
 
 declare global {

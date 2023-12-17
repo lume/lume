@@ -52,7 +52,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = lineExample
+ *   example.content = lineExample
  * </script>
  *
  * @extends Element3D
@@ -70,20 +70,11 @@ let Line = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Line = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
         }
-        static defaultBehaviors = {
-            'line-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'line-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
+        initialBehaviors = { geometry: 'line', material: 'line' };
         makeThreeObject3d() {
             return new ThreeLine();
-        }
-        static {
-            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return Line = _classThis;

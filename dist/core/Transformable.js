@@ -1,10 +1,3 @@
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -32,8 +25,14 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { createEffect, createRoot, on } from 'solid-js';
-import { attribute, element } from '@lume/element';
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
+import { attribute, element, noSignal } from '@lume/element';
 import { XYZNumberValues } from '../xyz-values/XYZNumberValues.js';
 import { Sizeable } from './Sizeable.js';
 const position = new WeakMap();
@@ -71,12 +70,12 @@ let Transformable = (() => {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _set_position_decorators = [attribute];
-            _set_rotation_decorators = [attribute];
-            _set_scale_decorators = [attribute];
-            _set_origin_decorators = [attribute];
-            _set_alignPoint_decorators = [attribute];
-            _set_mountPoint_decorators = [attribute];
+            _set_position_decorators = [attribute, noSignal];
+            _set_rotation_decorators = [attribute, noSignal];
+            _set_scale_decorators = [attribute, noSignal];
+            _set_origin_decorators = [attribute, noSignal];
+            _set_alignPoint_decorators = [attribute, noSignal];
+            _set_mountPoint_decorators = [attribute, noSignal];
             __esDecorate(this, null, _set_position_decorators, { kind: "setter", name: "position", static: false, private: false, access: { has: obj => "position" in obj, set: (obj, value) => { obj.position = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_rotation_decorators, { kind: "setter", name: "rotation", static: false, private: false, access: { has: obj => "rotation" in obj, set: (obj, value) => { obj.rotation = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_scale_decorators, { kind: "setter", name: "scale", static: false, private: false, access: { has: obj => "scale" in obj, set: (obj, value) => { obj.scale = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -87,23 +86,6 @@ let Transformable = (() => {
             Transformable = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
-        }
-        constructor() {
-            super();
-            __runInitializers(this, _instanceExtraInitializers);
-            // TODO remove this, it causes confusion with infinite loops when doing
-            // this.position.x = 123 in an effect, requiring untrack.
-            createRoot(() => {
-                // NOTE REACTIVITY When sub-properties of the XYZValues objects change,
-                // trigger reactivity for the respective properties. See also NOTE REACTIVITY
-                // in Sizeable.
-                createEffect(on(this.position.asDependency, () => (this.position = this.position)));
-                createEffect(on(this.rotation.asDependency, () => (this.rotation = this.rotation)));
-                createEffect(on(this.scale.asDependency, () => (this.scale = this.scale)));
-                createEffect(on(this.origin.asDependency, () => (this.origin = this.origin)));
-                createEffect(on(this.alignPoint.asDependency, () => (this.alignPoint = this.alignPoint)));
-                createEffect(on(this.mountPoint.asDependency, () => (this.mountPoint = this.mountPoint)));
-            });
         }
         // TODO readem's JSDoc parser can not handle the following type if it is
         // split onto multiple lines.
@@ -202,7 +184,7 @@ let Transformable = (() => {
          *
          * <live-code id="example"></live-code>
          * <script>
-         *   example.code = originExample
+         *   example.content = originExample
          * </script>
          */
         set origin(newValue) {
@@ -275,6 +257,10 @@ let Transformable = (() => {
             if (!mountPoint.has(this))
                 mountPoint.set(this, new XYZNumberValues(0, 0, 0));
             return mountPoint.get(this);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _instanceExtraInitializers);
         }
     };
     return Transformable = _classThis;

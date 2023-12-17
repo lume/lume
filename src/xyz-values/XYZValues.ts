@@ -1,6 +1,7 @@
 import {reactive, signal} from 'classy-solid'
 import {getInheritedDescriptor} from 'lowclass'
 import {stringToArray} from './utils.js'
+import {batch} from 'solid-js'
 
 export type XYZValuesArray<T> = [T, T, T]
 export type XYZPartialValuesArray<T> = [T] | [T, T] | [T, T, T] // Is there a better way to make a tuplet from 1 to 3 items?
@@ -223,9 +224,11 @@ abstract class XYZValues<T = any> extends Object {
 	 * @returns {this} - Returns the instance for method chaining.
 	 */
 	set(x: T, y: T, z: T): this {
-		this.x = x
-		this.y = y
-		this.z = z
+		batch(() => {
+			this.x = x
+			this.y = y
+			this.z = z
+		})
 
 		return this
 	}
@@ -373,6 +376,7 @@ abstract class XYZValues<T = any> extends Object {
 		this.x
 		this.y
 		this.z
+		return this
 	}
 }
 

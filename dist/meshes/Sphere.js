@@ -62,18 +62,9 @@ let Sphere = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Sphere = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = {
-            'sphere-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some(b => b.endsWith('-geometry'));
-            },
-            'phong-material': (initialBehaviors) => {
-                return !initialBehaviors.some(b => b.endsWith('-material'));
-            },
-        };
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { geometry: 'sphere', material: 'physical' };
     };
     return Sphere = _classThis;
 })();

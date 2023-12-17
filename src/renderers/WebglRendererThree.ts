@@ -4,20 +4,23 @@ import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constant
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Motor} from '../core/Motor.js'
+import {triangleBlurTexture} from '../utils/three/texture-blur.js'
 
 import './handle-DOM-absence.js'
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
 
 import type {Scene} from '../core/Scene.js'
-import type {Texture} from 'three/src/textures/Texture.js'
+import type {Texture} from 'three/src/Three.js'
 
 interface SceneState {
 	renderer: WebGLRenderer
 	pmremgen?: PMREMGenerator
-	backgroundIsEquirectangular?: boolean
-	hasBackground?: boolean
-	hasEnvironment?: boolean
+	hasBg?: boolean
+	bgIsEquirectangular?: boolean
+	bgTexture?: Texture
+	hasEnv?: boolean
+	envTexture?: Texture
 	sizeChangeHandler: () => void
 	effects: Effects
 }
@@ -212,12 +215,17 @@ class WebglRendererThree {
 	 * when the background mechanics are done loading. The Callback receives the
 	 * background Texture instance.
 	 */
-	enableBackground(scene: Scene, isEquirectangular: boolean, cb: (tex: Texture | undefined) => void): void {
+	enableBackground(
+		scene: Scene,
+		isEquirectangular: boolean,
+		blurAmount: number,
+		cb: (tex: Texture | undefined) => void,
+	): void {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
 		this.#bgVersion += 1
-		state.backgroundIsEquirectangular = isEquirectangular
+		state.bgIsEquirectangular = isEquirectangular
 
 		if (isEquirectangular) {
 			// Load the PMREM machinery only if needed.
@@ -227,8 +235,8 @@ class WebglRendererThree {
 			}
 		}
 
-		state.hasBackground = true
-		this.#loadBackgroundTexture(scene, cb)
+		state.hasBg = true
+		this.#loadBackgroundTexture(scene, blurAmount, cb)
 	}
 
 	/**
@@ -241,10 +249,13 @@ class WebglRendererThree {
 
 		this.#bgVersion += 1
 
-		if (!state.hasBackground && !state.hasEnvironment) {
+		if (!state.hasBg && !state.hasEnv) {
 			state.pmremgen?.dispose()
 			state.pmremgen = undefined
 		}
+
+		state.bgTexture?.dispose()
+		state.hasBg = false
 	}
 
 	/**
@@ -255,7 +266,7 @@ class WebglRendererThree {
 	 * texture is done loading. It receives the Texture, or undefined if loading
 	 * was canceled or if other issues.
 	 */
-	#loadBackgroundTexture(scene: Scene, cb: (texture: Texture) => void): void {
+	#loadBackgroundTexture(scene: Scene, blurAmount: number, cb: (texture: Texture) => void): void {
 		const state = this.sceneStates.get(scene)
 		if (!state) throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.')
 
@@ -266,11 +277,21 @@ class WebglRendererThree {
 			// corresponds to previous state:
 			if (version !== this.#bgVersion) return
 
-			if (state.backgroundIsEquirectangular) {
-				cb(state.pmremgen!.fromEquirectangular(tex).texture)
-			} else {
-				cb(tex)
+			if (blurAmount > 0) {
+				// state.bgTexture = blurTexture(state.renderer, tex, 5) // Faster, but quality is not as good, has a pixelated effect. Perhaps we should provide a Scene attribute to easily pick which blur to use.
+				state.bgTexture = triangleBlurTexture(state.renderer, tex, blurAmount, 2)
+				tex.dispose()
+				tex = state.bgTexture
 			}
+
+			if (state.bgIsEquirectangular) {
+				state.bgTexture = state.pmremgen!.fromEquirectangular(tex).texture
+				tex.dispose() // might not be needed, but just in case.
+			} else {
+				state.bgTexture = tex
+			}
+
+			cb(state.bgTexture)
 		})
 	}
 
@@ -295,7 +316,7 @@ class WebglRendererThree {
 			state.pmremgen.compileCubemapShader()
 		}
 
-		state.hasEnvironment = true
+		state.hasEnv = true
 		this.#loadEnvironmentTexture(scene, cb)
 	}
 
@@ -309,10 +330,13 @@ class WebglRendererThree {
 
 		this.#envVersion += 1
 
-		if (!state.hasBackground && !state.hasEnvironment) {
+		if (!state.hasBg && !state.hasEnv) {
 			state.pmremgen?.dispose()
 			state.pmremgen = undefined
 		}
+
+		state.envTexture?.dispose()
+		state.hasEnv = false
 	}
 
 	/**
@@ -333,8 +357,10 @@ class WebglRendererThree {
 			// corresponds to previous state:
 			if (version !== this.#envVersion) return
 
-			cb(state.pmremgen!.fromEquirectangular(tex).texture)
-			tex.dispose() // Three.js demos do this. Not sure if it is really needed.
+			state.envTexture = state.pmremgen!.fromEquirectangular(tex).texture
+			tex.dispose() // might not be needed, but just in case.
+
+			cb(state.envTexture)
 		})
 	}
 

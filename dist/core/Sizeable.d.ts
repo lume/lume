@@ -383,7 +383,6 @@ declare const Sizeable_base: {
  */
 export declare class Sizeable extends Sizeable_base {
     #private;
-    constructor();
     __calculatedSize?: XYZValuesObject<number>;
     /**
      * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -

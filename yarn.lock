@@ -3188,7 +3188,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/element@npm:^0.11.0, @lume/element@workspace:packages/element":
+"@lume/element@npm:^0.11.0, @lume/element@npm:^0.11.6, @lume/element@workspace:packages/element":
   version: 0.0.0-use.local
   resolution: "@lume/element@workspace:packages/element"
   dependencies:
@@ -11635,7 +11635,7 @@ __metadata:
     readem: "npm:^0.2.7"
     regexr: "npm:^2.0.0"
     rimraf: "npm:^3.0.2"
-    solid-js: "npm:<1.5.0"
+    solid-js: "npm:^1.0.0"
     symlink-dir: "npm:^5.2.0"
     thememirror: "npm:^2.0.0"
     three: "npm:>=0.139.0"
@@ -18972,7 +18972,7 @@ __metadata:
   dependencies:
     "@lume/autolayout": "npm:^0.10.0"
     "@lume/cli": "npm:^0.11.0"
-    "@lume/element": "npm:^0.11.0"
+    "@lume/element": "npm:^0.11.6"
     "@lume/eventful": "npm:^0.3.0"
     "@lume/three-projected-material": "npm:^0.3.0"
     "@types/three": "npm:>=0.139.0"
@@ -24761,7 +24761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.4.x, solid-js@npm:<1.5.0":
+"solid-js@npm:1.4.x":
   version: 1.4.8
   resolution: "solid-js@npm:1.4.8"
   checksum: 70cf4f30ed23cfc33323cd947e919dbb06b728104cc7a4024b3e4197e82b445915347db2783d2e9e40f5a3e51977134682fa9b69f63b402c3ead3571b8d434bd

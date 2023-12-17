@@ -64,7 +64,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = projectedTextureExample
+ *   example.content = projectedTextureExample
  * </script>
  *
  * @extends Element3D

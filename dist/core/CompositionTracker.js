@@ -1,11 +1,25 @@
+// TODO Remove isScene and isNode specifics out of here here, and move this
+// class along with ChildTracker to `@lume/element` as generic custom element
+// utilities. Sub-classes should filter out undesired elements while
+// CompositionTracker should be generic
+// TODO a more generic v2 implementation: a node shuold be able to observe when
+// it is composed into any element, no matter if the element is custom or not.
+// Currently, we rely on the composed parent and children both extending from
+// CompositionTracker for composition tracking to work, but if an element gets
+// composed into some other element like a regular `<div>`, composition is not
+// tracked.
+// What we need to approximately do is have a CompositionTracker instance detect
+// its regular parentElement in `connectedCallback` no matter what element it
+// is, observe if it has a `ShadowRoot` by patching global `attachShadow` (with
+// the limitation that the code has to be imported before any roots are
+// attached) so that we can react to the presence of a ShadowRoot now or in the
+// future, then we should enact similar logic as in this class in the
+// arbitrary parent element's ShadowRoot.
 import { Constructor } from 'lowclass';
 import { observeChildren } from './utils/observeChildren.js';
 import { isDomEnvironment, isScene } from './utils/isThisOrThat.js';
 export function CompositionTracker(Base) {
     return class CompositionTracker extends Constructor(Base) {
-        // TODO remove isScene and isElement3D from here, sub-classes should filter
-        // out undesired elements while CompositionTracker should be generic (and
-        // moved to a separate lib).
         // from Scene
         isScene = false;
         // from Element3D

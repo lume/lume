@@ -57,7 +57,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = pointLightExample()
+ *   liveExample.content = pointLightExample()
  * </script>
  *
  * @extends LightWithShadow

@@ -70,15 +70,9 @@ let MixedPlane = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             MixedPlane = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
         }
-        static defaultBehaviors = {
-            'mixedplane-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'mixedplane-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
+        initialBehaviors = { geometry: 'mixedplane', material: 'mixedplane' };
         /**
          * @property {true} isMixedPlane - An always-`true` property signaling that
          * this element is a `MixedPlane`. Useful for duck typing, especially in
@@ -86,9 +80,6 @@ let MixedPlane = (() => {
          */
         get isMixedPlane() {
             return true;
-        }
-        static {
-            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return MixedPlane = _classThis;

@@ -37,7 +37,7 @@ type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = projectedTextureExample
+ *   example.content = projectedTextureExample
  * </script>
  *
  * @extends Element3D

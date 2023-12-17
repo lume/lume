@@ -257,6 +257,6 @@ export declare abstract class XYZValues<T = any> extends Object {
      * A method that when called in a effect makes all three x/y/z properties a
      * dependency of the effect.
      */
-    asDependency: () => void;
+    asDependency: () => this;
 }
 //# sourceMappingURL=XYZValues.d.ts.map

@@ -9,9 +9,10 @@ import type { TransformableAttributes } from './Transformable.js';
 import type { SinglePropertyFunction } from './Sizeable.js';
 export type BaseAttributes = TransformableAttributes | 'opacity';
 declare const SharedAPI_base: {
-    new (...a: any[]): {
-        connectedCallback(): void;
-        "__#17@#setDefaultBehaviorsIfNeeded"(): void;
+    new (...args: any[]): {
+        initialBehaviors?: Record<string, string> | undefined;
+        "__#17@#setBehaviors"(): void;
+        connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
@@ -340,7 +341,6 @@ declare const SharedAPI_base: {
         blur(): void;
         focus(options?: FocusOptions | undefined): void;
     };
-    defaultBehaviors: any;
     observedAttributes?: string[] | undefined;
 } & {
     new (...args: any[]): {
@@ -843,11 +843,8 @@ export declare class SharedAPI extends SharedAPI_base {
      */
     childComposedCallback(child: Element, _compositionType: CompositionType): void;
     childUncomposedCallback(child: Element, _compositionType: CompositionType): void;
-    __giveSceneToChildrenAndLoadThree(el: SharedAPI, scene: Scene): void;
     /** @abstract */
     traverseSceneGraph(_visitor: (el: SharedAPI) => void, _waitForUpgrade?: boolean): Promise<void> | void;
-    __loadThree(el: SharedAPI): void;
-    __unloadThree(el: SharedAPI): void;
     /**
      * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
      * that parents are `SharedAPI` (`Element3D` or `Scene`) instances.
@@ -880,7 +877,6 @@ export declare class SharedAPI extends SharedAPI_base {
     needsUpdate(): void;
     _glLoaded: boolean;
     _cssLoaded: boolean;
-    __willBeRendered: boolean;
     get _elementOperations(): ElementOperations;
     get composedLumeChildren(): Element3D[];
     /**
@@ -952,7 +948,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * task that calls update).
      */
     update(_timestamp: number, _deltaTime: number): void;
-    __getNearestAncestorThatShouldBeUpdated(): SharedAPI | null;
     /** @deprecated Use `addEventListener()` instead. */
     on(eventName: string, callback: Function, context?: any): void;
     /** @deprecated Use `dispatchEvent()` instead. */

@@ -13,7 +13,7 @@ export type ShapeAttributes = MeshAttributes;
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = shapesExample
+ *   example.content = shapesExample
  * </script>
  *
  * Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geometries/ShapeGeometryBehavior.md).
@@ -21,9 +21,9 @@ export type ShapeAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Shape extends Mesh {
-    static defaultBehaviors: {
-        'shape-geometry': (initialBehaviors: any) => boolean;
-        'phong-material': (initialBehaviors: any) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 import type { ElementAttributes } from '@lume/element';

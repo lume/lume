@@ -21,7 +21,7 @@ export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | '
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = instancedMeshExample
+ *   liveExample.content = instancedMeshExample
  * </script>
  *
  * @extends Mesh
@@ -77,8 +77,9 @@ export declare class InstancedMesh extends Mesh {
      */
     get colors(): number[];
     set colors(v: number[]);
-    static defaultBehaviors: {
-        [k: string]: any;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
     makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material>;
     setInstancePosition(index: number, x: number, y: number, z: number): void;

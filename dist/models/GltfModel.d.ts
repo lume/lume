@@ -28,7 +28,9 @@ export type GltfModelAttributes = Element3DAttributes;
  * ```
  */
 export declare class GltfModel extends Element3D {
-    static defaultBehaviors: string[];
+    initialBehaviors: {
+        model: string;
+    };
 }
 import type { ElementAttributes } from '@lume/element';
 import type { ElementWithBehaviors } from '../index.js';

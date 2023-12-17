@@ -75,7 +75,7 @@ const appliedPosition = [0, 0, 0];
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = instancedMeshExample
+ *   liveExample.content = instancedMeshExample
  * </script>
  *
  * @extends Mesh
@@ -111,6 +111,7 @@ let InstancedMesh = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             InstancedMesh = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
         }
         /**
          * @property {number} count - The number of instances to render.
@@ -181,17 +182,7 @@ let InstancedMesh = (() => {
             this.#colors = stringToNumberArray(v, 'colors');
         }
         #colors = [];
-        // TODO NAMING: It would be neat to be able to return an array of classes
-        // as well, so that it can be agnostic of the naming. Either way should
-        // work.
-        static defaultBehaviors = {
-            'box-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'phong-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
+        initialBehaviors = { geometry: 'box', material: 'physical' };
         // This class will have a THREE.InstancedMesh for its .three property.
         makeThreeObject3d() {
             let geometryBehavior = null;
@@ -454,9 +445,6 @@ let InstancedMesh = (() => {
                 this.#allColorsNeedUpdate = false;
                 this.updateAllColors();
             }
-        }
-        static {
-            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return InstancedMesh = _classThis;

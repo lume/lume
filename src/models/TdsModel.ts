@@ -35,7 +35,7 @@ export type TdsModelAttributes = Element3DAttributes
 export
 @element('lume-3ds-model', autoDefineElements)
 class TdsModel extends Element3D {
-	static override defaultBehaviors = ['3ds-model']
+	override initialBehaviors = {model: '3ds'}
 }
 
 import type {ElementAttributes} from '@lume/element'

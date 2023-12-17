@@ -14,9 +14,9 @@ export type TorusAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Torus extends Mesh {
-    static defaultBehaviors: {
-        'torus-geometry': (initialBehaviors: any) => boolean;
-        'phong-material': (initialBehaviors: any) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 declare global {

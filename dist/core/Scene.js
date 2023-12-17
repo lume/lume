@@ -41,6 +41,7 @@ import { signal } from 'classy-solid';
 import { booleanAttribute, attribute, numberAttribute, element, stringAttribute } from '@lume/element';
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
+import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
 import { Color } from 'three/src/math/Color.js';
 import { Fog } from 'three/src/scenes/Fog.js';
@@ -78,7 +79,7 @@ queueMicrotask(() => console.info(magic()));
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = sceneExample()
+ *   liveExample.content = sceneExample()
  * </script>
  *
  * @extends SharedAPI
@@ -107,6 +108,8 @@ let Scene = (() => {
     let _backgroundOpacity_initializers = [];
     let _background_decorators;
     let _background_initializers = [];
+    let _backgroundBlur_decorators;
+    let _backgroundBlur_initializers = [];
     let _equirectangularBackground_decorators;
     let _equirectangularBackground_initializers = [];
     let _environment_decorators;
@@ -146,6 +149,7 @@ let Scene = (() => {
             _backgroundColor_decorators = [attribute];
             _backgroundOpacity_decorators = [numberAttribute];
             _background_decorators = [attribute];
+            _backgroundBlur_decorators = [numberAttribute];
             _equirectangularBackground_decorators = [booleanAttribute];
             _environment_decorators = [attribute];
             _fogMode_decorators = [stringAttribute];
@@ -169,6 +173,7 @@ let Scene = (() => {
             __esDecorate(null, null, _backgroundColor_decorators, { kind: "field", name: "backgroundColor", static: false, private: false, access: { has: obj => "backgroundColor" in obj, get: obj => obj.backgroundColor, set: (obj, value) => { obj.backgroundColor = value; } }, metadata: _metadata }, _backgroundColor_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _backgroundOpacity_decorators, { kind: "field", name: "backgroundOpacity", static: false, private: false, access: { has: obj => "backgroundOpacity" in obj, get: obj => obj.backgroundOpacity, set: (obj, value) => { obj.backgroundOpacity = value; } }, metadata: _metadata }, _backgroundOpacity_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _background_decorators, { kind: "field", name: "background", static: false, private: false, access: { has: obj => "background" in obj, get: obj => obj.background, set: (obj, value) => { obj.background = value; } }, metadata: _metadata }, _background_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _backgroundBlur_decorators, { kind: "field", name: "backgroundBlur", static: false, private: false, access: { has: obj => "backgroundBlur" in obj, get: obj => obj.backgroundBlur, set: (obj, value) => { obj.backgroundBlur = value; } }, metadata: _metadata }, _backgroundBlur_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _equirectangularBackground_decorators, { kind: "field", name: "equirectangularBackground", static: false, private: false, access: { has: obj => "equirectangularBackground" in obj, get: obj => obj.equirectangularBackground, set: (obj, value) => { obj.equirectangularBackground = value; } }, metadata: _metadata }, _equirectangularBackground_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _environment_decorators, { kind: "field", name: "environment", static: false, private: false, access: { has: obj => "environment" in obj, get: obj => obj.environment, set: (obj, value) => { obj.environment = value; } }, metadata: _metadata }, _environment_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _fogMode_decorators, { kind: "field", name: "fogMode", static: false, private: false, access: { has: obj => "fogMode" in obj, get: obj => obj.fogMode, set: (obj, value) => { obj.fogMode = value; } }, metadata: _metadata }, _fogMode_initializers, _instanceExtraInitializers);
@@ -443,29 +448,55 @@ let Scene = (() => {
          */
         background = __runInitializers(this, _background_initializers, null
         /**
-         * @property {string} equirectangularBackground -
+         * @property {number} backgroundBlur -
          *
-         * *attribute*
+         * **`experimental`** *attribute*
          *
-         * Default: `false`
+         * Default: `0`
          *
-         * If the `background`
-         * is equirectangular, set this to `true` so use it like a skybox,
-         * otherwise the image will be used as a regular 2D background image.
+         * If [`background`](#background) is set, the background will be blurred by
+         * the given amount.
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
         );
         /**
-         * @property {string} equirectangularBackground -
+         * @property {number} backgroundBlur -
+         *
+         * **`experimental`** *attribute*
+         *
+         * Default: `0`
+         *
+         * If [`background`](#background) is set, the background will be blurred by
+         * the given amount.
+         *
+         * Applies only if [`webgl`](#webgl) is `true`.
+         */
+        backgroundBlur = __runInitializers(this, _backgroundBlur_initializers, 0
+        /**
+         * @property {boolean} equirectangularBackground -
          *
          * *attribute*
          *
          * Default: `false`
          *
-         * If the `background`
-         * is equirectangular, set this to `true` so use it like a skybox,
-         * otherwise the image will be used as a regular 2D background image.
+         * If the [`background`](#background) is equirectangular, set this to `true`
+         * so use it like a skybox, otherwise the image will be used as a regular 2D
+         * background image.
+         *
+         * Applies only if [`webgl`](#webgl) is `true`.
+         */
+        );
+        /**
+         * @property {boolean} equirectangularBackground -
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         *
+         * If the [`background`](#background) is equirectangular, set this to `true`
+         * so use it like a skybox, otherwise the image will be used as a regular 2D
+         * background image.
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
@@ -857,7 +888,7 @@ let Scene = (() => {
         get threeCamera() {
             return this.__threeCamera;
         }
-        // this.#threeCamera holds the active camera. There can be many
+        // This holds the active camera. There can be many
         // cameras in the scene tree, but the last one with active="true"
         // will be the one referenced here.
         // If there are no cameras in the tree, a virtual default camera is
@@ -865,7 +896,7 @@ let Scene = (() => {
         // perspective attribute.
         __threeCamera;
         /**
-         * @property {PerspectiveCamera} camera
+         * @property {Camera} camera
          *
          * *readonly*, *signal*
          *
@@ -984,23 +1015,21 @@ let Scene = (() => {
                 this.needsUpdate();
             });
             this.createEffect(() => {
-                if (!this.webgl || !this.background) {
-                    if (isDisposable(this.three.background))
-                        this.three.background.dispose();
-                    this.#glRenderer?.disableBackground(this);
-                    this.needsUpdate();
+                if (!this.webgl || !this.background)
                     return;
-                }
                 if (this.background.match(/\.(jpg|jpeg|png)$/)) {
-                    // Dispose each time we switch to a new one.
-                    if (isDisposable(this.three.background))
-                        this.three.background.dispose();
-                    // destroy the previous one, if any.
-                    this.#glRenderer.disableBackground(this);
-                    this.#glRenderer.enableBackground(this, this.equirectangularBackground, texture => {
+                    this.#glRenderer.enableBackground(this, this.equirectangularBackground, this.backgroundBlur, texture => {
                         this.three.background = texture || null;
+                        // We do not use Three's built-in blur feature because it is
+                        // too simple and results in a less attractive pixelated
+                        // look.
+                        // this.three.backgroundBlurriness = this.backgroundBlur
                         this.needsUpdate();
                         // TODO emit background load event.
+                    });
+                    onCleanup(() => {
+                        this.#glRenderer.disableBackground(this);
+                        this.needsUpdate();
                     });
                 }
                 else {
@@ -1008,23 +1037,17 @@ let Scene = (() => {
                 }
             });
             this.createEffect(() => {
-                if (!this.webgl || !this.environment) {
-                    if (isDisposable(this.three.environment))
-                        this.three.environment.dispose();
-                    this.#glRenderer?.disableEnvironment(this);
-                    this.needsUpdate();
+                if (!this.webgl || !this.environment)
                     return;
-                }
                 if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
-                    // Dispose each time we switch to a new one.
-                    if (isDisposable(this.three.environment))
-                        this.three.environment.dispose();
-                    // destroy the previous one, if any.
-                    this.#glRenderer.disableEnvironment(this);
                     this.#glRenderer.enableEnvironment(this, texture => {
                         this.three.environment = texture;
                         this.needsUpdate();
-                        // TODO emit background load event.
+                        // TODO emit env load event.
+                    });
+                    onCleanup(() => {
+                        this.#glRenderer.disableEnvironment(this);
+                        this.needsUpdate();
                     });
                 }
                 else {
@@ -1039,7 +1062,7 @@ let Scene = (() => {
                 this.needsUpdate();
             });
             this.createEffect(() => {
-                this.sizeMode;
+                this.sizeMode.asDependency();
                 this.#maybeStartParentSizeObservation();
                 onCleanup(() => {
                     this.#stopParentSizeObservation();
@@ -1136,6 +1159,8 @@ let Scene = (() => {
         // It depends on size values.
         _updateCameraPerspective() {
             const perspective = this.#perspective;
+            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+                return;
             // This math is what sets the FOV of the default camera so that a
             // viewport-sized plane will fit exactly within the view when it is
             // positioned at the world origin, as described for in the
@@ -1145,9 +1170,13 @@ let Scene = (() => {
             this.__threeCamera.position.z = perspective;
         }
         _updateCameraAspect() {
+            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+                return;
             this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1;
         }
         _updateCameraProjection() {
+            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+                return;
             this.__threeCamera.updateProjectionMatrix();
         }
         // holds active cameras found in the DOM tree (if this is empty, it
@@ -1278,8 +1307,11 @@ let Scene = (() => {
                 this.needsUpdate();
             });
             this.createGLEffect(() => {
-                this.__threeCamera.near = this.cameraNear;
-                this.__threeCamera.far = this.cameraFar;
+                const { cameraNear, cameraFar } = this;
+                if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+                    return;
+                this.__threeCamera.near = cameraNear;
+                this.__threeCamera.far = cameraFar;
                 this.needsUpdate();
             });
             this.traverseSceneGraph((el) => el._triggerLoadGL(), true);
@@ -1494,7 +1526,6 @@ let Scene = (() => {
 			contain: size layout paint; /*fallback, TODO remove once Safari is caught up*/
 			contain: strict; /*override*/
 			overflow: hidden;
-			position: static; /*override*/
 
 			/* Prevent default browser behaviors like drag-and-drop to avoid pointercancel interfering with interaction features. */
 			touch-action: none;

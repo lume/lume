@@ -63,18 +63,9 @@ let Box = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Box = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = {
-            'box-geometry': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-geometry'));
-            },
-            'phong-material': (initialBehaviors) => {
-                return !initialBehaviors.some((b) => b.endsWith('-material'));
-            },
-        };
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { geometry: 'box', material: 'physical' };
     };
     return Box = _classThis;
 })();

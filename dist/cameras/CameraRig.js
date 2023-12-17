@@ -240,8 +240,8 @@ let CameraRig = (() => {
          * <live-code id="verticalExample"></live-code>
          *
          * <script>
-         *   example.code = cameraRigExample
-         *   verticalExample.code = cameraRigVerticalRotationExample
+         *   example.content = cameraRigExample
+         *   verticalExample.content = cameraRigVerticalRotationExample
          * </script>
          */
         maxVerticalAngle = __runInitializers(this, _maxVerticalAngle_initializers, 90
@@ -480,6 +480,7 @@ let CameraRig = (() => {
 				>
 					<lume-perspective-camera
 						ref=${(cam) => (this.cam = cam)}
+						id="camera-rig-perspective-camera"
 						active=${() => this.active}
 						position=${[0, 0, this.distance]}
 						align-point="0.5 0.5 0.5"
@@ -544,13 +545,13 @@ let CameraRig = (() => {
                         const cam = this.cam;
                         if (!cam)
                             return;
-                        untrack(() => cam.position).z = scrollFling.y;
+                        cam.position.z = scrollFling.y;
                     });
                     createEffect(() => {
                         const cam = this.cam;
                         if (!cam)
                             return;
-                        untrack(() => cam.position).z = pinchFling.x;
+                        cam.position.z = pinchFling.x;
                     });
                     createEffect(() => {
                         if (this.interactive) {

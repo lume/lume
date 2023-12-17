@@ -1,8 +1,8 @@
 import '../index.js'
 
-describe('DefaultBehaviors', () => {
+describe('InitialBehaviors', () => {
 	// This test re-creates the same test as in element-behaviors, but ensures
-	// that it continues to work with our DefaultBehaviors feture in place.
+	// that it continues to work with our InitialBehaviors feture in place.
 	it('does not interfere with default has="" attribute functionality', async () => {
 		const container = document.createElement('div')
 		document.body.append(container)

@@ -1,13 +1,9 @@
-import {createEffect, createRoot, untrack} from 'solid-js'
-import {numberAttribute, booleanAttribute, element} from '@lume/element'
+import {numberAttribute, element} from '@lume/element'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import {Camera, type CameraAttributes} from './Camera.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
-import type {Scene} from '../core/Scene.js'
-
-export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect' | 'near' | 'far' | 'zoom' | 'active'
-// | 'lookAt' // TODO
+export type PerspectiveCameraAttributes = CameraAttributes | 'fov'
 
 /**
  * @class PerspectiveCamera
@@ -20,14 +16,14 @@ export type PerspectiveCameraAttributes = Element3DAttributes | 'fov' | 'aspect'
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = perspectiveCameraExample
+ *   example.content = perspectiveCameraExample
  * </script>
  *
- * @extends Element3D
+ * @extends Camera
  */
 export
 @element('lume-perspective-camera', autoDefineElements)
-class PerspectiveCamera extends Element3D {
+class PerspectiveCamera extends Camera {
 	/**
 	 * @property {number} fov
 	 *
@@ -40,94 +36,8 @@ class PerspectiveCamera extends Element3D {
 	 */
 	@numberAttribute fov = 50
 
-	/**
-	 * @property {number} aspect
-	 *
-	 * *attribute*
-	 *
-	 * Default: `0`
-	 *
-	 * A value of `0` sets the aspect ratio to automatic, based on the
-	 * dimensions of a scene.  You normally don't want to modify this, but in
-	 * case of stretched or squished display, this can be adjusted appropriately
-	 * to unstretch or unsquish the view of the 3d world.
-	 */
-	@numberAttribute aspect = 0
-
-	/**
-	 * @property {number} near
-	 *
-	 * *attribute*
-	 *
-	 * Default: `1`
-	 *
-	 * Anything closer to the camera than this value will not be rendered.
-	 */
-	@numberAttribute near = 1
-
-	/**
-	 * @property {number} far
-	 *
-	 * *attribute*
-	 *
-	 * Default: `3000`
-	 *
-	 * Anything further from the camera than this value will not be rendered.
-	 */
-	@numberAttribute far = 3000
-
-	/**
-	 * @property {number} zoom
-	 *
-	 * *attribute*
-	 *
-	 * Default: `1`
-	 *
-	 * The zoom level of the camera modifies the effective field of view.
-	 * Increasing the zoom will decrease the effective field of view, and vice
-	 * versa. At zoom level `1`, the effective field of view is equivalent to
-	 * [`fov`](#fov).
-	 */
-	@numberAttribute zoom = 1
-
-	/**
-	 * @property {boolean} active
-	 *
-	 * *attribute*
-	 *
-	 * Default: `false`
-	 *
-	 * When `true`, the camera will be used as the viewport into the 3D scene,
-	 * instead of the scene's default camera. When set back to `false`, the last
-	 * camera that was set (and is still) active will be used, or if no other
-	 * cameras are active the scene's default camera will be used.
-	 */
-	@booleanAttribute active = false
-
-	// TODO lookat property
-	// @attribute lookat: string | Element3D | null = null
-
 	override connectedCallback() {
 		super.connectedCallback()
-
-		// Run logic once the scene exists.
-		createRoot(dispose => {
-			createEffect(() => {
-				if (!this.scene) return
-
-				untrack(() => {
-					this.#lastKnownScene = this.scene
-					this.#setSceneCamera(this.active ? undefined : 'unset')
-					queueMicrotask(() => dispose())
-				})
-			})
-		})
-		// TODO ^ once(condition) to make the above simpler, F.e.:
-		//
-		// once(() => this.scene).then(() => {
-		// 	this.__lastKnownScene = this.scene
-		// 	this.__setSceneCamera(this.active ? undefined : 'unset')
-		// })
 
 		this.createEffect(() => {
 			this.three.fov = this.fov
@@ -173,39 +83,10 @@ class PerspectiveCamera extends Element3D {
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
 		})
-
-		this.createEffect(() => {
-			const active = this.active
-			untrack(() => {
-				this.#setSceneCamera(active ? undefined : 'unset')
-			})
-			this.needsUpdate() // TODO need this? Cameras don't render as anything, maybe they don't need an update in this case.
-		})
 	}
 
 	override makeThreeObject3d() {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
-	}
-
-	// TODO make sure this works. Camera should switch to scene's default on
-	// removal of last camera, etc.
-	override disconnectedCallback() {
-		super.disconnectedCallback()
-
-		this.#setSceneCamera('unset')
-		this.#lastKnownScene = null
-	}
-
-	#lastKnownScene: Scene | null = null
-
-	#setSceneCamera(unset?: 'unset') {
-		if (unset) {
-			if (this.#lastKnownScene) this.#lastKnownScene._removeCamera(this)
-		} else {
-			if (!this.scene || !this.isConnected) return
-
-			this.scene._addCamera(this)
-		}
 	}
 }
 

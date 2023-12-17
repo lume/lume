@@ -12,7 +12,7 @@ export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipIntersection' | '
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = clipPlaneExample
+ *   example.content = clipPlaneExample
  * </script>
  *
  * @extends MeshBehavior

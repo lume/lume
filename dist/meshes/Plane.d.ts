@@ -16,9 +16,9 @@ export type PlaneAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Plane extends Mesh {
-    static defaultBehaviors: {
-        'plane-geometry': (initialBehaviors: string[]) => boolean;
-        'phong-material': (initialBehaviors: string[]) => boolean;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
 }
 declare module 'solid-js' {

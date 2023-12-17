@@ -61,7 +61,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = directionalLightExample()
+ *   liveExample.content = directionalLightExample()
  * </script>
  *
  * @extends LightWithShadow

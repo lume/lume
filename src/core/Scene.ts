@@ -8,6 +8,7 @@ import {signal} from 'classy-solid'
 import {booleanAttribute, attribute, numberAttribute, element, stringAttribute} from '@lume/element'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
+import {Camera as ThreeCamera} from 'three/src/cameras/Camera.js'
 // import {AmbientLight} from 'three/src/lights/AmbientLight.js'
 import {Color} from 'three/src/math/Color.js'
 import {Fog} from 'three/src/scenes/Fog.js'
@@ -21,7 +22,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 
 import type {TColor} from '../utils/three.js'
-import type {PerspectiveCamera} from '../cameras/PerspectiveCamera.js'
+import type {Camera} from '../cameras/Camera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Element3D} from './Element3D.js'
@@ -44,6 +45,7 @@ export type SceneAttributes =
 	| 'backgroundOpacity'
 	| 'background'
 	| 'equirectangularBackground'
+	| 'backgroundBlur'
 	| 'environment'
 	| 'fogMode'
 	| 'fogNear'
@@ -77,7 +79,7 @@ export type SceneAttributes =
  *
  * <live-code id="liveExample"></live-code>
  * <script>
- *   liveExample.code = sceneExample()
+ *   liveExample.content = sceneExample()
  * </script>
  *
  * @extends SharedAPI
@@ -243,15 +245,29 @@ class Scene extends SharedAPI {
 	@attribute background: string | null = null
 
 	/**
-	 * @property {string} equirectangularBackground -
+	 * @property {number} backgroundBlur -
+	 *
+	 * **`experimental`** *attribute*
+	 *
+	 * Default: `0`
+	 *
+	 * If [`background`](#background) is set, the background will be blurred by
+	 * the given amount.
+	 *
+	 * Applies only if [`webgl`](#webgl) is `true`.
+	 */
+	@numberAttribute backgroundBlur = 0
+
+	/**
+	 * @property {boolean} equirectangularBackground -
 	 *
 	 * *attribute*
 	 *
 	 * Default: `false`
 	 *
-	 * If the `background`
-	 * is equirectangular, set this to `true` so use it like a skybox,
-	 * otherwise the image will be used as a regular 2D background image.
+	 * If the [`background`](#background) is equirectangular, set this to `true`
+	 * so use it like a skybox, otherwise the image will be used as a regular 2D
+	 * background image.
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
@@ -473,20 +489,20 @@ class Scene extends SharedAPI {
 	 *
 	 * Applies with both CSS and WebGL rendering.
 	 */
-	get threeCamera(): ThreePerspectiveCamera {
+	get threeCamera(): ThreeCamera {
 		return this.__threeCamera
 	}
 
-	// this.#threeCamera holds the active camera. There can be many
+	// This holds the active camera. There can be many
 	// cameras in the scene tree, but the last one with active="true"
 	// will be the one referenced here.
 	// If there are no cameras in the tree, a virtual default camera is
 	// referenced here, who's perspective is that of the scene's
 	// perspective attribute.
-	__threeCamera!: ThreePerspectiveCamera
+	__threeCamera!: ThreeCamera
 
 	/**
-	 * @property {PerspectiveCamera} camera
+	 * @property {Camera} camera
 	 *
 	 * *readonly*, *signal*
 	 *
@@ -535,7 +551,7 @@ class Scene extends SharedAPI {
 		return this.#cssRenderer?.sceneStates.get(this)?.renderer
 	}
 
-	@signal __camera: PerspectiveCamera | null = null
+	@signal __camera: Camera | null = null
 
 	// This is toggled by ClipPlanesBehavior, not intended for direct use.
 	@signal __localClipping = false
@@ -623,25 +639,25 @@ class Scene extends SharedAPI {
 		})
 
 		this.createEffect(() => {
-			if (!this.webgl || !this.background) {
-				if (isDisposable(this.three.background)) this.three.background.dispose()
-				this.#glRenderer?.disableBackground(this)
-				this.needsUpdate()
-				return
-			}
+			if (!this.webgl || !this.background) return
 
 			if (this.background.match(/\.(jpg|jpeg|png)$/)) {
-				// Dispose each time we switch to a new one.
-				if (isDisposable(this.three.background)) this.three.background.dispose()
-
-				// destroy the previous one, if any.
-				this.#glRenderer!.disableBackground(this)
-
-				this.#glRenderer!.enableBackground(this, this.equirectangularBackground, texture => {
+				this.#glRenderer!.enableBackground(this, this.equirectangularBackground, this.backgroundBlur, texture => {
 					this.three.background = texture || null
+
+					// We do not use Three's built-in blur feature because it is
+					// too simple and results in a less attractive pixelated
+					// look.
+					// this.three.backgroundBlurriness = this.backgroundBlur
+
 					this.needsUpdate()
 
 					// TODO emit background load event.
+				})
+
+				onCleanup(() => {
+					this.#glRenderer!.disableBackground(this)
+					this.needsUpdate()
 				})
 			} else {
 				console.warn(
@@ -651,25 +667,19 @@ class Scene extends SharedAPI {
 		})
 
 		this.createEffect(() => {
-			if (!this.webgl || !this.environment) {
-				if (isDisposable(this.three.environment)) this.three.environment.dispose()
-				this.#glRenderer?.disableEnvironment(this)
-				this.needsUpdate()
-				return
-			}
+			if (!this.webgl || !this.environment) return
 
 			if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
-				// Dispose each time we switch to a new one.
-				if (isDisposable(this.three.environment)) this.three.environment.dispose()
-
-				// destroy the previous one, if any.
-				this.#glRenderer!.disableEnvironment(this)
-
 				this.#glRenderer!.enableEnvironment(this, texture => {
 					this.three.environment = texture
 					this.needsUpdate()
 
-					// TODO emit background load event.
+					// TODO emit env load event.
+				})
+
+				onCleanup(() => {
+					this.#glRenderer!.disableEnvironment(this)
+					this.needsUpdate()
 				})
 			} else {
 				console.warn(
@@ -686,7 +696,7 @@ class Scene extends SharedAPI {
 		})
 
 		this.createEffect(() => {
-			this.sizeMode
+			this.sizeMode.asDependency()
 			this.#maybeStartParentSizeObservation()
 			onCleanup(() => {
 				this.#stopParentSizeObservation()
@@ -800,6 +810,8 @@ class Scene extends SharedAPI {
 	_updateCameraPerspective() {
 		const perspective = this.#perspective
 
+		if (!(this.__threeCamera instanceof ThreePerspectiveCamera)) return
+
 		// This math is what sets the FOV of the default camera so that a
 		// viewport-sized plane will fit exactly within the view when it is
 		// positioned at the world origin, as described for in the
@@ -811,10 +823,14 @@ class Scene extends SharedAPI {
 	}
 
 	_updateCameraAspect() {
+		if (!(this.__threeCamera instanceof ThreePerspectiveCamera)) return
+
 		this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
 	}
 
 	_updateCameraProjection() {
+		if (!(this.__threeCamera instanceof ThreePerspectiveCamera)) return
+
 		this.__threeCamera.updateProjectionMatrix()
 	}
 
@@ -822,16 +838,16 @@ class Scene extends SharedAPI {
 	// means no camera elements are in the DOM, but this.#threeCamera
 	// will still have a reference to the default camera that scenes
 	// are rendered with when no camera elements exist).
-	__activeCameras?: Set<PerspectiveCamera>
+	__activeCameras?: Set<Camera>
 
-	_addCamera(camera: PerspectiveCamera) {
+	_addCamera(camera: Camera) {
 		if (!this.__activeCameras) this.__activeCameras = new Set()
 
 		this.__activeCameras.add(camera)
 		this.__setCamera(camera)
 	}
 
-	_removeCamera(camera: PerspectiveCamera) {
+	_removeCamera(camera: Camera) {
 		if (!this.__activeCameras) return
 
 		this.__activeCameras.delete(camera)
@@ -963,8 +979,12 @@ class Scene extends SharedAPI {
 		})
 
 		this.createGLEffect(() => {
-			this.__threeCamera.near = this.cameraNear
-			this.__threeCamera.far = this.cameraFar
+			const {cameraNear, cameraFar} = this
+
+			if (!(this.__threeCamera instanceof ThreePerspectiveCamera)) return
+
+			this.__threeCamera.near = cameraNear
+			this.__threeCamera.far = cameraFar
 			this.needsUpdate()
 		})
 
@@ -1050,7 +1070,7 @@ class Scene extends SharedAPI {
 		return renderer
 	}
 
-	__setCamera(camera?: PerspectiveCamera) {
+	__setCamera(camera?: Camera) {
 		if (!camera) {
 			this._createDefaultCamera()
 			this.__camera = null
@@ -1207,7 +1227,6 @@ class Scene extends SharedAPI {
 			contain: size layout paint; /*fallback, TODO remove once Safari is caught up*/
 			contain: strict; /*override*/
 			overflow: hidden;
-			position: static; /*override*/
 
 			/* Prevent default browser behaviors like drag-and-drop to avoid pointercancel interfering with interaction features. */
 			touch-action: none;

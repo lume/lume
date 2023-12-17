@@ -18,14 +18,15 @@ export type LineAttributes = Element3DAttributes;
  *
  * <live-code id="example"></live-code>
  * <script>
- *   example.code = lineExample
+ *   example.content = lineExample
  * </script>
  *
  * @extends Element3D
  */
 export declare class Line extends Element3D {
-    static defaultBehaviors: {
-        [k: string]: any;
+    initialBehaviors: {
+        geometry: string;
+        material: string;
     };
     makeThreeObject3d(): ThreeLine<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[]>;
 }

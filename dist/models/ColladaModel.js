@@ -74,11 +74,9 @@ let ColladaModel = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ColladaModel = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        }
-        static defaultBehaviors = ['collada-model'];
-        static {
             __runInitializers(_classThis, _classExtraInitializers);
         }
+        initialBehaviors = { model: 'collada' };
     };
     return ColladaModel = _classThis;
 })();

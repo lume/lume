@@ -7,14 +7,7 @@ export type RoundedRectangleAttributes = MeshAttributes
 export
 @element('lume-rounded-rectangle', autoDefineElements)
 class RoundedRectangle extends Mesh {
-	static override defaultBehaviors = {
-		'rounded-rectangle-geometry': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-geometry'))
-		},
-		'phong-material': (initialBehaviors: any) => {
-			return !initialBehaviors.some((b: any) => b.endsWith('-material'))
-		},
-	}
+	override initialBehaviors = {geometry: 'rounded-rectangle', material: 'physical'}
 }
 
 import type {ElementAttributes} from '@lume/element'
