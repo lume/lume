@@ -34,6 +34,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 };
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
+import { onCleanup } from 'solid-js';
 import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
 import { disposeObjectTree } from '../../../utils/three.js';
 import { behavior } from '../../Behavior.js';
@@ -62,31 +63,25 @@ let TdsModelBehavior = (() => {
         }
         /** Path to a .3ds file. */
         src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''));
-        loader;
+        loader = new TDSLoader();
         model;
-        // This is incremented any time we need a pending load() to cancel (f.e. on
-        // src change, or unloadGL cycle), so that the loader will ignore the
+        // This is incremented any time we need to cancel a pending load() (f.e. on
+        // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
         #version = 0;
-        loadGL() {
-            this.loader = new TDSLoader();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 this.src;
-                this.#cleanupModel();
-                this.#version++;
                 this.#loadModel();
+                onCleanup(() => {
+                    if (this.model)
+                        disposeObjectTree(this.model);
+                    this.model = undefined;
+                    // Increment this in case the loader is still loading, so it will ignore the result.
+                    this.#version++;
+                });
             });
-        }
-        unloadGL() {
-            this.loader = undefined;
-            this.#cleanupModel();
-            // Increment this in case the loader is still loading, so it will ignore the result.
-            this.#version++;
-        }
-        #cleanupModel() {
-            if (this.model)
-                disposeObjectTree(this.model);
-            this.model = undefined;
         }
         #loadModel() {
             const { src } = this;

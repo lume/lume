@@ -731,45 +731,21 @@ export declare class SharedAPI extends SharedAPI_base {
     set opacity(newValue: number | SinglePropertyFunction);
     get opacity(): number;
     /**
+     * @deprecated
      * @property {boolean} glLoaded
      *
-     * *readonly*, *signal*
+     * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
      *
-     * Returns a boolean indicating whether or not the WebGL rendering features
-     * of a LUME element are loaded and ready.
-     *
-     * All elements in a `<lume-scene>` have WebGL rendering disabled by
-     * default.
-     *
-     * If a `<lume-scene>` element has its `webgl` attribute set to
-     * `"false"` (the default), then `glLoaded` will always return `false` for any LUME
-     * elements in the scene.
-     *
-     * If a `<lume-scene>` element has the `webgl` attribute set to
-     * `"true"`, then `glLoaded` will return `true` for any LUME
-     * elements in the scene *after* their WebGL APIs have been loaded
-     * (`false` up until then).
+     * *readonly*
      */
     get glLoaded(): boolean;
     /**
+     * @deprecated
      * @property {boolean} cssLoaded
      *
-     * *readonly*, *signal*
+     * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
      *
-     * Returns a boolean indicating whether or not the CSS rendering features
-     * of a LUME element are loaded and ready.
-     *
-     * All elements in a `<lume-scene>` have CSS rendering enabled by
-     * default.
-     *
-     * If a `<lume-scene>` element has its `enable-css` attribute set to
-     * `"false"`, then `cssLoaded` will always return `false` for any LUME
-     * elements in the scene.
-     *
-     * If a `<lume-scene>` element has its `enable-css` attribute set to
-     * `"true"` (the default), then `cssLoaded` will return `true` for
-     * any LUME elements in the scene *after* their CSS APIs have been loaded
-     * ('false' up until then).
+     * *readonly*
      */
     get cssLoaded(): boolean;
     _scene: Scene | null;
@@ -828,6 +804,8 @@ export declare class SharedAPI extends SharedAPI_base {
     recreateThreeCSS(): void;
     connectedCallback(): void;
     disconnectedCallback(): void;
+    composedCallback(composedParent: Element, compositionType: CompositionType): void;
+    uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType): void;
     /**
      * Called whenever a child element is composed to this element.
      * This is called with a `compositionType` argument that tells us how the element is
@@ -875,8 +853,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * ```
      */
     needsUpdate(): void;
-    _glLoaded: boolean;
-    _cssLoaded: boolean;
     get _elementOperations(): ElementOperations;
     get composedLumeChildren(): Element3D[];
     /**
@@ -902,20 +878,10 @@ export declare class SharedAPI extends SharedAPI_base {
      * [THREE.CSS3DObject](https://github.com/mrdoob/three.js/blob/b13eccc8bf1b6aeecf6e5652ba18d2425f6ec22f/examples/js/renderers/CSS3DRenderer.js#L7).
      */
     makeThreeCSSObject(): Object3D;
-    __connectThree(): void;
-    __connectThreeCSS(): void;
+    __reconnectThree(): void;
+    __reconnectThreeCSS(): void;
     get composedLumeParent(): SharedAPI | null;
     get composedSceneGraphParent(): SharedAPI | null;
-    createGLEffect(fn: () => void): void;
-    _loadGL(): boolean;
-    _unloadGL(): boolean;
-    createCSSEffect(fn: () => void): void;
-    _loadCSS(): boolean;
-    _unloadCSS(): boolean;
-    _triggerLoadGL(): void;
-    _triggerUnloadGL(): void;
-    _triggerLoadCSS(): void;
-    _triggerUnloadCSS(): void;
     /**
      * Takes all the current component values (position, rotation, etc) and
      * calculates a transformation matrix from them (currently a THREE.Matrix4,

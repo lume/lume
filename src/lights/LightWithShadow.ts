@@ -179,10 +179,10 @@ abstract class LightWithShadow extends Light {
 	 */
 	@numberAttribute shadowCameraFar = 2000
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			const light = this.three
 
 			light.castShadow = this.castShadow
@@ -203,7 +203,5 @@ abstract class LightWithShadow extends Light {
 			shadow.needsUpdate = true
 			this.needsUpdate()
 		})
-
-		return true
 	}
 }

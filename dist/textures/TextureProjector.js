@@ -176,9 +176,8 @@ let TextureProjector = (() => {
         // textureOffset?: Vector2
         // TODO support also perspective projection
         _camera = __runInitializers(this, __camera_initializers, null);
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
+        connectedCallback() {
+            super.connectedCallback();
             this._camera = new OrthographicCamera();
             this.three.add(this._camera);
             // setTimeout(() => {
@@ -192,7 +191,7 @@ let TextureProjector = (() => {
             // Motor.addRenderTask(() => {
             // 	this._camera!.rotation.y += 0.005
             // })
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 // CAM HELPER
                 // const sphere = new Mesh(new SphereGeometry(10), new MeshPhongMaterial({color: 'white'}))
                 // this._camera!.add(sphere)
@@ -227,14 +226,11 @@ let TextureProjector = (() => {
                     this.needsUpdate();
                 });
             });
-            return true;
         }
-        _unloadGL() {
-            if (!super._unloadGL())
-                return false;
+        disconnectedCallback() {
+            super.disconnectedCallback();
             this.three.remove(this._camera);
             this._camera = null;
-            return true;
         }
     };
     return TextureProjector = _classThis;

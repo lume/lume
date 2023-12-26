@@ -1,9 +1,14 @@
 import { Element as LumeElement } from '@lume/element';
 declare const TreeNode_base: (new (...a: any[]) => {
-    "__#1@#owner": import("solid-js").Owner | null;
-    "__#1@#dispose": (() => void) | null;
+    "__#1@#effects": Set<import("classy-solid").Effect>;
     createEffect(fn: () => void): void;
     stopEffects(): void;
+    "__#1@#createEffect1"(fn: () => void): void;
+    "__#1@#stopEffects1"(): void;
+    "__#1@#owner": import("solid-js").Owner | null;
+    "__#1@#dispose": (() => void) | null;
+    "__#1@#createEffect2"(fn: () => void): void;
+    "__#1@#stopEffects2"(): void;
 }) & (new (...a: any[]) => {
     on(eventName: string, callback: Function, context?: any): void;
     off(eventName: string, callback?: Function | undefined, context?: any): void;

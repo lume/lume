@@ -7,9 +7,8 @@ export declare class TdsModelBehavior extends RenderableBehavior {
     #private;
     /** Path to a .3ds file. */
     src: string;
-    loader?: TDSLoader;
+    loader: TDSLoader;
     model?: Group;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=TdsModelBehavior.d.ts.map

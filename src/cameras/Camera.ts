@@ -2,7 +2,6 @@ import {onCleanup, untrack} from 'solid-js'
 import {booleanAttribute, element, numberAttribute} from '@lume/element'
 import {Camera as ThreeCamera} from 'three/src/cameras/Camera.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
-import type {Scene} from '../core/Scene.js'
 
 export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' | 'zoom'
 // | 'lookAt' // TODO
@@ -84,37 +83,25 @@ class Camera extends Element3D {
 	// TODO lookat property
 	// @attribute lookAt: string | Element3D | null = null
 
-	#lastKnownScene: Scene | null = null
-
 	override connectedCallback() {
 		super.connectedCallback()
+
+		let lastScene = this.scene
 
 		// Run logic once the scene exists.
 		this.createEffect(() => {
 			// If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
 			if (!this.scene || !this.active) return
 
-			untrack(() => {
-				this.#lastKnownScene = this.scene
-				this.#setSceneCamera()
+			lastScene = this.scene
+
+			untrack(() => this.scene!._addCamera(this))
+
+			onCleanup(() => {
+				lastScene!._removeCamera(this)
+				lastScene = null
 			})
-
-			onCleanup(() => this.#setSceneCamera('unset'))
 		})
-	}
-
-	// TODO make sure this works. Camera should switch to scene's default on
-	// removal of last camera, etc.
-	override disconnectedCallback() {
-		super.disconnectedCallback()
-
-		this.#setSceneCamera('unset')
-		this.#lastKnownScene = null
-	}
-
-	#setSceneCamera(unset?: 'unset') {
-		if (unset) this.#lastKnownScene!._removeCamera(this)
-		else this.scene!._addCamera(this)
 	}
 
 	// This is not called because this class is abstract and should be extended

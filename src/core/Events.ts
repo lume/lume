@@ -6,33 +6,6 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 
 export class EventTypes {
 	constructor(
-		// Listen to this event on an element to run custom logic after the
-		// element's GL objects have been initialized.
-		// GL_LOAD fires after BEHAVIOR_GL_LOAD, so GL_LOAD guarantees that both the
-		// element and the element's behaviors are done loading GL objects.
-		public GL_LOAD: undefined,
-		// Listen to this event on an element to clean up after the element's GL
-		// objects have been cleaned up and released.
-		// GL_UNLOAD fires after BEHAVIOR_GL_UNLOAD, so GL_UNLOAD guarantees that
-		// both the element and the element's behaviors are done unloading GL
-		// objects.
-		public GL_UNLOAD: undefined,
-		// Listen to this event on an element to run custom logic after the
-		// element's CSS objects have been initialized.
-		public CSS_LOAD: undefined,
-		// Listen to this event on an element to clean up after the element's CSS
-		// objects have been cleaned up and released.
-		public CSS_UNLOAD: undefined,
-		// Listen to this event on an element to run custom logic after the
-		// element's GL objects have been initialized. This is for use by element
-		// behaviors. Code that is outside of a given element and outside of the
-		// given element's behaviors should listen to GL_LOAD instead.
-		public BEHAVIOR_GL_LOAD: undefined,
-		// Listen to this event on an element to clean up after the element's GL
-		// objects have been initialized. This is for use by element behaviors. Code
-		// that is outside of a given element and outside of the given element's
-		// behaviors should listen to GL_LOAD instead.
-		public BEHAVIOR_GL_UNLOAD: undefined,
 		// This event is fired when a *-model element, or a node element with a
 		// *-model behavior, has loaded it's model.
 		public MODEL_LOAD: {

@@ -37,7 +37,6 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 import { element } from '@lume/element';
 import { Plane } from 'three/src/math/Plane.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
-import { createSignal } from 'solid-js';
 import { Element3D } from './Element3D.js';
 import { autoDefineElements } from '../LumeConfig.js';
 // Make the clip plane clip anything in front of it (towards the default
@@ -82,8 +81,6 @@ let ClipPlane = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        #plane = createSignal(null);
-        #inversePlane = createSignal(null);
         // The __clip and __inverseClip properties are used by `ClipPlanesBehavior`
         /**
          * *reactive* *readonly*
@@ -91,36 +88,18 @@ let ClipPlane = (() => {
          * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
          * for the scene and the element participates in rendering.
          */
-        get __clip() {
-            return this.#plane[0]();
-        }
+        __clip = new Plane(new Vector3(...clipNormal));
         /**
          * *reactive* *readonly*
          *
          * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
          * for the scene and the element participates in rendering.
          */
-        get __inverseClip() {
-            return this.#inversePlane[0]();
-        }
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.#plane[1](new Plane(new Vector3(...clipNormal)));
-            this.#inversePlane[1](new Plane(new Vector3(...clipNormal).negate()));
-            return true;
-        }
-        _unloadGL() {
-            if (!super._unloadGL())
-                return false;
-            this.#plane[1](null);
-            this.#inversePlane[1](null);
-            return true;
-        }
+        __inverseClip = new Plane(new Vector3(...clipNormal).negate());
         updateWorldMatrices() {
             super.updateWorldMatrices();
-            const plane = this.#plane[0]();
-            const inverse = this.#inversePlane[0]();
+            const plane = this.__clip;
+            const inverse = this.__inverseClip;
             // These only exist if WebGL mode is enabled.
             if (!plane || !inverse)
                 return;

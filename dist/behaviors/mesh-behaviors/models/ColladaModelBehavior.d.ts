@@ -6,9 +6,8 @@ export declare class ColladaModelBehavior extends RenderableBehavior {
     #private;
     /** Path to a .dae file. */
     src: string;
-    loader?: ColladaLoader;
+    loader: ColladaLoader;
     model?: Collada;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=ColladaModelBehavior.d.ts.map

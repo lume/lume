@@ -77,25 +77,18 @@ export function PropReceiver(Base = Object) {
             ;
             this[propName] = value;
         }
-        #isObserving = false;
         #observeProps() {
-            if (this.#isObserving)
-                return;
-            this.#isObserving = true;
             const ctor = this.constructor;
             // Make it unique, before we pass it to observe(), just in case.
             if (ctor.receivedProperties)
                 ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties));
-            this.__forwardInitialProps();
-            observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {
+            this.__receiveInitialValues();
+            observe(this.observedObject, this.__getReceivedProps(), this._propChangedCallback, {
             // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             });
         }
         #unobserveProps() {
-            if (!this.#isObserving)
-                return;
-            this.#isObserving = false;
-            unobserve(this.observedObject, this.__forwardedProps(), this._propChangedCallback);
+            unobserve(this.observedObject, this.__getReceivedProps(), this._propChangedCallback);
         }
         /**
          * @property {string[]} receivedProperties
@@ -105,18 +98,22 @@ export function PropReceiver(Base = Object) {
          * An array of strings, the properties of observedObject to observe.
          */
         static receivedProperties;
-        __forwardedProps() {
+        __getReceivedProps() {
             const ctor = this.constructor;
-            const props = (ctor.receivedProperties || []);
+            const props = ctor.receivedProperties || [];
             // @prod-prune
             if (!Array.isArray(props))
                 throw new TypeError('Expected static receivedProperties to be an array.');
             return props;
         }
-        __forwardInitialProps() {
+        __receiveInitialValues() {
             const observed = this.observedObject;
-            for (const prop of this.__forwardedProps()) {
-                prop in observed && this._propChangedCallback(prop, observed[prop]);
+            for (const prop of this.__getReceivedProps()) {
+                if (prop in observed) {
+                    const value = observed[prop];
+                    // @ts-expect-error indexed access of this
+                    this._propChangedCallback(prop, value !== undefined ? value : this[prop]);
+                }
             }
         }
     };
@@ -131,21 +128,21 @@ export function receiver(_, context) {
     if (kind === 'field') {
         return function (initialValue) {
             checkIsObject(this);
-            trackSignalProperty(this, name);
+            trackReceiverProperty(this, name);
             return initialValue;
         };
     }
     else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
         context.addInitializer(function () {
             checkIsObject(this);
-            trackSignalProperty(this, name);
+            trackReceiverProperty(this, name);
         });
     }
     else {
         throw new TypeError('@receiver is for use only on class fields, getters/setters, and auto accessors. Also make sure your class extends from PropReceiver.');
     }
 }
-function trackSignalProperty(obj, name) {
+function trackReceiverProperty(obj, name) {
     const ctor = obj.constructor;
     if (!ctor[isPropReceiverClass])
         throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver');

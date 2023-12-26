@@ -42,11 +42,11 @@ export class App extends Component<{}, State> {
 				<lume-element3d align-point="0.5 0.5 0.5">
 					<lume-camera-rig
 						active={this.state.view === 'free'}
-						initial-polar-angle="30"
+						vertical-angle="30"
 						min-distance="0.4"
 						max-distance="2"
 						dolly-speed="0.002"
-						initial-distance="1"
+						distance="1"
 					/>
 					<lume-element3d rotation={[this.state.view === 'top' ? -90 : 0, 0, 0].toString()}>
 						<lume-perspective-camera active={this.state.view !== 'free'} position="0 0 0.7" />

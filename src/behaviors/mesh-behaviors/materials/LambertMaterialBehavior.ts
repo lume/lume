@@ -33,8 +33,8 @@ class LambertMaterialBehavior extends MaterialBehavior {
 		return new MeshLambertMaterial({color: 0x00ff00})
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this._handleTexture(
 			() => this.texture,

@@ -226,17 +226,15 @@ let PointLight = (() => {
         }
         // TODO computed properties, f.e.
         // @memo @numberAttribute power = this.intensity * 4 * Math.PI
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 const light = this.three;
                 light.distance = this.distance;
                 light.decay = this.decay;
                 // We don't need to set three.power here because threejs already maps that itself.
                 this.needsUpdate();
             });
-            return true;
         }
         makeThreeObject3d() {
             return new ThreePointLight();

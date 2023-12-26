@@ -29,6 +29,6 @@ export declare class LineBasicMaterialBehavior extends MaterialBehavior {
      */
     texture: string;
     _createComponent(): LineBasicMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=LineBasicMaterialBehavior.d.ts.map

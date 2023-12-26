@@ -209,8 +209,8 @@ let PhongMaterialBehavior = (() => {
                 color: 0x00ff00,
             });
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)

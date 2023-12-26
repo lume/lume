@@ -174,7 +174,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 */
 	@numberAttribute @receiver materialOpacity = 1
 
-	#color: string | number = 'white'
+	__color: string | number = 'white'
 
 	/**
 	 * @property {string | number | Color} color -
@@ -195,11 +195,11 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	@stringAttribute
 	@receiver
 	get color(): string | number {
-		return this.#color
+		return this.__color
 	}
 	set color(val: string | number | Color) {
-		if (typeof val === 'object') this.#color = val.getStyle()
-		else this.#color = val
+		if (typeof val === 'object') this.__color = val.getStyle()
+		else this.__color = val
 	}
 
 	/**
@@ -216,8 +216,8 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 		else return false
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const mat = this.meshComponent
@@ -320,6 +320,8 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 				this.element.needsUpdate()
 
 				onLoad?.()
+
+				this.element.dispatchEvent(new TextureLoadEvent(url))
 			})
 
 			if (isColor) texture.colorSpace = SRGBColorSpace
@@ -345,4 +347,18 @@ function isColoredMaterial(mat: Material): mat is Material & {color: Color} {
 
 function isWireframeMaterial(mat: Material): mat is Material & {wireframe: boolean} {
 	return 'wireframe' in mat
+}
+
+/** NOTE: Experimental */
+class TextureLoadEvent extends Event {
+	override type = 'textureload'
+
+	/** The URL of the loaded texture. */
+	src = ''
+
+	constructor(src: string) {
+		super('textureload', {bubbles: true, composed: true, cancelable: true})
+
+		this.src = src
+	}
 }

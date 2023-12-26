@@ -1,3 +1,5 @@
+import './silence-solid.js'
+
 export {
 	$DEVCOMP,
 	$PROXY,

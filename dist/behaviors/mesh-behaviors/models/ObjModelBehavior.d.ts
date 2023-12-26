@@ -14,9 +14,8 @@ export declare class ObjModelBehavior extends RenderableBehavior {
     obj: string;
     mtl: string;
     model?: Group;
-    objLoader?: OBJLoader;
-    mtlLoader?: MTLLoader;
-    loadGL(): void;
-    unloadGL(): void;
+    objLoader: OBJLoader;
+    mtlLoader: MTLLoader;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=ObjModelBehavior.d.ts.map

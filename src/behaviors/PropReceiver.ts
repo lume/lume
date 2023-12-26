@@ -81,33 +81,25 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
             `)
 		}
 
-		_propChangedCallback(propName: PropertyKey, value: any) {
+		_propChangedCallback(propName: PropKey, value: any) {
 			;(this as any)[propName] = value
 		}
 
-		#isObserving = false
-
 		#observeProps() {
-			if (this.#isObserving) return
-			this.#isObserving = true
-
 			const ctor = this.constructor as typeof PropReceiver
 
 			// Make it unique, before we pass it to observe(), just in case.
 			if (ctor.receivedProperties) ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties))
 
-			this.__forwardInitialProps()
+			this.__receiveInitialValues()
 
-			observe(this.observedObject, this.__forwardedProps(), this._propChangedCallback, {
+			observe(this.observedObject, this.__getReceivedProps(), this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
 		}
 
 		#unobserveProps() {
-			if (!this.#isObserving) return
-			this.#isObserving = false
-
-			unobserve(this.observedObject, this.__forwardedProps(), this._propChangedCallback)
+			unobserve(this.observedObject, this.__getReceivedProps(), this._propChangedCallback)
 		}
 
 		/**
@@ -117,21 +109,25 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 		 *
 		 * An array of strings, the properties of observedObject to observe.
 		 */
-		static receivedProperties?: PropertyKey[]
+		static receivedProperties?: PropKey[]
 
-		__forwardedProps(): (keyof this['observedObject'])[] {
+		__getReceivedProps() {
 			const ctor = this.constructor as typeof PropReceiver
-			const props = (ctor.receivedProperties || []) as (keyof this['observedObject'])[]
+			const props = ctor.receivedProperties || []
 			// @prod-prune
 			if (!Array.isArray(props)) throw new TypeError('Expected static receivedProperties to be an array.')
-			return props
+			return props as Array<keyof this['observedObject']>
 		}
 
-		__forwardInitialProps() {
+		__receiveInitialValues() {
 			const observed = this.observedObject
 
-			for (const prop of this.__forwardedProps()) {
-				prop in observed && this._propChangedCallback(prop, (observed as any)[prop])
+			for (const prop of this.__getReceivedProps()) {
+				if (prop in observed) {
+					const value = (observed as any)[prop]
+					// @ts-expect-error indexed access of this
+					this._propChangedCallback(prop, value !== undefined ? value : this[prop])
+				}
 			}
 		}
 	}
@@ -155,13 +151,13 @@ export function receiver(_: unknown, context: DecoratorContext): any {
 	if (kind === 'field') {
 		return function (this: unknown, initialValue: unknown) {
 			checkIsObject(this)
-			trackSignalProperty(this!, name)
+			trackReceiverProperty(this!, name)
 			return initialValue
 		}
 	} else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
 		context.addInitializer!(function (this: unknown) {
 			checkIsObject(this)
-			trackSignalProperty(this!, name)
+			trackReceiverProperty(this!, name)
 		})
 	} else {
 		throw new TypeError(
@@ -170,7 +166,7 @@ export function receiver(_: unknown, context: DecoratorContext): any {
 	}
 }
 
-function trackSignalProperty(obj: object, name: PropertyKey) {
+function trackReceiverProperty(obj: object, name: PropKey) {
 	const ctor = obj.constructor as ReturnType<typeof PropReceiver>
 
 	if (!(ctor as any)[isPropReceiverClass])
@@ -180,3 +176,5 @@ function trackSignalProperty(obj: object, name: PropertyKey) {
 
 	ctor.receivedProperties!.push(name)
 }
+
+type PropKey = string | symbol

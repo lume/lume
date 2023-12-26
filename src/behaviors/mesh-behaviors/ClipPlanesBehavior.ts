@@ -1,4 +1,4 @@
-import {createEffect} from 'solid-js'
+import {createEffect, onCleanup} from 'solid-js'
 // import {stringAttribute, booleanAttribute} from '../attribute.js'
 import {stringAttribute, booleanAttribute} from '@lume/element'
 import {behavior} from '../Behavior.js'
@@ -6,6 +6,7 @@ import {receiver} from '../PropReceiver.js'
 import {ClipPlane} from '../../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
 import type {MaterialBehavior} from './index.js'
+import type {Scene} from '../../core/Scene.js'
 
 export type ClipPlanesBehaviorAttributes =
 	| 'clipPlanes'
@@ -122,7 +123,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
-				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// TODO #279: This setter is non-reactive to v.scene, so it will
 				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof ClipPlane && v.scene) this.#clipPlanes.push(v)
 				continue
@@ -147,7 +148,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
-					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// TODO #279: This setter is non-reactive to el.scene, so it will
 					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof ClipPlane && el.scene) this.#clipPlanes.push(el)
 
@@ -199,9 +200,15 @@ class ClipPlanesBehavior extends MeshBehavior {
 
 	#observer: MutationObserver | null = null
 
-	override loadGL() {
+	override connectedCallback() {
+		super.connectedCallback()
+
+		let lastScene: Scene | null = null
+
 		this.createEffect(() => {
 			if (!this.element.scene) return
+
+			lastScene = this.element.scene
 
 			// Trigger the setter again in case it returned early if there was
 			// no scene. Depending on code load order, el.scene inside of set
@@ -214,10 +221,6 @@ class ClipPlanesBehavior extends MeshBehavior {
 			if (!refCount) this.element.scene.__localClipping = true
 			refCount++
 
-			// loadGL may fire during parsing before children exist. This
-			// MutationObserver will also fire during parsing. This allows us to
-			// re-run the query logic whenever DOM in the current root changes.
-			//
 			// TODO we need to observe all the way up the composed tree, or we
 			// should make the querying scoped only to the nearest root, for
 			// consistency. This covers most cases, for now.
@@ -255,23 +258,19 @@ class ClipPlanesBehavior extends MeshBehavior {
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
-					if (!plane.__clip || !plane.__inverseClip) continue
 					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
 				}
 			})
 
-			// No onCleanup for this.#observer needed here because unloadGL handles it.
+			onCleanup(() => {
+				this.#observer?.disconnect()
+				this.#observer = null
+
+				refCount--
+				if (!refCount) lastScene!.__localClipping = false
+				lastScene = null
+			})
 		})
-	}
-
-	override unloadGL() {
-		if (!this.element.scene) return
-
-		refCount--
-		if (!refCount) this.element.scene.__localClipping = false
-
-		this.#observer?.disconnect()
-		this.#observer = null
 	}
 }
 

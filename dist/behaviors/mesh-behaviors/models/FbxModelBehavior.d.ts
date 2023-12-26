@@ -18,9 +18,8 @@ export declare class FbxModelBehavior extends RenderableBehavior {
      * welcome!).
      */
     centerGeometry: boolean;
-    loader?: FBXLoader;
+    loader: FBXLoader;
     model?: Group;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=FbxModelBehavior.d.ts.map

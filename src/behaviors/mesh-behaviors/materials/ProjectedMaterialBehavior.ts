@@ -136,6 +136,7 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 * *deprecated*: renamed to [`.textureProjectors`](#textureprojectors).
 	 */
 	@stringAttribute
+	@receiver
 	get projectedTextures() {
 		return this.textureProjectors
 	}
@@ -156,14 +157,11 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 
 	#observer: MutationObserver | null = null
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		let queuedRequery = false
 
-		// loadGL may fire during parsing before children exist. This
-		// MutationObserver will also fire during parsing. This allows us to
-		// re-run the query logic whenever DOM in the current root changes.
 		this.#observer = new MutationObserver(() => {
 			if (queuedRequery) return
 
@@ -320,8 +318,8 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 		})
 	}
 
-	override unloadGL(): void {
-		super.unloadGL()
+	override disconnectedCallback(): void {
+		super.disconnectedCallback()
 
 		this.#observer?.disconnect()
 		this.#observer = null

@@ -6,15 +6,18 @@
 	// tag with this code.
 
 	const script = document.currentScript
-	const template = script.getAttribute('template')
-	const templateUrl = template ? new URL(template, location.href) : '/examples/template.html'
+	const base = script.getAttribute('base')
+	const template = script.getAttribute('template') || '/examples/template.html'
 	const importmap = script.getAttribute('importmap')
+	const title = script.getAttribute('title')
+
+	if (base) document.write(`<base href="${base}" />`)
 
 	// Fetch our shared top-level HTML template synchronously. If we don't do it
 	// synchronously, we won't be able to take advantage of the next
 	// document.write trick, which has to run during parsing.
 	const r = new XMLHttpRequest()
-	r.open('GET', templateUrl, /*not asynchronous!*/ false)
+	r.open('GET', template, /*not asynchronous!*/ false)
 	r.send()
 
 	let html = r.responseText
@@ -29,5 +32,5 @@
 
 	// Each example specifies the title for its tab by putting a title="foo"
 	// attribute on the tag that is executing this code.
-	document.title = 'LUME - ' + script.getAttribute('title')
+	document.title = 'LUME - ' + title
 }

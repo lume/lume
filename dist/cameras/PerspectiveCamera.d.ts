@@ -23,10 +23,14 @@ export declare class PerspectiveCamera extends Camera {
      *
      * *attribute*
      *
-     * Default: `50`
+     * Default: `0`
      *
-     * The camera's field of view angle, in degrees, when [`zoom`](#zoom) level
-     * is `1`.
+     * The camera's field of view angle, in degrees, when the [`zoom`](#zoom)
+     * level is `1`.
+     *
+     * A value of `0` means automatic fov based on the current Scene's
+     * [`.perspective`](../core/Scene#perspective), matching the behavior of [CSS
+     * `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
      */
     fov: number;
     connectedCallback(): void;

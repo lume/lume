@@ -39,11 +39,11 @@ describe('SharedAPI', () => {
             stop();
             n.remove();
             expect(n.scene).toBe(null);
-            // make sure it changes scenes without first disconnecting
             newScene();
             scene.append(n);
             await Promise.resolve(); // allow MutationObserver to operate first.
             expect(n.scene).toBe(scene);
+            // make sure it changes scenes without first disconnecting
             const scene2 = new Scene();
             root.append(scene2);
             scene2.append(n);

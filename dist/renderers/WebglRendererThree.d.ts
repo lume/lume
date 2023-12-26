@@ -12,7 +12,6 @@ interface SceneState {
     bgTexture?: Texture;
     hasEnv?: boolean;
     envTexture?: Texture;
-    sizeChangeHandler: () => void;
     effects: Effects;
 }
 /** @typedef {'pcf' | 'pcfsoft' | 'basic'} ShadowMapTypeString */
@@ -28,10 +27,11 @@ export declare class WebglRendererThree {
     constructor();
     sceneStates: WeakMap<Scene, SceneState>;
     localClippingEnabled: boolean;
+    initialized(scene: Scene): boolean;
     initialize(scene: Scene): void;
     uninitialize(scene: Scene): void;
     drawScene(scene: Scene): void;
-    updateResolution(scene: Scene): void;
+    updateResolution(scene: Scene, x: number, y: number): void;
     setClearColor(scene: Scene, color: any, opacity: number): void;
     setClearAlpha(scene: Scene, opacity: number): void;
     setShadowMapType(scene: Scene, type: ShadowMapTypeString | null): void;

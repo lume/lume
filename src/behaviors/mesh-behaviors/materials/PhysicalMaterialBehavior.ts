@@ -54,8 +54,8 @@ class PhysicalMaterialBehavior extends StandardMaterialBehavior {
 		return new MeshPhysicalMaterial({})
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const mat = this.meshComponent

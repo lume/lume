@@ -35,7 +35,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { onCleanup, untrack } from 'solid-js';
+import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { signal } from 'classy-solid';
 import { booleanAttribute, attribute, numberAttribute, element, stringAttribute } from '@lume/element';
@@ -49,10 +49,10 @@ import { FogExp2 } from 'three/src/scenes/FogExp2.js';
 import { WebglRendererThree } from '../renderers/WebglRendererThree.js';
 import { Css3dRendererThree } from '../renderers/Css3dRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
-import { isDisposable } from '../utils/three.js';
 import { Motor } from './Motor.js';
 import { autoDefineElements } from '../LumeConfig.js';
 import { version } from '../index.js'; // TODO replace with version.ts for vanilla ES Module tree shakability
+import { defaultScenePerspective } from '../constants.js';
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
 // Queue a microtask because otherwise this fires before the module graph has
 // executed the version variable initializer.
@@ -108,6 +108,8 @@ let Scene = (() => {
     let _backgroundOpacity_initializers = [];
     let _background_decorators;
     let _background_initializers = [];
+    let _backgroundIntensity_decorators;
+    let _backgroundIntensity_initializers = [];
     let _backgroundBlur_decorators;
     let _backgroundBlur_initializers = [];
     let _equirectangularBackground_decorators;
@@ -130,7 +132,10 @@ let Scene = (() => {
     let _cameraNear_initializers = [];
     let _cameraFar_decorators;
     let _cameraFar_initializers = [];
-    let _set_perspective_decorators;
+    let _perspective_decorators;
+    let _perspective_initializers = [];
+    let ___defaultThreeCamera_decorators;
+    let ___defaultThreeCamera_initializers = [];
     let ___camera_decorators;
     let ___camera_initializers = [];
     let ___localClipping_decorators;
@@ -149,6 +154,7 @@ let Scene = (() => {
             _backgroundColor_decorators = [attribute];
             _backgroundOpacity_decorators = [numberAttribute];
             _background_decorators = [attribute];
+            _backgroundIntensity_decorators = [numberAttribute];
             _backgroundBlur_decorators = [numberAttribute];
             _equirectangularBackground_decorators = [booleanAttribute];
             _environment_decorators = [attribute];
@@ -160,11 +166,11 @@ let Scene = (() => {
             _physicallyCorrectLights_decorators = [booleanAttribute];
             _cameraNear_decorators = [numberAttribute];
             _cameraFar_decorators = [numberAttribute];
-            _set_perspective_decorators = [numberAttribute];
+            _perspective_decorators = [numberAttribute];
+            ___defaultThreeCamera_decorators = [signal];
             ___camera_decorators = [signal];
             ___localClipping_decorators = [signal];
             ___elementParentSize_decorators = [signal];
-            __esDecorate(this, null, _set_perspective_decorators, { kind: "setter", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _swapLayers_decorators, { kind: "field", name: "swapLayers", static: false, private: false, access: { has: obj => "swapLayers" in obj, get: obj => obj.swapLayers, set: (obj, value) => { obj.swapLayers = value; } }, metadata: _metadata }, _swapLayers_initializers, _instanceExtraInitializers);
@@ -173,6 +179,7 @@ let Scene = (() => {
             __esDecorate(null, null, _backgroundColor_decorators, { kind: "field", name: "backgroundColor", static: false, private: false, access: { has: obj => "backgroundColor" in obj, get: obj => obj.backgroundColor, set: (obj, value) => { obj.backgroundColor = value; } }, metadata: _metadata }, _backgroundColor_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _backgroundOpacity_decorators, { kind: "field", name: "backgroundOpacity", static: false, private: false, access: { has: obj => "backgroundOpacity" in obj, get: obj => obj.backgroundOpacity, set: (obj, value) => { obj.backgroundOpacity = value; } }, metadata: _metadata }, _backgroundOpacity_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _background_decorators, { kind: "field", name: "background", static: false, private: false, access: { has: obj => "background" in obj, get: obj => obj.background, set: (obj, value) => { obj.background = value; } }, metadata: _metadata }, _background_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _backgroundIntensity_decorators, { kind: "field", name: "backgroundIntensity", static: false, private: false, access: { has: obj => "backgroundIntensity" in obj, get: obj => obj.backgroundIntensity, set: (obj, value) => { obj.backgroundIntensity = value; } }, metadata: _metadata }, _backgroundIntensity_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _backgroundBlur_decorators, { kind: "field", name: "backgroundBlur", static: false, private: false, access: { has: obj => "backgroundBlur" in obj, get: obj => obj.backgroundBlur, set: (obj, value) => { obj.backgroundBlur = value; } }, metadata: _metadata }, _backgroundBlur_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _equirectangularBackground_decorators, { kind: "field", name: "equirectangularBackground", static: false, private: false, access: { has: obj => "equirectangularBackground" in obj, get: obj => obj.equirectangularBackground, set: (obj, value) => { obj.equirectangularBackground = value; } }, metadata: _metadata }, _equirectangularBackground_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _environment_decorators, { kind: "field", name: "environment", static: false, private: false, access: { has: obj => "environment" in obj, get: obj => obj.environment, set: (obj, value) => { obj.environment = value; } }, metadata: _metadata }, _environment_initializers, _instanceExtraInitializers);
@@ -184,6 +191,8 @@ let Scene = (() => {
             __esDecorate(null, null, _physicallyCorrectLights_decorators, { kind: "field", name: "physicallyCorrectLights", static: false, private: false, access: { has: obj => "physicallyCorrectLights" in obj, get: obj => obj.physicallyCorrectLights, set: (obj, value) => { obj.physicallyCorrectLights = value; } }, metadata: _metadata }, _physicallyCorrectLights_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _cameraNear_decorators, { kind: "field", name: "cameraNear", static: false, private: false, access: { has: obj => "cameraNear" in obj, get: obj => obj.cameraNear, set: (obj, value) => { obj.cameraNear = value; } }, metadata: _metadata }, _cameraNear_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, ___defaultThreeCamera_decorators, { kind: "field", name: "__defaultThreeCamera", static: false, private: false, access: { has: obj => "__defaultThreeCamera" in obj, get: obj => obj.__defaultThreeCamera, set: (obj, value) => { obj.__defaultThreeCamera = value; } }, metadata: _metadata }, ___defaultThreeCamera_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, ___camera_decorators, { kind: "field", name: "__camera", static: false, private: false, access: { has: obj => "__camera" in obj, get: obj => obj.__camera, set: (obj, value) => { obj.__camera = value; } }, metadata: _metadata }, ___camera_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, ___localClipping_decorators, { kind: "field", name: "__localClipping", static: false, private: false, access: { has: obj => "__localClipping" in obj, get: obj => obj.__localClipping, set: (obj, value) => { obj.__localClipping = value; } }, metadata: _metadata }, ___localClipping_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, ___elementParentSize_decorators, { kind: "field", name: "__elementParentSize", static: false, private: false, access: { has: obj => "__elementParentSize" in obj, get: obj => obj.__elementParentSize, set: (obj, value) => { obj.__elementParentSize = value; } }, metadata: _metadata }, ___elementParentSize_initializers, _instanceExtraInitializers);
@@ -447,6 +456,36 @@ let Scene = (() => {
          * Applies only if [`webgl`](#webgl) is `true`.
          */
         background = __runInitializers(this, _background_initializers, null
+        /**
+         * @property {number} backgroundIntensity -
+         *
+         * *attribute*
+         *
+         * Default: `0`
+         *
+         * A number between `0` and `1` that defines the intensity of the
+         * `background` when WebGL is enabled. If the value is 1, the background
+         * will be brightest, and if the value is 0 the background will be black.
+         *
+         * This applies only if [`webgl`](#webgl) is `true` and the
+         * [`background`](#background) property is set.
+         */
+        );
+        /**
+         * @property {number} backgroundIntensity -
+         *
+         * *attribute*
+         *
+         * Default: `0`
+         *
+         * A number between `0` and `1` that defines the intensity of the
+         * `background` when WebGL is enabled. If the value is 1, the background
+         * will be brightest, and if the value is 0 the background will be black.
+         *
+         * This applies only if [`webgl`](#webgl) is `true` and the
+         * [`background`](#background) property is set.
+         */
+        backgroundIntensity = __runInitializers(this, _backgroundIntensity_initializers, 1
         /**
          * @property {number} backgroundBlur -
          *
@@ -818,23 +857,29 @@ let Scene = (() => {
          *
          * Default: `400`
          *
-         * This property behaves just like CSS perspective
-         * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
-         * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
-         * value does not (currently) have any effect.
+         * This property behaves identical to CSS perspective
+         * (https://developer.mozilla.org/en-US/docs/Web/CSS/perspective) when using
+         * a scene's default camera, adjusting its fov and Z position. If using a
+         * custom camera (for example a `<lume-perspective-camera>`) then this value
+         * affects only the camera's fov, unless we specify a non-zero fov value for
+         * the custom camera.
          *
          * The value sets the default camera's Z position to the given value (relative to the world
          * origin, 0,0,0). Note that the default camera points in the -z direction, therefore a value
          * of 800 means the camera is at position 0,0,800 looking directly at the world origin
-         * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and zoom
+         * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and fov
          * will be adjusted such that if there were a plane positioned at 0,0,0, perpendicular
          * to the camera's line of sight, and having the same dimensions as the scene's viewport
          * in screen pixels, then the plane would fit perfectly in the view, and one unit on that
-         * plane would coincide with one pixel on the screen; essentially that plane would be lined
-         * up perfectly with the screen surface. This is the same meaning that CSS perspective has.
+         * plane would coincide with one CSS pixel on the screen; essentially that plane would be lined
+         * up perfectly with the screen surface.
          *
          * Applies with both CSS and WebGL rendering.
          */
+        // TODO perhaps we want the perspective to also affect a custom camera's internal
+        // position relative to the element's local origin. We can do this by making the THREE
+        // camera a child of the element's .three object instead of it being the
+        // .three object directly.
         );
         /**
          * @property {number} perspective -
@@ -843,45 +888,80 @@ let Scene = (() => {
          *
          * Default: `400`
          *
-         * This property behaves just like CSS perspective
-         * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
-         * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
-         * value does not (currently) have any effect.
+         * This property behaves identical to CSS perspective
+         * (https://developer.mozilla.org/en-US/docs/Web/CSS/perspective) when using
+         * a scene's default camera, adjusting its fov and Z position. If using a
+         * custom camera (for example a `<lume-perspective-camera>`) then this value
+         * affects only the camera's fov, unless we specify a non-zero fov value for
+         * the custom camera.
          *
          * The value sets the default camera's Z position to the given value (relative to the world
          * origin, 0,0,0). Note that the default camera points in the -z direction, therefore a value
          * of 800 means the camera is at position 0,0,800 looking directly at the world origin
-         * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and zoom
+         * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and fov
          * will be adjusted such that if there were a plane positioned at 0,0,0, perpendicular
          * to the camera's line of sight, and having the same dimensions as the scene's viewport
          * in screen pixels, then the plane would fit perfectly in the view, and one unit on that
-         * plane would coincide with one pixel on the screen; essentially that plane would be lined
-         * up perfectly with the screen surface. This is the same meaning that CSS perspective has.
+         * plane would coincide with one CSS pixel on the screen; essentially that plane would be lined
+         * up perfectly with the screen surface.
          *
          * Applies with both CSS and WebGL rendering.
          */
-        set perspective(value) {
-            this.#perspective = value;
-            this._updateCameraPerspective();
-            this._updateCameraProjection();
-            this.needsUpdate();
-        }
-        get perspective() {
-            return this.#perspective;
-        }
-        #perspective = 400;
+        // TODO perhaps we want the perspective to also affect a custom camera's internal
+        // position relative to the element's local origin. We can do this by making the THREE
+        // camera a child of the element's .three object instead of it being the
+        // .three object directly.
+        perspective = __runInitializers(this, _perspective_initializers, defaultScenePerspective
+        // Holds the default internal camera when a Camera elements is not in use.
+        );
+        // Holds the default internal camera when a Camera elements is not in use.
+        __defaultThreeCamera = __runInitializers(this, ___defaultThreeCamera_initializers, null
         /**
          * @property {THREE.Camera} threeCamera -
          *
          * *readonly*
          *
-         * The current active THREE.Camera being
-         * used by the scene. It will be a default camera if no camera was manually
-         * specified by a camera element such as `<lume-perspective-camera>`, in
-         * which case the scene's `perspective` property is used for configuring the
-         * default camera. If a manual camera element is set active with an
-         * `active` attribute, then this property will return the currently
-         * active THREE.Camera represented by the active camera element.
+         * The current active `THREE.Camera` being used to render visuals.
+         *
+         * If no Lume camera element such as `<lume-perspective-camera>` is active,
+         * this returns the default `THREE.Camera` that the scene uses internally.
+         *
+         * If a camera element is set active with an `active` attribute (f.e.
+         * `<lume-perspective-camera active>`, then this property will return the
+         * `THREE.Camera` from the active camera element.
+         *
+         * The scene's [`.perspective`](#perspective) property is used for
+         * configuring the default camera view's fov and Z position to behave
+         * identical to CSS `perspective` by default. This behavior can be bypassed
+         * by using a `<lume-perspective-camera>` element manually, and configuring
+         * its [`.aspect`](../cameras/PerspectiveCamera#aspect) and
+         * [`fov`](../cameras/PerspectiveCamera#fov) properties or attributes to
+         * non-zero values.
+         *
+         * Applies with both CSS and WebGL rendering.
+         */
+        );
+        /**
+         * @property {THREE.Camera} threeCamera -
+         *
+         * *readonly*
+         *
+         * The current active `THREE.Camera` being used to render visuals.
+         *
+         * If no Lume camera element such as `<lume-perspective-camera>` is active,
+         * this returns the default `THREE.Camera` that the scene uses internally.
+         *
+         * If a camera element is set active with an `active` attribute (f.e.
+         * `<lume-perspective-camera active>`, then this property will return the
+         * `THREE.Camera` from the active camera element.
+         *
+         * The scene's [`.perspective`](#perspective) property is used for
+         * configuring the default camera view's fov and Z position to behave
+         * identical to CSS `perspective` by default. This behavior can be bypassed
+         * by using a `<lume-perspective-camera>` element manually, and configuring
+         * its [`.aspect`](../cameras/PerspectiveCamera#aspect) and
+         * [`fov`](../cameras/PerspectiveCamera#fov) properties or attributes to
+         * non-zero values.
          *
          * Applies with both CSS and WebGL rendering.
          */
@@ -917,6 +997,7 @@ let Scene = (() => {
         get camera() {
             return this.__camera;
         }
+        #glRenderer = null;
         /**
          * @property {THREE.WebGLRenderer} glRenderer
          *
@@ -929,8 +1010,9 @@ let Scene = (() => {
         get glRenderer() {
             return this.#glRenderer?.sceneStates.get(this)?.renderer;
         }
+        #cssRenderer = null;
         /**
-         * @property {CSS3DRendererNested} glRenderer
+         * @property {CSS3DRendererNested} cssRenderer
          *
          * *readonly*
          *
@@ -947,13 +1029,16 @@ let Scene = (() => {
         );
         // This is toggled by ClipPlanesBehavior, not intended for direct use.
         __localClipping = __runInitializers(this, ___localClipping_initializers, false);
+        get scene() {
+            return this;
+        }
         constructor() {
             super();
             // Used by the `scene` getter in SharedAPI
             // TODO set this in connectedCallback, unset in disconnectedCallback, so
             // it has the same semantics as with Element3D (this.scene is not null when
             // scene is connected and has webgl or css rendering turned on)
-            this._scene = this;
+            // this._scene = this
             // TODO override size and sizeMode using fields after converting them
             // from getters/setters in the base class.
             /**
@@ -997,24 +1082,84 @@ let Scene = (() => {
         // Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
         _miscLayer = null;
         drawScene() {
-            this.#glRenderer && this.#glRenderer.drawScene(this);
-            this.#cssRenderer && this.#cssRenderer.drawScene(this);
+            this.#glRenderer?.drawScene(this);
+            this.#cssRenderer?.drawScene(this);
         }
-        // override readonly hasShadow = false;
         connectedCallback() {
             super.connectedCallback();
+            //////////////////////// GL
+            // We don't let Three update any matrices, we supply our own world
+            // matrices.
+            // @ts-expect-error legacy
+            this.three.autoUpdate = false; // three <0.144
+            this.three.matrixWorldAutoUpdate = false; // three >=0.144
+            // TODO: default ambient light when no AmbientLight elements are
+            // present in the Scene.
+            //const ambientLight = new AmbientLight( 0x353535 )
+            //this.three.add( ambientLight )
+            this.createEffect(this.glRendererEffect);
+            this.createEffect(this.fogEffect);
+            this.createEffect(this.cameraNearFarEffect);
+            this.createEffect(this.cameraEffect);
+            //////////////////////// CSS
+            this.createEffect(this.cssRendererEffect);
+            ////////////////////////
+            this.createEffect(this.parentSizeEffect);
             // Queue a microtask because with autoDefineElements true then
             // connectedCallback fires before the module graph has executed the
             // version variable initializer.
             queueMicrotask(() => this.shadowRoot.prepend(new Comment(magic())));
-            this.createEffect(() => {
-                if (this.webgl)
-                    this._triggerLoadGL();
-                else
-                    this._triggerUnloadGL();
+        }
+        glRendererEffect = () => {
+            if (!this.webgl)
+                return;
+            this.#glRenderer = WebglRendererThree.singleton();
+            this.#glRenderer.initialize(this);
+            onCleanup(() => {
+                this.#glRenderer.uninitialize(this);
+                this.#glRenderer = null;
+            });
+            createEffect(() => {
+                this.#glRenderer.localClippingEnabled = this.__localClipping;
                 this.needsUpdate();
             });
-            this.createEffect(() => {
+            createEffect(() => {
+                this.#glRenderer.setClearColor(this, this.backgroundColor, this.backgroundOpacity);
+                this.needsUpdate();
+            });
+            createEffect(() => {
+                this.#glRenderer.setClearAlpha(this, this.backgroundOpacity);
+                this.needsUpdate();
+            });
+            createEffect(() => {
+                this.#glRenderer.setShadowMapType(this, this.shadowmapType);
+                this.needsUpdate();
+            });
+            createEffect(() => {
+                this.#glRenderer.setPhysicallyCorrectLights(this, this.physicallyCorrectLights);
+                this.needsUpdate();
+            });
+            createEffect(() => {
+                this.#glRenderer.enableVR(this, this.vr);
+                if (this.vr) {
+                    Motor.setFrameRequester(fn => {
+                        this.#glRenderer.requestFrame(this, fn);
+                        // Mock rAF return value for Motor.setFrameRequester.
+                        return 0;
+                    });
+                    const button = this.#glRenderer.createDefaultVRButton(this);
+                    button.classList.add('vrButton');
+                    this._miscLayer.appendChild(button);
+                }
+                else if (this.xr) {
+                    // TODO
+                }
+                else {
+                    // TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
+                }
+                this.needsUpdate();
+            });
+            createEffect(() => {
                 if (!this.webgl || !this.background)
                     return;
                 if (this.background.match(/\.(jpg|jpeg|png)$/)) {
@@ -1036,7 +1181,11 @@ let Scene = (() => {
                     console.warn(`<${this.tagName.toLowerCase()}> background attribute ignored, the given image type is not currently supported.`);
                 }
             });
-            this.createEffect(() => {
+            createEffect(() => {
+                this.three.backgroundIntensity = this.backgroundIntensity;
+                this.needsUpdate();
+            });
+            createEffect(() => {
                 if (!this.webgl || !this.environment)
                     return;
                 if (this.environment.match(/\.(jpg|jpeg|png)$/)) {
@@ -1054,25 +1203,76 @@ let Scene = (() => {
                     console.warn(`<${this.tagName.toLowerCase()}> environment attribute ignored, the given image type is not currently supported.`);
                 }
             });
-            this.createEffect(() => {
-                if (this.enableCss)
-                    this._triggerLoadCSS();
-                else
-                    this._triggerUnloadCSS();
-                this.needsUpdate();
+            createEffect(() => {
+                const { x, y } = this.calculatedSize;
+                this.#glRenderer.updateResolution(this, x, y);
             });
-            this.createEffect(() => {
-                this.sizeMode.asDependency();
-                this.#maybeStartParentSizeObservation();
-                onCleanup(() => {
-                    this.#stopParentSizeObservation();
-                });
+        };
+        fogEffect = () => {
+            if (this.fogMode === 'none') {
+                this.three.fog = null;
+            }
+            else if (this.fogMode === 'linear') {
+                const fog = (this.three.fog = new Fog('deeppink'));
+                fog.near = this.fogNear;
+                fog.far = this.fogFar;
+                fog.color.set(this.fogColor);
+            }
+            else if (this.fogMode === 'expo2') {
+                const fog = (this.three.fog = new FogExp2(new Color('deeppink').getHex()));
+                fog.color.set(this.fogColor);
+                fog.density = this.fogDensity;
+            }
+            this.needsUpdate();
+        };
+        cameraNearFarEffect = () => {
+            const { cameraNear, cameraFar } = this;
+            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
+                return;
+            this.__defaultThreeCamera.near = cameraNear;
+            this.__defaultThreeCamera.far = cameraFar;
+            this.needsUpdate();
+        };
+        cameraEffect = () => {
+            this._updateCameraAspect();
+            this._updateCameraPerspective();
+            this._updateCameraProjection();
+            this.needsUpdate();
+        };
+        parentSizeEffect = () => {
+            // If no rendering is enbled
+            if (!this.webgl && !this.enableCss)
+                return;
+            const { x, y } = this.sizeMode;
+            // We only watch size if we have a proportional size.
+            // Note, we don't care about the Z dimension, because Scenes are 2D flat surfaces.
+            if (!(x === 'proportional' || x === 'p' || y === 'proportional' || y === 'p'))
+                return;
+            this.#startParentSizeObservation();
+            onCleanup(() => {
+                this.#stopParentSizeObservation();
             });
-        }
-        disconnectedCallback() {
-            super.disconnectedCallback();
-            this.#stopParentSizeObservation();
-        }
+            // TODO NESTED SCENES At the moment, we assume Scenes are top-level,
+            // connected to regular element parents. In the future, we will
+            // allow Scenes to be children of other lume nodes, in order to have
+            // nested scene rendering (f.e. a WebGL Scene rendered on a plane or
+            // as a texture inside a parent Scene, to make portals and objects
+            // with dynamic looks, etc).
+        };
+        cssRendererEffect = () => {
+            if (!this.enableCss)
+                return;
+            this.#cssRenderer = Css3dRendererThree.singleton();
+            this.#cssRenderer.initialize(this);
+            onCleanup(() => {
+                this.#cssRenderer.uninitialize(this);
+                this.#cssRenderer = null;
+            });
+            createEffect(() => {
+                const { x, y } = this.calculatedSize;
+                this.#cssRenderer.updateResolution(this, x, y);
+            });
+        };
         static observedAttributes = [...(Reflect.get(_classSuper, "observedAttributes", _classThis) || []), 'slot'];
         attributeChangedCallback(name, oldVal, newVal) {
             super.attributeChangedCallback(name, oldVal, newVal);
@@ -1150,34 +1350,35 @@ let Scene = (() => {
                 // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
                 // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
                 // TODO update with calculatedSize in autorun
-                this.__threeCamera = new ThreePerspectiveCamera(45, size.x / size.y || 1, 0.1, 10000);
+                this.__defaultThreeCamera = this.__threeCamera = new ThreePerspectiveCamera(this.__perspectiveFov, size.x / size.y || 1, 0.1, 10000);
                 this.__threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${this.__threeCamera.type})`;
                 this.perspective = this.perspective;
             });
         }
-        // TODO can this be moved to a render task like _calcSize should also be?
-        // It depends on size values.
+        // This math is what sets the FOV of the default camera so that a
+        // viewport-sized plane will fit exactly within the view when it is
+        // positioned at the world origin 0,0,0, as described in the
+        // `perspective` property's description.
+        // For more details: https://discourse.threejs.org/t/269/28
+        get __perspectiveFov() {
+            return (180 * (2 * Math.atan(this.calculatedSize.y / 2 / this.perspective))) / Math.PI;
+        }
         _updateCameraPerspective() {
-            const perspective = this.#perspective;
-            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+            const perspective = this.perspective;
+            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            // This math is what sets the FOV of the default camera so that a
-            // viewport-sized plane will fit exactly within the view when it is
-            // positioned at the world origin, as described for in the
-            // `perspective` property's description.
-            // For more details: https://discourse.threejs.org/t/269/28
-            this.__threeCamera.fov = (180 * (2 * Math.atan(this.calculatedSize.y / 2 / perspective))) / Math.PI;
-            this.__threeCamera.position.z = perspective;
+            this.__defaultThreeCamera.fov = this.__perspectiveFov;
+            this.__defaultThreeCamera.position.z = perspective;
         }
         _updateCameraAspect() {
-            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__threeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1;
+            this.__defaultThreeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1;
         }
         _updateCameraProjection() {
-            if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__threeCamera.updateProjectionMatrix();
+            this.__defaultThreeCamera.updateProjectionMatrix();
         }
         // holds active cameras found in the DOM tree (if this is empty, it
         // means no camera elements are in the DOM, but this.#threeCamera
@@ -1217,169 +1418,6 @@ let Scene = (() => {
         get parentSize() {
             return this.composedLumeParent?.calculatedSize ?? this.__elementParentSize;
         }
-        // For now, use the same program (with shaders) for all objects.
-        // Basically it has position, frag colors, point light, directional
-        // light, and ambient light.
-        _loadGL() {
-            // THREE
-            // maybe keep this in sceneState in WebGLRendererThree
-            if (!super._loadGL())
-                return false;
-            // We don't let Three update any matrices, we supply our own world
-            // matrices.
-            // @ts-expect-error legacy
-            this.three.autoUpdate = false; // three <0.144
-            this.three.matrixWorldAutoUpdate = false; // three >=0.144
-            // TODO: default ambient light when no AmbientLight elements are
-            // present in the Scene.
-            //const ambientLight = new AmbientLight( 0x353535 )
-            //this.three.add( ambientLight )
-            this.#glRenderer = this.#getGLRenderer('three');
-            // If _loadGL is firing, then this.webgl must be true, therefore
-            // this.#glRenderer must be defined in any of the below autoruns.
-            this.createGLEffect(() => {
-                if (this.fogMode === 'none') {
-                    this.three.fog = null;
-                }
-                else if (this.fogMode === 'linear') {
-                    this.three.fog = new Fog('deeppink');
-                }
-                else if (this.fogMode === 'expo2') {
-                    this.three.fog = new FogExp2(new Color('deeppink').getHex());
-                }
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                if (this.fogMode === 'none') {
-                    // Nothing to do.
-                }
-                else if (this.fogMode === 'linear') {
-                    const fog = this.three.fog;
-                    fog.near = this.fogNear;
-                    fog.far = this.fogFar;
-                    fog.color.set(this.fogColor);
-                }
-                else if (this.fogMode === 'expo2') {
-                    const fog = this.three.fog;
-                    fog.color.set(this.fogColor);
-                    fog.density = this.fogDensity;
-                }
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.localClippingEnabled = this.__localClipping;
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.setClearColor(this, this.backgroundColor, this.backgroundOpacity);
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.setClearAlpha(this, this.backgroundOpacity);
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.setShadowMapType(this, this.shadowmapType);
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.setPhysicallyCorrectLights(this, this.physicallyCorrectLights);
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                this.#glRenderer.enableVR(this, this.vr);
-                if (this.vr) {
-                    Motor.setFrameRequester(fn => {
-                        this.#glRenderer.requestFrame(this, fn);
-                        // Mock rAF return value for Motor.setFrameRequester.
-                        return 0;
-                    });
-                    const button = this.#glRenderer.createDefaultVRButton(this);
-                    button.classList.add('vrButton');
-                    this._miscLayer.appendChild(button);
-                }
-                else if (this.xr) {
-                    // TODO
-                }
-                else {
-                    // TODO else exit the WebXR headset, return back to normal requestAnimationFrame.
-                }
-                this.needsUpdate();
-            });
-            this.createGLEffect(() => {
-                const { cameraNear, cameraFar } = this;
-                if (!(this.__threeCamera instanceof ThreePerspectiveCamera))
-                    return;
-                this.__threeCamera.near = cameraNear;
-                this.__threeCamera.far = cameraFar;
-                this.needsUpdate();
-            });
-            this.traverseSceneGraph((el) => el._triggerLoadGL(), true);
-            return true;
-        }
-        _unloadGL() {
-            if (!super._unloadGL())
-                return false;
-            if (this.#glRenderer) {
-                this.#glRenderer.uninitialize(this);
-                this.#glRenderer = null;
-            }
-            this.traverseSceneGraph((el) => el._triggerUnloadGL());
-            // Not all things are loaded in _loadGL (they may be loaded
-            // depending on property/attribute values), but all things, if any, should
-            // still be disposed in _unloadGL.
-            {
-                this.three.environment?.dispose();
-                if (isDisposable(this.three.background))
-                    this.three.background.dispose();
-            }
-            return true;
-        }
-        _loadCSS() {
-            if (!super._loadCSS())
-                return false;
-            this.#cssRenderer = this.#getCSSRenderer('three');
-            this.traverseSceneGraph((el) => el._loadCSS(), true);
-            return true;
-        }
-        _unloadCSS() {
-            if (!super._unloadCSS())
-                return false;
-            if (this.#cssRenderer) {
-                this.#cssRenderer.uninitialize(this);
-                this.#cssRenderer = null;
-            }
-            this.traverseSceneGraph((el) => el._unloadCSS());
-            return true;
-        }
-        #glRenderer = null;
-        #cssRenderer = null;
-        // The idea here is that in the future we might have "babylon",
-        // "playcanvas", etc, on a per scene basis. We'd needed to abstract the
-        // renderer more, have abstract base classes to define the common
-        // interfaces.
-        #getGLRenderer(type) {
-            if (this.#glRenderer)
-                return this.#glRenderer;
-            let renderer;
-            if (type === 'three')
-                renderer = WebglRendererThree.singleton();
-            else
-                throw new Error('invalid WebGL renderer');
-            renderer.initialize(this);
-            return renderer;
-        }
-        #getCSSRenderer(type) {
-            if (this.#cssRenderer)
-                return this.#cssRenderer;
-            let renderer;
-            if (type === 'three')
-                renderer = Css3dRendererThree.singleton();
-            else
-                throw new Error('invalid CSS renderer. The only type supported is currently "three" (i.e. Three.js).');
-            renderer.initialize(this);
-            return renderer;
-        }
         __setCamera(camera) {
             if (!camera) {
                 this._createDefaultCamera();
@@ -1389,6 +1427,7 @@ let Scene = (() => {
                 // TODO?: implement an changecamera event/method and emit/call
                 // that here, then move this logic to the renderer
                 // handler/method?
+                this.__defaultThreeCamera = null;
                 this.__threeCamera = camera.three;
                 this.__camera = camera;
                 this._updateCameraAspect();
@@ -1398,32 +1437,10 @@ let Scene = (() => {
         }
         // TODO move the following parent size change stuff to a separate re-usable class.
         // size of the element where the Scene is mounted
-        __elementParentSize = __runInitializers(this, ___elementParentSize_initializers, { x: 0, y: 0, z: 0 }
-        // TODO NESTED SCENES At the moment, we assume Scenes are top-level, connected to regular
-        // element parents. In the future, we will allow Scenes to be children of
-        // Element3Ds, in order to have nested scene rendering (f.e. a WebGL Scene
-        // rendered on a plane inside a parent Scene, to make portals, etc).
-        );
-        // TODO NESTED SCENES At the moment, we assume Scenes are top-level, connected to regular
-        // element parents. In the future, we will allow Scenes to be children of
-        // Element3Ds, in order to have nested scene rendering (f.e. a WebGL Scene
-        // rendered on a plane inside a parent Scene, to make portals, etc).
-        #maybeStartParentSizeObservation() {
-            const { x, y } = this.sizeMode;
-            if (
-            // If we will be rendering something...
-            (this.enableCss || this.webgl) &&
-                // ...and if one size dimension is proportional...
-                (x === 'proportional' || x === 'p' || y === 'proportional' || y === 'p')
-            // Note, we don't care about the Z dimension, because Scenes are flat surfaces.
-            ) {
-                // ...then observe the parent element size (it may not be a LUME
-                // element, so we observe with ResizeObserver).
-                this.#startParentSizeObservation();
-            }
-        }
+        __elementParentSize = __runInitializers(this, ___elementParentSize_initializers, { x: 0, y: 0, z: 0 });
         #resizeObserver = null;
-        // observe size changes on the scene's parent.
+        // observe size changes on the scene's parent (it may not be a LUME element,
+        // so we observe with ResizeObserver).
         #startParentSizeObservation() {
             // TODO The only way to make composedParent reactive even for non-LUME
             // composed parents without polling is with a combination of monkey

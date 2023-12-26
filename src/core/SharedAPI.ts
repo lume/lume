@@ -1,5 +1,5 @@
 import {untrack} from 'solid-js'
-import {signal, Effects} from 'classy-solid'
+import {signal} from 'classy-solid'
 import {Object3D} from 'three/src/core/Object3D.js'
 import {element, attribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
@@ -7,12 +7,11 @@ import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
 import {CSS3DObjectNested} from '../renderers/CSS3DRendererNested.js'
 import {disposeObject} from '../utils/three.js'
-import {Events} from './Events.js'
 import {Settable} from '../utils/Settable.js'
 import {toRadians} from './utils/index.js'
 import {ChildTracker} from './ChildTracker.js'
 import {InitialBehaviors} from '../behaviors/InitialBehaviors.js'
-import {isDomEnvironment, isElement3D, isScene} from './utils/isThisOrThat.js'
+import {isDomEnvironment, isElement3D} from './utils/isThisOrThat.js'
 
 import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
@@ -97,51 +96,27 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	}
 
 	/**
+	 * @deprecated
 	 * @property {boolean} glLoaded
 	 *
-	 * *readonly*, *signal*
+	 * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
 	 *
-	 * Returns a boolean indicating whether or not the WebGL rendering features
-	 * of a LUME element are loaded and ready.
-	 *
-	 * All elements in a `<lume-scene>` have WebGL rendering disabled by
-	 * default.
-	 *
-	 * If a `<lume-scene>` element has its `webgl` attribute set to
-	 * `"false"` (the default), then `glLoaded` will always return `false` for any LUME
-	 * elements in the scene.
-	 *
-	 * If a `<lume-scene>` element has the `webgl` attribute set to
-	 * `"true"`, then `glLoaded` will return `true` for any LUME
-	 * elements in the scene *after* their WebGL APIs have been loaded
-	 * (`false` up until then).
+	 * *readonly*
 	 */
-	get glLoaded(): boolean {
-		return this._glLoaded
+	get glLoaded() {
+		return true
 	}
 
 	/**
+	 * @deprecated
 	 * @property {boolean} cssLoaded
 	 *
-	 * *readonly*, *signal*
+	 * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
 	 *
-	 * Returns a boolean indicating whether or not the CSS rendering features
-	 * of a LUME element are loaded and ready.
-	 *
-	 * All elements in a `<lume-scene>` have CSS rendering enabled by
-	 * default.
-	 *
-	 * If a `<lume-scene>` element has its `enable-css` attribute set to
-	 * `"false"`, then `cssLoaded` will always return `false` for any LUME
-	 * elements in the scene.
-	 *
-	 * If a `<lume-scene>` element has its `enable-css` attribute set to
-	 * `"true"` (the default), then `cssLoaded` will return `true` for
-	 * any LUME elements in the scene *after* their CSS APIs have been loaded
-	 * ('false' up until then).
+	 * *readonly*
 	 */
-	get cssLoaded(): boolean {
-		return this._cssLoaded
+	get cssLoaded() {
+		return true
 	}
 
 	// stores a ref to this element's root Scene when/if this element is
@@ -206,6 +181,9 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`
 		ourThreeObjects.add(o)
+		// we don't let Three update local matrices automatically, we do
+		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
+		o.matrixAutoUpdate = false
 		return o
 	}
 
@@ -227,7 +205,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 		this.__disposeThree()
 		// The three getter is used here, which makes a new instance
-		this.__connectThree()
+		this.__reconnectThree()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.three.add(...children)
@@ -255,6 +233,9 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`
 		ourThreeObjects.add(o)
+		// we don't let Three update local matrices automatically, we do
+		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
+		o.matrixAutoUpdate = false
 		return o
 	}
 
@@ -275,7 +256,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		const children = this.__threeCSS?.children
 		this.__disposeThreeCSS()
 		// The threeCSS getter is used here, which makes a new instance
-		this.__connectThreeCSS()
+		this.__reconnectThreeCSS()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.threeCSS.add(...children)
@@ -349,8 +330,46 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		super.disconnectedCallback()
 
 		this.stopEffects()
-		this.#unloadThree(this)
+
+		// TODO Keep the .three object around (dispose it, but no need to delete
+		// it and recreate it, it will be GC'd with the element if the element
+		// is unref'd)
+		this.__disposeThree()
+		this.__disposeThreeCSS()
+
 		this._scene = null
+	}
+
+	override composedCallback(composedParent: Element, compositionType: CompositionType) {
+		super.composedCallback?.(composedParent, compositionType)
+
+		if (this.isScene) {
+			console.warn(
+				'Composing `<lume-scene>` elements directly into other `<lume-*>` elements is not currently supported. To nest a scene inside a scene, wrap it with a `<div>` inside of a `<lume-mixed-plane>`.',
+			)
+		}
+
+		this.composedSceneGraphParent!.three.add(this.three)
+		this.composedSceneGraphParent!.threeCSS.add(this.threeCSS)
+		this._scene = this.composedSceneGraphParent!.scene
+		if (this._scene) this.#giveSceneToChildren()
+	}
+
+	override uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType) {
+		super.uncomposedCallback?.(uncomposedParent, compositionType)
+
+		this.three.parent?.remove(this.three)
+		this.threeCSS.parent?.remove(this.threeCSS)
+		this._scene = null
+		this.#giveSceneToChildren() // remove from children
+	}
+
+	#giveSceneToChildren() {
+		this.traverseSceneGraph(el => {
+			if (el === this) return
+			if (el._scene === this._scene) return
+			el._scene = this._scene
+		})
 	}
 
 	/**
@@ -371,18 +390,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		if (!(child instanceof SharedAPI)) return
 
 		this.needsUpdate() // Maybe not needed but its a no-op if called extra times.
-
-		// This code may run during a super constructor (f.e. while constructing
-		// a Scene and it calls `super()`), therefore a Scene's _scene property
-		// will not be set yet, hence the use of `isScene(this) && this` here as
-		// an alternative.
-		const scene = this._scene ?? (isScene(this) && this)
-
-		// TODO: This does a traversal of the subtree for each element that gets
-		// composed (a traversal bomb), and we return early in the traversal if
-		// nodes already have a scene to avoid setting an element's scene
-		// multiple times. Is there a better way?
-		if (scene) this.#giveSceneAndLoadThree(child, scene)
 	}
 
 	override childUncomposedCallback(child: Element, _compositionType: CompositionType): void {
@@ -391,46 +398,11 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		// Update the parent because the child is gone, but the scene needs a
 		// redraw, and we can't update the child because it is already gone.
 		this.needsUpdate()
-
-		if (this._scene) this.#removeSceneAndUnloadThree(child)
-	}
-
-	#giveSceneAndLoadThree(child: SharedAPI, scene: Scene) {
-		child.traverseSceneGraph(descendant => {
-			if (descendant.scene === scene) return
-			descendant._scene = scene
-			this.#loadThree(descendant)
-		})
-	}
-
-	#removeSceneAndUnloadThree(child: SharedAPI) {
-		child.traverseSceneGraph(descendant => {
-			this.#unloadThree(descendant)
-			descendant._scene = null
-		})
 	}
 
 	/** @abstract */
 	traverseSceneGraph(_visitor: (el: SharedAPI) => void, _waitForUpgrade = false): Promise<void> | void {
 		throw 'Element3D and Scene implement this'
-	}
-
-	#loadThree(el: SharedAPI): void {
-		// Skip scenes because scenes call their own _trigger* methods based on
-		// values of their webgl or enabled-css attributes.
-		if (!isElement3D(el)) return
-
-		el._triggerLoadGL()
-		el._triggerLoadCSS()
-	}
-
-	#unloadThree(el: SharedAPI): void {
-		// Skip scenes because scenes call their own _trigger* methods based on
-		// values of their webgl or enabled-css attributes.
-		if (!isElement3D(el)) return
-
-		el._triggerUnloadGL()
-		el._triggerUnloadCSS()
 	}
 
 	/**
@@ -480,9 +452,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		Motor.needsUpdate(this)
 	}
 
-	@signal _glLoaded = false
-	@signal _cssLoaded = false
-
 	get _elementOperations(): ElementOperations {
 		if (!elOps.has(this)) elOps.set(this, new ElementOperations(this))
 		return elOps.get(this)!
@@ -530,15 +499,9 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		return new CSS3DObjectNested(this)
 	}
 
-	__connectThree(): void {
+	__reconnectThree(): void {
 		this.composedSceneGraphParent?.three.add(this.three)
 
-		// Although children connect themselves during __connectThree when
-		// triggered via _loadGL, we still need to do this in case a child is
-		// already loaded but the parent was re-distributed (f.e. to a different
-		// slot, in which case unload/load will happen for that parent),
-		// otherwise the child tree will be connected to the old diconnected
-		// parent three object and won't render on screen.
 		for (const child of this.composedLumeChildren) {
 			this.three.add(child.three)
 		}
@@ -546,7 +509,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		this.needsUpdate()
 	}
 
-	__connectThreeCSS(): void {
+	__reconnectThreeCSS(): void {
 		this.composedSceneGraphParent?.threeCSS.add(this.threeCSS)
 
 		for (const child of this.composedLumeChildren) {
@@ -579,142 +542,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 		if (this.parentLumeElement?.isScene) return this.parentLumeElement
 		return composedLumeParent
-	}
-
-	#glEffects = new Effects()
-
-	createGLEffect(fn: () => void) {
-		this.#glEffects.createEffect(fn)
-	}
-
-	#stopGLEffects() {
-		this.#glEffects.stopEffects()
-	}
-
-	_loadGL(): boolean {
-		if (!(this.scene && this.scene.webgl)) return false
-
-		if (this._glLoaded) return false
-
-		// create the object in case it isn't already (via the getter)
-		const three = this.three
-
-		// we don't let Three update local matrices automatically, we do
-		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
-		three.matrixAutoUpdate = false
-
-		this.__connectThree()
-		this.needsUpdate()
-
-		this._glLoaded = true
-		return true
-	}
-
-	_unloadGL(): boolean {
-		if (!this._glLoaded) return false
-
-		this.#stopGLEffects()
-
-		this.__disposeThree()
-		this.needsUpdate()
-
-		this._glLoaded = false
-		return true
-	}
-
-	#cssEffects = new Effects()
-
-	createCSSEffect(fn: () => void) {
-		this.#cssEffects.createEffect(fn)
-	}
-
-	#stopCSSEffects() {
-		this.#cssEffects.stopEffects()
-	}
-
-	_loadCSS(): boolean {
-		if (!(this.scene && this.scene.enableCss)) return false
-
-		if (this._cssLoaded) return false
-
-		// create the object in case it isn't already (via the getter)
-		const threeCSS = this.threeCSS
-
-		// We don't let Three update local matrices automatically, we do
-		// it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree.
-		threeCSS.matrixAutoUpdate = false
-
-		this.__connectThreeCSS()
-		this.needsUpdate()
-
-		this._cssLoaded = true
-		return true
-	}
-
-	_unloadCSS(): boolean {
-		if (!this._cssLoaded) return false
-
-		this.#stopCSSEffects()
-
-		this.__disposeThreeCSS()
-		this.needsUpdate()
-
-		this._cssLoaded = false
-		return true
-	}
-
-	// This is meant to be called in a non-reactive way (untracked) here, and in
-	// Scene. It is designed to be a one-way thing: create GL once, then destroy
-	// GL once.
-	_triggerLoadGL(): void {
-		// Use untrack because _loadGL reads and writes _glLoaded.
-		untrack(() => {
-			if (!this._loadGL()) return
-
-			this.emit(Events.BEHAVIOR_GL_LOAD, this)
-
-			queueMicrotask(async () => {
-				// FIXME Can we get rid of the code deferral here? Without the
-				// deferral of a total of three microtasks, then GL_LOAD may
-				// fire before behaviors have loaded GL (when their
-				// connectedCallbacks fire) due to ordering of when custom
-				// elements and element-behaviors life cycle methods fire, and
-				// thus the user code that relies on GL_LOAD will modify
-				// Three.js object properties and then once the behaviors load
-				// the behaviors overwrite the users' values.
-				await null
-				await null
-
-				this.emit(Events.GL_LOAD, this)
-			})
-		})
-	}
-
-	_triggerUnloadGL(): void {
-		// Use untrack because _unloadGL reads and writes _glLoaded.
-		untrack(() => {
-			if (!this._unloadGL()) return
-
-			this.emit(Events.BEHAVIOR_GL_UNLOAD, this)
-			queueMicrotask(() => this.emit(Events.GL_UNLOAD, this))
-		})
-	}
-
-	_triggerLoadCSS(): void {
-		// Use untrack because _loadCSS reads and writes _cssLoaded.
-		untrack(() => {
-			if (!this._loadCSS()) return
-
-			this.emit(Events.CSS_LOAD, this)
-		})
-	}
-
-	_triggerUnloadCSS(): void {
-		// Use untrack because _unloadCSS reads and writes _cssLoaded.
-		untrack(() => {
-			if (!this._unloadCSS()) return
-			this.emit(Events.CSS_UNLOAD, this)
-		})
 	}
 
 	/**
@@ -925,6 +752,9 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		super.emit(eventName, data)
 	}
 
+	// TODO this needs to be moved into CompositionTracker so that triggering
+	// childComposedCallback is generic, and filtering of element types needs
+	// to be done by subclasses.
 	override childConnectedCallback(child: Element) {
 		// This code handles two cases: the element has a ShadowRoot
 		// ("composed children" are children of the ShadowRoot), or it has a
@@ -956,7 +786,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 			child.addEventListener('slotchange', this.__onChildSlotChange)
 
-			// XXX Do we need __handleDistributedChildren for initial slotted
+			// XXX Do we need __handleSlottedChildren for initial slotted
 			// elements? The answer seems to be "yes, sometimes". When slots are
 			// appended, their slotchange events will fire. However, this
 			// `childConnectedCallback` is fired later from when a child is
@@ -964,16 +794,16 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 			// an appended slot's slotchange event *may* have already fired,
 			// and we will not have had the chance to add a slotchange event
 			// handler yet, therefore we need to fire
-			// __handleDistributedChildren here to handle that missed
+			// __handleSlottedChildren here to handle that missed
 			// opportunity.
 			//
 			// Also we need to defer() here because otherwise, this
 			// childConnectedCallback will fire once for when a child is
 			// connected into the light DOM and run the logic in the `if
 			// (isElement3D(child))` branch *after* childConnectedCallback is fired
-			// and executes this __handleDistributedChildren call for a shadow
+			// and executes this __handleSlottedChildren call for a shadow
 			// DOM slot, and in that case the distribution will not be detected
-			// (why is that?).  By deferring, this __handleDistributedChildren
+			// (why is that?).  By deferring, this __handleSlottedChildren
 			// call correctly happens *after* the above `if (isElement3D(child))`
 			// branch and then things will work as expected. This is all due to
 			// using MutationObserver, which fires event in a later task than
@@ -982,9 +812,9 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 			// TODO ^, Can we make WithChildren call this callback right when
 			// children are added, synchronously?  If so then we could rely on
 			// a slot's slotchange event upon it being connected without having
-			// to call __handleDistributedChildren here (which means also not
+			// to call __handleSlottedChildren here (which means also not
 			// having to use defer for anything).
-			queueMicrotask(() => this.__handleDistributedChildren(child))
+			queueMicrotask(() => this.__handleSlottedChildren(child))
 		}
 	}
 
@@ -1002,7 +832,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 			// COMPOSED TREE TRACKING:
 			child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
 
-			this.__handleDistributedChildren(child)
+			this.__handleSlottedChildren(child)
 			this.__previousSlotAssignedNodes.delete(child)
 		}
 	}

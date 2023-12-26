@@ -100,8 +100,8 @@ class PhongMaterialBehavior extends MaterialBehavior {
 		})
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const mat = this.meshComponent

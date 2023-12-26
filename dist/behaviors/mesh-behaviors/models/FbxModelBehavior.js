@@ -91,38 +91,33 @@ let FbxModelBehavior = (() => {
          * welcome!).
          */
         centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
-        loader;
+        loader = new FBXLoader();
         model;
-        // This is incremented any time we need a pending load() to cancel (f.e. on
-        // src change, or unloadGL cycle), so that the loader will ignore the
+        // This is incremented any time we need to cancel a pending load() (f.e. on
+        // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
         #version = 0;
-        loadGL() {
-            this.loader = new FBXLoader();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 // Using memos here because re-creating models on same-value updates
                 // would cost a lot.
+                // TODO memoize in other model classes like we do here.
                 const src = createMemo(() => this.src); // TODO use @memo from classy-solid
                 const center = createMemo(() => this.centerGeometry);
                 createEffect(() => {
                     src();
                     center();
-                    this.#version++;
                     untrack(() => this.#loadModel());
-                    onCleanup(() => this.#cleanupModel());
+                    onCleanup(() => {
+                        if (this.model)
+                            disposeObjectTree(this.model);
+                        this.model = undefined;
+                        // Increment this in case the loader is still loading, so it will ignore the result.
+                        this.#version++;
+                    });
                 });
             });
-        }
-        unloadGL() {
-            this.loader = undefined;
-            this.#cleanupModel();
-            // Increment this in case the loader is still loading, so it will ignore the result.
-            this.#version++;
-        }
-        #cleanupModel() {
-            if (this.model)
-                disposeObjectTree(this.model);
-            this.model = undefined;
         }
         #loadModel() {
             const { src } = this;

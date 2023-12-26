@@ -20,7 +20,7 @@ export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitm
  * @extends GeometryBehavior
  */
 export declare class LineGeometryBehavior extends GeometryBehavior {
-    __points: number[];
+    #private;
     /**
      * @property {string | number[] | null} points - a set of points for the line. Every three numbers is a point (X, Y, Z).
      *

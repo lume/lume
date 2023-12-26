@@ -12,7 +12,6 @@ export type MaterialBehaviorAttributes = 'alphaTest' | 'colorWrite' | 'depthTest
  * @extends GeometryOrMaterialBehavior
  */
 export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
-    #private;
     type: MeshComponentType;
     /**
      * @property {number} alphaTest -
@@ -129,6 +128,7 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
      * the element's children.
      */
     materialOpacity: number;
+    __color: string | number;
     /**
      * @property {string | number | Color} color -
      *
@@ -157,7 +157,7 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
      * [`materialOpacity`](#materialOpacity) are less than 1.
      */
     get transparent(): boolean;
-    loadGL(): void;
+    connectedCallback(): void;
     _createComponent(): Material;
     _handleTexture(textureUrl: () => string, setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void, hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean, onLoad?: () => void, isColor?: boolean): void;
 }

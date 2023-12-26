@@ -39,8 +39,8 @@ export class LineBasicMaterialBehavior extends MaterialBehavior {
 		return new LineBasicMaterial()
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this._handleTexture(
 			() => this.texture,

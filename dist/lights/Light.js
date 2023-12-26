@@ -131,20 +131,18 @@ let Light = (() => {
             // @ts-expect-error Threelight is abstract
             return new ThreeLight();
         }
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 if (typeof this.color === 'object')
                     this.three.color = this.color;
                 this.three.color = new Color(this.color);
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.three.intensity = this.intensity;
                 this.needsUpdate();
             });
-            return true;
         }
     };
     return Light = _classThis;

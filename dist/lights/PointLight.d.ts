@@ -93,7 +93,7 @@ export declare class PointLight extends LightWithShadow {
      */
     get power(): number;
     set power(power: number);
-    _loadGL(): boolean;
+    connectedCallback(): void;
     makeThreeObject3d(): ThreePointLight;
 }
 import type { ElementAttributes } from '@lume/element';

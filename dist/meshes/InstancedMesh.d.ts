@@ -92,7 +92,7 @@ export declare class InstancedMesh extends Mesh {
      * This is very similar to SharedAPI._calculateMatrix, without the threeCSS parts.
      */
     _calculateInstanceMatrix(pos: Vector3, quat: Quaternion, scale: Vector3, pivot: Vector3, result: Matrix4): void;
-    _loadGL(): boolean;
+    connectedCallback(): void;
     update(t: number, dt: number): void;
 }
 import type { ElementAttributes } from '@lume/element';

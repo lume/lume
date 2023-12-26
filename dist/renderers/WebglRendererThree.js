@@ -89,6 +89,9 @@ let WebglRendererThree = (() => {
         }
         sceneStates = (__runInitializers(this, _instanceExtraInitializers), new WeakMap());
         localClippingEnabled = __runInitializers(this, _localClippingEnabled_initializers, false);
+        initialized(scene) {
+            return this.sceneStates.has(scene);
+        }
         initialize(scene) {
             let sceneState = this.sceneStates.get(scene);
             if (sceneState)
@@ -113,11 +116,8 @@ let WebglRendererThree = (() => {
             renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
             this.sceneStates.set(scene, (sceneState = {
                 renderer,
-                sizeChangeHandler: () => this.updateResolution(scene),
                 effects,
             }));
-            this.updateResolution(scene);
-            scene.on('sizechange', sceneState.sizeChangeHandler);
             // TODO? Maybe the html/scene.js element should be responsible for
             // making this, so that DOM logic is encapsulated there?
             scene._glLayer.appendChild(renderer.domElement);
@@ -126,7 +126,6 @@ let WebglRendererThree = (() => {
             const sceneState = this.sceneStates.get(scene);
             if (!sceneState)
                 return;
-            scene.off('sizechange', sceneState.sizeChangeHandler);
             scene._glLayer?.removeChild(sceneState.renderer.domElement);
             sceneState.renderer.dispose();
             sceneState.pmremgen?.dispose();
@@ -140,28 +139,21 @@ let WebglRendererThree = (() => {
             const { renderer } = sceneState;
             renderer.render(scene.three, scene.threeCamera);
         }
-        // TODO FIXME This is tied to the `sizechange` event of Scene, which means
-        // camera and renderer resize happens outside of the animation loop, but as
-        // with _calcSize, we want to see if we can put this in the animation loop
-        // as well. Putting this logic in the loop depends on putting _calcSize in
-        // the loop. #66
-        updateResolution(scene) {
-            // There seems to be a bug causing the canvas to flicker if this size
-            // change handling happens during a `ResizeObserver` callback. So we use
-            // `Motor.once` to defer it one frame. It doesn't work with
-            // `requestAnimationFrame` directly, only with `Motor.once`, which may
-            // be a clue to something. https://github.com/lume/lume/issues/253
+        updateResolution(scene, x, y) {
+            // There is a bug causing the canvas to flicker if this size change
+            // handling happens during a `ResizeObserver` callback because a canvas
+            // resize after having already rendered will clear the pixels before the
+            // paint happens after resize observer callbacks. So we use `Motor.once`
+            // to defer it by a frame so that the resize happens before the next
+            // frame's render to canvas. It doesn't work with
+            // `requestAnimationFrame` directly, only with `Motor.once`, for some
+            // reason.  https://github.com/lume/lume/issues/253
             // requestAnimationFrame(() => {
             Motor.once(() => {
+                if (!this.initialized(scene))
+                    return;
                 const state = this.sceneStates.get(scene);
-                if (!state)
-                    throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.');
-                scene._updateCameraAspect();
-                scene._updateCameraPerspective();
-                scene._updateCameraProjection();
-                const { x, y } = scene.calculatedSize;
                 state.renderer.setSize(x, y);
-                scene.needsUpdate();
             }, false);
         }
         setClearColor(scene, color, opacity) {

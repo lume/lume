@@ -83,8 +83,8 @@ let LambertMaterialBehavior = (() => {
         _createComponent() {
             return new MeshLambertMaterial({ color: 0x00ff00 });
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
             this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);
         }

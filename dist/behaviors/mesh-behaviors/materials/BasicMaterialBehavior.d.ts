@@ -6,6 +6,6 @@ export declare class BasicMaterialBehavior extends MaterialBehavior {
     texture: string;
     specularMap: string;
     _createComponent(): MeshBasicMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=BasicMaterialBehavior.d.ts.map

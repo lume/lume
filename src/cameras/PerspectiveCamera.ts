@@ -2,8 +2,11 @@ import {numberAttribute, element} from '@lume/element'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {Camera, type CameraAttributes} from './Camera.js'
 import {autoDefineElements} from '../LumeConfig.js'
+import {defaultScenePerspective} from '../constants.js'
 
 export type PerspectiveCameraAttributes = CameraAttributes | 'fov'
+
+// TODO auto-adjust position of three camera based on scene.perspective relative to element's origin. See Scene.perspective.
 
 /**
  * @class PerspectiveCamera
@@ -29,18 +32,43 @@ class PerspectiveCamera extends Camera {
 	 *
 	 * *attribute*
 	 *
-	 * Default: `50`
+	 * Default: `0`
 	 *
-	 * The camera's field of view angle, in degrees, when [`zoom`](#zoom) level
-	 * is `1`.
+	 * The camera's field of view angle, in degrees, when the [`zoom`](#zoom)
+	 * level is `1`.
+	 *
+	 * A value of `0` means automatic fov based on the current Scene's
+	 * [`.perspective`](../core/Scene#perspective), matching the behavior of [CSS
+	 * `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
 	 */
-	@numberAttribute fov = 50
+	@numberAttribute fov = 0
 
 	override connectedCallback() {
 		super.connectedCallback()
 
 		this.createEffect(() => {
-			this.three.fov = this.fov
+			if (this.fov !== 0) {
+				this.three.fov = this.fov
+				this.three.updateProjectionMatrix()
+				this.needsUpdate()
+				return
+			}
+
+			// AUTO FOV //////////////////////////
+			// Uses the scene `perspective` to match behavior of CSS `perspective`
+
+			const perspective = this.scene?.perspective ?? defaultScenePerspective
+			const sceneSize = this.scene?.calculatedSize ?? {x: 1, y: 1, z: 0}
+
+			// This math is what sets the FOV of the default camera so that a
+			// viewport-sized plane will fit exactly within the view when it is
+			// positioned at the world origin 0,0,0, as described in the
+			// `perspective` property's description.
+			// For more details: https://discourse.threejs.org/t/269/28
+			this.three.fov = (180 * (2 * Math.atan(sceneSize.y / 2 / perspective))) / Math.PI
+
+			////////////////////////////
+
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
 		})
@@ -51,17 +79,19 @@ class PerspectiveCamera extends Camera {
 			if (this.aspect !== 0) {
 				this.three.aspect = this.aspect
 				this.three.updateProjectionMatrix()
+				this.needsUpdate()
 				return
 			}
 
-			let aspect = 0
+			// AUTO ASPECT /////////////////////////////
 
-			if (this.scene) aspect = this.scene.calculatedSize.x / this.scene.calculatedSize.y
+			const sceneSize = this.scene?.calculatedSize || {x: 1, y: 1}
 
-			// in case of a 0 or NaN (f.e. 0 / 0 == NaN)
-			if (!aspect) aspect = 16 / 9
+			// '|| 1' in case of a 0 or NaN (f.e. 0 / 0 == NaN)
+			this.three.aspect = sceneSize.x / sceneSize.y || 1
 
-			this.three.aspect = aspect
+			////////////////////////////
+
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
 		})

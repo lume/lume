@@ -20,6 +20,6 @@ export declare class PhysicalMaterialBehavior extends StandardMaterialBehavior {
     transmission: number;
     transmissionMap: string;
     _createComponent(): MeshPhysicalMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=PhysicalMaterialBehavior.d.ts.map

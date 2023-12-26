@@ -17,8 +17,8 @@ class BasicMaterialBehavior extends MaterialBehavior {
 		return new MeshBasicMaterial()
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this._handleTexture(
 			() => this.texture, // map

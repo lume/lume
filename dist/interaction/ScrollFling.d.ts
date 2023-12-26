@@ -1,5 +1,6 @@
-type ScrollFlingOptions = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'scrollFactor'>>;
-export declare class ScrollFling {
+import { Effects } from 'classy-solid';
+type Options = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'sensitivity' | 'hasInteracted'>>;
+export declare class ScrollFling extends Effects {
     #private;
     /**
      * During scroll, this value will change. It is a signal so that it can be
@@ -18,9 +19,10 @@ export declare class ScrollFling {
     minY: number;
     maxY: number;
     target: Element;
-    scrollFactor: number;
+    sensitivity: number;
+    hasInteracted: boolean;
     get isStarted(): boolean;
-    constructor(options: ScrollFlingOptions);
+    constructor(options?: Options);
     start(): this;
     stop(): this;
 }

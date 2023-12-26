@@ -1,15 +1,15 @@
-import {createSignal, untrack} from 'solid-js'
-import {reactive, signal} from 'classy-solid'
+import {createSignal, onCleanup, untrack} from 'solid-js'
+import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
 import type {RenderTask} from '../core/index.js'
 
-type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>
+type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted'>>
 
 export
 @reactive
-class PinchFling {
+class PinchFling extends Effects {
 	/**
 	 * During pinch, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
@@ -20,9 +20,11 @@ class PinchFling {
 	minX = -Infinity
 	maxX = Infinity
 
-	target: Element = document.documentElement
+	@signal target: Element = document.documentElement
 
-	factor = 1
+	sensitivity = 1
+
+	@signal hasInteracted = false
 
 	#task?: RenderTask
 
@@ -46,12 +48,15 @@ class PinchFling {
 
 	#aborter = new AbortController()
 
-	constructor(options: ScrollFlingOptions) {
+	constructor(options: Options = {}) {
+		super()
 		Object.assign(this, options)
 	}
 
 	#onPinch = (dx: number) => {
-		dx = dx * this.factor
+		this.hasInteracted = true
+
+		dx = dx * this.sensitivity
 
 		this.x = clamp(this.x + dx, this.minX, this.maxX)
 
@@ -131,12 +136,23 @@ class PinchFling {
 		if (untrack(this.#isStarted.get)) return this
 		this.#isStarted.set(true)
 
-		this.#aborter = new AbortController()
+		this.createEffect(() => {
+			this.target // any time the target changes make new events on that target
 
-		// @ts-expect-error, whyyyyy TypeScript
-		this.target.addEventListener('pointerdown', this.#onDown, {signal: this.#aborter.signal})
-		// @ts-expect-error, whyyyyy TypeScript
-		this.target.addEventListener('pointerup', this.#onUp, {signal: this.#aborter.signal})
+			this.#aborter = new AbortController()
+
+			// @ts-expect-error, whyyyyy TypeScript
+			this.target.addEventListener('pointerdown', this.#onDown, {signal: this.#aborter.signal})
+			// @ts-expect-error, whyyyyy TypeScript
+			this.target.addEventListener('pointerup', this.#onUp, {signal: this.#aborter.signal})
+
+			onCleanup(() => {
+				// Stop any current animation, if any.
+				if (this.#task) Motor.removeRenderTask(this.#task)
+
+				this.#aborter.abort()
+			})
+		})
 
 		return this
 	}
@@ -145,10 +161,7 @@ class PinchFling {
 		if (!untrack(this.#isStarted.get)) return this
 		this.#isStarted.set(false)
 
-		// Stop any current animation, if any.
-		if (this.#task) Motor.removeRenderTask(this.#task)
-
-		this.#aborter.abort()
+		this.stopEffects()
 
 		return this
 	}

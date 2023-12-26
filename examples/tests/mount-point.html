@@ -24,21 +24,23 @@
 	}
 
 	.x-axis {
-		background: red;
+		background: rgb(255, 87, 87);
 	}
 	.y-axis {
-		background: green;
+		background: rgb(51, 191, 51);
 	}
 	.z-axis {
-		background: blue;
+		background: royalblue;
 	}
 </style>
 
-<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
+<lume-scene id="scene" perspective="700" webgl physically-correct-lights>
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
-	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 400" intensity="1500"></lume-point-light>
+	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 410" intensity="1500"></lume-point-light>
 
-	<lume-element3d id="root" size="0 0 0" align-point="0.5 0.5 0.5" rotation="-10 30 0">
+	<lume-camera-rig align-point="0.5 0.5" horizontal-angle="-30" vertical-angle="10"></lume-camera-rig>
+
+	<lume-element3d id="root" size="0 0 0" align-point="0.5 0.5 0.5" xrotation="-10 30 0">
 		<!-- prettier-ignore -->
 		<lume-element3d>
 			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
@@ -72,16 +74,11 @@
 <script type="module">
 	import 'lume'
 
-	setInterval(() => {
-		scene.webgl = !scene.webgl
-		scene.needsUpdate()
-	}, 1500)
-
 	// TODO replace with CSS, once that's ready
 	document.querySelectorAll('lume-scene *').forEach(n => {
 		n.color = 'deeppink'
 		n.materialOpacity = 0.4
 	})
 
-	root.rotation = (x, y, z) => [x, (y += 1), z]
+	setInterval(() => (scene.webgl = !scene.webgl), 1500)
 </script>

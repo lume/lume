@@ -64,10 +64,10 @@ class DirectionalLight extends LightWithShadow {
 	@numberAttribute shadowCameraBottom = -1000
 	@numberAttribute shadowCameraLeft = -1000
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			const light = this.three
 			const shadow = light.shadow
 
@@ -79,8 +79,6 @@ class DirectionalLight extends LightWithShadow {
 			shadow.needsUpdate = true
 			this.needsUpdate()
 		})
-
-		return true
 	}
 
 	override makeThreeObject3d() {

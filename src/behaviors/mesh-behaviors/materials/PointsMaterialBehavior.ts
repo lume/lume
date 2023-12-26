@@ -18,8 +18,8 @@ class PointsMaterialBehavior extends MaterialBehavior {
 		return new PointsMaterial({color: 0x00ff00})
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const mat = this.meshComponent

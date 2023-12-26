@@ -118,7 +118,6 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 					if (!this.isConnected) return
 					this.childDisconnectedCallback && this.childDisconnectedCallback(child)
 				},
-				skipTextNodes: true,
 			})
 		}
 

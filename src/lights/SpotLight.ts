@@ -1,6 +1,7 @@
+import {numberAttribute, element, booleanAttribute, stringAttribute} from '@lume/element'
 import {SpotLight as ThreeSpotLight} from 'three/src/lights/SpotLight.js'
 import {SpotLightHelper} from 'three/src/helpers/SpotLightHelper.js'
-import {numberAttribute, element, booleanAttribute, stringAttribute} from '@lume/element'
+import {Object3D} from 'three/src/core/Object3D.js'
 import {createEffect, onCleanup} from 'solid-js'
 import {PointLight, type PointLightAttributes} from './PointLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -97,7 +98,7 @@ class SpotLight extends PointLight {
 
 		for (const v of array) {
 			if (typeof v !== 'string') {
-				// TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+				// TODO #279: This setter is non-reactive to v.scene, so it will
 				// not update if the element becomes composed into a Lume scene.
 				if (v instanceof Element3D && v.scene) this.#target.push(v)
 				continue
@@ -122,7 +123,7 @@ class SpotLight extends PointLight {
 					// Find only planes participating in rendering (i.e. in the
 					// composed tree, noting that .scene is null when not
 					// composed)
-					// TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+					// TODO #279: This setter is non-reactive to el.scene, so it will
 					// not update if the element becomes composed into a Lume scene.
 					if (el instanceof Element3D && el.scene) this.#target.push(el)
 
@@ -151,10 +152,10 @@ class SpotLight extends PointLight {
 
 	#helper: SpotLightHelper | null = null
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			if (!(this.scene && this.debug)) return
 			const scene = this.scene
 			this.#helper = new SpotLightHelper(this.three)
@@ -163,7 +164,7 @@ class SpotLight extends PointLight {
 			onCleanup(() => scene.three.remove(this.#helper!))
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			const light = this.three
 
 			light.angle = toRadians(this.angle)
@@ -186,10 +187,6 @@ class SpotLight extends PointLight {
 			// worrying about code execution order. https://github.com/lume/lume/issues/279
 			this.target = this.#rawTarget
 
-			// loadGL may fire during parsing before children exist. This
-			// MutationObserver will also fire during parsing. This allows us to
-			// re-run the query logic whenever DOM in the current root changes.
-			//
 			// TODO we need to observe all the way up the composed tree, or we
 			// should make the querying scoped only to the nearest root, for
 			// consistency. This covers most cases, for now.
@@ -210,19 +207,11 @@ class SpotLight extends PointLight {
 				this.needsUpdate()
 			})
 
-			// No onCleanup for this.#observer needed here because _unloadGL handles it.
+			onCleanup(() => {
+				this.#observer?.disconnect()
+				this.#observer = null
+			})
 		})
-
-		return true
-	}
-
-	override _unloadGL() {
-		if (!super._unloadGL()) return false
-
-		this.#observer?.disconnect()
-		this.#observer = null
-
-		return true
 	}
 
 	// @ts-expect-error FIXME probably better for spotlight not to extend from pointlight, make a common shared class if needed.
@@ -232,7 +221,6 @@ class SpotLight extends PointLight {
 }
 
 import type {ElementAttributes} from '@lume/element'
-import {Object3D} from 'three'
 
 declare module 'solid-js' {
 	namespace JSX {

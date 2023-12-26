@@ -1,5 +1,6 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
+import {onCleanup} from 'solid-js'
 import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
@@ -27,61 +28,51 @@ class ObjModelBehavior extends RenderableBehavior {
 	@stringAttribute @receiver mtl = ''
 
 	model?: Group
-	objLoader?: OBJLoader
-	mtlLoader?: MTLLoader
 
-	// This is incremented any time we need a pending load() to cancel (f.e. on
-	// src change, or unloadGL cycle), so that the loader will ignore the
+	objLoader = (() => {
+		const loader = new OBJLoader()
+		loader.manager.onLoad = () => this.element.needsUpdate()
+		return loader
+	})()
+
+	mtlLoader = (() => {
+		const loader = new MTLLoader(this.objLoader.manager)
+		// Allow cross-origin images to be loaded.
+		loader.crossOrigin = ''
+		return loader
+	})()
+
+	// This is incremented any time we need to cancel a pending load() (f.e. on
+	// src change, or on disconnect), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	override loadGL() {
-		this.objLoader = new OBJLoader() // TODO types for loaders
-		this.mtlLoader = new MTLLoader(this.objLoader.manager)
-		// Allow cross-origin images to be loaded.
-		this.mtlLoader.crossOrigin = ''
-
-		this.objLoader.manager.onLoad = () => {
-			this.element.needsUpdate()
-		}
-
-		let firstRun = true
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			this.mtl
 			this.obj
 
-			if (!firstRun) this.#cleanupModel()
-
-			this.#version++
 			// TODO We can update only the material or model specifically
 			// instead of reloading the whole object.
 			this.#loadModel()
+
+			onCleanup(() => {
+				if (this.model) {
+					disposeObjectTree(this.model, {
+						destroyMaterial: !this.#materialIsFromMaterialBehavior,
+					})
+				}
+				this.#materialIsFromMaterialBehavior = false
+				this.model = undefined
+				// Increment this in case the loader is still loading, so it will ignore the result.
+				this.#version++
+			})
 		})
-
-		firstRun = false
-	}
-
-	override unloadGL() {
-		this.#cleanupModel()
-
-		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.#version++
 	}
 
 	#materialIsFromMaterialBehavior = false
-
-	#cleanupModel() {
-		if (this.model) {
-			disposeObjectTree(this.model, {
-				destroyMaterial: !this.#materialIsFromMaterialBehavior,
-			})
-		}
-
-		this.#materialIsFromMaterialBehavior = false
-
-		this.model = undefined
-	}
 
 	#loadModel() {
 		const {obj, mtl, mtlLoader, objLoader} = this

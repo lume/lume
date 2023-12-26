@@ -59,7 +59,7 @@ export type ShapeGeometryBehaviorAttributes =
 export
 @behavior
 class ShapeGeometryBehavior extends GeometryBehavior {
-	__shape = new Shape().copy(defaultShape)
+	#shape = new Shape().copy(defaultShape)
 
 	/**
 	 * @property {string | number[] | THREE.Shape | null} shape - Defines the 2D shape to render.
@@ -99,11 +99,11 @@ class ShapeGeometryBehavior extends GeometryBehavior {
 	@attribute
 	@receiver
 	get shape(): Shape {
-		return this.__shape
+		return this.#shape
 	}
 	set shape(shape: string | number[] | Shape | null) {
 		if (!shape) {
-			this.__shape.copy(defaultShape)
+			this.#shape.copy(defaultShape)
 		} else if (
 			typeof shape === 'string' &&
 			(shape = shape.trim()) && // skip empty string here
@@ -112,36 +112,36 @@ class ShapeGeometryBehavior extends GeometryBehavior {
 			const shapePath = parseSvgPathDAttribute(shape)
 
 			// TODO This supports only one solid shape for now.
-			this.__shape.copy(shapePath.toShapes(true)[0] ?? defaultShape)
+			this.#shape.copy(shapePath.toShapes(true)[0] ?? defaultShape)
 		} else if (typeof shape === 'string' && !shape.match(/^-?[0-9]/)) {
 			// TODO query selector for <path> element from which to get a `d` attribute.
 			console.error('Unsupported shape path: ', shape)
-			this.__shape.copy(defaultShape)
+			this.#shape.copy(defaultShape)
 		} else if (typeof shape === 'string' || Array.isArray(shape)) {
 			const points: number[] = typeof shape === 'string' ? stringToNumberArray(shape, 'shape') : shape
 
 			if (!points.length) {
-				this.__shape.copy(defaultShape)
+				this.#shape.copy(defaultShape)
 			} else {
 				if (points.length % 2 !== 0)
 					throw new Error('shape path must have an even number of numbers, each pair of numbers being a point.')
 
-				this.__shape.copy(emptyShape)
-				this.__shape.moveTo(points[0], points[1])
+				this.#shape.copy(emptyShape)
+				this.#shape.moveTo(points[0], points[1])
 
-				if (points.length > 2) for (let i = 2; i < points.length; i += 2) this.__shape.lineTo(points[i], points[i + 1])
+				if (points.length > 2) for (let i = 2; i < points.length; i += 2) this.#shape.lineTo(points[i], points[i + 1])
 			}
 		} else {
 			// Three.js bug: Copying a shape from itself breaks, causing
 			// its `curves` array to be empty. Without this, `<lume-shape>` will
 			// not draw anything on screen initially until its `shape` is
 			// modified.
-			if (this.__shape !== shape) {
-				this.__shape.copy(shape)
+			if (this.#shape !== shape) {
+				this.#shape.copy(shape)
 			}
 		}
 
-		this.__shape.updateArcLengths()
+		this.#shape.updateArcLengths()
 	}
 
 	/**

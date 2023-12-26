@@ -27,16 +27,15 @@ declare const Behavior_base: {
         connectedCallback(): void;
         disconnectedCallback(): void;
         readonly observedObject: object;
-        _propChangedCallback(propName: PropertyKey, value: any): void;
-        "__#5@#isObserving": boolean;
+        _propChangedCallback(propName: string | symbol, value: any): void;
         "__#5@#observeProps"(): void;
         "__#5@#unobserveProps"(): void;
-        __forwardedProps(): never[];
-        __forwardInitialProps(): void;
+        __getReceivedProps(): never[];
+        __receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
-    receivedProperties?: PropertyKey[] | undefined;
+    receivedProperties?: (string | symbol)[] | undefined;
 } & (new (...a: any[]) => import("./PropReceiver.js").PossiblyCustomElement);
 /**
  * @class Behavior
@@ -73,7 +72,7 @@ export declare abstract class Behavior extends Behavior_base {
         prototype: Element;
     }[];
     get observedObject(): Element;
-    __forwardInitialProps(): void;
+    __receiveInitialValues(): void;
 }
 export {};
 //# sourceMappingURL=Behavior.d.ts.map

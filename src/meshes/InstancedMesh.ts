@@ -405,10 +405,10 @@ class InstancedMesh extends Mesh {
 		// }
 	}
 
-	override _loadGL(): boolean {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			// Increase the InstancedMesh size (by making a new one) as needed.
 			if (this.count > this.#biggestCount) {
 				this.#biggestCount = this.count
@@ -432,35 +432,33 @@ class InstancedMesh extends Mesh {
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.rotations
 			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
 			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.positions
 			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
 			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.scales
 			if (!this.#updateSingleInstanceOnly) this.#allMatricesNeedUpdate = true
 			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.colors
 			if (!this.#updateSingleInstanceOnly) this.#allColorsNeedUpdate = true
 			this.#updateSingleInstanceOnly = false
 			this.needsUpdate()
 		})
-
-		return true
 	}
 
 	override update(t: number, dt: number) {

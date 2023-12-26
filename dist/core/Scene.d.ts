@@ -7,7 +7,7 @@ import type { Camera } from '../cameras/Camera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
-export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'equirectangularBackground' | 'backgroundBlur' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
 /**
  * @class Scene -
  *
@@ -174,6 +174,21 @@ export declare class Scene extends SharedAPI {
      * Applies only if [`webgl`](#webgl) is `true`.
      */
     background: string | null;
+    /**
+     * @property {number} backgroundIntensity -
+     *
+     * *attribute*
+     *
+     * Default: `0`
+     *
+     * A number between `0` and `1` that defines the intensity of the
+     * `background` when WebGL is enabled. If the value is 1, the background
+     * will be brightest, and if the value is 0 the background will be black.
+     *
+     * This applies only if [`webgl`](#webgl) is `true` and the
+     * [`background`](#background) property is set.
+     */
+    backgroundIntensity: number;
     /**
      * @property {number} backgroundBlur -
      *
@@ -363,37 +378,48 @@ export declare class Scene extends SharedAPI {
      *
      * Default: `400`
      *
-     * This property behaves just like CSS perspective
-     * when using CSS transforms, but also applies to LUME's WebGL rendering when using a scene's
-     * default camera. If using a custom camera (for example a `<lume-perspective-camera>` element) then this
-     * value does not (currently) have any effect.
+     * This property behaves identical to CSS perspective
+     * (https://developer.mozilla.org/en-US/docs/Web/CSS/perspective) when using
+     * a scene's default camera, adjusting its fov and Z position. If using a
+     * custom camera (for example a `<lume-perspective-camera>`) then this value
+     * affects only the camera's fov, unless we specify a non-zero fov value for
+     * the custom camera.
      *
      * The value sets the default camera's Z position to the given value (relative to the world
      * origin, 0,0,0). Note that the default camera points in the -z direction, therefore a value
      * of 800 means the camera is at position 0,0,800 looking directly at the world origin
-     * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and zoom
+     * at 0,0,0. Furthermore, based on the chosen value, the camera's aspect ratio and fov
      * will be adjusted such that if there were a plane positioned at 0,0,0, perpendicular
      * to the camera's line of sight, and having the same dimensions as the scene's viewport
      * in screen pixels, then the plane would fit perfectly in the view, and one unit on that
-     * plane would coincide with one pixel on the screen; essentially that plane would be lined
-     * up perfectly with the screen surface. This is the same meaning that CSS perspective has.
+     * plane would coincide with one CSS pixel on the screen; essentially that plane would be lined
+     * up perfectly with the screen surface.
      *
      * Applies with both CSS and WebGL rendering.
      */
-    set perspective(value: number);
-    get perspective(): number;
+    perspective: number;
+    __defaultThreeCamera: ThreeCamera | null;
     /**
      * @property {THREE.Camera} threeCamera -
      *
      * *readonly*
      *
-     * The current active THREE.Camera being
-     * used by the scene. It will be a default camera if no camera was manually
-     * specified by a camera element such as `<lume-perspective-camera>`, in
-     * which case the scene's `perspective` property is used for configuring the
-     * default camera. If a manual camera element is set active with an
-     * `active` attribute, then this property will return the currently
-     * active THREE.Camera represented by the active camera element.
+     * The current active `THREE.Camera` being used to render visuals.
+     *
+     * If no Lume camera element such as `<lume-perspective-camera>` is active,
+     * this returns the default `THREE.Camera` that the scene uses internally.
+     *
+     * If a camera element is set active with an `active` attribute (f.e.
+     * `<lume-perspective-camera active>`, then this property will return the
+     * `THREE.Camera` from the active camera element.
+     *
+     * The scene's [`.perspective`](#perspective) property is used for
+     * configuring the default camera view's fov and Z position to behave
+     * identical to CSS `perspective` by default. This behavior can be bypassed
+     * by using a `<lume-perspective-camera>` element manually, and configuring
+     * its [`.aspect`](../cameras/PerspectiveCamera#aspect) and
+     * [`fov`](../cameras/PerspectiveCamera#fov) properties or attributes to
+     * non-zero values.
      *
      * Applies with both CSS and WebGL rendering.
      */
@@ -430,7 +456,7 @@ export declare class Scene extends SharedAPI {
      */
     get glRenderer(): import("three").WebGLRenderer | undefined;
     /**
-     * @property {CSS3DRendererNested} glRenderer
+     * @property {CSS3DRendererNested} cssRenderer
      *
      * *readonly*
      *
@@ -442,13 +468,19 @@ export declare class Scene extends SharedAPI {
     get cssRenderer(): import("../renderers/CSS3DRendererNested.js").CSS3DRendererNested | undefined;
     __camera: Camera | null;
     __localClipping: boolean;
+    get scene(): this;
     constructor();
     _glLayer: HTMLDivElement | null;
     _cssLayer: HTMLDivElement | null;
     _miscLayer: HTMLDivElement | null;
     drawScene(): void;
     connectedCallback(): void;
-    disconnectedCallback(): void;
+    glRendererEffect: () => void;
+    fogEffect: () => void;
+    cameraNearFarEffect: () => void;
+    cameraEffect: () => void;
+    parentSizeEffect: () => void;
+    cssRendererEffect: () => void;
     static observedAttributes: string[];
     attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null): void;
     makeThreeObject3d(): ThreeScene;
@@ -486,6 +518,7 @@ export declare class Scene extends SharedAPI {
      */
     traverseSceneGraph(visitor: (el: Element3D) => void, waitForUpgrade?: boolean): Promise<void> | void;
     _createDefaultCamera(): void;
+    get __perspectiveFov(): number;
     _updateCameraPerspective(): void;
     _updateCameraAspect(): void;
     _updateCameraProjection(): void;
@@ -503,10 +536,6 @@ export declare class Scene extends SharedAPI {
      * elements don't have the concept of Z size and are always flat.
      */
     get parentSize(): XYZValuesObject<number>;
-    _loadGL(): boolean;
-    _unloadGL(): boolean;
-    _loadCSS(): boolean;
-    _unloadCSS(): boolean;
     __setCamera(camera?: Camera): void;
     __elementParentSize: XYZValuesObject<number>;
     template: () => Node | Node[];

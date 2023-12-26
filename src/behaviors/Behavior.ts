@@ -6,6 +6,8 @@ import type {Element as LumeElement} from '@lume/element'
 import type {ElementWithBehaviors, PossibleBehaviorConstructor, PossibleBehaviorInstance} from 'element-behaviors'
 import type {AnyConstructor} from 'lowclass/dist/utils.js'
 
+type PropKey = string | symbol
+
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
  * classes. If a name is passed in, it defines an element behavior instead of a
@@ -107,8 +109,8 @@ export abstract class Behavior extends PropReceiver() {
 	#whenDefined: Promise<unknown> = null! as Promise<unknown>
 	#elementDefined = false
 
-	override __forwardInitialProps() {
-		super.__forwardInitialProps()
+	override __receiveInitialValues() {
+		super.__receiveInitialValues()
 		this.#fowardPreUpgradeValues()
 	}
 
@@ -124,14 +126,14 @@ export abstract class Behavior extends PropReceiver() {
 
 		this.#preUpgradeValuesHandled = true
 
-		for (const prop of this.__forwardedProps()) {
+		for (const prop of this.__getReceivedProps()) {
 			// prettier-ignore
 			const value = el.
-				// @ts-ignore protected access is ok here
+				// @ts-expect-error protected access is ok here
 				_preUpgradeValues
 				.get(prop)
 
-			if (value !== undefined) this._propChangedCallback(prop, value)
+			if (value !== undefined) this._propChangedCallback(prop as PropKey, value)
 		}
 	}
 

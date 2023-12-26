@@ -16,7 +16,9 @@ import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 export abstract class GeometryOrMaterialBehavior extends MeshBehavior {
 	abstract type: MeshComponentType
 
-	override loadGL() {
+	override connectedCallback() {
+		super.connectedCallback()
+
 		this.createEffect(() => this.resetMeshComponent())
 	}
 

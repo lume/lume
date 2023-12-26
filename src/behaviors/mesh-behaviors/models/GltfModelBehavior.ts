@@ -55,16 +55,16 @@ class GltfModelBehavior extends RenderableBehavior {
 	 */
 	@booleanAttribute @receiver centerGeometry = false
 
-	gltfLoader?: GLTFLoader
+	loader = new GLTFLoader()
 	model: GLTF | null = null
 
-	// This is incremented any time we need a pending load() to cancel (f.e. on
-	// src change, or unloadGL cycle), so that the loader will ignore the
+	// This is incremented any time we need to cancel a pending load() (f.e. on
+	// src change, or on disconnect), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	override loadGL() {
-		this.gltfLoader = new GLTFLoader()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const decoderPath = createMemo(() => this.dracoDecoder)
@@ -73,11 +73,11 @@ class GltfModelBehavior extends RenderableBehavior {
 				if (!decoderPath()) return
 
 				const dracoLoader = getDracoLoader(decoderPath())
-				this.gltfLoader!.dracoLoader = dracoLoader
+				this.loader.dracoLoader = dracoLoader
 
 				onCleanup(() => {
 					disposeDracoLoader(decoderPath())
-					this.gltfLoader!.dracoLoader = null
+					this.loader.dracoLoader = null
 				})
 			})
 
@@ -91,24 +91,16 @@ class GltfModelBehavior extends RenderableBehavior {
 				decoderPath()
 				center()
 
-				this.#version++
 				untrack(() => this.#loadModel())
 
-				onCleanup(() => this.#cleanupModel())
+				onCleanup(() => {
+					if (this.model) disposeObjectTree(this.model.scene)
+					this.model = null
+					// Increment this in case the loader is still loading, so it will ignore the result.
+					this.#version++
+				})
 			})
 		})
-	}
-
-	override unloadGL() {
-		this.gltfLoader = undefined
-
-		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.#version++
-	}
-
-	#cleanupModel() {
-		if (this.model) disposeObjectTree(this.model.scene)
-		this.model = null
 	}
 
 	#loadModel() {
@@ -122,7 +114,7 @@ class GltfModelBehavior extends RenderableBehavior {
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
-		this.gltfLoader!.load(
+		this.loader.load(
 			src,
 			model => version == this.#version && this.#setModel(model),
 			progress => version == this.#version && this.element.emit(Events.PROGRESS, progress),

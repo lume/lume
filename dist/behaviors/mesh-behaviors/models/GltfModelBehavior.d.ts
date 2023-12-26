@@ -30,9 +30,8 @@ export declare class GltfModelBehavior extends RenderableBehavior {
      * welcome!).
      */
     centerGeometry: boolean;
-    gltfLoader?: GLTFLoader;
+    loader: GLTFLoader;
     model: GLTF | null;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=GltfModelBehavior.d.ts.map

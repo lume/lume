@@ -137,13 +137,18 @@ export declare class CameraRig extends Element3D {
      *
      * *attribute*
      *
-     * Default: `1000`
+     * Default: `-1`
      *
      * The distance that the camera will be away from the center point.
      * When the performing a scroll gesture, the camera will zoom by moving
      * towards or away from the center point (i.e. dollying).
+     *
+     * A value of `-1` means automatic distance based on the current scene's
+     * [`.perspective`](../core/Scene#perspective), matching the behavior of
+     * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
      */
     distance: number;
+    __appliedDistance: number;
     /**
      * @deprecated initialDistance has been renamed to distance.
      * @property {number} initialDistance
@@ -157,23 +162,31 @@ export declare class CameraRig extends Element3D {
      *
      * *attribute*
      *
-     * Default: `200`
+     * Default: `-1`
      *
-     * The smallest distance the camera can get to the center point when zooming
+     * The smallest distance (a non-zero value) the camera can get to the center point when zooming
      * by scrolling.
+     *
+     * A value of `-1` means the value will automatically be half of whatever
+     * the [`.distance`](#distance) value is.
      */
     minDistance: number;
+    __appliedMinDistance: number;
     /**
      * @property {number} maxDistance
      *
      * *attribute*
      *
-     * Default: `2000`
+     * Default: `-1`
      *
-     * The largest distance the camera can get from the center point when
-     * zooming by scrolling.
+     * The largest distance (a non-zero value) the camera can get from the
+     * center point when zooming out by scrolling or with pinch gesture.
+     *
+     * A value of `-1` means the value will automatically be double of whatever
+     * the [`.distance`](#distance) value is.
      */
     maxDistance: number;
+    __appliedMaxDistance: number;
     /**
      * @property {boolean} active
      *
@@ -203,19 +216,16 @@ export declare class CameraRig extends Element3D {
      * disabled, but the camera rig can still be manipulated programmatically.
      */
     interactive: boolean;
-    cam?: PerspectiveCamera;
+    threeCamera?: PerspectiveCamera;
+    /** @deprecated Use `.threeCamera` instead. */
+    get cam(): PerspectiveCamera | undefined;
     rotationYTarget?: Element3D;
+    rotationXTarget?: Element3D;
+    flingRotation: FlingRotation;
+    scrollFling: ScrollFling;
+    pinchFling: PinchFling;
+    connectedCallback(): void;
     template: () => Node | Node[];
-    flingRotation: FlingRotation | null;
-    scrollFling: ScrollFling | null;
-    pinchFling: PinchFling | null;
-    startInteraction(): void;
-    stopInteraction(): void;
-    _loadGL(): boolean;
-    _loadCSS(): boolean;
-    _unloadGL(): boolean;
-    _unloadCSS(): boolean;
-    disconnectedCallback(): void;
 }
 import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {

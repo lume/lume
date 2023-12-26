@@ -85,7 +85,7 @@ let LineGeometryBehavior = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        __points = (__runInitializers(this, _instanceExtraInitializers), []);
+        #points = (__runInitializers(this, _instanceExtraInitializers), []);
         // TODO see about using shapes, not just points, similar to lume-shape, using Shape.getPoints().
         /**
          * @property {string | number[] | null} points - a set of points for the line. Every three numbers is a point (X, Y, Z).
@@ -122,24 +122,24 @@ let LineGeometryBehavior = (() => {
          * rendered.
          */
         get points() {
-            return this.__points;
+            return this.#points;
         }
         set points(points) {
             if (!points) {
-                this.__points.length = 0;
+                this.#points.length = 0;
             }
             else if (typeof points === 'string' || Array.isArray(points)) {
                 const _points = typeof points === 'string' ? stringToNumberArray(points, 'points') : points;
                 if (!_points.length) {
-                    this.__points.length = 0;
+                    this.#points.length = 0;
                 }
                 else {
                     if (_points.length % 3 !== 0)
                         throw new Error('The points array needs to have 3 numbers per point.');
-                    if (this.__points.length !== _points.length)
-                        this.__points.length = _points.length;
+                    if (this.#points.length !== _points.length)
+                        this.#points.length = _points.length;
                     for (let i = 0, l = _points.length; i < l; i += 1)
-                        this.__points[i] = _points[i];
+                        this.#points[i] = _points[i];
                 }
             }
         }

@@ -10,7 +10,8 @@ import { MeshBehavior } from './MeshBehavior.js';
  * @extends MeshBehavior
  */
 export class GeometryOrMaterialBehavior extends MeshBehavior {
-    loadGL() {
+    connectedCallback() {
+        super.connectedCallback();
         this.createEffect(() => this.resetMeshComponent());
     }
     resetMeshComponent() {

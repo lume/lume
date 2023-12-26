@@ -48,7 +48,7 @@ export declare class DirectionalLight extends LightWithShadow {
     shadowCameraRight: number;
     shadowCameraBottom: number;
     shadowCameraLeft: number;
-    _loadGL(): boolean;
+    connectedCallback(): void;
     makeThreeObject3d(): ThreeDirectionalLight;
 }
 import type { ElementAttributes } from '@lume/element';

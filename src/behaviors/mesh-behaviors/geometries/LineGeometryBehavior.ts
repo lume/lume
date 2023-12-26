@@ -29,7 +29,7 @@ export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitm
  */
 @behavior
 export class LineGeometryBehavior extends GeometryBehavior {
-	__points: number[] = []
+	#points: number[] = []
 
 	// TODO see about using shapes, not just points, similar to lume-shape, using Shape.getPoints().
 
@@ -70,21 +70,21 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	@attribute
 	@receiver
 	get points(): number[] {
-		return this.__points
+		return this.#points
 	}
 	set points(points: string | number[] | null) {
 		if (!points) {
-			this.__points.length = 0
+			this.#points.length = 0
 		} else if (typeof points === 'string' || Array.isArray(points)) {
 			const _points: number[] = typeof points === 'string' ? stringToNumberArray(points, 'points') : points
 
 			if (!_points.length) {
-				this.__points.length = 0
+				this.#points.length = 0
 			} else {
 				if (_points.length % 3 !== 0) throw new Error('The points array needs to have 3 numbers per point.')
 
-				if (this.__points.length !== _points.length) this.__points.length = _points.length
-				for (let i = 0, l = _points.length; i < l; i += 1) this.__points[i] = _points[i]
+				if (this.#points.length !== _points.length) this.#points.length = _points.length
+				for (let i = 0, l = _points.length; i < l; i += 1) this.#points[i] = _points[i]
 			}
 		}
 	}

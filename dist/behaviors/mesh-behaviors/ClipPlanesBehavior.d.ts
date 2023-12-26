@@ -105,7 +105,6 @@ export declare class ClipPlanesBehavior extends MeshBehavior {
      * `reactive`
      */
     get material(): import("three").Material | null;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=ClipPlanesBehavior.d.ts.map

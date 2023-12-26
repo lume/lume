@@ -124,10 +124,9 @@ let DirectionalLight = (() => {
         shadowCameraRight = __runInitializers(this, _shadowCameraRight_initializers, 1000);
         shadowCameraBottom = __runInitializers(this, _shadowCameraBottom_initializers, -1000);
         shadowCameraLeft = __runInitializers(this, _shadowCameraLeft_initializers, -1000);
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 const light = this.three;
                 const shadow = light.shadow;
                 shadow.camera.top = this.shadowCameraTop;
@@ -137,7 +136,6 @@ let DirectionalLight = (() => {
                 shadow.needsUpdate = true;
                 this.needsUpdate();
             });
-            return true;
         }
         makeThreeObject3d() {
             return new ThreeDirectionalLight();

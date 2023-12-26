@@ -41,12 +41,11 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
          * A subclass should specify the object to observe by defining a `get observedObject` getter.
          */
         readonly observedObject: object;
-        _propChangedCallback(propName: PropertyKey, value: any): void;
-        "__#5@#isObserving": boolean;
+        _propChangedCallback(propName: PropKey, value: any): void;
         "__#5@#observeProps"(): void;
         "__#5@#unobserveProps"(): void;
-        __forwardedProps(): never[];
-        __forwardInitialProps(): void;
+        __getReceivedProps(): never[];
+        __receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
@@ -57,7 +56,7 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
      *
      * An array of strings, the properties of observedObject to observe.
      */
-    receivedProperties?: PropertyKey[] | undefined;
+    receivedProperties?: PropKey[] | undefined;
 } & T;
 export interface PossiblyCustomElement {
     connectedCallback?(): void;
@@ -66,4 +65,6 @@ export interface PossiblyCustomElement {
     attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
 }
 export declare function receiver(_: unknown, context: DecoratorContext): any;
+type PropKey = string | symbol;
+export {};
 //# sourceMappingURL=PropReceiver.d.ts.map

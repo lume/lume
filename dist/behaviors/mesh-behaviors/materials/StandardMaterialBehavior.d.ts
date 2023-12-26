@@ -30,7 +30,7 @@ export declare class StandardMaterialBehavior extends MaterialBehavior {
     morphTargets: boolean;
     morphNormals: boolean;
     _createComponent(): MeshStandardMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 export type MixinBaseClass<T> = T extends new (..._: any) => infer I ? {
     [K in keyof T]: T[K];

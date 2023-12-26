@@ -7,6 +7,7 @@ import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader.js'
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
+import {onCleanup} from 'solid-js'
 
 /**
  * @class PlyGeometryBehavior -
@@ -39,7 +40,7 @@ class PlyGeometryBehavior extends GeometryBehavior {
 	 */
 	@stringAttribute @receiver src = ''
 
-	loader: PLYLoader | null = null
+	loader = new PLYLoader()
 	@signal model: BufferGeometry | null = null
 
 	override _createComponent() {
@@ -48,40 +49,27 @@ class PlyGeometryBehavior extends GeometryBehavior {
 		return this.model
 	}
 
-	// This is incremented any time we need a pending load() to cancel (f.e. on
-	// src change, or unloadGL cycle), so that the loader will ignore the
+	// This is incremented any time we need to cancel a pending load() (f.e. on
+	// src change, or on disconnect), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	override loadGL() {
-		super.loadGL()
-
-		this.loader = new PLYLoader()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			this.src
 
-			// TODO use onCleanup in for all cleanupModel methods of loader behaviors
-			this.#cleanupModel()
-
-			this.#version++
 			this.#loadModel()
+
+			onCleanup(() => {
+				this.model?.dispose()
+				// Note that dispose is already called in the super.resetMeshComponent process.
+				this.model = null
+				// Increment this in case the loader is still loading, so it will ignore the result.
+				this.#version++
+			})
 		})
-	}
-
-	override unloadGL() {
-		this.loader = null
-
-		this.#cleanupModel()
-
-		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.#version++
-	}
-
-	#cleanupModel() {
-		// Note that dispose is already called in the super.resetMeshComponent process.
-		// TODO This causes the geometry to be removed while loading a new one. Perhaps we should not do that.
-		this.model = null
 	}
 
 	#loadModel() {

@@ -64,7 +64,7 @@ describe('InstancedMesh', () => {
 
 				<lume-camera-rig
 					active
-					initial-distance="2000"
+					distance="2000"
 					max-distance="3000"
 					min-distance="100"
 					position="1000 1000 1000"

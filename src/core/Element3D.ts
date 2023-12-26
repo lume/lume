@@ -219,26 +219,14 @@ class Element3D extends SharedAPI {
 		return promise
 	}
 
-	override _loadCSS() {
-		if (!super._loadCSS()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createCSSEffect(() => {
+		this.createEffect(() => {
 			this._elementOperations.shouldRender = this.visible
-			this.needsUpdate()
-		})
-
-		return true
-	}
-
-	override _loadGL() {
-		if (!super._loadGL()) return false
-
-		this.createGLEffect(() => {
 			this.three.visible = this.visible
 			this.needsUpdate()
 		})
-
-		return true
 	}
 
 	static override css = /*css*/ `

@@ -1,81 +1,88 @@
-import {clamp} from '../math/clamp.js'
+// TODO FlingRotation's interaction and tree structure are horribly coupled.
+// Instead we can implement DragFling, similar to ScrollFling and PinchFling,
+// and use that for rotation. Then if we even keep FlingRotation, we can just
+// have it accept a single element to rotate, and it would apply DragFling (or
+// whichever fling is provided, easy to compose things).
 
+import {Effects, reactive, signal} from 'classy-solid'
+import {onCleanup} from 'solid-js'
+import {clamp} from '../math/clamp.js'
 import type {Element3D} from '../core/Element3D.js'
 
-type FlingRotationOptions = Pick<FlingRotation, 'rotationYTarget'> &
-	Partial<
-		Pick<
-			FlingRotation,
-			| 'rotationXTarget'
-			| 'interactionInitiator'
-			| 'minFlingRotationX'
-			| 'maxFlingRotationX'
-			| 'minFlingRotationY'
-			| 'maxFlingRotationY'
-			| 'interactionContainer'
-			| 'factor'
-		>
+type Options = Partial<
+	Pick<
+		FlingRotation,
+		| 'rotationXTarget'
+		| 'rotationYTarget'
+		| 'interactionInitiator'
+		| 'interactionContainer'
+		| 'minFlingRotationX'
+		| 'maxFlingRotationX'
+		| 'minFlingRotationY'
+		| 'maxFlingRotationY'
+		| 'factor'
 	>
+>
 
-export class FlingRotation {
+export
+@reactive
+class FlingRotation extends Effects {
 	/** The object that will be rotated on Y. Required. */
-	readonly rotationYTarget!: Element3D
+	@signal rotationYTarget!: Element3D
 
 	/**
 	 * The object that will be rotated on X. Defaults to the element inside the
 	 * rotationYTarget (it's like a gimball).
 	 */
-	readonly rotationXTarget!: Element3D
+	@signal rotationXTarget!: Element3D
 
 	/**
 	 * The element on which the pointer should be placed down on in order to
 	 * initiate drag tracking. This defaults to rotationXTarget.
 	 */
-	readonly interactionInitiator!: Element
+	@signal interactionInitiator!: Element
+
+	/**
+	 * The area in which drag tacking will happen. Defaults to
+	 * document.documentElement for tracking in the whole viewport.
+	 */
+	// TODO we only need the initiator (just call it target) and we can remove
+	// this in favor of pointer capture.
+	@signal interactionContainer: Element = document.documentElement
 
 	/**
 	 * The X rotation can not go below this value. Defaults to -90 which means
 	 * facing straight up.
 	 */
-	readonly minFlingRotationX: number = -90
+	minFlingRotationX: number = -90
 
 	/**
 	 * The X rotation can not go above this value. Defaults to 90 which means
 	 * facing straight down.
 	 */
-	readonly maxFlingRotationX: number = 90
+	maxFlingRotationX: number = 90
 
 	/**
 	 * The Y rotation can not go below this value. Defaults to -Infinity which
 	 * means the camera can keep rotating laterally around the focus point
 	 * indefinitely.
 	 */
-	readonly minFlingRotationY: number = -Infinity
+	minFlingRotationY: number = -Infinity
 
 	/**
 	 * The Y rotation can not go below this value. Defaults to Infinity which
 	 * means the camera can keep rotating laterally around the focus point
 	 * indefinitely.
 	 */
-	readonly maxFlingRotationY: number = Infinity
-
-	/**
-	 * The area in which drag tacking will happen. Defaults to
-	 * document.documentElement for tracking in the whole viewport.
-	 */
-	readonly interactionContainer: Element = document.documentElement
+	maxFlingRotationY: number = Infinity
 
 	factor = 1
 
 	#aborter = new AbortController()
 
-	constructor(options: FlingRotationOptions) {
+	constructor(options: Options = {}) {
+		super()
 		Object.assign(this, options)
-
-		// FlingRotation is dependent on tree structure (unless otherwise
-		// specified by the input options), at least for now.
-		if (!this.rotationXTarget) this.rotationXTarget = this.rotationYTarget.children[0] as Element3D
-		if (!this.interactionInitiator) this.interactionInitiator = this.rotationXTarget
 	}
 
 	#mainPointer = -1
@@ -182,25 +189,42 @@ export class FlingRotation {
 		if (this.#isStarted) return this
 		this.#isStarted = true
 
-		this.#aborter = new AbortController()
+		this.createEffect(() => {
+			// We need all these things for interaction to continue.
+			if (!(this.rotationYTarget && this.rotationXTarget && this.interactionInitiator && this.interactionContainer))
+				return
 
-		// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-		this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
+			this.#aborter = new AbortController()
 
-		// Hack needed for Chrome (works fine in Firefox) otherwise
-		// pointercancel breaks the drag handling. See
-		// https://crbug.com/1166044
-		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
-		this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
-		this.interactionInitiator.addEventListener(
-			'pointercancel',
-			() => {
-				console.error(
-					'Pointercancel should not be happening. If so, please kindly open an issue at https://github.com/lume/lume/issues.',
-				)
-			},
-			{signal: this.#aborter.signal},
-		)
+			// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
+			this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
+
+			// Hack needed for Chrome (works fine in Firefox) otherwise
+			// pointercancel breaks the drag handling. See
+			// https://crbug.com/1166044
+			// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+			this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
+			this.interactionInitiator.addEventListener(
+				'pointercancel',
+				() => {
+					console.error(
+						'Pointercancel should not be happening. If so, please kindly open an issue at https://github.com/lume/lume/issues.',
+					)
+				},
+				{signal: this.#aborter.signal},
+			)
+
+			onCleanup(() => {
+				this.#mainPointer = -1
+				this.#pointerCount = 0
+
+				// Stop any current animation.
+				this.rotationXTarget.rotation = () => false
+				this.rotationYTarget.rotation = () => false
+
+				this.#aborter.abort()
+			})
+		})
 
 		return this
 	}
@@ -209,14 +233,7 @@ export class FlingRotation {
 		if (!this.#isStarted) return this
 		this.#isStarted = false
 
-		this.#mainPointer = -1
-		this.#pointerCount = 0
-
-		// Stop any current animation.
-		this.rotationXTarget.rotation = () => false
-		this.rotationYTarget.rotation = () => false
-
-		this.#aborter.abort()
+		this.stopEffects()
 
 		return this
 	}

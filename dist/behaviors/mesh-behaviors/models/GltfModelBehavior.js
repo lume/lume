@@ -130,24 +130,24 @@ let GltfModelBehavior = (() => {
          * welcome!).
          */
         centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
-        gltfLoader;
+        loader = new GLTFLoader();
         model = null;
-        // This is incremented any time we need a pending load() to cancel (f.e. on
-        // src change, or unloadGL cycle), so that the loader will ignore the
+        // This is incremented any time we need to cancel a pending load() (f.e. on
+        // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
         #version = 0;
-        loadGL() {
-            this.gltfLoader = new GLTFLoader();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 const decoderPath = createMemo(() => this.dracoDecoder);
                 createEffect(() => {
                     if (!decoderPath())
                         return;
                     const dracoLoader = getDracoLoader(decoderPath());
-                    this.gltfLoader.dracoLoader = dracoLoader;
+                    this.loader.dracoLoader = dracoLoader;
                     onCleanup(() => {
                         disposeDracoLoader(decoderPath());
-                        this.gltfLoader.dracoLoader = null;
+                        this.loader.dracoLoader = null;
                     });
                 });
                 // Use memos to avoid effect re-runs triggered by same-value
@@ -158,21 +158,16 @@ let GltfModelBehavior = (() => {
                     gltfPath();
                     decoderPath();
                     center();
-                    this.#version++;
                     untrack(() => this.#loadModel());
-                    onCleanup(() => this.#cleanupModel());
+                    onCleanup(() => {
+                        if (this.model)
+                            disposeObjectTree(this.model.scene);
+                        this.model = null;
+                        // Increment this in case the loader is still loading, so it will ignore the result.
+                        this.#version++;
+                    });
                 });
             });
-        }
-        unloadGL() {
-            this.gltfLoader = undefined;
-            // Increment this in case the loader is still loading, so it will ignore the result.
-            this.#version++;
-        }
-        #cleanupModel() {
-            if (this.model)
-                disposeObjectTree(this.model.scene);
-            this.model = null;
         }
         #loadModel() {
             const { src } = this;
@@ -183,7 +178,7 @@ let GltfModelBehavior = (() => {
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.
-            this.gltfLoader.load(src, model => version == this.#version && this.#setModel(model), progress => version == this.#version && this.element.emit(Events.PROGRESS, progress), error => version == this.#version && this.#onError(error));
+            this.loader.load(src, model => version == this.#version && this.#setModel(model), progress => version == this.#version && this.element.emit(Events.PROGRESS, progress), error => version == this.#version && this.#onError(error));
         }
         #onError(error) {
             const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${this.dracoDecoder}". See the following error.`;

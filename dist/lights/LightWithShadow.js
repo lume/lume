@@ -350,10 +350,9 @@ let LightWithShadow = (() => {
          * Adjusts the far plane of the internal camera used for shadow projection.
          */
         shadowCameraFar = __runInitializers(this, _shadowCameraFar_initializers, 2000);
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 const light = this.three;
                 light.castShadow = this.castShadow;
                 const shadow = this.three.shadow;
@@ -368,7 +367,6 @@ let LightWithShadow = (() => {
                 shadow.needsUpdate = true;
                 this.needsUpdate();
             });
-            return true;
         }
     };
     return LightWithShadow = _classThis;

@@ -108,7 +108,7 @@ export declare class ProjectedMaterialBehavior extends PhysicalMaterialBehavior 
     get projectedTextures(): string | (string | TextureProjector)[];
     set projectedTextures(value: string | (string | TextureProjector)[]);
     _createComponent(): ProjectedMaterial;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
+    disconnectedCallback(): void;
 }
 //# sourceMappingURL=ProjectedMaterialBehavior.d.ts.map

@@ -6,6 +6,7 @@ import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {onCleanup} from 'solid-js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
@@ -15,39 +16,29 @@ class ColladaModelBehavior extends RenderableBehavior {
 	/** Path to a .dae file. */
 	@stringAttribute @receiver src = ''
 
-	loader?: ColladaLoader
+	loader = new ColladaLoader()
 	model?: Collada
 
-	// This is incremented any time we need a pending load() to cancel (f.e. on
-	// src change, or unloadGL cycle), so that the loader will ignore the
+	// This is incremented any time we need to cancel a pending load() (f.e. on
+	// src change, or on disconnect), so that the loader will ignore the
 	// result when a version change has happened.
 	#version = 0
 
-	override loadGL() {
-		this.loader = new ColladaLoader()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			this.src
 
-			this.#cleanupModel()
-
-			this.#version++
 			this.#loadModel()
+
+			onCleanup(() => {
+				if (this.model) disposeObjectTree(this.model.scene)
+				this.model = undefined
+				// Increment this in case the loader is still loading, so it will ignore the result.
+				this.#version++
+			})
 		})
-	}
-
-	override unloadGL() {
-		this.loader = undefined
-
-		this.#cleanupModel()
-
-		// Increment this in case the loader is still loading, so it will ignore the result.
-		this.#version++
-	}
-
-	#cleanupModel() {
-		if (this.model) disposeObjectTree(this.model.scene)
-		this.model = undefined
 	}
 
 	#loadModel() {
@@ -61,7 +52,7 @@ class ColladaModelBehavior extends RenderableBehavior {
 		// a previous model was loading, in which case we ignore that
 		// result and wait for the next model to load.
 
-		this.loader!.load(
+		this.loader.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
 			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),

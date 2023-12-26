@@ -58,7 +58,7 @@ export declare class Mesh extends Element3D {
      * [`<lume-point-light>`](../lights/PointLight).
      */
     receiveShadow: boolean;
-    _loadGL(): boolean;
+    connectedCallback(): void;
     makeThreeObject3d(): ThreeMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, Material | Material[], import("three").Object3DEventMap>;
 }
 import type { ElementAttributes } from '@lume/element';

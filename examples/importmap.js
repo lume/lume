@@ -14,11 +14,11 @@
 			regexr: '/node_modules/regexr/dist/index.js',
 			'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
 			'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',
-			'solid-js': '/node_modules/solid-js/dist/solid.js',
+			'solid-js': '/node_modules/solid-js/dist/dev.js',
 			'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
 			'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
 			'solid-js/store': '/node_modules/solid-js/store/dist/store.js',
-			three: '/node_modules/three/build/three.module.js',
+			three: '/node_modules/three/src/Three.js',
 			'three/': '/node_modules/three/',
 		},
 	}

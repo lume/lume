@@ -7,6 +7,6 @@ export declare class PointsMaterialBehavior extends MaterialBehavior {
     sizeAttenuation: boolean;
     pointSize: number;
     _createComponent(): PointsMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=PointsMaterialBehavior.d.ts.map

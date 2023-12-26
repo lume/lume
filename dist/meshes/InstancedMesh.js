@@ -383,10 +383,9 @@ let InstancedMesh = (() => {
             }
             // }
         }
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 // Increase the InstancedMesh size (by making a new one) as needed.
                 if (this.count > this.#biggestCount) {
                     this.#biggestCount = this.count;
@@ -405,35 +404,34 @@ let InstancedMesh = (() => {
                 untrack(() => (this.three.count = this.count));
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.rotations;
                 if (!this.#updateSingleInstanceOnly)
                     this.#allMatricesNeedUpdate = true;
                 this.#updateSingleInstanceOnly = false;
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.positions;
                 if (!this.#updateSingleInstanceOnly)
                     this.#allMatricesNeedUpdate = true;
                 this.#updateSingleInstanceOnly = false;
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.scales;
                 if (!this.#updateSingleInstanceOnly)
                     this.#allMatricesNeedUpdate = true;
                 this.#updateSingleInstanceOnly = false;
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.colors;
                 if (!this.#updateSingleInstanceOnly)
                     this.#allColorsNeedUpdate = true;
                 this.#updateSingleInstanceOnly = false;
                 this.needsUpdate();
             });
-            return true;
         }
         update(t, dt) {
             super.update(t, dt);

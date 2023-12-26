@@ -1,5 +1,6 @@
-type ScrollFlingOptions = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'factor'>>;
-export declare class PinchFling {
+import { Effects } from 'classy-solid';
+type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted'>>;
+export declare class PinchFling extends Effects {
     #private;
     /**
      * During pinch, this value will change. It is a signal so that it can be
@@ -10,10 +11,11 @@ export declare class PinchFling {
     minX: number;
     maxX: number;
     target: Element;
-    factor: number;
+    sensitivity: number;
+    hasInteracted: boolean;
     get interacting(): boolean;
     get isStarted(): boolean;
-    constructor(options: ScrollFlingOptions);
+    constructor(options?: Options);
     start(): this;
     stop(): this;
 }

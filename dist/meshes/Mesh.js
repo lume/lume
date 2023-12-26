@@ -126,19 +126,17 @@ let Mesh = (() => {
          * [`<lume-point-light>`](../lights/PointLight).
          */
         receiveShadow = __runInitializers(this, _receiveShadow_initializers, true);
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 this.three.castShadow = this.castShadow;
                 this.needsUpdate();
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 this.three.receiveShadow = this.receiveShadow;
                 this.three.material.needsUpdate = true;
                 this.needsUpdate();
             });
-            return true;
         }
         makeThreeObject3d() {
             return new ThreeMesh();

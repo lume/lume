@@ -162,8 +162,7 @@ declare class Element3D extends SharedAPI {
      * returned so that it is possible to wait for the traversal to complete.
      */
     traverseSceneGraph(visitor: (node: Element3D) => void, waitForUpgrade?: boolean): Promise<void> | void;
-    _loadCSS(): boolean;
-    _loadGL(): boolean;
+    connectedCallback(): void;
     static css: string;
 }
 import type { ElementAttributes } from '@lume/element';

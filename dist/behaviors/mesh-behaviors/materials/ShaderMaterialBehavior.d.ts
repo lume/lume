@@ -9,6 +9,6 @@ export declare class ShaderMaterialBehavior extends MaterialBehavior {
     vertexShader: any;
     fragmentShader: any;
     _createComponent(): ShaderMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=ShaderMaterialBehavior.d.ts.map

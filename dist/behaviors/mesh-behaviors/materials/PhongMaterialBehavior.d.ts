@@ -44,6 +44,6 @@ export declare class PhongMaterialBehavior extends MaterialBehavior {
     set specular(val: string | number | Color);
     shininess: number;
     _createComponent(): MeshPhongMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=PhongMaterialBehavior.d.ts.map

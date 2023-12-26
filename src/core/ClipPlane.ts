@@ -4,7 +4,6 @@
 import {element, type ElementAttributes} from '@lume/element'
 import {Plane} from 'three/src/math/Plane.js'
 import {Vector3} from 'three/src/math/Vector3.js'
-import {createSignal} from 'solid-js'
 import {Element3D, type Element3DAttributes} from './Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -41,9 +40,6 @@ type ClipPlaneAttributes = Element3DAttributes
 export
 @element('lume-clip-plane', autoDefineElements)
 class ClipPlane extends Element3D {
-	#plane = createSignal<Plane | null>(null)
-	#inversePlane = createSignal<Plane | null>(null)
-
 	// The __clip and __inverseClip properties are used by `ClipPlanesBehavior`
 
 	/**
@@ -52,9 +48,7 @@ class ClipPlane extends Element3D {
 	 * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
 	 * for the scene and the element participates in rendering.
 	 */
-	get __clip(): Readonly<Plane> | null {
-		return this.#plane[0]()
-	}
+	__clip: Plane = new Plane(new Vector3(...clipNormal))
 
 	/**
 	 * *reactive* *readonly*
@@ -62,29 +56,13 @@ class ClipPlane extends Element3D {
 	 * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
 	 * for the scene and the element participates in rendering.
 	 */
-	get __inverseClip(): Readonly<Plane> | null {
-		return this.#inversePlane[0]()
-	}
-
-	override _loadGL() {
-		if (!super._loadGL()) return false
-		this.#plane[1](new Plane(new Vector3(...clipNormal)))
-		this.#inversePlane[1](new Plane(new Vector3(...clipNormal).negate()))
-		return true
-	}
-
-	override _unloadGL() {
-		if (!super._unloadGL()) return false
-		this.#plane[1](null)
-		this.#inversePlane[1](null)
-		return true
-	}
+	__inverseClip: Plane = new Plane(new Vector3(...clipNormal).negate())
 
 	override updateWorldMatrices() {
 		super.updateWorldMatrices()
 
-		const plane = this.#plane[0]()
-		const inverse = this.#inversePlane[0]()
+		const plane = this.__clip
+		const inverse = this.__inverseClip
 
 		// These only exist if WebGL mode is enabled.
 		if (!plane || !inverse) return

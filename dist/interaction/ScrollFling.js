@@ -32,8 +32,8 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { createSignal, untrack } from 'solid-js';
-import { reactive, signal } from 'classy-solid';
+import { createSignal, onCleanup, untrack } from 'solid-js';
+import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
 // @ts-ignore
@@ -43,19 +43,24 @@ let ScrollFling = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
+    let _classSuper = Effects;
     let _instanceExtraInitializers = [];
     let _x_decorators;
     let _x_initializers = [];
     let _y_decorators;
     let _y_initializers = [];
-    var ScrollFling = class {
+    let _hasInteracted_decorators;
+    let _hasInteracted_initializers = [];
+    var ScrollFling = class extends _classSuper {
         static { _classThis = this; }
         static {
-            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _x_decorators = [signal];
             _y_decorators = [signal];
+            _hasInteracted_decorators = [signal];
             __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _y_decorators, { kind: "field", name: "y", static: false, private: false, access: { has: obj => "y" in obj, get: obj => obj.y, set: (obj, value) => { obj.y = value; } }, metadata: _metadata }, _y_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -84,7 +89,8 @@ let ScrollFling = (() => {
         minY = -Infinity;
         maxY = Infinity;
         target = document.documentElement;
-        scrollFactor = 1;
+        sensitivity = 1;
+        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
         #task;
         #isStarted = (() => {
             const { 0: get, 1: set } = createSignal(false);
@@ -94,13 +100,15 @@ let ScrollFling = (() => {
             return this.#isStarted.get();
         }
         #aborter = new AbortController();
-        constructor(options) {
+        constructor(options = {}) {
+            super();
             Object.assign(this, options);
         }
         #onWheel = (event) => {
+            this.hasInteracted = true;
             event.preventDefault();
-            let dx = event.deltaX * this.scrollFactor;
-            let dy = event.deltaY * this.scrollFactor;
+            let dx = event.deltaX * this.sensitivity;
+            let dy = event.deltaY * this.sensitivity;
             this.x = clamp(this.x + dx, this.minX, this.maxX);
             this.y = clamp(this.y + dy, this.minY, this.maxY);
             if (dx === 0 && dy === 0)
@@ -123,19 +131,25 @@ let ScrollFling = (() => {
             if (untrack(this.#isStarted.get))
                 return this;
             this.#isStarted.set(true);
-            this.#aborter = new AbortController();
-            // @ts-expect-error, whyyyyy TypeScript
-            this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
+            this.createEffect(() => {
+                this.target; // any time the target changes make new events on that target
+                this.#aborter = new AbortController();
+                // @ts-expect-error, whyyyyy TypeScript
+                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
+                onCleanup(() => {
+                    // Stop any current animation, if any.
+                    if (this.#task)
+                        Motor.removeRenderTask(this.#task);
+                    this.#aborter.abort();
+                });
+            });
             return this;
         }
         stop() {
             if (!untrack(this.#isStarted.get))
                 return this;
             this.#isStarted.set(false);
-            // Stop any current animation, if any.
-            if (this.#task)
-                Motor.removeRenderTask(this.#task);
-            this.#aborter.abort();
+            this.stopEffects();
             return this;
         }
     };

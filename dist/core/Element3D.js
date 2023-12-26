@@ -257,23 +257,13 @@ let Element3D = (() => {
             }
             return promise;
         }
-        _loadCSS() {
-            if (!super._loadCSS())
-                return false;
-            this.createCSSEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 this._elementOperations.shouldRender = this.visible;
-                this.needsUpdate();
-            });
-            return true;
-        }
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
                 this.three.visible = this.visible;
                 this.needsUpdate();
             });
-            return true;
         }
         static css = /*css*/ `
 		${Reflect.get(_classSuper, "css", _classThis)}

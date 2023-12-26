@@ -13,7 +13,7 @@ import type { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 export declare abstract class GeometryOrMaterialBehavior extends MeshBehavior {
     #private;
     abstract type: MeshComponentType;
-    loadGL(): void;
+    connectedCallback(): void;
     resetMeshComponent(): void;
     _createComponent(): BufferGeometry | Material;
 }

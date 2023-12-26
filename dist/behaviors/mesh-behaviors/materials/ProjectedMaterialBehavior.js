@@ -88,7 +88,7 @@ let ProjectedMaterialBehavior = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             ___associatedProjectors_decorators = [signal];
             _get_textureProjectors_decorators = [stringAttribute, receiver];
-            _get_projectedTextures_decorators = [stringAttribute];
+            _get_projectedTextures_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_textureProjectors_decorators, { kind: "getter", name: "textureProjectors", static: false, private: false, access: { has: obj => "textureProjectors" in obj, get: obj => obj.textureProjectors }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_projectedTextures_decorators, { kind: "getter", name: "projectedTextures", static: false, private: false, access: { has: obj => "projectedTextures" in obj, get: obj => obj.projectedTextures }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, ___associatedProjectors_decorators, { kind: "field", name: "__associatedProjectors", static: false, private: false, access: { has: obj => "__associatedProjectors" in obj, get: obj => obj.__associatedProjectors, set: (obj, value) => { obj.__associatedProjectors = value; } }, metadata: _metadata }, ___associatedProjectors_initializers, _instanceExtraInitializers);
@@ -211,12 +211,9 @@ let ProjectedMaterialBehavior = (() => {
             return new ProjectedMaterial();
         }
         #observer = null;
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             let queuedRequery = false;
-            // loadGL may fire during parsing before children exist. This
-            // MutationObserver will also fire during parsing. This allows us to
-            // re-run the query logic whenever DOM in the current root changes.
             this.#observer = new MutationObserver(() => {
                 if (queuedRequery)
                     return;
@@ -349,8 +346,8 @@ let ProjectedMaterialBehavior = (() => {
                 });
             });
         }
-        unloadGL() {
-            super.unloadGL();
+        disconnectedCallback() {
+            super.disconnectedCallback();
             this.#observer?.disconnect();
             this.#observer = null;
         }

@@ -86,8 +86,8 @@ let LineBasicMaterialBehavior = (() => {
         _createComponent() {
             return new LineBasicMaterial();
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
         }
     };

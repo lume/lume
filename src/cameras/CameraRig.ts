@@ -2,14 +2,14 @@
 // this class can apply DragFling to X and Y rotations. We can use DragFling for
 // implementing a scrollable area.
 
-import {createEffect, onCleanup, untrack} from 'solid-js'
+import {onCleanup} from 'solid-js'
 import html from 'solid-js/html'
-import {signal, Effects} from 'classy-solid'
+import {signal, syncSignals} from 'classy-solid'
 import {element, numberAttribute, booleanAttribute} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
-
+import {defaultScenePerspective} from '../constants.js'
 import type {PerspectiveCamera} from './PerspectiveCamera.js'
 
 export type CameraRigAttributes =
@@ -194,13 +194,19 @@ class CameraRig extends Element3D {
 	 *
 	 * *attribute*
 	 *
-	 * Default: `1000`
+	 * Default: `-1`
 	 *
 	 * The distance that the camera will be away from the center point.
 	 * When the performing a scroll gesture, the camera will zoom by moving
 	 * towards or away from the center point (i.e. dollying).
+	 *
+	 * A value of `-1` means automatic distance based on the current scene's
+	 * [`.perspective`](../core/Scene#perspective), matching the behavior of
+	 * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
 	 */
-	@numberAttribute distance = 1000
+	@numberAttribute distance = -1
+
+	@signal __appliedDistance = defaultScenePerspective
 
 	/**
 	 * @deprecated initialDistance has been renamed to distance.
@@ -221,24 +227,34 @@ class CameraRig extends Element3D {
 	 *
 	 * *attribute*
 	 *
-	 * Default: `200`
+	 * Default: `-1`
 	 *
-	 * The smallest distance the camera can get to the center point when zooming
+	 * The smallest distance (a non-zero value) the camera can get to the center point when zooming
 	 * by scrolling.
+	 *
+	 * A value of `-1` means the value will automatically be half of whatever
+	 * the [`.distance`](#distance) value is.
 	 */
-	@numberAttribute minDistance = 200
+	@numberAttribute minDistance = -1
+
+	@signal __appliedMinDistance = 200
 
 	/**
 	 * @property {number} maxDistance
 	 *
 	 * *attribute*
 	 *
-	 * Default: `2000`
+	 * Default: `-1`
 	 *
-	 * The largest distance the camera can get from the center point when
-	 * zooming by scrolling.
+	 * The largest distance (a non-zero value) the camera can get from the
+	 * center point when zooming out by scrolling or with pinch gesture.
+	 *
+	 * A value of `-1` means the value will automatically be double of whatever
+	 * the [`.distance`](#distance) value is.
 	 */
-	@numberAttribute maxDistance = 2000
+	@numberAttribute maxDistance = -1
+
+	@signal __appliedMaxDistance = 800
 
 	/**
 	 * @property {boolean} active
@@ -272,9 +288,101 @@ class CameraRig extends Element3D {
 	 */
 	@booleanAttribute interactive = true
 
-	@signal cam?: PerspectiveCamera
+	@signal threeCamera?: PerspectiveCamera
+
+	/** @deprecated Use `.threeCamera` instead. */
+	get cam() {
+		return this.threeCamera
+	}
 
 	@signal rotationYTarget?: Element3D
+	@signal rotationXTarget?: Element3D
+
+	flingRotation = new FlingRotation()
+	scrollFling = new ScrollFling()
+	pinchFling = new PinchFling()
+
+	get #derivedInputDistance() {
+		return this.distance !== -1 ? this.distance : this.scene?.perspective ?? defaultScenePerspective
+	}
+
+	override connectedCallback() {
+		super.connectedCallback()
+
+		this.createEffect(() => {
+			// We start interaction if we have a scene (we're in the composed
+			// tree) and have the needed DOM nodes.
+			if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera)) return
+
+			// TODO replace with @memo once that's out in classy-solid
+			this.createEffect(() => {
+				this.__appliedDistance = this.#derivedInputDistance
+				this.__appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2
+				this.__appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2
+			})
+
+			// We set position here instead of in the template, otherwise
+			// pre-upgrade values from the template running before element
+			// upgrade (due to how Solid templates using cloneNode making them
+			// non-upgraded until connected) will override the initial
+			// __appliedDistance value.
+			this.createEffect(() => (this.threeCamera!.position.z = this.__appliedDistance))
+
+			const {scrollFling, pinchFling, flingRotation} = this
+
+			flingRotation.interactionInitiator = this.scene
+			flingRotation.interactionContainer = this.scene
+			flingRotation.rotationYTarget = this.rotationYTarget
+			flingRotation.rotationXTarget = this.rotationXTarget
+			scrollFling.target = this.scene
+			pinchFling.target = this.scene
+
+			syncSignals(
+				() => this.__appliedDistance,
+				(d: number) => (this.__appliedDistance = d),
+				() => this.scrollFling!.y,
+				(y: number) => (this.scrollFling!.y = y),
+			)
+			syncSignals(
+				() => this.scrollFling.y,
+				(y: number) => (this.scrollFling.y = y),
+				() => this.pinchFling.x,
+				(x: number) => (this.pinchFling.x = x),
+			)
+
+			this.createEffect(() => {
+				flingRotation.minFlingRotationX = this.minVerticalAngle
+				flingRotation.maxFlingRotationX = this.maxVerticalAngle
+				flingRotation.minFlingRotationY = this.minHorizontalAngle
+				flingRotation.maxFlingRotationY = this.maxHorizontalAngle
+
+				scrollFling.minY = pinchFling.minX = this.__appliedMinDistance
+				scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance
+				scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
+			})
+
+			this.createEffect(() => {
+				if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
+				else flingRotation.stop()
+			})
+
+			this.createEffect(() => {
+				if (this.interactive) {
+					scrollFling.start()
+					pinchFling.start()
+				} else {
+					scrollFling.stop()
+					pinchFling.stop()
+				}
+			})
+
+			onCleanup(() => {
+				this.flingRotation.stop()
+				this.scrollFling.stop()
+				this.pinchFling.stop()
+			})
+		})
+	}
 
 	override template = () => html`
 		<lume-element3d
@@ -282,12 +390,13 @@ class CameraRig extends Element3D {
 			ref=${(el: Element3D) => (this.rotationYTarget = el)}
 			size="1 1 1"
 			size-mode="proportional proportional proportional"
-			rotation=${() => untrack(() => [0, this.horizontalAngle, 0])}
+			rotation=${() => [0, this.horizontalAngle, 0]}
 		>
 			<lume-element3d
 				id="cameraX"
+				ref=${(el: Element3D) => (this.rotationXTarget = el)}
 				size="1 1 1"
-				rotation=${() => untrack(() => [this.verticalAngle, 0, 0])}
+				rotation=${() => [this.verticalAngle, 0, 0]}
 				size-mode="proportional proportional proportional"
 			>
 				<slot
@@ -295,10 +404,11 @@ class CameraRig extends Element3D {
 					TODO="determine semantics for overriding the internal camera (this slot is not documented yet)"
 				>
 					<lume-perspective-camera
-						ref=${(cam: PerspectiveCamera) => (this.cam = cam)}
+						ref=${(cam: PerspectiveCamera) => (this.threeCamera = cam)}
 						id="camera-rig-perspective-camera"
 						active=${() => this.active}
-						position=${[0, 0, this.distance]}
+						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
+						xposition=${() => [0, 0, this.__appliedDistance]}
 						align-point="0.5 0.5 0.5"
 						far="10000"
 					>
@@ -310,127 +420,6 @@ class CameraRig extends Element3D {
 
 		<slot></slot>
 	`
-
-	@signal flingRotation: FlingRotation | null = null
-	@signal scrollFling: ScrollFling | null = null
-	@signal pinchFling: PinchFling | null = null
-
-	#startedInteraction = false
-
-	#interactionEffects = new Effects()
-
-	startInteraction() {
-		if (this.#startedInteraction) return
-		this.#startedInteraction = true
-
-		this.#interactionEffects.createEffect(() => {
-			createEffect(() => {
-				if (!(this.scene && this.rotationYTarget)) return
-
-				const flingRotation = (this.flingRotation = new FlingRotation({
-					interactionInitiator: this.scene,
-					interactionContainer: this.scene,
-					rotationYTarget: this.rotationYTarget,
-					minFlingRotationX: this.minVerticalAngle,
-					maxFlingRotationX: this.maxVerticalAngle,
-					minFlingRotationY: this.minHorizontalAngle,
-					maxFlingRotationY: this.maxHorizontalAngle,
-				}).start())
-
-				createEffect(() => {
-					if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
-					else flingRotation.stop()
-				})
-
-				onCleanup(() => flingRotation.stop())
-			})
-
-			createEffect(() => {
-				if (!this.scene) return
-
-				const scrollFling = (this.scrollFling = new ScrollFling({
-					target: this.scene,
-					y: this.distance,
-					minY: this.minDistance,
-					maxY: this.maxDistance,
-					scrollFactor: this.dollySpeed,
-				}).start())
-
-				const pinchFling = (this.pinchFling = new PinchFling({
-					target: this.scene,
-					x: this.distance,
-					minX: this.minDistance,
-					maxX: this.maxDistance,
-					factor: this.dollySpeed,
-				}).start())
-
-				createEffect(() => {
-					const cam = this.cam
-					if (!cam) return
-
-					cam.position.z = scrollFling.y
-				})
-
-				createEffect(() => {
-					const cam = this.cam
-					if (!cam) return
-
-					cam.position.z = pinchFling.x
-				})
-
-				createEffect(() => {
-					if (this.interactive) {
-						scrollFling.start()
-						pinchFling.start()
-					} else {
-						scrollFling.stop()
-						pinchFling.stop()
-					}
-				})
-
-				onCleanup(() => {
-					scrollFling.stop()
-					pinchFling.stop()
-				})
-			})
-		})
-	}
-
-	stopInteraction() {
-		if (!this.#startedInteraction) return
-		this.#startedInteraction = false
-
-		this.#interactionEffects.stopEffects()
-	}
-
-	override _loadGL(): boolean {
-		if (!super._loadGL()) return false
-		this.startInteraction()
-		return true
-	}
-
-	override _loadCSS(): boolean {
-		if (!super._loadCSS()) return false
-		this.startInteraction()
-		return true
-	}
-
-	override _unloadGL(): boolean {
-		if (!super._unloadGL()) return false
-		if (!this.glLoaded && !this.cssLoaded) this.stopInteraction()
-		return true
-	}
-
-	override _unloadCSS(): boolean {
-		if (!super._unloadCSS()) return false
-		if (!this.glLoaded && !this.cssLoaded) this.stopInteraction()
-		return true
-	}
-
-	override disconnectedCallback() {
-		super.disconnectedCallback()
-		this.stopInteraction()
-	}
 }
 
 import type {ElementAttributes} from '@lume/element'

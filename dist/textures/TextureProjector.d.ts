@@ -57,8 +57,8 @@ export declare class TextureProjector extends Element3D {
     fitment: Fitment;
     frontFacesOnly: boolean;
     _camera: PerspectiveCamera | OrthographicCamera | null;
-    _loadGL(): boolean;
-    _unloadGL(): boolean;
+    connectedCallback(): void;
+    disconnectedCallback(): void;
 }
 declare module 'solid-js' {
     namespace JSX {

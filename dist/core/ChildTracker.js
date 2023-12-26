@@ -98,7 +98,6 @@ export function ChildTracker(Base) {
                         return;
                     this.childDisconnectedCallback && this.childDisconnectedCallback(child);
                 },
-                skipTextNodes: true,
             });
         }
         #destroyObserver() {

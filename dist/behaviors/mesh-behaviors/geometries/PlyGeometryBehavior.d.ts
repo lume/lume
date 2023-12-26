@@ -31,10 +31,9 @@ export declare class PlyGeometryBehavior extends GeometryBehavior {
      * Path to a `.ply` file to load points from.
      */
     src: string;
-    loader: PLYLoader | null;
+    loader: PLYLoader;
     model: BufferGeometry | null;
     _createComponent(): BufferGeometry<import("three/src/core/BufferGeometry.js").NormalBufferAttributes>;
-    loadGL(): void;
-    unloadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=PlyGeometryBehavior.d.ts.map

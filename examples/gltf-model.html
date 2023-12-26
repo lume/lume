@@ -1,26 +1,26 @@
 <script src="./template.js" template="./template.html" title="<lume-gltf-model>"></script>
 
-<script type="module">
-	import 'lume'
-</script>
-
 <lume-scene
 	id="scene"
 	perspective="800"
 	webgl
-	Xbackground="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-	Xequirectangular-background="true"
+	background="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+	background-intensity="0.6"
+	equirectangular-background="true"
 	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 	physically-correct-lights
 >
-	<!-- <lume-point-light position="500 0 0" intensity="10000" color="white"></lume-point-light> -->
-	<lume-directional-light position="500 0 0" intensity="12" align-point="0.5 0.5"></lume-directional-light>
+	<lume-directional-light position="500 0 200" intensity="12" align-point="0.5 0.5"></lume-directional-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
-	<lume-camera-rig active initial-distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
+	<lume-camera-rig active distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
 
 	<!-- background -->
+	<!-- Try setting visible="true" on this sphere to see how it compares to the
+	scene's `background`. For some reason Three.js washes out `scene.background`
+	color. -->
 	<lume-sphere
+		visible="false"
 		has="basic-material"
 		color="white"
 		sidedness="double"
@@ -35,8 +35,26 @@
 		size="2 2 0"
 		src="./models/DamagedHelmet.glb"
 		scale="50 50 50"
-		style="background: blue"
 		center-geometry
-	>
-	</lume-gltf-model>
+	></lume-gltf-model>
 </lume-scene>
+
+<script type="module">
+	import 'lume'
+
+	// If there is something Lume cannot yet do with its HTML interface, we can
+	// traverse the Three.js objects to manually tweak underlying Three.js
+	// objects. We have full access to Three.js.
+	const model = document.getElementById('model')
+	// Once the model is loaded then Three.js objects have been created.
+	model.on('MODEL_LOAD', () => {
+		// element.three is the underlying Three.js object, and
+		// element.three.traverse() is a Three.js API.
+		model.three.traverse(node => {
+			if (node.isMesh) {
+				node.castShadow = true
+				node.receiveShadow = true
+			}
+		})
+	})
+</script>

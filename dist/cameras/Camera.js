@@ -190,33 +190,21 @@ let Camera = (() => {
         );
         // TODO lookat property
         // @attribute lookAt: string | Element3D | null = null
-        #lastKnownScene = null;
         connectedCallback() {
             super.connectedCallback();
+            let lastScene = this.scene;
             // Run logic once the scene exists.
             this.createEffect(() => {
                 // If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
                 if (!this.scene || !this.active)
                     return;
-                untrack(() => {
-                    this.#lastKnownScene = this.scene;
-                    this.#setSceneCamera();
+                lastScene = this.scene;
+                untrack(() => this.scene._addCamera(this));
+                onCleanup(() => {
+                    lastScene._removeCamera(this);
+                    lastScene = null;
                 });
-                onCleanup(() => this.#setSceneCamera('unset'));
             });
-        }
-        // TODO make sure this works. Camera should switch to scene's default on
-        // removal of last camera, etc.
-        disconnectedCallback() {
-            super.disconnectedCallback();
-            this.#setSceneCamera('unset');
-            this.#lastKnownScene = null;
-        }
-        #setSceneCamera(unset) {
-            if (unset)
-                this.#lastKnownScene._removeCamera(this);
-            else
-                this.scene._addCamera(this);
         }
         // This is not called because this class is abstract and should be extended
         // by concrete camera elements, but it provides types for locations that use

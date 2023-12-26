@@ -128,8 +128,8 @@ let PhysicalMaterialBehavior = (() => {
         _createComponent() {
             return new MeshPhysicalMaterial({});
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)

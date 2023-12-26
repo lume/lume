@@ -1,17 +1,29 @@
 // const addedTo = new Map<Node, Node>()
 // const removedFrom = new Map<Node, Node>()
 // let scheduled = false
-export function observeChildren({ target, onConnect, onDisconnect, skipTextNodes }) {
-    const childObserver = createChildObserver(onConnect, onDisconnect, skipTextNodes);
+export function observeChildren({ target, onConnect, onDisconnect, includeTextNodes = false, weighted = false, }) {
+    const childObserver = createChildObserver(onConnect, onDisconnect, includeTextNodes, weighted);
     childObserver.observe(target, { childList: true });
     return () => childObserver.disconnect();
 }
-// NOTE: If a child is disconnected then connected to the same parent in the
-// same turn, then the onConnect and onDisconnect callbacks won't be called
-// because the DOM tree will be back in the exact state as before (this is
-// possible thanks to the logic associated with weightsPerTarget).
-export function createChildObserver(onConnect, onDisconnect, skipTextNodes = false) {
+/**
+ * NOTE: If a child is synchronously disconnected then connected to the same parent in the
+ * same tick when weighted is true, then the onConnect and onDisconnect callbacks won't be called
+ * because the DOM tree will be back in the exact state as before (this is
+ * possible thanks to the logic associated with weightsPerTarget).
+ */
+export function createChildObserver(onConnect, onDisconnect, includeTextNodes = false, weighted = false) {
     const observer = new MutationObserver(changes => {
+        if (!weighted) {
+            for (const change of changes) {
+                const { target, removedNodes, addedNodes } = change;
+                for (let i = 0, l = removedNodes.length; i < l; i += 1)
+                    onDisconnect.call(target, removedNodes[i]);
+                for (let i = 0, l = addedNodes.length; i < l; i += 1)
+                    onConnect.call(target, addedNodes[i]);
+            }
+            return;
+        }
         const weightsPerTarget = new Map();
         // We're just counting how many times each child node was added and
         // removed from the parent we're observing.
@@ -38,7 +50,7 @@ export function createChildObserver(onConnect, onDisconnect, skipTextNodes = fal
         // https://github.com/whatwg/dom/issues/1105
         for (const [target, weights] of Array.from(weightsPerTarget)) {
             for (const [child, weight] of Array.from(weights)) {
-                if (skipTextNodes && (child instanceof Text || child instanceof Comment))
+                if (!includeTextNodes && (child instanceof Text || child instanceof Comment))
                     continue;
                 // If the number of times a child was added is greater than the
                 // number of times it was removed, then the net result is that
@@ -59,21 +71,6 @@ export function createChildObserver(onConnect, onDisconnect, skipTextNodes = fal
                 // in place, so we don't call anything.
             }
         }
-        // if (!scheduled) {
-        // 	scheduled = true
-        // 	queueMicrotask(() => {
-        // 		scheduled = false
-        // 		const changes = observer.takeRecords()
-        // 		// It changes happened during the MO, we're not done yet, wait for more MOs.
-        // 		// if (changes.length) return
-        // 		const allNodes = new Set([...addedTo.keys(), ...removedFrom.keys()])
-        // 		for (const child of allNodes) {
-        // 			if (child.parentElement) { }
-        // 		}
-        // 		addedTo.clear()
-        // 		removedFrom.clear()
-        // 	})
-        // }
     });
     return observer;
 }

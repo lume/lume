@@ -27,7 +27,7 @@ export type ShapeGeometryBehaviorAttributes = 'shape' | 'curveSegments' | 'bevel
  * @extends GeometryBehavior
  */
 export declare class ShapeGeometryBehavior extends GeometryBehavior {
-    __shape: Shape;
+    #private;
     /**
      * @property {string | number[] | THREE.Shape | null} shape - Defines the 2D shape to render.
      *

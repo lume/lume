@@ -22,6 +22,6 @@ export declare class LambertMaterialBehavior extends MaterialBehavior {
     texture: string;
     specularMap: string;
     _createComponent(): MeshLambertMaterial;
-    loadGL(): void;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=LambertMaterialBehavior.d.ts.map

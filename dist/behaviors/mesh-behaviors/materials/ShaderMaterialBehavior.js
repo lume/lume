@@ -99,7 +99,7 @@ let ShaderMaterialBehavior = (() => {
         vertexShader = __runInitializers(this, _vertexShader_initializers, default_vertex);
         fragmentShader = __runInitializers(this, _fragmentShader_initializers, default_fragment);
         _createComponent() {
-            // untrack because we update the properties on the material instance in the effect in loadGL
+            // untrack, we subsequently update the properties using an effect.
             return untrack(() => {
                 return new ShaderMaterial({
                     uniforms: this.uniforms,
@@ -108,7 +108,7 @@ let ShaderMaterialBehavior = (() => {
                 });
             });
         }
-        loadGL() {
+        connectedCallback() {
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)
@@ -119,7 +119,7 @@ let ShaderMaterialBehavior = (() => {
                 mat.needsUpdate = true;
                 this.element.needsUpdate();
             });
-            super.loadGL();
+            super.connectedCallback();
         }
     };
     return ShaderMaterialBehavior = _classThis;

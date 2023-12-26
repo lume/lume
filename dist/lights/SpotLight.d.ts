@@ -58,8 +58,7 @@ export declare class SpotLight extends PointLight {
     set target(value: string | Element3D | null | Array<Element3D | string>);
     debug: boolean;
     updateWorldMatrices(traverse?: boolean): void;
-    _loadGL(): boolean;
-    _unloadGL(): boolean;
+    connectedCallback(): void;
     makeThreeObject3d(): ThreeSpotLight;
 }
 import type { ElementAttributes } from '@lume/element';

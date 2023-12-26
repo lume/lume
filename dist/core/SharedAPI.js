@@ -33,7 +33,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     done = true;
 };
 import { untrack } from 'solid-js';
-import { signal, Effects } from 'classy-solid';
+import { signal } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
 import { element, attribute } from '@lume/element';
 import { Transformable } from './Transformable.js';
@@ -41,12 +41,11 @@ import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
 import { CSS3DObjectNested } from '../renderers/CSS3DRendererNested.js';
 import { disposeObject } from '../utils/three.js';
-import { Events } from './Events.js';
 import { Settable } from '../utils/Settable.js';
 import { toRadians } from './utils/index.js';
 import { ChildTracker } from './ChildTracker.js';
 import { InitialBehaviors } from '../behaviors/InitialBehaviors.js';
-import { isDomEnvironment, isElement3D, isScene } from './utils/isThisOrThat.js';
+import { isDomEnvironment, isElement3D } from './utils/isThisOrThat.js';
 const threeJsPostAdjustment = [0, 0, 0];
 const alignAdjustment = [0, 0, 0];
 const mountPointAdjustment = [0, 0, 0];
@@ -82,10 +81,6 @@ let SharedAPI = (() => {
     let _set_opacity_decorators;
     let __scene_decorators;
     let __scene_initializers = [];
-    let __glLoaded_decorators;
-    let __glLoaded_initializers = [];
-    let __cssLoaded_decorators;
-    let __cssLoaded_initializers = [];
     let _version_decorators;
     let _version_initializers = [];
     var SharedAPI = class extends _classSuper {
@@ -94,13 +89,9 @@ let SharedAPI = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _set_opacity_decorators = [attribute];
             __scene_decorators = [signal];
-            __glLoaded_decorators = [signal];
-            __cssLoaded_decorators = [signal];
             _version_decorators = [signal];
             __esDecorate(this, null, _set_opacity_decorators, { kind: "setter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, set: (obj, value) => { obj.opacity = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, __scene_decorators, { kind: "field", name: "_scene", static: false, private: false, access: { has: obj => "_scene" in obj, get: obj => obj._scene, set: (obj, value) => { obj._scene = value; } }, metadata: _metadata }, __scene_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __glLoaded_decorators, { kind: "field", name: "_glLoaded", static: false, private: false, access: { has: obj => "_glLoaded" in obj, get: obj => obj._glLoaded, set: (obj, value) => { obj._glLoaded = value; } }, metadata: _metadata }, __glLoaded_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __cssLoaded_decorators, { kind: "field", name: "_cssLoaded", static: false, private: false, access: { has: obj => "_cssLoaded" in obj, get: obj => obj._cssLoaded, set: (obj, value) => { obj._cssLoaded = value; } }, metadata: _metadata }, __cssLoaded_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SharedAPI = _classThis = _classDescriptor.value;
@@ -142,50 +133,26 @@ let SharedAPI = (() => {
             return opacity.get(this);
         }
         /**
+         * @deprecated
          * @property {boolean} glLoaded
          *
-         * *readonly*, *signal*
+         * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
          *
-         * Returns a boolean indicating whether or not the WebGL rendering features
-         * of a LUME element are loaded and ready.
-         *
-         * All elements in a `<lume-scene>` have WebGL rendering disabled by
-         * default.
-         *
-         * If a `<lume-scene>` element has its `webgl` attribute set to
-         * `"false"` (the default), then `glLoaded` will always return `false` for any LUME
-         * elements in the scene.
-         *
-         * If a `<lume-scene>` element has the `webgl` attribute set to
-         * `"true"`, then `glLoaded` will return `true` for any LUME
-         * elements in the scene *after* their WebGL APIs have been loaded
-         * (`false` up until then).
+         * *readonly*
          */
         get glLoaded() {
-            return this._glLoaded;
+            return true;
         }
         /**
+         * @deprecated
          * @property {boolean} cssLoaded
          *
-         * *readonly*, *signal*
+         * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
          *
-         * Returns a boolean indicating whether or not the CSS rendering features
-         * of a LUME element are loaded and ready.
-         *
-         * All elements in a `<lume-scene>` have CSS rendering enabled by
-         * default.
-         *
-         * If a `<lume-scene>` element has its `enable-css` attribute set to
-         * `"false"`, then `cssLoaded` will always return `false` for any LUME
-         * elements in the scene.
-         *
-         * If a `<lume-scene>` element has its `enable-css` attribute set to
-         * `"true"` (the default), then `cssLoaded` will return `true` for
-         * any LUME elements in the scene *after* their CSS APIs have been loaded
-         * ('false' up until then).
+         * *readonly*
          */
         get cssLoaded() {
-            return this._cssLoaded;
+            return true;
         }
         // stores a ref to this element's root Scene when/if this element is
         // in a scene.
@@ -257,6 +224,9 @@ let SharedAPI = (() => {
             // @prod-prune
             o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (webgl, ${o.type})`;
             ourThreeObjects.add(o);
+            // we don't let Three update local matrices automatically, we do
+            // it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
+            o.matrixAutoUpdate = false;
             return o;
         }
         __disposeThree() {
@@ -276,7 +246,7 @@ let SharedAPI = (() => {
             const children = this.__three?.children;
             this.__disposeThree();
             // The three getter is used here, which makes a new instance
-            this.__connectThree();
+            this.__reconnectThree();
             // Three.js crashes on arrays of length 0.
             if (children && children.length)
                 this.three.add(...children);
@@ -301,6 +271,9 @@ let SharedAPI = (() => {
             // @prod-prune
             o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`;
             ourThreeObjects.add(o);
+            // we don't let Three update local matrices automatically, we do
+            // it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
+            o.matrixAutoUpdate = false;
             return o;
         }
         __disposeThreeCSS() {
@@ -320,7 +293,7 @@ let SharedAPI = (() => {
             const children = this.__threeCSS?.children;
             this.__disposeThreeCSS();
             // The threeCSS getter is used here, which makes a new instance
-            this.__connectThreeCSS();
+            this.__reconnectThreeCSS();
             // Three.js crashes on arrays of length 0.
             if (children && children.length)
                 this.threeCSS.add(...children);
@@ -382,8 +355,39 @@ let SharedAPI = (() => {
         disconnectedCallback() {
             super.disconnectedCallback();
             this.stopEffects();
-            this.#unloadThree(this);
+            // TODO Keep the .three object around (dispose it, but no need to delete
+            // it and recreate it, it will be GC'd with the element if the element
+            // is unref'd)
+            this.__disposeThree();
+            this.__disposeThreeCSS();
             this._scene = null;
+        }
+        composedCallback(composedParent, compositionType) {
+            super.composedCallback?.(composedParent, compositionType);
+            if (this.isScene) {
+                console.warn('Composing `<lume-scene>` elements directly into other `<lume-*>` elements is not currently supported. To nest a scene inside a scene, wrap it with a `<div>` inside of a `<lume-mixed-plane>`.');
+            }
+            this.composedSceneGraphParent.three.add(this.three);
+            this.composedSceneGraphParent.threeCSS.add(this.threeCSS);
+            this._scene = this.composedSceneGraphParent.scene;
+            if (this._scene)
+                this.#giveSceneToChildren();
+        }
+        uncomposedCallback(uncomposedParent, compositionType) {
+            super.uncomposedCallback?.(uncomposedParent, compositionType);
+            this.three.parent?.remove(this.three);
+            this.threeCSS.parent?.remove(this.threeCSS);
+            this._scene = null;
+            this.#giveSceneToChildren(); // remove from children
+        }
+        #giveSceneToChildren() {
+            this.traverseSceneGraph(el => {
+                if (el === this)
+                    return;
+                if (el._scene === this._scene)
+                    return;
+                el._scene = this._scene;
+            });
         }
         /**
          * Called whenever a child element is composed to this element.
@@ -403,17 +407,6 @@ let SharedAPI = (() => {
             if (!(child instanceof SharedAPI))
                 return;
             this.needsUpdate(); // Maybe not needed but its a no-op if called extra times.
-            // This code may run during a super constructor (f.e. while constructing
-            // a Scene and it calls `super()`), therefore a Scene's _scene property
-            // will not be set yet, hence the use of `isScene(this) && this` here as
-            // an alternative.
-            const scene = this._scene ?? (isScene(this) && this);
-            // TODO: This does a traversal of the subtree for each element that gets
-            // composed (a traversal bomb), and we return early in the traversal if
-            // nodes already have a scene to avoid setting an element's scene
-            // multiple times. Is there a better way?
-            if (scene)
-                this.#giveSceneAndLoadThree(child, scene);
         }
         childUncomposedCallback(child, _compositionType) {
             if (!(child instanceof SharedAPI))
@@ -421,42 +414,10 @@ let SharedAPI = (() => {
             // Update the parent because the child is gone, but the scene needs a
             // redraw, and we can't update the child because it is already gone.
             this.needsUpdate();
-            if (this._scene)
-                this.#removeSceneAndUnloadThree(child);
-        }
-        #giveSceneAndLoadThree(child, scene) {
-            child.traverseSceneGraph(descendant => {
-                if (descendant.scene === scene)
-                    return;
-                descendant._scene = scene;
-                this.#loadThree(descendant);
-            });
-        }
-        #removeSceneAndUnloadThree(child) {
-            child.traverseSceneGraph(descendant => {
-                this.#unloadThree(descendant);
-                descendant._scene = null;
-            });
         }
         /** @abstract */
         traverseSceneGraph(_visitor, _waitForUpgrade = false) {
             throw 'Element3D and Scene implement this';
-        }
-        #loadThree(el) {
-            // Skip scenes because scenes call their own _trigger* methods based on
-            // values of their webgl or enabled-css attributes.
-            if (!isElement3D(el))
-                return;
-            el._triggerLoadGL();
-            el._triggerLoadCSS();
-        }
-        #unloadThree(el) {
-            // Skip scenes because scenes call their own _trigger* methods based on
-            // values of their webgl or enabled-css attributes.
-            if (!isElement3D(el))
-                return;
-            el._triggerUnloadGL();
-            el._triggerUnloadCSS();
         }
         /**
          * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
@@ -503,8 +464,6 @@ let SharedAPI = (() => {
                 return;
             Motor.needsUpdate(this);
         }
-        _glLoaded = __runInitializers(this, __glLoaded_initializers, false);
-        _cssLoaded = __runInitializers(this, __cssLoaded_initializers, false);
         get _elementOperations() {
             if (!elOps.has(this))
                 elOps.set(this, new ElementOperations(this));
@@ -551,20 +510,14 @@ let SharedAPI = (() => {
                 throw 'API available only in DOM environment.';
             return new CSS3DObjectNested(this);
         }
-        __connectThree() {
+        __reconnectThree() {
             this.composedSceneGraphParent?.three.add(this.three);
-            // Although children connect themselves during __connectThree when
-            // triggered via _loadGL, we still need to do this in case a child is
-            // already loaded but the parent was re-distributed (f.e. to a different
-            // slot, in which case unload/load will happen for that parent),
-            // otherwise the child tree will be connected to the old diconnected
-            // parent three object and won't render on screen.
             for (const child of this.composedLumeChildren) {
                 this.three.add(child.three);
             }
             this.needsUpdate();
         }
-        __connectThreeCSS() {
+        __reconnectThreeCSS() {
             this.composedSceneGraphParent?.threeCSS.add(this.threeCSS);
             for (const child of this.composedLumeChildren) {
                 this.threeCSS.add(child.threeCSS);
@@ -593,117 +546,6 @@ let SharedAPI = (() => {
             if (this.parentLumeElement?.isScene)
                 return this.parentLumeElement;
             return composedLumeParent;
-        }
-        #glEffects = new Effects();
-        createGLEffect(fn) {
-            this.#glEffects.createEffect(fn);
-        }
-        #stopGLEffects() {
-            this.#glEffects.stopEffects();
-        }
-        _loadGL() {
-            if (!(this.scene && this.scene.webgl))
-                return false;
-            if (this._glLoaded)
-                return false;
-            // create the object in case it isn't already (via the getter)
-            const three = this.three;
-            // we don't let Three update local matrices automatically, we do
-            // it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree
-            three.matrixAutoUpdate = false;
-            this.__connectThree();
-            this.needsUpdate();
-            this._glLoaded = true;
-            return true;
-        }
-        _unloadGL() {
-            if (!this._glLoaded)
-                return false;
-            this.#stopGLEffects();
-            this.__disposeThree();
-            this.needsUpdate();
-            this._glLoaded = false;
-            return true;
-        }
-        #cssEffects = new Effects();
-        createCSSEffect(fn) {
-            this.#cssEffects.createEffect(fn);
-        }
-        #stopCSSEffects() {
-            this.#cssEffects.stopEffects();
-        }
-        _loadCSS() {
-            if (!(this.scene && this.scene.enableCss))
-                return false;
-            if (this._cssLoaded)
-                return false;
-            // create the object in case it isn't already (via the getter)
-            const threeCSS = this.threeCSS;
-            // We don't let Three update local matrices automatically, we do
-            // it ourselves in _calculateMatrix and _calculateWorldMatricesInSubtree.
-            threeCSS.matrixAutoUpdate = false;
-            this.__connectThreeCSS();
-            this.needsUpdate();
-            this._cssLoaded = true;
-            return true;
-        }
-        _unloadCSS() {
-            if (!this._cssLoaded)
-                return false;
-            this.#stopCSSEffects();
-            this.__disposeThreeCSS();
-            this.needsUpdate();
-            this._cssLoaded = false;
-            return true;
-        }
-        // This is meant to be called in a non-reactive way (untracked) here, and in
-        // Scene. It is designed to be a one-way thing: create GL once, then destroy
-        // GL once.
-        _triggerLoadGL() {
-            // Use untrack because _loadGL reads and writes _glLoaded.
-            untrack(() => {
-                if (!this._loadGL())
-                    return;
-                this.emit(Events.BEHAVIOR_GL_LOAD, this);
-                queueMicrotask(async () => {
-                    // FIXME Can we get rid of the code deferral here? Without the
-                    // deferral of a total of three microtasks, then GL_LOAD may
-                    // fire before behaviors have loaded GL (when their
-                    // connectedCallbacks fire) due to ordering of when custom
-                    // elements and element-behaviors life cycle methods fire, and
-                    // thus the user code that relies on GL_LOAD will modify
-                    // Three.js object properties and then once the behaviors load
-                    // the behaviors overwrite the users' values.
-                    await null;
-                    await null;
-                    this.emit(Events.GL_LOAD, this);
-                });
-            });
-        }
-        _triggerUnloadGL() {
-            // Use untrack because _unloadGL reads and writes _glLoaded.
-            untrack(() => {
-                if (!this._unloadGL())
-                    return;
-                this.emit(Events.BEHAVIOR_GL_UNLOAD, this);
-                queueMicrotask(() => this.emit(Events.GL_UNLOAD, this));
-            });
-        }
-        _triggerLoadCSS() {
-            // Use untrack because _loadCSS reads and writes _cssLoaded.
-            untrack(() => {
-                if (!this._loadCSS())
-                    return;
-                this.emit(Events.CSS_LOAD, this);
-            });
-        }
-        _triggerUnloadCSS() {
-            // Use untrack because _unloadCSS reads and writes _cssLoaded.
-            untrack(() => {
-                if (!this._unloadCSS())
-                    return;
-                this.emit(Events.CSS_UNLOAD, this);
-            });
         }
         /**
          * Takes all the current component values (position, rotation, etc) and
@@ -865,6 +707,9 @@ let SharedAPI = (() => {
         emit(eventName, data) {
             super.emit(eventName, data);
         }
+        // TODO this needs to be moved into CompositionTracker so that triggering
+        // childComposedCallback is generic, and filtering of element types needs
+        // to be done by subclasses.
         childConnectedCallback(child) {
             // This code handles two cases: the element has a ShadowRoot
             // ("composed children" are children of the ShadowRoot), or it has a
@@ -894,7 +739,7 @@ let SharedAPI = (() => {
                 // COMPOSED TREE TRACKING: Detecting slots here is part of composed
                 // tree tracking (detecting when a child is distributed to an element).
                 child.addEventListener('slotchange', this.__onChildSlotChange);
-                // XXX Do we need __handleDistributedChildren for initial slotted
+                // XXX Do we need __handleSlottedChildren for initial slotted
                 // elements? The answer seems to be "yes, sometimes". When slots are
                 // appended, their slotchange events will fire. However, this
                 // `childConnectedCallback` is fired later from when a child is
@@ -902,16 +747,16 @@ let SharedAPI = (() => {
                 // an appended slot's slotchange event *may* have already fired,
                 // and we will not have had the chance to add a slotchange event
                 // handler yet, therefore we need to fire
-                // __handleDistributedChildren here to handle that missed
+                // __handleSlottedChildren here to handle that missed
                 // opportunity.
                 //
                 // Also we need to defer() here because otherwise, this
                 // childConnectedCallback will fire once for when a child is
                 // connected into the light DOM and run the logic in the `if
                 // (isElement3D(child))` branch *after* childConnectedCallback is fired
-                // and executes this __handleDistributedChildren call for a shadow
+                // and executes this __handleSlottedChildren call for a shadow
                 // DOM slot, and in that case the distribution will not be detected
-                // (why is that?).  By deferring, this __handleDistributedChildren
+                // (why is that?).  By deferring, this __handleSlottedChildren
                 // call correctly happens *after* the above `if (isElement3D(child))`
                 // branch and then things will work as expected. This is all due to
                 // using MutationObserver, which fires event in a later task than
@@ -920,9 +765,9 @@ let SharedAPI = (() => {
                 // TODO ^, Can we make WithChildren call this callback right when
                 // children are added, synchronously?  If so then we could rely on
                 // a slot's slotchange event upon it being connected without having
-                // to call __handleDistributedChildren here (which means also not
+                // to call __handleSlottedChildren here (which means also not
                 // having to use defer for anything).
-                queueMicrotask(() => this.__handleDistributedChildren(child));
+                queueMicrotask(() => this.__handleSlottedChildren(child));
             }
         }
         childDisconnectedCallback(child) {
@@ -940,7 +785,7 @@ let SharedAPI = (() => {
             else if (child instanceof HTMLSlotElement) {
                 // COMPOSED TREE TRACKING:
                 child.removeEventListener('slotchange', this.__onChildSlotChange, { capture: true });
-                this.__handleDistributedChildren(child);
+                this.__handleSlottedChildren(child);
                 this.__previousSlotAssignedNodes.delete(child);
             }
         }

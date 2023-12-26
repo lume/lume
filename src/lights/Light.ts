@@ -67,20 +67,18 @@ abstract class Light extends Element3D {
 		return new ThreeLight()
 	}
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			if (typeof this.color === 'object') this.three.color = this.color
 			this.three.color = new Color(this.color)
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.three.intensity = this.intensity
 			this.needsUpdate()
 		})
-
-		return true
 	}
 }

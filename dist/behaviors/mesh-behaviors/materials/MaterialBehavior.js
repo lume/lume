@@ -343,7 +343,7 @@ let MaterialBehavior = (() => {
          * the element's children.
          */
         materialOpacity = __runInitializers(this, _materialOpacity_initializers, 1);
-        #color = 'white';
+        __color = 'white';
         /**
          * @property {string | number | Color} color -
          *
@@ -361,13 +361,13 @@ let MaterialBehavior = (() => {
          * object.
          */
         get color() {
-            return this.#color;
+            return this.__color;
         }
         set color(val) {
             if (typeof val === 'object')
-                this.#color = val.getStyle();
+                this.__color = val.getStyle();
             else
-                this.#color = val;
+                this.__color = val;
         }
         /**
          * @property {} transparent -
@@ -384,8 +384,8 @@ let MaterialBehavior = (() => {
             else
                 return false;
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)
@@ -467,6 +467,7 @@ let MaterialBehavior = (() => {
                     setTexture(mat, texture);
                     this.element.needsUpdate();
                     onLoad?.();
+                    this.element.dispatchEvent(new TextureLoadEvent(url));
                 });
                 if (isColor)
                     texture.colorSpace = SRGBColorSpace;
@@ -490,5 +491,15 @@ function isColoredMaterial(mat) {
 }
 function isWireframeMaterial(mat) {
     return 'wireframe' in mat;
+}
+/** NOTE: Experimental */
+class TextureLoadEvent extends Event {
+    type = 'textureload';
+    /** The URL of the loaded texture. */
+    src = '';
+    constructor(src) {
+        super('textureload', { bubbles: true, composed: true, cancelable: true });
+        this.src = src;
+    }
 }
 //# sourceMappingURL=MaterialBehavior.js.map

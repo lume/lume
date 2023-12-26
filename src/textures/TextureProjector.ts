@@ -96,8 +96,8 @@ class TextureProjector extends Element3D {
 	// TODO support also perspective projection
 	@signal _camera: PerspectiveCamera | OrthographicCamera | null = null
 
-	override _loadGL(): boolean {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this._camera = new OrthographicCamera()
 		this.three.add(this._camera)
@@ -115,7 +115,7 @@ class TextureProjector extends Element3D {
 		// 	this._camera!.rotation.y += 0.005
 		// })
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			// CAM HELPER
 			// const sphere = new Mesh(new SphereGeometry(10), new MeshPhongMaterial({color: 'white'}))
 			// this._camera!.add(sphere)
@@ -154,17 +154,13 @@ class TextureProjector extends Element3D {
 				this.needsUpdate()
 			})
 		})
-
-		return true
 	}
 
-	override _unloadGL(): boolean {
-		if (!super._unloadGL()) return false
+	override disconnectedCallback() {
+		super.disconnectedCallback()
 
 		this.three.remove(this._camera!)
 		this._camera = null
-
-		return true
 	}
 }
 

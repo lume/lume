@@ -180,8 +180,8 @@ let StandardMaterialBehavior = (() => {
         _createComponent() {
             return new MeshStandardMaterial();
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this.createEffect(() => {
                 const mat = this.meshComponent;
                 if (!mat)

@@ -1,3 +1,5 @@
+// TODO move into utils/three/ folder
+
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {Color} from 'three/src/math/Color.js'
 

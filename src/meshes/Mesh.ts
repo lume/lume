@@ -67,22 +67,20 @@ class Mesh extends Element3D {
 	 */
 	@booleanAttribute receiveShadow = true
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.three.castShadow = this.castShadow
 			this.needsUpdate()
 		})
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			this.three.receiveShadow = this.receiveShadow
 			// TODO handle material arrays
 			;(this.three.material as Material).needsUpdate = true
 			this.needsUpdate()
 		})
-
-		return true
 	}
 
 	override makeThreeObject3d() {

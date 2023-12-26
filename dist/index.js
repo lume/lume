@@ -1,3 +1,4 @@
+import './silence-solid.js';
 export { $DEVCOMP, $PROXY, $TRACK, ErrorBoundary, For, Index, Match, Show, Suspense, SuspenseList, Switch, batch, children, createComputed, createContext, createEffect, createMemo, createResource, createRoot, createSelector, createSignal, getListener, getOwner, indexArray, mapArray, mergeProps, on, onCleanup, onError, onMount, runWithOwner, splitProps, startTransition, untrack, useContext, useTransition, } from 'solid-js';
 export { render } from 'solid-js/web';
 export { default as html } from 'solid-js/html';

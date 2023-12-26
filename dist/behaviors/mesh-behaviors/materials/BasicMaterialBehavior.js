@@ -67,8 +67,8 @@ let BasicMaterialBehavior = (() => {
         _createComponent() {
             return new MeshBasicMaterial();
         }
-        loadGL() {
-            super.loadGL();
+        connectedCallback() {
+            super.connectedCallback();
             this._handleTexture(() => this.texture, // map
             (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
             this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);

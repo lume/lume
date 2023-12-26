@@ -32,9 +32,10 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
+import { numberAttribute, element, booleanAttribute, stringAttribute } from '@lume/element';
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
 import { SpotLightHelper } from 'three/src/helpers/SpotLightHelper.js';
-import { numberAttribute, element, booleanAttribute, stringAttribute } from '@lume/element';
+import { Object3D } from 'three/src/core/Object3D.js';
 import { createEffect, onCleanup } from 'solid-js';
 import { PointLight } from './PointLight.js';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -174,7 +175,7 @@ let SpotLight = (() => {
             this.#target = [];
             for (const v of array) {
                 if (typeof v !== 'string') {
-                    // TODO #279: This .projectedTextures setter non-reactive to v.scene, so it will
+                    // TODO #279: This setter is non-reactive to v.scene, so it will
                     // not update if the element becomes composed into a Lume scene.
                     if (v instanceof Element3D && v.scene)
                         this.#target.push(v);
@@ -196,7 +197,7 @@ let SpotLight = (() => {
                         // Find only planes participating in rendering (i.e. in the
                         // composed tree, noting that .scene is null when not
                         // composed)
-                        // TODO #279: This .projectedTextures setter non-reactive to el.scene, so it will
+                        // TODO #279: This setter is non-reactive to el.scene, so it will
                         // not update if the element becomes composed into a Lume scene.
                         if (el instanceof Element3D && el.scene)
                             this.#target.push(el);
@@ -219,10 +220,9 @@ let SpotLight = (() => {
             this.#helper?.update();
         }
         #helper = null;
-        _loadGL() {
-            if (!super._loadGL())
-                return false;
-            this.createGLEffect(() => {
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
                 if (!(this.scene && this.debug))
                     return;
                 const scene = this.scene;
@@ -231,7 +231,7 @@ let SpotLight = (() => {
                 this.needsUpdate();
                 onCleanup(() => scene.three.remove(this.#helper));
             });
-            this.createGLEffect(() => {
+            this.createEffect(() => {
                 const light = this.three;
                 light.angle = toRadians(this.angle);
                 light.penumbra = this.penumbra;
@@ -249,10 +249,6 @@ let SpotLight = (() => {
                 // from getters/setters, make all logic fully reactive to avoid
                 // worrying about code execution order. https://github.com/lume/lume/issues/279
                 this.target = this.#rawTarget;
-                // loadGL may fire during parsing before children exist. This
-                // MutationObserver will also fire during parsing. This allows us to
-                // re-run the query logic whenever DOM in the current root changes.
-                //
                 // TODO we need to observe all the way up the composed tree, or we
                 // should make the querying scoped only to the nearest root, for
                 // consistency. This covers most cases, for now.
@@ -270,16 +266,11 @@ let SpotLight = (() => {
                         this.three.target = new Object3D(); // point at world origin
                     this.needsUpdate();
                 });
-                // No onCleanup for this.#observer needed here because _unloadGL handles it.
+                onCleanup(() => {
+                    this.#observer?.disconnect();
+                    this.#observer = null;
+                });
             });
-            return true;
-        }
-        _unloadGL() {
-            if (!super._unloadGL())
-                return false;
-            this.#observer?.disconnect();
-            this.#observer = null;
-            return true;
         }
         // @ts-expect-error FIXME probably better for spotlight not to extend from pointlight, make a common shared class if needed.
         makeThreeObject3d() {
@@ -289,5 +280,4 @@ let SpotLight = (() => {
     return SpotLight = _classThis;
 })();
 export { SpotLight };
-import { Object3D } from 'three';
 //# sourceMappingURL=SpotLight.js.map

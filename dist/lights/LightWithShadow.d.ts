@@ -148,6 +148,6 @@ export declare abstract class LightWithShadow extends Light {
      * Adjusts the far plane of the internal camera used for shadow projection.
      */
     shadowCameraFar: number;
-    _loadGL(): boolean;
+    connectedCallback(): void;
 }
 //# sourceMappingURL=LightWithShadow.d.ts.map

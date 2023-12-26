@@ -119,10 +119,10 @@ class PointLight extends LightWithShadow {
 	// TODO computed properties, f.e.
 	// @memo @numberAttribute power = this.intensity * 4 * Math.PI
 
-	override _loadGL() {
-		if (!super._loadGL()) return false
+	override connectedCallback() {
+		super.connectedCallback()
 
-		this.createGLEffect(() => {
+		this.createEffect(() => {
 			const light = this.three
 
 			light.distance = this.distance
@@ -132,8 +132,6 @@ class PointLight extends LightWithShadow {
 
 			this.needsUpdate()
 		})
-
-		return true
 	}
 
 	override makeThreeObject3d() {

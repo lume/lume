@@ -1,4 +1,3 @@
-import {untrack} from 'solid-js'
 import {signal} from 'classy-solid'
 import {attribute, element, noSignal} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
@@ -221,10 +220,7 @@ class Sizeable extends CompositionTracker(TreeNode) {
 			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
 			else this.#settingValueFromPropFunction = false
 
-			// NOTE REACTIVITY We're already in the middle of setting a property, so untrack to
-			// prevent an infinite reactivity loop the reactivity triggers we
-			// set up in the constructor.
-			untrack(() => xyz.from(newValue))
+			xyz.from(newValue)
 		}
 
 		this.#isSettingProperty = false
@@ -239,8 +235,7 @@ class Sizeable extends CompositionTracker(TreeNode) {
 			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
 			else this.#settingValueFromPropFunction = false
 
-			// Same note about this untrack() call as the one in _setPropertyXYZ.
-			untrack(() => setter(newValue as any)) // FIXME no any
+			setter(newValue as any) // FIXME no any
 		}
 
 		this.#isSettingProperty = false

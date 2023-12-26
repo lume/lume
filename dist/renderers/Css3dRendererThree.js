@@ -1,4 +1,5 @@
 import { CSS3DRendererNested } from './CSS3DRendererNested.js';
+import { Motor } from '../core/Motor.js';
 let instance = null;
 let isCreatingSingleton = false;
 export class Css3dRendererThree {
@@ -23,6 +24,9 @@ export class Css3dRendererThree {
             throw new Error('class is a singleton, use the static .singleton() method to get an instance');
     }
     sceneStates = new WeakMap();
+    initialized(scene) {
+        return this.sceneStates.has(scene);
+    }
     // TODO rename
     initialize(scene) {
         let sceneState = this.sceneStates.get(scene);
@@ -30,18 +34,14 @@ export class Css3dRendererThree {
             return;
         this.sceneStates.set(scene, (sceneState = {
             renderer: new CSS3DRendererNested(),
-            sizeChangeHandler: () => this.updateResolution(scene),
         }));
         const { renderer } = sceneState;
-        this.updateResolution(scene);
-        scene.on('sizechange', sceneState.sizeChangeHandler);
         scene._cssLayer.appendChild(renderer.domElement);
     }
     uninitialize(scene) {
         const sceneState = this.sceneStates.get(scene);
         if (!sceneState)
             return;
-        scene.off('sizechange', sceneState.sizeChangeHandler);
         scene._cssLayer?.removeChild(sceneState.renderer.domElement);
         this.sceneStates.delete(scene);
     }
@@ -52,16 +52,18 @@ export class Css3dRendererThree {
         const { renderer } = sceneState;
         renderer.render(scene.threeCSS, scene.threeCamera);
     }
-    updateResolution(scene) {
-        const state = this.sceneStates.get(scene);
-        if (!state)
-            throw new ReferenceError('Unable to update resolution. Scene state should be initialized first.');
-        scene._updateCameraAspect();
-        scene._updateCameraPerspective();
-        scene._updateCameraProjection();
-        const { x, y } = scene.calculatedSize;
-        state.renderer.setSize(x, y);
-        scene.needsUpdate();
+    updateResolution(scene, x, y) {
+        // We don't need to defer here like we do in the webgl renderer (see the
+        // WebglRendererThree.updateResolution comment for more info on why we
+        // need to defer), but we do it so that the CSS visual stays in sync
+        // with the GL visual on resize, otherwise the resized CSS visual will
+        // always be one frame ahead of the resized GL visual.
+        Motor.once(() => {
+            if (!this.initialized(scene))
+                return;
+            const state = this.sceneStates.get(scene);
+            state.renderer.setSize(x, y);
+        });
     }
     requestFrame(_scene, fn) {
         requestAnimationFrame(fn);

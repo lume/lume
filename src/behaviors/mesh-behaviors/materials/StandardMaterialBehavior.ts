@@ -75,8 +75,8 @@ class StandardMaterialBehavior extends MaterialBehavior {
 		return new MeshStandardMaterial()
 	}
 
-	override loadGL() {
-		super.loadGL()
+	override connectedCallback() {
+		super.connectedCallback()
 
 		this.createEffect(() => {
 			const mat = this.meshComponent

@@ -11,13 +11,7 @@
 	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
-	<lume-camera-rig
-		active
-		initial-distance="5"
-		max-distance="70000"
-		min-distance="0.2"
-		dolly-speed="0.005"
-	></lume-camera-rig>
+	<lume-camera-rig active distance="5" max-distance="70000" min-distance="0.2" dolly-speed="0.005"></lume-camera-rig>
 
 	<!-- background -->
 	<lume-sphere
@@ -35,22 +29,66 @@
 
 	const positions = [-3, -2, -1, 0, 1, 2, 3]
 
-	// The model is 1/50th of one unit across, so scale by 50
-	render(
-		() => html`
-			<${For} each=${() => positions}>
-				${pos => html`
-					<lume-gltf-model
-						rotation="0 45 0"
-						size="1 1 0"
-						src="./models/boombox/BoomBox.gltf"
-						draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
-						scale="50 50 50"
-						position=${pos * 1.2}
-					></lume-gltf-model>
-				`}
-			</${For}>
-		`,
-		scene,
-	)
+	/** @type {'solid-html' | 'plain-html' | 'js'} */
+	const method =
+		//
+		'solid-html'
+	// 'plain-html'
+	// 'js'
+
+	if (method === 'solid-html') {
+		// The model is ~1/50th of one unit across, so scale by 50
+		// prettier-ignore
+		render(
+			() => html`
+				<${For} each=${() => positions}>
+					${pos => html`
+						<lume-gltf-model
+							attr:id=${"debug-model-" + pos}
+							rotation="0 45 0"
+							size="0.02 0.02 0"
+							src="./models/boombox/BoomBox.gltf"
+							draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
+							scale="50 50 50"
+							attr:position=${pos * 1.2}
+						></lume-gltf-model>
+					`}
+				</>
+			`,
+			scene,
+		)
+	} else if (method === 'plain-html') {
+		let content = ''
+		// prettier-ignore
+		for (const pos of positions) {
+			content += /*html*/ `
+						<lume-gltf-model
+							id="${"debug-model-" + pos}"
+							rotation="0 45 0"
+							size="0.02 0.02 0"
+							src="./models/boombox/BoomBox.gltf"
+							draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
+							scale="50 50 50"
+							position="${pos * 1.2}"
+							align-point="0.01 0.01"
+						></lume-gltf-model>
+			`
+		}
+		scene.insertAdjacentHTML('beforeend', content)
+	} else if (method === 'js') {
+		let content = []
+		for (const pos of positions) {
+			const gltf = document.createElement('lume-gltf-model')
+			content.push(gltf)
+			gltf.setAttribute('id', 'debug-model-' + pos)
+			gltf.setAttribute('rotation', '0 45 0')
+			gltf.setAttribute('size', '0.02 0.02 0')
+			gltf.setAttribute('src', './models/boombox/BoomBox.gltf')
+			gltf.setAttribute('draco-decoder', 'https://www.gstatic.com/draco/v1/decoders/')
+			gltf.setAttribute('scale', '50 50 50')
+			gltf.setAttribute('position', String(pos * 1.2))
+			gltf.setAttribute('align-point', '0.01 0.01')
+		}
+		scene.append(...content)
+	}
 </script>
