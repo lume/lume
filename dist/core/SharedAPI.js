@@ -35,7 +35,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 import { untrack } from 'solid-js';
 import { signal } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
-import { element, attribute } from '@lume/element';
+import { element, attribute, booleanAttribute } from '@lume/element';
 import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
@@ -79,6 +79,8 @@ let SharedAPI = (() => {
     let _classSuper = InitialBehaviors(ChildTracker(Settable(Transformable)));
     let _instanceExtraInitializers = [];
     let _set_opacity_decorators;
+    let _debug_decorators;
+    let _debug_initializers = [];
     let __scene_decorators;
     let __scene_initializers = [];
     let _version_decorators;
@@ -88,9 +90,11 @@ let SharedAPI = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _set_opacity_decorators = [attribute];
+            _debug_decorators = [booleanAttribute];
             __scene_decorators = [signal];
             _version_decorators = [signal];
             __esDecorate(this, null, _set_opacity_decorators, { kind: "setter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, set: (obj, value) => { obj.opacity = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, __scene_decorators, { kind: "field", name: "_scene", static: false, private: false, access: { has: obj => "_scene" in obj, get: obj => obj._scene, set: (obj, value) => { obj._scene = value; } }, metadata: _metadata }, __scene_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -132,6 +136,26 @@ let SharedAPI = (() => {
                 opacity.set(this, 1);
             return opacity.get(this);
         }
+        /**
+         * @property {boolean} debug -
+         *
+         * `attribute`
+         *
+         * Default: `false`
+         *
+         * When `true`, show debug visuals for the object. Not all objects implement
+         * debug visuals yet.
+         */
+        debug = __runInitializers(this, _debug_initializers, false
+        /**
+         * @deprecated
+         * @property {boolean} glLoaded
+         *
+         * DEPRECATED Now always true. For logic depending on this in an effect (f.e. returning early when false), instead init things when an element is connected, and uninit when an element is disconnected.
+         *
+         * *readonly*
+         */
+        );
         /**
          * @deprecated
          * @property {boolean} glLoaded

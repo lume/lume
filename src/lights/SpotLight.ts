@@ -1,6 +1,7 @@
-import {numberAttribute, element, booleanAttribute, stringAttribute} from '@lume/element'
+import {numberAttribute, element, stringAttribute} from '@lume/element'
 import {SpotLight as ThreeSpotLight} from 'three/src/lights/SpotLight.js'
 import {SpotLightHelper} from 'three/src/helpers/SpotLightHelper.js'
+import {CameraHelper} from 'three/src/helpers/CameraHelper.js'
 import {Object3D} from 'three/src/core/Object3D.js'
 import {createEffect, onCleanup} from 'solid-js'
 import {PointLight, type PointLightAttributes} from './PointLight.js'
@@ -23,10 +24,7 @@ export type SpotLightAttributes = PointLightAttributes
  *
  * ## Example
  *
- * <live-code id="liveExample"></live-code>
- * <script>
- *   liveExample.content = spotLightExample()
- * </script>
+ * <live-code src="../../examples/spotlight.html"></live-code>
  *
  * @extends PointLight
  */
@@ -141,27 +139,41 @@ class SpotLight extends PointLight {
 		}
 	}
 
-	// TODO generic debug for all elements.
-	@booleanAttribute debug = false
-
 	override updateWorldMatrices(traverse = true) {
 		super.updateWorldMatrices(traverse)
 
 		this.#helper?.update()
+		this.#camHelper?.update()
 	}
 
 	#helper: SpotLightHelper | null = null
+	#camHelper: CameraHelper | null = null
 
 	override connectedCallback() {
 		super.connectedCallback()
 
 		this.createEffect(() => {
 			if (!(this.scene && this.debug)) return
+
 			const scene = this.scene
+
 			this.#helper = new SpotLightHelper(this.three)
 			scene.three.add(this.#helper)
+
+			this.#camHelper = new CameraHelper(this.three.shadow.camera)
+			scene.three.add(this.#camHelper)
+
 			this.needsUpdate()
-			onCleanup(() => scene.three.remove(this.#helper!))
+
+			onCleanup(() => {
+				this.#helper!.dispose()
+				scene.three.remove(this.#helper!)
+				this.#helper = null
+
+				this.#camHelper!.dispose()
+				scene.three.remove(this.#camHelper!)
+				this.#camHelper = null
+			})
 		})
 
 		this.createEffect(() => {

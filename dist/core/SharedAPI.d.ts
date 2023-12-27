@@ -731,6 +731,17 @@ export declare class SharedAPI extends SharedAPI_base {
     set opacity(newValue: number | SinglePropertyFunction);
     get opacity(): number;
     /**
+     * @property {boolean} debug -
+     *
+     * `attribute`
+     *
+     * Default: `false`
+     *
+     * When `true`, show debug visuals for the object. Not all objects implement
+     * debug visuals yet.
+     */
+    debug: boolean;
+    /**
      * @deprecated
      * @property {boolean} glLoaded
      *

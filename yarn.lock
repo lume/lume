@@ -3265,7 +3265,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lume/live-code@npm:^0.5.1, @lume/live-code@workspace:packages/live-code":
+"@lume/live-code@npm:^0.6.0, @lume/live-code@workspace:packages/live-code":
   version: 0.0.0-use.local
   resolution: "@lume/live-code@workspace:packages/live-code"
   dependencies:
@@ -3369,6 +3369,13 @@ __metadata:
     "@nodelib/fs.scandir": "npm:2.1.5"
     fastq: "npm:^1.6.0"
   checksum: db9de047c3bb9b51f9335a7bb46f4fcfb6829fb628318c12115fbaf7d369bfce71c15b103d1fc3b464812d936220ee9bc1c8f762d032c9f6be9acc99249095b1
+  languageName: node
+  linkType: hard
+
+"@nothing-but/utils@npm:~0.12.0":
+  version: 0.12.1
+  resolution: "@nothing-but/utils@npm:0.12.1"
+  checksum: b6211b69021a09035426013abba1ece06fdc452097e2b2569eb820a1a9c5fde2245447e827007abbe57bc4cd3094a0c222129296e992d6ae9dbf3f4bf671517e
   languageName: node
   linkType: hard
 
@@ -4597,6 +4604,86 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solid-devtools/debugger@npm:^0.23.3":
+  version: 0.23.3
+  resolution: "@solid-devtools/debugger@npm:0.23.3"
+  dependencies:
+    "@nothing-but/utils": "npm:~0.12.0"
+    "@solid-devtools/shared": "npm:^0.13.1"
+    "@solid-primitives/bounds": "npm:^0.0.118"
+    "@solid-primitives/cursor": "npm:^0.0.112"
+    "@solid-primitives/event-bus": "npm:^1.0.8"
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/keyboard": "npm:^1.2.5"
+    "@solid-primitives/platform": "npm:^0.1.0"
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/scheduled": "npm:^1.4.1"
+    "@solid-primitives/static-store": "npm:^0.0.5"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.8.0
+  checksum: c0eb8037fa4d0aa7dd011f29a7ee275e1269994b0fe29bd0ffb351df79a5be954271dd1733bc8ba55969ca5fd6170f8823da3c00f3be31e648e1774910b67cfa
+  languageName: node
+  linkType: hard
+
+"@solid-devtools/logger@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "@solid-devtools/logger@npm:0.8.3"
+  dependencies:
+    "@nothing-but/utils": "npm:~0.12.0"
+    "@solid-devtools/debugger": "npm:^0.23.3"
+    "@solid-devtools/shared": "npm:^0.13.1"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.8.0
+  checksum: ab4f44171d228fd56ecb3d87b1e4df5661f0553a0dd9d1766d2ed4dd9d9b5461ce7e1dc70c5177853e0ff400c553fead74e50fda8f3499e1db276f405a33180c
+  languageName: node
+  linkType: hard
+
+"@solid-devtools/shared@npm:^0.13.1":
+  version: 0.13.1
+  resolution: "@solid-devtools/shared@npm:0.13.1"
+  dependencies:
+    "@solid-primitives/event-bus": "npm:^1.0.8"
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/media": "npm:^2.2.5"
+    "@solid-primitives/refs": "npm:^1.0.5"
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/scheduled": "npm:^1.4.1"
+    "@solid-primitives/static-store": "npm:^0.0.5"
+    "@solid-primitives/styles": "npm:^0.0.111"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.8.0
+  checksum: b91b4690c34189673cb782eab9f85bc68fd32d7a7b3385321ad19fcaf4bae211a8a6dcfe2fe80aa8d7970babf24639d07f26ff25a7cd555b2a8772f3cab0736f
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/bounds@npm:^0.0.118":
+  version: 0.0.118
+  resolution: "@solid-primitives/bounds@npm:0.0.118"
+  dependencies:
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/resize-observer": "npm:^2.0.22"
+    "@solid-primitives/static-store": "npm:^0.0.5"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: a0d7e18987ba2ea6250c89a9a9006271b9d70584f208f72639bb2d373c16e739df83fd0f20576464cdef2980046b53851f4ea693ae7e62ebaa775035f8ff9c3f
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/cursor@npm:^0.0.112":
+  version: 0.0.112
+  resolution: "@solid-primitives/cursor@npm:0.0.112"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 7044983d6ed134297e0fab394e38fd5077894a448c4fe1b7423f63123055dec00817f154846be1c4f94fb249e88892ef3348c4d4fbda56cd3b5c72a5753195a0
+  languageName: node
+  linkType: hard
+
 "@solid-primitives/debounce@npm:1.2.0":
   version: 1.2.0
   resolution: "@solid-primitives/debounce@npm:1.2.0"
@@ -4606,12 +4693,147 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solid-primitives/event-bus@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "@solid-primitives/event-bus@npm:1.0.8"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 1a03e77999234232a06993844f3eede902457af7ee13ec1012371dcf1ca70c8f4cd4abc39a01012836ecbedc7f75d0f7461ec12cd268d2c766e61459c52f8544
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/event-listener@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@solid-primitives/event-listener@npm:2.3.0"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: d6f67f1a302ab23800f0e10f37f85a3f7c4376c3b6b4ceba290ad5b7566247bc6c0b6de48944ab4e5c4c882647bd67e1e18d3aed93ebcd523f5a55e5a0c744ec
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/keyboard@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "@solid-primitives/keyboard@npm:1.2.5"
+  dependencies:
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 0875b6e25b219494380b7d75176631c982071d5df1f2ed54426c888cf8372387adb4e86d5aac04a0757b17b94767fbd38de1d324a2129829dcf142913955c777
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/media@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "@solid-primitives/media@npm:2.2.5"
+  dependencies:
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/static-store": "npm:^0.0.5"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: c0baabda3dee6864d56be36c8d28016c4f905a686e06160b7bfa39fb367dc8c77884ed902231811c171d2390b0be1dd9a14c017467602be525fe10b752481b77
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/platform@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@solid-primitives/platform@npm:0.1.0"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 7f48653380dd71e03532f607840fd8c8b32ad49458fbba3a1b4059bc77fb8336044ec2d9e2beae9f538e3360cce5fb542b932a64ed8a230d540c84bfe924a090
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/refs@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@solid-primitives/refs@npm:1.0.5"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 528f02f07116dd02639c9448d577157de6ff532b62203a5df2e2ede5607bd941ae13975e8dab9bd8cd15dd42410c56c1e3656b3ab227deb34395801645f6e403
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/resize-observer@npm:^2.0.22":
+  version: 2.0.22
+  resolution: "@solid-primitives/resize-observer@npm:2.0.22"
+  dependencies:
+    "@solid-primitives/event-listener": "npm:^2.3.0"
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/static-store": "npm:^0.0.5"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: aed3f9ef44a61427b467ff25d78eec11442790b11a3ddf4b2cf176212d1bf9701ebb88b44b32709dbdb11bbdcb4f35167c3901be8b4bbd8edd7b84def289591e
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/rootless@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@solid-primitives/rootless@npm:1.4.2"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: e68937ae74df02458a16bd47c9d903cc642b48e243dd865ef5042ecbf8602bdbd31affe4d30c1832a92c7bb09b492b660b080f90d47d57afdb541de9fe825538
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/scheduled@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@solid-primitives/scheduled@npm:1.4.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 41a7f166a2f70e6d796c8af9b44ccf6eec1bbc01212fbcc4fa20183bdb32454539e2b5f54a65f6c74ed2626d16a832d4939c8733cee4261f0ead5d711d81a003
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/static-store@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@solid-primitives/static-store@npm:0.0.5"
+  dependencies:
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: e3803368146d47d8e981a628bd5c020ff3d0a7c7a27c7416c9d29e11b1213d58ba9ee6c235442823f2b14f901850ad9feaa19076a02df34519389bcb366d1bb4
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/styles@npm:^0.0.111":
+  version: 0.0.111
+  resolution: "@solid-primitives/styles@npm:0.0.111"
+  dependencies:
+    "@solid-primitives/rootless": "npm:^1.4.2"
+    "@solid-primitives/utils": "npm:^6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: d6800c593f7e2d27c2d5023d6473d0fcf2079f04ff265a1ae1610b9b3fb3a7eba001824ae0f840046c363c17a7051c8a7a8bd219009c22661bbd979b383a0c55
+  languageName: node
+  linkType: hard
+
 "@solid-primitives/throttle@npm:1.1.3":
   version: 1.1.3
   resolution: "@solid-primitives/throttle@npm:1.1.3"
   peerDependencies:
     solid-js: ^1.3.1
   checksum: fe36ac989a39700aaec1711714a2288be30aad6a53329408703e953df7deab12f8a7face2505b8c7994d233cfed9c55b1ea99f9d159d29b48796cd64a7b8baf2
+  languageName: node
+  linkType: hard
+
+"@solid-primitives/utils@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@solid-primitives/utils@npm:6.2.1"
+  peerDependencies:
+    solid-js: ^1.6.12
+  checksum: 402116f9daaf020b6299d6e7b2c41bfda67c069a323d4fba76ea76b31ed1c3500769ae39430bb0e5732d3747e5e7f5c194718acf6f0c3e9bf237a4d6188b56e6
   languageName: node
   linkType: hard
 
@@ -9296,7 +9518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classy-solid@npm:^0.3.0, classy-solid@npm:^0.3.2, classy-solid@workspace:packages/classy-solid":
+"classy-solid@npm:^0.3.0, classy-solid@npm:^0.3.7, classy-solid@workspace:packages/classy-solid":
   version: 0.0.0-use.local
   resolution: "classy-solid@workspace:packages/classy-solid"
   dependencies:
@@ -11610,8 +11832,9 @@ __metadata:
     "@lume/element": "npm:^0.11.0"
     "@lume/eventful": "npm:^0.3.0"
     "@lume/kiwi": "npm:^0.4.0"
-    "@lume/live-code": "npm:^0.5.1"
+    "@lume/live-code": "npm:^0.6.0"
     "@lume/three-projected-material": "npm:^0.3.0"
+    "@solid-devtools/logger": "npm:^0.8.3"
     "@uiw/codemirror-theme-noctis-lilac": "npm:^4.0.0"
     browser-sync: "npm:^2.27.11"
     classy-solid: "npm:^0.3.0"
@@ -18976,7 +19199,7 @@ __metadata:
     "@lume/eventful": "npm:^0.3.0"
     "@lume/three-projected-material": "npm:^0.3.0"
     "@types/three": "npm:>=0.139.0"
-    classy-solid: "npm:^0.3.2"
+    classy-solid: "npm:^0.3.7"
     cross-env: "npm:^7.0.3"
     element-behaviors: "npm:^5.0.0"
     five-server: "npm:^0.3.1"

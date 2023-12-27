@@ -1,7 +1,11 @@
-import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {numberAttribute, element} from '@lume/element'
+import {onCleanup} from 'solid-js'
+import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
+import {DirectionalLightHelper} from 'three/src/helpers/DirectionalLightHelper.js'
+import {CameraHelper} from 'three/src/helpers/CameraHelper.js'
 import {LightWithShadow, type LightWithShadowAttributes} from './LightWithShadow.js'
 import {autoDefineElements} from '../LumeConfig.js'
+import {Motor} from '../core/Motor.js'
 
 export type DirectionalLightAttributes =
 	| LightWithShadowAttributes
@@ -67,6 +71,8 @@ class DirectionalLight extends LightWithShadow {
 	override connectedCallback() {
 		super.connectedCallback()
 
+		this.three.castShadow = true
+
 		this.createEffect(() => {
 			const light = this.three
 			const shadow = light.shadow
@@ -78,6 +84,31 @@ class DirectionalLight extends LightWithShadow {
 
 			shadow.needsUpdate = true
 			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			if (!this.debug) return
+			if (!this.scene) return
+
+			const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom)
+			this.scene.three.add(lightHelper)
+
+			const camHelper = new CameraHelper(this.three.shadow.camera)
+			this.scene.three.add(camHelper)
+
+			const task = Motor.addRenderTask(() => {
+				lightHelper.update()
+				camHelper.update()
+				this.scene!.needsUpdate()
+			})
+
+			onCleanup(() => {
+				Motor.removeRenderTask(task)
+				lightHelper.dispose()
+				this.scene!.three.remove(lightHelper)
+				camHelper.dispose()
+				this.scene!.three.remove(camHelper)
+			})
 		})
 	}
 

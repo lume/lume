@@ -1,5 +1,8 @@
-import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {numberAttribute, element} from '@lume/element'
+import {onCleanup} from 'solid-js'
+import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
+import {PointLightHelper} from 'three/src/helpers/PointLightHelper.js'
+import {Motor} from '../core/Motor.js'
 import {LightWithShadow, type LightWithShadowAttributes} from './LightWithShadow.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -131,6 +134,24 @@ class PointLight extends LightWithShadow {
 			// We don't need to set three.power here because threejs already maps that itself.
 
 			this.needsUpdate()
+		})
+
+		this.createEffect(() => {
+			if (!this.debug) return
+			if (!this.scene) return
+
+			const helper = new PointLightHelper(this.three, this.calculatedSize.x || 100)
+			this.scene.three.add(helper)
+
+			// Inifinite render loop while debugging, but oh well, its debug
+			// mode, code is simpler this way.
+			const task = Motor.addRenderTask(() => helper.update())
+
+			onCleanup(() => {
+				helper.dispose()
+				this.scene!.three.remove(helper)
+				Motor.removeRenderTask(task)
+			})
 		})
 	}
 

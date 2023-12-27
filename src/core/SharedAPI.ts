@@ -1,7 +1,7 @@
 import {untrack} from 'solid-js'
 import {signal} from 'classy-solid'
 import {Object3D} from 'three/src/core/Object3D.js'
-import {element, attribute} from '@lume/element'
+import {element, attribute, booleanAttribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
@@ -94,6 +94,18 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		if (!opacity.has(this)) opacity.set(this, 1)
 		return opacity.get(this)!
 	}
+
+	/**
+	 * @property {boolean} debug -
+	 *
+	 * `attribute`
+	 *
+	 * Default: `false`
+	 *
+	 * When `true`, show debug visuals for the object. Not all objects implement
+	 * debug visuals yet.
+	 */
+	@booleanAttribute debug = false
 
 	/**
 	 * @deprecated

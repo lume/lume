@@ -97,10 +97,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  * rotation to the root node based on the current mouse or finger position.
  * See the [events guide](TODO) for how the event system works.
  *
- * <live-code id="liveExample"></live-code>
- * <script>
- *   liveExample.content = miniGalaxyDemo()
- * </script>
+ * <live-code src="../../examples/mini-galaxy/example.html"></live-code>
  *
  * @extends SharedAPI
  */

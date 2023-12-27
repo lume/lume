@@ -32,9 +32,10 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { numberAttribute, element, booleanAttribute, stringAttribute } from '@lume/element';
+import { numberAttribute, element, stringAttribute } from '@lume/element';
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
 import { SpotLightHelper } from 'three/src/helpers/SpotLightHelper.js';
+import { CameraHelper } from 'three/src/helpers/CameraHelper.js';
 import { Object3D } from 'three/src/core/Object3D.js';
 import { createEffect, onCleanup } from 'solid-js';
 import { PointLight } from './PointLight.js';
@@ -54,10 +55,7 @@ import { Element3D, toRadians } from '../core/index.js';
  *
  * ## Example
  *
- * <live-code id="liveExample"></live-code>
- * <script>
- *   liveExample.content = spotLightExample()
- * </script>
+ * <live-code src="../../examples/spotlight.html"></live-code>
  *
  * @extends PointLight
  */
@@ -73,8 +71,6 @@ let SpotLight = (() => {
     let _penumbra_decorators;
     let _penumbra_initializers = [];
     let _get_target_decorators;
-    let _debug_decorators;
-    let _debug_initializers = [];
     var SpotLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -82,11 +78,9 @@ let SpotLight = (() => {
             _angle_decorators = [numberAttribute];
             _penumbra_decorators = [numberAttribute];
             _get_target_decorators = [stringAttribute];
-            _debug_decorators = [booleanAttribute];
             __esDecorate(this, null, _get_target_decorators, { kind: "getter", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _angle_decorators, { kind: "field", name: "angle", static: false, private: false, access: { has: obj => "angle" in obj, get: obj => obj.angle, set: (obj, value) => { obj.angle = value; } }, metadata: _metadata }, _angle_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _penumbra_decorators, { kind: "field", name: "penumbra", static: false, private: false, access: { has: obj => "penumbra" in obj, get: obj => obj.penumbra, set: (obj, value) => { obj.penumbra = value; } }, metadata: _metadata }, _penumbra_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SpotLight = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -213,13 +207,13 @@ let SpotLight = (() => {
                 }
             }
         }
-        // TODO generic debug for all elements.
-        debug = __runInitializers(this, _debug_initializers, false);
         updateWorldMatrices(traverse = true) {
             super.updateWorldMatrices(traverse);
             this.#helper?.update();
+            this.#camHelper?.update();
         }
         #helper = null;
+        #camHelper = null;
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
@@ -228,8 +222,17 @@ let SpotLight = (() => {
                 const scene = this.scene;
                 this.#helper = new SpotLightHelper(this.three);
                 scene.three.add(this.#helper);
+                this.#camHelper = new CameraHelper(this.three.shadow.camera);
+                scene.three.add(this.#camHelper);
                 this.needsUpdate();
-                onCleanup(() => scene.three.remove(this.#helper));
+                onCleanup(() => {
+                    this.#helper.dispose();
+                    scene.three.remove(this.#helper);
+                    this.#helper = null;
+                    this.#camHelper.dispose();
+                    scene.three.remove(this.#camHelper);
+                    this.#camHelper = null;
+                });
             });
             this.createEffect(() => {
                 const light = this.three;

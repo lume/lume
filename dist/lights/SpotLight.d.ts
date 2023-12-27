@@ -16,10 +16,7 @@ export type SpotLightAttributes = PointLightAttributes;
  *
  * ## Example
  *
- * <live-code id="liveExample"></live-code>
- * <script>
- *   liveExample.content = spotLightExample()
- * </script>
+ * <live-code src="../../examples/spotlight.html"></live-code>
  *
  * @extends PointLight
  */
@@ -56,7 +53,6 @@ export declare class SpotLight extends PointLight {
     penumbra: number;
     get target(): Element3D | null;
     set target(value: string | Element3D | null | Array<Element3D | string>);
-    debug: boolean;
     updateWorldMatrices(traverse?: boolean): void;
     connectedCallback(): void;
     makeThreeObject3d(): ThreeSpotLight;

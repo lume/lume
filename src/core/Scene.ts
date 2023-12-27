@@ -77,10 +77,7 @@ export type SceneAttributes =
  * The following example shows how to begin making a LUME scene within an HTML
  * file. To learn more about how to get started, see the [install guide](../../guide/install.md).
  *
- * <live-code id="liveExample"></live-code>
- * <script>
- *   liveExample.content = sceneExample()
- * </script>
+ * <live-code src="../../examples/scene.html"></live-code>
  *
  * @extends SharedAPI
  */

@@ -32,10 +32,14 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { DirectionalLight as ThreeDirectionalLight } from 'three/src/lights/DirectionalLight.js';
 import { numberAttribute, element } from '@lume/element';
+import { onCleanup } from 'solid-js';
+import { DirectionalLight as ThreeDirectionalLight } from 'three/src/lights/DirectionalLight.js';
+import { DirectionalLightHelper } from 'three/src/helpers/DirectionalLightHelper.js';
+import { CameraHelper } from 'three/src/helpers/CameraHelper.js';
 import { LightWithShadow } from './LightWithShadow.js';
 import { autoDefineElements } from '../LumeConfig.js';
+import { Motor } from '../core/Motor.js';
 // TODO @element jsdoc tag
 /**
  * @element lume-directional-light
@@ -126,6 +130,7 @@ let DirectionalLight = (() => {
         shadowCameraLeft = __runInitializers(this, _shadowCameraLeft_initializers, -1000);
         connectedCallback() {
             super.connectedCallback();
+            this.three.castShadow = true;
             this.createEffect(() => {
                 const light = this.three;
                 const shadow = light.shadow;
@@ -135,6 +140,28 @@ let DirectionalLight = (() => {
                 shadow.camera.left = this.shadowCameraLeft;
                 shadow.needsUpdate = true;
                 this.needsUpdate();
+            });
+            this.createEffect(() => {
+                if (!this.debug)
+                    return;
+                if (!this.scene)
+                    return;
+                const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom);
+                this.scene.three.add(lightHelper);
+                const camHelper = new CameraHelper(this.three.shadow.camera);
+                this.scene.three.add(camHelper);
+                const task = Motor.addRenderTask(() => {
+                    lightHelper.update();
+                    camHelper.update();
+                    this.scene.needsUpdate();
+                });
+                onCleanup(() => {
+                    Motor.removeRenderTask(task);
+                    lightHelper.dispose();
+                    this.scene.three.remove(lightHelper);
+                    camHelper.dispose();
+                    this.scene.three.remove(camHelper);
+                });
             });
         }
         makeThreeObject3d() {
