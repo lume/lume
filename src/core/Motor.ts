@@ -168,11 +168,6 @@ class _Motor {
 		if (this.#elementsToUpdate.size === 0) return
 
 		for (const el of this.#elementsToUpdate) {
-			// Skip any element that is not participating in rendering of a
-			// scene (f.e. the element is not composed, or scene render modes
-			// are disabled)
-			if (!el.scene || (!el.scene.webgl && !el.scene.enableCss)) continue
-
 			el.update(timestamp, deltaTime)
 
 			// if there is no ancestor of the current element that should be
@@ -182,7 +177,7 @@ class _Motor {
 
 			// keep track of which scenes are modified so we can render webgl
 			// only for those scenes.
-			this.#modifiedScenes.add(el.scene)
+			if (el.scene) this.#modifiedScenes.add(el.scene)
 		}
 		this.#elementsToUpdate.clear()
 

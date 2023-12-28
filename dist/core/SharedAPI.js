@@ -341,8 +341,6 @@ let SharedAPI = (() => {
                 });
             });
             this.createEffect(() => {
-                if (!this.scene)
-                    return;
                 // If the parent size changes,
                 this.parentSize;
                 untrack(() => {
@@ -484,8 +482,6 @@ let SharedAPI = (() => {
          * ```
          */
         needsUpdate() {
-            if (!this.scene)
-                return;
             Motor.needsUpdate(this);
         }
         get _elementOperations() {

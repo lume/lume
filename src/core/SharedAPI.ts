@@ -296,8 +296,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		})
 
 		this.createEffect(() => {
-			if (!this.scene) return
-
 			// If the parent size changes,
 			this.parentSize
 
@@ -460,7 +458,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * ```
 	 */
 	needsUpdate(): void {
-		if (!this.scene) return
 		Motor.needsUpdate(this)
 	}
 
