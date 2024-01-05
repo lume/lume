@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
 import { PointLight, type PointLightAttributes } from './PointLight.js';
 import { Element3D } from '../core/index.js';
@@ -57,7 +58,6 @@ export declare class SpotLight extends PointLight {
     connectedCallback(): void;
     makeThreeObject3d(): ThreeSpotLight;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

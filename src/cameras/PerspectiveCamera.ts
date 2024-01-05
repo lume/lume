@@ -1,4 +1,4 @@
-import {numberAttribute, element} from '@lume/element'
+import {numberAttribute, element, type ElementAttributes} from '@lume/element'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {Camera, type CameraAttributes} from './Camera.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -119,8 +119,6 @@ class PerspectiveCamera extends Camera {
 		return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

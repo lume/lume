@@ -4,7 +4,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
 
-type CubeLayoutAttributes = Element3DAttributes
+export type CubeLayoutAttributes = Element3DAttributes
 
 /**
  * @extends Element3D

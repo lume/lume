@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 export type FlickeringOrbsAttributes = Element3DAttributes | 'shadowBias' | 'intensity';
 export declare class FlickeringOrbs extends Element3D {
@@ -7,7 +8,6 @@ export declare class FlickeringOrbs extends Element3D {
     color: string | null;
     template: () => Node | Node[];
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

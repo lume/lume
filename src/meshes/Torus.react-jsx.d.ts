@@ -6,8 +6,7 @@ import type {PhongMaterialBehavior, PhongMaterialBehaviorAttributes} from '../be
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-torus': ReactElementAttributes<Torus, TorusAttributes> &
-				ReactElementAttributes<PhongMaterialBehavior, PhongMaterialBehaviorAttributes>
+			'lume-torus': ReactElementAttributes<Torus, TorusAttributes>
 		}
 	}
 }

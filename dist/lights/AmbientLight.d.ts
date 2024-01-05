@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Light } from './Light.js';
 import { AmbientLight as ThreeAmbientLight } from 'three/src/lights/AmbientLight.js';
 import type { LightAttributes } from './Light.js';
@@ -27,7 +28,6 @@ export declare class AmbientLight extends Light {
     intensity: number;
     makeThreeObject3d(): ThreeAmbientLight;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

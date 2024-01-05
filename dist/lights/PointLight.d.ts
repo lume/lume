@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { PointLight as ThreePointLight } from 'three/src/lights/PointLight.js';
 import { LightWithShadow, type LightWithShadowAttributes } from './LightWithShadow.js';
 export type PointLightAttributes = LightWithShadowAttributes | 'distance' | 'decay';
@@ -96,7 +97,6 @@ export declare class PointLight extends LightWithShadow {
     connectedCallback(): void;
     makeThreeObject3d(): ThreePointLight;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

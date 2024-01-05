@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Mesh, type MeshAttributes } from './Mesh.js';
 export type PlaneAttributes = MeshAttributes;
 /**
@@ -24,7 +25,7 @@ export declare class Plane extends Mesh {
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-plane': JSX.IntrinsicElements['lume-mesh'];
+            'lume-plane': ElementAttributes<Plane, PlaneAttributes>;
         }
     }
 }

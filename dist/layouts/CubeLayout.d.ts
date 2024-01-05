@@ -1,6 +1,6 @@
 import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-type CubeLayoutAttributes = Element3DAttributes;
+export type CubeLayoutAttributes = Element3DAttributes;
 /**
  * @extends Element3D
  * @class CubeLayout -
@@ -48,5 +48,4 @@ declare global {
         'lume-cube-layout': CubeLayout;
     }
 }
-export {};
 //# sourceMappingURL=CubeLayout.d.ts.map

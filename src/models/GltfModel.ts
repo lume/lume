@@ -1,37 +1,42 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../behaviors/index.js'
 
-import type {
-	GltfModelBehavior,
-	GltfModelBehaviorAttributes,
-} from '../behaviors/mesh-behaviors/models/GltfModelBehavior.js'
-
-export type GltfModelAttributes = Element3DAttributes
+export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttributes
 
 /**
  * @element lume-gltf-model
  * @class GltfModel -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * Defines the `<lume-gltf-model>` element, for loading 3D
- * models in the glTF format. It is similar to an `<img>` tag, but for 3D.
+ * Defines the `<lume-gltf-model>` element, short for `<lume-element3d
+ * has="gltf-model">`, for loading 3D models in the glTF format (`.gltf` or
+ * `.glb` files).
+ *
+ * See [`GltfModelBehavior`](../behaviors/mesh-behaviors/models/GltfModelBehavior)
+ * for attributes/properties available on this element.
  *
  * HTML Example:
  *
  * ```html
  * <lume-scene webgl>
- *   <lume-gltf-model src="path/to/model.gltf"></lume-gltf-model>
+ *   <lume-gltf-model id="myModel" src="path/to/model.gltf"></lume-gltf-model>
  * </lume-scene>
+ * <script>
+ *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ * </script>
  * ```
  *
  * JavaScript Example:
  *
  * ```js
  * const scene = new Scene
+ * scene.webgl = true
  * document.body.append(scene)
  * const model = new GltfModel
  * model.src = 'path/to/model.gltf'
+ * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
  */
@@ -41,22 +46,18 @@ class GltfModel extends Element3D {
 	override initialBehaviors = {model: 'gltf'}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {ElementWithBehaviors} from '../index.js'
-
 export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}
-
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-gltf-model': GltfModel
-	}
-}
 
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-gltf-model': JSX.IntrinsicElements['lume-element3d'] &
-				ElementAttributes<GltfModelBehavior, GltfModelBehaviorAttributes>
+			'lume-gltf-model': ElementAttributes<GltfModel, GltfModelAttributes>
 		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-gltf-model': GltfModel
 	}
 }

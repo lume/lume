@@ -1,9 +1,19 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {Element3DAttributes} from '../core/Element3D.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {
+	ClipPlanesBehavior,
+	ClipPlanesBehaviorAttributes,
+	LambertMaterialBehavior,
+	LambertMaterialBehaviorAttributes,
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+	PointsMaterialBehavior,
+	PointsMaterialBehaviorAttributes,
+} from '../behaviors/index.js'
 
 export type PointsAttributes = Element3DAttributes
 
@@ -37,33 +47,23 @@ class Points extends Element3D {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	ElementWithBehaviors,
-	LambertMaterialBehavior,
-	LambertMaterialBehaviorAttributes,
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-	PointsMaterialBehavior,
-	PointsMaterialBehaviorAttributes,
-} from '../index.js'
+export interface Points extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
-export interface Points
-	extends ElementWithBehaviors<
-		PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
-		PointsMaterialBehaviorAttributes | PhongMaterialBehaviorAttributes | LambertMaterialBehaviorAttributes
-	> {}
+type BehaviorInstanceTypes = PointsMaterialBehavior &
+	PhongMaterialBehavior &
+	LambertMaterialBehavior &
+	ClipPlanesBehavior
+
+type BehaviorAttributes =
+	| PointsMaterialBehaviorAttributes
+	| PhongMaterialBehaviorAttributes
+	| LambertMaterialBehaviorAttributes
+	| ClipPlanesBehaviorAttributes
 
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-points': ElementAttributes<
-				Points & PointsMaterialBehavior & PhongMaterialBehavior & LambertMaterialBehavior,
-				| PointsAttributes
-				| PointsMaterialBehaviorAttributes
-				| PhongMaterialBehaviorAttributes
-				| LambertMaterialBehaviorAttributes
-			>
+			'lume-points': ElementAttributes<Points, PointsAttributes>
 		}
 	}
 }

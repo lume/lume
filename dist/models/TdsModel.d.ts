@@ -1,29 +1,39 @@
+import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { TdsModelBehavior, TdsModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/TdsModelBehavior.js';
-export type TdsModelAttributes = Element3DAttributes;
+import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
+import type { TdsModelBehavior, TdsModelBehaviorAttributes } from '../behaviors/index.js';
+export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttributes;
 /**
  * @element lume-3ds-model
  * @class TdsModel -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * Defines the `<lume-3ds-model>` element, for loading 3D
- * models in the 3DS format (.3ds files). It is similar to an `<img>` tag, but for 3D.
+ * Defines the `<lume-3ds-model>` element, short for `<lume-element3d
+ * has="3ds-model">`, for loading 3D models in the 3DS format (`.3ds`
+ * files).
+ *
+ * See [`TdsModelBehavior`](../behaviors/mesh-behaviors/models/TdsModelBehavior)
+ * for attributes/properties available on this element.
  *
  * HTML Example:
  *
  * ```html
  * <lume-scene webgl>
- *   <lume-3ds-model src="path/to/model.3ds"></lume-3ds-model>
+ *   <lume-3ds-model id="myModel" src="path/to/model.3ds"></lume-3ds-model>
  * </lume-scene>
+ * <script>
+ *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ * </script>
  * ```
  *
  * JavaScript Example:
  *
  * ```js
  * const scene = new Scene
+ * scene.webgl = true
  * document.body.append(scene)
  * const model = new TdsModel
  * model.src = 'path/to/model.3ds'
+ * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
  */
@@ -32,20 +42,18 @@ export declare class TdsModel extends Element3D {
         model: string;
     };
 }
-import type { ElementAttributes } from '@lume/element';
-import type { ElementWithBehaviors } from '../index.js';
 export interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {
-}
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-3ds-model': TdsModel;
-    }
 }
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-3ds-model': JSX.IntrinsicElements['lume-element3d'] & ElementAttributes<TdsModelBehavior, TdsModelBehaviorAttributes>;
+            'lume-3ds-model': ElementAttributes<TdsModel, TdsModelAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-3ds-model': TdsModel;
     }
 }
 //# sourceMappingURL=TdsModel.d.ts.map

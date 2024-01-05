@@ -1,12 +1,24 @@
 import {Mesh as ThreeMesh} from 'three/src/objects/Mesh.js'
-import {booleanAttribute, element} from '@lume/element'
+import {booleanAttribute, element, type ElementAttributes} from '@lume/element'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {Material} from 'three/src/materials/Material.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {
+	PhongMaterialBehavior,
+	PhongMaterialBehaviorAttributes,
+	LambertMaterialBehavior,
+	LambertMaterialBehaviorAttributes,
+	ClipPlanesBehavior,
+	ClipPlanesBehaviorAttributes,
+	PhysicalMaterialBehavior,
+	PhysicalMaterialBehaviorAttributes,
+	StandardMaterialBehavior,
+	StandardMaterialBehaviorAttributes,
+} from '../behaviors/index.js'
 
-export type MeshAttributes = Element3DAttributes | 'castShadow' | 'receiveShadow'
+export type MeshAttributes = Element3DAttributes | BehaviorAttributes | 'castShadow' | 'receiveShadow'
 
 /**
  * @class Mesh -
@@ -88,20 +100,7 @@ class Mesh extends Element3D {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	PhongMaterialBehavior,
-	PhongMaterialBehaviorAttributes,
-	LambertMaterialBehavior,
-	LambertMaterialBehaviorAttributes,
-	ElementWithBehaviors,
-	ClipPlanesBehavior,
-	ClipPlanesBehaviorAttributes,
-	PhysicalMaterialBehavior,
-	PhysicalMaterialBehaviorAttributes,
-	StandardMaterialBehavior,
-	StandardMaterialBehaviorAttributes,
-} from '../index.js'
+export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
 type BehaviorInstanceTypes = PhongMaterialBehavior &
 	LambertMaterialBehavior &
@@ -116,12 +115,10 @@ type BehaviorAttributes =
 	| PhysicalMaterialBehaviorAttributes
 	| ClipPlanesBehaviorAttributes
 
-export interface Mesh extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
-
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-mesh': ElementAttributes<Mesh & BehaviorInstanceTypes, MeshAttributes | BehaviorAttributes>
+			'lume-mesh': ElementAttributes<Mesh, MeshAttributes>
 		}
 	}
 }

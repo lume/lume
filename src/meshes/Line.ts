@@ -1,10 +1,19 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Line as ThreeLine} from 'three/src/objects/Line.js'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {
+	ClipPlanesBehavior,
+	ClipPlanesBehaviorAttributes,
+	LineBasicMaterialBehavior,
+	LineBasicMaterialBehaviorAttributes,
+	LineGeometryBehavior,
+	LineGeometryBehaviorAttributes,
+} from '../behaviors/index.js'
 
-export type LineAttributes = Element3DAttributes
+export type LineAttributes = Element3DAttributes | BehaviorAttributes
 
 /**
  * @class Line - Renders a line based on a sequence of points.
@@ -36,25 +45,19 @@ export class Line extends Element3D {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {
-	ElementWithBehaviors,
-	LineBasicMaterialBehavior,
-	LineBasicMaterialBehaviorAttributes,
-	LineGeometryBehavior,
-	LineGeometryBehaviorAttributes,
-} from '../index.js'
-
-type BehaviorInstanceTypes = LineBasicMaterialBehavior & LineGeometryBehavior
-
-type BehaviorAttributes = LineBasicMaterialBehaviorAttributes | LineGeometryBehaviorAttributes
-
 export interface Line extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {}
 
-declare module '@lume/element' {
+type BehaviorInstanceTypes = LineBasicMaterialBehavior & LineGeometryBehavior & ClipPlanesBehavior
+
+type BehaviorAttributes =
+	| LineBasicMaterialBehaviorAttributes
+	| LineGeometryBehaviorAttributes
+	| ClipPlanesBehaviorAttributes
+
+declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-line': ElementAttributes<Line & BehaviorInstanceTypes, LineAttributes | BehaviorAttributes>
+			'lume-line': ElementAttributes<Line, LineAttributes>
 		}
 	}
 }

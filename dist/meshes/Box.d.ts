@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Mesh } from './Mesh.js';
 import type { MeshAttributes } from './Mesh.js';
 export type BoxAttributes = MeshAttributes;
@@ -22,16 +23,16 @@ export declare class Box extends Mesh {
         material: string;
     };
 }
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-box': Box;
-    }
-}
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-box': JSX.IntrinsicElements['lume-mesh'];
+            'lume-box': ElementAttributes<Box, BoxAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-box': Box;
     }
 }
 //# sourceMappingURL=Box.d.ts.map

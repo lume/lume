@@ -1,4 +1,4 @@
-import {numberAttribute, element} from '@lume/element'
+import {numberAttribute, element, type ElementAttributes} from '@lume/element'
 import {onCleanup} from 'solid-js'
 import {PointLight as ThreePointLight} from 'three/src/lights/PointLight.js'
 import {PointLightHelper} from 'three/src/helpers/PointLightHelper.js'
@@ -159,8 +159,6 @@ class PointLight extends LightWithShadow {
 		return new ThreePointLight()
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

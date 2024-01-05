@@ -5,7 +5,15 @@
 import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
 import {signal} from 'classy-solid'
-import {booleanAttribute, attribute, numberAttribute, element, stringAttribute} from '@lume/element'
+import {
+	booleanAttribute,
+	attribute,
+	numberAttribute,
+	element,
+	stringAttribute,
+	type ElementAttributes,
+	noSignal,
+} from '@lume/element'
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {Camera as ThreeCamera} from 'three/src/cameras/Camera.js'
@@ -35,7 +43,8 @@ queueMicrotask(() => console.info(magic()))
 export type SceneAttributes =
 	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
 	| SizeableAttributes
-	| 'shadowmapType'
+	| 'shadowMode'
+	| 'shadowmapType' // deprecated
 	| 'vr'
 	| 'webgl'
 	| 'enableCss'
@@ -149,7 +158,7 @@ class Scene extends SharedAPI {
 	@booleanAttribute swapLayers = false
 
 	/**
-	 * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
+	 * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
 	 *
 	 * *attribute*
 	 *
@@ -163,7 +172,22 @@ class Scene extends SharedAPI {
 	 *
 	 * Applies only if [`webgl`](#webgl) is `true`.
 	 */
-	@attribute shadowmapType: ShadowMapTypeString | null = 'basic'
+	@attribute shadowMode: ShadowMapTypeString | null = 'basic'
+
+	/**
+	 * @deprecated
+	 * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
+	 *
+	 * *attribute*
+	 */
+	@attribute
+	@noSignal
+	get shadowmapType() {
+		return this.shadowMode
+	}
+	set shadowmapType(v) {
+		this.shadowMode = v
+	}
 
 	/**
 	 * @property {boolean} vr -
@@ -394,7 +418,7 @@ class Scene extends SharedAPI {
 	 * @deprecated This property/attribute will be removed when Three.js r165 is
 	 * released (estimated), and physically correct lighting will become the
 	 * default option for enhanced interoperability with other graphics engines
-	 * (f.e. Blender).  To be ready for the removal, set this to true, and
+	 * (f.e. Blender). To be ready for the removal, set this to true, and
 	 * adjust lighting (intensity values may need to be notably higher as they
 	 * are now in candela units assuming world units are in meters) to achieve a
 	 * similar effect as before.
@@ -711,7 +735,7 @@ class Scene extends SharedAPI {
 		})
 
 		createEffect(() => {
-			this.#glRenderer!.setShadowMapType(this, this.shadowmapType)
+			this.#glRenderer!.setShadowMapType(this, this.shadowMode)
 			this.needsUpdate()
 		})
 
@@ -1254,8 +1278,6 @@ class Scene extends SharedAPI {
 // in a super() call.
 // @ts-ignore
 Scene.prototype.isScene = true
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

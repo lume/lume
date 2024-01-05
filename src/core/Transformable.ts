@@ -134,7 +134,7 @@ class Transformable extends Sizeable {
 	 * same, but as you move the sliders, each cube rotates around their
 	 * specific origin.
 	 *
-	 * <live-code src="../../examples/positioning/origin.html"></live-code>
+	 * <live-code src="../../guide/positioning/origin.html"></live-code>
 	 */
 	@attribute
 	@noSignal

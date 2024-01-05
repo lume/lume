@@ -1,4 +1,4 @@
-import {element, numberAttribute} from '@lume/element'
+import {element, numberAttribute, type ElementAttributes} from '@lume/element'
 import {Light} from './Light.js'
 import {AmbientLight as ThreeAmbientLight} from 'three/src/lights/AmbientLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -37,8 +37,6 @@ class AmbientLight extends Light {
 		return new ThreeAmbientLight()
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

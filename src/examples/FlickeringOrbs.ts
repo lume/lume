@@ -1,5 +1,5 @@
 import html from 'solid-js/html'
-import {element, attribute, numberAttribute} from '@lume/element'
+import {element, attribute, numberAttribute, type ElementAttributes} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 
@@ -23,8 +23,6 @@ class FlickeringOrbs extends Element3D {
 		<flickering-orb flicker-range=${() => this.flickerRange} intensity=${() => this.intensity} shadow-bias=${() => this.shadowBias} color=${() => this.color ??     "white"} position="0 250 0"></flickering-orb>
 	`
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

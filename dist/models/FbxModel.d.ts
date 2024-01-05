@@ -1,29 +1,39 @@
+import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/mesh-behaviors/models/FbxModelBehavior.js';
-export type FbxModelAttributes = Element3DAttributes;
+import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
+import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/index.js';
+export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttributes;
 /**
  * @element lume-fbx-model
  * @class FbxModel -
- * > :construction: :hammer: Under construction! :hammer: :construction:
  *
- * Defines the `<lume-fbx-model>` element, for loading 3D
- * models in the FBX format (.fbx files). It is similar to an `<img>` tag, but for 3D.
+ * Defines the `<lume-fbx-model>` element, short for `<lume-element3d
+ * has="fbx-model">`, for loading 3D models in the FBX format (`.fbx`
+ * files).
+ *
+ * See [`FbxModelBehavior`](../behaviors/mesh-behaviors/models/FbxModelBehavior)
+ * for attributes/properties available on this element.
  *
  * HTML Example:
  *
  * ```html
  * <lume-scene webgl>
- *   <lume-fbx-model src="path/to/model.fbx"></lume-fbx-model>
+ *   <lume-fbx-model id="myModel" src="path/to/model.fbx"></lume-fbx-model>
  * </lume-scene>
+ * <script>
+ *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ * </script>
  * ```
  *
  * JavaScript Example:
  *
  * ```js
  * const scene = new Scene
+ * scene.webgl = true
  * document.body.append(scene)
  * const model = new FbxModel
  * model.src = 'path/to/model.fbx'
+ * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
  */
@@ -32,20 +42,18 @@ export declare class FbxModel extends Element3D {
         model: string;
     };
 }
-import type { ElementAttributes } from '@lume/element';
-import type { ElementWithBehaviors } from '../index.js';
 export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {
-}
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-fbx-model': FbxModel;
-    }
 }
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-fbx-model': JSX.IntrinsicElements['lume-element3d'] & ElementAttributes<FbxModelBehavior, FbxModelBehaviorAttributes>;
+            'lume-fbx-model': ElementAttributes<FbxModel, FbxModelAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-fbx-model': FbxModel;
     }
 }
 //# sourceMappingURL=FbxModel.d.ts.map

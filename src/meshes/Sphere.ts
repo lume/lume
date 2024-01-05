@@ -1,6 +1,8 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {SphereGeometryBehavior, SphereGeometryBehaviorAttributes} from '../behaviors/index.js'
 
 export type SphereAttributes = MeshAttributes
 
@@ -24,16 +26,18 @@ class Sphere extends Mesh {
 	override initialBehaviors = {geometry: 'sphere', material: 'physical'}
 }
 
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-sphere': Sphere
-	}
-}
+export interface Sphere extends ElementWithBehaviors<SphereGeometryBehavior, SphereGeometryBehaviorAttributes> {}
 
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-sphere': JSX.IntrinsicElements['lume-mesh']
+			'lume-sphere': ElementAttributes<Sphere, SphereAttributes>
 		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-sphere': Sphere
 	}
 }

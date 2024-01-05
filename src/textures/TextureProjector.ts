@@ -7,11 +7,10 @@ import {createEffect} from 'solid-js'
 import {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {Fitment} from '@lume/three-projected-material/dist/ProjectedMaterial.js'
 import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 
-type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
+export type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
 // | 'frontFacesOnly'
 
 /**

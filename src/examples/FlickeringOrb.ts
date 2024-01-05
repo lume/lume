@@ -1,5 +1,5 @@
 import html from 'solid-js/html'
-import {element, numberAttribute, stringAttribute} from '@lume/element'
+import {element, numberAttribute, stringAttribute, type ElementAttributes} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
@@ -69,8 +69,6 @@ class FlickeringOrb extends Element3D {
 		Motor.once(flickerFunction)
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

@@ -5,7 +5,7 @@
 import {onCleanup} from 'solid-js'
 import html from 'solid-js/html'
 import {signal, syncSignals} from 'classy-solid'
-import {element, numberAttribute, booleanAttribute} from '@lume/element'
+import {element, numberAttribute, booleanAttribute, type ElementAttributes} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {FlingRotation, ScrollFling, PinchFling} from '../interaction/index.js'
@@ -421,8 +421,6 @@ class CameraRig extends Element3D {
 		<slot></slot>
 	`
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

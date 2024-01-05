@@ -5,6 +5,8 @@ import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 
+export type SphereGeometryBehaviorAttributes = 'horizontalSegments' | 'verticalSegments'
+
 /**
  * @class SphereGeometryBehavior -
  *

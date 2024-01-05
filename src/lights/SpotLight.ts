@@ -1,4 +1,4 @@
-import {numberAttribute, element, stringAttribute} from '@lume/element'
+import {numberAttribute, element, stringAttribute, type ElementAttributes} from '@lume/element'
 import {SpotLight as ThreeSpotLight} from 'three/src/lights/SpotLight.js'
 import {SpotLightHelper} from 'three/src/helpers/SpotLightHelper.js'
 import {CameraHelper} from 'three/src/helpers/CameraHelper.js'
@@ -231,8 +231,6 @@ class SpotLight extends PointLight {
 		return new ThreeSpotLight()
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

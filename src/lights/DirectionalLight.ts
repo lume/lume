@@ -1,4 +1,4 @@
-import {numberAttribute, element} from '@lume/element'
+import {numberAttribute, element, type ElementAttributes} from '@lume/element'
 import {onCleanup} from 'solid-js'
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {DirectionalLightHelper} from 'three/src/helpers/DirectionalLightHelper.js'
@@ -116,8 +116,6 @@ class DirectionalLight extends LightWithShadow {
 		return new ThreeDirectionalLight()
 	}
 }
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

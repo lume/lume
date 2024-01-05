@@ -1,4 +1,4 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -28,7 +28,7 @@ class Plane extends Mesh {
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-plane': JSX.IntrinsicElements['lume-mesh']
+			'lume-plane': ElementAttributes<Plane, PlaneAttributes>
 		}
 	}
 }

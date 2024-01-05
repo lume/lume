@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { type ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
@@ -7,7 +8,7 @@ import type { Camera } from '../cameras/Camera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
-export type SceneAttributes = SizeableAttributes | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+export type SceneAttributes = SizeableAttributes | 'shadowMode' | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
 /**
  * @class Scene -
  *
@@ -84,7 +85,7 @@ export declare class Scene extends SharedAPI {
      */
     swapLayers: boolean;
     /**
-     * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
+     * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
      *
      * *attribute*
      *
@@ -98,7 +99,15 @@ export declare class Scene extends SharedAPI {
      *
      * Applies only if [`webgl`](#webgl) is `true`.
      */
-    shadowmapType: ShadowMapTypeString | null;
+    shadowMode: ShadowMapTypeString | null;
+    /**
+     * @deprecated
+     * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
+     *
+     * *attribute*
+     */
+    get shadowmapType(): ShadowMapTypeString | null;
+    set shadowmapType(v: ShadowMapTypeString | null);
     /**
      * @property {boolean} vr -
      *
@@ -315,7 +324,7 @@ export declare class Scene extends SharedAPI {
      * @deprecated This property/attribute will be removed when Three.js r165 is
      * released (estimated), and physically correct lighting will become the
      * default option for enhanced interoperability with other graphics engines
-     * (f.e. Blender).  To be ready for the removal, set this to true, and
+     * (f.e. Blender). To be ready for the removal, set this to true, and
      * adjust lighting (intensity values may need to be notably higher as they
      * are now in candela units assuming world units are in meters) to achieve a
      * similar effect as before.
@@ -538,7 +547,6 @@ export declare class Scene extends SharedAPI {
     template: () => Node | Node[];
     static css: string;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

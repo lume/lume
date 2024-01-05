@@ -1,6 +1,8 @@
+import { type ElementAttributes } from '@lume/element';
 import { Mesh } from './Mesh.js';
 import type { MeshAttributes } from './Mesh.js';
-export type TorusAttributes = MeshAttributes;
+import type { ElementWithBehaviors, TorusGeometryBehavior, TorusGeometryBehaviorAttributes } from '../behaviors/index.js';
+export type TorusAttributes = MeshAttributes | TorusGeometryBehaviorAttributes;
 /**
  * @class Torus -
  *
@@ -19,16 +21,18 @@ export declare class Torus extends Mesh {
         material: string;
     };
 }
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-torus': Torus;
-    }
+export interface Torus extends ElementWithBehaviors<TorusGeometryBehavior, TorusGeometryBehaviorAttributes> {
 }
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-torus': JSX.IntrinsicElements['lume-mesh'];
+            'lume-torus': ElementAttributes<Torus, TorusAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-torus': Torus;
     }
 }
 //# sourceMappingURL=Torus.d.ts.map

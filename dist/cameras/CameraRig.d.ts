@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 import type { PerspectiveCamera } from './PerspectiveCamera.js';
@@ -227,7 +228,6 @@ export declare class CameraRig extends Element3D {
     connectedCallback(): void;
     template: () => Node | Node[];
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

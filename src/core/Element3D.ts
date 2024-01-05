@@ -1,4 +1,4 @@
-import {booleanAttribute, element} from '@lume/element'
+import {booleanAttribute, element, type ElementAttributes} from '@lume/element'
 import {SharedAPI} from './SharedAPI.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {BaseAttributes} from './SharedAPI.js'
@@ -241,8 +241,6 @@ class Element3D extends SharedAPI {
 // in a super() call.
 // @ts-expect-error readonly
 Element3D.prototype.isElement3D = true
-
-import type {ElementAttributes} from '@lume/element'
 
 declare module 'solid-js' {
 	namespace JSX {

@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { SharedAPI } from './SharedAPI.js';
 import type { BaseAttributes } from './SharedAPI.js';
 export type Element3DAttributes = BaseAttributes | 'visible';
@@ -162,7 +163,6 @@ declare class Element3D extends SharedAPI {
     connectedCallback(): void;
     static css: string;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

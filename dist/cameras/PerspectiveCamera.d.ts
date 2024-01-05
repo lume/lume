@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
 import { Camera, type CameraAttributes } from './Camera.js';
 export type PerspectiveCameraAttributes = CameraAttributes | 'fov';
@@ -36,7 +37,6 @@ export declare class PerspectiveCamera extends Camera {
     connectedCallback(): void;
     makeThreeObject3d(): ThreePerspectiveCamera;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

@@ -1,4 +1,4 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 
@@ -23,7 +23,7 @@ export type MixedPlaneAttributes = MeshAttributes
  * See [`MixedPlaneGeometryBehavior`](../behaviors/mesh-behaviors/geometries/MixedPlaneGeometryBehavior) and [`MixedPlaneMaterialBehavior`](../behaviors/mesh-behaviors/materials/MixedPlaneMaterialBehavior) for
  * available properties.
  *
- * <live-code src="../../../examples/buttons-with-shadow.html"></live-code>
+ * <live-code src="../../../examples/buttons-with-shadow/example.html"></live-code>
  *
  * @extends Mesh
  */
@@ -45,7 +45,7 @@ class MixedPlane extends Mesh {
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-mixed-plane': JSX.IntrinsicElements['lume-mesh']
+			'lume-mixed-plane': ElementAttributes<MixedPlane, MixedPlaneAttributes>
 		}
 	}
 }

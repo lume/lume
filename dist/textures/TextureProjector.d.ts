@@ -3,7 +3,7 @@ import { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import type { Fitment } from '@lume/three-projected-material/dist/ProjectedMaterial.js';
 import type { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment';
+export type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment';
 /**
  * @class TextureProjector
  *
@@ -72,5 +72,4 @@ declare global {
         'lume-texture-projector': TextureProjector;
     }
 }
-export {};
 //# sourceMappingURL=TextureProjector.d.ts.map

@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { InstancedMesh as ThreeInstancedMesh } from 'three/src/objects/InstancedMesh.js';
 import { Quaternion } from 'three/src/math/Quaternion.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
@@ -95,11 +96,10 @@ export declare class InstancedMesh extends Mesh {
     connectedCallback(): void;
     update(t: number, dt: number): void;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-instanced-mesh': JSX.IntrinsicElements['lume-mesh'] & ElementAttributes<InstancedMesh, InstancedMeshAttributes>;
+            'lume-instanced-mesh': ElementAttributes<InstancedMesh, InstancedMeshAttributes>;
         }
     }
 }

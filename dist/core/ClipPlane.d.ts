@@ -1,7 +1,7 @@
 import { type ElementAttributes } from '@lume/element';
 import { Plane } from 'three/src/math/Plane.js';
 import { Element3D, type Element3DAttributes } from './Element3D.js';
-type ClipPlaneAttributes = Element3DAttributes;
+export type ClipPlaneAttributes = Element3DAttributes;
 /**
  * @class ClipPlane
  *
@@ -54,5 +54,4 @@ declare global {
         'lume-clip-plane': ClipPlane;
     }
 }
-export {};
 //# sourceMappingURL=ClipPlane.d.ts.map

@@ -7,6 +7,7 @@ import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehav
 
 export type StandardMaterialBehaviorAttributes =
 	| MaterialBehaviorAttributes
+	| 'alphaMap'
 	| 'aoMap'
 	| 'aoMapIntensity'
 	| 'bumpMap'
@@ -37,7 +38,7 @@ export type StandardMaterialBehaviorAttributes =
 export
 @behavior
 class StandardMaterialBehavior extends MaterialBehavior {
-	// alphaMap?: Texture | null;
+	@stringAttribute @receiver alphaMap = ''
 	@stringAttribute @receiver aoMap = ''
 	@numberAttribute @receiver aoMapIntensity = 1
 	@stringAttribute @receiver bumpMap = ''
@@ -99,6 +100,11 @@ class StandardMaterialBehavior extends MaterialBehavior {
 			this.element.needsUpdate()
 		})
 
+		this._handleTexture(
+			() => this.alphaMap,
+			(mat, tex) => (mat.alphaMap = tex),
+			mat => !!mat.alphaMap,
+		)
 		this._handleTexture(
 			() => this.aoMap,
 			(mat, tex) => (mat.aoMap = tex),

@@ -1,4 +1,7 @@
+import { type ElementAttributes } from '@lume/element';
 import { Mesh, type MeshAttributes } from './Mesh.js';
+import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
+import type { SphereGeometryBehavior, SphereGeometryBehaviorAttributes } from '../behaviors/index.js';
 export type SphereAttributes = MeshAttributes;
 /**
  * @class Sphere -
@@ -20,16 +23,18 @@ export declare class Sphere extends Mesh {
         material: string;
     };
 }
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-sphere': Sphere;
-    }
+export interface Sphere extends ElementWithBehaviors<SphereGeometryBehavior, SphereGeometryBehaviorAttributes> {
 }
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-sphere': JSX.IntrinsicElements['lume-mesh'];
+            'lume-sphere': ElementAttributes<Sphere, SphereAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-sphere': Sphere;
     }
 }
 //# sourceMappingURL=Sphere.d.ts.map

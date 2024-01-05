@@ -38,7 +38,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { signal } from 'classy-solid';
-import { booleanAttribute, attribute, numberAttribute, element, stringAttribute } from '@lume/element';
+import { booleanAttribute, attribute, numberAttribute, element, stringAttribute, noSignal, } from '@lume/element';
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
@@ -95,8 +95,9 @@ let Scene = (() => {
     let _webgl_initializers = [];
     let _swapLayers_decorators;
     let _swapLayers_initializers = [];
-    let _shadowmapType_decorators;
-    let _shadowmapType_initializers = [];
+    let _shadowMode_decorators;
+    let _shadowMode_initializers = [];
+    let _get_shadowmapType_decorators;
     let _vr_decorators;
     let _vr_initializers = [];
     let _backgroundColor_decorators;
@@ -146,7 +147,8 @@ let Scene = (() => {
             _enableCss_decorators = [booleanAttribute];
             _webgl_decorators = [booleanAttribute];
             _swapLayers_decorators = [booleanAttribute];
-            _shadowmapType_decorators = [attribute];
+            _shadowMode_decorators = [attribute];
+            _get_shadowmapType_decorators = [attribute, noSignal];
             _vr_decorators = [booleanAttribute];
             _backgroundColor_decorators = [attribute];
             _backgroundOpacity_decorators = [numberAttribute];
@@ -168,10 +170,11 @@ let Scene = (() => {
             ___camera_decorators = [signal];
             ___localClipping_decorators = [signal];
             ___elementParentSize_decorators = [signal];
+            __esDecorate(this, null, _get_shadowmapType_decorators, { kind: "getter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, get: obj => obj.shadowmapType }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _swapLayers_decorators, { kind: "field", name: "swapLayers", static: false, private: false, access: { has: obj => "swapLayers" in obj, get: obj => obj.swapLayers, set: (obj, value) => { obj.swapLayers = value; } }, metadata: _metadata }, _swapLayers_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowmapType_decorators, { kind: "field", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, get: obj => obj.shadowmapType, set: (obj, value) => { obj.shadowmapType = value; } }, metadata: _metadata }, _shadowmapType_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _shadowMode_decorators, { kind: "field", name: "shadowMode", static: false, private: false, access: { has: obj => "shadowMode" in obj, get: obj => obj.shadowMode, set: (obj, value) => { obj.shadowMode = value; } }, metadata: _metadata }, _shadowMode_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _vr_decorators, { kind: "field", name: "vr", static: false, private: false, access: { has: obj => "vr" in obj, get: obj => obj.vr, set: (obj, value) => { obj.vr = value; } }, metadata: _metadata }, _vr_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _backgroundColor_decorators, { kind: "field", name: "backgroundColor", static: false, private: false, access: { has: obj => "backgroundColor" in obj, get: obj => obj.backgroundColor, set: (obj, value) => { obj.backgroundColor = value; } }, metadata: _metadata }, _backgroundColor_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _backgroundOpacity_decorators, { kind: "field", name: "backgroundOpacity", static: false, private: false, access: { has: obj => "backgroundOpacity" in obj, get: obj => obj.backgroundOpacity, set: (obj, value) => { obj.backgroundOpacity = value; } }, metadata: _metadata }, _backgroundOpacity_initializers, _instanceExtraInitializers);
@@ -278,7 +281,7 @@ let Scene = (() => {
          */
         swapLayers = __runInitializers(this, _swapLayers_initializers, false
         /**
-         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
+         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
          *
          * *attribute*
          *
@@ -294,7 +297,7 @@ let Scene = (() => {
          */
         );
         /**
-         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType -
+         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
          *
          * *attribute*
          *
@@ -308,24 +311,26 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        shadowmapType = __runInitializers(this, _shadowmapType_initializers, 'basic'
+        shadowMode = __runInitializers(this, _shadowMode_initializers, 'basic'
         /**
-         * @property {boolean} vr -
+         * @deprecated
+         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
          *
          * *attribute*
-         *
-         * Default: `false`
-         *
-         * When `true`, enables VR capabilities. The user
-         * can click a button to enter VR mode.
-         *
-         * Applies only if [`webgl`](#webgl) is `true`. CSS content can not be natively
-         * rendered with the browser's WebXR. There exist some tricks to import CSS
-         * rendering in the form of an SVG image to use as a texture in WebGL and
-         * hence WebXR, but it has some limitations including low performance if
-         * animating CSS features; we may add this feature later.
          */
         );
+        /**
+         * @deprecated
+         * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
+         *
+         * *attribute*
+         */
+        get shadowmapType() {
+            return this.shadowMode;
+        }
+        set shadowmapType(v) {
+            this.shadowMode = v;
+        }
         /**
          * @property {boolean} vr -
          *
@@ -737,7 +742,7 @@ let Scene = (() => {
          * @deprecated This property/attribute will be removed when Three.js r165 is
          * released (estimated), and physically correct lighting will become the
          * default option for enhanced interoperability with other graphics engines
-         * (f.e. Blender).  To be ready for the removal, set this to true, and
+         * (f.e. Blender). To be ready for the removal, set this to true, and
          * adjust lighting (intensity values may need to be notably higher as they
          * are now in candela units assuming world units are in meters) to achieve a
          * similar effect as before.
@@ -760,7 +765,7 @@ let Scene = (() => {
          * @deprecated This property/attribute will be removed when Three.js r165 is
          * released (estimated), and physically correct lighting will become the
          * default option for enhanced interoperability with other graphics engines
-         * (f.e. Blender).  To be ready for the removal, set this to true, and
+         * (f.e. Blender). To be ready for the removal, set this to true, and
          * adjust lighting (intensity values may need to be notably higher as they
          * are now in candela units assuming world units are in meters) to achieve a
          * similar effect as before.
@@ -1129,7 +1134,7 @@ let Scene = (() => {
                 this.needsUpdate();
             });
             createEffect(() => {
-                this.#glRenderer.setShadowMapType(this, this.shadowmapType);
+                this.#glRenderer.setShadowMapType(this, this.shadowMode);
                 this.needsUpdate();
             });
             createEffect(() => {

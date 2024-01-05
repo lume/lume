@@ -1,10 +1,11 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {MeshAttributes} from './Mesh.js'
+import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
+import type {ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes} from '../behaviors/index.js'
 
-export type ShapeAttributes = MeshAttributes
+export type ShapeAttributes = MeshAttributes | ShapeGeometryBehaviorAttributes
 
 /**
  * @class Shape - Allows creating a 2D shape that can be extruded.
@@ -31,22 +32,18 @@ class Shape extends Mesh {
 	override initialBehaviors = {geometry: 'shape', material: 'physical'}
 }
 
-import type {ElementAttributes} from '@lume/element'
-import type {ElementWithBehaviors, ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes} from '../index.js'
-
 export interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {}
-
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-shape': Shape
-	}
-}
 
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-shape': JSX.IntrinsicElements['lume-mesh'] &
-				ElementAttributes<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes>
+			'lume-shape': ElementAttributes<Shape, ShapeAttributes>
 		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-shape': Shape
 	}
 }

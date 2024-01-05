@@ -12,7 +12,7 @@ import {autoDefineElements} from '../LumeConfig.js'
 // towards the camera by default.
 const clipNormal: [number, number, number] = [0, 0, -1]
 
-type ClipPlaneAttributes = Element3DAttributes
+export type ClipPlaneAttributes = Element3DAttributes
 
 /**
  * @class ClipPlane

@@ -1,10 +1,10 @@
-import {element} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
-
 import type {MeshAttributes} from './Mesh.js'
+import type {ElementWithBehaviors, TorusGeometryBehavior, TorusGeometryBehaviorAttributes} from '../behaviors/index.js'
 
-export type TorusAttributes = MeshAttributes
+export type TorusAttributes = MeshAttributes | TorusGeometryBehaviorAttributes
 
 /**
  * @class Torus -
@@ -24,16 +24,18 @@ class Torus extends Mesh {
 	override initialBehaviors = {geometry: 'torus', material: 'physical'}
 }
 
-declare global {
-	interface HTMLElementTagNameMap {
-		'lume-torus': Torus
-	}
-}
+export interface Torus extends ElementWithBehaviors<TorusGeometryBehavior, TorusGeometryBehaviorAttributes> {}
 
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-torus': JSX.IntrinsicElements['lume-mesh']
+			'lume-torus': ElementAttributes<Torus, TorusAttributes>
 		}
+	}
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'lume-torus': Torus
 	}
 }

@@ -54,6 +54,8 @@ let StandardMaterialBehavior = (() => {
     let _classThis;
     let _classSuper = MaterialBehavior;
     let _instanceExtraInitializers = [];
+    let _alphaMap_decorators;
+    let _alphaMap_initializers = [];
     let _aoMap_decorators;
     let _aoMap_initializers = [];
     let _aoMapIntensity_decorators;
@@ -92,6 +94,7 @@ let StandardMaterialBehavior = (() => {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _alphaMap_decorators = [stringAttribute, receiver];
             _aoMap_decorators = [stringAttribute, receiver];
             _aoMapIntensity_decorators = [numberAttribute, receiver];
             _bumpMap_decorators = [stringAttribute, receiver];
@@ -109,6 +112,7 @@ let StandardMaterialBehavior = (() => {
             _vertexTangents_decorators = [booleanAttribute, receiver];
             _morphTargets_decorators = [booleanAttribute, receiver];
             _morphNormals_decorators = [booleanAttribute, receiver];
+            __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _bumpMap_decorators, { kind: "field", name: "bumpMap", static: false, private: false, access: { has: obj => "bumpMap" in obj, get: obj => obj.bumpMap, set: (obj, value) => { obj.bumpMap = value; } }, metadata: _metadata }, _bumpMap_initializers, _instanceExtraInitializers);
@@ -131,8 +135,8 @@ let StandardMaterialBehavior = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        // alphaMap?: Texture | null;
-        aoMap = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _aoMap_initializers, ''));
+        alphaMap = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _alphaMap_initializers, ''));
+        aoMap = __runInitializers(this, _aoMap_initializers, '');
         aoMapIntensity = __runInitializers(this, _aoMapIntensity_initializers, 1);
         bumpMap = __runInitializers(this, _bumpMap_initializers, '');
         bumpScale = __runInitializers(this, _bumpScale_initializers, 1);
@@ -200,6 +204,7 @@ let StandardMaterialBehavior = (() => {
                 // mat.needsUpdate = true
                 this.element.needsUpdate();
             });
+            this._handleTexture(() => this.alphaMap, (mat, tex) => (mat.alphaMap = tex), mat => !!mat.alphaMap);
             this._handleTexture(() => this.aoMap, (mat, tex) => (mat.aoMap = tex), mat => !!mat.aoMap);
             this._handleTexture(() => this.bumpMap, (mat, tex) => (mat.bumpMap = tex), mat => !!mat.bumpMap);
             this._handleTexture(() => this.displacementMap, (mat, tex) => (mat.displacementMap = tex), mat => !!mat.displacementMap);

@@ -5,6 +5,10 @@ import type {ReactElementAttributes} from '@lume/element/src/react'
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
+			/**
+			 * @deprecated `AutoLayoutNode` and `<lume-autolayout-node>` have been renamed
+			 * to [`Autolayout`](./Autolayout) and `<lume-autolayout>`.
+			 */
 			'lume-autolayout-node': ReactElementAttributes<AutoLayoutNode, AutoLayoutNodeAttributes>
 		}
 	}

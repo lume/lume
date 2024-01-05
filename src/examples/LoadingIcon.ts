@@ -1,8 +1,6 @@
 // Find a standalone version of this loading icon at
 // https://codepen.io/trusktr/pen/poNxzqJ
 
-export type LoadingIconAttributes = 'color'
-
 /**
  * @class LoadingIcon - A `<loading-icon>` element useful for an initial loading
  * animation while assets are loading. The element has no dependencies, so it
@@ -168,7 +166,10 @@ customElements.define('loading-icon', LoadingIcon)
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'loading-icon': {}
+			// Default attributes because this class has none.
+			'loading-icon': JSX.HTMLAttributes<LoadingIcon>
+			// Otherwise use this if we add attributes, like with other classes:
+			// 'loading-icon': ElementAttributes<LoadingIcon, LoadingIconAttributes>
 		}
 	}
 }

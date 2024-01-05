@@ -1,25 +1,26 @@
+import { type ElementAttributes } from '@lume/element';
 import { Mesh, type MeshAttributes } from './Mesh.js';
-export type RoundedRectangleAttributes = MeshAttributes;
+import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
+import type { RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes } from '../behaviors/index.js';
+export type RoundedRectangleAttributes = MeshAttributes | RoundedRectangleGeometryBehaviorAttributes;
 export declare class RoundedRectangle extends Mesh {
     initialBehaviors: {
         geometry: string;
         material: string;
     };
 }
-import type { ElementAttributes } from '@lume/element';
-import type { ElementWithBehaviors, RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes } from '../index.js';
 export interface RoundedRectangle extends ElementWithBehaviors<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes> {
-}
-declare global {
-    interface HTMLElementTagNameMap {
-        'lume-rounded-rectangle': RoundedRectangle;
-    }
 }
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'lume-rounded-rectangle': JSX.IntrinsicElements['lume-mesh'] & ElementAttributes<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes>;
+            'lume-rounded-rectangle': ElementAttributes<RoundedRectangle, RoundedRectangleAttributes>;
         }
+    }
+}
+declare global {
+    interface HTMLElementTagNameMap {
+        'lume-rounded-rectangle': RoundedRectangle;
     }
 }
 //# sourceMappingURL=RoundedRectangle.d.ts.map

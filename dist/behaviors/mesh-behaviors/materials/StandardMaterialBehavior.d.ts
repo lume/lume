@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { MeshStandardMaterial } from 'three/src/materials/MeshStandardMaterial.js';
 import { MaterialBehavior, type MaterialBehaviorAttributes } from './MaterialBehavior.js';
-export type StandardMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'displacementScale' | 'displacementBias' | 'texture' | 'normalMap' | 'normalScale' | 'metalness' | 'metalnessMap' | 'morphNormals' | 'morphTargets' | 'roughness' | 'roughnessMap' | 'vertexTangents';
+export type StandardMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'alphaMap' | 'aoMap' | 'aoMapIntensity' | 'bumpMap' | 'bumpScale' | 'displacementMap' | 'displacementScale' | 'displacementBias' | 'texture' | 'normalMap' | 'normalScale' | 'metalness' | 'metalnessMap' | 'morphNormals' | 'morphTargets' | 'roughness' | 'roughnessMap' | 'vertexTangents';
 /**
  * @class StandardMaterialBehavior -
  *
@@ -12,6 +12,7 @@ export type StandardMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'a
  * @extends MaterialBehavior
  */
 export declare class StandardMaterialBehavior extends MaterialBehavior {
+    alphaMap: string;
     aoMap: string;
     aoMapIntensity: number;
     bumpMap: string;

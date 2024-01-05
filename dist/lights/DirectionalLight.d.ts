@@ -1,3 +1,4 @@
+import { type ElementAttributes } from '@lume/element';
 import { DirectionalLight as ThreeDirectionalLight } from 'three/src/lights/DirectionalLight.js';
 import { LightWithShadow, type LightWithShadowAttributes } from './LightWithShadow.js';
 export type DirectionalLightAttributes = LightWithShadowAttributes | 'shadowCameraTop' | 'shadowCameraRight' | 'shadowCameraBottom' | 'shadowCameraLeft';
@@ -51,7 +52,6 @@ export declare class DirectionalLight extends LightWithShadow {
     connectedCallback(): void;
     makeThreeObject3d(): ThreeDirectionalLight;
 }
-import type { ElementAttributes } from '@lume/element';
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {

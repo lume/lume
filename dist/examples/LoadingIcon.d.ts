@@ -1,4 +1,3 @@
-export type LoadingIconAttributes = 'color';
 /**
  * @class LoadingIcon - A `<loading-icon>` element useful for an initial loading
  * animation while assets are loading. The element has no dependencies, so it
@@ -106,7 +105,7 @@ export declare class LoadingIcon extends HTMLElement {
 declare module 'solid-js' {
     namespace JSX {
         interface IntrinsicElements {
-            'loading-icon': {};
+            'loading-icon': JSX.HTMLAttributes<LoadingIcon>;
         }
     }
 }

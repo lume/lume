@@ -1,5 +1,5 @@
 import {batch, untrack} from 'solid-js'
-import {element, numberAttribute, stringAttribute} from '@lume/element'
+import {element, numberAttribute, stringAttribute, type ElementAttributes} from '@lume/element'
 import {InstancedMesh as ThreeInstancedMesh} from 'three/src/objects/InstancedMesh.js'
 import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
@@ -475,13 +475,10 @@ class InstancedMesh extends Mesh {
 	}
 }
 
-import type {ElementAttributes} from '@lume/element'
-
 declare module 'solid-js' {
 	namespace JSX {
 		interface IntrinsicElements {
-			'lume-instanced-mesh': JSX.IntrinsicElements['lume-mesh'] &
-				ElementAttributes<InstancedMesh, InstancedMeshAttributes>
+			'lume-instanced-mesh': ElementAttributes<InstancedMesh, InstancedMeshAttributes>
 		}
 	}
 }
