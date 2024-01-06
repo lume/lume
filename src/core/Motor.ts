@@ -3,7 +3,7 @@
 import type {SharedAPI} from './SharedAPI.js'
 import type {Scene} from './Scene.js'
 
-export type RenderTask = (timestamp: number, deltaTime: number) => false | void
+export type RenderTask = (timestamp: number, deltaTime: number) => false | unknown
 
 class _Motor {
 	/**

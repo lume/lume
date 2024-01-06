@@ -1035,7 +1035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-decorators@npm:7.23.2, @babel/plugin-proposal-decorators@npm:^7.10.5, @babel/plugin-proposal-decorators@npm:^7.19.1":
+"@babel/plugin-proposal-decorators@npm:7.23.2, @babel/plugin-proposal-decorators@npm:^7.19.1":
   version: 7.23.2
   resolution: "@babel/plugin-proposal-decorators@npm:7.23.2"
   dependencies:
@@ -19160,24 +19160,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:0.3.0-alpha.9":
-  version: 0.3.0-alpha.9
-  resolution: "lume@npm:0.3.0-alpha.9"
-  dependencies:
-    "@lume/autolayout": "npm:^0.8.0"
-    "@lume/element": "npm:^0.6.0"
-    "@lume/eventful": "npm:^0.2.2"
-    element-behaviors: "npm:^2.3.4"
-    james-bond: "npm:^0.5.0"
-    lowclass: "npm:^5.0.0"
-    regexr: "npm:^1.5.1"
-    resize-observer-polyfill: "npm:^1.5.1"
-    three: "npm:^0.124.0"
-    three-projected-material: "npm:^2.0.5"
-  checksum: f4b3ebdd0781d71e5f909f06eb6d5d78fd0f903a97705fe8ea8909f0faa649422783919ce2614da83a858c422cc24761b9fa614b59b2bedf5676c0a2ec6affbd
-  languageName: node
-  linkType: hard
-
 "lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.37, lume@workspace:.":
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
@@ -24434,6 +24416,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"seroval@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "seroval@npm:1.0.2"
+  checksum: 16a4c4c080e03ec3eb84d6d8c9613fb7fee2b87edf7c07046f24bbebc4bb5921d5d3ea7f74464e83dc660f89e949fc982f6ee573d2be5a5221822438bd138172
+  languageName: node
+  linkType: hard
+
 "serve-handler@npm:6.1.3":
   version: 6.1.3
   resolution: "serve-handler@npm:6.1.3"
@@ -24973,13 +24962,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.4.x":
-  version: 1.4.8
-  resolution: "solid-js@npm:1.4.8"
-  checksum: 70cf4f30ed23cfc33323cd947e919dbb06b728104cc7a4024b3e4197e82b445915347db2783d2e9e40f5a3e51977134682fa9b69f63b402c3ead3571b8d434bd
-  languageName: node
-  linkType: hard
-
 "solid-js@npm:^1.0.0, solid-js@npm:^1.3.13, solid-js@npm:^1.3.6":
   version: 1.8.5
   resolution: "solid-js@npm:1.8.5"
@@ -24987,6 +24969,16 @@ __metadata:
     csstype: "npm:^3.1.0"
     seroval: "npm:^0.12.0"
   checksum: c1cb42dbdde3e54efc6d4542e6944d5ca7becb7af738ce432b7cfc36c080b7d7ed2f66b6f54cd1530a8154e0e028b84d60874a422e0b0c1d8d07284094be30ad
+  languageName: node
+  linkType: hard
+
+"solid-js@npm:^1.4.0":
+  version: 1.8.8
+  resolution: "solid-js@npm:1.8.8"
+  dependencies:
+    csstype: "npm:^3.1.0"
+    seroval: "npm:^1.0.2"
+  checksum: 2b7f9ec0d9aeefcb29af9c24a453a6892f50d623b732c54a9bc0e0a89a0e22a38901ff9ebdb39b26ed7c5de4c3d54499a96e884ff49be03833f793cfb425afef
   languageName: node
   linkType: hard
 
@@ -26351,13 +26343,6 @@ __metadata:
   version: 0.112.1
   resolution: "three@npm:0.112.1"
   checksum: 4d9a4be56e47b2395a71fa5f4e16ddbb08981b0e6391995d9dc68e4d1260875f857bc9f5df047421989e5f473aca4684ec54e47ecd22cc83785eda7f6b97db4f
-  languageName: node
-  linkType: hard
-
-"three@npm:^0.124.0":
-  version: 0.124.0
-  resolution: "three@npm:0.124.0"
-  checksum: 976fad0039a301a0ac8a85d197d00dd338370ae090831524bbb6f7a9cef4b696ff608681401610cfef0900cd8b8839565dd9c94127b9cbe6b2489e55e82a180e
   languageName: node
   linkType: hard
 
@@ -28084,19 +28069,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "website@workspace:apps/website"
   dependencies:
-    "@babel/core": "npm:^7.11.6"
-    "@babel/plugin-proposal-class-properties": "npm:^7.10.4"
-    "@babel/plugin-proposal-decorators": "npm:^7.10.5"
-    "@babel/plugin-proposal-nullish-coalescing-operator": "npm:^7.10.4"
-    "@babel/plugin-proposal-optional-chaining": "npm:^7.11.0"
-    "@babel/runtime": "npm:^7.15.4"
     "@lume/cli": "npm:^0.11.0"
-    "@lume/element": "npm:^0.6.0"
+    "@lume/element": "npm:^0.11.0"
     "@tweenjs/tween.js": "npm:^18.6.4"
-    lume: "npm:0.3.0-alpha.9"
+    "@types/meteor": "npm:^2.6.2"
+    lume: "npm:^0.3.0-alpha.37"
     meteor-node-stubs: "npm:^1.0.0"
     prettier: "npm:3.0.3"
-    solid-js: "npm:1.4.x"
+    solid-js: "npm:^1.4.0"
+    typescript: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
