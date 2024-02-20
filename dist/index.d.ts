@@ -18,5 +18,5 @@ export * from './textures/index.js';
 export * from './utils/index.js';
 export * from './xyz-values/index.js';
 export * from './defineElements.js';
-export declare const version = "0.3.0-alpha.39";
+export declare const version = "0.3.0-alpha.40";
 //# sourceMappingURL=index.d.ts.map
