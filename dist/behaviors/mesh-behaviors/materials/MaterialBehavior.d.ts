@@ -147,6 +147,7 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
      */
     get color(): string | number;
     set color(val: string | number | Color);
+    __transparent: import("solid-js").Accessor<boolean>;
     /**
      * @property {} transparent -
      *

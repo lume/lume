@@ -36,7 +36,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-import { onCleanup } from 'solid-js';
+import { createMemo, onCleanup } from 'solid-js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Color } from 'three/src/math/Color.js';
 import { DoubleSide, FrontSide, BackSide, SRGBColorSpace } from 'three/src/constants.js';
@@ -369,6 +369,8 @@ let MaterialBehavior = (() => {
             else
                 this.__color = val;
         }
+        // TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
+        __transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false));
         /**
          * @property {} transparent -
          *
@@ -379,10 +381,7 @@ let MaterialBehavior = (() => {
          * [`materialOpacity`](#materialOpacity) are less than 1.
          */
         get transparent() {
-            if (this.element.opacity < 1 || this.materialOpacity < 1)
-                return true;
-            else
-                return false;
+            return this.__transparent();
         }
         connectedCallback() {
             super.connectedCallback();
@@ -440,6 +439,13 @@ let MaterialBehavior = (() => {
                 mat.opacity = this.element.opacity * this.materialOpacity;
                 mat.transparent = this.transparent;
                 this.element.needsUpdate();
+            });
+            this.createEffect(() => {
+                const mat = this.meshComponent;
+                if (!mat)
+                    return;
+                this.transparent; // dependency (if changed based on opacity)
+                mat.needsUpdate = true;
             });
         }
         _createComponent() {

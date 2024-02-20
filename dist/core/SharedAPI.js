@@ -35,7 +35,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 import { untrack } from 'solid-js';
 import { signal } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
-import { element, attribute, booleanAttribute } from '@lume/element';
+import { element, booleanAttribute, numberAttribute } from '@lume/element';
 import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
@@ -89,7 +89,7 @@ let SharedAPI = (() => {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _set_opacity_decorators = [attribute];
+            _set_opacity_decorators = [numberAttribute];
             _debug_decorators = [booleanAttribute];
             __scene_decorators = [signal];
             _version_decorators = [signal];

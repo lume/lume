@@ -1,7 +1,7 @@
 import {untrack} from 'solid-js'
 import {signal} from 'classy-solid'
 import {Object3D} from 'three/src/core/Object3D.js'
-import {element, attribute, booleanAttribute} from '@lume/element'
+import {element, booleanAttribute, numberAttribute} from '@lume/element'
 import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
@@ -85,7 +85,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
 	 */
 	// TODO convert opacity to multiplicative down the tree for gl materials.
-	@attribute
+	@numberAttribute
 	set opacity(newValue: number | SinglePropertyFunction) {
 		if (!opacity.has(this)) opacity.set(this, 1)
 		this._setPropertySingle('opacity', v => opacity.set(this, v), newValue)
