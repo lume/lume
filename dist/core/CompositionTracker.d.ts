@@ -34,12 +34,12 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void;
-        "__#13@#discrepancy": boolean;
+        "__#11@#discrepancy": boolean;
         __triggerChildComposedCallback(child: any, compositionType: CompositionType): void;
         __triggerChildUncomposedCallback(child: any, compositionType: CompositionType): void;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): SlotDiff;
-        "__#13@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        "__#11@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;

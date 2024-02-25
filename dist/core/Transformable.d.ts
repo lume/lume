@@ -1,6 +1,6 @@
 import { XYZNumberValues } from '../xyz-values/XYZNumberValues.js';
-import { Sizeable, type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction } from './Sizeable.js';
-import type { SizeableAttributes } from './Sizeable.js';
+import { type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction } from './PropertyAnimator.js';
+import { Sizeable, type SizeableAttributes } from './Sizeable.js';
 export type TransformableAttributes = SizeableAttributes | 'position' | 'rotation' | 'scale' | 'origin' | 'alignPoint' | 'mountPoint';
 /**
  * @class Transformable - A class containing transform-related features for all

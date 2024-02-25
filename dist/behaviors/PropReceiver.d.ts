@@ -1,4 +1,5 @@
 import type { Constructor } from 'lowclass';
+import type { PossiblyCustomElement } from '../core/PossibleCustomElement.js';
 /**
  * @class PropReceiver
  *
@@ -58,12 +59,6 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
      */
     receivedProperties?: PropKey[] | undefined;
 } & T;
-export interface PossiblyCustomElement {
-    connectedCallback?(): void;
-    disconnectedCallback?(): void;
-    adoptedCallback?(): void;
-    attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
-}
 export declare function receiver(_: unknown, context: DecoratorContext): any;
 type PropKey = string | symbol;
 export {};

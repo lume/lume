@@ -1,8 +1,7 @@
 import {attribute, element, noSignal} from '@lume/element'
 import {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
-import {Sizeable, type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction} from './Sizeable.js'
-
-import type {SizeableAttributes} from './Sizeable.js'
+import {type XYZNumberValuesProperty, type XYZNumberValuesPropertyFunction} from './PropertyAnimator.js'
+import {Sizeable, type SizeableAttributes} from './Sizeable.js'
 
 export type TransformableAttributes =
 	| SizeableAttributes

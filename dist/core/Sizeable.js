@@ -37,8 +37,8 @@ import { attribute, element, noSignal } from '@lume/element';
 import { TreeNode } from './TreeNode.js';
 import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
-import { Motor } from './Motor.js';
 import { CompositionTracker } from './CompositionTracker.js';
+import { PropertyAnimator, } from './PropertyAnimator.js';
 const previousSize = {};
 const sizeMode = new WeakMap();
 const size = new WeakMap();
@@ -58,7 +58,7 @@ let Sizeable = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = CompositionTracker(TreeNode);
+    let _classSuper = PropertyAnimator(CompositionTracker(TreeNode));
     let _instanceExtraInitializers = [];
     let ___calculatedSize_decorators;
     let ___calculatedSize_initializers = [];
@@ -256,103 +256,8 @@ let Sizeable = (() => {
                 this.emit('sizechange', { ...calculatedSize });
             }
         }
-        #isSettingProperty = false;
-        get _isSettingProperty() {
-            return this.#isSettingProperty;
-        }
-        _setPropertyXYZ(name, xyz, newValue) {
-            // @ts-ignore
-            if (newValue === xyz)
-                return;
-            this.#isSettingProperty = true;
-            if (isXYZPropertyFunction(newValue)) {
-                this.#handleXYZPropertyFunction(newValue, name, xyz);
-            }
-            else {
-                if (!this.#settingValueFromPropFunction)
-                    this.#removePropertyFunction(name);
-                else
-                    this.#settingValueFromPropFunction = false;
-                xyz.from(newValue);
-            }
-            this.#isSettingProperty = false;
-        }
-        _setPropertySingle(name, setter, newValue) {
-            this.#isSettingProperty = true;
-            if (isSinglePropertyFunction(newValue)) {
-                this.#handleSinglePropertyFunction(newValue, name);
-            }
-            else {
-                if (!this.#settingValueFromPropFunction)
-                    this.#removePropertyFunction(name);
-                else
-                    this.#settingValueFromPropFunction = false;
-                setter(newValue); // FIXME no any
-            }
-            this.#isSettingProperty = false;
-        }
-        #propertyFunctions = null;
-        #settingValueFromPropFunction = false;
-        #handleXYZPropertyFunction(fn, name, xyz) {
-            if (!this.#propertyFunctions)
-                this.#propertyFunctions = new Map();
-            const propFunction = this.#propertyFunctions.get(name);
-            if (propFunction)
-                Motor.removeRenderTask(propFunction);
-            this.#propertyFunctions.set(name, Motor.addRenderTask((time, deltaTime) => {
-                const result = fn(xyz.x, xyz.y, xyz.z, time, deltaTime);
-                if (result === false) {
-                    this.#propertyFunctions.delete(name);
-                    return false;
-                }
-                this.#settingValueFromPropFunction = true;
-                xyz.from(result);
-                return;
-            }));
-        }
-        #handleSinglePropertyFunction(fn, name) {
-            if (!this.#propertyFunctions)
-                this.#propertyFunctions = new Map();
-            const propFunction = this.#propertyFunctions.get(name);
-            if (propFunction)
-                Motor.removeRenderTask(propFunction);
-            this.#propertyFunctions.set(name, Motor.addRenderTask(time => {
-                const result = fn(this[name], time);
-                if (result === false) {
-                    this.#propertyFunctions.delete(name);
-                    return false;
-                }
-                this.#settingValueFromPropFunction = true;
-                this[name] = result;
-                // TODO The RenderTask return type is `false | void`, so why
-                // does the noImplicitReturns TS option require a return
-                // here? Open bug on TypeScript.
-                return;
-            }));
-        }
-        // remove property function (render task) if any.
-        #removePropertyFunction(name) {
-            if (!this.#propertyFunctions)
-                return;
-            const propFunction = this.#propertyFunctions.get(name);
-            if (propFunction) {
-                Motor.removeRenderTask(propFunction);
-                this.#propertyFunctions.delete(name);
-                if (!this.#propertyFunctions.size)
-                    this.#propertyFunctions = null;
-            }
-        }
     };
     return Sizeable = _classThis;
 })();
 export { Sizeable };
-// the following type guards are used above just to satisfy the type system,
-// though the actual runtime check does not guarantee that the functions are of
-// the expected shape.
-function isXYZPropertyFunction(f) {
-    return typeof f === 'function';
-}
-function isSinglePropertyFunction(f) {
-    return typeof f === 'function';
-}
 //# sourceMappingURL=Sizeable.js.map

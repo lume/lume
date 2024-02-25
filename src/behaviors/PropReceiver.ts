@@ -1,6 +1,6 @@
 import {observe, unobserve} from 'james-bond'
-
 import type {Constructor} from 'lowclass'
+import type {PossiblyCustomElement} from '../core/PossibleCustomElement.js'
 
 // We use this to enforce that the @receiver decorator is used on PropReceiver
 // classes.
@@ -131,13 +131,6 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 			}
 		}
 	}
-}
-
-export interface PossiblyCustomElement {
-	connectedCallback?(): void
-	disconnectedCallback?(): void
-	adoptedCallback?(): void
-	attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void
 }
 
 function checkIsObject(o: unknown): o is object {

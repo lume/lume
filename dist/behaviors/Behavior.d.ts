@@ -36,7 +36,7 @@ declare const Behavior_base: {
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
     receivedProperties?: (string | symbol)[] | undefined;
-} & (new (...a: any[]) => import("./PropReceiver.js").PossiblyCustomElement);
+} & (new (...a: any[]) => import("../index.js").PossiblyCustomElement);
 /**
  * @class Behavior
  * Base class for all LUME behaviors.

@@ -1,19 +1,16 @@
 import {signal} from 'classy-solid'
 import {attribute, element, noSignal} from '@lume/element'
 import {TreeNode} from './TreeNode.js'
-import {XYZSizeModeValues, type SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
+import {XYZSizeModeValues} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
-import {Motor} from './Motor.js'
 import {CompositionTracker} from './CompositionTracker.js'
-
-import type {
-	XYZValues,
-	XYZValuesObject,
-	XYZPartialValuesArray,
-	XYZPartialValuesObject,
-} from '../xyz-values/XYZValues.js'
-import type {RenderTask} from './Motor.js'
-import type {XYZNumberValues} from '../xyz-values/XYZNumberValues.js'
+import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
+import {
+	PropertyAnimator,
+	type XYZNonNegativeNumberValuesProperty,
+	type XYZNonNegativeNumberValuesPropertyFunction,
+	type XYZSizeModeValuesProperty,
+} from './PropertyAnimator.js'
 
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
@@ -35,7 +32,7 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // based on parent values.
 export
 @element
-class Sizeable extends CompositionTracker(TreeNode) {
+class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	@signal __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
@@ -201,154 +198,4 @@ class Sizeable extends CompositionTracker(TreeNode) {
 			this.emit('sizechange', {...calculatedSize})
 		}
 	}
-
-	#isSettingProperty = false
-
-	get _isSettingProperty() {
-		return this.#isSettingProperty
-	}
-
-	_setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V) {
-		// @ts-ignore
-		if (newValue === xyz) return
-
-		this.#isSettingProperty = true
-
-		if (isXYZPropertyFunction(newValue)) {
-			this.#handleXYZPropertyFunction(newValue, name, xyz)
-		} else {
-			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
-			else this.#settingValueFromPropFunction = false
-
-			xyz.from(newValue)
-		}
-
-		this.#isSettingProperty = false
-	}
-
-	_setPropertySingle<K extends keyof this, V>(name: K, setter: (newValue: this[K]) => void, newValue: V) {
-		this.#isSettingProperty = true
-
-		if (isSinglePropertyFunction(newValue)) {
-			this.#handleSinglePropertyFunction(newValue, name)
-		} else {
-			if (!this.#settingValueFromPropFunction) this.#removePropertyFunction(name)
-			else this.#settingValueFromPropFunction = false
-
-			setter(newValue as any) // FIXME no any
-		}
-
-		this.#isSettingProperty = false
-	}
-
-	#propertyFunctions: Map<string, RenderTask> | null = null
-	#settingValueFromPropFunction = false
-
-	#handleXYZPropertyFunction(fn: XYZNumberValuesPropertyFunction, name: keyof this, xyz: XYZValues) {
-		if (!this.#propertyFunctions) this.#propertyFunctions = new Map()
-
-		const propFunction = this.#propertyFunctions.get(name as string)
-
-		if (propFunction) Motor.removeRenderTask(propFunction)
-
-		this.#propertyFunctions.set(
-			name as string,
-			Motor.addRenderTask((time, deltaTime) => {
-				const result = fn(xyz.x, xyz.y, xyz.z, time, deltaTime)
-
-				if (result === false) {
-					this.#propertyFunctions!.delete(name as string)
-					return false
-				}
-
-				this.#settingValueFromPropFunction = true
-				xyz.from(result)
-
-				return
-			}),
-		)
-	}
-
-	#handleSinglePropertyFunction(fn: SinglePropertyFunction, name: keyof this) {
-		if (!this.#propertyFunctions) this.#propertyFunctions = new Map()
-
-		const propFunction = this.#propertyFunctions.get(name as string)
-
-		if (propFunction) Motor.removeRenderTask(propFunction)
-
-		this.#propertyFunctions.set(
-			name as string,
-			Motor.addRenderTask(time => {
-				const result = fn((this as any)[name], time)
-
-				if (result === false) {
-					this.#propertyFunctions!.delete(name as string)
-					return false
-				}
-
-				this.#settingValueFromPropFunction = true
-				;(this as any)[name] = result
-
-				// TODO The RenderTask return type is `false | void`, so why
-				// does the noImplicitReturns TS option require a return
-				// here? Open bug on TypeScript.
-				return
-			}),
-		)
-	}
-
-	// remove property function (render task) if any.
-	#removePropertyFunction(name: keyof this) {
-		if (!this.#propertyFunctions) return
-
-		const propFunction = this.#propertyFunctions.get(name as string)
-
-		if (propFunction) {
-			Motor.removeRenderTask(propFunction)
-			this.#propertyFunctions.delete(name as string)
-			if (!this.#propertyFunctions.size) this.#propertyFunctions = null
-		}
-	}
 }
-
-// the following type guards are used above just to satisfy the type system,
-// though the actual runtime check does not guarantee that the functions are of
-// the expected shape.
-
-function isXYZPropertyFunction(f: any): f is XYZNumberValuesPropertyFunction {
-	return typeof f === 'function'
-}
-
-function isSinglePropertyFunction(f: any): f is SinglePropertyFunction {
-	return typeof f === 'function'
-}
-
-// This type represents the types of values that can be set via attributes or
-// properties (attributes pass strings to properties and properties all handle
-// string values for example, hence why it includes `| string`)
-export type XYZValuesProperty<XYZValuesType extends XYZValues, DataType> =
-	| XYZValuesType
-	| XYZPartialValuesArray<DataType>
-	| XYZPartialValuesObject<DataType>
-	| string
-
-export type XYZNumberValuesProperty = XYZValuesProperty<XYZNumberValues, number>
-export type XYZNonNegativeNumberValuesProperty = XYZValuesProperty<XYZNonNegativeValues, number>
-export type XYZSizeModeValuesProperty = XYZValuesProperty<XYZSizeModeValues, SizeModeValue>
-
-// Property functions are used for animating properties of type XYZNumberValues
-export type XYZValuesPropertyFunction<XYZValuesPropertyType, DataType> = (
-	x: DataType,
-	y: DataType,
-	z: DataType,
-	time: number,
-	deltaTime: number,
-) => XYZValuesPropertyType | false
-
-export type XYZNumberValuesPropertyFunction = XYZValuesPropertyFunction<XYZNumberValuesProperty, number>
-export type XYZNonNegativeNumberValuesPropertyFunction = XYZValuesPropertyFunction<
-	XYZNonNegativeNumberValuesProperty,
-	number
->
-
-export type SinglePropertyFunction = (value: number, time: number) => number | false

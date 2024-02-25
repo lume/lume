@@ -1,11 +1,26 @@
 /// <reference types="webxr" />
 import { TreeNode } from './TreeNode.js';
-import { XYZSizeModeValues, type SizeModeValue } from '../xyz-values/XYZSizeModeValues.js';
+import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
-import type { XYZValues, XYZValuesObject, XYZPartialValuesArray, XYZPartialValuesObject } from '../xyz-values/XYZValues.js';
-import type { XYZNumberValues } from '../xyz-values/XYZNumberValues.js';
+import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
+import { type XYZNonNegativeNumberValuesProperty, type XYZNonNegativeNumberValuesPropertyFunction, type XYZSizeModeValuesProperty } from './PropertyAnimator.js';
 export type SizeableAttributes = 'sizeMode' | 'size';
 declare const Sizeable_base: {
+    new (...a: any[]): {
+        _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: import("../xyz-values/XYZValues.js").XYZValues<any>, newValue: V): void;
+        _setPropertySingle<K_1 extends keyof any, V_1>(name: K_1, setter: (newValue: any[K_1]) => void, newValue: V_1): void;
+        "__#14@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
+        "__#14@#settingValueFromPropFunction": boolean;
+        "__#14@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues<any>): void;
+        "__#14@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
+        "__#14@#removePropertyFunction"(name: keyof any): void;
+        removeAllPropertyFunctions(): void;
+        disconnectedCallback(): void;
+        connectedCallback?(): void;
+        adoptedCallback?(): void;
+        attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
+    };
+} & {
     new (...a: any[]): {
         isScene: boolean;
         isElement3D: boolean;
@@ -39,7 +54,7 @@ declare const Sizeable_base: {
         childUncomposedCallback?(uncomposedChild: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
-        "__#13@#discrepancy": boolean;
+        "__#11@#discrepancy": boolean;
         __triggerChildComposedCallback(child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
         __triggerChildUncomposedCallback(child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
@@ -47,7 +62,7 @@ declare const Sizeable_base: {
             added: Node[];
             removed: Node[];
         };
-        "__#13@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        "__#11@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): void | Promise<void>;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
@@ -77,9 +92,9 @@ declare const Sizeable_base: {
         hidePopover(): void;
         showPopover(): void;
         togglePopover(force?: boolean | undefined): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
+        addEventListener<K_2 extends keyof HTMLElementEventMap>(type: K_2, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_2]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined): void;
-        removeEventListener<K_1 extends keyof HTMLElementEventMap>(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions | undefined): void;
+        removeEventListener<K_3 extends keyof HTMLElementEventMap>(type: K_3, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_3]) => any, options?: boolean | EventListenerOptions | undefined): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined): void;
         readonly attributes: NamedNodeMap;
         readonly classList: DOMTokenList;
@@ -105,9 +120,9 @@ declare const Sizeable_base: {
         slot: string;
         readonly tagName: string;
         checkVisibility(options?: CheckVisibilityOptions | undefined): boolean;
-        closest<K_2 extends keyof HTMLElementTagNameMap>(selector: K_2): HTMLElementTagNameMap[K_2] | null;
-        closest<K_3 extends keyof SVGElementTagNameMap>(selector: K_3): SVGElementTagNameMap[K_3] | null;
-        closest<K_4 extends keyof MathMLElementTagNameMap>(selector: K_4): MathMLElementTagNameMap[K_4] | null;
+        closest<K_4 extends keyof HTMLElementTagNameMap>(selector: K_4): HTMLElementTagNameMap[K_4] | null;
+        closest<K_5 extends keyof SVGElementTagNameMap>(selector: K_5): SVGElementTagNameMap[K_5] | null;
+        closest<K_6 extends keyof MathMLElementTagNameMap>(selector: K_6): MathMLElementTagNameMap[K_6] | null;
         closest<E extends Element = Element>(selectors: string): E | null;
         computedStyleMap(): StylePropertyMapReadOnly;
         getAttribute(qualifiedName: string): string | null;
@@ -118,10 +133,10 @@ declare const Sizeable_base: {
         getBoundingClientRect(): DOMRect;
         getClientRects(): DOMRectList;
         getElementsByClassName(classNames: string): HTMLCollectionOf<Element>;
-        getElementsByTagName<K_5 extends keyof HTMLElementTagNameMap>(qualifiedName: K_5): HTMLCollectionOf<HTMLElementTagNameMap[K_5]>;
-        getElementsByTagName<K_6 extends keyof SVGElementTagNameMap>(qualifiedName: K_6): HTMLCollectionOf<SVGElementTagNameMap[K_6]>;
-        getElementsByTagName<K_7 extends keyof MathMLElementTagNameMap>(qualifiedName: K_7): HTMLCollectionOf<MathMLElementTagNameMap[K_7]>;
-        getElementsByTagName<K_8 extends keyof HTMLElementDeprecatedTagNameMap>(qualifiedName: K_8): HTMLCollectionOf<HTMLElementDeprecatedTagNameMap[K_8]>;
+        getElementsByTagName<K_7 extends keyof HTMLElementTagNameMap>(qualifiedName: K_7): HTMLCollectionOf<HTMLElementTagNameMap[K_7]>;
+        getElementsByTagName<K_8 extends keyof SVGElementTagNameMap>(qualifiedName: K_8): HTMLCollectionOf<SVGElementTagNameMap[K_8]>;
+        getElementsByTagName<K_9 extends keyof MathMLElementTagNameMap>(qualifiedName: K_9): HTMLCollectionOf<MathMLElementTagNameMap[K_9]>;
+        getElementsByTagName<K_10 extends keyof HTMLElementDeprecatedTagNameMap>(qualifiedName: K_10): HTMLCollectionOf<HTMLElementDeprecatedTagNameMap[K_10]>;
         getElementsByTagName(qualifiedName: string): HTMLCollectionOf<Element>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/2000/svg", localName: string): HTMLCollectionOf<SVGElement>;
@@ -255,15 +270,15 @@ declare const Sizeable_base: {
         readonly lastElementChild: Element | null;
         append(...nodes: (string | Node)[]): void;
         prepend(...nodes: (string | Node)[]): void;
-        querySelector<K_9 extends keyof HTMLElementTagNameMap>(selectors: K_9): HTMLElementTagNameMap[K_9] | null;
-        querySelector<K_10 extends keyof SVGElementTagNameMap>(selectors: K_10): SVGElementTagNameMap[K_10] | null;
-        querySelector<K_11 extends keyof MathMLElementTagNameMap>(selectors: K_11): MathMLElementTagNameMap[K_11] | null;
-        querySelector<K_12 extends keyof HTMLElementDeprecatedTagNameMap>(selectors: K_12): HTMLElementDeprecatedTagNameMap[K_12] | null;
+        querySelector<K_11 extends keyof HTMLElementTagNameMap>(selectors: K_11): HTMLElementTagNameMap[K_11] | null;
+        querySelector<K_12 extends keyof SVGElementTagNameMap>(selectors: K_12): SVGElementTagNameMap[K_12] | null;
+        querySelector<K_13 extends keyof MathMLElementTagNameMap>(selectors: K_13): MathMLElementTagNameMap[K_13] | null;
+        querySelector<K_14 extends keyof HTMLElementDeprecatedTagNameMap>(selectors: K_14): HTMLElementDeprecatedTagNameMap[K_14] | null;
         querySelector<E_1 extends Element = Element>(selectors: string): E_1 | null;
-        querySelectorAll<K_13 extends keyof HTMLElementTagNameMap>(selectors: K_13): NodeListOf<HTMLElementTagNameMap[K_13]>;
-        querySelectorAll<K_14 extends keyof SVGElementTagNameMap>(selectors: K_14): NodeListOf<SVGElementTagNameMap[K_14]>;
-        querySelectorAll<K_15 extends keyof MathMLElementTagNameMap>(selectors: K_15): NodeListOf<MathMLElementTagNameMap[K_15]>;
-        querySelectorAll<K_16 extends keyof HTMLElementDeprecatedTagNameMap>(selectors: K_16): NodeListOf<HTMLElementDeprecatedTagNameMap[K_16]>;
+        querySelectorAll<K_15 extends keyof HTMLElementTagNameMap>(selectors: K_15): NodeListOf<HTMLElementTagNameMap[K_15]>;
+        querySelectorAll<K_16 extends keyof SVGElementTagNameMap>(selectors: K_16): NodeListOf<SVGElementTagNameMap[K_16]>;
+        querySelectorAll<K_17 extends keyof MathMLElementTagNameMap>(selectors: K_17): NodeListOf<MathMLElementTagNameMap[K_17]>;
+        querySelectorAll<K_18 extends keyof HTMLElementDeprecatedTagNameMap>(selectors: K_18): NodeListOf<HTMLElementDeprecatedTagNameMap[K_18]>;
         querySelectorAll<E_2 extends Element = Element>(selectors: string): NodeListOf<E_2>;
         replaceChildren(...nodes: (string | Node)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
@@ -388,7 +403,6 @@ declare const Sizeable_base: {
  * @extends TreeNode
  */
 export declare class Sizeable extends Sizeable_base {
-    #private;
     __calculatedSize?: XYZValuesObject<number>;
     /**
      * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
@@ -476,17 +490,6 @@ export declare class Sizeable extends Sizeable_base {
         z: number;
     };
     _calcSize(): void;
-    get _isSettingProperty(): boolean;
-    _setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V): void;
-    _setPropertySingle<K extends keyof this, V>(name: K, setter: (newValue: this[K]) => void, newValue: V): void;
 }
-export type XYZValuesProperty<XYZValuesType extends XYZValues, DataType> = XYZValuesType | XYZPartialValuesArray<DataType> | XYZPartialValuesObject<DataType> | string;
-export type XYZNumberValuesProperty = XYZValuesProperty<XYZNumberValues, number>;
-export type XYZNonNegativeNumberValuesProperty = XYZValuesProperty<XYZNonNegativeValues, number>;
-export type XYZSizeModeValuesProperty = XYZValuesProperty<XYZSizeModeValues, SizeModeValue>;
-export type XYZValuesPropertyFunction<XYZValuesPropertyType, DataType> = (x: DataType, y: DataType, z: DataType, time: number, deltaTime: number) => XYZValuesPropertyType | false;
-export type XYZNumberValuesPropertyFunction = XYZValuesPropertyFunction<XYZNumberValuesProperty, number>;
-export type XYZNonNegativeNumberValuesPropertyFunction = XYZValuesPropertyFunction<XYZNonNegativeNumberValuesProperty, number>;
-export type SinglePropertyFunction = (value: number, time: number) => number | false;
 export {};
 //# sourceMappingURL=Sizeable.d.ts.map

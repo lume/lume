@@ -17,7 +17,7 @@ import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
 import type {CompositionType} from './CompositionTracker'
 import type {TransformableAttributes} from './Transformable.js'
-import type {SinglePropertyFunction} from './Sizeable.js'
+import type {SinglePropertyFunction} from './PropertyAnimator.js'
 
 // Exposes the `has=""` attribute type definition for all elements in TypeScript JSX templates.
 import type {} from 'element-behaviors/src/attribute-types'

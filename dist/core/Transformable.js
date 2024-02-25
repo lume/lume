@@ -34,6 +34,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 };
 import { attribute, element, noSignal } from '@lume/element';
 import { XYZNumberValues } from '../xyz-values/XYZNumberValues.js';
+import {} from './PropertyAnimator.js';
 import { Sizeable } from './Sizeable.js';
 const position = new WeakMap();
 const rotation = new WeakMap();

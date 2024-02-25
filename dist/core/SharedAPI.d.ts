@@ -6,7 +6,7 @@ import type { Element3D } from './Element3D.js';
 import type { Scene } from './Scene.js';
 import type { CompositionType } from './CompositionTracker';
 import type { TransformableAttributes } from './Transformable.js';
-import type { SinglePropertyFunction } from './Sizeable.js';
+import type { SinglePropertyFunction } from './PropertyAnimator.js';
 export type BaseAttributes = TransformableAttributes | 'opacity';
 declare const SharedAPI_base: {
     new (...args: any[]): {
