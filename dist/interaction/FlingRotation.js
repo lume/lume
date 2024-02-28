@@ -119,6 +119,12 @@ let FlingRotation = (() => {
          */
         maxFlingRotationY = Infinity;
         factor = 1;
+        epsilon = 0.01;
+        /**
+         * Portion of the change in rotation that is removed each frame to
+         * cause slowdown. Between 0 and 1.
+         */
+        slowdownAmount = 0.05;
         #aborter = new AbortController();
         constructor(options = {}) {
             super();
@@ -138,9 +144,7 @@ let FlingRotation = (() => {
             else
                 return;
             this.interactionContainer.setPointerCapture(this.#mainPointer);
-            // Stop rotation if any.
-            this.rotationXTarget.rotation = () => false;
-            this.rotationYTarget.rotation = () => false;
+            this.#stopAnimation();
             this.#lastX = event.x;
             this.#lastY = event.y;
             this.#deltaX = 0;
@@ -178,19 +182,23 @@ let FlingRotation = (() => {
             if (this.#deltaX === 0 && this.#deltaY === 0)
                 return;
             // slow the rotation down based on former drag speed
-            this.rotationXTarget.rotation = (x, y, z) => {
-                this.#deltaX = this.#deltaX * 0.95;
+            this.rotationXTarget.rotation = (x, y, z, _t, dt) => {
+                const fpsRatio = dt / 16.6666;
+                // Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
+                this.#deltaX *= 1 - fpsRatio * this.slowdownAmount;
                 // stop rotation once the delta is small enough that we
                 // no longer notice the rotation.
-                if (Math.abs(this.#deltaX) < 0.01)
+                if (Math.abs(this.#deltaX) < this.epsilon)
                     return false;
                 return [clamp(x + this.#deltaX, this.minFlingRotationX, this.maxFlingRotationX), y, z];
             };
-            this.rotationYTarget.rotation = (x, y, z) => {
-                this.#deltaY = this.#deltaY * 0.95;
+            this.rotationYTarget.rotation = (x, y, z, _t, dt) => {
+                const fpsRatio = dt / 16.6666;
+                // Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
+                this.#deltaY *= 1 - fpsRatio * this.slowdownAmount;
                 // stop rotation once the delta is small enough that we
                 // no longer notice the rotation.
-                if (Math.abs(this.#deltaY) < 0.01)
+                if (Math.abs(this.#deltaY) < this.epsilon)
                     return false;
                 return [x, clamp(y + this.#deltaY, this.minFlingRotationY, this.maxFlingRotationY), z];
             };
@@ -219,9 +227,7 @@ let FlingRotation = (() => {
                 onCleanup(() => {
                     this.#mainPointer = -1;
                     this.#pointerCount = 0;
-                    // Stop any current animation.
-                    this.rotationXTarget.rotation = () => false;
-                    this.rotationYTarget.rotation = () => false;
+                    this.#stopAnimation();
                     this.#aborter.abort();
                 });
             });
@@ -233,6 +239,11 @@ let FlingRotation = (() => {
             this.#isStarted = false;
             this.stopEffects();
             return this;
+        }
+        #stopAnimation() {
+            // Stop any current animation.
+            this.rotationXTarget.rotation = () => false;
+            this.rotationYTarget.rotation = () => false;
         }
     };
     return FlingRotation = _classThis;
