@@ -95,9 +95,9 @@ let SphereGeometryBehavior = (() => {
          *
          * Default: `32`
          *
-         * The number of divisions across the height of the plane. A plane with 10
+         * The number of divisions across the height of the sphere. A sphere with 10
          * width segments and 10 height segments is essentially made up of 100 cells
-         * (or 10 rows and 10 columns of smaller planes)
+         * (or 10 rows and 10 columns of smaller planes).
          */
         ));
         /**
@@ -107,9 +107,9 @@ let SphereGeometryBehavior = (() => {
          *
          * Default: `32`
          *
-         * The number of divisions across the height of the plane. A plane with 10
+         * The number of divisions across the height of the sphere. A sphere with 10
          * width segments and 10 height segments is essentially made up of 100 cells
-         * (or 10 rows and 10 columns of smaller planes)
+         * (or 10 rows and 10 columns of smaller planes).
          */
         verticalSegments = __runInitializers(this, _verticalSegments_initializers, 32);
         _createComponent() {

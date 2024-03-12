@@ -140,7 +140,6 @@ let ScrollFling = (() => {
             event.preventDefault();
             const dx = event.deltaX * this.sensitivity;
             const dy = event.deltaY * this.sensitivity;
-            console.log('initial y, target y:', this._y, this.#targetY);
             this.#targetX = clamp(this.#targetX + dx, this.minX, this.maxX);
             this.#targetY = clamp(this.#targetY + dy, this.minY, this.maxY);
             this.#stopAnimation();
