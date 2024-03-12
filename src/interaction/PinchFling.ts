@@ -5,7 +5,9 @@ import {clamp} from '../math/clamp.js'
 
 import type {RenderTask} from '../core/index.js'
 
-type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted'>>
+type Options = Partial<
+	Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'slowdownAmount'>
+>
 
 export
 @reactive
@@ -25,6 +27,14 @@ class PinchFling extends Effects {
 	sensitivity = 1
 
 	@signal hasInteracted = false
+
+	epsilon = 0.01
+
+	/**
+	 * Portion of the change in value that is removed each frame to
+	 * cause slowdown. Between 0 and 1.
+	 */
+	slowdownAmount = 0.05
 
 	#task?: RenderTask
 
@@ -65,14 +75,17 @@ class PinchFling extends Effects {
 		if (this.#task) Motor.removeRenderTask(this.#task)
 
 		// slow the rotation down based on former drag speed
-		this.#task = Motor.addRenderTask((): false | void => {
-			dx = dx * 0.95
+		this.#task = Motor.addRenderTask((_t, dt): false | void => {
+			const fpsRatio = dt / 16.6666
+
+			// Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
+			dx *= 1 - fpsRatio * this.slowdownAmount
 
 			this.x = clamp(this.x + dx, this.minX, this.maxX)
 
 			// Stop the rotation update loop once the deltas are small enough
 			// that we no longer notice a change.
-			if (Math.abs(dx) < 0.01) return false
+			if (Math.abs(dx) < this.epsilon) return false
 		})
 	}
 

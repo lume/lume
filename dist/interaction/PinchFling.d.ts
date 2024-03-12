@@ -1,5 +1,5 @@
 import { Effects } from 'classy-solid';
-type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted'>>;
+type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'slowdownAmount'>>;
 export declare class PinchFling extends Effects {
     #private;
     /**
@@ -13,6 +13,12 @@ export declare class PinchFling extends Effects {
     target: Element;
     sensitivity: number;
     hasInteracted: boolean;
+    epsilon: number;
+    /**
+     * Portion of the change in value that is removed each frame to
+     * cause slowdown. Between 0 and 1.
+     */
+    slowdownAmount: number;
     get interacting(): boolean;
     get isStarted(): boolean;
     constructor(options?: Options);

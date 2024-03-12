@@ -6,7 +6,20 @@ import {clamp} from '../math/clamp.js'
 import type {RenderTask} from '../core/index.js'
 
 type Options = Partial<
-	Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'sensitivity' | 'hasInteracted'>
+	Pick<
+		ScrollFling,
+		| 'target'
+		| 'x'
+		| 'y'
+		| 'minX'
+		| 'maxX'
+		| 'minY'
+		| 'maxY'
+		| 'sensitivity'
+		| 'hasInteracted'
+		| 'epsilon'
+		| 'lerpAmount'
+	>
 >
 
 // @ts-ignore
@@ -15,19 +28,37 @@ window.debug = true
 export
 @reactive
 class ScrollFling extends Effects {
-	/**
-	 * During scroll, this value will change. It is a signal so that it can be
-	 * observed. Set this value initially if you want to start at a certain
-	 * value.
-	 */
-	@signal x = 0
+	@signal _x = 0
 
 	/**
 	 * During scroll, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
-	 * value.
+	 * value. Setting the value immediately stops any smoothing animation.
 	 */
-	@signal y = 0
+	get x() {
+		return this._x
+	}
+	set x(val) {
+		this.#stopAnimation()
+		this._x = val
+		this.#targetX = val
+	}
+
+	@signal _y = 0
+
+	/**
+	 * During scroll, this value will change. It is a signal so that it can be
+	 * observed. Set this value initially if you want to start at a certain
+	 * value. Setting the value immediately stops any smoothing animation.
+	 */
+	get y() {
+		return this._y
+	}
+	set y(val) {
+		this.#stopAnimation()
+		this._y = val
+		this.#targetY = val
+	}
 
 	minX = -Infinity
 	maxX = Infinity
@@ -39,6 +70,16 @@ class ScrollFling extends Effects {
 	sensitivity = 1
 
 	@signal hasInteracted = false
+
+	epsilon = 0.01
+
+	/**
+	 * The portion to lerp towards the target values each frame. Between 0 and 1.
+	 */
+	lerpAmount = 0.3
+
+	#targetX = 0
+	#targetY = 0
 
 	#task?: RenderTask
 
@@ -56,6 +97,8 @@ class ScrollFling extends Effects {
 	constructor(options: Options = {}) {
 		super()
 		Object.assign(this, options)
+		this.#targetX = this._x
+		this.#targetY = this._y
 	}
 
 	#onWheel = (event: WheelEvent) => {
@@ -63,27 +106,27 @@ class ScrollFling extends Effects {
 
 		event.preventDefault()
 
-		let dx = event.deltaX * this.sensitivity
-		let dy = event.deltaY * this.sensitivity
+		const dx = event.deltaX * this.sensitivity
+		const dy = event.deltaY * this.sensitivity
 
-		this.x = clamp(this.x + dx, this.minX, this.maxX)
-		this.y = clamp(this.y + dy, this.minY, this.maxY)
+		this.#targetX = clamp(this.#targetX + dx, this.minX, this.maxX)
+		this.#targetY = clamp(this.#targetY + dy, this.minY, this.maxY)
 
-		if (dx === 0 && dy === 0) return
+		this.#stopAnimation()
 
-		if (this.#task) Motor.removeRenderTask(this.#task)
+		// lerp towards the target values
+		this.#task = Motor.addRenderTask((_t, dt): false | void => {
+			const dx = this.#targetX - this._x
+			const dy = this.#targetY - this._y
+			const fpsRatio = dt / 16.6666
 
-		// slow the rotation down based on former drag speed
-		this.#task = Motor.addRenderTask((): false | void => {
-			dx = dx * 0.95
-			dy = dy * 0.95
+			// Multiply by fpsRatio so that the lerpAmount is consistent over time no matter the fps.
+			this._x += dx * fpsRatio * this.lerpAmount
+			this._y += dy * fpsRatio * this.lerpAmount
 
-			this.x = clamp(this.x + dx, this.minX, this.maxX)
-			this.y = clamp(this.y + dy, this.minY, this.maxY)
-
-			// Stop the rotation update loop once the deltas are small enough
+			// Stop the fling update loop once the deltas are small enough
 			// that we no longer notice a change.
-			if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return false
+			if (Math.abs(dx) < this.epsilon && Math.abs(dy) < this.epsilon) return false
 		})
 	}
 
@@ -100,9 +143,7 @@ class ScrollFling extends Effects {
 			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
 
 			onCleanup(() => {
-				// Stop any current animation, if any.
-				if (this.#task) Motor.removeRenderTask(this.#task)
-
+				this.#stopAnimation()
 				this.#aborter.abort()
 			})
 		})
@@ -117,6 +158,11 @@ class ScrollFling extends Effects {
 		this.stopEffects()
 
 		return this
+	}
+
+	#stopAnimation() {
+		// Stop any current animation, if any.
+		if (this.#task) Motor.removeRenderTask(this.#task)
 	}
 }
 

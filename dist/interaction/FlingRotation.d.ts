@@ -1,6 +1,6 @@
 import { Effects } from 'classy-solid';
 import type { Element3D } from '../core/Element3D.js';
-type Options = Partial<Pick<FlingRotation, 'rotationXTarget' | 'rotationYTarget' | 'interactionInitiator' | 'interactionContainer' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'factor'>>;
+type Options = Partial<Pick<FlingRotation, 'rotationXTarget' | 'rotationYTarget' | 'interactionInitiator' | 'interactionContainer' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'factor' | 'epsilon' | 'slowdownAmount'>>;
 export declare class FlingRotation extends Effects {
     #private;
     /** The object that will be rotated on Y. Required. */
@@ -43,6 +43,12 @@ export declare class FlingRotation extends Effects {
      */
     maxFlingRotationY: number;
     factor: number;
+    epsilon: number;
+    /**
+     * Portion of the change in rotation that is removed each frame to
+     * cause slowdown. Between 0 and 1.
+     */
+    slowdownAmount: number;
     constructor(options?: Options);
     start(): this;
     stop(): this;
