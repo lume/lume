@@ -96,8 +96,7 @@ let SphereGeometryBehavior = (() => {
          * Default: `32`
          *
          * The number of divisions across the height of the sphere. A sphere with 10
-         * width segments and 10 height segments is essentially made up of 100 cells
-         * (or 10 rows and 10 columns of smaller planes).
+         * horizontal segments and 10 vertical segments is made up of 100 flat faces.
          */
         ));
         /**
@@ -108,8 +107,7 @@ let SphereGeometryBehavior = (() => {
          * Default: `32`
          *
          * The number of divisions across the height of the sphere. A sphere with 10
-         * width segments and 10 height segments is essentially made up of 100 cells
-         * (or 10 rows and 10 columns of smaller planes).
+         * horizontal segments and 10 vertical segments is made up of 100 flat faces.
          */
         verticalSegments = __runInitializers(this, _verticalSegments_initializers, 32);
         _createComponent() {
