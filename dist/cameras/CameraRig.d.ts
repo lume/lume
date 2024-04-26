@@ -249,7 +249,8 @@ export declare class CameraRig extends Element3D {
      * Default: `0.05`
      *
      * Portion of the dolly speed to remove each frame to slow down the dolly
-     * animation after pinching to dolly the camera. Between 0 and 1.
+     * animation after pinching to dolly the camera, i.e. how much to lerp
+     * towards zero motion. Between 0 and 1.
      */
     dollyPinchSlowdown: number;
     /**
@@ -272,7 +273,8 @@ export declare class CameraRig extends Element3D {
      * Default: `0.05`
      *
      * Portion of the rotational speed to remove each frame to slow down the
-     * rotation after dragging to rotate the camera. Between 0 and 1.
+     * rotation after dragging to rotate the camera, i.e. how much to lerp
+     * towards zero motion. Between 0 and 1.
      */
     rotationSlowdown: number;
     threeCamera?: PerspectiveCamera;

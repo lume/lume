@@ -559,7 +559,8 @@ let CameraRig = (() => {
          * Default: `0.05`
          *
          * Portion of the dolly speed to remove each frame to slow down the dolly
-         * animation after pinching to dolly the camera. Between 0 and 1.
+         * animation after pinching to dolly the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
          */
         );
         /**
@@ -570,7 +571,8 @@ let CameraRig = (() => {
          * Default: `0.05`
          *
          * Portion of the dolly speed to remove each frame to slow down the dolly
-         * animation after pinching to dolly the camera. Between 0 and 1.
+         * animation after pinching to dolly the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
          */
         dollyPinchSlowdown = __runInitializers(this, _dollyPinchSlowdown_initializers, 0.05
         /**
@@ -605,7 +607,8 @@ let CameraRig = (() => {
          * Default: `0.05`
          *
          * Portion of the rotational speed to remove each frame to slow down the
-         * rotation after dragging to rotate the camera. Between 0 and 1.
+         * rotation after dragging to rotate the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
          */
         );
         /**
@@ -616,7 +619,8 @@ let CameraRig = (() => {
          * Default: `0.05`
          *
          * Portion of the rotational speed to remove each frame to slow down the
-         * rotation after dragging to rotate the camera. Between 0 and 1.
+         * rotation after dragging to rotate the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
          */
         rotationSlowdown = __runInitializers(this, _rotationSlowdown_initializers, 0.05);
         threeCamera = __runInitializers(this, _threeCamera_initializers, void 0);
