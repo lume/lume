@@ -27,6 +27,9 @@ jobs:
             - name: install
               run: |
                   npm run fresh
+            - name: display env
+              run: |
+                  npx envinfo --preset playwright
             - name: check formatting
               run: |
                   npm run prettier:check:all
