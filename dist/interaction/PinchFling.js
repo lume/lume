@@ -75,6 +75,12 @@ let PinchFling = (() => {
         target = __runInitializers(this, _target_initializers, document.documentElement);
         sensitivity = 1;
         hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
+        epsilon = 0.01;
+        /**
+         * Portion of the change in value that is removed each frame to
+         * cause slowdown. Between 0 and 1.
+         */
+        slowdownAmount = 0.05;
         #task;
         #interacting = (() => {
             const { 0: get, 1: set } = createSignal(false);
@@ -104,12 +110,14 @@ let PinchFling = (() => {
             if (this.#task)
                 Motor.removeRenderTask(this.#task);
             // slow the rotation down based on former drag speed
-            this.#task = Motor.addRenderTask(() => {
-                dx = dx * 0.95;
+            this.#task = Motor.addRenderTask((_t, dt) => {
+                const fpsRatio = dt / 16.6666;
+                // Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
+                dx *= 1 - fpsRatio * this.slowdownAmount;
                 this.x = clamp(this.x + dx, this.minX, this.maxX);
                 // Stop the rotation update loop once the deltas are small enough
                 // that we no longer notice a change.
-                if (Math.abs(dx) < 0.01)
+                if (Math.abs(dx) < this.epsilon)
                     return false;
             });
         };

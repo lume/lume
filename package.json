@@ -87,7 +87,7 @@
 		"three": ">=0.139.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.11.0",
+		"@lume/cli": "^0.12.0",
 		"@types/three": ">=0.139.0",
 		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",
@@ -97,7 +97,7 @@
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
-		"typescript": "^5.0.0"
+		"typescript": "5.2.x"
 	},
 	"repository": {
 		"type": "git",
