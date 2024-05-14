@@ -95,6 +95,8 @@ class FlingRotation extends Effects {
 	#deltaX = 0
 	#deltaY = 0
 
+	#moveTimestamp = 0
+
 	#onPointerDown = (event: PointerEvent) => {
 		this.#pointerCount++
 		if (this.#pointerCount === 1) this.#mainPointer = event.pointerId
@@ -119,6 +121,8 @@ class FlingRotation extends Effects {
 
 	#onMove = (event: PointerEvent) => {
 		if (event.pointerId !== this.#mainPointer) return
+
+		this.#moveTimestamp = performance.now()
 
 		// We're not simply using event.movementX and event.movementY
 		// because of a Safari bug:
@@ -157,7 +161,7 @@ class FlingRotation extends Effects {
 		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.removeEventListener('pointermove', this.#onMove)
 
-		if (this.#deltaX === 0 && this.#deltaY === 0) return
+		if ((this.#deltaX === 0 && this.#deltaY === 0) || performance.now() - this.#moveTimestamp > 100) return
 
 		// slow the rotation down based on former drag speed
 		this.rotationXTarget.rotation = (x, y, z) => {
