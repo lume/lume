@@ -1,0 +1,51 @@
+<script src="./template.js" template="./template.html" title="<lume-camera-rig>"></script>
+
+<lume-scene
+	id="scene"
+	perspective="800"
+	webgl
+	background="../apps/docs/examples/hello-world/galaxy_starfield.png"
+	background-intensity="0.6"
+	equirectangular-background="true"
+	environment="../apps/docs/examples/hello-world/galaxy_starfield.png"
+	physically-correct-lights
+>
+	<lume-directional-light position="500 0 200" intensity="8" align-point="0.5 0.5"></lume-directional-light>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+	<lume-camera-rig
+		active
+		dolly-speed="1"
+		dynamic-dolly
+		rotation-speed="0.5"
+		dynamic-rotation
+		distance="800"
+		max-distance="15000"
+		min-distance="400"
+	></lume-camera-rig>
+
+	<lume-sphere
+		has="phong-material"
+		texture="../apps/docs/examples/hello-world/earthmap1k.jpg"
+		bump-map="../apps/docs/examples/hello-world/earthbump1k.jpg"
+		specular-map="../apps/docs/examples/hello-world/earthspec1k.jpg"
+		color="white"
+		size="1 1 1"
+		scale="800 800 800"
+		mount-point="0.5 0.5 0.5"
+		><lume-sphere
+			id="clouds"
+			texture="../apps/docs/examples/hello-world/earthclouds.png"
+			opacity="0.7"
+			size="1.01 1.01 1.01"
+			size="800 800 800"
+			mount-point="0.5 0.5 0.5"
+			align-point="0.5 0.5 0.5"
+			color="white"
+		></lume-sphere
+	></lume-sphere>
+</lume-scene>
+
+<script type="module">
+	import 'lume'
+</script>
