@@ -2,7 +2,7 @@ import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 import type { PerspectiveCamera } from './PerspectiveCamera.js';
-export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
+export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'rotationSpeed' | 'dynamicDolly' | 'dynamicRotation' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
 /**
  * @class CameraRig
  *
@@ -217,6 +217,30 @@ export declare class CameraRig extends Element3D {
      * disabled, but the camera rig can still be manipulated programmatically.
      */
     interactive: boolean;
+    /**
+     * @property {number} rotationSpeed
+     *
+     * *attribute*
+     *
+     * Default: `1`
+     */
+    rotationSpeed: number;
+    /**
+     * @property {boolean} dynamicDolly
+     *
+     * *attribute*
+     *
+     * Default: `false`
+     */
+    dynamicDolly: boolean;
+    /**
+     * @property {boolean} dynamicRotation
+     *
+     * *attribute*
+     *
+     * Default: `false`
+     */
+    dynamicRotation: boolean;
     threeCamera?: PerspectiveCamera;
     /** @deprecated Use `.threeCamera` instead. */
     get cam(): PerspectiveCamera | undefined;

@@ -26,6 +26,9 @@ export type CameraRigAttributes =
 	| 'active'
 	| 'dollySpeed'
 	| 'interactive'
+	| 'rotationSpeed'
+	| 'dynamicDolly'
+	| 'dynamicRotation'
 	| 'initialPolarAngle' // deprecated
 	| 'minPolarAngle' // deprecated
 	| 'maxPolarAngle' // deprecated
@@ -288,6 +291,33 @@ class CameraRig extends Element3D {
 	 */
 	@booleanAttribute interactive = true
 
+	/**
+	 * @property {number} rotationSpeed
+	 *
+	 * *attribute*
+	 *
+	 * Default: `1`
+	 */
+	@numberAttribute rotationSpeed = 1
+
+	/**
+	 * @property {boolean} dynamicDolly
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 */
+	@booleanAttribute dynamicDolly = false
+
+	/**
+	 * @property {boolean} dynamicRotation
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 */
+	@booleanAttribute dynamicRotation = false
+
 	@signal threeCamera?: PerspectiveCamera
 
 	/** @deprecated Use `.threeCamera` instead. */
@@ -355,10 +385,51 @@ class CameraRig extends Element3D {
 				flingRotation.maxFlingRotationX = this.maxVerticalAngle
 				flingRotation.minFlingRotationY = this.minHorizontalAngle
 				flingRotation.maxFlingRotationY = this.maxHorizontalAngle
+				flingRotation.factor = this.rotationSpeed
 
 				scrollFling.minY = pinchFling.minX = this.__appliedMinDistance
 				scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance
 				scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
+			})
+
+			this.createEffect(() => {
+				if (!this.dynamicDolly) return
+
+				// Dolly speed when position is at minDistance
+				const minDollySpeed = 0.001
+
+				// Dolly speed when position is at maxDistance
+				const maxDollySpeed = 2 * this.dollySpeed
+
+				// Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+				const sens =
+					((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+						(this.threeCamera!.position.z - this.minDistance) +
+					minDollySpeed
+
+				scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens
+			})
+			this.createEffect(() => {
+				if (!this.dynamicRotation) return
+
+				// This only depends on the size of the scene and the FOV of the camera. The only
+				// issue is the camera's FOV is not reactive and is set by the scene at some point.
+				// In the case where the camera's FOV is not set yet, use the scene's perspective.
+				const perspective = this.threeCamera!.three.fov
+					? this.scene!.calculatedSize.y / 2 / Math.tan((this.threeCamera!.three.fov * Math.PI) / 360)
+					: this.scene!.perspective
+
+				// Plane positioned at origin facing camera with width equal to `minDistance`.
+				// `minDistance` is doubled because the expected `minDistance` should barely touch
+				// the object, whose size would be double `minDistance`.
+				const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera!.position.z
+
+				const degreesPerPixel = 180 / planeSize
+
+				// Counteract the FlingRotation's delta modifier to get exact angular movement.
+				const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed
+
+				this.flingRotation.factor = sens <= 0 ? 1 : sens
 			})
 
 			this.createEffect(() => {
@@ -410,7 +481,7 @@ class CameraRig extends Element3D {
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
 						xposition=${() => [0, 0, this.__appliedDistance]}
 						align-point="0.5 0.5 0.5"
-						far="10000"
+						far="100000"
 					>
 						<slot name="camera-child"></slot>
 					</lume-perspective-camera>

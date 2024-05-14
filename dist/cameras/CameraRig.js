@@ -105,6 +105,12 @@ let CameraRig = (() => {
     let _dollySpeed_initializers = [];
     let _interactive_decorators;
     let _interactive_initializers = [];
+    let _rotationSpeed_decorators;
+    let _rotationSpeed_initializers = [];
+    let _dynamicDolly_decorators;
+    let _dynamicDolly_initializers = [];
+    let _dynamicRotation_decorators;
+    let _dynamicRotation_initializers = [];
     let _threeCamera_decorators;
     let _threeCamera_initializers = [];
     let _rotationYTarget_decorators;
@@ -134,6 +140,9 @@ let CameraRig = (() => {
             _active_decorators = [booleanAttribute];
             _dollySpeed_decorators = [numberAttribute];
             _interactive_decorators = [booleanAttribute];
+            _rotationSpeed_decorators = [numberAttribute];
+            _dynamicDolly_decorators = [booleanAttribute];
+            _dynamicRotation_decorators = [booleanAttribute];
             _threeCamera_decorators = [signal];
             _rotationYTarget_decorators = [signal];
             _rotationXTarget_decorators = [signal];
@@ -156,6 +165,9 @@ let CameraRig = (() => {
             __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dollySpeed_decorators, { kind: "field", name: "dollySpeed", static: false, private: false, access: { has: obj => "dollySpeed" in obj, get: obj => obj.dollySpeed, set: (obj, value) => { obj.dollySpeed = value; } }, metadata: _metadata }, _dollySpeed_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _interactive_decorators, { kind: "field", name: "interactive", static: false, private: false, access: { has: obj => "interactive" in obj, get: obj => obj.interactive, set: (obj, value) => { obj.interactive = value; } }, metadata: _metadata }, _interactive_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationSpeed_decorators, { kind: "field", name: "rotationSpeed", static: false, private: false, access: { has: obj => "rotationSpeed" in obj, get: obj => obj.rotationSpeed, set: (obj, value) => { obj.rotationSpeed = value; } }, metadata: _metadata }, _rotationSpeed_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dynamicDolly_decorators, { kind: "field", name: "dynamicDolly", static: false, private: false, access: { has: obj => "dynamicDolly" in obj, get: obj => obj.dynamicDolly, set: (obj, value) => { obj.dynamicDolly = value; } }, metadata: _metadata }, _dynamicDolly_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dynamicRotation_decorators, { kind: "field", name: "dynamicRotation", static: false, private: false, access: { has: obj => "dynamicRotation" in obj, get: obj => obj.dynamicRotation, set: (obj, value) => { obj.dynamicRotation = value; } }, metadata: _metadata }, _dynamicRotation_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _threeCamera_decorators, { kind: "field", name: "threeCamera", static: false, private: false, access: { has: obj => "threeCamera" in obj, get: obj => obj.threeCamera, set: (obj, value) => { obj.threeCamera = value; } }, metadata: _metadata }, _threeCamera_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
@@ -482,7 +494,55 @@ let CameraRig = (() => {
          * When `false`, user interaction (ability to zoom or rotate the camera) is
          * disabled, but the camera rig can still be manipulated programmatically.
          */
-        interactive = __runInitializers(this, _interactive_initializers, true);
+        interactive = __runInitializers(this, _interactive_initializers, true
+        /**
+         * @property {number} rotationSpeed
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         */
+        );
+        /**
+         * @property {number} rotationSpeed
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         */
+        rotationSpeed = __runInitializers(this, _rotationSpeed_initializers, 1
+        /**
+         * @property {boolean} dynamicDolly
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         */
+        );
+        /**
+         * @property {boolean} dynamicDolly
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         */
+        dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
+        /**
+         * @property {boolean} dynamicRotation
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         */
+        );
+        /**
+         * @property {boolean} dynamicRotation
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         */
+        dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false);
         threeCamera = __runInitializers(this, _threeCamera_initializers, void 0);
         /** @deprecated Use `.threeCamera` instead. */
         get cam() {
@@ -529,9 +589,41 @@ let CameraRig = (() => {
                     flingRotation.maxFlingRotationX = this.maxVerticalAngle;
                     flingRotation.minFlingRotationY = this.minHorizontalAngle;
                     flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
+                    flingRotation.factor = this.rotationSpeed;
                     scrollFling.minY = pinchFling.minX = this.__appliedMinDistance;
                     scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance;
                     scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed;
+                });
+                this.createEffect(() => {
+                    if (!this.dynamicDolly)
+                        return;
+                    // Dolly speed when position is at minDistance
+                    const minDollySpeed = 0.001;
+                    // Dolly speed when position is at maxDistance
+                    const maxDollySpeed = 2 * this.dollySpeed;
+                    // Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+                    const sens = ((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+                        (this.threeCamera.position.z - this.minDistance) +
+                        minDollySpeed;
+                    scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens;
+                });
+                this.createEffect(() => {
+                    if (!this.dynamicRotation)
+                        return;
+                    // This only depends on the size of the scene and the FOV of the camera. The only
+                    // issue is the camera's FOV is not reactive and is set by the scene at some point.
+                    // In the case where the camera's FOV is not set yet, use the scene's perspective.
+                    const perspective = this.threeCamera.three.fov
+                        ? this.scene.calculatedSize.y / 2 / Math.tan((this.threeCamera.three.fov * Math.PI) / 360)
+                        : this.scene.perspective;
+                    // Plane positioned at origin facing camera with width equal to `minDistance`.
+                    // `minDistance` is doubled because the expected `minDistance` should barely touch
+                    // the object, whose size would be double `minDistance`.
+                    const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera.position.z;
+                    const degreesPerPixel = 180 / planeSize;
+                    // Counteract the FlingRotation's delta modifier to get exact angular movement.
+                    const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed;
+                    this.flingRotation.factor = sens <= 0 ? 1 : sens;
                 });
                 this.createEffect(() => {
                     if (this.interactive && !this.pinchFling?.interacting)
@@ -582,7 +674,7 @@ let CameraRig = (() => {
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
 						xposition=${() => [0, 0, this.__appliedDistance]}
 						align-point="0.5 0.5 0.5"
-						far="10000"
+						far="100000"
 					>
 						<slot name="camera-child"></slot>
 					</lume-perspective-camera>
