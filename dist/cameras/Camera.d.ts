@@ -1,6 +1,6 @@
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' | 'zoom';
+export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' | 'active' | 'zoom';
 /**
  * @class Camera
  *
