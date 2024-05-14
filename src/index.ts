@@ -43,6 +43,7 @@ export {render} from 'solid-js/web'
 export {default as html} from 'solid-js/html'
 
 export * from '@lume/element'
+export * from 'classy-solid'
 
 export * from './behaviors/index.js'
 export * from './cameras/index.js'

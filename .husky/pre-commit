@@ -19,6 +19,12 @@ git commit --no-verify -m "TMP_COMMIT_HOOK_COMMIT"
 git stash save -u COMMIT_HOOK_STASH
 git reset --soft HEAD~
 
-# NOTE: The post-commit hook will unstash the COMMIT_HOOK_STASH
+echo ""
+echo "Status after stash:"
+echo ""
+git status
 
-npx lint-staged
+# See .lintstagedrc.js for the steps that will run at this point.
+npx lint-staged --verbose
+
+# NOTE: After this, the post-commit hook will unstash the COMMIT_HOOK_STASH. See .husky/post-commit.
