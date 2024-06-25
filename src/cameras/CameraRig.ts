@@ -302,8 +302,8 @@ class CameraRig extends Element3D {
 	 * *attribute*
 	 *
 	 * Default: `1`
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@numberAttribute rotationSpeed = 1
 
@@ -313,8 +313,8 @@ class CameraRig extends Element3D {
 	 * *attribute*
 	 *
 	 * Default: `false`
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@booleanAttribute dynamicDolly = false
 
@@ -326,7 +326,7 @@ class CameraRig extends Element3D {
 	 * Default: `false`
 	 */
 	@booleanAttribute dynamicRotation = false
-	 
+
 	/**
 	 * @property {number} dollyEpsilon
 	 *
