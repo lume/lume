@@ -111,6 +111,16 @@ let CameraRig = (() => {
     let _dynamicDolly_initializers = [];
     let _dynamicRotation_decorators;
     let _dynamicRotation_initializers = [];
+    let _dollyEpsilon_decorators;
+    let _dollyEpsilon_initializers = [];
+    let _dollyScrollLerp_decorators;
+    let _dollyScrollLerp_initializers = [];
+    let _dollyPinchSlowdown_decorators;
+    let _dollyPinchSlowdown_initializers = [];
+    let _rotationEpsilon_decorators;
+    let _rotationEpsilon_initializers = [];
+    let _rotationSlowdown_decorators;
+    let _rotationSlowdown_initializers = [];
     let _threeCamera_decorators;
     let _threeCamera_initializers = [];
     let _rotationYTarget_decorators;
@@ -143,6 +153,11 @@ let CameraRig = (() => {
             _rotationSpeed_decorators = [numberAttribute];
             _dynamicDolly_decorators = [booleanAttribute];
             _dynamicRotation_decorators = [booleanAttribute];
+            _dollyEpsilon_decorators = [numberAttribute];
+            _dollyScrollLerp_decorators = [numberAttribute];
+            _dollyPinchSlowdown_decorators = [numberAttribute];
+            _rotationEpsilon_decorators = [numberAttribute];
+            _rotationSlowdown_decorators = [numberAttribute];
             _threeCamera_decorators = [signal];
             _rotationYTarget_decorators = [signal];
             _rotationXTarget_decorators = [signal];
@@ -168,6 +183,11 @@ let CameraRig = (() => {
             __esDecorate(null, null, _rotationSpeed_decorators, { kind: "field", name: "rotationSpeed", static: false, private: false, access: { has: obj => "rotationSpeed" in obj, get: obj => obj.rotationSpeed, set: (obj, value) => { obj.rotationSpeed = value; } }, metadata: _metadata }, _rotationSpeed_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dynamicDolly_decorators, { kind: "field", name: "dynamicDolly", static: false, private: false, access: { has: obj => "dynamicDolly" in obj, get: obj => obj.dynamicDolly, set: (obj, value) => { obj.dynamicDolly = value; } }, metadata: _metadata }, _dynamicDolly_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dynamicRotation_decorators, { kind: "field", name: "dynamicRotation", static: false, private: false, access: { has: obj => "dynamicRotation" in obj, get: obj => obj.dynamicRotation, set: (obj, value) => { obj.dynamicRotation = value; } }, metadata: _metadata }, _dynamicRotation_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dollyEpsilon_decorators, { kind: "field", name: "dollyEpsilon", static: false, private: false, access: { has: obj => "dollyEpsilon" in obj, get: obj => obj.dollyEpsilon, set: (obj, value) => { obj.dollyEpsilon = value; } }, metadata: _metadata }, _dollyEpsilon_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dollyScrollLerp_decorators, { kind: "field", name: "dollyScrollLerp", static: false, private: false, access: { has: obj => "dollyScrollLerp" in obj, get: obj => obj.dollyScrollLerp, set: (obj, value) => { obj.dollyScrollLerp = value; } }, metadata: _metadata }, _dollyScrollLerp_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dollyPinchSlowdown_decorators, { kind: "field", name: "dollyPinchSlowdown", static: false, private: false, access: { has: obj => "dollyPinchSlowdown" in obj, get: obj => obj.dollyPinchSlowdown, set: (obj, value) => { obj.dollyPinchSlowdown = value; } }, metadata: _metadata }, _dollyPinchSlowdown_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationEpsilon_decorators, { kind: "field", name: "rotationEpsilon", static: false, private: false, access: { has: obj => "rotationEpsilon" in obj, get: obj => obj.rotationEpsilon, set: (obj, value) => { obj.rotationEpsilon = value; } }, metadata: _metadata }, _rotationEpsilon_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationSlowdown_decorators, { kind: "field", name: "rotationSlowdown", static: false, private: false, access: { has: obj => "rotationSlowdown" in obj, get: obj => obj.rotationSlowdown, set: (obj, value) => { obj.rotationSlowdown = value; } }, metadata: _metadata }, _rotationSlowdown_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _threeCamera_decorators, { kind: "field", name: "threeCamera", static: false, private: false, access: { has: obj => "threeCamera" in obj, get: obj => obj.threeCamera, set: (obj, value) => { obj.threeCamera = value; } }, metadata: _metadata }, _threeCamera_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
@@ -501,6 +521,8 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `1`
+         *
+         *
          */
         );
         /**
@@ -509,6 +531,8 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `1`
+         *
+         *
          */
         rotationSpeed = __runInitializers(this, _rotationSpeed_initializers, 1
         /**
@@ -517,6 +541,8 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `false`
+         *
+         *
          */
         );
         /**
@@ -525,6 +551,8 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `false`
+         *
+         *
          */
         dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
         /**
@@ -542,7 +570,127 @@ let CameraRig = (() => {
          *
          * Default: `false`
          */
-        dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false);
+        dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false
+        /**
+         * @property {number} dollyEpsilon
+         *
+         * *attribute*
+         *
+         * Default: `0.01`
+         *
+         * The threshold for when to stop dolly smoothing animation (lerp). When the
+         * delta between actual dolly position and target dolly position is below
+         * this number, animation stops. Set this to a high value to prevent
+         * smoothing.
+         */
+        );
+        /**
+         * @property {number} dollyEpsilon
+         *
+         * *attribute*
+         *
+         * Default: `0.01`
+         *
+         * The threshold for when to stop dolly smoothing animation (lerp). When the
+         * delta between actual dolly position and target dolly position is below
+         * this number, animation stops. Set this to a high value to prevent
+         * smoothing.
+         */
+        dollyEpsilon = __runInitializers(this, _dollyEpsilon_initializers, 0.01
+        /**
+         * @property {number} dollyScrollLerp
+         *
+         * *attribute*
+         *
+         * Default: `0.3`
+         *
+         * The portion to lerp towards the dolly target position each frame after
+         * scrolling to dolly the camera. Between 0 and 1.
+         */
+        );
+        /**
+         * @property {number} dollyScrollLerp
+         *
+         * *attribute*
+         *
+         * Default: `0.3`
+         *
+         * The portion to lerp towards the dolly target position each frame after
+         * scrolling to dolly the camera. Between 0 and 1.
+         */
+        dollyScrollLerp = __runInitializers(this, _dollyScrollLerp_initializers, 0.3
+        /**
+         * @property {number} dollyPinchSlowdown
+         *
+         * *attribute*
+         *
+         * Default: `0.05`
+         *
+         * Portion of the dolly speed to remove each frame to slow down the dolly
+         * animation after pinching to dolly the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
+         */
+        );
+        /**
+         * @property {number} dollyPinchSlowdown
+         *
+         * *attribute*
+         *
+         * Default: `0.05`
+         *
+         * Portion of the dolly speed to remove each frame to slow down the dolly
+         * animation after pinching to dolly the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
+         */
+        dollyPinchSlowdown = __runInitializers(this, _dollyPinchSlowdown_initializers, 0.05
+        /**
+         * @property {number} rotationEpsilon
+         *
+         * *attribute*
+         *
+         * Default: `0.01`
+         *
+         * The threshold for when to stop intertial rotation slowdown animation.
+         * When the current frame's change in rotation goes below this number,
+         * animation stops. Set this to a high value to prevent inertial slowdown.
+         */
+        );
+        /**
+         * @property {number} rotationEpsilon
+         *
+         * *attribute*
+         *
+         * Default: `0.01`
+         *
+         * The threshold for when to stop intertial rotation slowdown animation.
+         * When the current frame's change in rotation goes below this number,
+         * animation stops. Set this to a high value to prevent inertial slowdown.
+         */
+        rotationEpsilon = __runInitializers(this, _rotationEpsilon_initializers, 0.01
+        /**
+         * @property {number} rotationSlowdown
+         *
+         * *attribute*
+         *
+         * Default: `0.05`
+         *
+         * Portion of the rotational speed to remove each frame to slow down the
+         * rotation after dragging to rotate the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
+         */
+        );
+        /**
+         * @property {number} rotationSlowdown
+         *
+         * *attribute*
+         *
+         * Default: `0.05`
+         *
+         * Portion of the rotational speed to remove each frame to slow down the
+         * rotation after dragging to rotate the camera, i.e. how much to lerp
+         * towards zero motion. Between 0 and 1.
+         */
+        rotationSlowdown = __runInitializers(this, _rotationSlowdown_initializers, 0.05);
         threeCamera = __runInitializers(this, _threeCamera_initializers, void 0);
         /** @deprecated Use `.threeCamera` instead. */
         get cam() {
@@ -582,7 +730,9 @@ let CameraRig = (() => {
                 flingRotation.rotationXTarget = this.rotationXTarget;
                 scrollFling.target = this.scene;
                 pinchFling.target = this.scene;
+                // Sync __appliedDistance to scrollFling.y and vice versa
                 syncSignals(() => this.__appliedDistance, (d) => (this.__appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
+                // Sync scrollFling.y to pinchFling.x and vice versa
                 syncSignals(() => this.scrollFling.y, (y) => (this.scrollFling.y = y), () => this.pinchFling.x, (x) => (this.pinchFling.x = x));
                 this.createEffect(() => {
                     flingRotation.minFlingRotationX = this.minVerticalAngle;
@@ -590,9 +740,14 @@ let CameraRig = (() => {
                     flingRotation.minFlingRotationY = this.minHorizontalAngle;
                     flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
                     flingRotation.factor = this.rotationSpeed;
+                    flingRotation.epsilon = this.rotationEpsilon;
+                    flingRotation.slowdownAmount = this.rotationSlowdown;
                     scrollFling.minY = pinchFling.minX = this.__appliedMinDistance;
                     scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance;
                     scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed;
+                    scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon;
+                    scrollFling.lerpAmount = this.dollyScrollLerp;
+                    pinchFling.slowdownAmount = this.dollyPinchSlowdown;
                 });
                 this.createEffect(() => {
                     if (!this.dynamicDolly)

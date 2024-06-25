@@ -2,7 +2,7 @@ import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 import type { PerspectiveCamera } from './PerspectiveCamera.js';
-export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'rotationSpeed' | 'dynamicDolly' | 'dynamicRotation' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
+export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'rotationSpeed' | 'dynamicDolly' | 'dynamicRotation' | 'dollyEpsilon' | 'dollyScrollLerp' | 'dollyPinchSlowdown' | 'rotationEpsilon' | 'rotationSlowdown' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
 /**
  * @class CameraRig
  *
@@ -223,6 +223,8 @@ export declare class CameraRig extends Element3D {
      * *attribute*
      *
      * Default: `1`
+     *
+     *
      */
     rotationSpeed: number;
     /**
@@ -231,6 +233,8 @@ export declare class CameraRig extends Element3D {
      * *attribute*
      *
      * Default: `false`
+     *
+     *
      */
     dynamicDolly: boolean;
     /**
@@ -241,6 +245,66 @@ export declare class CameraRig extends Element3D {
      * Default: `false`
      */
     dynamicRotation: boolean;
+    /**
+     * @property {number} dollyEpsilon
+     *
+     * *attribute*
+     *
+     * Default: `0.01`
+     *
+     * The threshold for when to stop dolly smoothing animation (lerp). When the
+     * delta between actual dolly position and target dolly position is below
+     * this number, animation stops. Set this to a high value to prevent
+     * smoothing.
+     */
+    dollyEpsilon: number;
+    /**
+     * @property {number} dollyScrollLerp
+     *
+     * *attribute*
+     *
+     * Default: `0.3`
+     *
+     * The portion to lerp towards the dolly target position each frame after
+     * scrolling to dolly the camera. Between 0 and 1.
+     */
+    dollyScrollLerp: number;
+    /**
+     * @property {number} dollyPinchSlowdown
+     *
+     * *attribute*
+     *
+     * Default: `0.05`
+     *
+     * Portion of the dolly speed to remove each frame to slow down the dolly
+     * animation after pinching to dolly the camera, i.e. how much to lerp
+     * towards zero motion. Between 0 and 1.
+     */
+    dollyPinchSlowdown: number;
+    /**
+     * @property {number} rotationEpsilon
+     *
+     * *attribute*
+     *
+     * Default: `0.01`
+     *
+     * The threshold for when to stop intertial rotation slowdown animation.
+     * When the current frame's change in rotation goes below this number,
+     * animation stops. Set this to a high value to prevent inertial slowdown.
+     */
+    rotationEpsilon: number;
+    /**
+     * @property {number} rotationSlowdown
+     *
+     * *attribute*
+     *
+     * Default: `0.05`
+     *
+     * Portion of the rotational speed to remove each frame to slow down the
+     * rotation after dragging to rotate the camera, i.e. how much to lerp
+     * towards zero motion. Between 0 and 1.
+     */
+    rotationSlowdown: number;
     threeCamera?: PerspectiveCamera;
     /** @deprecated Use `.threeCamera` instead. */
     get cam(): PerspectiveCamera | undefined;

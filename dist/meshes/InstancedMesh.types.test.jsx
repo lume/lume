@@ -40,13 +40,17 @@ import { XYZValues } from '../xyz-values/XYZValues.js';
 
 	{/* material attributes */}
 	<lume-instanced-mesh has="phong-material" shininess={0.3} reflectivity={0.4}/>
-	{/* @ts-expect-error this error is good, a boolean is invalid */}
-	<lume-instanced-mesh has="phong-material" shininess={true}/>
-	{/* @ts-expect-error this error is good, a boolean is invalid */}
-	<lume-instanced-mesh has="phong-material" reflectivity={false}/>
+	<lume-instanced-mesh has="phong-material" 
+// @ts-expect-error this error is good, a boolean is invalid
+shininess={true}/>
+	<lume-instanced-mesh has="phong-material" 
+// @ts-expect-error this error is good, a boolean is invalid
+reflectivity={false}/>
 	<lume-instanced-mesh has="lambert-material" specular-map="./foo.jpg"/>
 	{/* @ts-expect-error this error is good, a number is invalid */}
-	<lume-instanced-mesh has="lambert-material" specular-map={123}/>
+	<lume-instanced-mesh has="lambert-material" 
+//
+specular-map={123}/>
 
 	{/* InstancedMesh attributes */}
 	<lume-instanced-mesh count={123}/>

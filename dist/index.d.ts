@@ -3,6 +3,7 @@ export { $DEVCOMP, $PROXY, $TRACK, ErrorBoundary, For, Index, Match, Show, type 
 export { render } from 'solid-js/web';
 export { default as html } from 'solid-js/html';
 export * from '@lume/element';
+export * from 'classy-solid';
 export * from './behaviors/index.js';
 export * from './cameras/index.js';
 export * from './core/index.js';
@@ -18,5 +19,5 @@ export * from './textures/index.js';
 export * from './utils/index.js';
 export * from './xyz-values/index.js';
 export * from './defineElements.js';
-export declare const version = "0.3.0-alpha.41";
+export declare const version = "0.3.0-alpha.43";
 //# sourceMappingURL=index.d.ts.map

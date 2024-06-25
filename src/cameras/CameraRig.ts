@@ -29,6 +29,11 @@ export type CameraRigAttributes =
 	| 'rotationSpeed'
 	| 'dynamicDolly'
 	| 'dynamicRotation'
+	| 'dollyEpsilon'
+	| 'dollyScrollLerp'
+	| 'dollyPinchSlowdown'
+	| 'rotationEpsilon'
+	| 'rotationSlowdown'
 	| 'initialPolarAngle' // deprecated
 	| 'minPolarAngle' // deprecated
 	| 'maxPolarAngle' // deprecated
@@ -297,6 +302,8 @@ class CameraRig extends Element3D {
 	 * *attribute*
 	 *
 	 * Default: `1`
+	 * 
+	 * 
 	 */
 	@numberAttribute rotationSpeed = 1
 
@@ -306,6 +313,8 @@ class CameraRig extends Element3D {
 	 * *attribute*
 	 *
 	 * Default: `false`
+	 * 
+	 * 
 	 */
 	@booleanAttribute dynamicDolly = false
 
@@ -317,6 +326,71 @@ class CameraRig extends Element3D {
 	 * Default: `false`
 	 */
 	@booleanAttribute dynamicRotation = false
+	 
+	/**
+	 * @property {number} dollyEpsilon
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.01`
+	 *
+	 * The threshold for when to stop dolly smoothing animation (lerp). When the
+	 * delta between actual dolly position and target dolly position is below
+	 * this number, animation stops. Set this to a high value to prevent
+	 * smoothing.
+	 */
+	@numberAttribute dollyEpsilon = 0.01
+
+	/**
+	 * @property {number} dollyScrollLerp
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.3`
+	 *
+	 * The portion to lerp towards the dolly target position each frame after
+	 * scrolling to dolly the camera. Between 0 and 1.
+	 */
+	@numberAttribute dollyScrollLerp = 0.3
+
+	/**
+	 * @property {number} dollyPinchSlowdown
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.05`
+	 *
+	 * Portion of the dolly speed to remove each frame to slow down the dolly
+	 * animation after pinching to dolly the camera, i.e. how much to lerp
+	 * towards zero motion. Between 0 and 1.
+	 */
+	@numberAttribute dollyPinchSlowdown = 0.05
+
+	/**
+	 * @property {number} rotationEpsilon
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.01`
+	 *
+	 * The threshold for when to stop intertial rotation slowdown animation.
+	 * When the current frame's change in rotation goes below this number,
+	 * animation stops. Set this to a high value to prevent inertial slowdown.
+	 */
+	@numberAttribute rotationEpsilon = 0.01
+
+	/**
+	 * @property {number} rotationSlowdown
+	 *
+	 * *attribute*
+	 *
+	 * Default: `0.05`
+	 *
+	 * Portion of the rotational speed to remove each frame to slow down the
+	 * rotation after dragging to rotate the camera, i.e. how much to lerp
+	 * towards zero motion. Between 0 and 1.
+	 */
+	@numberAttribute rotationSlowdown = 0.05
 
 	@signal threeCamera?: PerspectiveCamera
 
@@ -367,12 +441,14 @@ class CameraRig extends Element3D {
 			scrollFling.target = this.scene
 			pinchFling.target = this.scene
 
+			// Sync __appliedDistance to scrollFling.y and vice versa
 			syncSignals(
 				() => this.__appliedDistance,
 				(d: number) => (this.__appliedDistance = d),
 				() => this.scrollFling!.y,
 				(y: number) => (this.scrollFling!.y = y),
 			)
+			// Sync scrollFling.y to pinchFling.x and vice versa
 			syncSignals(
 				() => this.scrollFling.y,
 				(y: number) => (this.scrollFling.y = y),
@@ -386,10 +462,15 @@ class CameraRig extends Element3D {
 				flingRotation.minFlingRotationY = this.minHorizontalAngle
 				flingRotation.maxFlingRotationY = this.maxHorizontalAngle
 				flingRotation.factor = this.rotationSpeed
+				flingRotation.epsilon = this.rotationEpsilon
+				flingRotation.slowdownAmount = this.rotationSlowdown
 
 				scrollFling.minY = pinchFling.minX = this.__appliedMinDistance
 				scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance
 				scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
+				scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon
+				scrollFling.lerpAmount = this.dollyScrollLerp
+				pinchFling.slowdownAmount = this.dollyPinchSlowdown
 			})
 
 			this.createEffect(() => {

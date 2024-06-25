@@ -27,6 +27,9 @@ jobs:
             - name: install
               run: |
                   npm run fresh
+            - name: display env
+              run: |
+                  npx envinfo --preset playwright
             - name: check formatting
               run: |
                   npm run prettier:check:all
@@ -38,9 +41,11 @@ jobs:
               run: |
                   npm run test:all
             - name: check repo is clean
-              # skip this check in windows for now, as the build outputs may get slightly modified in Windows, which we want to fix.
+              # Skip this check in windows for now, as the build outputs may get slightly modified in Windows, which we want to fix.
+              # Also skip checking docsify emoji files which may get updated by github API.
               if: runner.os != 'Windows'
               run: |
+                  cd packages/docsifyjs+docsify/ && git checkout docs/emoji.md src/core/render/emoji-data.js && cd .. && cd ..
                   git status && git submodule foreach git --no-pager diff && git add . && git diff --quiet && git diff --cached --quiet
               env:
                   CI: true

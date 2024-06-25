@@ -43,6 +43,7 @@ export {render} from 'solid-js/web'
 export {default as html} from 'solid-js/html'
 
 export * from '@lume/element'
+export * from 'classy-solid'
 
 export * from './behaviors/index.js'
 export * from './cameras/index.js'
@@ -61,4 +62,4 @@ export * from './xyz-values/index.js'
 
 export * from './defineElements.js'
 
-export const version = '0.3.0-alpha.41'
+export const version = '0.3.0-alpha.43'
