@@ -522,7 +522,7 @@ let CameraRig = (() => {
          *
          * Default: `1`
          *
-         *
+         * How much the camera rotates while dragging.
          */
         );
         /**
@@ -532,7 +532,7 @@ let CameraRig = (() => {
          *
          * Default: `1`
          *
-         *
+         * How much the camera rotates while dragging.
          */
         rotationSpeed = __runInitializers(this, _rotationSpeed_initializers, 1
         /**
@@ -542,7 +542,9 @@ let CameraRig = (() => {
          *
          * Default: `false`
          *
-         *
+         * When `true`, the effective dolly speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective dolly speed.
          */
         );
         /**
@@ -552,7 +554,9 @@ let CameraRig = (() => {
          *
          * Default: `false`
          *
-         *
+         * When `true`, the effective dolly speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective dolly speed.
          */
         dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
         /**
@@ -561,6 +565,10 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `false`
+         *
+         * When `true`, the effective rotation speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective rotation speed to allow for finer control.
          */
         );
         /**
@@ -569,6 +577,10 @@ let CameraRig = (() => {
          * *attribute*
          *
          * Default: `false`
+         *
+         * When `true`, the effective rotation speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective rotation speed to allow for finer control.
          */
         dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false
         /**

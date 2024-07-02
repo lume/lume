@@ -303,7 +303,7 @@ class CameraRig extends Element3D {
 	 *
 	 * Default: `1`
 	 *
-	 *
+	 * How much the camera rotates while dragging.
 	 */
 	@numberAttribute rotationSpeed = 1
 
@@ -314,7 +314,9 @@ class CameraRig extends Element3D {
 	 *
 	 * Default: `false`
 	 *
-	 *
+	 * When `true`, the effective dolly speed will be changed based on the
+	 * camera's distance to `minDistance`. Getting closer to `minDistance` will
+	 * lower the effective dolly speed.
 	 */
 	@booleanAttribute dynamicDolly = false
 
@@ -324,6 +326,10 @@ class CameraRig extends Element3D {
 	 * *attribute*
 	 *
 	 * Default: `false`
+	 *
+	 * When `true`, the effective rotation speed will be changed based on the
+	 * camera's distance to `minDistance`. Getting closer to `minDistance` will
+	 * lower the effective rotation speed to allow for finer control.
 	 */
 	@booleanAttribute dynamicRotation = false
 
