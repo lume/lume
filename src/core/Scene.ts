@@ -771,29 +771,23 @@ class Scene extends SharedAPI {
 		createEffect(() => {
 			if (!this.webgl || !this.background) return
 
-			if (this.background.match(/\.(jpg|jpeg|png)$/)) {
-				this.#glRenderer!.enableBackground(this, this.equirectangularBackground, this.backgroundBlur, texture => {
-					this.three.background = texture || null
+			this.#glRenderer!.enableBackground(this, this.equirectangularBackground, this.backgroundBlur, texture => {
+				this.three.background = texture || null
 
-					// We do not use Three's built-in blur feature because it is
-					// too simple and results in a less attractive pixelated
-					// look.
-					// this.three.backgroundBlurriness = this.backgroundBlur
+				// We do not use Three's built-in blur feature because it is
+				// too simple and results in a less attractive pixelated
+				// look.
+				// this.three.backgroundBlurriness = this.backgroundBlur
 
-					this.needsUpdate()
+				this.needsUpdate()
 
-					// TODO emit background load event.
-				})
+				// TODO emit background load event.
+			})
 
-				onCleanup(() => {
-					this.#glRenderer!.disableBackground(this)
-					this.needsUpdate()
-				})
-			} else {
-				console.warn(
-					`<${this.tagName.toLowerCase()}> background attribute ignored, the given image type is not currently supported.`,
-				)
-			}
+			onCleanup(() => {
+				this.#glRenderer!.disableBackground(this)
+				this.needsUpdate()
+			})
 		})
 
 		createEffect(() => {
