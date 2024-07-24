@@ -106,7 +106,6 @@ export function PropertyAnimator(Base = Object) {
             }
         }
         removeAllPropertyFunctions() {
-            console.log('remove all property functions');
             if (this.#propertyFunctions)
                 for (const [name] of this.#propertyFunctions)
                     this.#removePropertyFunction(name);
