@@ -129,7 +129,6 @@ export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(B
 		}
 
 		removeAllPropertyFunctions() {
-			console.log('remove all property functions')
 			if (this.#propertyFunctions)
 				for (const [name] of this.#propertyFunctions) this.#removePropertyFunction(name as keyof this)
 		}
