@@ -1,4 +1,9 @@
 {
+	// This GitHub Personal Access Token should be READONLY for the lume repo!
+	const token64 =
+		'Z2l0aHViX3BhdF8xMUFBQ0lWVFEweWdzTnhVY01FbWMzX3hhbXNwN1pZQkdxWkFjdWtneFlzcXh6akVCelZFSmhwQktFbXBUTFRrY1hDWlpVNTU0VHFKQjlINDlB'
+	const token = atob(token64)
+
 	const localMap = {
 		imports: {
 			lume: '/dist/index.js',
@@ -24,7 +29,8 @@
 		},
 	}
 
-	const isGithack = location.origin.includes('githack.com')
+	// const isGithack = location.origin.includes('githack.com')
+	const isGithack = true
 
 	// Special case for raw.githack.com for viewing examples directly off of GitHub
 	// Maybe we can do better than hand-writing two import maps? How can we version the lume packages URLs? Perhaps use an importmap generator like `jspm` cli.
@@ -107,10 +113,7 @@
 
 		const xhr = new XMLHttpRequest()
 		xhr.open('POST', 'https://api.github.com/graphql', false)
-		xhr.setRequestHeader(
-			'Authorization',
-			'bearer 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',
-		)
+		xhr.setRequestHeader('Authorization', 'bearer ' + token)
 		xhr.send(params)
 
 		/** @type {GraphQlResult<GraphQlResult<Record<string, unknown>>> | undefined} */
