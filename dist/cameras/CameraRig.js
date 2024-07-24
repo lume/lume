@@ -544,7 +544,9 @@ let CameraRig = (() => {
          *
          * When `true`, the effective dolly speed will be changed based on the
          * camera's distance to `minDistance`. Getting closer to `minDistance` will
-         * lower the effective dolly speed.
+         * lower the effective dolly speed towards zero. This is useful when zoomed
+         * into an object and having the dolly movements not be disproportionately
+         * huge while viewing fine details of the object.
          */
         );
         /**
@@ -556,7 +558,9 @@ let CameraRig = (() => {
          *
          * When `true`, the effective dolly speed will be changed based on the
          * camera's distance to `minDistance`. Getting closer to `minDistance` will
-         * lower the effective dolly speed.
+         * lower the effective dolly speed towards zero. This is useful when zoomed
+         * into an object and having the dolly movements not be disproportionately
+         * huge while viewing fine details of the object.
          */
         dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
         /**
@@ -568,7 +572,9 @@ let CameraRig = (() => {
          *
          * When `true`, the effective rotation speed will be changed based on the
          * camera's distance to `minDistance`. Getting closer to `minDistance` will
-         * lower the effective rotation speed to allow for finer control.
+         * lower the effective rotation speed to allow for finer control. This is useful
+         * zoomed in to see fine details of an object and having the rotation not be
+         * disproportionately huge, for example when zooming into a 3D globe.
          */
         );
         /**
@@ -580,7 +586,9 @@ let CameraRig = (() => {
          *
          * When `true`, the effective rotation speed will be changed based on the
          * camera's distance to `minDistance`. Getting closer to `minDistance` will
-         * lower the effective rotation speed to allow for finer control.
+         * lower the effective rotation speed to allow for finer control. This is useful
+         * zoomed in to see fine details of an object and having the rotation not be
+         * disproportionately huge, for example when zooming into a 3D globe.
          */
         dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false
         /**
