@@ -78,7 +78,6 @@
 		const info = getSubmoduleInfo(gitref)
 		/** @type {Array<{name: string, gitUrl: string, subprojectCommitOid: string}>} */
 		const submodules = info.data.repository.object.entries.map(o => o.submodule).filter(o => !!o)
-		console.log('subs', submodules)
 		const importEntries = Object.entries(githackMap.imports)
 
 		for (const [specifier, url] of importEntries) {
@@ -87,7 +86,6 @@
 			const parts = url.split('/')
 			const gitRepo = parts[3] + '/' + parts[4]
 			const sub = submodules.find(o => o.gitUrl.endsWith('/' + gitRepo + '.git'))
-			console.log(gitRepo)
 			if (!sub) throw new Error('submodule not found.')
 			const subgitref = sub.subprojectCommitOid
 
