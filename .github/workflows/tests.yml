@@ -46,6 +46,10 @@ jobs:
               if: runner.os != 'Windows'
               run: |
                   cd packages/docsifyjs+docsify/ && git checkout docs/emoji.md src/core/render/emoji-data.js && cd .. && cd ..
-                  git status && git submodule foreach git --no-pager diff && git add . && git diff --quiet && git diff --cached --quiet
+                  git status
+                  git --no-pager diff
+                  git submodule foreach git --no-pager diff
+                  git add .
+                  git diff --quiet && git diff --cached --quiet
               env:
                   CI: true
