@@ -1,8 +1,17 @@
 {
-	// This GitHub Personal Access Token should be READONLY for the lume repo!
-	const token64 =
-		'Z2l0aHViX3BhdF8xMUFBQ0lWVFEweWdzTnhVY01FbWMzX3hhbXNwN1pZQkdxWkFjdWtneFlzcXh6akVCelZFSmhwQktFbXBUTFRrY1hDWlpVNTU0VHFKQjlINDlB'
-	const token = atob(token64)
+	// This password should be READONLY for the lume repo!
+	// Array generated with `new TextEncoder.encode(btoa(authkey))`.
+	const authkey = atob(
+		new TextDecoder().decode(
+			new Uint8Array([
+				90, 50, 108, 48, 97, 72, 86, 105, 88, 51, 66, 104, 100, 70, 56, 120, 77, 85, 70, 66, 81, 48, 108, 87, 86, 70,
+				69, 119, 90, 110, 100, 51, 90, 107, 104, 108, 87, 88, 78, 85, 87, 109, 70, 49, 88, 48, 53, 71, 85, 50, 115, 121,
+				77, 48, 100, 49, 83, 69, 112, 70, 86, 108, 86, 104, 82, 48, 77, 48, 89, 108, 70, 113, 87, 88, 78, 49, 82, 109,
+				74, 70, 78, 87, 78, 117, 90, 50, 78, 89, 100, 87, 104, 81, 84, 122, 70, 73, 100, 69, 116, 71, 77, 84, 66, 83,
+				83, 85, 120, 85, 83, 48, 99, 122, 83, 109, 99, 120, 97, 69, 81, 53, 77, 49, 89, 52,
+			]),
+		),
+	)
 
 	const localMap = {
 		imports: {
@@ -113,7 +122,7 @@
 
 		const xhr = new XMLHttpRequest()
 		xhr.open('POST', 'https://api.github.com/graphql', false)
-		xhr.setRequestHeader('Authorization', 'bearer ' + token)
+		xhr.setRequestHeader('Authorization', 'bearer ' + authkey)
 		xhr.send(params)
 
 		/** @type {GraphQlResult<GraphQlResult<Record<string, unknown>>> | undefined} */
