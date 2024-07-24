@@ -1,6 +1,8 @@
 {
 	// This password should be READONLY for the lume repo!
-	// Array generated with `new TextEncoder.encode(btoa(authkey))`.
+	// Create this representation of the token with `new
+	// TextEncoder.encode(btoa(github_token))`, or else the token will be
+	// auto-expired upon pushing to GitHub.
 	const authkey = atob(
 		new TextDecoder().decode(
 			new Uint8Array([
