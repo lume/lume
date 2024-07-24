@@ -4,10 +4,10 @@
 	id="scene"
 	perspective="800"
 	webgl
-	background="../apps/docs/examples/hello-world/galaxy_starfield.png"
+	background="https://docs.lume.io/examples/hello-world/galaxy_starfield.png"
 	background-intensity="0.6"
 	equirectangular-background="true"
-	environment="../apps/docs/examples/hello-world/galaxy_starfield.png"
+	environment="https://docs.lume.io/examples/hello-world/galaxy_starfield.png"
 	physically-correct-lights
 >
 	<lume-directional-light position="500 0 200" intensity="8" align-point="0.5 0.5"></lume-directional-light>
@@ -15,7 +15,7 @@
 
 	<lume-camera-rig
 		active
-		dolly-speed="1"
+		dolly-speed="5"
 		dynamic-dolly
 		rotation-speed="0.3"
 		dynamic-rotation
@@ -26,16 +26,16 @@
 
 	<lume-sphere
 		has="phong-material"
-		texture="../apps/docs/examples/hello-world/earthmap1k.jpg"
-		bump-map="../apps/docs/examples/hello-world/earthbump1k.jpg"
-		specular-map="../apps/docs/examples/hello-world/earthspec1k.jpg"
+		texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_atmos_2048.jpg"
+		bump-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_normal_2048.jpg"
+		specular-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_specular_2048.jpg"
 		color="white"
 		size="1 1 1"
 		scale="800 800 800"
 		mount-point="0.5 0.5 0.5"
 		><lume-sphere
 			id="clouds"
-			texture="../apps/docs/examples/hello-world/earthclouds.png"
+			texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_clouds_1024.png"
 			opacity="0.7"
 			size="1.01 1.01 1.01"
 			size="800 800 800"
