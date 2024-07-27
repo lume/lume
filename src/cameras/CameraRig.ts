@@ -26,6 +26,9 @@ export type CameraRigAttributes =
 	| 'active'
 	| 'dollySpeed'
 	| 'interactive'
+	| 'rotationSpeed'
+	| 'dynamicDolly'
+	| 'dynamicRotation'
 	| 'dollyEpsilon'
 	| 'dollyScrollLerp'
 	| 'dollyPinchSlowdown'
@@ -294,6 +297,47 @@ class CameraRig extends Element3D {
 	@booleanAttribute interactive = true
 
 	/**
+	 * @property {number} rotationSpeed
+	 *
+	 * *attribute*
+	 *
+	 * Default: `1`
+	 *
+	 * How much the camera rotates while dragging.
+	 */
+	@numberAttribute rotationSpeed = 1
+
+	/**
+	 * @property {boolean} dynamicDolly
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * When `true`, the effective dolly speed will be changed based on the
+	 * camera's distance to `minDistance`. Getting closer to `minDistance` will
+	 * lower the effective dolly speed towards zero. This is useful when zoomed
+	 * into an object and having the dolly movements not be disproportionately
+	 * huge while viewing fine details of the object.
+	 */
+	@booleanAttribute dynamicDolly = false
+
+	/**
+	 * @property {boolean} dynamicRotation
+	 *
+	 * *attribute*
+	 *
+	 * Default: `false`
+	 *
+	 * When `true`, the effective rotation speed will be changed based on the
+	 * camera's distance to `minDistance`. Getting closer to `minDistance` will
+	 * lower the effective rotation speed to allow for finer control. This is useful
+	 * zoomed in to see fine details of an object and having the rotation not be
+	 * disproportionately huge, for example when zooming into a 3D globe.
+	 */
+	@booleanAttribute dynamicRotation = false
+
+	/**
 	 * @property {number} dollyEpsilon
 	 *
 	 * *attribute*
@@ -427,6 +471,7 @@ class CameraRig extends Element3D {
 				flingRotation.maxFlingRotationX = this.maxVerticalAngle
 				flingRotation.minFlingRotationY = this.minHorizontalAngle
 				flingRotation.maxFlingRotationY = this.maxHorizontalAngle
+				flingRotation.factor = this.rotationSpeed
 				flingRotation.epsilon = this.rotationEpsilon
 				flingRotation.slowdownAmount = this.rotationSlowdown
 
@@ -436,6 +481,46 @@ class CameraRig extends Element3D {
 				scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon
 				scrollFling.lerpAmount = this.dollyScrollLerp
 				pinchFling.slowdownAmount = this.dollyPinchSlowdown
+			})
+
+			this.createEffect(() => {
+				if (!this.dynamicDolly) return
+
+				// Dolly speed when position is at minDistance
+				const minDollySpeed = 0.001
+
+				// Dolly speed when position is at maxDistance
+				const maxDollySpeed = 2 * this.dollySpeed
+
+				// Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+				const sens =
+					((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+						(this.threeCamera!.position.z - this.minDistance) +
+					minDollySpeed
+
+				scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens
+			})
+			this.createEffect(() => {
+				if (!this.dynamicRotation) return
+
+				// This only depends on the size of the scene and the FOV of the camera. The only
+				// issue is the camera's FOV is not reactive and is set by the scene at some point.
+				// In the case where the camera's FOV is not set yet, use the scene's perspective.
+				const perspective = this.threeCamera!.three.fov
+					? this.scene!.calculatedSize.y / 2 / Math.tan((this.threeCamera!.three.fov * Math.PI) / 360)
+					: this.scene!.perspective
+
+				// Plane positioned at origin facing camera with width equal to `minDistance`.
+				// `minDistance` is doubled because the expected `minDistance` should barely touch
+				// the object, whose size would be double `minDistance`.
+				const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera!.position.z
+
+				const degreesPerPixel = 180 / planeSize
+
+				// Counteract the FlingRotation's delta modifier to get exact angular movement.
+				const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed
+
+				this.flingRotation.factor = sens <= 0 ? 1 : sens
 			})
 
 			this.createEffect(() => {
@@ -487,7 +572,7 @@ class CameraRig extends Element3D {
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
 						xposition=${() => [0, 0, this.__appliedDistance]}
 						align-point="0.5 0.5 0.5"
-						far="10000"
+						far="100000"
 					>
 						<slot name="camera-child"></slot>
 					</lume-perspective-camera>

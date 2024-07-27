@@ -105,6 +105,12 @@ let CameraRig = (() => {
     let _dollySpeed_initializers = [];
     let _interactive_decorators;
     let _interactive_initializers = [];
+    let _rotationSpeed_decorators;
+    let _rotationSpeed_initializers = [];
+    let _dynamicDolly_decorators;
+    let _dynamicDolly_initializers = [];
+    let _dynamicRotation_decorators;
+    let _dynamicRotation_initializers = [];
     let _dollyEpsilon_decorators;
     let _dollyEpsilon_initializers = [];
     let _dollyScrollLerp_decorators;
@@ -144,6 +150,9 @@ let CameraRig = (() => {
             _active_decorators = [booleanAttribute];
             _dollySpeed_decorators = [numberAttribute];
             _interactive_decorators = [booleanAttribute];
+            _rotationSpeed_decorators = [numberAttribute];
+            _dynamicDolly_decorators = [booleanAttribute];
+            _dynamicRotation_decorators = [booleanAttribute];
             _dollyEpsilon_decorators = [numberAttribute];
             _dollyScrollLerp_decorators = [numberAttribute];
             _dollyPinchSlowdown_decorators = [numberAttribute];
@@ -171,6 +180,9 @@ let CameraRig = (() => {
             __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dollySpeed_decorators, { kind: "field", name: "dollySpeed", static: false, private: false, access: { has: obj => "dollySpeed" in obj, get: obj => obj.dollySpeed, set: (obj, value) => { obj.dollySpeed = value; } }, metadata: _metadata }, _dollySpeed_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _interactive_decorators, { kind: "field", name: "interactive", static: false, private: false, access: { has: obj => "interactive" in obj, get: obj => obj.interactive, set: (obj, value) => { obj.interactive = value; } }, metadata: _metadata }, _interactive_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationSpeed_decorators, { kind: "field", name: "rotationSpeed", static: false, private: false, access: { has: obj => "rotationSpeed" in obj, get: obj => obj.rotationSpeed, set: (obj, value) => { obj.rotationSpeed = value; } }, metadata: _metadata }, _rotationSpeed_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dynamicDolly_decorators, { kind: "field", name: "dynamicDolly", static: false, private: false, access: { has: obj => "dynamicDolly" in obj, get: obj => obj.dynamicDolly, set: (obj, value) => { obj.dynamicDolly = value; } }, metadata: _metadata }, _dynamicDolly_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _dynamicRotation_decorators, { kind: "field", name: "dynamicRotation", static: false, private: false, access: { has: obj => "dynamicRotation" in obj, get: obj => obj.dynamicRotation, set: (obj, value) => { obj.dynamicRotation = value; } }, metadata: _metadata }, _dynamicRotation_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dollyEpsilon_decorators, { kind: "field", name: "dollyEpsilon", static: false, private: false, access: { has: obj => "dollyEpsilon" in obj, get: obj => obj.dollyEpsilon, set: (obj, value) => { obj.dollyEpsilon = value; } }, metadata: _metadata }, _dollyEpsilon_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dollyScrollLerp_decorators, { kind: "field", name: "dollyScrollLerp", static: false, private: false, access: { has: obj => "dollyScrollLerp" in obj, get: obj => obj.dollyScrollLerp, set: (obj, value) => { obj.dollyScrollLerp = value; } }, metadata: _metadata }, _dollyScrollLerp_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _dollyPinchSlowdown_decorators, { kind: "field", name: "dollyPinchSlowdown", static: false, private: false, access: { has: obj => "dollyPinchSlowdown" in obj, get: obj => obj.dollyPinchSlowdown, set: (obj, value) => { obj.dollyPinchSlowdown = value; } }, metadata: _metadata }, _dollyPinchSlowdown_initializers, _instanceExtraInitializers);
@@ -504,6 +516,82 @@ let CameraRig = (() => {
          */
         interactive = __runInitializers(this, _interactive_initializers, true
         /**
+         * @property {number} rotationSpeed
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         *
+         * How much the camera rotates while dragging.
+         */
+        );
+        /**
+         * @property {number} rotationSpeed
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         *
+         * How much the camera rotates while dragging.
+         */
+        rotationSpeed = __runInitializers(this, _rotationSpeed_initializers, 1
+        /**
+         * @property {boolean} dynamicDolly
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         *
+         * When `true`, the effective dolly speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective dolly speed towards zero. This is useful when zoomed
+         * into an object and having the dolly movements not be disproportionately
+         * huge while viewing fine details of the object.
+         */
+        );
+        /**
+         * @property {boolean} dynamicDolly
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         *
+         * When `true`, the effective dolly speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective dolly speed towards zero. This is useful when zoomed
+         * into an object and having the dolly movements not be disproportionately
+         * huge while viewing fine details of the object.
+         */
+        dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
+        /**
+         * @property {boolean} dynamicRotation
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         *
+         * When `true`, the effective rotation speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective rotation speed to allow for finer control. This is useful
+         * zoomed in to see fine details of an object and having the rotation not be
+         * disproportionately huge, for example when zooming into a 3D globe.
+         */
+        );
+        /**
+         * @property {boolean} dynamicRotation
+         *
+         * *attribute*
+         *
+         * Default: `false`
+         *
+         * When `true`, the effective rotation speed will be changed based on the
+         * camera's distance to `minDistance`. Getting closer to `minDistance` will
+         * lower the effective rotation speed to allow for finer control. This is useful
+         * zoomed in to see fine details of an object and having the rotation not be
+         * disproportionately huge, for example when zooming into a 3D globe.
+         */
+        dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false
+        /**
          * @property {number} dollyEpsilon
          *
          * *attribute*
@@ -671,6 +759,7 @@ let CameraRig = (() => {
                     flingRotation.maxFlingRotationX = this.maxVerticalAngle;
                     flingRotation.minFlingRotationY = this.minHorizontalAngle;
                     flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
+                    flingRotation.factor = this.rotationSpeed;
                     flingRotation.epsilon = this.rotationEpsilon;
                     flingRotation.slowdownAmount = this.rotationSlowdown;
                     scrollFling.minY = pinchFling.minX = this.__appliedMinDistance;
@@ -679,6 +768,37 @@ let CameraRig = (() => {
                     scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon;
                     scrollFling.lerpAmount = this.dollyScrollLerp;
                     pinchFling.slowdownAmount = this.dollyPinchSlowdown;
+                });
+                this.createEffect(() => {
+                    if (!this.dynamicDolly)
+                        return;
+                    // Dolly speed when position is at minDistance
+                    const minDollySpeed = 0.001;
+                    // Dolly speed when position is at maxDistance
+                    const maxDollySpeed = 2 * this.dollySpeed;
+                    // Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+                    const sens = ((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+                        (this.threeCamera.position.z - this.minDistance) +
+                        minDollySpeed;
+                    scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens;
+                });
+                this.createEffect(() => {
+                    if (!this.dynamicRotation)
+                        return;
+                    // This only depends on the size of the scene and the FOV of the camera. The only
+                    // issue is the camera's FOV is not reactive and is set by the scene at some point.
+                    // In the case where the camera's FOV is not set yet, use the scene's perspective.
+                    const perspective = this.threeCamera.three.fov
+                        ? this.scene.calculatedSize.y / 2 / Math.tan((this.threeCamera.three.fov * Math.PI) / 360)
+                        : this.scene.perspective;
+                    // Plane positioned at origin facing camera with width equal to `minDistance`.
+                    // `minDistance` is doubled because the expected `minDistance` should barely touch
+                    // the object, whose size would be double `minDistance`.
+                    const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera.position.z;
+                    const degreesPerPixel = 180 / planeSize;
+                    // Counteract the FlingRotation's delta modifier to get exact angular movement.
+                    const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed;
+                    this.flingRotation.factor = sens <= 0 ? 1 : sens;
                 });
                 this.createEffect(() => {
                     if (this.interactive && !this.pinchFling?.interacting)
@@ -729,7 +849,7 @@ let CameraRig = (() => {
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
 						xposition=${() => [0, 0, this.__appliedDistance]}
 						align-point="0.5 0.5 0.5"
-						far="10000"
+						far="100000"
 					>
 						<slot name="camera-child"></slot>
 					</lume-perspective-camera>

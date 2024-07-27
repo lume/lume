@@ -2,7 +2,7 @@ import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
 import { FlingRotation, ScrollFling, PinchFling } from '../interaction/index.js';
 import type { PerspectiveCamera } from './PerspectiveCamera.js';
-export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'dollyEpsilon' | 'dollyScrollLerp' | 'dollyPinchSlowdown' | 'rotationEpsilon' | 'rotationSlowdown' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
+export type CameraRigAttributes = Element3DAttributes | 'verticalAngle' | 'minVerticalAngle' | 'maxVerticalAngle' | 'horizontalAngle' | 'minHorizontalAngle' | 'maxHorizontalAngle' | 'distance' | 'minDistance' | 'maxDistance' | 'active' | 'dollySpeed' | 'interactive' | 'rotationSpeed' | 'dynamicDolly' | 'dynamicRotation' | 'dollyEpsilon' | 'dollyScrollLerp' | 'dollyPinchSlowdown' | 'rotationEpsilon' | 'rotationSlowdown' | 'initialPolarAngle' | 'minPolarAngle' | 'maxPolarAngle' | 'initialDistance';
 /**
  * @class CameraRig
  *
@@ -217,6 +217,44 @@ export declare class CameraRig extends Element3D {
      * disabled, but the camera rig can still be manipulated programmatically.
      */
     interactive: boolean;
+    /**
+     * @property {number} rotationSpeed
+     *
+     * *attribute*
+     *
+     * Default: `1`
+     *
+     * How much the camera rotates while dragging.
+     */
+    rotationSpeed: number;
+    /**
+     * @property {boolean} dynamicDolly
+     *
+     * *attribute*
+     *
+     * Default: `false`
+     *
+     * When `true`, the effective dolly speed will be changed based on the
+     * camera's distance to `minDistance`. Getting closer to `minDistance` will
+     * lower the effective dolly speed towards zero. This is useful when zoomed
+     * into an object and having the dolly movements not be disproportionately
+     * huge while viewing fine details of the object.
+     */
+    dynamicDolly: boolean;
+    /**
+     * @property {boolean} dynamicRotation
+     *
+     * *attribute*
+     *
+     * Default: `false`
+     *
+     * When `true`, the effective rotation speed will be changed based on the
+     * camera's distance to `minDistance`. Getting closer to `minDistance` will
+     * lower the effective rotation speed to allow for finer control. This is useful
+     * zoomed in to see fine details of an object and having the rotation not be
+     * disproportionately huge, for example when zooming into a 3D globe.
+     */
+    dynamicRotation: boolean;
     /**
      * @property {number} dollyEpsilon
      *
