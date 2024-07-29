@@ -11,6 +11,7 @@ import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {ModelLoadEvent, type Model} from '../../../models/Model.js'
 
 /**
  * The recommended CDN for retrieving Draco decoder files.
@@ -146,6 +147,10 @@ class GltfModelBehavior extends RenderableBehavior {
 
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
+		// Cast so the type check passes. Non-TypeScript users can listen to
+		// this event on any non-Model element anyway, while TS users will be
+		// using Model elements for type safety.
+		;(this.element as Model).dispatchEvent(new ModelLoadEvent('gltf', model))
 		this.element.needsUpdate()
 	}
 }

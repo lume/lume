@@ -1,22 +1,25 @@
 import type {Constructor} from 'lowclass'
-import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
-import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import type {Group} from 'three/src/objects/Group.js'
-import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
+import type {ModelType, ThreeModel} from '../models/Model.js'
 
 export class EventTypes {
 	constructor(
-		// This event is fired when a *-model element, or a node element with a
-		// *-model behavior, has loaded it's model.
-		public MODEL_LOAD: {
-			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply'
-			model: Group | GLTF | Collada | BufferGeometry
-		},
-		// Fired if a *-model element, or node element with *-model behavior,
-		// has an error during load.
+		/**
+		 * This event is fired when a *-model element, or a node element with a
+		 * *-model behavior, has loaded it's model.
+		 * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
+		 */
+		public MODEL_LOAD: {format: ModelType; model: ThreeModel},
+		/**
+		 * @deprecated
+		 * Fired if a *-model element, or node element with *-model behavior,
+		 * has an error during load.
+		 */
 		public MODEL_ERROR: Error,
-		// Fired by elements that load resources. See
-		// https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+		/**
+		 * @deprecated
+		 * Fired by elements that load resources. See
+		 * https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+		 */
 		public PROGRESS: ProgressEvent,
 	) {}
 }

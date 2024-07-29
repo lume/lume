@@ -1,8 +1,8 @@
 import { type ElementAttributes } from '@lume/element';
-import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { GltfModelBehavior, GltfModelBehaviorAttributes } from '../behaviors/index.js';
-export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttributes;
+export type GltfModelAttributes = ModelAttributes | GltfModelBehaviorAttributes;
 /**
  * @element lume-gltf-model
  * @class GltfModel -
@@ -36,8 +36,10 @@ export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttribu
  * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
-export declare class GltfModel extends Element3D {
+export declare class GltfModel extends Model {
     initialBehaviors: {
         model: string;
     };

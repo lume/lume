@@ -43,6 +43,7 @@ import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelLoadEvent } from '../../../models/Model.js';
 let FbxModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
@@ -148,6 +149,7 @@ let FbxModelBehavior = (() => {
             }
             this.element.three.add(model);
             this.element.emit(Events.MODEL_LOAD, { format: 'fbx', model });
+            this.element.dispatchEvent(new ModelLoadEvent('fbx', model));
             this.element.needsUpdate();
         }
     };

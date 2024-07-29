@@ -1,18 +1,18 @@
 import 'element-behaviors'
+import type {ElementBehaviors} from 'element-behaviors'
 import {stringAttribute} from '@lume/element'
 import {onCleanup} from 'solid-js'
-import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
+import type {Object3D} from 'three/src/core/Object3D.js'
+import type {Group} from 'three/src/objects/Group.js'
+import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
-
-import type {Object3D} from 'three/src/core/Object3D.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
-import type {Group} from 'three/src/objects/Group.js'
-import type {ElementBehaviors} from 'element-behaviors'
+import {ModelLoadEvent, type Model} from '../../../models/Model.js'
 
 // TODO move this somewhere better, perhaps element-behaviors
 declare global {
@@ -146,6 +146,10 @@ class ObjModelBehavior extends RenderableBehavior {
 		this.model = model
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'obj', model})
+		// Cast so the type check passes. Non-TypeScript users can listen to
+		// this event on any non-Model element anyway, while TS users will be
+		// using Model elements for type safety.
+		;(this.element as Model).dispatchEvent(new ModelLoadEvent('obj', model))
 		this.element.needsUpdate()
 	}
 }

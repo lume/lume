@@ -35,13 +35,14 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
-import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelLoadEvent } from '../../../models/Model.js';
 let ObjModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
@@ -167,6 +168,7 @@ let ObjModelBehavior = (() => {
             this.model = model;
             this.element.three.add(model);
             this.element.emit(Events.MODEL_LOAD, { format: 'obj', model });
+            this.element.dispatchEvent(new ModelLoadEvent('obj', model));
             this.element.needsUpdate();
         }
     };

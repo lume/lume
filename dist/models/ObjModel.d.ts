@@ -1,8 +1,8 @@
 import { type ElementAttributes } from '@lume/element';
-import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { ObjModelBehavior, ObjModelBehaviorAttributes } from '../behaviors/index.js';
-export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttributes;
+export type ObjModelAttributes = ModelAttributes | ObjModelBehaviorAttributes;
 /**
  * @element lume-obj-model
  * @class ObjModel -
@@ -34,8 +34,10 @@ export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttribute
  * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
-export declare class ObjModel extends Element3D {
+export declare class ObjModel extends Model {
     initialBehaviors: {
         model: string;
     };

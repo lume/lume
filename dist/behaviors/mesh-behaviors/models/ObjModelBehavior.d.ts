@@ -1,9 +1,9 @@
 import 'element-behaviors';
+import type { ElementBehaviors } from 'element-behaviors';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
-import type { ElementBehaviors } from 'element-behaviors';
+import { RenderableBehavior } from '../../RenderableBehavior.js';
 declare global {
     interface Element extends ElementBehaviors {
     }

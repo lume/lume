@@ -45,6 +45,7 @@ import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelLoadEvent } from '../../../models/Model.js';
 /**
  * The recommended CDN for retrieving Draco decoder files.
  * More info: https://github.com/google/draco#wasm-and-javascript-decoders
@@ -199,6 +200,7 @@ let GltfModelBehavior = (() => {
             }
             this.element.three.add(model.scene);
             this.element.emit(Events.MODEL_LOAD, { format: 'gltf', model });
+            this.element.dispatchEvent(new ModelLoadEvent('gltf', model));
             this.element.needsUpdate();
         }
     };

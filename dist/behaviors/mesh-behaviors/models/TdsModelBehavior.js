@@ -41,6 +41,7 @@ import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelLoadEvent } from '../../../models/Model.js';
 let TdsModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
@@ -105,6 +106,7 @@ let TdsModelBehavior = (() => {
             this.model = model;
             this.element.three.add(model);
             this.element.emit(Events.MODEL_LOAD, { format: '3ds', model });
+            this.element.dispatchEvent(new ModelLoadEvent('3ds', model));
             this.element.needsUpdate();
         }
     };

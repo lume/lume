@@ -42,6 +42,7 @@ import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 import { Events } from '../../../core/Events.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
 import { onCleanup } from 'solid-js';
+import { ModelLoadEvent } from '../../../models/Model.js';
 /**
  * @class PlyGeometryBehavior -
  *
@@ -141,6 +142,7 @@ let PlyGeometryBehavior = (() => {
             model.computeVertexNormals();
             this.model = model; // triggers the resetMeshComponent effect
             this.element.emit(Events.MODEL_LOAD, { format: 'ply', model });
+            this.element.dispatchEvent(new ModelLoadEvent('ply', model));
         }
     };
     return PlyGeometryBehavior = _classThis;

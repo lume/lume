@@ -3,14 +3,23 @@ export class EventTypes {
     MODEL_ERROR;
     PROGRESS;
     constructor(
-    // This event is fired when a *-model element, or a node element with a
-    // *-model behavior, has loaded it's model.
+    /**
+     * This event is fired when a *-model element, or a node element with a
+     * *-model behavior, has loaded it's model.
+     * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
+     */
     MODEL_LOAD, 
-    // Fired if a *-model element, or node element with *-model behavior,
-    // has an error during load.
+    /**
+     * @deprecated
+     * Fired if a *-model element, or node element with *-model behavior,
+     * has an error during load.
+     */
     MODEL_ERROR, 
-    // Fired by elements that load resources. See
-    // https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+    /**
+     * @deprecated
+     * Fired by elements that load resources. See
+     * https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+     */
     PROGRESS) {
         this.MODEL_LOAD = MODEL_LOAD;
         this.MODEL_ERROR = MODEL_ERROR;

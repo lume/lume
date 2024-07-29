@@ -4,13 +4,13 @@ import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
 import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
+import type {Group} from 'three/src/objects/Group.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
-
-import type {Group} from 'three/src/objects/Group.js'
+import {ModelLoadEvent, type Model} from '../../../models/Model.js'
 
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry'
 
@@ -108,6 +108,10 @@ class FbxModelBehavior extends RenderableBehavior {
 
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
+		// Cast so the type check passes. Non-TypeScript users can listen to
+		// this event on any non-Model element anyway, while TS users will be
+		// using Model elements for type safety.
+		;(this.element as Model).dispatchEvent(new ModelLoadEvent('fbx', model))
 		this.element.needsUpdate()
 	}
 }

@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
+import { RenderableBehavior } from '../../RenderableBehavior.js';
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry';
 export declare class FbxModelBehavior extends RenderableBehavior {
     #private;
