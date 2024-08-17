@@ -40,8 +40,7 @@
 		},
 	}
 
-	// const isGithack = location.origin.includes('githack.com')
-	const isGithack = true
+	const isGithack = location.origin.includes('githack.com')
 
 	// Special case for raw.githack.com for viewing examples directly off of GitHub
 	// Maybe we can do better than hand-writing two import maps? How can we version the lume packages URLs? Perhaps use an importmap generator like `jspm` cli.
