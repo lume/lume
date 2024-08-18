@@ -1,24 +1,39 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
+import {onCleanup} from 'solid-js'
 import {ColladaLoader, type Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-import {onCleanup} from 'solid-js'
-import {ModelLoadEvent, type Model} from '../../../models/Model.js'
+import {ModelBehavior} from './ModelBehavior.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {ColladaModel} from '../../../models/ColladaModel.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
+/**
+ * A behavior containing the logic that loads Collada models for `<lume-collada-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-collada-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class ColladaModelBehavior extends RenderableBehavior {
+class ColladaModelBehavior extends ModelBehavior {
 	/** Path to a .dae file. */
 	@stringAttribute @receiver src = ''
 
 	loader = new ColladaLoader()
-	model?: Collada
+
+	/** @deprecated access `.threeModel` on the lume-collada-model element instead. */
+	declare model?: Collada
+
+	declare element: ColladaModel
+
+	override requiredElementType() {
+		return [ColladaModel]
+	}
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -34,8 +49,9 @@ class ColladaModelBehavior extends RenderableBehavior {
 			this.#loadModel()
 
 			onCleanup(() => {
-				if (this.model) disposeObjectTree(this.model.scene)
+				if (this.element.threeModel) disposeObjectTree(this.element.threeModel.scene)
 				this.model = undefined
+				this.element.threeModel = null
 				// Increment this in case the loader is still loading, so it will ignore the result.
 				this.#version++
 			})
@@ -72,59 +88,12 @@ class ColladaModelBehavior extends RenderableBehavior {
 	}
 
 	#setModel(model: Collada) {
-		this.model = model
 		this.element.three.add(model.scene)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
-
-		// Cast so the type check passes. Non-TypeScript users can listen to
-		// this event on any non-Model element anyway, while TS users will be
-		// using Model elements for type safety.
-		;(this.element as Model).dispatchEvent(new ModelLoadEvent('collada', model))
-		// Note how the "collada" string could be any of the possible string
-		// values, such as "gltf", which would be incorrect, but there would be
-		// no type error. Easy to get it wrong.
-		// Perhaps we could eliminate model behaviors, because we can just use
-		// the model elements directly, and each model element can subclass
-		// ModelLoadEvent. Plus that starts to move us towards better type
-		// safety based on element definitions.
-		// F.e. we can do this currently:
-		//
-		//   <lume-element3d has="gltf-model" src="./foo.gltf">
-		//   </lume-element3d>
-		//
-		// But the Element3D type does not include a `src` attribute, so there's
-		// no type safety for `src={}` in JSX, or `.src` on the JS reference. So
-		// that's why this is better:
-		//
-		//   <lume-gltf-model src="./foo.gltf">
-		//   </lume-gltf-model>
-		//
-		// And if we wanted to have multiple models like this,
-		//
-		//   <lume-element3d has="gltf-model collada-model fbx-model" src="./foo.gltf" position="...move them all at once...">
-		//   </lume-element3d>
-		//
-		// it wouldn't even work because there'd be a single src attribute and
-		// all of the behaviors would try to use it, but it would only have the
-		// correct file for one of the behaviors. With elements we can just do
-		// this:
-		//
-		//   <lume-element3d position="...move them all at once...">
-		//     <lume-gltf-model src="./foo.gltf" position="...plus now can control them indivdually too..."></lume-gltf-model>
-		//     <lume-fbx-model src="./foo.fbx"></lume-fbx-model>
-		//     <lume-collada-model src="./foo.dae"></lume-collada-model>
-		//   </lume-element3d>
-		//
-		// So, I think it time to start to deprecate behaviors that can easily
-		// be represented as HTML elements.
-		//
-		// As for geometry and material behaviors, perhaps those can be elements
-		// too: "behavior elements" that give an intrinsic feature to their
-		// <lume-mesh> parent elements. But we need to ideate how this will work
-		// with CSS support (for example apply a material via CSS, or via
-		// behavior element, and re-use as much of the logic as we can either
-		// way). It is uncharted territory, and we'll be making something novel!
-
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

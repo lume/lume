@@ -44,8 +44,9 @@ import { disposeObjectTree } from '../../../utils/three.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
-import { ModelLoadEvent } from '../../../models/Model.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
+import { GltfModel } from '../../../models/GltfModel.js';
 /**
  * The recommended CDN for retrieving Draco decoder files.
  * More info: https://github.com/google/draco#wasm-and-javascript-decoders
@@ -53,12 +54,18 @@ import { ModelLoadEvent } from '../../../models/Model.js';
 const defaultDracoDecoder = 'https://www.gstatic.com/draco/v1/decoders/';
 /** One DRACOLoader per draco decoder URL. */
 let dracoLoaders = new Map();
+/**
+ * A behavior containing the logic that loads glTF models for `<lume-gltf-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-gltf-model>` element.
+ * @extends ModelBehavior
+ */
 let GltfModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
@@ -132,7 +139,9 @@ let GltfModelBehavior = (() => {
          */
         centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
         loader = new GLTFLoader();
-        model = null;
+        requiredElementType() {
+            return [GltfModel];
+        }
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
@@ -161,9 +170,10 @@ let GltfModelBehavior = (() => {
                     center();
                     untrack(() => this.#loadModel());
                     onCleanup(() => {
-                        if (this.model)
-                            disposeObjectTree(this.model.scene);
+                        if (this.element.threeModel)
+                            disposeObjectTree(this.element.threeModel.scene);
                         this.model = null;
+                        this.element.threeModel = null;
                         // Increment this in case the loader is still loading, so it will ignore the result.
                         this.#version++;
                     });
@@ -189,7 +199,6 @@ let GltfModelBehavior = (() => {
             this.element.emit(Events.MODEL_ERROR, err);
         }
         #setModel(model) {
-            this.model = model;
             model.scene = model.scene || new Scene().add(...model.scenes);
             if (this.centerGeometry) {
                 const box = new Box3();
@@ -199,8 +208,10 @@ let GltfModelBehavior = (() => {
                 model.scene.position.copy(center.negate());
             }
             this.element.three.add(model.scene);
+            this.model = model;
+            this.element.threeModel = model;
             this.element.emit(Events.MODEL_LOAD, { format: 'gltf', model });
-            this.element.dispatchEvent(new ModelLoadEvent('gltf', model));
+            this.element.dispatchEvent(new LoadEvent());
             this.element.needsUpdate();
         }
     };

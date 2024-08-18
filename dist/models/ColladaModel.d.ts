@@ -1,4 +1,5 @@
 import { type ElementAttributes } from '@lume/element';
+import type { Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { ColladaModelBehavior, ColladaModelBehaviorAttributes } from '../behaviors/index.js';
@@ -43,6 +44,13 @@ export declare class ColladaModel extends Model {
     initialBehaviors: {
         model: string;
     };
+    /**
+     * @property {Collada | null} threeModel - The loaded Collada model, or null
+     * when not loaded or while loading.
+     *
+     * `signal`
+     */
+    threeModel: Collada | null;
 }
 export interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {
 }

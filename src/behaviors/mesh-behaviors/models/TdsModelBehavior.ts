@@ -7,19 +7,33 @@ import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-import {ModelLoadEvent, type Model} from '../../../models/Model.js'
+import {ModelBehavior} from './ModelBehavior.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {TdsModel} from '../../../models/TdsModel.js'
 
 export type TdsModelBehaviorAttributes = 'src'
 
+/**
+ * A behavior containing the logic that loads 3DS models for `<lume-3ds-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-3ds-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class TdsModelBehavior extends RenderableBehavior {
+class TdsModelBehavior extends ModelBehavior {
 	/** Path to a .3ds file. */
 	@stringAttribute @receiver src = ''
 
 	loader = new TDSLoader()
-	model?: Group
+
+	declare model?: Group
+
+	declare element: TdsModel
+
+	override requiredElementType() {
+		return [TdsModel]
+	}
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -35,8 +49,9 @@ class TdsModelBehavior extends RenderableBehavior {
 			this.#loadModel()
 
 			onCleanup(() => {
-				if (this.model) disposeObjectTree(this.model)
+				if (this.element.threeModel) disposeObjectTree(this.element.threeModel)
 				this.model = undefined
+				this.element.threeModel = null
 				// Increment this in case the loader is still loading, so it will ignore the result.
 				this.#version++
 			})
@@ -73,13 +88,12 @@ class TdsModelBehavior extends RenderableBehavior {
 	}
 
 	#setModel(model: Group) {
-		this.model = model
 		this.element.three.add(model)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: '3ds', model})
-		// Cast so the type check passes. Non-TypeScript users can listen to
-		// this event on any non-Model element anyway, while TS users will be
-		// using Model elements for type safety.
-		;(this.element as Model).dispatchEvent(new ModelLoadEvent('3ds', model))
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

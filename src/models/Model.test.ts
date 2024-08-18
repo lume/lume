@@ -1,48 +1,50 @@
-import {Group} from 'three/src/Three.js'
-import {GltfModel} from './GltfModel.js'
-import {ModelLoadEvent} from './Model.js'
+import {element} from '@lume/element'
+import {Model} from './Model.js'
+import {LoadEvent} from './LoadEvent.js'
+
+let rand = Math.random()
+@element('test-el-' + rand)
+class TestModel extends Model {
+	foo = 123
+}
 
 describe('Model', () => {
-	it('dispatches a ModelLoadEvent', () => {
-		const el = new GltfModel()
+	it('dispatches a load event', () => {
+		const el = new TestModel()
 
-		// Type check
+		// Type check (ensure these types are still present)
 		el.addEventListener('click', function (event) {
-			event.target // standard property
+			event.target
 		})
 
-		// Type check
+		// Type check (ensure these types are still present)
 		el.addEventListener('pointerdown', function (event) {
-			event.target // standard property
+			event.target
 		})
 
-		let loadEvent: ModelLoadEvent | null = null
+		let loadEvent: LoadEvent | null = null
 
 		el.addEventListener('load', function (event) {
 			event.target
-			event.format
-			event.model
-			if ('scene' in event.model) event.model.scene
 			this.position
 			this.rotation
+			this.foo
 			loadEvent = event
 		})
 
-		const event = new ModelLoadEvent('fbx', new Group())
+		const event = new LoadEvent()
 		el.dispatchEvent(event)
 
 		expect(loadEvent).toBe(event)
+	})
 
+	it('does not change type of other load events', () => {
 		// Type check
-		const div = document.createElement('div')
-		div.addEventListener('load', function (event) {
-			event.target
+		const img = document.createElement('img')
 
-			// @ts-expect-error should not be a ModelLoadEvent
-			event.format
-			// @ts-expect-error should not be a ModelLoadEvent
-			event.model
-			// @ts-expect-error should not be a ModelLoadEvent
+		img.addEventListener('load', function (event) {
+			event.target
+			// @ts-expect-error not a Model element
 			this.position
 		})
 	})

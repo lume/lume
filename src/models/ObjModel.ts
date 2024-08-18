@@ -1,4 +1,5 @@
 import {element, type ElementAttributes} from '@lume/element'
+import type {Group} from 'three/src/objects/Group.js'
 import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -44,6 +45,14 @@ export
 @element('lume-obj-model', autoDefineElements)
 class ObjModel extends Model {
 	override initialBehaviors = {model: 'obj'}
+
+	/**
+	 * @property {Group | null} threeModel - The loaded OBJ model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: Group | null
 }
 
 export interface ObjModel extends ElementWithBehaviors<ObjModelBehavior, ObjModelBehaviorAttributes> {}

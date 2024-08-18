@@ -1,3 +1,38 @@
+var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
+    var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+    var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+    var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+    var _, done = false;
+    for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+            if (result === void 0) continue;
+            if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+            if (_ = accept(result.get)) descriptor.get = _;
+            if (_ = accept(result.set)) descriptor.set = _;
+            if (_ = accept(result.init)) initializers.unshift(_);
+        }
+        else if (_ = accept(result)) {
+            if (kind === "field") initializers.unshift(_);
+            else descriptor[key] = _;
+        }
+    }
+    if (target) Object.defineProperty(target, contextIn.name, descriptor);
+    done = true;
+};
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
+import { reactive, signal } from 'classy-solid';
 import { Element3D } from '../core/Element3D.js';
 /**
  * @class Model - Base class for model elements that load 3D models from
@@ -5,60 +40,34 @@ import { Element3D } from '../core/Element3D.js';
  *
  * @extends Element3D
  */
-export class Model extends Element3D {
-}
-/**
- * @class ModelLoadEvent - This event is fired by a `<lume-*-model>` element, or
- * a `<lume-element3d>` with a `*-model` behavior, when it has loaded it's 3D
- * content. It serves the same purpose as `load` events for elements such as
- * `<img>`, `<script>`, `<iframe>`, etc, to notify when an element has loaded
- * whatever it loads.
- *
- * The Event will expose `format`, a string containing the file type of the
- * loaded model (usually the file extension used for the model file, but not
- * always, for example a "gltf" model can be loaded from both a .gltf or a .glb
- * file, and a "collada" model is loaded from a .dae file), and `model` which is
- * the underlying model object loaded by Three.js for direct manipulation if
- * needed. The `format` values are 'obj', 'gltf', 'collada', 'fbx', 'ply', and
- * '3ds'.
- *
- * Example (plain HTML):
- *
- * ```html
- * <lume-scene>
- *   <lume-gltf-model id="rocket" src="./rocket-ship.gltf"></lume-gltf-model>
- * </lume-scene>
- *
- * <script>
- *   const el = document.getElementById('rocket')
- *   el.addEventListener('load', event => console.log('model loaded:', event.format, event.model))
- * </script>
- * ```
- *
- * Example (JSX):
- *
- * ```jsx
- * function SomeComponent() {
- *   return (
- *     <lume-scene>
- *       <lume-gltf-model
- *         src="./rocket-ship.gltf"
- *         onload=${event => console.log('model loaded:', event.format, event.model)}}
- *       ></lume-gltf-model>
- *     </lume-scene>
- *   )
- * }
- * ```
- */
-export class ModelLoadEvent extends Event {
-    static type = 'load';
-    static defaultOptions = { cancelable: false, bubbles: false };
-    format;
-    model;
-    constructor(format, model, options = ModelLoadEvent.defaultOptions) {
-        super('load', { ...ModelLoadEvent.defaultOptions, ...options });
-        this.format = format;
-        this.model = model;
-    }
-}
+let Model = (() => {
+    let _classDecorators = [reactive];
+    let _classDescriptor;
+    let _classExtraInitializers = [];
+    let _classThis;
+    let _classSuper = Element3D;
+    let _instanceExtraInitializers = [];
+    let _threeModel_decorators;
+    let _threeModel_initializers = [];
+    var Model = class extends _classSuper {
+        static { _classThis = this; }
+        static {
+            const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _threeModel_decorators = [signal];
+            __esDecorate(null, null, _threeModel_decorators, { kind: "field", name: "threeModel", static: false, private: false, access: { has: obj => "threeModel" in obj, get: obj => obj.threeModel, set: (obj, value) => { obj.threeModel = value; } }, metadata: _metadata }, _threeModel_initializers, _instanceExtraInitializers);
+            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+            Model = _classThis = _classDescriptor.value;
+            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+            __runInitializers(_classThis, _classExtraInitializers);
+        }
+        /**
+         * @property {object | null} threeModel - The loaded model, or null if not loaded or while loading.
+         *
+         * `signal`
+         */
+        threeModel = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _threeModel_initializers, null));
+    };
+    return Model = _classThis;
+})();
+export { Model };
 //# sourceMappingURL=Model.js.map

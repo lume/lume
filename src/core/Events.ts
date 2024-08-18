@@ -1,5 +1,7 @@
 import type {Constructor} from 'lowclass'
-import type {ModelType, ThreeModel} from '../models/Model.js'
+import type {BufferGeometry, Group} from 'three/src/Three.js'
+import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export class EventTypes {
 	constructor(
@@ -8,7 +10,10 @@ export class EventTypes {
 		 * *-model behavior, has loaded it's model.
 		 * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
 		 */
-		public MODEL_LOAD: {format: ModelType; model: ThreeModel},
+		public MODEL_LOAD: {
+			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply' | '3ds'
+			model: Group | GLTF | Collada | BufferGeometry
+		},
 		/**
 		 * @deprecated
 		 * Fired if a *-model element, or node element with *-model behavior,

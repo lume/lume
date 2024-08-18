@@ -1,4 +1,5 @@
 import {element, type ElementAttributes} from '@lume/element'
+import type {Group} from 'three/src/objects/Group.js'
 import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -46,6 +47,14 @@ export
 @element('lume-3ds-model', autoDefineElements)
 class TdsModel extends Model {
 	override initialBehaviors = {model: '3ds'}
+
+	/**
+	 * @property {Group | null} threeModel - The loaded 3DS model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: Group | null
 }
 
 export interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {}

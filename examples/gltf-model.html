@@ -26,6 +26,7 @@
 		sidedness="double"
 		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 		size="4000"
+		scale="1 1 -1"
 		mount-point="0.5 0.5 0.5"
 	></lume-sphere>
 
@@ -40,14 +41,17 @@
 </lume-scene>
 
 <script type="module">
-	import 'lume'
+	import {createEffect} from 'lume'
 
-	// If there is something Lume cannot yet do with its HTML interface, we can
-	// traverse the Three.js objects to manually tweak underlying Three.js
-	// objects. We have full access to Three.js.
 	const model = document.getElementById('model')
-	// Once the model is loaded then Three.js objects have been created.
-	model.on('MODEL_LOAD', () => {
+
+	// Recommended: use an effect to observe when the model is loaded:
+	createEffect(() => {
+		if (!model.threeModel) return
+		console.log('gltf model effect:', model.threeModel)
+
+		// Once the model is loaded then Three.js objects have been created and
+		// can be tweaked.
 		// element.three is the underlying Three.js object, and
 		// element.three.traverse() is a Three.js API.
 		model.three.traverse(node => {
@@ -56,5 +60,11 @@
 				node.receiveShadow = true
 			}
 		})
+		model.needsUpdate()
+	})
+
+	// The `load` event can be used too:
+	model.addEventListener('load', () => {
+		console.log('gltf model event:', model.threeModel)
 	})
 </script>

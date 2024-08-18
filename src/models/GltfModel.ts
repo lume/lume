@@ -1,4 +1,5 @@
 import {element, type ElementAttributes} from '@lume/element'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -46,6 +47,14 @@ export
 @element('lume-gltf-model', autoDefineElements)
 class GltfModel extends Model {
 	override initialBehaviors = {model: 'gltf'}
+
+	/**
+	 * @property {GLTF | null} threeModel - The loaded GLTF model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: GLTF | null
 }
 
 export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}

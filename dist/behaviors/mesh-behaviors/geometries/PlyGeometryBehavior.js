@@ -42,7 +42,7 @@ import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 import { Events } from '../../../core/Events.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
 import { onCleanup } from 'solid-js';
-import { ModelLoadEvent } from '../../../models/Model.js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
 /**
  * @class PlyGeometryBehavior -
  *
@@ -142,7 +142,9 @@ let PlyGeometryBehavior = (() => {
             model.computeVertexNormals();
             this.model = model; // triggers the resetMeshComponent effect
             this.element.emit(Events.MODEL_LOAD, { format: 'ply', model });
-            this.element.dispatchEvent(new ModelLoadEvent('ply', model));
+            // TODO we fire a load event here, but there is no Model
+            // element for this behavior. Make a <lume-ply-model> element.
+            this.element.dispatchEvent(new LoadEvent());
         }
     };
     return PlyGeometryBehavior = _classThis;

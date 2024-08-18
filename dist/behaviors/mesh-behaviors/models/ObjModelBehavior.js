@@ -41,14 +41,21 @@ import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '..
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
-import { ModelLoadEvent } from '../../../models/Model.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
+import { ObjModel } from '../../../models/ObjModel.js';
+/**
+ * A behavior containing the logic that loads OBJ models for `<lume-obj-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-obj-model>` element.
+ * @extends ModelBehavior
+ */
 let ObjModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _obj_decorators;
     let _obj_initializers = [];
@@ -69,7 +76,9 @@ let ObjModelBehavior = (() => {
         }
         obj = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _obj_initializers, ''));
         mtl = __runInitializers(this, _mtl_initializers, '');
-        model;
+        requiredElementType() {
+            return [ObjModel];
+        }
         objLoader = (() => {
             const loader = new OBJLoader();
             loader.manager.onLoad = () => this.element.needsUpdate();
@@ -94,13 +103,14 @@ let ObjModelBehavior = (() => {
                 // instead of reloading the whole object.
                 this.#loadModel();
                 onCleanup(() => {
-                    if (this.model) {
-                        disposeObjectTree(this.model, {
+                    if (this.element.threeModel) {
+                        disposeObjectTree(this.element.threeModel, {
                             destroyMaterial: !this.#materialIsFromMaterialBehavior,
                         });
                     }
                     this.#materialIsFromMaterialBehavior = false;
                     this.model = undefined;
+                    this.element.threeModel = null;
                     // Increment this in case the loader is still loading, so it will ignore the result.
                     this.#version++;
                 });
@@ -165,10 +175,11 @@ let ObjModelBehavior = (() => {
                     setRandomColorPhongMaterial(model);
                 }
             }
-            this.model = model;
             this.element.three.add(model);
+            this.model = model;
+            this.element.threeModel = model;
             this.element.emit(Events.MODEL_LOAD, { format: 'obj', model });
-            this.element.dispatchEvent(new ModelLoadEvent('obj', model));
+            this.element.dispatchEvent(new LoadEvent());
             this.element.needsUpdate();
         }
     };

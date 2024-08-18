@@ -10,8 +10,9 @@ import {disposeObjectTree} from '../../../utils/three.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-import {ModelLoadEvent, type Model} from '../../../models/Model.js'
+import {ModelBehavior} from './ModelBehavior.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {GltfModel} from '../../../models/GltfModel.js'
 
 /**
  * The recommended CDN for retrieving Draco decoder files.
@@ -24,9 +25,15 @@ let dracoLoaders = new Map<string, {count: number; dracoLoader: DRACOLoader}>()
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
+/**
+ * A behavior containing the logic that loads glTF models for `<lume-gltf-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-gltf-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class GltfModelBehavior extends RenderableBehavior {
+class GltfModelBehavior extends ModelBehavior {
 	/** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
 	@attribute @receiver src: string | null = ''
 
@@ -57,7 +64,15 @@ class GltfModelBehavior extends RenderableBehavior {
 	@booleanAttribute @receiver centerGeometry = false
 
 	loader = new GLTFLoader()
-	model: GLTF | null = null
+
+	/** @deprecated access `.threeModel` on the lume-gltf-model element instead. */
+	declare model: GLTF | null
+
+	declare element: GltfModel
+
+	override requiredElementType() {
+		return [GltfModel]
+	}
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -95,8 +110,9 @@ class GltfModelBehavior extends RenderableBehavior {
 				untrack(() => this.#loadModel())
 
 				onCleanup(() => {
-					if (this.model) disposeObjectTree(this.model.scene)
+					if (this.element.threeModel) disposeObjectTree(this.element.threeModel.scene)
 					this.model = null
+					this.element.threeModel = null
 					// Increment this in case the loader is still loading, so it will ignore the result.
 					this.#version++
 				})
@@ -134,7 +150,6 @@ class GltfModelBehavior extends RenderableBehavior {
 	}
 
 	#setModel(model: GLTF) {
-		this.model = model
 		model.scene = model.scene || new Scene().add(...model.scenes)
 
 		if (this.centerGeometry) {
@@ -146,11 +161,11 @@ class GltfModelBehavior extends RenderableBehavior {
 		}
 
 		this.element.three.add(model.scene)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
-		// Cast so the type check passes. Non-TypeScript users can listen to
-		// this event on any non-Model element anyway, while TS users will be
-		// using Model elements for type safety.
-		;(this.element as Model).dispatchEvent(new ModelLoadEvent('gltf', model))
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

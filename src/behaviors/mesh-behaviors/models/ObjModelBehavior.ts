@@ -10,9 +10,10 @@ import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../.
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {ModelBehavior} from './ModelBehavior.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
-import {ModelLoadEvent, type Model} from '../../../models/Model.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {ObjModel} from '../../../models/ObjModel.js'
 
 // TODO move this somewhere better, perhaps element-behaviors
 declare global {
@@ -21,13 +22,25 @@ declare global {
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
 
+/**
+ * A behavior containing the logic that loads OBJ models for `<lume-obj-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-obj-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class ObjModelBehavior extends RenderableBehavior {
+class ObjModelBehavior extends ModelBehavior {
 	@stringAttribute @receiver obj = ''
 	@stringAttribute @receiver mtl = ''
 
-	model?: Group
+	declare model?: Group
+
+	declare element: ObjModel
+
+	override requiredElementType() {
+		return [ObjModel]
+	}
 
 	objLoader = (() => {
 		const loader = new OBJLoader()
@@ -59,13 +72,14 @@ class ObjModelBehavior extends RenderableBehavior {
 			this.#loadModel()
 
 			onCleanup(() => {
-				if (this.model) {
-					disposeObjectTree(this.model, {
+				if (this.element.threeModel) {
+					disposeObjectTree(this.element.threeModel, {
 						destroyMaterial: !this.#materialIsFromMaterialBehavior,
 					})
 				}
 				this.#materialIsFromMaterialBehavior = false
 				this.model = undefined
+				this.element.threeModel = null
 				// Increment this in case the loader is still loading, so it will ignore the result.
 				this.#version++
 			})
@@ -143,13 +157,12 @@ class ObjModelBehavior extends RenderableBehavior {
 			}
 		}
 
-		this.model = model
 		this.element.three.add(model)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: 'obj', model})
-		// Cast so the type check passes. Non-TypeScript users can listen to
-		// this event on any non-Model element anyway, while TS users will be
-		// using Model elements for type safety.
-		;(this.element as Model).dispatchEvent(new ModelLoadEvent('obj', model))
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

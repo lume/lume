@@ -1,8 +1,15 @@
 import 'element-behaviors';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { GltfModel } from '../../../models/GltfModel.js';
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry';
-export declare class GltfModelBehavior extends RenderableBehavior {
+/**
+ * A behavior containing the logic that loads glTF models for `<lume-gltf-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-gltf-model>` element.
+ * @extends ModelBehavior
+ */
+export declare class GltfModelBehavior extends ModelBehavior {
     #private;
     /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
     src: string | null;
@@ -31,7 +38,10 @@ export declare class GltfModelBehavior extends RenderableBehavior {
      */
     centerGeometry: boolean;
     loader: GLTFLoader;
+    /** @deprecated access `.threeModel` on the lume-gltf-model element instead. */
     model: GLTF | null;
+    element: GltfModel;
+    requiredElementType(): (typeof GltfModel)[];
     connectedCallback(): void;
 }
 //# sourceMappingURL=GltfModelBehavior.d.ts.map

@@ -26,10 +26,15 @@
 </lume-scene>
 
 <script type="module">
-	import 'lume'
+	import {createEffect} from 'lume'
 
 	const models = Array.from(document.querySelectorAll('lume-3ds-model'))
 
-	for (const model of models)
-		model.on('MODEL_LOAD', () => model.three.traverse(n => n.isMesh && (n.material.shininess = 8)))
+	for (const model of models) {
+		// Recommended: use an effect to observe when the model is loaded:
+		createEffect(() => {
+			if (!model.threeModel) return
+			model.threeModel.traverse(n => n.isMesh && (n.material.shininess = 8))
+		})
+	}
 </script>

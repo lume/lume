@@ -1,4 +1,5 @@
 import { type ElementAttributes } from '@lume/element';
+import type { Group } from 'three/src/objects/Group.js';
 import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/index.js';
@@ -43,6 +44,13 @@ export declare class FbxModel extends Model {
     initialBehaviors: {
         model: string;
     };
+    /**
+     * @property {FbxModel | null} threeModel - The loaded FBX model, or null
+     * when not loaded or while loading.
+     *
+     * `signal`
+     */
+    threeModel: Group | null;
 }
 export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {
 }

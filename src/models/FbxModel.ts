@@ -1,4 +1,5 @@
 import {element, type ElementAttributes} from '@lume/element'
+import type {Group} from 'three/src/objects/Group.js'
 import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -46,6 +47,14 @@ export
 @element('lume-fbx-model', autoDefineElements)
 class FbxModel extends Model {
 	override initialBehaviors = {model: 'fbx'}
+
+	/**
+	 * @property {FbxModel | null} threeModel - The loaded FBX model, or null
+	 * when not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: Group | null
 }
 
 export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {}

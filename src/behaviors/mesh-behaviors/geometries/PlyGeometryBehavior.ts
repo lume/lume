@@ -8,7 +8,7 @@ import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {onCleanup} from 'solid-js'
-import {ModelLoadEvent, type Model} from '../../../models/Model.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
 
 /**
  * @class PlyGeometryBehavior -
@@ -107,16 +107,9 @@ class PlyGeometryBehavior extends GeometryBehavior {
 		this.model = model // triggers the resetMeshComponent effect
 		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
 
-		// TODO we fire a ModelLoadEvent event here, but there is no Model
-		// element for this behavior. Do we need a Model element for this, f.e.
-		// <lume-ply-model>? Hmm, yeah, I think that would be more consistent.
-		// The concept of a geometry behavior that loads its geometry async was
-		// interesting, but then again that's just a subset of what a Model
-		// element does (a Model typically loads materials too). I guess a Model
-		// element does have to always have to load a material, for example a
-		// <lume-ply-model> could just have a default material just like a
-		// <lume-mesh> does.
-		;(this.element as Model).dispatchEvent(new ModelLoadEvent('ply', model))
+		// TODO we fire a load event here, but there is no Model
+		// element for this behavior. Make a <lume-ply-model> element.
+		this.element.dispatchEvent(new LoadEvent())
 	}
 }
 

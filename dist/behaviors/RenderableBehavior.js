@@ -7,7 +7,6 @@ import { Element3D } from '../core/Element3D.js';
  *
  * @extends Behavior
  */
-// @Xts-expect-error broken type checking in latest TypeScript (https://github.com/microsoft/TypeScript/issues/56330)
 export class RenderableBehavior extends Effectful(Behavior) {
     requiredElementType() {
         return [Element3D];

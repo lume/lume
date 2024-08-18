@@ -1,5 +1,7 @@
 import type { Constructor } from 'lowclass';
-import type { ModelType, ThreeModel } from '../models/Model.js';
+import type { BufferGeometry, Group } from 'three/src/Three.js';
+import type { Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export declare class EventTypes {
     /**
      * This event is fired when a *-model element, or a node element with a
@@ -7,8 +9,8 @@ export declare class EventTypes {
      * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
      */
     MODEL_LOAD: {
-        format: ModelType;
-        model: ThreeModel;
+        format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply' | '3ds';
+        model: Group | GLTF | Collada | BufferGeometry;
     };
     /**
      * @deprecated
@@ -29,8 +31,8 @@ export declare class EventTypes {
      * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
      */
     MODEL_LOAD: {
-        format: ModelType;
-        model: ThreeModel;
+        format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply' | '3ds';
+        model: Group | GLTF | Collada | BufferGeometry;
     }, 
     /**
      * @deprecated
