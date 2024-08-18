@@ -499,12 +499,14 @@ function isWireframeMaterial(mat) {
     return 'wireframe' in mat;
 }
 /** NOTE: Experimental */
+// Once we migrate geometry and material behaviors into elements, they will emit
+// 'load' events as needed, and we'll delete this.
 class TextureLoadEvent extends Event {
-    type = 'textureload';
+    static type = 'textureload';
     /** The URL of the loaded texture. */
     src = '';
     constructor(src) {
-        super('textureload', { bubbles: true, composed: true, cancelable: true });
+        super(TextureLoadEvent.type, { bubbles: false, cancelable: false });
         this.src = src;
     }
 }

@@ -55,4 +55,14 @@ export class TreeNode extends Effectful(Eventful(LumeElement)) {
 		super.disconnectedCallback()
 		this.stopEffects()
 	}
+
+	/** @deprecated Use `addEventListener()` instead. */
+	override on(eventName: string, callback: Function, context?: any) {
+		super.on(eventName, callback, context)
+	}
+
+	/** @deprecated Use `dispatchEvent()` instead. */
+	override emit(eventName: string, data?: any) {
+		super.emit(eventName, data)
+	}
 }

@@ -67,8 +67,8 @@ class Autolayout extends Element3D {
 		super()
 
 		// PORTED {
-		this.on('sizechange', this.#layout)
-		this.on('reflow', this.#layout)
+		this.addEventListener('sizechange', this.#layout)
+		this.addEventListener('reflow', this.#layout)
 		// }
 
 		// TODO use Settable.set instead.
@@ -121,6 +121,8 @@ class Autolayout extends Element3D {
 		this.#checkNodes()
 	}
 
+	#reflowEvent = new Event('reflow')
+
 	/**
 	 * Forces a reflow of the layout.
 	 *
@@ -129,7 +131,7 @@ class Autolayout extends Element3D {
 	reflowLayout() {
 		if (!this.#reflowLayout) {
 			this.#reflowLayout = true
-			Motor.once(() => this.emit('reflow')) // PORTED
+			Motor.once(() => (this.emit('reflow'), this.dispatchEvent(this.#reflowEvent))) // PORTED
 		}
 		return this
 	}

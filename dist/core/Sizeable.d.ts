@@ -9,11 +9,11 @@ declare const Sizeable_base: {
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: import("../xyz-values/XYZValues.js").XYZValues<any>, newValue: V): void;
         _setPropertySingle<K_1 extends keyof any, V_1>(name: K_1, setter: (newValue: any[K_1]) => void, newValue: V_1): void;
-        "__#14@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
-        "__#14@#settingValueFromPropFunction": boolean;
-        "__#14@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues<any>): void;
-        "__#14@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
-        "__#14@#removePropertyFunction"(name: keyof any): void;
+        "__#15@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
+        "__#15@#settingValueFromPropFunction": boolean;
+        "__#15@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues<any>): void;
+        "__#15@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
+        "__#15@#removePropertyFunction"(name: keyof any): void;
         removeAllPropertyFunctions(): void;
         disconnectedCallback(): void;
         connectedCallback?(): void;
@@ -403,6 +403,7 @@ declare const Sizeable_base: {
  * @extends TreeNode
  */
 export declare class Sizeable extends Sizeable_base {
+    #private;
     __calculatedSize?: XYZValuesObject<number>;
     /**
      * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -

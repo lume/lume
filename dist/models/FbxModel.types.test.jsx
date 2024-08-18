@@ -35,5 +35,9 @@ import { XYZValues } from '../xyz-values/XYZValues.js';
 	{/* @ts-expect-error this error is good, a number is invalid */}
 	<lume-fbx-model src={123}/>
 	<lume-fbx-model src={'foo.fbx'}/>
+
+	<lume-fbx-model 
+// event props
+onload={(event) => console.log(event)} onerror={(event) => console.log(event)} onprogress={(event) => console.log(event)}></lume-fbx-model>
 </>;
 //# sourceMappingURL=FbxModel.types.test.jsx.map

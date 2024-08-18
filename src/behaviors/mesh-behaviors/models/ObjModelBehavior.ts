@@ -14,6 +14,7 @@ import {ModelBehavior} from './ModelBehavior.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
 import {LoadEvent} from '../../../models/LoadEvent.js'
 import {ObjModel} from '../../../models/ObjModel.js'
+import {ErrorEvent, normalizeError} from '../../../models/ErrorEvent.js'
 
 // TODO move this somewhere better, perhaps element-behaviors
 declare global {
@@ -114,7 +115,9 @@ class ObjModelBehavior extends ModelBehavior {
 		this.objLoader!.load(
 			this.obj,
 			model => version == this.#version && this.#setModel(model, hasMtl),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -124,9 +127,10 @@ class ObjModelBehavior extends ModelBehavior {
 			this.mtl
 		}". See the following error.`
 		console.warn(message)
-		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		const err = normalizeError(error)
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(new ErrorEvent(err))
 	}
 
 	#setModel(model: Group, hasMtl: boolean) {

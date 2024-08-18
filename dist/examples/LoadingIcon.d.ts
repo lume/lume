@@ -8,7 +8,7 @@
  *
  * Hit "Rerun" to see the loading icon again.
  *
- * <live-code src="../../examples/skateboard-configurator/index.html"></live-code>
+ * <live-code src="../../examples/skateboard-configurator/example.html"></live-code>
  * <script>
  *   // A small hack to scale the size of the demo to make it easier to view inside the live-code preview.
  *   const livecode = document.querySelector('live-code')

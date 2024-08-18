@@ -21,7 +21,8 @@ contrast between dark and bright points for effect. -->
 	<lume-camera-rig active distance="200" max-distance="700" min-distance="100" align-point="0.5 0.5"></lume-camera-rig>
 
 	<lume-points
-		id="model"
+		id="withPhong"
+		visible="false"
 		has="ply-geometry phong-material"
 		src="./models/shelby-gt350.ply"
 		rotation="90 0 0"
@@ -31,7 +32,38 @@ contrast between dark and bright points for effect. -->
 		color="#003333"
 		align-point="0.5 0.5"
 	></lume-points>
+
+	<lume-points
+		id="withoutPhong"
+		visible="true"
+		has="ply-geometry"
+		src="./models/shelby-gt350.ply"
+		rotation="90 0 0"
+		position="-250 0 0"
+		size="0 0 0"
+		scale="50 50 50"
+		color="#009999"
+		align-point="0.5 0.5"
+		size-attenuation
+		point-size="0.5"
+	></lume-points>
 </lume-scene>
+
+<div id="ui">
+	<label>
+		<input id="usePhong" type="checkbox" />
+		Use phong material for shimmering effect (works in Firefox only)
+	</label>
+</div>
+
+<style>
+	#ui {
+		color: white;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
+</style>
 
 <script type="module">
 	import 'lume'
@@ -44,4 +76,9 @@ contrast between dark and bright points for effect. -->
 		lightDisplacement * Math.cos(t * movementRate),
 		lightDisplacement * Math.sin(t * movementRate),
 	]
+
+	usePhong.addEventListener('input', () => {
+		withPhong.visible = !!usePhong.checked
+		withoutPhong.visible = !usePhong.checked
+	})
 </script>

@@ -10,6 +10,7 @@ import {Events} from '../../../core/Events.js'
 import {ModelBehavior} from './ModelBehavior.js'
 import {LoadEvent} from '../../../models/LoadEvent.js'
 import {TdsModel} from '../../../models/TdsModel.js'
+import {ErrorEvent, normalizeError} from '../../../models/ErrorEvent.js'
 
 export type TdsModelBehaviorAttributes = 'src'
 
@@ -72,7 +73,9 @@ class TdsModelBehavior extends ModelBehavior {
 		this.loader!.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -82,9 +85,10 @@ class TdsModelBehavior extends ModelBehavior {
 			this.src
 		}". See the following error.`
 		console.warn(message)
-		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		const err = normalizeError(error)
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(new ErrorEvent(err))
 	}
 
 	#setModel(model: Group) {

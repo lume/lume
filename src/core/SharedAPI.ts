@@ -751,16 +751,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		this._elementOperations.applyProperties()
 	}
 
-	/** @deprecated Use `addEventListener()` instead. */
-	override on(eventName: string, callback: Function, context?: any) {
-		super.on(eventName, callback, context)
-	}
-
-	/** @deprecated Use `dispatchEvent()` instead. */
-	override emit(eventName: string, data?: any) {
-		super.emit(eventName, data)
-	}
-
 	// TODO this needs to be moved into CompositionTracker so that triggering
 	// childComposedCallback is generic, and filtering of element types needs
 	// to be done by subclasses.

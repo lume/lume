@@ -2,7 +2,7 @@ import {reactive, signal} from 'classy-solid'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import type {LoadEvent} from './LoadEvent.js'
 
-export type ModelAttributes = Element3DAttributes
+export type ModelAttributes = Element3DAttributes | 'onload'
 
 /**
  * @class Model - Base class for model elements that load 3D models from
@@ -29,6 +29,22 @@ export class Model extends Element3D {
 		listener: (this: this, event: ModelEvents[Key]) => void,
 		options?: boolean | AddEventListenerOptions,
 	) => void
+
+	/** Needed for JSX types */
+	declare onload: ((event: Event) => void) | null
+
+	// override dispatchEvent(event: Event) {
+	// 	console.log('DISPATCH EVENT')
+	// 	if (typeof (this as any)['on' + event.type] === 'function') {
+	// 		try {
+	// 			;(this as any)['on' + event.type](event)
+	// 		} catch (e) {
+	// 			console.error(e)
+	// 		}
+	// 	}
+
+	// 	return super.dispatchEvent(event)
+	// }
 }
 
 export interface ModelEvents extends HTMLElementEventMap {

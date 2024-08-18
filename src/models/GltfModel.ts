@@ -25,7 +25,7 @@ export type GltfModelAttributes = ModelAttributes | GltfModelBehaviorAttributes
  *   <lume-gltf-model id="myModel" src="path/to/model.gltf"></lume-gltf-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -37,7 +37,7 @@ export type GltfModelAttributes = ModelAttributes | GltfModelBehaviorAttributes
  * document.body.append(scene)
  * const model = new GltfModel
  * model.src = 'path/to/model.gltf'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *

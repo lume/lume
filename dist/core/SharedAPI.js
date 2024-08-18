@@ -719,14 +719,6 @@ let SharedAPI = (() => {
             this._calculateMatrix();
             this._elementOperations.applyProperties();
         }
-        /** @deprecated Use `addEventListener()` instead. */
-        on(eventName, callback, context) {
-            super.on(eventName, callback, context);
-        }
-        /** @deprecated Use `dispatchEvent()` instead. */
-        emit(eventName, data) {
-            super.emit(eventName, data);
-        }
         // TODO this needs to be moved into CompositionTracker so that triggering
         // childComposedCallback is generic, and filtering of element types needs
         // to be done by subclasses.

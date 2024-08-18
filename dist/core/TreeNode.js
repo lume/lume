@@ -52,5 +52,13 @@ export class TreeNode extends Effectful(Eventful(LumeElement)) {
         super.disconnectedCallback();
         this.stopEffects();
     }
+    /** @deprecated Use `addEventListener()` instead. */
+    on(eventName, callback, context) {
+        super.on(eventName, callback, context);
+    }
+    /** @deprecated Use `dispatchEvent()` instead. */
+    emit(eventName, data) {
+        super.emit(eventName, data);
+    }
 }
 //# sourceMappingURL=TreeNode.js.map

@@ -2,6 +2,7 @@ import type { Constructor } from 'lowclass';
 import type { BufferGeometry, Group } from 'three/src/Three.js';
 import type { Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export declare class EventTypes {
     /**
      * This event is fired when a *-model element, or a node element with a
@@ -47,6 +48,7 @@ export declare class EventTypes {
      */
     PROGRESS: ProgressEvent);
 }
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export declare const Events: Readonly<{
     MODEL_LOAD: "MODEL_LOAD";
     MODEL_ERROR: "MODEL_ERROR";

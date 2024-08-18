@@ -19,7 +19,7 @@ export type ObjModelAttributes = ModelAttributes | ObjModelBehaviorAttributes;
  *   <lume-obj-model id="myModel" obj="path/to/model.obj" mtl="path/to/model.mtl"></lume-obj-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -32,7 +32,7 @@ export type ObjModelAttributes = ModelAttributes | ObjModelBehaviorAttributes;
  * const model = new ObjModel
  * model.obj = 'path/to/model.obj'
  * model.mtl = 'path/to/model.mtl'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *

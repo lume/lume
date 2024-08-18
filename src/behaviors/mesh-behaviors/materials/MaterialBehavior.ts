@@ -360,14 +360,16 @@ function isWireframeMaterial(mat: Material): mat is Material & {wireframe: boole
 }
 
 /** NOTE: Experimental */
+// Once we migrate geometry and material behaviors into elements, they will emit
+// 'load' events as needed, and we'll delete this.
 class TextureLoadEvent extends Event {
-	override type = 'textureload'
+	static type = 'textureload'
 
 	/** The URL of the loaded texture. */
 	src = ''
 
 	constructor(src: string) {
-		super('textureload', {bubbles: true, composed: true, cancelable: true})
+		super(TextureLoadEvent.type, {bubbles: false, cancelable: false})
 
 		this.src = src
 	}

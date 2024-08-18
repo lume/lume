@@ -53,7 +53,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   <lume-fbx-model id="myModel" src="path/to/model.fbx"></lume-fbx-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -65,7 +65,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  * document.body.append(scene)
  * const model = new FbxModel
  * model.src = 'path/to/model.fbx'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *

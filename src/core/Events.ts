@@ -3,6 +3,7 @@ import type {BufferGeometry, Group} from 'three/src/Three.js'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export class EventTypes {
 	constructor(
 		/**
@@ -19,6 +20,7 @@ export class EventTypes {
 		 * Fired if a *-model element, or node element with *-model behavior,
 		 * has an error during load.
 		 */
+		// CONTINUE: ErrorEvents
 		public MODEL_ERROR: Error,
 		/**
 		 * @deprecated
@@ -29,6 +31,7 @@ export class EventTypes {
 	) {}
 }
 
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export const Events = makeEnumFromClassProperties(EventTypes)
 
 // loop on the keys of a dummy class instance in order to create an enum-like

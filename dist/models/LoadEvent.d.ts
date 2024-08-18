@@ -79,7 +79,7 @@
  * }
  * ```
  *
- * Example (Lit):
+ * Example (Lit, replace `@@` with a signle ampersand which is a small hack for rendering the docs markdown from JSDoc comments):
  *
  * ```js
  * class SomeLitElement {
@@ -88,7 +88,7 @@
  *       <lume-scene>
  *         <lume-gltf-model
  *           src="./rocket-ship.gltf"
- *           @load=${event => console.log('model loaded:', event.target.threeModel)}}
+ *           @@load=${event => console.log('model loaded:', event.target.threeModel)}}
  *         ></lume-gltf-model>
  *       </lume-scene>
  *     `

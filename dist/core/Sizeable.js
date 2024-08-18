@@ -222,6 +222,7 @@ let Sizeable = (() => {
         get parentSize() {
             return this.composedLumeParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
         }
+        #sizechangeEvent = new Event('sizechange');
         _calcSize() {
             const calculatedSize = this.__calculatedSize ?? { x: 0, y: 0, z: 0 };
             Object.assign(previousSize, calculatedSize);
@@ -254,6 +255,7 @@ let Sizeable = (() => {
                 previousSize.z !== calculatedSize.z) {
                 // TODO replace events with reactivity
                 this.emit('sizechange', { ...calculatedSize });
+                this.dispatchEvent(this.#sizechangeEvent);
             }
         }
     };

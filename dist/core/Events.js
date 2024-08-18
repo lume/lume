@@ -1,3 +1,4 @@
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export class EventTypes {
     MODEL_LOAD;
     MODEL_ERROR;
@@ -14,6 +15,7 @@ export class EventTypes {
      * Fired if a *-model element, or node element with *-model behavior,
      * has an error during load.
      */
+    // CONTINUE: ErrorEvents
     MODEL_ERROR, 
     /**
      * @deprecated
@@ -26,6 +28,7 @@ export class EventTypes {
         this.PROGRESS = PROGRESS;
     }
 }
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export const Events = makeEnumFromClassProperties(EventTypes);
 // loop on the keys of a dummy class instance in order to create an enum-like
 // object.

@@ -11,7 +11,7 @@ export type BaseAttributes = TransformableAttributes | 'opacity';
 declare const SharedAPI_base: {
     new (...args: any[]): {
         initialBehaviors?: Record<string, string> | undefined;
-        "__#17@#setBehaviors"(): void;
+        "__#18@#setBehaviors"(): void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
@@ -350,14 +350,14 @@ declare const SharedAPI_base: {
         disconnectedCallback(): void;
         childConnectedCallback?(_child: Element): void;
         childDisconnectedCallback?(_child: Element): void;
-        "__#16@#awaitedChildren": Set<Element>;
-        "__#16@#runChildConnectedCallbacks"(): void;
-        "__#16@#runChildConnect"(child: Element): void;
-        "__#16@#runChildDisconnectedCallbacks"(): void;
-        "__#16@#runChildDisconnect"(child: Element): void;
-        "__#16@#unobserveChildren": (() => void) | null;
-        "__#16@#createObserver"(): void;
-        "__#16@#destroyObserver"(): void;
+        "__#17@#awaitedChildren": Set<Element>;
+        "__#17@#runChildConnectedCallbacks"(): void;
+        "__#17@#runChildConnect"(child: Element): void;
+        "__#17@#runChildDisconnectedCallbacks"(): void;
+        "__#17@#runChildDisconnect"(child: Element): void;
+        "__#17@#unobserveChildren": (() => void) | null;
+        "__#17@#createObserver"(): void;
+        "__#17@#destroyObserver"(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
         accessKey: string;
@@ -925,10 +925,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * task that calls update).
      */
     update(_timestamp: number, _deltaTime: number): void;
-    /** @deprecated Use `addEventListener()` instead. */
-    on(eventName: string, callback: Function, context?: any): void;
-    /** @deprecated Use `dispatchEvent()` instead. */
-    emit(eventName: string, data?: any): void;
     childConnectedCallback(child: Element): void;
     childDisconnectedCallback(child: Element): void;
     setAttribute(attr: string, value: any): void;

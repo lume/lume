@@ -44,6 +44,7 @@ import { Events } from '../../../core/Events.js';
 import { ModelBehavior } from './ModelBehavior.js';
 import { LoadEvent } from '../../../models/LoadEvent.js';
 import { ObjModel } from '../../../models/ObjModel.js';
+import { ErrorEvent, normalizeError } from '../../../models/ErrorEvent.js';
 /**
  * A behavior containing the logic that loads OBJ models for `<lume-obj-model>`
  * elements.
@@ -137,14 +138,16 @@ let ObjModelBehavior = (() => {
             }
         }
         #loadObj(version, hasMtl) {
-            this.objLoader.load(this.obj, model => version == this.#version && this.#setModel(model, hasMtl), progress => version === this.#version && this.element.emit(Events.PROGRESS, progress), error => version === this.#version && this.#onError(error));
+            this.objLoader.load(this.obj, model => version == this.#version && this.#setModel(model, hasMtl), progress => version === this.#version &&
+                (this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)), error => version === this.#version && this.#onError(error));
         }
         #onError(error) {
             const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${this.obj}" and mtl value "${this.mtl}". See the following error.`;
             console.warn(message);
-            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            const err = normalizeError(error);
             console.error(err);
             this.element.emit(Events.MODEL_ERROR, err);
+            this.element.dispatchEvent(new ErrorEvent(err));
         }
         #setModel(model, hasMtl) {
             // If the OBJ model does not have an MTL, then use the material behavior if any.

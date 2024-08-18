@@ -25,7 +25,7 @@ export type TdsModelAttributes = ModelAttributes | TdsModelBehaviorAttributes
  *   <lume-3ds-model id="myModel" src="path/to/model.3ds"></lume-3ds-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -37,7 +37,7 @@ export type TdsModelAttributes = ModelAttributes | TdsModelBehaviorAttributes
  * document.body.append(scene)
  * const model = new TdsModel
  * model.src = 'path/to/model.3ds'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *
