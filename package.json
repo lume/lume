@@ -12,9 +12,7 @@
 	},
 	"workspaces": [
 		"apps/*",
-		"packages/*",
-		"examples/react",
-		"examples/react-typescript"
+		"packages/*"
 	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {

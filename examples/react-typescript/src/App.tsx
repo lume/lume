@@ -1,4 +1,7 @@
-import {Node, XYZNumberValuesPropertyFunction, defineElements} from 'lume'
+import 'lume'
+import {type ColladaModel, type CameraRig, type Element3D, type PerspectiveCamera} from 'lume'
+import type {XYZNumberValuesPropertyFunction} from 'lume/dist/core/PropertyAnimator'
+import {Light} from 'three/src/lights/Light'
 
 // For React TypeScript users, import the React JSX type defs.
 import type {} from 'lume/dist/index.react-jsx'
@@ -6,15 +9,13 @@ import type {} from 'lume/dist/index.react-jsx'
 import * as React from 'react'
 import {Component, createRef, CSSProperties, ChangeEvent} from 'react'
 
-import bodyModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/body.dae'
-import pmcModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc.dae'
-import pmcSkinModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc_skin_.dae'
-import pmcBumperModelUrl from '../../../apps/docs/examples/nasa-astrobee-robot/astrobee/pmc_bumper.dae'
+const bodyModelUrl = 'https://docs.lume.io/examples/nasa-astrobee-robot/astrobee/body.dae'
+const pmcModelUrl = 'https://docs.lume.io/examples/nasa-astrobee-robot/astrobee/pmc.dae'
+const pmcSkinModelUrl = 'https://docs.lume.io/examples/nasa-astrobee-robot/astrobee/pmc_skin_.dae'
+const pmcBumperModelUrl = 'https://docs.lume.io/examples/nasa-astrobee-robot/astrobee/pmc_bumper.dae'
 
 // Image from https://blog.kuula.co/360-images-ruben-frosali
-import lunaStation from '../../../apps/docs/examples/nasa-astrobee-robot/luna-station.jpg'
-
-defineElements()
+const lunaStation = 'https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg'
 
 type View = 'top' | 'side' | 'free'
 
@@ -34,36 +35,42 @@ export class App extends Component<{}, State> {
 		view: 'free' as View,
 	}
 
-	astrobee = createRef<Node>()
+	astrobee = createRef<Element3D>()
+	rig = createRef<CameraRig>()
+	cam = createRef<PerspectiveCamera>()
 
 	render = () => (
 		<>
-			<lume-scene webgl environment={lunaStation}>
-				<lume-element3d align-point="0.5 0.5 0.5">
-					<lume-camera-rig
-						active={this.state.view === 'free'}
-						vertical-angle="30"
-						min-distance="0.4"
-						max-distance="2"
-						dolly-speed="0.002"
-						distance="1"
-					/>
-					<lume-element3d rotation={[this.state.view === 'top' ? -90 : 0, 0, 0].toString()}>
-						<lume-perspective-camera active={this.state.view !== 'free'} position="0 0 0.7" />
-					</lume-element3d>
+			<lume-scene webgl environment={lunaStation} physically-correct-lights>
+				<lume-camera-rig
+					ref={this.rig}
+					active={this.state.view === 'free'}
+					vertical-angle="30"
+					min-distance="0.4"
+					max-distance="2"
+					dolly-speed="0.002"
+					distance="1"
+				/>
+				<lume-element3d rotation={String([this.state.view === 'top' ? -90 : 0, 0, 0])}>
+					<lume-perspective-camera ref={this.cam} active={this.state.view !== 'free'} position="0 0 0.7" />
 				</lume-element3d>
 
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 90 0" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 -90 0" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 0 90" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="0 0 -90" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="90 80 0" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="90 -80 0" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 80 0" />
-				<lume-point-light intensity="0.3" align-point="0.5 0.5 0.5" color="#a3ffff" position="-90 -80 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="0 9 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="0 -9 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="0 0 9" />
+				<lume-point-light intensity="20" color="#a3ffff" position="0 0 -9" />
+				<lume-point-light intensity="20" color="#a3ffff" position="9 8 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="9 -8 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="-9 8 0" />
+				<lume-point-light intensity="20" color="#a3ffff" position="-9 -8 0" />
 
-				<lume-element3d ref={this.astrobee} align-point="0.5 0.5 0.5">
-					<lume-collada-model src={bodyModelUrl} />
+				<lume-element3d ref={this.astrobee}>
+					<lume-collada-model
+						src={bodyModelUrl}
+						// @ts-expect-error onload prop type in JSX is not working
+						onLoad={this.#onModelLoaded}
+						onProgress={() => console.log()}
+					/>
 					<lume-collada-model src={pmcModelUrl} />
 					<lume-collada-model src={pmcSkinModelUrl} />
 					<lume-collada-model src={pmcBumperModelUrl} />
@@ -80,7 +87,6 @@ export class App extends Component<{}, State> {
 					has="basic-material"
 					texture={lunaStation}
 					color="white"
-					align-point="0.5 0.5 0.5"
 					mount-point="0.5 0.5 0.5"
 					size="100 100 100"
 					sidedness="double"
@@ -121,8 +127,25 @@ export class App extends Component<{}, State> {
 		</>
 	)
 
+	#onModelLoaded = (event: Event) => {
+		const el = event.target as ColladaModel
+		el.three.traverse(n => {
+			// Disable the model's own lights, they are in the wrong
+			// position, and too bright.
+			if (n.type.includes('Light')) (n as Light).intensity = 0
+		})
+		el.needsUpdate()
+	}
+
 	componentDidMount() {
 		this.astrobee.current!.rotation = this.astrobeeRotation
+
+		// defer so that the rig's shadowRoot is ready when this code runs
+		queueMicrotask(() => {
+			const rigCam = this.rig.current!.shadowRoot!.querySelector('lume-perspective-camera')!
+			rigCam.near = this.cam.current!.near = 0.1
+			rigCam.far = this.cam.current!.far = 110
+		})
 	}
 
 	private astrobeeRotation: XYZNumberValuesPropertyFunction = (x, y, z, _time) => [
@@ -146,6 +169,7 @@ export class App extends Component<{}, State> {
 	private changeView = (event: ChangeEvent<HTMLInputElement>) => {
 		const input = event.target
 
+		if (input.checked) this.setState({view: input.name as View})
 		if (input.checked) this.setState({view: input.name as View})
 	}
 }

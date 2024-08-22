@@ -5,16 +5,17 @@
 		"build": "webpack --mode production"
 	},
 	"dependencies": {
-		"lume": "^0.3.0-alpha.30",
-		"react": "^17.0.1",
-		"react-dom": "^17.0.1"
+		"lume": "file:../../",
+		"react": "^19.0.0-rc",
+		"react-dom": "^19.0.0-rc"
 	},
+	"// TODO switch back to @types/react after React 19 release": "",
 	"devDependencies": {
 		"@babel/core": "^7.12.16",
 		"@babel/plugin-proposal-class-properties": "^7.13.0",
 		"@babel/preset-react": "^7.12.10",
-		"@types/react": "^17.0.0",
-		"@types/react-dom": "^17.0.0",
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc",
 		"babel-loader": "^8.2.2",
 		"file-loader": "^6.2.0",
 		"five-server": "^0.3.1",
@@ -24,5 +25,9 @@
 		"webpack": "^5.21.2",
 		"webpack-cli": "^4.5.0",
 		"webpack-dev-server": "^3.11.2"
+	},
+	"overrides": {
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc"
 	}
 }

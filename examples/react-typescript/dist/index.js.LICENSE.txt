@@ -8,13 +8,24 @@ object-assign
 fflate - fast JavaScript compression/decompression
 <https://101arrowz.github.io/fflate>
 Licensed under MIT. https://github.com/101arrowz/fflate/blob/master/LICENSE
-version 0.6.9
+version 0.8.2
 */
 
 /**
  * @license
- * Copyright 2010-2023 Three.js Authors
+ * Copyright 2010-2024 Three.js Authors
  * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * This Source Code is licensed under the MIT license. If a copy of the
+ * MIT-license was not distributed with this file, You can obtain one at:
+ * http://opensource.org/licenses/mit-license.html.
+ *
+ * @author: Hein Rutjes (IjzerenHein) and Joe Pea (trusktr)
+ * @license MIT
+ * @copyright Gloey Apps, 2015
+ * @copyright Joe Pea, 2018
  */
 
 /** @license React v0.20.2

@@ -10,9 +10,10 @@
 		"sourceMap": true,
 
 		"experimentalDecorators": true,
-		"target": "es2019",
+		"target": "ESNext",
+		"module": "ESNext",
 		"moduleResolution": "node",
-		"lib": ["dom"],
+		"lib": ["dom", "ESNext"],
 
 		"types": [],
 		"typeRoots": [],
