@@ -48,11 +48,9 @@ class ScrollFling extends Settable(Effects) {
 	minY = -Infinity
 	maxY = Infinity
 
-	target: Element = document.documentElement
+	@signal target: Element = document.documentElement
 
 	sensitivity = 1
-
-	@signal hasInteracted = false
 
 	epsilon = 0.01
 
@@ -60,6 +58,8 @@ class ScrollFling extends Settable(Effects) {
 	 * The portion to lerp towards the target values each frame. Between 0 and 1.
 	 */
 	lerpAmount = 0.3
+
+	@signal hasInteracted = false
 
 	#targetX = 0
 	#targetY = 0

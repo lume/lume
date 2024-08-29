@@ -1,24 +1,24 @@
 import { Effects } from 'classy-solid';
-declare const ScrollFling_base: {
+declare const DragFling_base: {
     new (...a: any[]): {
         set<T extends any, K extends keyof T, V extends T[K]>(props: Partial<Record<K, V>>): any;
     };
 } & typeof Effects;
-export declare class ScrollFling extends ScrollFling_base {
+export declare class DragFling extends DragFling_base {
     #private;
     private _x;
     /**
-     * During scroll, this value will change. It is a signal so that it can be
+     * During drag, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
-     * value. Setting the value immediately stops any smoothing animation.
+     * value.
      */
     get x(): number;
     set x(val: number);
     private _y;
     /**
-     * During scroll, this value will change. It is a signal so that it can be
+     * During drag, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
-     * value. Setting the value immediately stops any smoothing animation.
+     * value.
      */
     get y(): number;
     set y(val: number);
@@ -30,13 +30,21 @@ export declare class ScrollFling extends ScrollFling_base {
     sensitivity: number;
     epsilon: number;
     /**
-     * The portion to lerp towards the target values each frame. Between 0 and 1.
+     * Portion of the change in value that is removed each frame to
+     * cause slowdown. Between 0 and 1.
      */
-    lerpAmount: number;
-    hasInteracted: boolean;
+    slowdownAmount: number;
+    invertY: boolean;
+    invertX: boolean;
+    /**
+     * The allowed pointer types to use for dragging ('mouse', 'pen', or
+     * 'touch'). Default is all of them.
+     */
+    pointerTypes: ('mouse' | 'pen' | 'touch')[];
+    get interacting(): boolean;
     get isStarted(): boolean;
     start(): this;
     stop(): this;
 }
 export {};
-//# sourceMappingURL=ScrollFling.d.ts.map
+//# sourceMappingURL=DragFling.d.ts.map
