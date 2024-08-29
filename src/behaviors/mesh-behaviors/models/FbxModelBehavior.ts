@@ -4,11 +4,11 @@ import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js'
 import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {ModelBehavior} from './ModelBehavior.js'
 
 import type {Group} from 'three/src/objects/Group.js'
 
@@ -16,7 +16,7 @@ export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry'
 
 export
 @behavior
-class FbxModelBehavior extends RenderableBehavior {
+class FbxModelBehavior extends ModelBehavior {
 	/** Path to a .fbx file. */
 	@stringAttribute @receiver src = ''
 
@@ -33,7 +33,7 @@ class FbxModelBehavior extends RenderableBehavior {
 	@booleanAttribute @receiver centerGeometry = false
 
 	loader = new FBXLoader()
-	model?: Group
+	declare model?: Group
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -72,6 +72,8 @@ class FbxModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
+		this.isLoading = true
+
 		// In the following loader.load() callbacks, if __version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
@@ -109,6 +111,8 @@ class FbxModelBehavior extends RenderableBehavior {
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: 'fbx', model})
 		this.element.needsUpdate()
+
+		this.isLoading = false
 	}
 }
 

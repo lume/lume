@@ -1,8 +1,8 @@
 import 'element-behaviors';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry';
-export declare class GltfModelBehavior extends RenderableBehavior {
+export declare class GltfModelBehavior extends ModelBehavior {
     #private;
     /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
     src: string | null;
@@ -31,7 +31,7 @@ export declare class GltfModelBehavior extends RenderableBehavior {
      */
     centerGeometry: boolean;
     loader: GLTFLoader;
-    model: GLTF | null;
+    model?: GLTF;
     connectedCallback(): void;
 }
 //# sourceMappingURL=GltfModelBehavior.d.ts.map

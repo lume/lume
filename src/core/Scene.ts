@@ -28,7 +28,7 @@ import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 import {defaultScenePerspective} from '../constants.js'
-import type {TColor} from '../utils/three.js'
+import type {TColor} from '../utils/three/material.js'
 import type {Camera} from '../cameras/Camera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'

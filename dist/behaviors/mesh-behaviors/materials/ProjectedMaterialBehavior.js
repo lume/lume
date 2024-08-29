@@ -226,6 +226,7 @@ let ProjectedMaterialBehavior = (() => {
                     this.textureProjectors = this.#textureProjectorsRaw;
                 }, 0);
             });
+            // TODO This queries in upward roots only. I think we want to also branch downward into sibling roots.
             for (const root of upwardRoots(this.element))
                 this.#observer.observe(root, { childList: true, subtree: true });
             this.createEffect(() => {

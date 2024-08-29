@@ -12,4 +12,9 @@ export function* upwardRoots(el) {
         root = root instanceof ShadowRoot ? root.host.getRootNode() : null;
     }
 }
+/**
+ * Iterate all roots reachable from `el`.
+ * This will make it possible to implement selector refs across the whole composed tree.
+ */
+export function* reachableRoots(_el) { }
 //# sourceMappingURL=upwardRoots.js.map

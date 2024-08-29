@@ -36,17 +36,17 @@ import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
 import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
-import { disposeObjectTree } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
 let TdsModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
@@ -64,7 +64,6 @@ let TdsModelBehavior = (() => {
         /** Path to a .3ds file. */
         src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''));
         loader = new TDSLoader();
-        model;
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
@@ -88,6 +87,7 @@ let TdsModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
+            this.isLoading = true;
             // In the following loader.load() callbacks, if __version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
@@ -106,6 +106,7 @@ let TdsModelBehavior = (() => {
             this.element.three.add(model);
             this.element.emit(Events.MODEL_LOAD, { format: '3ds', model });
             this.element.needsUpdate();
+            this.isLoading = false;
         }
     };
     return TdsModelBehavior = _classThis;

@@ -40,11 +40,11 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Box3 } from 'three/src/math/Box3.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
-import { disposeObjectTree } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
 /**
  * The recommended CDN for retrieving Draco decoder files.
  * More info: https://github.com/google/draco#wasm-and-javascript-decoders
@@ -57,7 +57,7 @@ let GltfModelBehavior = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
@@ -131,7 +131,6 @@ let GltfModelBehavior = (() => {
          */
         centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
         loader = new GLTFLoader();
-        model = null;
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
@@ -162,7 +161,7 @@ let GltfModelBehavior = (() => {
                     onCleanup(() => {
                         if (this.model)
                             disposeObjectTree(this.model.scene);
-                        this.model = null;
+                        this.model = undefined;
                         // Increment this in case the loader is still loading, so it will ignore the result.
                         this.#version++;
                     });
@@ -174,6 +173,7 @@ let GltfModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
+            this.isLoading = true;
             // In the following gltfLoader.load() callbacks, if #version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
@@ -200,6 +200,7 @@ let GltfModelBehavior = (() => {
             this.element.three.add(model.scene);
             this.element.emit(Events.MODEL_LOAD, { format: 'gltf', model });
             this.element.needsUpdate();
+            this.isLoading = false;
         }
     };
     return GltfModelBehavior = _classThis;

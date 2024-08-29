@@ -35,19 +35,21 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
-import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
+import { setRandomColorPhongMaterial } from '../../../utils/three/material.js';
+import { isRenderItem } from '../../../utils/three/is.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
 let ObjModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _obj_decorators;
     let _obj_initializers = [];
@@ -68,7 +70,6 @@ let ObjModelBehavior = (() => {
         }
         obj = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _obj_initializers, ''));
         mtl = __runInitializers(this, _mtl_initializers, '');
-        model;
         objLoader = (() => {
             const loader = new OBJLoader();
             loader.manager.onLoad = () => this.element.needsUpdate();
@@ -111,6 +112,7 @@ let ObjModelBehavior = (() => {
             const version = this.#version;
             if (!obj)
                 return;
+            this.isLoading = true;
             if (mtl) {
                 mtlLoader.setResourcePath(mtl.substr(0, mtl.lastIndexOf('/') + 1));
                 mtlLoader.load(mtl, materials => {
@@ -168,6 +170,7 @@ let ObjModelBehavior = (() => {
             this.element.three.add(model);
             this.element.emit(Events.MODEL_LOAD, { format: 'obj', model });
             this.element.needsUpdate();
+            this.isLoading = false;
         }
     };
     return ObjModelBehavior = _classThis;

@@ -1,8 +1,8 @@
 import { type ElementAttributes } from '@lume/element';
-import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/index.js';
-export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttributes;
+export type FbxModelAttributes = ModelAttributes | FbxModelBehaviorAttributes;
 /**
  * @element lume-fbx-model
  * @class FbxModel -
@@ -36,8 +36,10 @@ export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttribute
  * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
-export declare class FbxModel extends Element3D {
+export declare class FbxModel extends Model {
     initialBehaviors: {
         model: string;
     };

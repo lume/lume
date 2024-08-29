@@ -6,11 +6,11 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {GLTFLoader, type GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {ModelBehavior} from './ModelBehavior.js'
 
 /**
  * The recommended CDN for retrieving Draco decoder files.
@@ -25,7 +25,7 @@ export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeomet
 
 export
 @behavior
-class GltfModelBehavior extends RenderableBehavior {
+class GltfModelBehavior extends ModelBehavior {
 	/** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
 	@attribute @receiver src: string | null = ''
 
@@ -56,7 +56,7 @@ class GltfModelBehavior extends RenderableBehavior {
 	@booleanAttribute @receiver centerGeometry = false
 
 	loader = new GLTFLoader()
-	model: GLTF | null = null
+	declare model?: GLTF
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -95,7 +95,7 @@ class GltfModelBehavior extends RenderableBehavior {
 
 				onCleanup(() => {
 					if (this.model) disposeObjectTree(this.model.scene)
-					this.model = null
+					this.model = undefined
 					// Increment this in case the loader is still loading, so it will ignore the result.
 					this.#version++
 				})
@@ -108,6 +108,8 @@ class GltfModelBehavior extends RenderableBehavior {
 		const version = this.#version
 
 		if (!src) return
+
+		this.isLoading = true
 
 		// In the following gltfLoader.load() callbacks, if #version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
@@ -147,6 +149,8 @@ class GltfModelBehavior extends RenderableBehavior {
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'gltf', model})
 		this.element.needsUpdate()
+
+		this.isLoading = false
 	}
 }
 

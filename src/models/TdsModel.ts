@@ -1,10 +1,10 @@
 import {element, type ElementAttributes} from '@lume/element'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {TdsModelBehavior, TdsModelBehaviorAttributes} from '../behaviors/index.js'
 
-export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttributes
+export type TdsModelAttributes = ModelAttributes | TdsModelBehaviorAttributes
 
 /**
  * @element lume-3ds-model
@@ -39,10 +39,12 @@ export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttribute
  * model.on('MODEL_LOAD', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 export
 @element('lume-3ds-model', autoDefineElements)
-class TdsModel extends Element3D {
+class TdsModel extends Model {
 	override initialBehaviors = {model: '3ds'}
 }
 

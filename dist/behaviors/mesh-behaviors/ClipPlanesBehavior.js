@@ -39,6 +39,7 @@ import { behavior } from '../Behavior.js';
 import { receiver } from '../PropReceiver.js';
 import { ClipPlane } from '../../core/ClipPlane.js';
 import { MeshBehavior } from './MeshBehavior.js';
+import { upwardRoots } from '../../utils/upwardRoots.js';
 let refCount = 0;
 /**
  * @class ClipPlanesBehavior
@@ -284,15 +285,14 @@ let ClipPlanesBehavior = (() => {
                 if (!refCount)
                     this.element.scene.__localClipping = true;
                 refCount++;
-                // TODO we need to observe all the way up the composed tree, or we
-                // should make the querying scoped only to the nearest root, for
-                // consistency. This covers most cases, for now.
                 this.#observer = new MutationObserver(() => {
                     // TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
                     // This triggers the setter logic.
                     this.clipPlanes = this.#rawClipPlanes;
                 });
-                this.#observer.observe(this.element.getRootNode(), { childList: true, subtree: true });
+                // TODO This queries in upward roots only. I think we want to also branch downward into sibling roots.
+                for (const root of upwardRoots(this.element))
+                    this.#observer.observe(root, { childList: true, subtree: true });
                 createEffect(() => {
                     const { clipPlanes, clipIntersection, clipShadows, flipClip } = this;
                     const mat = this.material;

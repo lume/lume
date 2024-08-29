@@ -1,10 +1,10 @@
 import {element, type ElementAttributes} from '@lume/element'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {ColladaModelBehavior, ColladaModelBehaviorAttributes} from '../behaviors/index.js'
 
-export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorAttributes
+export type ColladaModelAttributes = ModelAttributes | ColladaModelBehaviorAttributes
 
 /**
  * @element lume-collada-model
@@ -40,11 +40,11 @@ export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorA
  * scene.add(model)
  * ```
  *
- * @extends Element3D
+ * @extends Model
  */
 export
 @element('lume-collada-model', autoDefineElements)
-class ColladaModel extends Element3D {
+class ColladaModel extends Model {
 	override initialBehaviors = {model: 'collada'}
 }
 

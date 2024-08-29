@@ -2,11 +2,11 @@ import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
 import {onCleanup} from 'solid-js'
 import {TDSLoader} from 'three/examples/jsm/loaders/TDSLoader.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {ModelBehavior} from './ModelBehavior.js'
 
 import type {Group} from 'three/src/objects/Group.js'
 
@@ -14,12 +14,12 @@ export type TdsModelBehaviorAttributes = 'src'
 
 export
 @behavior
-class TdsModelBehavior extends RenderableBehavior {
+class TdsModelBehavior extends ModelBehavior {
 	/** Path to a .3ds file. */
 	@stringAttribute @receiver src = ''
 
 	loader = new TDSLoader()
-	model?: Group
+	declare model?: Group
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -49,6 +49,8 @@ class TdsModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
+		this.isLoading = true
+
 		// In the following loader.load() callbacks, if __version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
@@ -77,6 +79,8 @@ class TdsModelBehavior extends RenderableBehavior {
 		this.element.three.add(model)
 		this.element.emit(Events.MODEL_LOAD, {format: '3ds', model})
 		this.element.needsUpdate()
+
+		this.isLoading = false
 	}
 }
 

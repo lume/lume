@@ -1,7 +1,7 @@
 import 'element-behaviors';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
 import type { ElementBehaviors } from 'element-behaviors';
 declare global {
@@ -9,7 +9,7 @@ declare global {
     }
 }
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl';
-export declare class ObjModelBehavior extends RenderableBehavior {
+export declare class ObjModelBehavior extends ModelBehavior {
     #private;
     obj: string;
     mtl: string;

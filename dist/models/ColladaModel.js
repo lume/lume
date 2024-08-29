@@ -33,7 +33,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
-import { Element3D } from '../core/Element3D.js';
+import { Model } from './Model.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
  * @element lume-collada-model
@@ -69,14 +69,14 @@ import { autoDefineElements } from '../LumeConfig.js';
  * scene.add(model)
  * ```
  *
- * @extends Element3D
+ * @extends Model
  */
 let ColladaModel = (() => {
     let _classDecorators = [element('lume-collada-model', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = Model;
     var ColladaModel = class extends _classSuper {
         static { _classThis = this; }
         static {

@@ -34,19 +34,19 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 };
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
+import { onCleanup } from 'solid-js';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
-import { disposeObjectTree } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
-import { onCleanup } from 'solid-js';
+import { ModelBehavior } from './ModelBehavior.js';
 let ColladaModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
@@ -64,7 +64,6 @@ let ColladaModelBehavior = (() => {
         /** Path to a .dae file. */
         src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''));
         loader = new ColladaLoader();
-        model;
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
@@ -88,6 +87,7 @@ let ColladaModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
+            this.isLoading = true;
             // In the following colladaLoader.load() callbacks, if version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
@@ -106,6 +106,7 @@ let ColladaModelBehavior = (() => {
             this.element.three.add(model.scene);
             this.element.emit(Events.MODEL_LOAD, { format: 'collada', model });
             this.element.needsUpdate();
+            this.isLoading = false;
         }
     };
     return ColladaModelBehavior = _classThis;

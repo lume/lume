@@ -3,7 +3,7 @@ import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { type ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
-import type { TColor } from '../utils/three.js';
+import type { TColor } from '../utils/three/material.js';
 import type { Camera } from '../cameras/Camera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';

@@ -1,23 +1,23 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
+import {onCleanup} from 'solid-js'
 import {ColladaLoader, type Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-import {onCleanup} from 'solid-js'
+import {ModelBehavior} from './ModelBehavior.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
 export
 @behavior
-class ColladaModelBehavior extends RenderableBehavior {
+class ColladaModelBehavior extends ModelBehavior {
 	/** Path to a .dae file. */
 	@stringAttribute @receiver src = ''
 
 	loader = new ColladaLoader()
-	model?: Collada
+	declare model?: Collada
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -47,6 +47,8 @@ class ColladaModelBehavior extends RenderableBehavior {
 
 		if (!src) return
 
+		this.isLoading = true
+
 		// In the following colladaLoader.load() callbacks, if version doesn't
 		// match, it means this.src or this.dracoDecoder changed while
 		// a previous model was loading, in which case we ignore that
@@ -75,6 +77,8 @@ class ColladaModelBehavior extends RenderableBehavior {
 		this.element.three.add(model.scene)
 		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
 		this.element.needsUpdate()
+
+		this.isLoading = false
 	}
 }
 
