@@ -82,7 +82,7 @@ export declare class InstancedMesh extends Mesh {
         geometry: string;
         material: string;
     };
-    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material>;
+    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material, import("three/src/objects/InstancedMesh.js").InstancedMeshEventMap>;
     setInstancePosition(index: number, x: number, y: number, z: number): void;
     setInstanceScale(index: number, x: number, y: number, z: number): void;
     setInstanceRotation(index: number, x: number, y: number, z: number): void;

@@ -2,33 +2,16 @@ import {createSignal, onCleanup, untrack} from 'solid-js'
 import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
-
 import type {RenderTask} from '../core/index.js'
-
-type Options = Partial<
-	Pick<
-		ScrollFling,
-		| 'target'
-		| 'x'
-		| 'y'
-		| 'minX'
-		| 'maxX'
-		| 'minY'
-		| 'maxY'
-		| 'sensitivity'
-		| 'hasInteracted'
-		| 'epsilon'
-		| 'lerpAmount'
-	>
->
+import {Settable} from '../utils/Settable.js'
 
 // @ts-ignore
 window.debug = true
 
 export
 @reactive
-class ScrollFling extends Effects {
-	@signal _x = 0
+class ScrollFling extends Settable(Effects) {
+	@signal private _x = 0
 
 	/**
 	 * During scroll, this value will change. It is a signal so that it can be
@@ -44,7 +27,7 @@ class ScrollFling extends Effects {
 		this.#targetX = val
 	}
 
-	@signal _y = 0
+	@signal private _y = 0
 
 	/**
 	 * During scroll, this value will change. It is a signal so that it can be
@@ -84,7 +67,7 @@ class ScrollFling extends Effects {
 	#task?: RenderTask
 
 	#isStarted = (() => {
-		const {0: get, 1: set} = createSignal(false)
+		const [get, set] = createSignal(false)
 		return {get, set}
 	})()
 
@@ -93,13 +76,6 @@ class ScrollFling extends Effects {
 	}
 
 	#aborter = new AbortController()
-
-	constructor(options: Options = {}) {
-		super()
-		Object.assign(this, options)
-		this.#targetX = this._x
-		this.#targetY = this._y
-	}
 
 	#onWheel = (event: WheelEvent) => {
 		this.hasInteracted = true

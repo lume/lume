@@ -36,6 +36,7 @@ import { createSignal, onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
+import { Settable } from '../utils/Settable.js';
 // @ts-ignore
 window.debug = true;
 let ScrollFling = (() => {
@@ -43,7 +44,7 @@ let ScrollFling = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _instanceExtraInitializers = [];
     let __x_decorators;
     let __x_initializers = [];
@@ -122,19 +123,13 @@ let ScrollFling = (() => {
         #targetY = 0;
         #task;
         #isStarted = (() => {
-            const { 0: get, 1: set } = createSignal(false);
+            const [get, set] = createSignal(false);
             return { get, set };
         })();
         get isStarted() {
             return this.#isStarted.get();
         }
         #aborter = new AbortController();
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-            this.#targetX = this._x;
-            this.#targetY = this._y;
-        }
         #onWheel = (event) => {
             this.hasInteracted = true;
             event.preventDefault();

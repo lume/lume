@@ -8,27 +8,11 @@ import {Effects, reactive, signal} from 'classy-solid'
 import {onCleanup} from 'solid-js'
 import {clamp} from '../math/clamp.js'
 import type {Element3D} from '../core/Element3D.js'
-
-type Options = Partial<
-	Pick<
-		FlingRotation,
-		| 'rotationXTarget'
-		| 'rotationYTarget'
-		| 'interactionInitiator'
-		| 'interactionContainer'
-		| 'minFlingRotationX'
-		| 'maxFlingRotationX'
-		| 'minFlingRotationY'
-		| 'maxFlingRotationY'
-		| 'factor'
-		| 'epsilon'
-		| 'slowdownAmount'
-	>
->
+import {Settable} from '../utils/Settable.js'
 
 export
 @reactive
-class FlingRotation extends Effects {
+class FlingRotation extends Settable(Effects) {
 	/** The object that will be rotated on Y. Required. */
 	@signal rotationYTarget!: Element3D
 
@@ -89,11 +73,6 @@ class FlingRotation extends Effects {
 	slowdownAmount = 0.05
 
 	#aborter = new AbortController()
-
-	constructor(options: Options = {}) {
-		super()
-		Object.assign(this, options)
-	}
 
 	#mainPointer = -1
 	#pointerCount = 0

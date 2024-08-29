@@ -2,16 +2,12 @@ import {createSignal, onCleanup, untrack} from 'solid-js'
 import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
-
 import type {RenderTask} from '../core/index.js'
-
-type Options = Partial<
-	Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'slowdownAmount'>
->
+import {Settable} from '../utils/Settable.js'
 
 export
 @reactive
-class PinchFling extends Effects {
+class PinchFling extends Settable(Effects) {
 	/**
 	 * During pinch, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
@@ -39,7 +35,7 @@ class PinchFling extends Effects {
 	#task?: RenderTask
 
 	#interacting = (() => {
-		const {0: get, 1: set} = createSignal(false)
+		const [get, set] = createSignal(false)
 		return {get, set}
 	})()
 
@@ -48,7 +44,7 @@ class PinchFling extends Effects {
 	}
 
 	#isStarted = (() => {
-		const {0: get, 1: set} = createSignal(false)
+		const [get, set] = createSignal(false)
 		return {get, set}
 	})()
 
@@ -57,11 +53,6 @@ class PinchFling extends Effects {
 	}
 
 	#aborter = new AbortController()
-
-	constructor(options: Options = {}) {
-		super()
-		Object.assign(this, options)
-	}
 
 	#onPinch = (dx: number) => {
 		this.hasInteracted = true
@@ -164,6 +155,7 @@ class PinchFling extends Effects {
 				if (this.#task) Motor.removeRenderTask(this.#task)
 
 				this.#aborter.abort()
+				this.#interacting.set(false)
 			})
 		})
 

@@ -40,12 +40,13 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 import { Effects, reactive, signal } from 'classy-solid';
 import { onCleanup } from 'solid-js';
 import { clamp } from '../math/clamp.js';
+import { Settable } from '../utils/Settable.js';
 let FlingRotation = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _instanceExtraInitializers = [];
     let _rotationYTarget_decorators;
     let _rotationYTarget_initializers = [];
@@ -126,10 +127,6 @@ let FlingRotation = (() => {
          */
         slowdownAmount = 0.05;
         #aborter = new AbortController();
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-        }
         #mainPointer = -1;
         #pointerCount = 0;
         // The last X/Y only for a single pointer (the rest are ignored).

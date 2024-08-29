@@ -31,7 +31,7 @@ export declare class Line extends Element3D {
         geometry: string;
         material: string;
     };
-    makeThreeObject3d(): ThreeLine<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[]>;
+    makeThreeObject3d(): ThreeLine<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
 }
 export interface Line extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {
 }

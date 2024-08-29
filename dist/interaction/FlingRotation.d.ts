@@ -1,7 +1,11 @@
 import { Effects } from 'classy-solid';
 import type { Element3D } from '../core/Element3D.js';
-type Options = Partial<Pick<FlingRotation, 'rotationXTarget' | 'rotationYTarget' | 'interactionInitiator' | 'interactionContainer' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'factor' | 'epsilon' | 'slowdownAmount'>>;
-export declare class FlingRotation extends Effects {
+declare const FlingRotation_base: {
+    new (...a: any[]): {
+        set<T extends any, K extends keyof T, V extends T[K]>(props: Partial<Record<K, V>>): any;
+    };
+} & typeof Effects;
+export declare class FlingRotation extends FlingRotation_base {
     #private;
     /** The object that will be rotated on Y. Required. */
     rotationYTarget: Element3D;
@@ -49,7 +53,6 @@ export declare class FlingRotation extends Effects {
      * cause slowdown. Between 0 and 1.
      */
     slowdownAmount: number;
-    constructor(options?: Options);
     start(): this;
     stop(): this;
 }
