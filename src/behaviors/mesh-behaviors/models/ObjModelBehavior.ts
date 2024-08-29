@@ -6,7 +6,9 @@ import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {Group} from 'three/src/objects/Group.js'
-import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
+import {setRandomColorPhongMaterial} from '../../../utils/three/material.js'
+import {isRenderItem} from '../../../utils/three/is.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
@@ -35,6 +37,7 @@ class ObjModelBehavior extends ModelBehavior {
 	@stringAttribute @receiver obj = ''
 	@stringAttribute @receiver mtl = ''
 
+	/** @deprecated access `.threeModel` on the lume-obj-model element instead. */
 	declare model?: Group
 
 	declare element: ObjModel

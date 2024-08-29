@@ -1,8 +1,3 @@
-// TODO FlingRotation's interaction and tree structure are horribly coupled.
-// Instead we can implement DragFling, similar to ScrollFling and PinchFling,
-// and use that for rotation. Then if we even keep FlingRotation, we can just
-// have it accept a single element to rotate, and it would apply DragFling (or
-// whichever fling is provided, easy to compose things).
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -38,35 +33,68 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { Effects, reactive, signal } from 'classy-solid';
-import { onCleanup } from 'solid-js';
-import { clamp } from '../math/clamp.js';
+import { createEffect, onCleanup } from 'solid-js';
+import { Settable } from '../utils/Settable.js';
+import { DragFling } from './DragFling.js';
+/**
+ * Rotates the `rotationXTarget` element on X, and the `rotationYTarget` element
+ * on Y, to make interactive rotation of an object.
+ */
 let FlingRotation = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _instanceExtraInitializers = [];
     let _rotationYTarget_decorators;
     let _rotationYTarget_initializers = [];
     let _rotationXTarget_decorators;
     let _rotationXTarget_initializers = [];
-    let _interactionInitiator_decorators;
-    let _interactionInitiator_initializers = [];
-    let _interactionContainer_decorators;
-    let _interactionContainer_initializers = [];
+    let _target_decorators;
+    let _target_initializers = [];
+    let _minRotationX_decorators;
+    let _minRotationX_initializers = [];
+    let _maxRotationX_decorators;
+    let _maxRotationX_initializers = [];
+    let _minRotationY_decorators;
+    let _minRotationY_initializers = [];
+    let _maxRotationY_decorators;
+    let _maxRotationY_initializers = [];
+    let _sensitivity_decorators;
+    let _sensitivity_initializers = [];
+    let _epsilon_decorators;
+    let _epsilon_initializers = [];
+    let _slowdownAmount_decorators;
+    let _slowdownAmount_initializers = [];
+    let _pointerTypes_decorators;
+    let _pointerTypes_initializers = [];
     var FlingRotation = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _rotationYTarget_decorators = [signal];
             _rotationXTarget_decorators = [signal];
-            _interactionInitiator_decorators = [signal];
-            _interactionContainer_decorators = [signal];
+            _target_decorators = [signal];
+            _minRotationX_decorators = [signal];
+            _maxRotationX_decorators = [signal];
+            _minRotationY_decorators = [signal];
+            _maxRotationY_decorators = [signal];
+            _sensitivity_decorators = [signal];
+            _epsilon_decorators = [signal];
+            _slowdownAmount_decorators = [signal];
+            _pointerTypes_decorators = [signal];
             __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _interactionInitiator_decorators, { kind: "field", name: "interactionInitiator", static: false, private: false, access: { has: obj => "interactionInitiator" in obj, get: obj => obj.interactionInitiator, set: (obj, value) => { obj.interactionInitiator = value; } }, metadata: _metadata }, _interactionInitiator_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _interactionContainer_decorators, { kind: "field", name: "interactionContainer", static: false, private: false, access: { has: obj => "interactionContainer" in obj, get: obj => obj.interactionContainer, set: (obj, value) => { obj.interactionContainer = value; } }, metadata: _metadata }, _interactionContainer_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _minRotationX_decorators, { kind: "field", name: "minRotationX", static: false, private: false, access: { has: obj => "minRotationX" in obj, get: obj => obj.minRotationX, set: (obj, value) => { obj.minRotationX = value; } }, metadata: _metadata }, _minRotationX_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _maxRotationX_decorators, { kind: "field", name: "maxRotationX", static: false, private: false, access: { has: obj => "maxRotationX" in obj, get: obj => obj.maxRotationX, set: (obj, value) => { obj.maxRotationX = value; } }, metadata: _metadata }, _maxRotationX_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _minRotationY_decorators, { kind: "field", name: "minRotationY", static: false, private: false, access: { has: obj => "minRotationY" in obj, get: obj => obj.minRotationY, set: (obj, value) => { obj.minRotationY = value; } }, metadata: _metadata }, _minRotationY_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _maxRotationY_decorators, { kind: "field", name: "maxRotationY", static: false, private: false, access: { has: obj => "maxRotationY" in obj, get: obj => obj.maxRotationY, set: (obj, value) => { obj.maxRotationY = value; } }, metadata: _metadata }, _maxRotationY_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _sensitivity_decorators, { kind: "field", name: "sensitivity", static: false, private: false, access: { has: obj => "sensitivity" in obj, get: obj => obj.sensitivity, set: (obj, value) => { obj.sensitivity = value; } }, metadata: _metadata }, _sensitivity_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _epsilon_decorators, { kind: "field", name: "epsilon", static: false, private: false, access: { has: obj => "epsilon" in obj, get: obj => obj.epsilon, set: (obj, value) => { obj.epsilon = value; } }, metadata: _metadata }, _epsilon_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _slowdownAmount_decorators, { kind: "field", name: "slowdownAmount", static: false, private: false, access: { has: obj => "slowdownAmount" in obj, get: obj => obj.slowdownAmount, set: (obj, value) => { obj.slowdownAmount = value; } }, metadata: _metadata }, _slowdownAmount_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _pointerTypes_decorators, { kind: "field", name: "pointerTypes", static: false, private: false, access: { has: obj => "pointerTypes" in obj, get: obj => obj.pointerTypes, set: (obj, value) => { obj.pointerTypes = value; } }, metadata: _metadata }, _pointerTypes_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             FlingRotation = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -80,132 +108,73 @@ let FlingRotation = (() => {
          */
         rotationXTarget = __runInitializers(this, _rotationXTarget_initializers, void 0);
         /**
-         * The element on which the pointer should be placed down on in order to
-         * initiate drag tracking. This defaults to rotationXTarget.
+         * The element that will used for drag handling, defaults to
+         * rotationXTarget. You could set it to a <lume-scene>, for example, to make
+         * the rotation interaction start anywhere in a scene, not specifically on
+         * the object to be rotated.
          */
-        interactionInitiator = __runInitializers(this, _interactionInitiator_initializers, void 0);
-        /**
-         * The area in which drag tacking will happen. Defaults to
-         * document.documentElement for tracking in the whole viewport.
-         */
-        // TODO we only need the initiator (just call it target) and we can remove
-        // this in favor of pointer capture.
-        interactionContainer = __runInitializers(this, _interactionContainer_initializers, document.documentElement
+        target = __runInitializers(this, _target_initializers, void 0);
         /**
          * The X rotation can not go below this value. Defaults to -90 which means
          * facing straight up.
          */
-        );
-        /**
-         * The X rotation can not go below this value. Defaults to -90 which means
-         * facing straight up.
-         */
-        minFlingRotationX = -90;
+        minRotationX = __runInitializers(this, _minRotationX_initializers, -90
         /**
          * The X rotation can not go above this value. Defaults to 90 which means
          * facing straight down.
          */
-        maxFlingRotationX = 90;
+        );
+        /**
+         * The X rotation can not go above this value. Defaults to 90 which means
+         * facing straight down.
+         */
+        maxRotationX = __runInitializers(this, _maxRotationX_initializers, 90
         /**
          * The Y rotation can not go below this value. Defaults to -Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        minFlingRotationY = -Infinity;
+        );
+        /**
+         * The Y rotation can not go below this value. Defaults to -Infinity which
+         * means the camera can keep rotating laterally around the focus point
+         * indefinitely.
+         */
+        minRotationY = __runInitializers(this, _minRotationY_initializers, -Infinity
         /**
          * The Y rotation can not go below this value. Defaults to Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        maxFlingRotationY = Infinity;
-        factor = 1;
-        epsilon = 0.01;
+        );
+        /**
+         * The Y rotation can not go below this value. Defaults to Infinity which
+         * means the camera can keep rotating laterally around the focus point
+         * indefinitely.
+         */
+        maxRotationY = __runInitializers(this, _maxRotationY_initializers, Infinity);
+        sensitivity = __runInitializers(this, _sensitivity_initializers, 1);
+        epsilon = __runInitializers(this, _epsilon_initializers, 0.01
         /**
          * Portion of the change in rotation that is removed each frame to
          * cause slowdown. Between 0 and 1.
          */
-        slowdownAmount = 0.05;
-        #aborter = new AbortController();
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-        }
-        #mainPointer = -1;
-        #pointerCount = 0;
-        // The last X/Y only for a single pointer (the rest are ignored).
-        #lastX = 0;
-        #lastY = 0;
-        #deltaX = 0;
-        #deltaY = 0;
-        #moveTimestamp = 0;
-        #onPointerDown = (event) => {
-            this.#pointerCount++;
-            if (this.#pointerCount === 1)
-                this.#mainPointer = event.pointerId;
-            else
-                return;
-            this.interactionContainer.setPointerCapture(this.#mainPointer);
-            this.#stopAnimation();
-            this.#lastX = event.x;
-            this.#lastY = event.y;
-            this.#deltaX = 0;
-            this.#deltaY = 0;
-            // @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
-            this.interactionContainer.addEventListener('pointermove', this.#onMove, { signal: this.#aborter.signal });
-            this.interactionContainer.addEventListener('pointerup', this.#onPointerUp, { signal: this.#aborter.signal });
-        };
-        #onMove = (event) => {
-            if (event.pointerId !== this.#mainPointer)
-                return;
-            this.#moveTimestamp = performance.now();
-            // We're not simply using event.movementX and event.movementY
-            // because of a Safari bug:
-            // https://bugs.webkit.org/show_bug.cgi?id=248119
-            const movementX = event.x - this.#lastX;
-            const movementY = event.y - this.#lastY;
-            this.#lastX = event.x;
-            this.#lastY = event.y;
-            this.#deltaX = movementY * 0.15 * this.factor;
-            this.rotationXTarget.rotation.x = clamp(this.rotationXTarget.rotation.x + this.#deltaX, this.minFlingRotationX, this.maxFlingRotationX);
-            this.#deltaY = -movementX * 0.15 * this.factor;
-            this.rotationYTarget.rotation.y = clamp(this.rotationYTarget.rotation.y + this.#deltaY, this.minFlingRotationY, this.maxFlingRotationY);
-        };
-        #onPointerUp = () => {
-            this.#pointerCount--;
-            if (this.#pointerCount === 0) {
-                if (this.interactionContainer.hasPointerCapture(this.#mainPointer))
-                    this.interactionContainer.releasePointerCapture(this.#mainPointer);
-                this.#mainPointer = -1;
-                this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp);
-            }
-            // stop dragging
-            // @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
-            this.interactionContainer.removeEventListener('pointermove', this.#onMove);
-            if ((this.#deltaX === 0 && this.#deltaY === 0) || performance.now() - this.#moveTimestamp > 100)
-                return;
-            // slow the rotation down based on former drag speed
-            this.rotationXTarget.rotation = (x, y, z, _t, dt) => {
-                const fpsRatio = dt / 16.6666;
-                // Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
-                this.#deltaX *= 1 - fpsRatio * this.slowdownAmount;
-                // stop rotation once the delta is small enough that we
-                // no longer notice the rotation.
-                if (Math.abs(this.#deltaX) < this.epsilon)
-                    return false;
-                return [clamp(x + this.#deltaX, this.minFlingRotationX, this.maxFlingRotationX), y, z];
-            };
-            this.rotationYTarget.rotation = (x, y, z, _t, dt) => {
-                const fpsRatio = dt / 16.6666;
-                // Multiply by fpsRatio so that the slowdownAmount is consistent over time no matter the fps.
-                this.#deltaY *= 1 - fpsRatio * this.slowdownAmount;
-                // stop rotation once the delta is small enough that we
-                // no longer notice the rotation.
-                if (Math.abs(this.#deltaY) < this.epsilon)
-                    return false;
-                return [x, clamp(y + this.#deltaY, this.minFlingRotationY, this.maxFlingRotationY), z];
-            };
-        };
-        #onDragStart = (event) => event.preventDefault();
+        );
+        /**
+         * Portion of the change in rotation that is removed each frame to
+         * cause slowdown. Between 0 and 1.
+         */
+        slowdownAmount = __runInitializers(this, _slowdownAmount_initializers, 0.05
+        /**
+         * The allowed pointer types to use for dragging ('mouse', 'pen', or
+         * 'touch'). Default is all of them.
+         */
+        );
+        /**
+         * The allowed pointer types to use for dragging ('mouse', 'pen', or
+         * 'touch'). Default is all of them.
+         */
+        pointerTypes = __runInitializers(this, _pointerTypes_initializers, ['mouse', 'pen', 'touch']);
         #isStarted = false;
         start() {
             if (this.#isStarted)
@@ -213,24 +182,25 @@ let FlingRotation = (() => {
             this.#isStarted = true;
             this.createEffect(() => {
                 // We need all these things for interaction to continue.
-                if (!(this.rotationYTarget && this.rotationXTarget && this.interactionInitiator && this.interactionContainer))
+                if (!(this.rotationYTarget && this.rotationXTarget && this.target))
                     return;
-                this.#aborter = new AbortController();
-                // @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-                this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, { signal: this.#aborter.signal });
-                // Hack needed for Chrome (works fine in Firefox) otherwise
-                // pointercancel breaks the drag handling. See
-                // https://crbug.com/1166044
-                // @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
-                this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, { signal: this.#aborter.signal });
-                this.interactionInitiator.addEventListener('pointercancel', () => {
-                    console.error('Pointercancel should not be happening. If so, please kindly open an issue at https://github.com/lume/lume/issues.');
-                }, { signal: this.#aborter.signal });
-                onCleanup(() => {
-                    this.#mainPointer = -1;
-                    this.#pointerCount = 0;
-                    this.#stopAnimation();
-                    this.#aborter.abort();
+                const dragFling = new DragFling().set({ target: this.target, pointerTypes: this.pointerTypes });
+                dragFling.start();
+                onCleanup(() => dragFling.stop());
+                createEffect(() => {
+                    dragFling.set({
+                        minX: this.minRotationY,
+                        maxX: this.maxRotationY,
+                        minY: this.minRotationX,
+                        maxY: this.maxRotationX,
+                        sensitivity: 0.15 * this.sensitivity,
+                        epsilon: this.epsilon,
+                        slowdownAmount: this.slowdownAmount,
+                    });
+                });
+                createEffect(() => {
+                    this.rotationXTarget.rotation.x = dragFling.y;
+                    this.rotationYTarget.rotation.y = -dragFling.x;
                 });
             });
             return this;
@@ -241,11 +211,6 @@ let FlingRotation = (() => {
             this.#isStarted = false;
             this.stopEffects();
             return this;
-        }
-        #stopAnimation() {
-            // Stop any current animation.
-            this.rotationXTarget.rotation = () => false;
-            this.rotationYTarget.rotation = () => false;
         }
     };
     return FlingRotation = _classThis;

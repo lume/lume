@@ -36,12 +36,13 @@ import { createSignal, onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
+import { Settable } from '../utils/Settable.js';
 let PinchFling = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _instanceExtraInitializers = [];
     let _x_decorators;
     let _x_initializers = [];
@@ -83,24 +84,20 @@ let PinchFling = (() => {
         slowdownAmount = 0.05;
         #task;
         #interacting = (() => {
-            const { 0: get, 1: set } = createSignal(false);
+            const [get, set] = createSignal(false);
             return { get, set };
         })();
         get interacting() {
             return this.#interacting.get();
         }
         #isStarted = (() => {
-            const { 0: get, 1: set } = createSignal(false);
+            const [get, set] = createSignal(false);
             return { get, set };
         })();
         get isStarted() {
             return this.#isStarted.get();
         }
         #aborter = new AbortController();
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-        }
         #onPinch = (dx) => {
             this.hasInteracted = true;
             dx = dx * this.sensitivity;
@@ -185,6 +182,7 @@ let PinchFling = (() => {
                     if (this.#task)
                         Motor.removeRenderTask(this.#task);
                     this.#aborter.abort();
+                    this.#interacting.set(false);
                 });
             });
             return this;

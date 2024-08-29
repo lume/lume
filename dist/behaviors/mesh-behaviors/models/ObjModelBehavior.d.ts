@@ -20,6 +20,7 @@ export declare class ObjModelBehavior extends ModelBehavior {
     #private;
     obj: string;
     mtl: string;
+    /** @deprecated access `.threeModel` on the lume-obj-model element instead. */
     model?: Group;
     element: ObjModel;
     requiredElementType(): (typeof ObjModel)[];

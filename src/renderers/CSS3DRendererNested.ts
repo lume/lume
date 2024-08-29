@@ -2,7 +2,7 @@
 
 import {Matrix4} from 'three/src/math/Matrix4.js'
 import {Object3DWithPivot} from '../core/Object3DWithPivot.js'
-import {isPerspectiveCamera, isOrthographicCamera} from '../utils/three.js'
+import {isPerspectiveCamera, isOrthographicCamera} from '../utils/three/is.js'
 
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {Scene} from 'three/src/scenes/Scene.js'

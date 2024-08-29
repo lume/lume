@@ -1,6 +1,7 @@
 import {reactive, signal} from 'classy-solid'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import type {LoadEvent} from './LoadEvent.js'
+import {skeletonHelper} from '../utils/three/skeletonHelper.js'
 
 export type ModelAttributes =
 	| Element3DAttributes
@@ -22,6 +23,15 @@ export class Model extends Element3D {
 	 * `signal`
 	 */
 	@signal threeModel: object | null = null
+
+	override connectedCallback() {
+		super.connectedCallback()
+
+		this.createEffect(() => {
+			if (!this.scene) return
+			if (this.debug) skeletonHelper(this)
+		})
+	}
 
 	declare addEventListener: <Key extends keyof ModelEvents>(
 		type: Key,

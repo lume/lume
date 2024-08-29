@@ -1,8 +1,12 @@
 import { Effects } from 'classy-solid';
-type Options = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'lerpAmount'>>;
-export declare class ScrollFling extends Effects {
+declare const ScrollFling_base: {
+    new (...a: any[]): {
+        set<T extends any, K extends keyof T, V extends T[K]>(props: Partial<Record<K, V>>): any;
+    };
+} & typeof Effects;
+export declare class ScrollFling extends ScrollFling_base {
     #private;
-    _x: number;
+    private _x;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
@@ -10,7 +14,7 @@ export declare class ScrollFling extends Effects {
      */
     get x(): number;
     set x(val: number);
-    _y: number;
+    private _y;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
@@ -24,14 +28,13 @@ export declare class ScrollFling extends Effects {
     maxY: number;
     target: Element;
     sensitivity: number;
-    hasInteracted: boolean;
     epsilon: number;
     /**
      * The portion to lerp towards the target values each frame. Between 0 and 1.
      */
     lerpAmount: number;
+    hasInteracted: boolean;
     get isStarted(): boolean;
-    constructor(options?: Options);
     start(): this;
     stop(): this;
 }

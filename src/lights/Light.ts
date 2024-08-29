@@ -3,7 +3,7 @@ import {Light as ThreeLight} from 'three/src/lights/Light.js'
 import {attribute, element, numberAttribute} from '@lume/element'
 import {Element3D} from '../core/Element3D.js'
 
-import type {TColor} from '../utils/three.js'
+import type {TColor} from '../utils/three/material.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
 
 export type LightAttributes = Element3DAttributes | 'color' | 'intensity'

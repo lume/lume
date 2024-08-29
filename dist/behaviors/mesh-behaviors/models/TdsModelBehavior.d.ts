@@ -15,6 +15,7 @@ export declare class TdsModelBehavior extends ModelBehavior {
     /** Path to a .3ds file. */
     src: string;
     loader: TDSLoader;
+    /** @deprecated access `.threeModel` on the lume-3ds-model element instead. */
     model?: Group;
     element: TdsModel;
     requiredElementType(): (typeof TdsModel)[];

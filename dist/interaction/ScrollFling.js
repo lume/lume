@@ -36,6 +36,7 @@ import { createSignal, onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
+import { Settable } from '../utils/Settable.js';
 // @ts-ignore
 window.debug = true;
 let ScrollFling = (() => {
@@ -43,12 +44,14 @@ let ScrollFling = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _instanceExtraInitializers = [];
     let __x_decorators;
     let __x_initializers = [];
     let __y_decorators;
     let __y_initializers = [];
+    let _target_decorators;
+    let _target_initializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
     var ScrollFling = class extends _classSuper {
@@ -57,9 +60,11 @@ let ScrollFling = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             __x_decorators = [signal];
             __y_decorators = [signal];
+            _target_decorators = [signal];
             _hasInteracted_decorators = [signal];
             __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
@@ -110,31 +115,25 @@ let ScrollFling = (() => {
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
-        target = document.documentElement;
+        target = __runInitializers(this, _target_initializers, document.documentElement);
         sensitivity = 1;
-        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
         epsilon = 0.01;
         /**
          * The portion to lerp towards the target values each frame. Between 0 and 1.
          */
         lerpAmount = 0.3;
+        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
         #targetX = 0;
         #targetY = 0;
         #task;
         #isStarted = (() => {
-            const { 0: get, 1: set } = createSignal(false);
+            const [get, set] = createSignal(false);
             return { get, set };
         })();
         get isStarted() {
             return this.#isStarted.get();
         }
         #aborter = new AbortController();
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-            this.#targetX = this._x;
-            this.#targetY = this._y;
-        }
         #onWheel = (event) => {
             this.hasInteracted = true;
             event.preventDefault();

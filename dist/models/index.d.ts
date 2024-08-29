@@ -4,4 +4,5 @@ export * from './GltfModel.js';
 export * from './Model.js';
 export * from './ObjModel.js';
 export * from './TdsModel.js';
+export * from './utils/index.js';
 //# sourceMappingURL=index.d.ts.map

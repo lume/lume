@@ -5,7 +5,7 @@ import {createEffect, createMemo, onCleanup, untrack} from 'solid-js'
 import {Box3} from 'three/src/math/Box3.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import type {Group} from 'three/src/objects/Group.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
@@ -42,6 +42,7 @@ class FbxModelBehavior extends ModelBehavior {
 
 	loader = new FBXLoader()
 
+	/** @deprecated access `.threeModel` on the lume-fbx-model element instead. */
 	declare model?: Group
 
 	declare element: FbxModel

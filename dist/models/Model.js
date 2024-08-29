@@ -34,6 +34,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 };
 import { reactive, signal } from 'classy-solid';
 import { Element3D } from '../core/Element3D.js';
+import { skeletonHelper } from '../utils/three/skeletonHelper.js';
 /**
  * @class Model - Base class for model elements that load 3D models from
  * various types of asset files (f.e. gltf, fbx, obj, etc).
@@ -66,6 +67,15 @@ let Model = (() => {
          * `signal`
          */
         threeModel = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _threeModel_initializers, null));
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
+                if (!this.scene)
+                    return;
+                if (this.debug)
+                    skeletonHelper(this);
+            });
+        }
     };
     return Model = _classThis;
 })();

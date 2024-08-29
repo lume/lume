@@ -37,7 +37,9 @@ import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
+import { setRandomColorPhongMaterial } from '../../../utils/three/material.js';
+import { isRenderItem } from '../../../utils/three/is.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
@@ -76,7 +78,9 @@ let ObjModelBehavior = (() => {
             __runInitializers(_classThis, _classExtraInitializers);
         }
         obj = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _obj_initializers, ''));
-        mtl = __runInitializers(this, _mtl_initializers, '');
+        mtl = __runInitializers(this, _mtl_initializers, ''
+        /** @deprecated access `.threeModel` on the lume-obj-model element instead. */
+        );
         requiredElementType() {
             return [ObjModel];
         }

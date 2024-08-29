@@ -26,6 +26,7 @@ export declare class FbxModelBehavior extends ModelBehavior {
      */
     centerGeometry: boolean;
     loader: FBXLoader;
+    /** @deprecated access `.threeModel` on the lume-fbx-model element instead. */
     model?: Group;
     element: FbxModel;
     requiredElementType(): (typeof FbxModel)[];

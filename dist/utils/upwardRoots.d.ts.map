@@ -1,1 +1,1 @@
-{"version":3,"file":"upwardRoots.d.ts","sourceRoot":"","sources":["../../src/utils/upwardRoots.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,wBAAiB,WAAW,CAAC,EAAE,EAAE,OAAO,mDAOvC"}
+{"version":3,"file":"upwardRoots.d.ts","sourceRoot":"","sources":["../../src/utils/upwardRoots.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,wBAAiB,WAAW,CAAC,EAAE,EAAE,OAAO,mDAOvC;AAED;;;GAGG;AACH,wBAAiB,cAAc,CAAC,GAAG,EAAE,OAAO,mCAAI"}

@@ -3,7 +3,7 @@ import {stringAttribute} from '@lume/element'
 import {onCleanup} from 'solid-js'
 import {TDSLoader} from 'three/examples/jsm/loaders/TDSLoader.js'
 import type {Group} from 'three/src/objects/Group.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
@@ -28,6 +28,7 @@ class TdsModelBehavior extends ModelBehavior {
 
 	loader = new TDSLoader()
 
+	/** @deprecated access `.threeModel` on the lume-3ds-model element instead. */
 	declare model?: Group
 
 	declare element: TdsModel

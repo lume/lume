@@ -53,6 +53,7 @@ import { Motor } from './Motor.js';
 import { autoDefineElements } from '../LumeConfig.js';
 import { version } from '../index.js'; // TODO replace with version.ts for vanilla ES Module tree shakability
 import { defaultScenePerspective } from '../constants.js';
+import { threejsVersion } from '../utils/three/threeVersion.js';
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
 // Queue a microtask because otherwise this fires before the module graph has
 // executed the version variable initializer.
@@ -124,8 +125,6 @@ let Scene = (() => {
     let _fogColor_initializers = [];
     let _fogDensity_decorators;
     let _fogDensity_initializers = [];
-    let _physicallyCorrectLights_decorators;
-    let _physicallyCorrectLights_initializers = [];
     let _cameraNear_decorators;
     let _cameraNear_initializers = [];
     let _cameraFar_decorators;
@@ -162,7 +161,6 @@ let Scene = (() => {
             _fogFar_decorators = [numberAttribute];
             _fogColor_decorators = [stringAttribute];
             _fogDensity_decorators = [numberAttribute];
-            _physicallyCorrectLights_decorators = [booleanAttribute];
             _cameraNear_decorators = [numberAttribute];
             _cameraFar_decorators = [numberAttribute];
             _perspective_decorators = [numberAttribute];
@@ -188,7 +186,6 @@ let Scene = (() => {
             __esDecorate(null, null, _fogFar_decorators, { kind: "field", name: "fogFar", static: false, private: false, access: { has: obj => "fogFar" in obj, get: obj => obj.fogFar, set: (obj, value) => { obj.fogFar = value; } }, metadata: _metadata }, _fogFar_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _fogColor_decorators, { kind: "field", name: "fogColor", static: false, private: false, access: { has: obj => "fogColor" in obj, get: obj => obj.fogColor, set: (obj, value) => { obj.fogColor = value; } }, metadata: _metadata }, _fogColor_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _fogDensity_decorators, { kind: "field", name: "fogDensity", static: false, private: false, access: { has: obj => "fogDensity" in obj, get: obj => obj.fogDensity, set: (obj, value) => { obj.fogDensity = value; } }, metadata: _metadata }, _fogDensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _physicallyCorrectLights_decorators, { kind: "field", name: "physicallyCorrectLights", static: false, private: false, access: { has: obj => "physicallyCorrectLights" in obj, get: obj => obj.physicallyCorrectLights, set: (obj, value) => { obj.physicallyCorrectLights = value; } }, metadata: _metadata }, _physicallyCorrectLights_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _cameraNear_decorators, { kind: "field", name: "cameraNear", static: false, private: false, access: { has: obj => "cameraNear" in obj, get: obj => obj.cameraNear, set: (obj, value) => { obj.cameraNear = value; } }, metadata: _metadata }, _cameraNear_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _instanceExtraInitializers);
@@ -739,52 +736,6 @@ let Scene = (() => {
          */
         fogDensity = __runInitializers(this, _fogDensity_initializers, 0.0025
         /**
-         * @deprecated This property/attribute will be removed when Three.js r165 is
-         * released (estimated), and physically correct lighting will become the
-         * default option for enhanced interoperability with other graphics engines
-         * (f.e. Blender). To be ready for the removal, set this to true, and
-         * adjust lighting (intensity values may need to be notably higher as they
-         * are now in candela units assuming world units are in meters) to achieve a
-         * similar effect as before.
-         *
-         * @property {boolean} physicallyCorrectLights -
-         *
-         * `attribute`
-         *
-         * Default: `false`
-         *
-         * Whether to use physically correct lighting mode or not. This affects only
-         * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
-         * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
-         * physical example](https://threejs.org/examples/#webgl_lights_physical)
-         * from Three.js and "physicallyCorrectLights" in the Three.js manual's
-         * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
-         */
-        );
-        /**
-         * @deprecated This property/attribute will be removed when Three.js r165 is
-         * released (estimated), and physically correct lighting will become the
-         * default option for enhanced interoperability with other graphics engines
-         * (f.e. Blender). To be ready for the removal, set this to true, and
-         * adjust lighting (intensity values may need to be notably higher as they
-         * are now in candela units assuming world units are in meters) to achieve a
-         * similar effect as before.
-         *
-         * @property {boolean} physicallyCorrectLights -
-         *
-         * `attribute`
-         *
-         * Default: `false`
-         *
-         * Whether to use physically correct lighting mode or not. This affects only
-         * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
-         * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
-         * physical example](https://threejs.org/examples/#webgl_lights_physical)
-         * from Three.js and "physicallyCorrectLights" in the Three.js manual's
-         * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
-         */
-        physicallyCorrectLights = __runInitializers(this, _physicallyCorrectLights_initializers, false
-        /**
          * @property {number} cameraNear -
          *
          * *attribute*
@@ -1093,7 +1044,8 @@ let Scene = (() => {
             // We don't let Three update any matrices, we supply our own world
             // matrices.
             // @ts-expect-error legacy
-            this.three.autoUpdate = false; // three <0.144
+            if (threejsVersion < 144)
+                this.three.autoUpdate = false; // three <0.144
             this.three.matrixWorldAutoUpdate = false; // three >=0.144
             // TODO: default ambient light when no AmbientLight elements are
             // present in the Scene.
@@ -1135,10 +1087,6 @@ let Scene = (() => {
             });
             createEffect(() => {
                 this.#glRenderer.setShadowMapType(this, this.shadowMode);
-                this.needsUpdate();
-            });
-            createEffect(() => {
-                this.#glRenderer.setPhysicallyCorrectLights(this, this.physicallyCorrectLights);
                 this.needsUpdate();
             });
             createEffect(() => {

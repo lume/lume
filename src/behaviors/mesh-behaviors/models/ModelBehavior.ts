@@ -1,3 +1,4 @@
+import {reactive, signal} from 'classy-solid'
 import {Model} from '../../../models/Model.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
 
@@ -7,7 +8,9 @@ import {RenderableBehavior} from '../../RenderableBehavior.js'
  * @deprecated Don't use model behaviors directly, instead use `<lume-*-model>` elements (f.e. `<lume-gltf-model>`)
  * @extends RenderableBehavior
  */
-export class ModelBehavior extends RenderableBehavior {
+export
+@reactive
+class ModelBehavior extends RenderableBehavior {
 	declare element: Model
 
 	override requiredElementType() {
@@ -15,5 +18,5 @@ export class ModelBehavior extends RenderableBehavior {
 	}
 
 	/** @deprecated access `.threeModel` on the model element instead. */
-	model?: object | null = null
+	@signal model?: object | null = null
 }

@@ -40,7 +40,7 @@ import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
 import { CSS3DObjectNested } from '../renderers/CSS3DRendererNested.js';
-import { disposeObject } from '../utils/three.js';
+import { disposeObject } from '../utils/three/dispose.js';
 import { Settable } from '../utils/Settable.js';
 import { toRadians } from './utils/index.js';
 import { ChildTracker } from './ChildTracker.js';

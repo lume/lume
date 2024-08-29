@@ -35,7 +35,6 @@ export declare class WebglRendererThree {
     setClearColor(scene: Scene, color: any, opacity: number): void;
     setClearAlpha(scene: Scene, opacity: number): void;
     setShadowMapType(scene: Scene, type: ShadowMapTypeString | null): void;
-    setPhysicallyCorrectLights(scene: Scene, value: boolean): void;
     /**
      * @method enableBackground - Enable background texture handling for the given scene.
      * @param {Scene} scene - The given scene.

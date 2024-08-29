@@ -14,6 +14,7 @@ export declare class Model extends Element3D {
      * `signal`
      */
     threeModel: object | null;
+    connectedCallback(): void;
     addEventListener: <Key extends keyof ModelEvents>(type: Key, listener: (this: this, event: ModelEvents[Key]) => void, options?: boolean | AddEventListenerOptions) => void;
     removeEventListener: <Key extends keyof ModelEvents>(type: Key, listener: (this: this, event: ModelEvents[Key]) => void, options?: boolean | AddEventListenerOptions) => void;
 }

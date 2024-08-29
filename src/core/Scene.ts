@@ -28,11 +28,12 @@ import {Motor} from './Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 import {defaultScenePerspective} from '../constants.js'
-import type {TColor} from '../utils/three.js'
+import type {TColor} from '../utils/three/material.js'
 import type {Camera} from '../cameras/Camera.js'
 import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Element3D} from './Element3D.js'
+import {threejsVersion} from '../utils/three/threeVersion.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
@@ -61,7 +62,6 @@ export type SceneAttributes =
 	| 'fogFar'
 	| 'fogColor'
 	| 'fogDensity'
-	| 'physicallyCorrectLights'
 	| 'cameraNear'
 	| 'cameraFar'
 	| 'perspective'
@@ -415,30 +415,6 @@ class Scene extends SharedAPI {
 	@numberAttribute fogDensity = 0.0025
 
 	/**
-	 * @deprecated This property/attribute will be removed when Three.js r165 is
-	 * released (estimated), and physically correct lighting will become the
-	 * default option for enhanced interoperability with other graphics engines
-	 * (f.e. Blender). To be ready for the removal, set this to true, and
-	 * adjust lighting (intensity values may need to be notably higher as they
-	 * are now in candela units assuming world units are in meters) to achieve a
-	 * similar effect as before.
-	 *
-	 * @property {boolean} physicallyCorrectLights -
-	 *
-	 * `attribute`
-	 *
-	 * Default: `false`
-	 *
-	 * Whether to use physically correct lighting mode or not. This affects only
-	 * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
-	 * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
-	 * physical example](https://threejs.org/examples/#webgl_lights_physical)
-	 * from Three.js and "physicallyCorrectLights" in the Three.js manual's
-	 * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
-	 */
-	@booleanAttribute physicallyCorrectLights = false
-
-	/**
 	 * @property {number} cameraNear -
 	 *
 	 * *attribute*
@@ -681,7 +657,7 @@ class Scene extends SharedAPI {
 		// We don't let Three update any matrices, we supply our own world
 		// matrices.
 		// @ts-expect-error legacy
-		this.three.autoUpdate = false // three <0.144
+		if (threejsVersion < 144) this.three.autoUpdate = false // three <0.144
 		this.three.matrixWorldAutoUpdate = false // three >=0.144
 
 		// TODO: default ambient light when no AmbientLight elements are
@@ -736,11 +712,6 @@ class Scene extends SharedAPI {
 
 		createEffect(() => {
 			this.#glRenderer!.setShadowMapType(this, this.shadowMode)
-			this.needsUpdate()
-		})
-
-		createEffect(() => {
-			this.#glRenderer!.setPhysicallyCorrectLights(this, this.physicallyCorrectLights)
 			this.needsUpdate()
 		})
 

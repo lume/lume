@@ -1,7 +1,7 @@
 // based on THREE.CSS3DRenderer from https://github.com/mrdoob/three.js/blob/51ac0084709d4d3795ccb7119ee24e6a808618df/examples/js/renderers/CSS3DRenderer.js
 import { Matrix4 } from 'three/src/math/Matrix4.js';
 import { Object3DWithPivot } from '../core/Object3DWithPivot.js';
-import { isPerspectiveCamera, isOrthographicCamera } from '../utils/three.js';
+import { isPerspectiveCamera, isOrthographicCamera } from '../utils/three/is.js';
 export class CSS3DObjectNested extends Object3DWithPivot {
     element;
     type = 'CSS3DObjectNested';

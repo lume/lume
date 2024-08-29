@@ -176,8 +176,25 @@ class InstancedMesh extends Mesh {
 
 	#allMatricesNeedUpdate = false
 	#allColorsNeedUpdate = false
+	// TODO (https://github.com/lume/lume/issues/297) we will need to invert
+	// this to be #updateAllInstances based on if attributes changed when we
+	// update to non-synchronous effects (f.e. Solid 2.0, or TC39 Signals), as
+	// the currently synchronous expectation will break the behavior. Instead,
+	// setting an attribute should synchronously set #updateAllInstances to
+	// true, otherwise an other updates (f.e. setInstancePosition) should
+	// update only a single instance.
 	#updateSingleInstanceOnly = false
 
+	/**
+	 * @method setInstancePosition - Set the position of a specific instance at
+	 * the given index. Use this instead of the [`positions`](#positions)
+	 * attribute when you only need to update a small number of instances for
+	 * optimization.
+	 * @param {number} index - The instance index.
+	 * @param {number} x - The x component of the position.
+	 * @param {number} y - The y component of the position.
+	 * @param {number} z - The z component of the position.
+	 */
 	setInstancePosition(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
@@ -199,6 +216,15 @@ class InstancedMesh extends Mesh {
 		this.positions = this.positions // trigger reactivity
 	}
 
+	/**
+	 * @method setInstanceScale - Set the scale of a specific instance at the
+	 * given index. Use this instead of the [`scales`](#scales) attribute when
+	 * you only need to update a small number of instances for optimization.
+	 * @param {number} index - The instance index.
+	 * @param {number} x - The x component of the scale.
+	 * @param {number} y - The y component of the scale.
+	 * @param {number} z - The z component of the scale.
+	 */
 	setInstanceScale(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
@@ -220,6 +246,16 @@ class InstancedMesh extends Mesh {
 		this.scales = this.scales // trigger reactivity
 	}
 
+	/**
+	 * @method setInstanceRotation - Set the rotation of a specific instance at
+	 * the given index. Use this instead of the [`rotations`](#rotations)
+	 * attribute when you only need to update a small number of instances for
+	 * optimization.
+	 * @param {number} index - The instance index.
+	 * @param {number} x - The x component of the rotation.
+	 * @param {number} y - The y component of the rotation.
+	 * @param {number} z - The z component of the rotation.
+	 */
 	setInstanceRotation(index: number, x: number, y: number, z: number) {
 		const arrIndex = index * 3
 
@@ -241,6 +277,15 @@ class InstancedMesh extends Mesh {
 		this.rotations = this.rotations // trigger reactivity
 	}
 
+	/**
+	 * @method setInstanceColor - Set the color of a specific instance at the
+	 * given index. Use this instead of the [`colors`](#colors) attribute when
+	 * you only need to update a small number of instances for optimization.
+	 * @param {number} index - The instance index.
+	 * @param {number} r - The r component of the color.
+	 * @param {number} g - The g component of the color.
+	 * @param {number} b - The b component of the color.
+	 */
 	setInstanceColor(index: number, r: number, g: number, b: number) {
 		const arrIndex = index * 3
 

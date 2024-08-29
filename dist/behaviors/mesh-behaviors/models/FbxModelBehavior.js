@@ -38,7 +38,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
 import { Box3 } from 'three/src/math/Box3.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
-import { disposeObjectTree } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
