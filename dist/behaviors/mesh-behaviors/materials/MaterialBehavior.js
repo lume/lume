@@ -105,7 +105,6 @@ let MaterialBehavior = (() => {
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             MaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
         }
         type = (__runInitializers(this, _instanceExtraInitializers), 'material');
         /**
@@ -451,14 +450,37 @@ let MaterialBehavior = (() => {
         _createComponent() {
             return new Material();
         }
+        static textureCache = {};
         _handleTexture(textureUrl, setTexture, hasTexture, onLoad, isColor = false) {
+            const texUrl = createMemo(textureUrl);
+            const meshComponent = createMemo(() => this.meshComponent);
             this.createEffect(() => {
-                const mat = this.meshComponent;
+                const mat = meshComponent();
                 if (!mat)
                     return;
-                const url = textureUrl(); // this is a dependency of the effect
+                const url = texUrl(); // this is a dependency of the effect
                 if (!url)
                     return;
+                let info = MaterialBehavior.textureCache[url];
+                if (info) {
+                    info.refcount++;
+                    setTexture(mat, info.texture);
+                    mat.needsUpdate = true;
+                    this.element.needsUpdate();
+                    onLoad?.();
+                    this.element.dispatchEvent(new TextureLoadEvent(url));
+                    onCleanup(() => {
+                        info.refcount--;
+                        if (info.refcount === 0) {
+                            info.texture.dispose();
+                            delete MaterialBehavior.textureCache[url];
+                        }
+                        setTexture(mat, null);
+                        mat.needsUpdate = true; // Three.js needs to update the material in the GPU
+                        this.element.needsUpdate(); // LUME needs to re-render
+                    });
+                    return;
+                }
                 // TODO The default material color (if not specified) when
                 // there's a texture should be white
                 let cleaned = false;
@@ -479,14 +501,22 @@ let MaterialBehavior = (() => {
                     texture.colorSpace = SRGBColorSpace;
                 mat.needsUpdate = true; // Three.js needs to update the material in the GPU
                 this.element.needsUpdate(); // LUME needs to re-render
+                info = MaterialBehavior.textureCache[url] = { texture, refcount: 1 };
                 onCleanup(() => {
                     cleaned = true;
-                    texture.dispose();
+                    info.refcount--;
+                    if (info.refcount === 0) {
+                        info.texture.dispose();
+                        delete MaterialBehavior.textureCache[url];
+                    }
                     setTexture(mat, null);
                     mat.needsUpdate = true; // Three.js needs to update the material in the GPU
                     this.element.needsUpdate(); // LUME needs to re-render
                 });
             });
+        }
+        static {
+            __runInitializers(_classThis, _classExtraInitializers);
         }
     };
     return MaterialBehavior = _classThis;

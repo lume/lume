@@ -297,6 +297,8 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 		return new Material()
 	}
 
+	static textureCache: {[url: string]: {refcount: number; texture: Texture}} = {}
+
 	_handleTexture(
 		textureUrl: () => string,
 		setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void,
@@ -304,13 +306,43 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 		onLoad?: () => void,
 		isColor = false,
 	) {
+		const texUrl = createMemo(textureUrl)
+		const meshComponent = createMemo(() => this.meshComponent)
+
 		this.createEffect(() => {
-			const mat = this.meshComponent
+			const mat = meshComponent()
 			if (!mat) return
 
-			const url = textureUrl() // this is a dependency of the effect
+			const url = texUrl() // this is a dependency of the effect
 
 			if (!url) return
+
+			let info = MaterialBehavior.textureCache[url]
+
+			if (info) {
+				info.refcount++
+
+				setTexture(mat, info.texture)
+				mat.needsUpdate = true
+				this.element.needsUpdate()
+				onLoad?.()
+				this.element.dispatchEvent(new TextureLoadEvent(url))
+
+				onCleanup(() => {
+					info.refcount--
+
+					if (info.refcount === 0) {
+						info.texture.dispose()
+						delete MaterialBehavior.textureCache[url]
+					}
+
+					setTexture(mat, null)
+					mat.needsUpdate = true // Three.js needs to update the material in the GPU
+					this.element.needsUpdate() // LUME needs to re-render
+				})
+
+				return
+			}
 
 			// TODO The default material color (if not specified) when
 			// there's a texture should be white
@@ -326,11 +358,8 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 				if (!hasTexture(mat!)) mat.needsUpdate = true
 
 				setTexture(mat!, texture)
-
 				this.element.needsUpdate()
-
 				onLoad?.()
-
 				this.element.dispatchEvent(new TextureLoadEvent(url))
 			})
 
@@ -339,11 +368,19 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 			mat.needsUpdate = true // Three.js needs to update the material in the GPU
 			this.element.needsUpdate() // LUME needs to re-render
 
+			info = MaterialBehavior.textureCache[url] = {texture, refcount: 1}
+
 			onCleanup(() => {
 				cleaned = true
-				texture.dispose()
-				setTexture(mat!, null)
 
+				info.refcount--
+
+				if (info.refcount === 0) {
+					info.texture.dispose()
+					delete MaterialBehavior.textureCache[url]
+				}
+
+				setTexture(mat!, null)
 				mat.needsUpdate = true // Three.js needs to update the material in the GPU
 				this.element.needsUpdate() // LUME needs to re-render
 			})
