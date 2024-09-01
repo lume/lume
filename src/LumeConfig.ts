@@ -25,4 +25,4 @@ try {
 	UserConfig = {}
 }
 
-export const autoDefineElements = UserConfig.autoDefineElements ?? true
+export const autoDefineElements = !!(UserConfig.autoDefineElements ?? globalThis.window?.customElements)
