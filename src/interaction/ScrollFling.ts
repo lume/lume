@@ -5,9 +5,6 @@ import {clamp} from '../math/clamp.js'
 import type {RenderTask} from '../core/index.js'
 import {Settable} from '../utils/Settable.js'
 
-// @ts-ignore
-window.debug = true
-
 export
 @reactive
 class ScrollFling extends Settable(Effects) {
@@ -141,6 +138,3 @@ class ScrollFling extends Settable(Effects) {
 		if (this.#task) Motor.removeRenderTask(this.#task)
 	}
 }
-
-// @ts-ignore
-window.debug = false

@@ -37,8 +37,6 @@ import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
 import { Settable } from '../utils/Settable.js';
-// @ts-ignore
-window.debug = true;
 let ScrollFling = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
@@ -188,6 +186,4 @@ let ScrollFling = (() => {
     return ScrollFling = _classThis;
 })();
 export { ScrollFling };
-// @ts-ignore
-window.debug = false;
 //# sourceMappingURL=ScrollFling.js.map
