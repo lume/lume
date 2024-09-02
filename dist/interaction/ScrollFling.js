@@ -52,6 +52,8 @@ let ScrollFling = (() => {
     let _target_initializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
+    let _passive_decorators;
+    let _passive_initializers = [];
     var ScrollFling = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -60,10 +62,12 @@ let ScrollFling = (() => {
             __y_decorators = [signal];
             _target_decorators = [signal];
             _hasInteracted_decorators = [signal];
+            _passive_decorators = [signal];
             __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _passive_decorators, { kind: "field", name: "passive", static: false, private: false, access: { has: obj => "passive" in obj, get: obj => obj.passive, set: (obj, value) => { obj.passive = value; } }, metadata: _metadata }, _passive_initializers, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -120,7 +124,19 @@ let ScrollFling = (() => {
          * The portion to lerp towards the target values each frame. Between 0 and 1.
          */
         lerpAmount = 0.3;
-        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
+        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false
+        /**
+         * Whether or not the underlying wheel event is passive. Defaults to false
+         * because we typically depend on our logic to do custom scroll animation,
+         * rather than the browser doing any actual scrolling.
+         */
+        );
+        /**
+         * Whether or not the underlying wheel event is passive. Defaults to false
+         * because we typically depend on our logic to do custom scroll animation,
+         * rather than the browser doing any actual scrolling.
+         */
+        passive = __runInitializers(this, _passive_initializers, false);
         #targetX = 0;
         #targetY = 0;
         #task;
@@ -160,9 +176,10 @@ let ScrollFling = (() => {
             this.#isStarted.set(true);
             this.createEffect(() => {
                 this.target; // any time the target changes make new events on that target
+                this.passive;
                 this.#aborter = new AbortController();
                 // @ts-expect-error, whyyyyy TypeScript
-                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
+                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal, passive: this.passive });
                 onCleanup(() => {
                     this.#stopAnimation();
                     this.#aborter.abort();

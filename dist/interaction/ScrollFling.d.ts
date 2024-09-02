@@ -34,6 +34,12 @@ export declare class ScrollFling extends ScrollFling_base {
      */
     lerpAmount: number;
     hasInteracted: boolean;
+    /**
+     * Whether or not the underlying wheel event is passive. Defaults to false
+     * because we typically depend on our logic to do custom scroll animation,
+     * rather than the browser doing any actual scrolling.
+     */
+    passive: boolean;
     get isStarted(): boolean;
     start(): this;
     stop(): this;

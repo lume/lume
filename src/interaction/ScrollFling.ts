@@ -58,6 +58,13 @@ class ScrollFling extends Settable(Effects) {
 
 	@signal hasInteracted = false
 
+	/**
+	 * Whether or not the underlying wheel event is passive. Defaults to false
+	 * because we typically depend on our logic to do custom scroll animation,
+	 * rather than the browser doing any actual scrolling.
+	 */
+	@signal passive = false
+
 	#targetX = 0
 	#targetY = 0
 
@@ -109,11 +116,12 @@ class ScrollFling extends Settable(Effects) {
 
 		this.createEffect(() => {
 			this.target // any time the target changes make new events on that target
+			this.passive
 
 			this.#aborter = new AbortController()
 
 			// @ts-expect-error, whyyyyy TypeScript
-			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
+			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal, passive: this.passive})
 
 			onCleanup(() => {
 				this.#stopAnimation()
