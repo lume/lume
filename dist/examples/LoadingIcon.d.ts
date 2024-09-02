@@ -1,3 +1,7 @@
+declare const LoadingIcon_base: {
+    new (): HTMLElement;
+    prototype: HTMLElement;
+};
 /**
  * @class LoadingIcon - A `<loading-icon>` element useful for an initial loading
  * animation while assets are loading. The element has no dependencies, so it
@@ -99,7 +103,7 @@
  *
  * @extends HTMLElement
  */
-export declare class LoadingIcon extends HTMLElement {
+export declare class LoadingIcon extends LoadingIcon_base {
     connectedCallback(): void;
 }
 declare module 'solid-js' {
@@ -114,4 +118,5 @@ declare global {
         'loading-icon': LoadingIcon;
     }
 }
+export {};
 //# sourceMappingURL=LoadingIcon.d.ts.map

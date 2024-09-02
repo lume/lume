@@ -101,7 +101,7 @@
  *
  * @extends HTMLElement
  */
-export class LoadingIcon extends HTMLElement {
+export class LoadingIcon extends (globalThis.window?.HTMLElement ?? null) {
     connectedCallback() {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = /*html*/ `
@@ -159,5 +159,5 @@ export class LoadingIcon extends HTMLElement {
 		`;
     }
 }
-customElements.define('loading-icon', LoadingIcon);
+globalThis.window?.customElements?.define('loading-icon', LoadingIcon);
 //# sourceMappingURL=LoadingIcon.js.map

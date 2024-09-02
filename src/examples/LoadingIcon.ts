@@ -102,7 +102,7 @@
  *
  * @extends HTMLElement
  */
-export class LoadingIcon extends HTMLElement {
+export class LoadingIcon extends ((globalThis.window?.HTMLElement ?? null) as typeof HTMLElement) {
 	connectedCallback() {
 		this.attachShadow({mode: 'open'})
 		this.shadowRoot!.innerHTML = /*html*/ `
@@ -161,7 +161,7 @@ export class LoadingIcon extends HTMLElement {
 	}
 }
 
-customElements.define('loading-icon', LoadingIcon)
+globalThis.window?.customElements?.define('loading-icon', LoadingIcon)
 
 declare module 'solid-js' {
 	namespace JSX {

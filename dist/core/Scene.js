@@ -55,9 +55,6 @@ import { version } from '../index.js'; // TODO replace with version.ts for vanil
 import { defaultScenePerspective } from '../constants.js';
 import { threejsVersion } from '../utils/three/threeVersion.js';
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
-// Queue a microtask because otherwise this fires before the module graph has
-// executed the version variable initializer.
-queueMicrotask(() => console.info(magic()));
 /**
  * @class Scene -
  *
@@ -1554,4 +1551,15 @@ export { Scene };
 // in a super() call.
 // @ts-ignore
 Scene.prototype.isScene = true;
+// Queue a microtask because otherwise this fires before the module graph has
+// executed the version variable initializer.
+queueMicrotask(() => {
+    // Also swallow an error here because some SSR systems' builds (f.e. Solid
+    // Start's) cannot properly initialize `version` on the server side due to
+    // the module circle.
+    try {
+        console.info(magic());
+    }
+    catch (e) { }
+});
 //# sourceMappingURL=Scene.js.map

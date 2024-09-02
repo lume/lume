@@ -37,10 +37,6 @@ import {threejsVersion} from '../utils/three/threeVersion.js'
 
 const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
 
-// Queue a microtask because otherwise this fires before the module graph has
-// executed the version variable initializer.
-queueMicrotask(() => console.info(magic()))
-
 export type SceneAttributes =
 	// Don't expost TransformableAttributes here for now (although they exist). What should modifying those on a Scene do?
 	| SizeableAttributes
@@ -1259,3 +1255,14 @@ declare global {
 }
 
 type FogMode = 'none' | 'linear' | 'expo2'
+
+// Queue a microtask because otherwise this fires before the module graph has
+// executed the version variable initializer.
+queueMicrotask(() => {
+	// Also swallow an error here because some SSR systems' builds (f.e. Solid
+	// Start's) cannot properly initialize `version` on the server side due to
+	// the module circle.
+	try {
+		console.info(magic())
+	} catch (e) {}
+})
