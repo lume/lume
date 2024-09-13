@@ -1,5 +1,5 @@
 /// <reference types="webxr" />
-import { Constructor } from 'lowclass';
+import { Constructor } from 'lowclass/dist/Constructor.js';
 export declare function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T): {
     new (...a: any[]): {
         isScene: boolean;

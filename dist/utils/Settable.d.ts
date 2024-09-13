@@ -1,4 +1,4 @@
-import type { Constructor } from 'lowclass';
+import type { Constructor } from 'lowclass/dist/Constructor.js';
 /**
  * @mixin - TODO make this @mixin tag do something in the docs.
  * @class Settable - This class provides a simple `set()` method that can be used

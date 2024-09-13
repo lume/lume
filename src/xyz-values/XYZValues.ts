@@ -1,5 +1,5 @@
 import {reactive, signal} from 'classy-solid'
-import {getInheritedDescriptor} from 'lowclass'
+import {getInheritedDescriptor} from 'lowclass/dist/getInheritedDescriptor.js'
 import {stringToArray} from './utils.js'
 import {batch} from 'solid-js'
 

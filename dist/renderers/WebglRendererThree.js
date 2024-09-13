@@ -195,6 +195,7 @@ let WebglRendererThree = (() => {
                 throw new ReferenceError('Unable to set value. Scene state should be initialized first.');
             // @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
             state.renderer.physicallyCorrectLights = value; // <0.150
+            // @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
             state.renderer.useLegacyLights = !value; // >=0.150
         }
         #bgVersion = 0;

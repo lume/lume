@@ -28,6 +28,29 @@ declare const Sizeable_base: {
         attachShadow(options: ShadowRootInit): ShadowRoot;
         readonly _hasShadowRoot: boolean;
         readonly _isPossiblyDistributedToShadowRoot: boolean;
+        /**
+         * @property {string | [x?: number, y?: number, z?: number] | {x?: number, y?: number, z?: number} | XYZNonNegativeValues | null} size -
+         *
+         * *attribute*
+         *
+         * Default: <code>new [XYZNonNegativeValues](../xyz-values/XYZNonNegativeValues)(0, 0, 0)</code>
+         *
+         * Set the size of the object along each axis. The meaning of a size value for a particular axis depends on the
+         * [`.sizeMode`](#sizemode) value for the same axis.
+         *
+         * All size values must be positive numbers or an error is thrown.
+         *
+         * Literal sizes can be any positive value (the literal size that you want).
+         * Proportional size along an axis represents a proportion of the parent
+         * size on the same axis. `0` means 0% of the parent size, and `1.0` means
+         * 100% of the parent size.
+         *
+         * For example, if `.sizeMode` is set to `el.sizeMode = ['literal',
+         * 'proportional', 'literal']`, then setting `el.size = [20, 0.5, 30]` means
+         * the X size is a literal value of `20`, the Y size is 50% of the parent Y
+         * size, and the Z size is a literal value of `30`. It is easy this way to
+         * mix literal and proportional sizes for the different axes.
+         */
         readonly _shadowRootParent: any | null;
         readonly _shadowRootChildren: any[];
         readonly _distributedShadowRootChildren: any[];

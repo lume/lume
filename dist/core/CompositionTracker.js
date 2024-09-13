@@ -18,7 +18,7 @@
 // attached) so that we can react to the presence of a ShadowRoot now or in the
 // future, then we should enact similar logic as in this class in the
 // arbitrary parent element's ShadowRoot.
-import { Constructor } from 'lowclass';
+import { Constructor } from 'lowclass/dist/Constructor.js';
 import { observeChildren } from './utils/observeChildren.js';
 import { isDomEnvironment, isScene } from './utils/isThisOrThat.js';
 export function CompositionTracker(Base) {

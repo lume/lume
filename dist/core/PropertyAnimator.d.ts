@@ -1,4 +1,4 @@
-import type { Constructor } from 'lowclass';
+import type { Constructor } from 'lowclass/dist/Constructor.js';
 import { type RenderTask } from './Motor.js';
 import { XYZSizeModeValues, type SizeModeValue } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';

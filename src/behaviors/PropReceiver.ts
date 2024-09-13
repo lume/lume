@@ -1,5 +1,5 @@
 import {observe, unobserve} from 'james-bond'
-import type {Constructor} from 'lowclass'
+import type {Constructor} from 'lowclass/dist/Constructor.js'
 import type {PossiblyCustomElement} from '../core/PossibleCustomElement.js'
 
 // We use this to enforce that the @receiver decorator is used on PropReceiver

@@ -1,4 +1,4 @@
-import {Constructor} from 'lowclass'
+import {Constructor} from 'lowclass/dist/Constructor.js'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from '../core/PossibleCustomElement.js'
 import {r} from 'regexr'
 

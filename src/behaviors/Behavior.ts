@@ -4,7 +4,7 @@ import {PropReceiver} from './PropReceiver.js'
 
 import type {Element as LumeElement} from '@lume/element'
 import type {ElementWithBehaviors, PossibleBehaviorConstructor, PossibleBehaviorInstance} from 'element-behaviors'
-import type {AnyConstructor} from 'lowclass/dist/utils.js'
+import type {AnyConstructor} from 'lowclass/dist/Constructor.js'
 
 type PropKey = string | symbol
 

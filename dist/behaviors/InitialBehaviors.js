@@ -1,4 +1,4 @@
-import { Constructor } from 'lowclass';
+import { Constructor } from 'lowclass/dist/Constructor.js';
 import { r } from 'regexr';
 // TODO Move this to element-behaviors package?
 export function InitialBehaviors(Base) {

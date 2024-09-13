@@ -1,6 +1,6 @@
 import 'element-behaviors';
 import type { ElementWithBehaviors, PossibleBehaviorInstance } from 'element-behaviors';
-import type { AnyConstructor } from 'lowclass/dist/utils.js';
+import type { AnyConstructor } from 'lowclass/dist/Constructor.js';
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
  * classes. If a name is passed in, it defines an element behavior instead of a

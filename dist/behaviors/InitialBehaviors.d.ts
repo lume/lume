@@ -1,5 +1,5 @@
 /// <reference types="webxr" />
-import { Constructor } from 'lowclass';
+import { Constructor } from 'lowclass/dist/Constructor.js';
 export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Base: T): {
     new (...args: any[]): {
         initialBehaviors?: Record<string, string> | undefined;

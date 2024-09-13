@@ -1,5 +1,5 @@
 /// <reference types="webxr" />
-import { Constructor } from 'lowclass';
+import { Constructor } from 'lowclass/dist/Constructor.js';
 /**
  * @class ChildTracker - A mixin for use with custom elements, for tracking
  * children of a custom element. In a similar pattern as with custom element

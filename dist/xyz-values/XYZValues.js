@@ -33,7 +33,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     done = true;
 };
 import { reactive, signal } from 'classy-solid';
-import { getInheritedDescriptor } from 'lowclass';
+import { getInheritedDescriptor } from 'lowclass/dist/getInheritedDescriptor.js';
 import { stringToArray } from './utils.js';
 import { batch } from 'solid-js';
 const defaultValues = { x: undefined, y: undefined, z: undefined };

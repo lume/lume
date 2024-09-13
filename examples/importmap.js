@@ -26,6 +26,7 @@
 			'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
 			'@lume/autolayout': '/node_modules/@lume/autolayout/dist/AutoLayout.js',
 			lowclass: '/node_modules/lowclass/dist/index.js',
+			'lowclass/': '/node_modules/lowclass/',
 			'james-bond': '/node_modules/james-bond/dist/index.js',
 			'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
 			'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',

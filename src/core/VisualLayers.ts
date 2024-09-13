@@ -4,6 +4,7 @@ import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
 
 import type {Camera, Object3D, Renderer} from 'three'
+import type * as THREE from 'three'
 
 /**
  * Allows rendering objects into one ore more visual layers that are stacked on
