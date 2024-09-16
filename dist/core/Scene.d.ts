@@ -9,6 +9,7 @@ import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
 export type SceneAttributes = SizeableAttributes | 'shadowMode' | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+declare const Super: typeof SharedAPI;
 /**
  * @class Scene -
  *
@@ -33,7 +34,7 @@ export type SceneAttributes = SizeableAttributes | 'shadowMode' | 'shadowmapType
  *
  * @extends SharedAPI
  */
-export declare class Scene extends SharedAPI {
+export declare class Scene extends Super {
     #private;
     /**
      * @property {true} isScene -

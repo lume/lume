@@ -41,7 +41,7 @@ export declare function Settable<T extends Constructor>(Base?: T): {
          *
          * @param {this} props - An object containing all properties to set. For example:
          */
-        set<T extends any, K extends keyof T, V extends T[K]>(props: Partial<Record<K, V>>): any;
+        set<T_1 extends any, K extends keyof T_1, V extends T_1[K]>(props: Partial<Record<K, V>>): any;
     };
 } & T;
 export type SettableInstance = InstanceType<ReturnType<typeof Settable>>;

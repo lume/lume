@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import { signal } from 'classy-solid';
 import { attribute, element, noSignal } from '@lume/element';
@@ -62,6 +62,7 @@ let Sizeable = (() => {
     let _instanceExtraInitializers = [];
     let ___calculatedSize_decorators;
     let ___calculatedSize_initializers = [];
+    let ___calculatedSize_extraInitializers = [];
     let _set_sizeMode_decorators;
     let _set_size_decorators;
     var Sizeable = class extends _classSuper {
@@ -73,7 +74,7 @@ let Sizeable = (() => {
             _set_size_decorators = [attribute, noSignal];
             __esDecorate(this, null, _set_sizeMode_decorators, { kind: "setter", name: "sizeMode", static: false, private: false, access: { has: obj => "sizeMode" in obj, set: (obj, value) => { obj.sizeMode = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_size_decorators, { kind: "setter", name: "size", static: false, private: false, access: { has: obj => "size" in obj, set: (obj, value) => { obj.size = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, ___calculatedSize_decorators, { kind: "field", name: "__calculatedSize", static: false, private: false, access: { has: obj => "__calculatedSize" in obj, get: obj => obj.__calculatedSize, set: (obj, value) => { obj.__calculatedSize = value; } }, metadata: _metadata }, ___calculatedSize_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, ___calculatedSize_decorators, { kind: "field", name: "__calculatedSize", static: false, private: false, access: { has: obj => "__calculatedSize" in obj, get: obj => obj.__calculatedSize, set: (obj, value) => { obj.__calculatedSize = value; } }, metadata: _metadata }, ___calculatedSize_initializers, ___calculatedSize_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Sizeable = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -255,6 +256,10 @@ let Sizeable = (() => {
                 // TODO replace events with reactivity
                 this.emit('sizechange', { ...calculatedSize });
             }
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, ___calculatedSize_extraInitializers);
         }
     };
     return Sizeable = _classThis;

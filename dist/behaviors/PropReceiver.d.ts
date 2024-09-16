@@ -7,7 +7,7 @@ import type { PossiblyCustomElement } from '../core/PossibleCustomElement.js';
  *
  * Forwards properties of a specified `observedObject` onto properties of
  * `this` object. The properties to be received from `observedObject` are those
- * listed in the `static receivedProperties` array, or the ones decorated with
+ * listed in the `receivedProperties` array, or the ones decorated with
  * `@receiver`.
  *
  * In particular, LUME uses this to forward properties of a behavior's host
@@ -17,7 +17,7 @@ import type { PossiblyCustomElement } from '../core/PossibleCustomElement.js';
  *
  * ```js
  * class SomeBehavior extends PropReceiver(BaseClass) {
- *   static receivedProperties = ['foo', 'bar']
+ *   receivedProperties = ['foo', 'bar']
  *   get observedObject() {
  *     return this.element
  *   }
@@ -43,21 +43,21 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
          */
         readonly observedObject: object;
         _propChangedCallback(propName: PropKey, value: any): void;
-        "__#5@#observeProps"(): void;
-        "__#5@#unobserveProps"(): void;
-        __getReceivedProps(): never[];
-        __receiveInitialValues(): void;
+        receiveProps(): void;
+        unreceiveProps(): void;
+        /**
+         * @property {string[]} receivedProperties
+         *
+         * `static`
+         *
+         * An array of strings, the properties of observedObject to observe.
+         */
+        receivedProperties?: never[] | undefined;
+        "__#5@#getReceivedProps"(): never[];
+        receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
-    /**
-     * @property {string[]} receivedProperties
-     *
-     * `static`
-     *
-     * An array of strings, the properties of observedObject to observe.
-     */
-    receivedProperties?: PropKey[] | undefined;
 } & T;
 export declare function receiver(_: unknown, context: DecoratorContext): any;
 type PropKey = string | symbol;

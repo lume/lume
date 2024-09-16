@@ -72,19 +72,20 @@ let Mesh = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _castShadow_decorators;
     let _castShadow_initializers = [];
+    let _castShadow_extraInitializers = [];
     let _receiveShadow_decorators;
     let _receiveShadow_initializers = [];
+    let _receiveShadow_extraInitializers = [];
     var Mesh = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _castShadow_decorators = [booleanAttribute];
             _receiveShadow_decorators = [booleanAttribute];
-            __esDecorate(null, null, _castShadow_decorators, { kind: "field", name: "castShadow", static: false, private: false, access: { has: obj => "castShadow" in obj, get: obj => obj.castShadow, set: (obj, value) => { obj.castShadow = value; } }, metadata: _metadata }, _castShadow_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _receiveShadow_decorators, { kind: "field", name: "receiveShadow", static: false, private: false, access: { has: obj => "receiveShadow" in obj, get: obj => obj.receiveShadow, set: (obj, value) => { obj.receiveShadow = value; } }, metadata: _metadata }, _receiveShadow_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _castShadow_decorators, { kind: "field", name: "castShadow", static: false, private: false, access: { has: obj => "castShadow" in obj, get: obj => obj.castShadow, set: (obj, value) => { obj.castShadow = value; } }, metadata: _metadata }, _castShadow_initializers, _castShadow_extraInitializers);
+            __esDecorate(null, null, _receiveShadow_decorators, { kind: "field", name: "receiveShadow", static: false, private: false, access: { has: obj => "receiveShadow" in obj, get: obj => obj.receiveShadow, set: (obj, value) => { obj.receiveShadow = value; } }, metadata: _metadata }, _receiveShadow_initializers, _receiveShadow_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Mesh = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -101,7 +102,7 @@ let Mesh = (() => {
          * presence of a light such as a
          * [`<lume-point-light>`](../lights/PointLight).
          */
-        castShadow = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _castShadow_initializers, true
+        castShadow = __runInitializers(this, _castShadow_initializers, true
         /**
          * @property {boolean} receiveShadow
          *
@@ -113,7 +114,7 @@ let Mesh = (() => {
          * presence of a light such as a
          * [`<lume-point-light>`](../lights/PointLight).
          */
-        ));
+        );
         /**
          * @property {boolean} receiveShadow
          *
@@ -125,7 +126,7 @@ let Mesh = (() => {
          * presence of a light such as a
          * [`<lume-point-light>`](../lights/PointLight).
          */
-        receiveShadow = __runInitializers(this, _receiveShadow_initializers, true);
+        receiveShadow = (__runInitializers(this, _castShadow_extraInitializers), __runInitializers(this, _receiveShadow_initializers, true));
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
@@ -140,6 +141,10 @@ let Mesh = (() => {
         }
         makeThreeObject3d() {
             return new ThreeMesh();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _receiveShadow_extraInitializers);
         }
     };
     return Mesh = _classThis;

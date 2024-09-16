@@ -1,6 +1,5 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
 import { r } from 'regexr';
-// TODO Move this to element-behaviors package?
 export function InitialBehaviors(Base) {
     return class InitialBehaviors extends Constructor(Base) {
         initialBehaviors;

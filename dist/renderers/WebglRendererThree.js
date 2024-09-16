@@ -1,10 +1,3 @@
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -32,6 +25,13 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 import { reactive, signal, Effects } from 'classy-solid';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 import { BasicShadowMap, PCFSoftShadowMap, PCFShadowMap } from 'three/src/constants.js';
@@ -53,15 +53,15 @@ let WebglRendererThree = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _instanceExtraInitializers = [];
     let _localClippingEnabled_decorators;
     let _localClippingEnabled_initializers = [];
+    let _localClippingEnabled_extraInitializers = [];
     var WebglRendererThree = class {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
             _localClippingEnabled_decorators = [signal];
-            __esDecorate(null, null, _localClippingEnabled_decorators, { kind: "field", name: "localClippingEnabled", static: false, private: false, access: { has: obj => "localClippingEnabled" in obj, get: obj => obj.localClippingEnabled, set: (obj, value) => { obj.localClippingEnabled = value; } }, metadata: _metadata }, _localClippingEnabled_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _localClippingEnabled_decorators, { kind: "field", name: "localClippingEnabled", static: false, private: false, access: { has: obj => "localClippingEnabled" in obj, get: obj => obj.localClippingEnabled, set: (obj, value) => { obj.localClippingEnabled = value; } }, metadata: _metadata }, _localClippingEnabled_initializers, _localClippingEnabled_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             WebglRendererThree = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -87,7 +87,7 @@ let WebglRendererThree = (() => {
             if (!isCreatingSingleton)
                 throw new Error('class is a singleton, use the static .singleton() method to get an instance');
         }
-        sceneStates = (__runInitializers(this, _instanceExtraInitializers), new WeakMap());
+        sceneStates = new WeakMap();
         localClippingEnabled = __runInitializers(this, _localClippingEnabled_initializers, false);
         initialized(scene) {
             return this.sceneStates.has(scene);
@@ -198,7 +198,7 @@ let WebglRendererThree = (() => {
             // @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
             state.renderer.useLegacyLights = !value; // >=0.150
         }
-        #bgVersion = 0;
+        #bgVersion = (__runInitializers(this, _localClippingEnabled_extraInitializers), 0);
         /**
          * @method enableBackground - Enable background texture handling for the given scene.
          * @param {Scene} scene - The given scene.

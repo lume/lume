@@ -68,8 +68,10 @@ let LineGeometryBehavior = (() => {
     let _get_points_decorators;
     let _centerGeometry_decorators;
     let _centerGeometry_initializers = [];
+    let _centerGeometry_extraInitializers = [];
     let _fitment_decorators;
     let _fitment_initializers = [];
+    let _fitment_extraInitializers = [];
     var LineGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -78,8 +80,8 @@ let LineGeometryBehavior = (() => {
             _centerGeometry_decorators = [booleanAttribute, receiver];
             _fitment_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_points_decorators, { kind: "getter", name: "points", static: false, private: false, access: { has: obj => "points" in obj, get: obj => obj.points }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
+            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _fitment_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             LineGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -164,7 +166,7 @@ let LineGeometryBehavior = (() => {
          * https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values for
          * details.
          */
-        fitment = __runInitializers(this, _fitment_initializers, 'none');
+        fitment = (__runInitializers(this, _centerGeometry_extraInitializers), __runInitializers(this, _fitment_initializers, 'none'));
         _createComponent() {
             const geometry = new BufferGeometry();
             const positions = new Float32BufferAttribute(this.points, 3);
@@ -221,6 +223,10 @@ let LineGeometryBehavior = (() => {
             // 	}
             // }
             return geometry;
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _fitment_extraInitializers);
         }
     };
     return LineGeometryBehavior = _classThis;

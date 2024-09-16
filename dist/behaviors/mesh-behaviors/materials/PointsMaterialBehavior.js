@@ -44,13 +44,15 @@ let PointsMaterialBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = MaterialBehavior;
-    let _instanceExtraInitializers = [];
     let _texture_decorators;
     let _texture_initializers = [];
+    let _texture_extraInitializers = [];
     let _sizeAttenuation_decorators;
     let _sizeAttenuation_initializers = [];
+    let _sizeAttenuation_extraInitializers = [];
     let _pointSize_decorators;
     let _pointSize_initializers = [];
+    let _pointSize_extraInitializers = [];
     var PointsMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -58,17 +60,17 @@ let PointsMaterialBehavior = (() => {
             _texture_decorators = [stringAttribute, receiver];
             _sizeAttenuation_decorators = [booleanAttribute, receiver];
             _pointSize_decorators = [numberAttribute, receiver];
-            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _sizeAttenuation_decorators, { kind: "field", name: "sizeAttenuation", static: false, private: false, access: { has: obj => "sizeAttenuation" in obj, get: obj => obj.sizeAttenuation, set: (obj, value) => { obj.sizeAttenuation = value; } }, metadata: _metadata }, _sizeAttenuation_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _pointSize_decorators, { kind: "field", name: "pointSize", static: false, private: false, access: { has: obj => "pointSize" in obj, get: obj => obj.pointSize, set: (obj, value) => { obj.pointSize = value; } }, metadata: _metadata }, _pointSize_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _texture_extraInitializers);
+            __esDecorate(null, null, _sizeAttenuation_decorators, { kind: "field", name: "sizeAttenuation", static: false, private: false, access: { has: obj => "sizeAttenuation" in obj, get: obj => obj.sizeAttenuation, set: (obj, value) => { obj.sizeAttenuation = value; } }, metadata: _metadata }, _sizeAttenuation_initializers, _sizeAttenuation_extraInitializers);
+            __esDecorate(null, null, _pointSize_decorators, { kind: "field", name: "pointSize", static: false, private: false, access: { has: obj => "pointSize" in obj, get: obj => obj.pointSize, set: (obj, value) => { obj.pointSize = value; } }, metadata: _metadata }, _pointSize_initializers, _pointSize_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PointsMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        texture = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _texture_initializers, ''));
-        sizeAttenuation = __runInitializers(this, _sizeAttenuation_initializers, true);
-        pointSize = __runInitializers(this, _pointSize_initializers, 1);
+        texture = __runInitializers(this, _texture_initializers, '');
+        sizeAttenuation = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _sizeAttenuation_initializers, true));
+        pointSize = (__runInitializers(this, _sizeAttenuation_extraInitializers), __runInitializers(this, _pointSize_initializers, 1));
         _createComponent() {
             return new PointsMaterial({ color: 0x00ff00 });
         }
@@ -83,6 +85,10 @@ let PointsMaterialBehavior = (() => {
                 this.element.needsUpdate();
             });
             this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _pointSize_extraInitializers);
         }
     };
     return PointsMaterialBehavior = _classThis;

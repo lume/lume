@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import { batch, untrack } from 'solid-js';
 import { element, numberAttribute, stringAttribute } from '@lume/element';
@@ -90,6 +90,7 @@ let InstancedMesh = (() => {
     let _instanceExtraInitializers = [];
     let _count_decorators;
     let _count_initializers = [];
+    let _count_extraInitializers = [];
     let _get_rotations_decorators;
     let _get_positions_decorators;
     let _get_scales_decorators;
@@ -107,7 +108,7 @@ let InstancedMesh = (() => {
             __esDecorate(this, null, _get_positions_decorators, { kind: "getter", name: "positions", static: false, private: false, access: { has: obj => "positions" in obj, get: obj => obj.positions }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_scales_decorators, { kind: "getter", name: "scales", static: false, private: false, access: { has: obj => "scales" in obj, get: obj => obj.scales }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_colors_decorators, { kind: "getter", name: "colors", static: false, private: false, access: { has: obj => "colors" in obj, get: obj => obj.colors }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _count_decorators, { kind: "field", name: "count", static: false, private: false, access: { has: obj => "count" in obj, get: obj => obj.count, set: (obj, value) => { obj.count = value; } }, metadata: _metadata }, _count_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _count_decorators, { kind: "field", name: "count", static: false, private: false, access: { has: obj => "count" in obj, get: obj => obj.count, set: (obj, value) => { obj.count = value; } }, metadata: _metadata }, _count_initializers, _count_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             InstancedMesh = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -117,7 +118,7 @@ let InstancedMesh = (() => {
          * @property {number} count - The number of instances to render.
          */
         count = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _count_initializers, 10));
-        #biggestCount = this.count;
+        #biggestCount = (__runInitializers(this, _count_extraInitializers), this.count);
         /**
          * @property {number[]} rotations - The rotations for each instance.
          * Generally the array should have a length of `this.count * 3` because

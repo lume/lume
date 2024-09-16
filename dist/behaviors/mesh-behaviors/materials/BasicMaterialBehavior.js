@@ -44,26 +44,27 @@ let BasicMaterialBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = MaterialBehavior;
-    let _instanceExtraInitializers = [];
     let _texture_decorators;
     let _texture_initializers = [];
+    let _texture_extraInitializers = [];
     let _specularMap_decorators;
     let _specularMap_initializers = [];
+    let _specularMap_extraInitializers = [];
     var BasicMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _texture_decorators = [stringAttribute, receiver];
             _specularMap_decorators = [stringAttribute, receiver];
-            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _specularMap_decorators, { kind: "field", name: "specularMap", static: false, private: false, access: { has: obj => "specularMap" in obj, get: obj => obj.specularMap, set: (obj, value) => { obj.specularMap = value; } }, metadata: _metadata }, _specularMap_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _texture_extraInitializers);
+            __esDecorate(null, null, _specularMap_decorators, { kind: "field", name: "specularMap", static: false, private: false, access: { has: obj => "specularMap" in obj, get: obj => obj.specularMap, set: (obj, value) => { obj.specularMap = value; } }, metadata: _metadata }, _specularMap_initializers, _specularMap_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             BasicMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        texture = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _texture_initializers, ''));
-        specularMap = __runInitializers(this, _specularMap_initializers, '');
+        texture = __runInitializers(this, _texture_initializers, '');
+        specularMap = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _specularMap_initializers, ''));
         _createComponent() {
             return new MeshBasicMaterial();
         }
@@ -72,6 +73,10 @@ let BasicMaterialBehavior = (() => {
             this._handleTexture(() => this.texture, // map
             (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
             this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _specularMap_extraInitializers);
         }
     };
     return BasicMaterialBehavior = _classThis;

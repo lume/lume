@@ -53,43 +53,60 @@ let StandardMaterialBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = MaterialBehavior;
-    let _instanceExtraInitializers = [];
     let _alphaMap_decorators;
     let _alphaMap_initializers = [];
+    let _alphaMap_extraInitializers = [];
     let _aoMap_decorators;
     let _aoMap_initializers = [];
+    let _aoMap_extraInitializers = [];
     let _aoMapIntensity_decorators;
     let _aoMapIntensity_initializers = [];
+    let _aoMapIntensity_extraInitializers = [];
     let _bumpMap_decorators;
     let _bumpMap_initializers = [];
+    let _bumpMap_extraInitializers = [];
     let _bumpScale_decorators;
     let _bumpScale_initializers = [];
+    let _bumpScale_extraInitializers = [];
     let _displacementMap_decorators;
     let _displacementMap_initializers = [];
+    let _displacementMap_extraInitializers = [];
     let _displacementScale_decorators;
     let _displacementScale_initializers = [];
+    let _displacementScale_extraInitializers = [];
     let _displacementBias_decorators;
     let _displacementBias_initializers = [];
+    let _displacementBias_extraInitializers = [];
     let _texture_decorators;
     let _texture_initializers = [];
+    let _texture_extraInitializers = [];
     let _normalMap_decorators;
     let _normalMap_initializers = [];
+    let _normalMap_extraInitializers = [];
     let _normalScale_decorators;
     let _normalScale_initializers = [];
+    let _normalScale_extraInitializers = [];
     let _metalness_decorators;
     let _metalness_initializers = [];
+    let _metalness_extraInitializers = [];
     let _metalnessMap_decorators;
     let _metalnessMap_initializers = [];
+    let _metalnessMap_extraInitializers = [];
     let _roughness_decorators;
     let _roughness_initializers = [];
+    let _roughness_extraInitializers = [];
     let _roughnessMap_decorators;
     let _roughnessMap_initializers = [];
+    let _roughnessMap_extraInitializers = [];
     let _vertexTangents_decorators;
     let _vertexTangents_initializers = [];
+    let _vertexTangents_extraInitializers = [];
     let _morphTargets_decorators;
     let _morphTargets_initializers = [];
+    let _morphTargets_extraInitializers = [];
     let _morphNormals_decorators;
     let _morphNormals_initializers = [];
+    let _morphNormals_extraInitializers = [];
     var StandardMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -112,37 +129,37 @@ let StandardMaterialBehavior = (() => {
             _vertexTangents_decorators = [booleanAttribute, receiver];
             _morphTargets_decorators = [booleanAttribute, receiver];
             _morphNormals_decorators = [booleanAttribute, receiver];
-            __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bumpMap_decorators, { kind: "field", name: "bumpMap", static: false, private: false, access: { has: obj => "bumpMap" in obj, get: obj => obj.bumpMap, set: (obj, value) => { obj.bumpMap = value; } }, metadata: _metadata }, _bumpMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bumpScale_decorators, { kind: "field", name: "bumpScale", static: false, private: false, access: { has: obj => "bumpScale" in obj, get: obj => obj.bumpScale, set: (obj, value) => { obj.bumpScale = value; } }, metadata: _metadata }, _bumpScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementMap_decorators, { kind: "field", name: "displacementMap", static: false, private: false, access: { has: obj => "displacementMap" in obj, get: obj => obj.displacementMap, set: (obj, value) => { obj.displacementMap = value; } }, metadata: _metadata }, _displacementMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementScale_decorators, { kind: "field", name: "displacementScale", static: false, private: false, access: { has: obj => "displacementScale" in obj, get: obj => obj.displacementScale, set: (obj, value) => { obj.displacementScale = value; } }, metadata: _metadata }, _displacementScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementBias_decorators, { kind: "field", name: "displacementBias", static: false, private: false, access: { has: obj => "displacementBias" in obj, get: obj => obj.displacementBias, set: (obj, value) => { obj.displacementBias = value; } }, metadata: _metadata }, _displacementBias_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _normalMap_decorators, { kind: "field", name: "normalMap", static: false, private: false, access: { has: obj => "normalMap" in obj, get: obj => obj.normalMap, set: (obj, value) => { obj.normalMap = value; } }, metadata: _metadata }, _normalMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _normalScale_decorators, { kind: "field", name: "normalScale", static: false, private: false, access: { has: obj => "normalScale" in obj, get: obj => obj.normalScale, set: (obj, value) => { obj.normalScale = value; } }, metadata: _metadata }, _normalScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _metalness_decorators, { kind: "field", name: "metalness", static: false, private: false, access: { has: obj => "metalness" in obj, get: obj => obj.metalness, set: (obj, value) => { obj.metalness = value; } }, metadata: _metadata }, _metalness_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _metalnessMap_decorators, { kind: "field", name: "metalnessMap", static: false, private: false, access: { has: obj => "metalnessMap" in obj, get: obj => obj.metalnessMap, set: (obj, value) => { obj.metalnessMap = value; } }, metadata: _metadata }, _metalnessMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _roughness_decorators, { kind: "field", name: "roughness", static: false, private: false, access: { has: obj => "roughness" in obj, get: obj => obj.roughness, set: (obj, value) => { obj.roughness = value; } }, metadata: _metadata }, _roughness_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _roughnessMap_decorators, { kind: "field", name: "roughnessMap", static: false, private: false, access: { has: obj => "roughnessMap" in obj, get: obj => obj.roughnessMap, set: (obj, value) => { obj.roughnessMap = value; } }, metadata: _metadata }, _roughnessMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _vertexTangents_decorators, { kind: "field", name: "vertexTangents", static: false, private: false, access: { has: obj => "vertexTangents" in obj, get: obj => obj.vertexTangents, set: (obj, value) => { obj.vertexTangents = value; } }, metadata: _metadata }, _vertexTangents_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _morphTargets_decorators, { kind: "field", name: "morphTargets", static: false, private: false, access: { has: obj => "morphTargets" in obj, get: obj => obj.morphTargets, set: (obj, value) => { obj.morphTargets = value; } }, metadata: _metadata }, _morphTargets_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _morphNormals_decorators, { kind: "field", name: "morphNormals", static: false, private: false, access: { has: obj => "morphNormals" in obj, get: obj => obj.morphNormals, set: (obj, value) => { obj.morphNormals = value; } }, metadata: _metadata }, _morphNormals_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _alphaMap_extraInitializers);
+            __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _aoMap_extraInitializers);
+            __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _aoMapIntensity_extraInitializers);
+            __esDecorate(null, null, _bumpMap_decorators, { kind: "field", name: "bumpMap", static: false, private: false, access: { has: obj => "bumpMap" in obj, get: obj => obj.bumpMap, set: (obj, value) => { obj.bumpMap = value; } }, metadata: _metadata }, _bumpMap_initializers, _bumpMap_extraInitializers);
+            __esDecorate(null, null, _bumpScale_decorators, { kind: "field", name: "bumpScale", static: false, private: false, access: { has: obj => "bumpScale" in obj, get: obj => obj.bumpScale, set: (obj, value) => { obj.bumpScale = value; } }, metadata: _metadata }, _bumpScale_initializers, _bumpScale_extraInitializers);
+            __esDecorate(null, null, _displacementMap_decorators, { kind: "field", name: "displacementMap", static: false, private: false, access: { has: obj => "displacementMap" in obj, get: obj => obj.displacementMap, set: (obj, value) => { obj.displacementMap = value; } }, metadata: _metadata }, _displacementMap_initializers, _displacementMap_extraInitializers);
+            __esDecorate(null, null, _displacementScale_decorators, { kind: "field", name: "displacementScale", static: false, private: false, access: { has: obj => "displacementScale" in obj, get: obj => obj.displacementScale, set: (obj, value) => { obj.displacementScale = value; } }, metadata: _metadata }, _displacementScale_initializers, _displacementScale_extraInitializers);
+            __esDecorate(null, null, _displacementBias_decorators, { kind: "field", name: "displacementBias", static: false, private: false, access: { has: obj => "displacementBias" in obj, get: obj => obj.displacementBias, set: (obj, value) => { obj.displacementBias = value; } }, metadata: _metadata }, _displacementBias_initializers, _displacementBias_extraInitializers);
+            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _texture_extraInitializers);
+            __esDecorate(null, null, _normalMap_decorators, { kind: "field", name: "normalMap", static: false, private: false, access: { has: obj => "normalMap" in obj, get: obj => obj.normalMap, set: (obj, value) => { obj.normalMap = value; } }, metadata: _metadata }, _normalMap_initializers, _normalMap_extraInitializers);
+            __esDecorate(null, null, _normalScale_decorators, { kind: "field", name: "normalScale", static: false, private: false, access: { has: obj => "normalScale" in obj, get: obj => obj.normalScale, set: (obj, value) => { obj.normalScale = value; } }, metadata: _metadata }, _normalScale_initializers, _normalScale_extraInitializers);
+            __esDecorate(null, null, _metalness_decorators, { kind: "field", name: "metalness", static: false, private: false, access: { has: obj => "metalness" in obj, get: obj => obj.metalness, set: (obj, value) => { obj.metalness = value; } }, metadata: _metadata }, _metalness_initializers, _metalness_extraInitializers);
+            __esDecorate(null, null, _metalnessMap_decorators, { kind: "field", name: "metalnessMap", static: false, private: false, access: { has: obj => "metalnessMap" in obj, get: obj => obj.metalnessMap, set: (obj, value) => { obj.metalnessMap = value; } }, metadata: _metadata }, _metalnessMap_initializers, _metalnessMap_extraInitializers);
+            __esDecorate(null, null, _roughness_decorators, { kind: "field", name: "roughness", static: false, private: false, access: { has: obj => "roughness" in obj, get: obj => obj.roughness, set: (obj, value) => { obj.roughness = value; } }, metadata: _metadata }, _roughness_initializers, _roughness_extraInitializers);
+            __esDecorate(null, null, _roughnessMap_decorators, { kind: "field", name: "roughnessMap", static: false, private: false, access: { has: obj => "roughnessMap" in obj, get: obj => obj.roughnessMap, set: (obj, value) => { obj.roughnessMap = value; } }, metadata: _metadata }, _roughnessMap_initializers, _roughnessMap_extraInitializers);
+            __esDecorate(null, null, _vertexTangents_decorators, { kind: "field", name: "vertexTangents", static: false, private: false, access: { has: obj => "vertexTangents" in obj, get: obj => obj.vertexTangents, set: (obj, value) => { obj.vertexTangents = value; } }, metadata: _metadata }, _vertexTangents_initializers, _vertexTangents_extraInitializers);
+            __esDecorate(null, null, _morphTargets_decorators, { kind: "field", name: "morphTargets", static: false, private: false, access: { has: obj => "morphTargets" in obj, get: obj => obj.morphTargets, set: (obj, value) => { obj.morphTargets = value; } }, metadata: _metadata }, _morphTargets_initializers, _morphTargets_extraInitializers);
+            __esDecorate(null, null, _morphNormals_decorators, { kind: "field", name: "morphNormals", static: false, private: false, access: { has: obj => "morphNormals" in obj, get: obj => obj.morphNormals, set: (obj, value) => { obj.morphNormals = value; } }, metadata: _metadata }, _morphNormals_initializers, _morphNormals_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             StandardMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        alphaMap = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _alphaMap_initializers, ''));
-        aoMap = __runInitializers(this, _aoMap_initializers, '');
-        aoMapIntensity = __runInitializers(this, _aoMapIntensity_initializers, 1);
-        bumpMap = __runInitializers(this, _bumpMap_initializers, '');
-        bumpScale = __runInitializers(this, _bumpScale_initializers, 1);
-        displacementMap = __runInitializers(this, _displacementMap_initializers, '');
-        displacementScale = __runInitializers(this, _displacementScale_initializers, 1);
-        displacementBias = __runInitializers(this, _displacementBias_initializers, 0
+        alphaMap = __runInitializers(this, _alphaMap_initializers, '');
+        aoMap = (__runInitializers(this, _alphaMap_extraInitializers), __runInitializers(this, _aoMap_initializers, ''));
+        aoMapIntensity = (__runInitializers(this, _aoMap_extraInitializers), __runInitializers(this, _aoMapIntensity_initializers, 1));
+        bumpMap = (__runInitializers(this, _aoMapIntensity_extraInitializers), __runInitializers(this, _bumpMap_initializers, ''));
+        bumpScale = (__runInitializers(this, _bumpMap_extraInitializers), __runInitializers(this, _bumpScale_initializers, 1));
+        displacementMap = (__runInitializers(this, _bumpScale_extraInitializers), __runInitializers(this, _displacementMap_initializers, ''));
+        displacementScale = (__runInitializers(this, _displacementMap_extraInitializers), __runInitializers(this, _displacementScale_initializers, 1));
+        displacementBias = (__runInitializers(this, _displacementScale_extraInitializers), __runInitializers(this, _displacementBias_initializers, 0
         // emissive?: Color | string | number;
         // envMap?: Texture | null;
         // @numberAttribute @receiver envMapIntensity?: number
@@ -150,7 +167,7 @@ let StandardMaterialBehavior = (() => {
         // emissiveMap?: Texture | null;
         // lightMap?: Texture | null;
         // @numberAttribute @receiver lightMapIntensity?: number
-        );
+        ));
         // emissive?: Color | string | number;
         // envMap?: Texture | null;
         // @numberAttribute @receiver envMapIntensity?: number
@@ -158,29 +175,29 @@ let StandardMaterialBehavior = (() => {
         // emissiveMap?: Texture | null;
         // lightMap?: Texture | null;
         // @numberAttribute @receiver lightMapIntensity?: number
-        texture = __runInitializers(this, _texture_initializers, ''); // map
-        normalMap = __runInitializers(this, _normalMap_initializers, ''
+        texture = (__runInitializers(this, _displacementBias_extraInitializers), __runInitializers(this, _texture_initializers, '')); // map
+        normalMap = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _normalMap_initializers, ''
         // normalMapType
-        );
+        ));
         // normalMapType
-        normalScale = __runInitializers(this, _normalScale_initializers, 1);
-        metalness = __runInitializers(this, _metalness_initializers, 0);
-        metalnessMap = __runInitializers(this, _metalnessMap_initializers, ''
+        normalScale = (__runInitializers(this, _normalMap_extraInitializers), __runInitializers(this, _normalScale_initializers, 1));
+        metalness = (__runInitializers(this, _normalScale_extraInitializers), __runInitializers(this, _metalness_initializers, 0));
+        metalnessMap = (__runInitializers(this, _metalness_extraInitializers), __runInitializers(this, _metalnessMap_initializers, ''
         // @numberAttribute @receiver refractionRatio?: number
-        );
+        ));
         // @numberAttribute @receiver refractionRatio?: number
-        roughness = __runInitializers(this, _roughness_initializers, 1);
-        roughnessMap = __runInitializers(this, _roughnessMap_initializers, ''
+        roughness = (__runInitializers(this, _metalnessMap_extraInitializers), __runInitializers(this, _roughness_initializers, 1));
+        roughnessMap = (__runInitializers(this, _roughness_extraInitializers), __runInitializers(this, _roughnessMap_initializers, ''
         // wireframe?: boolean
         // @numberAttribute @receiver wireframeLinewidth?: number // Not supported because the WebGL line width is always 1.
         // @booleanAttribute @receiver skinning: boolean = false
-        );
+        ));
         // wireframe?: boolean
         // @numberAttribute @receiver wireframeLinewidth?: number // Not supported because the WebGL line width is always 1.
         // @booleanAttribute @receiver skinning: boolean = false
-        vertexTangents = __runInitializers(this, _vertexTangents_initializers, false);
-        morphTargets = __runInitializers(this, _morphTargets_initializers, false);
-        morphNormals = __runInitializers(this, _morphNormals_initializers, false);
+        vertexTangents = (__runInitializers(this, _roughnessMap_extraInitializers), __runInitializers(this, _vertexTangents_initializers, false));
+        morphTargets = (__runInitializers(this, _vertexTangents_extraInitializers), __runInitializers(this, _morphTargets_initializers, false));
+        morphNormals = (__runInitializers(this, _morphTargets_extraInitializers), __runInitializers(this, _morphNormals_initializers, false));
         _createComponent() {
             return new MeshStandardMaterial();
         }
@@ -213,6 +230,10 @@ let StandardMaterialBehavior = (() => {
             this._handleTexture(() => this.normalMap, (mat, tex) => (mat.normalMap = tex), mat => !!mat.normalMap);
             this._handleTexture(() => this.metalnessMap, (mat, tex) => (mat.metalnessMap = tex), mat => !!mat.metalnessMap);
             this._handleTexture(() => this.roughnessMap, (mat, tex) => (mat.roughnessMap = tex), mat => !!mat.roughnessMap);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _morphNormals_extraInitializers);
         }
     };
     return StandardMaterialBehavior = _classThis;

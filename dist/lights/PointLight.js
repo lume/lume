@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import { numberAttribute, element } from '@lume/element';
 import { onCleanup } from 'solid-js';
@@ -74,12 +74,16 @@ let PointLight = (() => {
     let _instanceExtraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
+    let _intensity_extraInitializers = [];
     let _shadowCameraFov_decorators;
     let _shadowCameraFov_initializers = [];
+    let _shadowCameraFov_extraInitializers = [];
     let _distance_decorators;
     let _distance_initializers = [];
+    let _distance_extraInitializers = [];
     let _decay_decorators;
     let _decay_initializers = [];
+    let _decay_extraInitializers = [];
     let _get_power_decorators;
     var PointLight = class extends _classSuper {
         static { _classThis = this; }
@@ -91,10 +95,10 @@ let PointLight = (() => {
             _decay_decorators = [numberAttribute];
             _get_power_decorators = [numberAttribute];
             __esDecorate(this, null, _get_power_decorators, { kind: "getter", name: "power", static: false, private: false, access: { has: obj => "power" in obj, get: obj => obj.power }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraFov_decorators, { kind: "field", name: "shadowCameraFov", static: false, private: false, access: { has: obj => "shadowCameraFov" in obj, get: obj => obj.shadowCameraFov, set: (obj, value) => { obj.shadowCameraFov = value; } }, metadata: _metadata }, _shadowCameraFov_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _decay_decorators, { kind: "field", name: "decay", static: false, private: false, access: { has: obj => "decay" in obj, get: obj => obj.decay, set: (obj, value) => { obj.decay = value; } }, metadata: _metadata }, _decay_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
+            __esDecorate(null, null, _shadowCameraFov_decorators, { kind: "field", name: "shadowCameraFov", static: false, private: false, access: { has: obj => "shadowCameraFov" in obj, get: obj => obj.shadowCameraFov, set: (obj, value) => { obj.shadowCameraFov = value; } }, metadata: _metadata }, _shadowCameraFov_initializers, _shadowCameraFov_extraInitializers);
+            __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _distance_extraInitializers);
+            __esDecorate(null, null, _decay_decorators, { kind: "field", name: "decay", static: false, private: false, access: { has: obj => "decay" in obj, get: obj => obj.decay, set: (obj, value) => { obj.decay = value; } }, metadata: _metadata }, _decay_initializers, _decay_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PointLight = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -120,7 +124,7 @@ let PointLight = (() => {
         ));
         // These map to THREE.PointLightShadow properties, which uses a perspective camera for shadow projection.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/PointLightShadow
-        shadowCameraFov = __runInitializers(this, _shadowCameraFov_initializers, 90
+        shadowCameraFov = (__runInitializers(this, _intensity_extraInitializers), __runInitializers(this, _shadowCameraFov_initializers, 90
         /**
          * @property {number} distance -
          *
@@ -141,7 +145,7 @@ let PointLight = (() => {
          * cutoff, where it will then attenuate quickly and smoothly to 0.
          * Inherently, cutoffs are not physically correct.
          */
-        );
+        ));
         /**
          * @property {number} distance -
          *
@@ -162,7 +166,7 @@ let PointLight = (() => {
          * cutoff, where it will then attenuate quickly and smoothly to 0.
          * Inherently, cutoffs are not physically correct.
          */
-        distance = __runInitializers(this, _distance_initializers, 0
+        distance = (__runInitializers(this, _shadowCameraFov_extraInitializers), __runInitializers(this, _distance_initializers, 0
         /**
          * @property {number} decay
          *
@@ -175,7 +179,7 @@ let PointLight = (() => {
          * In [physically correct mode](../core/Scene#physicallycorrectlights), a
          * decay value of `2` leads to physically realistic light falloff.
          */
-        );
+        ));
         /**
          * @property {number} decay
          *
@@ -188,7 +192,7 @@ let PointLight = (() => {
          * In [physically correct mode](../core/Scene#physicallycorrectlights), a
          * decay value of `2` leads to physically realistic light falloff.
          */
-        decay = __runInitializers(this, _decay_initializers, 1
+        decay = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, _decay_initializers, 1
         /**
          * @property {number} power -
          *
@@ -203,7 +207,7 @@ let PointLight = (() => {
          * is enabled, power is the luminous power of the light measured in lumens
          * (lm).
          */
-        );
+        ));
         /**
          * @property {number} power -
          *
@@ -257,6 +261,10 @@ let PointLight = (() => {
         }
         makeThreeObject3d() {
             return new ThreePointLight();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _decay_extraInitializers);
         }
     };
     return PointLight = _classThis;

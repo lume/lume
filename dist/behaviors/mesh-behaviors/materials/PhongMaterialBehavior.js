@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import 'element-behaviors';
 import { Color } from 'three/src/math/Color.js';
@@ -62,46 +62,66 @@ let PhongMaterialBehavior = (() => {
     let _instanceExtraInitializers = [];
     let _alphaMap_decorators;
     let _alphaMap_initializers = [];
+    let _alphaMap_extraInitializers = [];
     let _aoMap_decorators;
     let _aoMap_initializers = [];
+    let _aoMap_extraInitializers = [];
     let _aoMapIntensity_decorators;
     let _aoMapIntensity_initializers = [];
+    let _aoMapIntensity_extraInitializers = [];
     let _bumpMap_decorators;
     let _bumpMap_initializers = [];
+    let _bumpMap_extraInitializers = [];
     let _bumpScale_decorators;
     let _bumpScale_initializers = [];
+    let _bumpScale_extraInitializers = [];
     let _displacementMap_decorators;
     let _displacementMap_initializers = [];
+    let _displacementMap_extraInitializers = [];
     let _displacementScale_decorators;
     let _displacementScale_initializers = [];
+    let _displacementScale_extraInitializers = [];
     let _displacementBias_decorators;
     let _displacementBias_initializers = [];
+    let _displacementBias_extraInitializers = [];
     let _emissiveMap_decorators;
     let _emissiveMap_initializers = [];
+    let _emissiveMap_extraInitializers = [];
     let _get_emissive_decorators;
     let _emissiveIntensity_decorators;
     let _emissiveIntensity_initializers = [];
+    let _emissiveIntensity_extraInitializers = [];
     let _envMap_decorators;
     let _envMap_initializers = [];
+    let _envMap_extraInitializers = [];
     let _flatShading_decorators;
     let _flatShading_initializers = [];
+    let _flatShading_extraInitializers = [];
     let _lightMap_decorators;
     let _lightMap_initializers = [];
+    let _lightMap_extraInitializers = [];
     let _lightMapIntensity_decorators;
     let _lightMapIntensity_initializers = [];
+    let _lightMapIntensity_extraInitializers = [];
     let _texture_decorators;
     let _texture_initializers = [];
+    let _texture_extraInitializers = [];
     let _normalMap_decorators;
     let _normalMap_initializers = [];
+    let _normalMap_extraInitializers = [];
     let _normalScale_decorators;
     let _normalScale_initializers = [];
+    let _normalScale_extraInitializers = [];
     let _reflectivity_decorators;
     let _reflectivity_initializers = [];
+    let _reflectivity_extraInitializers = [];
     let _specularMap_decorators;
     let _specularMap_initializers = [];
+    let _specularMap_extraInitializers = [];
     let _get_specular_decorators;
     let _shininess_decorators;
     let _shininess_initializers = [];
+    let _shininess_extraInitializers = [];
     var PhongMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -130,45 +150,45 @@ let PhongMaterialBehavior = (() => {
             _shininess_decorators = [numberAttribute, receiver];
             __esDecorate(this, null, _get_emissive_decorators, { kind: "getter", name: "emissive", static: false, private: false, access: { has: obj => "emissive" in obj, get: obj => obj.emissive }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_specular_decorators, { kind: "getter", name: "specular", static: false, private: false, access: { has: obj => "specular" in obj, get: obj => obj.specular }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bumpMap_decorators, { kind: "field", name: "bumpMap", static: false, private: false, access: { has: obj => "bumpMap" in obj, get: obj => obj.bumpMap, set: (obj, value) => { obj.bumpMap = value; } }, metadata: _metadata }, _bumpMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bumpScale_decorators, { kind: "field", name: "bumpScale", static: false, private: false, access: { has: obj => "bumpScale" in obj, get: obj => obj.bumpScale, set: (obj, value) => { obj.bumpScale = value; } }, metadata: _metadata }, _bumpScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementMap_decorators, { kind: "field", name: "displacementMap", static: false, private: false, access: { has: obj => "displacementMap" in obj, get: obj => obj.displacementMap, set: (obj, value) => { obj.displacementMap = value; } }, metadata: _metadata }, _displacementMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementScale_decorators, { kind: "field", name: "displacementScale", static: false, private: false, access: { has: obj => "displacementScale" in obj, get: obj => obj.displacementScale, set: (obj, value) => { obj.displacementScale = value; } }, metadata: _metadata }, _displacementScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _displacementBias_decorators, { kind: "field", name: "displacementBias", static: false, private: false, access: { has: obj => "displacementBias" in obj, get: obj => obj.displacementBias, set: (obj, value) => { obj.displacementBias = value; } }, metadata: _metadata }, _displacementBias_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _emissiveMap_decorators, { kind: "field", name: "emissiveMap", static: false, private: false, access: { has: obj => "emissiveMap" in obj, get: obj => obj.emissiveMap, set: (obj, value) => { obj.emissiveMap = value; } }, metadata: _metadata }, _emissiveMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _emissiveIntensity_decorators, { kind: "field", name: "emissiveIntensity", static: false, private: false, access: { has: obj => "emissiveIntensity" in obj, get: obj => obj.emissiveIntensity, set: (obj, value) => { obj.emissiveIntensity = value; } }, metadata: _metadata }, _emissiveIntensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _envMap_decorators, { kind: "field", name: "envMap", static: false, private: false, access: { has: obj => "envMap" in obj, get: obj => obj.envMap, set: (obj, value) => { obj.envMap = value; } }, metadata: _metadata }, _envMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _flatShading_decorators, { kind: "field", name: "flatShading", static: false, private: false, access: { has: obj => "flatShading" in obj, get: obj => obj.flatShading, set: (obj, value) => { obj.flatShading = value; } }, metadata: _metadata }, _flatShading_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _lightMap_decorators, { kind: "field", name: "lightMap", static: false, private: false, access: { has: obj => "lightMap" in obj, get: obj => obj.lightMap, set: (obj, value) => { obj.lightMap = value; } }, metadata: _metadata }, _lightMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _lightMapIntensity_decorators, { kind: "field", name: "lightMapIntensity", static: false, private: false, access: { has: obj => "lightMapIntensity" in obj, get: obj => obj.lightMapIntensity, set: (obj, value) => { obj.lightMapIntensity = value; } }, metadata: _metadata }, _lightMapIntensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _normalMap_decorators, { kind: "field", name: "normalMap", static: false, private: false, access: { has: obj => "normalMap" in obj, get: obj => obj.normalMap, set: (obj, value) => { obj.normalMap = value; } }, metadata: _metadata }, _normalMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _normalScale_decorators, { kind: "field", name: "normalScale", static: false, private: false, access: { has: obj => "normalScale" in obj, get: obj => obj.normalScale, set: (obj, value) => { obj.normalScale = value; } }, metadata: _metadata }, _normalScale_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _reflectivity_decorators, { kind: "field", name: "reflectivity", static: false, private: false, access: { has: obj => "reflectivity" in obj, get: obj => obj.reflectivity, set: (obj, value) => { obj.reflectivity = value; } }, metadata: _metadata }, _reflectivity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _specularMap_decorators, { kind: "field", name: "specularMap", static: false, private: false, access: { has: obj => "specularMap" in obj, get: obj => obj.specularMap, set: (obj, value) => { obj.specularMap = value; } }, metadata: _metadata }, _specularMap_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shininess_decorators, { kind: "field", name: "shininess", static: false, private: false, access: { has: obj => "shininess" in obj, get: obj => obj.shininess, set: (obj, value) => { obj.shininess = value; } }, metadata: _metadata }, _shininess_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _alphaMap_extraInitializers);
+            __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _aoMap_extraInitializers);
+            __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _aoMapIntensity_extraInitializers);
+            __esDecorate(null, null, _bumpMap_decorators, { kind: "field", name: "bumpMap", static: false, private: false, access: { has: obj => "bumpMap" in obj, get: obj => obj.bumpMap, set: (obj, value) => { obj.bumpMap = value; } }, metadata: _metadata }, _bumpMap_initializers, _bumpMap_extraInitializers);
+            __esDecorate(null, null, _bumpScale_decorators, { kind: "field", name: "bumpScale", static: false, private: false, access: { has: obj => "bumpScale" in obj, get: obj => obj.bumpScale, set: (obj, value) => { obj.bumpScale = value; } }, metadata: _metadata }, _bumpScale_initializers, _bumpScale_extraInitializers);
+            __esDecorate(null, null, _displacementMap_decorators, { kind: "field", name: "displacementMap", static: false, private: false, access: { has: obj => "displacementMap" in obj, get: obj => obj.displacementMap, set: (obj, value) => { obj.displacementMap = value; } }, metadata: _metadata }, _displacementMap_initializers, _displacementMap_extraInitializers);
+            __esDecorate(null, null, _displacementScale_decorators, { kind: "field", name: "displacementScale", static: false, private: false, access: { has: obj => "displacementScale" in obj, get: obj => obj.displacementScale, set: (obj, value) => { obj.displacementScale = value; } }, metadata: _metadata }, _displacementScale_initializers, _displacementScale_extraInitializers);
+            __esDecorate(null, null, _displacementBias_decorators, { kind: "field", name: "displacementBias", static: false, private: false, access: { has: obj => "displacementBias" in obj, get: obj => obj.displacementBias, set: (obj, value) => { obj.displacementBias = value; } }, metadata: _metadata }, _displacementBias_initializers, _displacementBias_extraInitializers);
+            __esDecorate(null, null, _emissiveMap_decorators, { kind: "field", name: "emissiveMap", static: false, private: false, access: { has: obj => "emissiveMap" in obj, get: obj => obj.emissiveMap, set: (obj, value) => { obj.emissiveMap = value; } }, metadata: _metadata }, _emissiveMap_initializers, _emissiveMap_extraInitializers);
+            __esDecorate(null, null, _emissiveIntensity_decorators, { kind: "field", name: "emissiveIntensity", static: false, private: false, access: { has: obj => "emissiveIntensity" in obj, get: obj => obj.emissiveIntensity, set: (obj, value) => { obj.emissiveIntensity = value; } }, metadata: _metadata }, _emissiveIntensity_initializers, _emissiveIntensity_extraInitializers);
+            __esDecorate(null, null, _envMap_decorators, { kind: "field", name: "envMap", static: false, private: false, access: { has: obj => "envMap" in obj, get: obj => obj.envMap, set: (obj, value) => { obj.envMap = value; } }, metadata: _metadata }, _envMap_initializers, _envMap_extraInitializers);
+            __esDecorate(null, null, _flatShading_decorators, { kind: "field", name: "flatShading", static: false, private: false, access: { has: obj => "flatShading" in obj, get: obj => obj.flatShading, set: (obj, value) => { obj.flatShading = value; } }, metadata: _metadata }, _flatShading_initializers, _flatShading_extraInitializers);
+            __esDecorate(null, null, _lightMap_decorators, { kind: "field", name: "lightMap", static: false, private: false, access: { has: obj => "lightMap" in obj, get: obj => obj.lightMap, set: (obj, value) => { obj.lightMap = value; } }, metadata: _metadata }, _lightMap_initializers, _lightMap_extraInitializers);
+            __esDecorate(null, null, _lightMapIntensity_decorators, { kind: "field", name: "lightMapIntensity", static: false, private: false, access: { has: obj => "lightMapIntensity" in obj, get: obj => obj.lightMapIntensity, set: (obj, value) => { obj.lightMapIntensity = value; } }, metadata: _metadata }, _lightMapIntensity_initializers, _lightMapIntensity_extraInitializers);
+            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _texture_extraInitializers);
+            __esDecorate(null, null, _normalMap_decorators, { kind: "field", name: "normalMap", static: false, private: false, access: { has: obj => "normalMap" in obj, get: obj => obj.normalMap, set: (obj, value) => { obj.normalMap = value; } }, metadata: _metadata }, _normalMap_initializers, _normalMap_extraInitializers);
+            __esDecorate(null, null, _normalScale_decorators, { kind: "field", name: "normalScale", static: false, private: false, access: { has: obj => "normalScale" in obj, get: obj => obj.normalScale, set: (obj, value) => { obj.normalScale = value; } }, metadata: _metadata }, _normalScale_initializers, _normalScale_extraInitializers);
+            __esDecorate(null, null, _reflectivity_decorators, { kind: "field", name: "reflectivity", static: false, private: false, access: { has: obj => "reflectivity" in obj, get: obj => obj.reflectivity, set: (obj, value) => { obj.reflectivity = value; } }, metadata: _metadata }, _reflectivity_initializers, _reflectivity_extraInitializers);
+            __esDecorate(null, null, _specularMap_decorators, { kind: "field", name: "specularMap", static: false, private: false, access: { has: obj => "specularMap" in obj, get: obj => obj.specularMap, set: (obj, value) => { obj.specularMap = value; } }, metadata: _metadata }, _specularMap_initializers, _specularMap_extraInitializers);
+            __esDecorate(null, null, _shininess_decorators, { kind: "field", name: "shininess", static: false, private: false, access: { has: obj => "shininess" in obj, get: obj => obj.shininess, set: (obj, value) => { obj.shininess = value; } }, metadata: _metadata }, _shininess_initializers, _shininess_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PhongMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         alphaMap = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _alphaMap_initializers, ''));
-        aoMap = __runInitializers(this, _aoMap_initializers, '');
-        aoMapIntensity = __runInitializers(this, _aoMapIntensity_initializers, 1);
-        bumpMap = __runInitializers(this, _bumpMap_initializers, '');
-        bumpScale = __runInitializers(this, _bumpScale_initializers, 1
+        aoMap = (__runInitializers(this, _alphaMap_extraInitializers), __runInitializers(this, _aoMap_initializers, ''));
+        aoMapIntensity = (__runInitializers(this, _aoMap_extraInitializers), __runInitializers(this, _aoMapIntensity_initializers, 1));
+        bumpMap = (__runInitializers(this, _aoMapIntensity_extraInitializers), __runInitializers(this, _bumpMap_initializers, ''));
+        bumpScale = (__runInitializers(this, _bumpMap_extraInitializers), __runInitializers(this, _bumpScale_initializers, 1
         // combine
-        );
+        ));
         // combine
-        displacementMap = __runInitializers(this, _displacementMap_initializers, '');
-        displacementScale = __runInitializers(this, _displacementScale_initializers, 1);
-        displacementBias = __runInitializers(this, _displacementBias_initializers, 0);
-        emissiveMap = __runInitializers(this, _emissiveMap_initializers, ''
+        displacementMap = (__runInitializers(this, _bumpScale_extraInitializers), __runInitializers(this, _displacementMap_initializers, ''));
+        displacementScale = (__runInitializers(this, _displacementMap_extraInitializers), __runInitializers(this, _displacementScale_initializers, 1));
+        displacementBias = (__runInitializers(this, _displacementScale_extraInitializers), __runInitializers(this, _displacementBias_initializers, 0));
+        emissiveMap = (__runInitializers(this, _displacementBias_extraInitializers), __runInitializers(this, _emissiveMap_initializers, ''
         // TODO this is not DRY, similar to the .color and .specular properties, consolidate.
-        );
+        ));
         // TODO this is not DRY, similar to the .color and .specular properties, consolidate.
         get emissive() {
             return this.#emissive;
@@ -179,20 +199,20 @@ let PhongMaterialBehavior = (() => {
             else
                 this.#emissive = val;
         }
-        #emissive = 'black';
+        #emissive = (__runInitializers(this, _emissiveMap_extraInitializers), 'black');
         emissiveIntensity = __runInitializers(this, _emissiveIntensity_initializers, 1);
-        envMap = __runInitializers(this, _envMap_initializers, '');
-        flatShading = __runInitializers(this, _flatShading_initializers, false);
-        lightMap = __runInitializers(this, _lightMap_initializers, '');
-        lightMapIntensity = __runInitializers(this, _lightMapIntensity_initializers, 1);
-        texture = __runInitializers(this, _texture_initializers, ''); // map
-        normalMap = __runInitializers(this, _normalMap_initializers, ''
+        envMap = (__runInitializers(this, _emissiveIntensity_extraInitializers), __runInitializers(this, _envMap_initializers, ''));
+        flatShading = (__runInitializers(this, _envMap_extraInitializers), __runInitializers(this, _flatShading_initializers, false));
+        lightMap = (__runInitializers(this, _flatShading_extraInitializers), __runInitializers(this, _lightMap_initializers, ''));
+        lightMapIntensity = (__runInitializers(this, _lightMap_extraInitializers), __runInitializers(this, _lightMapIntensity_initializers, 1));
+        texture = (__runInitializers(this, _lightMapIntensity_extraInitializers), __runInitializers(this, _texture_initializers, '')); // map
+        normalMap = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _normalMap_initializers, ''
         // normalMapType
-        );
+        ));
         // normalMapType
-        normalScale = __runInitializers(this, _normalScale_initializers, 1);
-        reflectivity = __runInitializers(this, _reflectivity_initializers, 1);
-        specularMap = __runInitializers(this, _specularMap_initializers, '');
+        normalScale = (__runInitializers(this, _normalMap_extraInitializers), __runInitializers(this, _normalScale_initializers, 1));
+        reflectivity = (__runInitializers(this, _normalScale_extraInitializers), __runInitializers(this, _reflectivity_initializers, 1));
+        specularMap = (__runInitializers(this, _reflectivity_extraInitializers), __runInitializers(this, _specularMap_initializers, ''));
         get specular() {
             return this.#specular;
         }
@@ -202,7 +222,7 @@ let PhongMaterialBehavior = (() => {
             else
                 this.#specular = val;
         }
-        #specular = '#111';
+        #specular = (__runInitializers(this, _specularMap_extraInitializers), '#111');
         shininess = __runInitializers(this, _shininess_initializers, 30);
         _createComponent() {
             return new MeshPhongMaterial({
@@ -248,6 +268,10 @@ let PhongMaterialBehavior = (() => {
             (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
             this._handleTexture(() => this.normalMap, (mat, tex) => (mat.normalMap = tex), mat => !!mat.normalMap);
             this._handleTexture(() => this.specularMap, (mat, tex) => (mat.specularMap = tex), mat => !!mat.specularMap, () => { }, true);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _shininess_extraInitializers);
         }
     };
     return PhongMaterialBehavior = _classThis;

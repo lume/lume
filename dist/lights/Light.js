@@ -53,19 +53,20 @@ let Light = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _color_decorators;
     let _color_initializers = [];
+    let _color_extraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
+    let _intensity_extraInitializers = [];
     var Light = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _color_decorators = [attribute];
             _intensity_decorators = [numberAttribute];
-            __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _color_extraInitializers);
+            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Light = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -91,7 +92,7 @@ let Light = (() => {
          * `THREE.Color` after assignment will have no effect; instead you can
          * assign it again each time you wish to update the color.
          */
-        color = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _color_initializers, 'white'
+        color = __runInitializers(this, _color_initializers, 'white'
         /**
          * @property {number} intensity -
          *
@@ -105,7 +106,7 @@ let Light = (() => {
          * is enabled, the units of intensity depend on the type of light (f.e.
          * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
          */
-        ));
+        );
         /**
          * @property {number} intensity -
          *
@@ -119,11 +120,11 @@ let Light = (() => {
          * is enabled, the units of intensity depend on the type of light (f.e.
          * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
          */
-        intensity = __runInitializers(this, _intensity_initializers, 1
+        intensity = (__runInitializers(this, _color_extraInitializers), __runInitializers(this, _intensity_initializers, 1
         // This is not used in practice because this class is abstract, but this enforces
         // (in TypeScript) that subclasses that override this will return a subtype of
         // ThreeLight.
-        );
+        ));
         // This is not used in practice because this class is abstract, but this enforces
         // (in TypeScript) that subclasses that override this will return a subtype of
         // ThreeLight.
@@ -143,6 +144,10 @@ let Light = (() => {
                 this.three.intensity = this.intensity;
                 this.needsUpdate();
             });
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _intensity_extraInitializers);
         }
     };
     return Light = _classThis;

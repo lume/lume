@@ -5,7 +5,7 @@ export declare function makeTriangleBlurShader(iterations?: number): {
     name: string;
     uniforms: {
         blurTexture: IUniform<Texture | null>;
-        delta: IUniform<any>;
+        delta: IUniform;
     };
     vertexShader: string;
     fragmentShader: string;

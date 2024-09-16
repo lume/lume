@@ -57,6 +57,7 @@ const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
 // Queue a microtask because otherwise this fires before the module graph has
 // executed the version variable initializer.
 queueMicrotask(() => console.info(magic()));
+const Super = SharedAPI;
 /**
  * @class Scene -
  *
@@ -87,59 +88,84 @@ let Scene = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = SharedAPI;
+    let _classSuper = Super;
     let _instanceExtraInitializers = [];
     let _enableCss_decorators;
     let _enableCss_initializers = [];
+    let _enableCss_extraInitializers = [];
     let _webgl_decorators;
     let _webgl_initializers = [];
+    let _webgl_extraInitializers = [];
     let _swapLayers_decorators;
     let _swapLayers_initializers = [];
+    let _swapLayers_extraInitializers = [];
     let _shadowMode_decorators;
     let _shadowMode_initializers = [];
+    let _shadowMode_extraInitializers = [];
     let _get_shadowmapType_decorators;
     let _vr_decorators;
     let _vr_initializers = [];
+    let _vr_extraInitializers = [];
     let _backgroundColor_decorators;
     let _backgroundColor_initializers = [];
+    let _backgroundColor_extraInitializers = [];
     let _backgroundOpacity_decorators;
     let _backgroundOpacity_initializers = [];
+    let _backgroundOpacity_extraInitializers = [];
     let _background_decorators;
     let _background_initializers = [];
+    let _background_extraInitializers = [];
     let _backgroundIntensity_decorators;
     let _backgroundIntensity_initializers = [];
+    let _backgroundIntensity_extraInitializers = [];
     let _backgroundBlur_decorators;
     let _backgroundBlur_initializers = [];
+    let _backgroundBlur_extraInitializers = [];
     let _equirectangularBackground_decorators;
     let _equirectangularBackground_initializers = [];
+    let _equirectangularBackground_extraInitializers = [];
     let _environment_decorators;
     let _environment_initializers = [];
+    let _environment_extraInitializers = [];
     let _fogMode_decorators;
     let _fogMode_initializers = [];
+    let _fogMode_extraInitializers = [];
     let _fogNear_decorators;
     let _fogNear_initializers = [];
+    let _fogNear_extraInitializers = [];
     let _fogFar_decorators;
     let _fogFar_initializers = [];
+    let _fogFar_extraInitializers = [];
     let _fogColor_decorators;
     let _fogColor_initializers = [];
+    let _fogColor_extraInitializers = [];
     let _fogDensity_decorators;
     let _fogDensity_initializers = [];
+    let _fogDensity_extraInitializers = [];
     let _physicallyCorrectLights_decorators;
     let _physicallyCorrectLights_initializers = [];
+    let _physicallyCorrectLights_extraInitializers = [];
     let _cameraNear_decorators;
     let _cameraNear_initializers = [];
+    let _cameraNear_extraInitializers = [];
     let _cameraFar_decorators;
     let _cameraFar_initializers = [];
+    let _cameraFar_extraInitializers = [];
     let _perspective_decorators;
     let _perspective_initializers = [];
+    let _perspective_extraInitializers = [];
     let ___defaultThreeCamera_decorators;
     let ___defaultThreeCamera_initializers = [];
+    let ___defaultThreeCamera_extraInitializers = [];
     let ___camera_decorators;
     let ___camera_initializers = [];
+    let ___camera_extraInitializers = [];
     let ___localClipping_decorators;
     let ___localClipping_initializers = [];
+    let ___localClipping_extraInitializers = [];
     let ___elementParentSize_decorators;
     let ___elementParentSize_initializers = [];
+    let ___elementParentSize_extraInitializers = [];
     var Scene = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -171,31 +197,31 @@ let Scene = (() => {
             ___localClipping_decorators = [signal];
             ___elementParentSize_decorators = [signal];
             __esDecorate(this, null, _get_shadowmapType_decorators, { kind: "getter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, get: obj => obj.shadowmapType }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _swapLayers_decorators, { kind: "field", name: "swapLayers", static: false, private: false, access: { has: obj => "swapLayers" in obj, get: obj => obj.swapLayers, set: (obj, value) => { obj.swapLayers = value; } }, metadata: _metadata }, _swapLayers_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowMode_decorators, { kind: "field", name: "shadowMode", static: false, private: false, access: { has: obj => "shadowMode" in obj, get: obj => obj.shadowMode, set: (obj, value) => { obj.shadowMode = value; } }, metadata: _metadata }, _shadowMode_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _vr_decorators, { kind: "field", name: "vr", static: false, private: false, access: { has: obj => "vr" in obj, get: obj => obj.vr, set: (obj, value) => { obj.vr = value; } }, metadata: _metadata }, _vr_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _backgroundColor_decorators, { kind: "field", name: "backgroundColor", static: false, private: false, access: { has: obj => "backgroundColor" in obj, get: obj => obj.backgroundColor, set: (obj, value) => { obj.backgroundColor = value; } }, metadata: _metadata }, _backgroundColor_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _backgroundOpacity_decorators, { kind: "field", name: "backgroundOpacity", static: false, private: false, access: { has: obj => "backgroundOpacity" in obj, get: obj => obj.backgroundOpacity, set: (obj, value) => { obj.backgroundOpacity = value; } }, metadata: _metadata }, _backgroundOpacity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _background_decorators, { kind: "field", name: "background", static: false, private: false, access: { has: obj => "background" in obj, get: obj => obj.background, set: (obj, value) => { obj.background = value; } }, metadata: _metadata }, _background_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _backgroundIntensity_decorators, { kind: "field", name: "backgroundIntensity", static: false, private: false, access: { has: obj => "backgroundIntensity" in obj, get: obj => obj.backgroundIntensity, set: (obj, value) => { obj.backgroundIntensity = value; } }, metadata: _metadata }, _backgroundIntensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _backgroundBlur_decorators, { kind: "field", name: "backgroundBlur", static: false, private: false, access: { has: obj => "backgroundBlur" in obj, get: obj => obj.backgroundBlur, set: (obj, value) => { obj.backgroundBlur = value; } }, metadata: _metadata }, _backgroundBlur_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _equirectangularBackground_decorators, { kind: "field", name: "equirectangularBackground", static: false, private: false, access: { has: obj => "equirectangularBackground" in obj, get: obj => obj.equirectangularBackground, set: (obj, value) => { obj.equirectangularBackground = value; } }, metadata: _metadata }, _equirectangularBackground_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _environment_decorators, { kind: "field", name: "environment", static: false, private: false, access: { has: obj => "environment" in obj, get: obj => obj.environment, set: (obj, value) => { obj.environment = value; } }, metadata: _metadata }, _environment_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fogMode_decorators, { kind: "field", name: "fogMode", static: false, private: false, access: { has: obj => "fogMode" in obj, get: obj => obj.fogMode, set: (obj, value) => { obj.fogMode = value; } }, metadata: _metadata }, _fogMode_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fogNear_decorators, { kind: "field", name: "fogNear", static: false, private: false, access: { has: obj => "fogNear" in obj, get: obj => obj.fogNear, set: (obj, value) => { obj.fogNear = value; } }, metadata: _metadata }, _fogNear_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fogFar_decorators, { kind: "field", name: "fogFar", static: false, private: false, access: { has: obj => "fogFar" in obj, get: obj => obj.fogFar, set: (obj, value) => { obj.fogFar = value; } }, metadata: _metadata }, _fogFar_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fogColor_decorators, { kind: "field", name: "fogColor", static: false, private: false, access: { has: obj => "fogColor" in obj, get: obj => obj.fogColor, set: (obj, value) => { obj.fogColor = value; } }, metadata: _metadata }, _fogColor_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fogDensity_decorators, { kind: "field", name: "fogDensity", static: false, private: false, access: { has: obj => "fogDensity" in obj, get: obj => obj.fogDensity, set: (obj, value) => { obj.fogDensity = value; } }, metadata: _metadata }, _fogDensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _physicallyCorrectLights_decorators, { kind: "field", name: "physicallyCorrectLights", static: false, private: false, access: { has: obj => "physicallyCorrectLights" in obj, get: obj => obj.physicallyCorrectLights, set: (obj, value) => { obj.physicallyCorrectLights = value; } }, metadata: _metadata }, _physicallyCorrectLights_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _cameraNear_decorators, { kind: "field", name: "cameraNear", static: false, private: false, access: { has: obj => "cameraNear" in obj, get: obj => obj.cameraNear, set: (obj, value) => { obj.cameraNear = value; } }, metadata: _metadata }, _cameraNear_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___defaultThreeCamera_decorators, { kind: "field", name: "__defaultThreeCamera", static: false, private: false, access: { has: obj => "__defaultThreeCamera" in obj, get: obj => obj.__defaultThreeCamera, set: (obj, value) => { obj.__defaultThreeCamera = value; } }, metadata: _metadata }, ___defaultThreeCamera_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___camera_decorators, { kind: "field", name: "__camera", static: false, private: false, access: { has: obj => "__camera" in obj, get: obj => obj.__camera, set: (obj, value) => { obj.__camera = value; } }, metadata: _metadata }, ___camera_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___localClipping_decorators, { kind: "field", name: "__localClipping", static: false, private: false, access: { has: obj => "__localClipping" in obj, get: obj => obj.__localClipping, set: (obj, value) => { obj.__localClipping = value; } }, metadata: _metadata }, ___localClipping_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___elementParentSize_decorators, { kind: "field", name: "__elementParentSize", static: false, private: false, access: { has: obj => "__elementParentSize" in obj, get: obj => obj.__elementParentSize, set: (obj, value) => { obj.__elementParentSize = value; } }, metadata: _metadata }, ___elementParentSize_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _enableCss_extraInitializers);
+            __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _webgl_extraInitializers);
+            __esDecorate(null, null, _swapLayers_decorators, { kind: "field", name: "swapLayers", static: false, private: false, access: { has: obj => "swapLayers" in obj, get: obj => obj.swapLayers, set: (obj, value) => { obj.swapLayers = value; } }, metadata: _metadata }, _swapLayers_initializers, _swapLayers_extraInitializers);
+            __esDecorate(null, null, _shadowMode_decorators, { kind: "field", name: "shadowMode", static: false, private: false, access: { has: obj => "shadowMode" in obj, get: obj => obj.shadowMode, set: (obj, value) => { obj.shadowMode = value; } }, metadata: _metadata }, _shadowMode_initializers, _shadowMode_extraInitializers);
+            __esDecorate(null, null, _vr_decorators, { kind: "field", name: "vr", static: false, private: false, access: { has: obj => "vr" in obj, get: obj => obj.vr, set: (obj, value) => { obj.vr = value; } }, metadata: _metadata }, _vr_initializers, _vr_extraInitializers);
+            __esDecorate(null, null, _backgroundColor_decorators, { kind: "field", name: "backgroundColor", static: false, private: false, access: { has: obj => "backgroundColor" in obj, get: obj => obj.backgroundColor, set: (obj, value) => { obj.backgroundColor = value; } }, metadata: _metadata }, _backgroundColor_initializers, _backgroundColor_extraInitializers);
+            __esDecorate(null, null, _backgroundOpacity_decorators, { kind: "field", name: "backgroundOpacity", static: false, private: false, access: { has: obj => "backgroundOpacity" in obj, get: obj => obj.backgroundOpacity, set: (obj, value) => { obj.backgroundOpacity = value; } }, metadata: _metadata }, _backgroundOpacity_initializers, _backgroundOpacity_extraInitializers);
+            __esDecorate(null, null, _background_decorators, { kind: "field", name: "background", static: false, private: false, access: { has: obj => "background" in obj, get: obj => obj.background, set: (obj, value) => { obj.background = value; } }, metadata: _metadata }, _background_initializers, _background_extraInitializers);
+            __esDecorate(null, null, _backgroundIntensity_decorators, { kind: "field", name: "backgroundIntensity", static: false, private: false, access: { has: obj => "backgroundIntensity" in obj, get: obj => obj.backgroundIntensity, set: (obj, value) => { obj.backgroundIntensity = value; } }, metadata: _metadata }, _backgroundIntensity_initializers, _backgroundIntensity_extraInitializers);
+            __esDecorate(null, null, _backgroundBlur_decorators, { kind: "field", name: "backgroundBlur", static: false, private: false, access: { has: obj => "backgroundBlur" in obj, get: obj => obj.backgroundBlur, set: (obj, value) => { obj.backgroundBlur = value; } }, metadata: _metadata }, _backgroundBlur_initializers, _backgroundBlur_extraInitializers);
+            __esDecorate(null, null, _equirectangularBackground_decorators, { kind: "field", name: "equirectangularBackground", static: false, private: false, access: { has: obj => "equirectangularBackground" in obj, get: obj => obj.equirectangularBackground, set: (obj, value) => { obj.equirectangularBackground = value; } }, metadata: _metadata }, _equirectangularBackground_initializers, _equirectangularBackground_extraInitializers);
+            __esDecorate(null, null, _environment_decorators, { kind: "field", name: "environment", static: false, private: false, access: { has: obj => "environment" in obj, get: obj => obj.environment, set: (obj, value) => { obj.environment = value; } }, metadata: _metadata }, _environment_initializers, _environment_extraInitializers);
+            __esDecorate(null, null, _fogMode_decorators, { kind: "field", name: "fogMode", static: false, private: false, access: { has: obj => "fogMode" in obj, get: obj => obj.fogMode, set: (obj, value) => { obj.fogMode = value; } }, metadata: _metadata }, _fogMode_initializers, _fogMode_extraInitializers);
+            __esDecorate(null, null, _fogNear_decorators, { kind: "field", name: "fogNear", static: false, private: false, access: { has: obj => "fogNear" in obj, get: obj => obj.fogNear, set: (obj, value) => { obj.fogNear = value; } }, metadata: _metadata }, _fogNear_initializers, _fogNear_extraInitializers);
+            __esDecorate(null, null, _fogFar_decorators, { kind: "field", name: "fogFar", static: false, private: false, access: { has: obj => "fogFar" in obj, get: obj => obj.fogFar, set: (obj, value) => { obj.fogFar = value; } }, metadata: _metadata }, _fogFar_initializers, _fogFar_extraInitializers);
+            __esDecorate(null, null, _fogColor_decorators, { kind: "field", name: "fogColor", static: false, private: false, access: { has: obj => "fogColor" in obj, get: obj => obj.fogColor, set: (obj, value) => { obj.fogColor = value; } }, metadata: _metadata }, _fogColor_initializers, _fogColor_extraInitializers);
+            __esDecorate(null, null, _fogDensity_decorators, { kind: "field", name: "fogDensity", static: false, private: false, access: { has: obj => "fogDensity" in obj, get: obj => obj.fogDensity, set: (obj, value) => { obj.fogDensity = value; } }, metadata: _metadata }, _fogDensity_initializers, _fogDensity_extraInitializers);
+            __esDecorate(null, null, _physicallyCorrectLights_decorators, { kind: "field", name: "physicallyCorrectLights", static: false, private: false, access: { has: obj => "physicallyCorrectLights" in obj, get: obj => obj.physicallyCorrectLights, set: (obj, value) => { obj.physicallyCorrectLights = value; } }, metadata: _metadata }, _physicallyCorrectLights_initializers, _physicallyCorrectLights_extraInitializers);
+            __esDecorate(null, null, _cameraNear_decorators, { kind: "field", name: "cameraNear", static: false, private: false, access: { has: obj => "cameraNear" in obj, get: obj => obj.cameraNear, set: (obj, value) => { obj.cameraNear = value; } }, metadata: _metadata }, _cameraNear_initializers, _cameraNear_extraInitializers);
+            __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _cameraFar_extraInitializers);
+            __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _perspective_extraInitializers);
+            __esDecorate(null, null, ___defaultThreeCamera_decorators, { kind: "field", name: "__defaultThreeCamera", static: false, private: false, access: { has: obj => "__defaultThreeCamera" in obj, get: obj => obj.__defaultThreeCamera, set: (obj, value) => { obj.__defaultThreeCamera = value; } }, metadata: _metadata }, ___defaultThreeCamera_initializers, ___defaultThreeCamera_extraInitializers);
+            __esDecorate(null, null, ___camera_decorators, { kind: "field", name: "__camera", static: false, private: false, access: { has: obj => "__camera" in obj, get: obj => obj.__camera, set: (obj, value) => { obj.__camera = value; } }, metadata: _metadata }, ___camera_initializers, ___camera_extraInitializers);
+            __esDecorate(null, null, ___localClipping_decorators, { kind: "field", name: "__localClipping", static: false, private: false, access: { has: obj => "__localClipping" in obj, get: obj => obj.__localClipping, set: (obj, value) => { obj.__localClipping = value; } }, metadata: _metadata }, ___localClipping_initializers, ___localClipping_extraInitializers);
+            __esDecorate(null, null, ___elementParentSize_decorators, { kind: "field", name: "__elementParentSize", static: false, private: false, access: { has: obj => "__elementParentSize" in obj, get: obj => obj.__elementParentSize, set: (obj, value) => { obj.__elementParentSize = value; } }, metadata: _metadata }, ___elementParentSize_initializers, ___elementParentSize_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Scene = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -255,7 +281,7 @@ let Scene = (() => {
          *
          * When `true`, enables WebGL rendering.
          */
-        webgl = __runInitializers(this, _webgl_initializers, false
+        webgl = (__runInitializers(this, _enableCss_extraInitializers), __runInitializers(this, _webgl_initializers, false
         /**
          * @property {boolean} swapLayers -
          *
@@ -267,7 +293,7 @@ let Scene = (() => {
          * WebGL render modes are enabled. When `true`, the CSS layer will render on
          * top of the WebGL layer instead of below.
          */
-        );
+        ));
         /**
          * @property {boolean} swapLayers -
          *
@@ -279,7 +305,7 @@ let Scene = (() => {
          * WebGL render modes are enabled. When `true`, the CSS layer will render on
          * top of the WebGL layer instead of below.
          */
-        swapLayers = __runInitializers(this, _swapLayers_initializers, false
+        swapLayers = (__runInitializers(this, _webgl_extraInitializers), __runInitializers(this, _swapLayers_initializers, false
         /**
          * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
          *
@@ -295,7 +321,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowMode -
          *
@@ -311,14 +337,14 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        shadowMode = __runInitializers(this, _shadowMode_initializers, 'basic'
+        shadowMode = (__runInitializers(this, _swapLayers_extraInitializers), __runInitializers(this, _shadowMode_initializers, 'basic'
         /**
          * @deprecated
          * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
          *
          * *attribute*
          */
-        );
+        ));
         /**
          * @deprecated
          * @property {'basic' | 'pcf' | 'pcfsoft' | 'vsm'} shadowmapType - Deprecated, use [`shadowMode`](#shadowmaptype) instead.
@@ -347,7 +373,7 @@ let Scene = (() => {
          * hence WebXR, but it has some limitations including low performance if
          * animating CSS features; we may add this feature later.
          */
-        vr = __runInitializers(this, _vr_initializers, false
+        vr = (__runInitializers(this, _shadowMode_extraInitializers), __runInitializers(this, _vr_initializers, false
         /**
          * @property {Color | string | number | null} backgroundColor -
          *
@@ -364,7 +390,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {Color | string | number | null} backgroundColor -
          *
@@ -381,7 +407,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        backgroundColor = __runInitializers(this, _backgroundColor_initializers, new Color('white')
+        backgroundColor = (__runInitializers(this, _vr_extraInitializers), __runInitializers(this, _backgroundColor_initializers, new Color('white')
         /**
          * @property {number} backgroundOpacity -
          *
@@ -398,7 +424,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {number} backgroundOpacity -
          *
@@ -415,7 +441,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        backgroundOpacity = __runInitializers(this, _backgroundOpacity_initializers, 0
+        backgroundOpacity = (__runInitializers(this, _backgroundColor_extraInitializers), __runInitializers(this, _backgroundOpacity_initializers, 0
         /**
          * @property {string | null} background -
          *
@@ -436,7 +462,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {string | null} background -
          *
@@ -457,7 +483,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        background = __runInitializers(this, _background_initializers, null
+        background = (__runInitializers(this, _backgroundOpacity_extraInitializers), __runInitializers(this, _background_initializers, null
         /**
          * @property {number} backgroundIntensity -
          *
@@ -472,7 +498,7 @@ let Scene = (() => {
          * This applies only if [`webgl`](#webgl) is `true` and the
          * [`background`](#background) property is set.
          */
-        );
+        ));
         /**
          * @property {number} backgroundIntensity -
          *
@@ -487,7 +513,7 @@ let Scene = (() => {
          * This applies only if [`webgl`](#webgl) is `true` and the
          * [`background`](#background) property is set.
          */
-        backgroundIntensity = __runInitializers(this, _backgroundIntensity_initializers, 1
+        backgroundIntensity = (__runInitializers(this, _background_extraInitializers), __runInitializers(this, _backgroundIntensity_initializers, 1
         /**
          * @property {number} backgroundBlur -
          *
@@ -500,7 +526,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {number} backgroundBlur -
          *
@@ -513,7 +539,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        backgroundBlur = __runInitializers(this, _backgroundBlur_initializers, 0
+        backgroundBlur = (__runInitializers(this, _backgroundIntensity_extraInitializers), __runInitializers(this, _backgroundBlur_initializers, 0
         /**
          * @property {boolean} equirectangularBackground -
          *
@@ -527,7 +553,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {boolean} equirectangularBackground -
          *
@@ -541,7 +567,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        equirectangularBackground = __runInitializers(this, _equirectangularBackground_initializers, false
+        equirectangularBackground = (__runInitializers(this, _backgroundBlur_extraInitializers), __runInitializers(this, _equirectangularBackground_initializers, false
         /**
          * @property {string | null} environment -
          *
@@ -556,7 +582,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {string | null} environment -
          *
@@ -571,7 +597,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        environment = __runInitializers(this, _environment_initializers, null
+        environment = (__runInitializers(this, _equirectangularBackground_extraInitializers), __runInitializers(this, _environment_initializers, null
         /**
          * @property {'none' | 'linear' | 'expo2'} fogMode -
          *
@@ -597,7 +623,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {'none' | 'linear' | 'expo2'} fogMode -
          *
@@ -623,7 +649,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        fogMode = __runInitializers(this, _fogMode_initializers, 'none'
+        fogMode = (__runInitializers(this, _environment_extraInitializers), __runInitializers(this, _fogMode_initializers, 'none'
         /**
          * @property {number} fogNear -
          *
@@ -637,7 +663,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {number} fogNear -
          *
@@ -651,7 +677,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        fogNear = __runInitializers(this, _fogNear_initializers, 0
+        fogNear = (__runInitializers(this, _fogMode_extraInitializers), __runInitializers(this, _fogNear_initializers, 0
         /**
          * @property {number} fogFar -
          *
@@ -665,7 +691,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {number} fogFar -
          *
@@ -679,7 +705,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        fogFar = __runInitializers(this, _fogFar_initializers, 1000
+        fogFar = (__runInitializers(this, _fogNear_extraInitializers), __runInitializers(this, _fogFar_initializers, 1000
         /**
          * @property {string} fogColor -
          *
@@ -695,7 +721,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {string} fogColor -
          *
@@ -711,7 +737,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        fogColor = __runInitializers(this, _fogColor_initializers, 'gray'
+        fogColor = (__runInitializers(this, _fogFar_extraInitializers), __runInitializers(this, _fogColor_initializers, 'gray'
         /**
          * @property {number} fogDensity -
          *
@@ -724,7 +750,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        );
+        ));
         /**
          * @property {number} fogDensity -
          *
@@ -737,7 +763,7 @@ let Scene = (() => {
          *
          * Applies only if [`webgl`](#webgl) is `true`.
          */
-        fogDensity = __runInitializers(this, _fogDensity_initializers, 0.0025
+        fogDensity = (__runInitializers(this, _fogColor_extraInitializers), __runInitializers(this, _fogDensity_initializers, 0.0025
         /**
          * @deprecated This property/attribute will be removed when Three.js r165 is
          * released (estimated), and physically correct lighting will become the
@@ -760,7 +786,7 @@ let Scene = (() => {
          * from Three.js and "physicallyCorrectLights" in the Three.js manual's
          * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
          */
-        );
+        ));
         /**
          * @deprecated This property/attribute will be removed when Three.js r165 is
          * released (estimated), and physically correct lighting will become the
@@ -783,7 +809,7 @@ let Scene = (() => {
          * from Three.js and "physicallyCorrectLights" in the Three.js manual's
          * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
          */
-        physicallyCorrectLights = __runInitializers(this, _physicallyCorrectLights_initializers, false
+        physicallyCorrectLights = (__runInitializers(this, _fogDensity_extraInitializers), __runInitializers(this, _physicallyCorrectLights_initializers, false
         /**
          * @property {number} cameraNear -
          *
@@ -800,7 +826,7 @@ let Scene = (() => {
          * values apply only to WebGL rendering and are otherwise infinitely small and
          * infinitely big (respectively) when it comes to CSS rendering.
          */
-        );
+        ));
         /**
          * @property {number} cameraNear -
          *
@@ -817,7 +843,7 @@ let Scene = (() => {
          * values apply only to WebGL rendering and are otherwise infinitely small and
          * infinitely big (respectively) when it comes to CSS rendering.
          */
-        cameraNear = __runInitializers(this, _cameraNear_initializers, 0.1
+        cameraNear = (__runInitializers(this, _physicallyCorrectLights_extraInitializers), __runInitializers(this, _cameraNear_initializers, 0.1
         /**
          * @property {number} cameraFar -
          *
@@ -834,7 +860,7 @@ let Scene = (() => {
          * values apply only to WebGL rendering and are otherwise infinitely small and
          * infinitely big (respectively) when it comes to CSS rendering.
          */
-        );
+        ));
         /**
          * @property {number} cameraFar -
          *
@@ -851,7 +877,7 @@ let Scene = (() => {
          * values apply only to WebGL rendering and are otherwise infinitely small and
          * infinitely big (respectively) when it comes to CSS rendering.
          */
-        cameraFar = __runInitializers(this, _cameraFar_initializers, 10000
+        cameraFar = (__runInitializers(this, _cameraNear_extraInitializers), __runInitializers(this, _cameraFar_initializers, 10000
         /**
          * @property {number} perspective -
          *
@@ -882,7 +908,7 @@ let Scene = (() => {
         // position relative to the element's local origin. We can do this by making the THREE
         // camera a child of the element's .three object instead of it being the
         // .three object directly.
-        );
+        ));
         /**
          * @property {number} perspective -
          *
@@ -913,11 +939,11 @@ let Scene = (() => {
         // position relative to the element's local origin. We can do this by making the THREE
         // camera a child of the element's .three object instead of it being the
         // .three object directly.
-        perspective = __runInitializers(this, _perspective_initializers, defaultScenePerspective
+        perspective = (__runInitializers(this, _cameraFar_extraInitializers), __runInitializers(this, _perspective_initializers, defaultScenePerspective
         // Holds the default internal camera when a Camera elements is not in use.
-        );
+        ));
         // Holds the default internal camera when a Camera elements is not in use.
-        __defaultThreeCamera = __runInitializers(this, ___defaultThreeCamera_initializers, null
+        __defaultThreeCamera = (__runInitializers(this, _perspective_extraInitializers), __runInitializers(this, ___defaultThreeCamera_initializers, null
         /**
          * @property {THREE.Camera} threeCamera -
          *
@@ -942,7 +968,7 @@ let Scene = (() => {
          *
          * Applies with both CSS and WebGL rendering.
          */
-        );
+        ));
         /**
          * @property {THREE.Camera} threeCamera -
          *
@@ -976,7 +1002,7 @@ let Scene = (() => {
         // If there are no cameras in the tree, a virtual default camera is
         // referenced here, who's perspective is that of the scene's
         // perspective attribute.
-        __threeCamera;
+        __threeCamera = __runInitializers(this, ___defaultThreeCamera_extraInitializers);
         /**
          * @property {Camera} camera
          *
@@ -1030,7 +1056,7 @@ let Scene = (() => {
         // This is toggled by ClipPlanesBehavior, not intended for direct use.
         );
         // This is toggled by ClipPlanesBehavior, not intended for direct use.
-        __localClipping = __runInitializers(this, ___localClipping_initializers, false);
+        __localClipping = (__runInitializers(this, ___camera_extraInitializers), __runInitializers(this, ___localClipping_initializers, false));
         get scene() {
             return this;
         }
@@ -1078,7 +1104,7 @@ let Scene = (() => {
             this.needsUpdate();
         }
         // WebGLRendererThree appends its content into here.
-        _glLayer = null;
+        _glLayer = (__runInitializers(this, ___localClipping_extraInitializers), null);
         // CSS3DRendererThree appends its content into here.
         _cssLayer = null;
         // Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
@@ -1270,7 +1296,9 @@ let Scene = (() => {
                 this.#cssRenderer.updateResolution(this, x, y);
             });
         };
-        static observedAttributes = [...(Reflect.get(_classSuper, "observedAttributes", _classThis) || []), 'slot'];
+        // For now workaround with Super instead of super due to TS issue (https://discord.com/channels/508357248330760243/1265203824478392331/1284671647240163368)
+        static observedAttributes = [...(Super.observedAttributes || []), 'slot'];
+        // static override observedAttributes = [...(super.observedAttributes || []), 'slot']
         attributeChangedCallback(name, oldVal, newVal) {
             super.attributeChangedCallback(name, oldVal, newVal);
             if (name === 'slot') {
@@ -1435,7 +1463,7 @@ let Scene = (() => {
         // TODO move the following parent size change stuff to a separate re-usable class.
         // size of the element where the Scene is mounted
         __elementParentSize = __runInitializers(this, ___elementParentSize_initializers, { x: 0, y: 0, z: 0 });
-        #resizeObserver = null;
+        #resizeObserver = (__runInitializers(this, ___elementParentSize_extraInitializers), null);
         // observe size changes on the scene's parent (it may not be a LUME element,
         // so we observe with ResizeObserver).
         #startParentSizeObservation() {

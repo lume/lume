@@ -42,13 +42,15 @@ let PinchFling = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Effects;
-    let _instanceExtraInitializers = [];
     let _x_decorators;
     let _x_initializers = [];
+    let _x_extraInitializers = [];
     let _target_decorators;
     let _target_initializers = [];
+    let _target_extraInitializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
+    let _hasInteracted_extraInitializers = [];
     var PinchFling = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -56,9 +58,9 @@ let PinchFling = (() => {
             _x_decorators = [signal];
             _target_decorators = [signal];
             _hasInteracted_decorators = [signal];
-            __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _x_extraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
+            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PinchFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -69,13 +71,13 @@ let PinchFling = (() => {
          * observed. Set this value initially if you want to start at a certain
          * value.
          */
-        x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _x_initializers, 0));
-        minX = -Infinity;
+        x = __runInitializers(this, _x_initializers, 0);
+        minX = (__runInitializers(this, _x_extraInitializers), -Infinity);
         maxX = Infinity;
         target = __runInitializers(this, _target_initializers, document.documentElement);
-        sensitivity = 1;
+        sensitivity = (__runInitializers(this, _target_extraInitializers), 1);
         hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
-        epsilon = 0.01;
+        epsilon = (__runInitializers(this, _hasInteracted_extraInitializers), 0.01);
         /**
          * Portion of the change in value that is removed each frame to
          * cause slowdown. Between 0 and 1.

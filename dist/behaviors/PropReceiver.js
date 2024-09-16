@@ -1,10 +1,6 @@
 import { observe, unobserve } from 'james-bond';
 // We use this to enforce that the @receiver decorator is used on PropReceiver
 // classes.
-//
-// We could've used a Symbol instead, which is simpler, but that causes the
-// infamous "has or is using private name" errors due to declaration emit
-// (https://github.com/microsoft/TypeScript/issues/35822)
 const isPropReceiverClass = Symbol();
 /**
  * @class PropReceiver
@@ -13,7 +9,7 @@ const isPropReceiverClass = Symbol();
  *
  * Forwards properties of a specified `observedObject` onto properties of
  * `this` object. The properties to be received from `observedObject` are those
- * listed in the `static receivedProperties` array, or the ones decorated with
+ * listed in the `receivedProperties` array, or the ones decorated with
  * `@receiver`.
  *
  * In particular, LUME uses this to forward properties of a behavior's host
@@ -23,7 +19,7 @@ const isPropReceiverClass = Symbol();
  *
  * ```js
  * class SomeBehavior extends PropReceiver(BaseClass) {
- *   static receivedProperties = ['foo', 'bar']
+ *   receivedProperties = ['foo', 'bar']
  *   get observedObject() {
  *     return this.element
  *   }
@@ -36,27 +32,21 @@ const isPropReceiverClass = Symbol();
  * ```
  */
 export function PropReceiver(Base = Object) {
-    // TODO Maybe this class should not depend on DOM (i.e. don't use methods
-    // from PossibleCustomElement), and we can have a separate mixin for that.
-    var _a;
-    // TODO Use abstract with TS 4.2
     return class PropReceiver extends Base {
-        static {
-            // Make this unknown to the type system, otherwise we get errors with the mixin usage downstream. :(
-            ;
-            this[isPropReceiverClass] = true;
-        }
+        // @ts-ignore Make this unknown to the type system, otherwise we get "has or is using private name" errors due to declaration emit. :(
+        // (https://github.com/microsoft/TypeScript/issues/35822)
+        static [isPropReceiverClass] = true;
         constructor(...args) {
             super(...args);
             this._propChangedCallback = this._propChangedCallback.bind(this);
         }
         connectedCallback() {
             super.connectedCallback?.();
-            this.#observeProps();
+            this.receiveProps();
         }
         disconnectedCallback() {
             super.disconnectedCallback?.();
-            this.#unobserveProps();
+            this.unreceiveProps();
         }
         /**
          * @abstract
@@ -67,28 +57,23 @@ export function PropReceiver(Base = Object) {
          * A subclass should specify the object to observe by defining a `get observedObject` getter.
          */
         get observedObject() {
-            throw new TypeError(`
-                The subclass using PropReceiver must define
-                'observedObject' to specify the object from which props
-                are received.
-            `);
+            throw new TypeError(`implement 'observedObject' in subclass`);
         }
         _propChangedCallback(propName, value) {
             ;
             this[propName] = value;
         }
-        #observeProps() {
-            const ctor = this.constructor;
+        receiveProps() {
             // Make it unique, before we pass it to observe(), just in case.
-            if (ctor.receivedProperties)
-                ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties));
-            this.__receiveInitialValues();
-            observe(this.observedObject, this.__getReceivedProps(), this._propChangedCallback, {
+            if (this.receivedProperties)
+                this.receivedProperties = Array.from(new Set(this.receivedProperties));
+            this.receiveInitialValues();
+            observe(this.observedObject, this.#getReceivedProps(), this._propChangedCallback, {
             // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             });
         }
-        #unobserveProps() {
-            unobserve(this.observedObject, this.__getReceivedProps(), this._propChangedCallback);
+        unreceiveProps() {
+            unobserve(this.observedObject, this.#getReceivedProps(), this._propChangedCallback);
         }
         /**
          * @property {string[]} receivedProperties
@@ -97,18 +82,17 @@ export function PropReceiver(Base = Object) {
          *
          * An array of strings, the properties of observedObject to observe.
          */
-        static receivedProperties;
-        __getReceivedProps() {
-            const ctor = this.constructor;
-            const props = ctor.receivedProperties || [];
+        receivedProperties = [];
+        #getReceivedProps() {
+            const props = this.receivedProperties || [];
             // @prod-prune
             if (!Array.isArray(props))
-                throw new TypeError('Expected static receivedProperties to be an array.');
+                throw new TypeError('Expected receivedProperties to be an array.');
             return props;
         }
-        __receiveInitialValues() {
+        receiveInitialValues() {
             const observed = this.observedObject;
-            for (const prop of this.__getReceivedProps()) {
+            for (const prop of this.#getReceivedProps()) {
                 if (prop in observed) {
                     const value = observed[prop];
                     // @ts-expect-error indexed access of this
@@ -146,8 +130,11 @@ function trackReceiverProperty(obj, name) {
     const ctor = obj.constructor;
     if (!ctor[isPropReceiverClass])
         throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver');
-    if (!ctor.hasOwnProperty('receivedProperties'))
-        ctor.receivedProperties = [...(ctor.receivedProperties || [])];
-    ctor.receivedProperties.push(name);
+    // Ensure we modify the own property if any, and not an inherited property which would break other inheriting objects.
+    if (!obj.hasOwnProperty('receivedProperties'))
+        obj.receivedProperties = [...(obj.receivedProperties || [])];
+    if (!obj.receivedProperties)
+        debugger;
+    obj.receivedProperties.push(name);
 }
 //# sourceMappingURL=PropReceiver.js.map

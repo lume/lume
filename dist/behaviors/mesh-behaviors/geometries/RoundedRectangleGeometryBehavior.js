@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,13 +32,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 import 'element-behaviors';
 import { attribute } from '@lume/element';
 import { Shape } from 'three/src/extras/core/Shape.js';
@@ -49,8 +49,10 @@ let RoundedRectangleGeometryBehavior = (() => {
     let _instanceExtraInitializers = [];
     let _cornerRadius_decorators;
     let _cornerRadius_initializers = [];
+    let _cornerRadius_extraInitializers = [];
     let _thickness_decorators;
     let _thickness_initializers = [];
+    let _thickness_extraInitializers = [];
     let _get_quadraticCorners_decorators;
     var RoundedRectangleGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
@@ -60,16 +62,16 @@ let RoundedRectangleGeometryBehavior = (() => {
             _thickness_decorators = [attribute({ from: Number }), receiver];
             _get_quadraticCorners_decorators = [attribute, receiver];
             __esDecorate(this, null, _get_quadraticCorners_decorators, { kind: "getter", name: "quadraticCorners", static: false, private: false, access: { has: obj => "quadraticCorners" in obj, get: obj => obj.quadraticCorners }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _cornerRadius_decorators, { kind: "field", name: "cornerRadius", static: false, private: false, access: { has: obj => "cornerRadius" in obj, get: obj => obj.cornerRadius, set: (obj, value) => { obj.cornerRadius = value; } }, metadata: _metadata }, _cornerRadius_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _thickness_decorators, { kind: "field", name: "thickness", static: false, private: false, access: { has: obj => "thickness" in obj, get: obj => obj.thickness, set: (obj, value) => { obj.thickness = value; } }, metadata: _metadata }, _thickness_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _cornerRadius_decorators, { kind: "field", name: "cornerRadius", static: false, private: false, access: { has: obj => "cornerRadius" in obj, get: obj => obj.cornerRadius, set: (obj, value) => { obj.cornerRadius = value; } }, metadata: _metadata }, _cornerRadius_initializers, _cornerRadius_extraInitializers);
+            __esDecorate(null, null, _thickness_decorators, { kind: "field", name: "thickness", static: false, private: false, access: { has: obj => "thickness" in obj, get: obj => obj.thickness, set: (obj, value) => { obj.thickness = value; } }, metadata: _metadata }, _thickness_initializers, _thickness_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             RoundedRectangleGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         cornerRadius = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _cornerRadius_initializers, 0));
-        thickness = __runInitializers(this, _thickness_initializers, 0);
-        #quadraticCorners = false;
+        thickness = (__runInitializers(this, _cornerRadius_extraInitializers), __runInitializers(this, _thickness_initializers, 0));
+        #quadraticCorners = (__runInitializers(this, _thickness_extraInitializers), false);
         get quadraticCorners() {
             return this.#quadraticCorners;
         }

@@ -66,6 +66,8 @@ export type SceneAttributes =
 	| 'cameraFar'
 	| 'perspective'
 
+const Super = SharedAPI
+
 /**
  * @class Scene -
  *
@@ -93,7 +95,7 @@ export type SceneAttributes =
 // TODO @element jsdoc tag
 export
 @element('lume-scene', autoDefineElements)
-class Scene extends SharedAPI {
+class Scene extends Super {
 	/**
 	 * @property {true} isScene -
 	 *
@@ -899,7 +901,9 @@ class Scene extends SharedAPI {
 		})
 	}
 
-	static override observedAttributes = [...(super.observedAttributes || []), 'slot']
+	// For now workaround with Super instead of super due to TS issue (https://discord.com/channels/508357248330760243/1265203824478392331/1284671647240163368)
+	static override observedAttributes = [...(Super.observedAttributes || []), 'slot']
+	// static override observedAttributes = [...(super.observedAttributes || []), 'slot']
 
 	override attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
 		super.attributeChangedCallback!(name, oldVal, newVal)

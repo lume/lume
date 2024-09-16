@@ -2,7 +2,6 @@ import {Constructor} from 'lowclass/dist/Constructor.js'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from '../core/PossibleCustomElement.js'
 import {r} from 'regexr'
 
-// TODO Move this to element-behaviors package?
 export function InitialBehaviors<T extends Constructor<HTMLElement>>(Base: T) {
 	return class InitialBehaviors extends Constructor<PossibleCustomElement, PossibleCustomElementConstructor & T>(Base) {
 		initialBehaviors?: Record<string, string>

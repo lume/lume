@@ -44,13 +44,15 @@ let ScrollFling = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Effects;
-    let _instanceExtraInitializers = [];
     let __x_decorators;
     let __x_initializers = [];
+    let __x_extraInitializers = [];
     let __y_decorators;
     let __y_initializers = [];
+    let __y_extraInitializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
+    let _hasInteracted_extraInitializers = [];
     var ScrollFling = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -58,21 +60,21 @@ let ScrollFling = (() => {
             __x_decorators = [signal];
             __y_decorators = [signal];
             _hasInteracted_decorators = [signal];
-            __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, __x_extraInitializers);
+            __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, __y_extraInitializers);
+            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        _x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, __x_initializers, 0
+        _x = __runInitializers(this, __x_initializers, 0
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
-        ));
+        );
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
@@ -86,13 +88,13 @@ let ScrollFling = (() => {
             this._x = val;
             this.#targetX = val;
         }
-        _y = __runInitializers(this, __y_initializers, 0
+        _y = (__runInitializers(this, __x_extraInitializers), __runInitializers(this, __y_initializers, 0
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
-        );
+        ));
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
@@ -106,14 +108,14 @@ let ScrollFling = (() => {
             this._y = val;
             this.#targetY = val;
         }
-        minX = -Infinity;
+        minX = (__runInitializers(this, __y_extraInitializers), -Infinity);
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
         target = document.documentElement;
         sensitivity = 1;
         hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
-        epsilon = 0.01;
+        epsilon = (__runInitializers(this, _hasInteracted_extraInitializers), 0.01);
         /**
          * The portion to lerp towards the target values each frame. Between 0 and 1.
          */

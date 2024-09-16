@@ -97,7 +97,7 @@
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
-		"typescript": "5.2.x"
+		"typescript": "^5.0.0"
 	},
 	"repository": {
 		"type": "git",

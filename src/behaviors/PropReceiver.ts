@@ -4,11 +4,7 @@ import type {PossiblyCustomElement} from '../core/PossibleCustomElement.js'
 
 // We use this to enforce that the @receiver decorator is used on PropReceiver
 // classes.
-//
-// We could've used a Symbol instead, which is simpler, but that causes the
-// infamous "has or is using private name" errors due to declaration emit
-// (https://github.com/microsoft/TypeScript/issues/35822)
-const isPropReceiverClass: unique symbol = Symbol()
+const isPropReceiverClass = Symbol()
 
 /**
  * @class PropReceiver
@@ -17,7 +13,7 @@ const isPropReceiverClass: unique symbol = Symbol()
  *
  * Forwards properties of a specified `observedObject` onto properties of
  * `this` object. The properties to be received from `observedObject` are those
- * listed in the `static receivedProperties` array, or the ones decorated with
+ * listed in the `receivedProperties` array, or the ones decorated with
  * `@receiver`.
  *
  * In particular, LUME uses this to forward properties of a behavior's host
@@ -27,7 +23,7 @@ const isPropReceiverClass: unique symbol = Symbol()
  *
  * ```js
  * class SomeBehavior extends PropReceiver(BaseClass) {
- *   static receivedProperties = ['foo', 'bar']
+ *   receivedProperties = ['foo', 'bar']
  *   get observedObject() {
  *     return this.element
  *   }
@@ -40,15 +36,10 @@ const isPropReceiverClass: unique symbol = Symbol()
  * ```
  */
 export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
-	// TODO Maybe this class should not depend on DOM (i.e. don't use methods
-	// from PossibleCustomElement), and we can have a separate mixin for that.
-
-	// TODO Use abstract with TS 4.2
 	return class PropReceiver extends Base {
-		static {
-			// Make this unknown to the type system, otherwise we get errors with the mixin usage downstream. :(
-			;(this as any)[isPropReceiverClass] = true
-		}
+		// @ts-ignore Make this unknown to the type system, otherwise we get "has or is using private name" errors due to declaration emit. :(
+		// (https://github.com/microsoft/TypeScript/issues/35822)
+		static [isPropReceiverClass as any] = true
 
 		constructor(...args: any[]) {
 			super(...args)
@@ -57,12 +48,12 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 
 		override connectedCallback() {
 			super.connectedCallback?.()
-			this.#observeProps()
+			this.receiveProps()
 		}
 
 		override disconnectedCallback() {
 			super.disconnectedCallback?.()
-			this.#unobserveProps()
+			this.unreceiveProps()
 		}
 
 		/**
@@ -74,32 +65,26 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 		 * A subclass should specify the object to observe by defining a `get observedObject` getter.
 		 */
 		get observedObject(): object {
-			throw new TypeError(`
-                The subclass using PropReceiver must define
-                'observedObject' to specify the object from which props
-                are received.
-            `)
+			throw new TypeError(`implement 'observedObject' in subclass`)
 		}
 
 		_propChangedCallback(propName: PropKey, value: any) {
 			;(this as any)[propName] = value
 		}
 
-		#observeProps() {
-			const ctor = this.constructor as typeof PropReceiver
-
+		receiveProps() {
 			// Make it unique, before we pass it to observe(), just in case.
-			if (ctor.receivedProperties) ctor.receivedProperties = Array.from(new Set(ctor.receivedProperties))
+			if (this.receivedProperties) this.receivedProperties = Array.from(new Set(this.receivedProperties))
 
-			this.__receiveInitialValues()
+			this.receiveInitialValues()
 
-			observe(this.observedObject, this.__getReceivedProps(), this._propChangedCallback, {
+			observe(this.observedObject, this.#getReceivedProps() as never[], this._propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
 		}
 
-		#unobserveProps() {
-			unobserve(this.observedObject, this.__getReceivedProps(), this._propChangedCallback)
+		unreceiveProps() {
+			unobserve(this.observedObject, this.#getReceivedProps() as never[], this._propChangedCallback)
 		}
 
 		/**
@@ -109,20 +94,19 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 		 *
 		 * An array of strings, the properties of observedObject to observe.
 		 */
-		static receivedProperties?: PropKey[]
+		receivedProperties?: (keyof this['observedObject'])[] = []
 
-		__getReceivedProps() {
-			const ctor = this.constructor as typeof PropReceiver
-			const props = ctor.receivedProperties || []
+		#getReceivedProps(): Array<keyof this['observedObject']> {
+			const props = this.receivedProperties || []
 			// @prod-prune
-			if (!Array.isArray(props)) throw new TypeError('Expected static receivedProperties to be an array.')
-			return props as Array<keyof this['observedObject']>
+			if (!Array.isArray(props)) throw new TypeError('Expected receivedProperties to be an array.')
+			return props
 		}
 
-		__receiveInitialValues() {
+		receiveInitialValues() {
 			const observed = this.observedObject
 
-			for (const prop of this.__getReceivedProps()) {
+			for (const prop of this.#getReceivedProps()) {
 				if (prop in observed) {
 					const value = (observed as any)[prop]
 					// @ts-expect-error indexed access of this
@@ -142,15 +126,15 @@ export function receiver(_: unknown, context: DecoratorContext): any {
 	const {kind, name} = context
 
 	if (kind === 'field') {
-		return function (this: unknown, initialValue: unknown) {
+		return function (this: InstanceType<ReturnType<typeof PropReceiver>>, initialValue: unknown) {
 			checkIsObject(this)
-			trackReceiverProperty(this!, name)
+			trackReceiverProperty(this, name)
 			return initialValue
 		}
 	} else if (kind === 'getter' || kind === 'setter' || kind === 'accessor') {
 		context.addInitializer!(function (this: unknown) {
 			checkIsObject(this)
-			trackReceiverProperty(this!, name)
+			trackReceiverProperty(this as InstanceType<ReturnType<typeof PropReceiver>>, name)
 		})
 	} else {
 		throw new TypeError(
@@ -159,15 +143,17 @@ export function receiver(_: unknown, context: DecoratorContext): any {
 	}
 }
 
-function trackReceiverProperty(obj: object, name: PropKey) {
+function trackReceiverProperty(obj: InstanceType<ReturnType<typeof PropReceiver>>, name: PropKey) {
 	const ctor = obj.constructor as ReturnType<typeof PropReceiver>
 
 	if (!(ctor as any)[isPropReceiverClass])
 		throw new TypeError('@receiver must be used on a property of a class that extends PropReceiver')
 
-	if (!ctor.hasOwnProperty('receivedProperties')) ctor.receivedProperties = [...(ctor.receivedProperties || [])]
+	// Ensure we modify the own property if any, and not an inherited property which would break other inheriting objects.
+	if (!obj.hasOwnProperty('receivedProperties')) obj.receivedProperties = [...(obj.receivedProperties || [])]
 
-	ctor.receivedProperties!.push(name)
+	if (!obj.receivedProperties) debugger
+	obj.receivedProperties!.push(name as never)
 }
 
 type PropKey = string | symbol

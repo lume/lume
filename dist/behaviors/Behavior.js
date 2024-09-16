@@ -61,8 +61,8 @@ export class Behavior extends PropReceiver() {
     // a promise resolved when an element is upgraded
     #whenDefined = null;
     #elementDefined = false;
-    __receiveInitialValues() {
-        super.__receiveInitialValues();
+    receiveInitialValues() {
+        super.receiveInitialValues();
         this.#fowardPreUpgradeValues();
     }
     #preUpgradeValuesHandled = false;
@@ -74,7 +74,7 @@ export class Behavior extends PropReceiver() {
         if (!isLumeElement(el))
             return;
         this.#preUpgradeValuesHandled = true;
-        for (const prop of this.__getReceivedProps()) {
+        for (const prop of this.receivedProperties ?? []) {
             // prettier-ignore
             const value = el.
                 // @ts-expect-error protected access is ok here

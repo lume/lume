@@ -81,10 +81,13 @@ let SharedAPI = (() => {
     let _set_opacity_decorators;
     let _debug_decorators;
     let _debug_initializers = [];
+    let _debug_extraInitializers = [];
     let __scene_decorators;
     let __scene_initializers = [];
+    let __scene_extraInitializers = [];
     let _version_decorators;
     let _version_initializers = [];
+    let _version_extraInitializers = [];
     var SharedAPI = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -94,9 +97,9 @@ let SharedAPI = (() => {
             __scene_decorators = [signal];
             _version_decorators = [signal];
             __esDecorate(this, null, _set_opacity_decorators, { kind: "setter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, set: (obj, value) => { obj.opacity = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __scene_decorators, { kind: "field", name: "_scene", static: false, private: false, access: { has: obj => "_scene" in obj, get: obj => obj._scene, set: (obj, value) => { obj._scene = value; } }, metadata: _metadata }, __scene_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _debug_extraInitializers);
+            __esDecorate(null, null, __scene_decorators, { kind: "field", name: "_scene", static: false, private: false, access: { has: obj => "_scene" in obj, get: obj => obj._scene, set: (obj, value) => { obj._scene = value; } }, metadata: _metadata }, __scene_initializers, __scene_extraInitializers);
+            __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _version_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SharedAPI = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -180,7 +183,7 @@ let SharedAPI = (() => {
         }
         // stores a ref to this element's root Scene when/if this element is
         // in a scene.
-        _scene = __runInitializers(this, __scene_initializers, null
+        _scene = (__runInitializers(this, _debug_extraInitializers), __runInitializers(this, __scene_initializers, null
         /**
          * @property {THREE.Scene} scene -
          *
@@ -193,7 +196,7 @@ let SharedAPI = (() => {
          * participating in the composed tree (i.e. the element is not distributed
          * to a `<slot>` element of a ShadowRoot of the element's parent).
          */
-        );
+        ));
         /**
          * @property {THREE.Scene} scene -
          *
@@ -227,7 +230,7 @@ let SharedAPI = (() => {
         // code will know to clean up anything relying on the old object and adapt
         // to the new object?
         // @signal
-        __three;
+        __three = __runInitializers(this, __scene_extraInitializers);
         /**
          * @property {Object3D} three -
          *
@@ -873,6 +876,10 @@ let SharedAPI = (() => {
 			/*box-shadow: 0 0 1px rgba(255, 255, 255, 0); currently is very very slow, https://crbug.com/1405629*/
 		}
 	`;
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _version_extraInitializers);
+        }
         static {
             __runInitializers(_classThis, _classExtraInitializers);
         }

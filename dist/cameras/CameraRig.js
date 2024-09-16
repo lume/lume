@@ -73,60 +73,86 @@ let CameraRig = (() => {
     let _instanceExtraInitializers = [];
     let _verticalAngle_decorators;
     let _verticalAngle_initializers = [];
+    let _verticalAngle_extraInitializers = [];
     let _get_initialPolarAngle_decorators;
     let _minVerticalAngle_decorators;
     let _minVerticalAngle_initializers = [];
+    let _minVerticalAngle_extraInitializers = [];
     let _get_minPolarAngle_decorators;
     let _maxVerticalAngle_decorators;
     let _maxVerticalAngle_initializers = [];
+    let _maxVerticalAngle_extraInitializers = [];
     let _get_maxPolarAngle_decorators;
     let _horizontalAngle_decorators;
     let _horizontalAngle_initializers = [];
+    let _horizontalAngle_extraInitializers = [];
     let _minHorizontalAngle_decorators;
     let _minHorizontalAngle_initializers = [];
+    let _minHorizontalAngle_extraInitializers = [];
     let _maxHorizontalAngle_decorators;
     let _maxHorizontalAngle_initializers = [];
+    let _maxHorizontalAngle_extraInitializers = [];
     let _distance_decorators;
     let _distance_initializers = [];
+    let _distance_extraInitializers = [];
     let ___appliedDistance_decorators;
     let ___appliedDistance_initializers = [];
+    let ___appliedDistance_extraInitializers = [];
     let _get_initialDistance_decorators;
     let _minDistance_decorators;
     let _minDistance_initializers = [];
+    let _minDistance_extraInitializers = [];
     let ___appliedMinDistance_decorators;
     let ___appliedMinDistance_initializers = [];
+    let ___appliedMinDistance_extraInitializers = [];
     let _maxDistance_decorators;
     let _maxDistance_initializers = [];
+    let _maxDistance_extraInitializers = [];
     let ___appliedMaxDistance_decorators;
     let ___appliedMaxDistance_initializers = [];
+    let ___appliedMaxDistance_extraInitializers = [];
     let _active_decorators;
     let _active_initializers = [];
+    let _active_extraInitializers = [];
     let _dollySpeed_decorators;
     let _dollySpeed_initializers = [];
+    let _dollySpeed_extraInitializers = [];
     let _interactive_decorators;
     let _interactive_initializers = [];
+    let _interactive_extraInitializers = [];
     let _rotationSpeed_decorators;
     let _rotationSpeed_initializers = [];
+    let _rotationSpeed_extraInitializers = [];
     let _dynamicDolly_decorators;
     let _dynamicDolly_initializers = [];
+    let _dynamicDolly_extraInitializers = [];
     let _dynamicRotation_decorators;
     let _dynamicRotation_initializers = [];
+    let _dynamicRotation_extraInitializers = [];
     let _dollyEpsilon_decorators;
     let _dollyEpsilon_initializers = [];
+    let _dollyEpsilon_extraInitializers = [];
     let _dollyScrollLerp_decorators;
     let _dollyScrollLerp_initializers = [];
+    let _dollyScrollLerp_extraInitializers = [];
     let _dollyPinchSlowdown_decorators;
     let _dollyPinchSlowdown_initializers = [];
+    let _dollyPinchSlowdown_extraInitializers = [];
     let _rotationEpsilon_decorators;
     let _rotationEpsilon_initializers = [];
+    let _rotationEpsilon_extraInitializers = [];
     let _rotationSlowdown_decorators;
     let _rotationSlowdown_initializers = [];
+    let _rotationSlowdown_extraInitializers = [];
     let _threeCamera_decorators;
     let _threeCamera_initializers = [];
+    let _threeCamera_extraInitializers = [];
     let _rotationYTarget_decorators;
     let _rotationYTarget_initializers = [];
+    let _rotationYTarget_extraInitializers = [];
     let _rotationXTarget_decorators;
     let _rotationXTarget_initializers = [];
+    let _rotationXTarget_extraInitializers = [];
     var CameraRig = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -165,32 +191,32 @@ let CameraRig = (() => {
             __esDecorate(this, null, _get_minPolarAngle_decorators, { kind: "getter", name: "minPolarAngle", static: false, private: false, access: { has: obj => "minPolarAngle" in obj, get: obj => obj.minPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_maxPolarAngle_decorators, { kind: "getter", name: "maxPolarAngle", static: false, private: false, access: { has: obj => "maxPolarAngle" in obj, get: obj => obj.maxPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_initialDistance_decorators, { kind: "getter", name: "initialDistance", static: false, private: false, access: { has: obj => "initialDistance" in obj, get: obj => obj.initialDistance }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _verticalAngle_decorators, { kind: "field", name: "verticalAngle", static: false, private: false, access: { has: obj => "verticalAngle" in obj, get: obj => obj.verticalAngle, set: (obj, value) => { obj.verticalAngle = value; } }, metadata: _metadata }, _verticalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _minVerticalAngle_decorators, { kind: "field", name: "minVerticalAngle", static: false, private: false, access: { has: obj => "minVerticalAngle" in obj, get: obj => obj.minVerticalAngle, set: (obj, value) => { obj.minVerticalAngle = value; } }, metadata: _metadata }, _minVerticalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _maxVerticalAngle_decorators, { kind: "field", name: "maxVerticalAngle", static: false, private: false, access: { has: obj => "maxVerticalAngle" in obj, get: obj => obj.maxVerticalAngle, set: (obj, value) => { obj.maxVerticalAngle = value; } }, metadata: _metadata }, _maxVerticalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _horizontalAngle_decorators, { kind: "field", name: "horizontalAngle", static: false, private: false, access: { has: obj => "horizontalAngle" in obj, get: obj => obj.horizontalAngle, set: (obj, value) => { obj.horizontalAngle = value; } }, metadata: _metadata }, _horizontalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _minHorizontalAngle_decorators, { kind: "field", name: "minHorizontalAngle", static: false, private: false, access: { has: obj => "minHorizontalAngle" in obj, get: obj => obj.minHorizontalAngle, set: (obj, value) => { obj.minHorizontalAngle = value; } }, metadata: _metadata }, _minHorizontalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _maxHorizontalAngle_decorators, { kind: "field", name: "maxHorizontalAngle", static: false, private: false, access: { has: obj => "maxHorizontalAngle" in obj, get: obj => obj.maxHorizontalAngle, set: (obj, value) => { obj.maxHorizontalAngle = value; } }, metadata: _metadata }, _maxHorizontalAngle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___appliedDistance_decorators, { kind: "field", name: "__appliedDistance", static: false, private: false, access: { has: obj => "__appliedDistance" in obj, get: obj => obj.__appliedDistance, set: (obj, value) => { obj.__appliedDistance = value; } }, metadata: _metadata }, ___appliedDistance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _minDistance_decorators, { kind: "field", name: "minDistance", static: false, private: false, access: { has: obj => "minDistance" in obj, get: obj => obj.minDistance, set: (obj, value) => { obj.minDistance = value; } }, metadata: _metadata }, _minDistance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___appliedMinDistance_decorators, { kind: "field", name: "__appliedMinDistance", static: false, private: false, access: { has: obj => "__appliedMinDistance" in obj, get: obj => obj.__appliedMinDistance, set: (obj, value) => { obj.__appliedMinDistance = value; } }, metadata: _metadata }, ___appliedMinDistance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _maxDistance_decorators, { kind: "field", name: "maxDistance", static: false, private: false, access: { has: obj => "maxDistance" in obj, get: obj => obj.maxDistance, set: (obj, value) => { obj.maxDistance = value; } }, metadata: _metadata }, _maxDistance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, ___appliedMaxDistance_decorators, { kind: "field", name: "__appliedMaxDistance", static: false, private: false, access: { has: obj => "__appliedMaxDistance" in obj, get: obj => obj.__appliedMaxDistance, set: (obj, value) => { obj.__appliedMaxDistance = value; } }, metadata: _metadata }, ___appliedMaxDistance_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dollySpeed_decorators, { kind: "field", name: "dollySpeed", static: false, private: false, access: { has: obj => "dollySpeed" in obj, get: obj => obj.dollySpeed, set: (obj, value) => { obj.dollySpeed = value; } }, metadata: _metadata }, _dollySpeed_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _interactive_decorators, { kind: "field", name: "interactive", static: false, private: false, access: { has: obj => "interactive" in obj, get: obj => obj.interactive, set: (obj, value) => { obj.interactive = value; } }, metadata: _metadata }, _interactive_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationSpeed_decorators, { kind: "field", name: "rotationSpeed", static: false, private: false, access: { has: obj => "rotationSpeed" in obj, get: obj => obj.rotationSpeed, set: (obj, value) => { obj.rotationSpeed = value; } }, metadata: _metadata }, _rotationSpeed_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dynamicDolly_decorators, { kind: "field", name: "dynamicDolly", static: false, private: false, access: { has: obj => "dynamicDolly" in obj, get: obj => obj.dynamicDolly, set: (obj, value) => { obj.dynamicDolly = value; } }, metadata: _metadata }, _dynamicDolly_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dynamicRotation_decorators, { kind: "field", name: "dynamicRotation", static: false, private: false, access: { has: obj => "dynamicRotation" in obj, get: obj => obj.dynamicRotation, set: (obj, value) => { obj.dynamicRotation = value; } }, metadata: _metadata }, _dynamicRotation_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dollyEpsilon_decorators, { kind: "field", name: "dollyEpsilon", static: false, private: false, access: { has: obj => "dollyEpsilon" in obj, get: obj => obj.dollyEpsilon, set: (obj, value) => { obj.dollyEpsilon = value; } }, metadata: _metadata }, _dollyEpsilon_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dollyScrollLerp_decorators, { kind: "field", name: "dollyScrollLerp", static: false, private: false, access: { has: obj => "dollyScrollLerp" in obj, get: obj => obj.dollyScrollLerp, set: (obj, value) => { obj.dollyScrollLerp = value; } }, metadata: _metadata }, _dollyScrollLerp_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dollyPinchSlowdown_decorators, { kind: "field", name: "dollyPinchSlowdown", static: false, private: false, access: { has: obj => "dollyPinchSlowdown" in obj, get: obj => obj.dollyPinchSlowdown, set: (obj, value) => { obj.dollyPinchSlowdown = value; } }, metadata: _metadata }, _dollyPinchSlowdown_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationEpsilon_decorators, { kind: "field", name: "rotationEpsilon", static: false, private: false, access: { has: obj => "rotationEpsilon" in obj, get: obj => obj.rotationEpsilon, set: (obj, value) => { obj.rotationEpsilon = value; } }, metadata: _metadata }, _rotationEpsilon_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationSlowdown_decorators, { kind: "field", name: "rotationSlowdown", static: false, private: false, access: { has: obj => "rotationSlowdown" in obj, get: obj => obj.rotationSlowdown, set: (obj, value) => { obj.rotationSlowdown = value; } }, metadata: _metadata }, _rotationSlowdown_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _threeCamera_decorators, { kind: "field", name: "threeCamera", static: false, private: false, access: { has: obj => "threeCamera" in obj, get: obj => obj.threeCamera, set: (obj, value) => { obj.threeCamera = value; } }, metadata: _metadata }, _threeCamera_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _verticalAngle_decorators, { kind: "field", name: "verticalAngle", static: false, private: false, access: { has: obj => "verticalAngle" in obj, get: obj => obj.verticalAngle, set: (obj, value) => { obj.verticalAngle = value; } }, metadata: _metadata }, _verticalAngle_initializers, _verticalAngle_extraInitializers);
+            __esDecorate(null, null, _minVerticalAngle_decorators, { kind: "field", name: "minVerticalAngle", static: false, private: false, access: { has: obj => "minVerticalAngle" in obj, get: obj => obj.minVerticalAngle, set: (obj, value) => { obj.minVerticalAngle = value; } }, metadata: _metadata }, _minVerticalAngle_initializers, _minVerticalAngle_extraInitializers);
+            __esDecorate(null, null, _maxVerticalAngle_decorators, { kind: "field", name: "maxVerticalAngle", static: false, private: false, access: { has: obj => "maxVerticalAngle" in obj, get: obj => obj.maxVerticalAngle, set: (obj, value) => { obj.maxVerticalAngle = value; } }, metadata: _metadata }, _maxVerticalAngle_initializers, _maxVerticalAngle_extraInitializers);
+            __esDecorate(null, null, _horizontalAngle_decorators, { kind: "field", name: "horizontalAngle", static: false, private: false, access: { has: obj => "horizontalAngle" in obj, get: obj => obj.horizontalAngle, set: (obj, value) => { obj.horizontalAngle = value; } }, metadata: _metadata }, _horizontalAngle_initializers, _horizontalAngle_extraInitializers);
+            __esDecorate(null, null, _minHorizontalAngle_decorators, { kind: "field", name: "minHorizontalAngle", static: false, private: false, access: { has: obj => "minHorizontalAngle" in obj, get: obj => obj.minHorizontalAngle, set: (obj, value) => { obj.minHorizontalAngle = value; } }, metadata: _metadata }, _minHorizontalAngle_initializers, _minHorizontalAngle_extraInitializers);
+            __esDecorate(null, null, _maxHorizontalAngle_decorators, { kind: "field", name: "maxHorizontalAngle", static: false, private: false, access: { has: obj => "maxHorizontalAngle" in obj, get: obj => obj.maxHorizontalAngle, set: (obj, value) => { obj.maxHorizontalAngle = value; } }, metadata: _metadata }, _maxHorizontalAngle_initializers, _maxHorizontalAngle_extraInitializers);
+            __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _distance_extraInitializers);
+            __esDecorate(null, null, ___appliedDistance_decorators, { kind: "field", name: "__appliedDistance", static: false, private: false, access: { has: obj => "__appliedDistance" in obj, get: obj => obj.__appliedDistance, set: (obj, value) => { obj.__appliedDistance = value; } }, metadata: _metadata }, ___appliedDistance_initializers, ___appliedDistance_extraInitializers);
+            __esDecorate(null, null, _minDistance_decorators, { kind: "field", name: "minDistance", static: false, private: false, access: { has: obj => "minDistance" in obj, get: obj => obj.minDistance, set: (obj, value) => { obj.minDistance = value; } }, metadata: _metadata }, _minDistance_initializers, _minDistance_extraInitializers);
+            __esDecorate(null, null, ___appliedMinDistance_decorators, { kind: "field", name: "__appliedMinDistance", static: false, private: false, access: { has: obj => "__appliedMinDistance" in obj, get: obj => obj.__appliedMinDistance, set: (obj, value) => { obj.__appliedMinDistance = value; } }, metadata: _metadata }, ___appliedMinDistance_initializers, ___appliedMinDistance_extraInitializers);
+            __esDecorate(null, null, _maxDistance_decorators, { kind: "field", name: "maxDistance", static: false, private: false, access: { has: obj => "maxDistance" in obj, get: obj => obj.maxDistance, set: (obj, value) => { obj.maxDistance = value; } }, metadata: _metadata }, _maxDistance_initializers, _maxDistance_extraInitializers);
+            __esDecorate(null, null, ___appliedMaxDistance_decorators, { kind: "field", name: "__appliedMaxDistance", static: false, private: false, access: { has: obj => "__appliedMaxDistance" in obj, get: obj => obj.__appliedMaxDistance, set: (obj, value) => { obj.__appliedMaxDistance = value; } }, metadata: _metadata }, ___appliedMaxDistance_initializers, ___appliedMaxDistance_extraInitializers);
+            __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _active_extraInitializers);
+            __esDecorate(null, null, _dollySpeed_decorators, { kind: "field", name: "dollySpeed", static: false, private: false, access: { has: obj => "dollySpeed" in obj, get: obj => obj.dollySpeed, set: (obj, value) => { obj.dollySpeed = value; } }, metadata: _metadata }, _dollySpeed_initializers, _dollySpeed_extraInitializers);
+            __esDecorate(null, null, _interactive_decorators, { kind: "field", name: "interactive", static: false, private: false, access: { has: obj => "interactive" in obj, get: obj => obj.interactive, set: (obj, value) => { obj.interactive = value; } }, metadata: _metadata }, _interactive_initializers, _interactive_extraInitializers);
+            __esDecorate(null, null, _rotationSpeed_decorators, { kind: "field", name: "rotationSpeed", static: false, private: false, access: { has: obj => "rotationSpeed" in obj, get: obj => obj.rotationSpeed, set: (obj, value) => { obj.rotationSpeed = value; } }, metadata: _metadata }, _rotationSpeed_initializers, _rotationSpeed_extraInitializers);
+            __esDecorate(null, null, _dynamicDolly_decorators, { kind: "field", name: "dynamicDolly", static: false, private: false, access: { has: obj => "dynamicDolly" in obj, get: obj => obj.dynamicDolly, set: (obj, value) => { obj.dynamicDolly = value; } }, metadata: _metadata }, _dynamicDolly_initializers, _dynamicDolly_extraInitializers);
+            __esDecorate(null, null, _dynamicRotation_decorators, { kind: "field", name: "dynamicRotation", static: false, private: false, access: { has: obj => "dynamicRotation" in obj, get: obj => obj.dynamicRotation, set: (obj, value) => { obj.dynamicRotation = value; } }, metadata: _metadata }, _dynamicRotation_initializers, _dynamicRotation_extraInitializers);
+            __esDecorate(null, null, _dollyEpsilon_decorators, { kind: "field", name: "dollyEpsilon", static: false, private: false, access: { has: obj => "dollyEpsilon" in obj, get: obj => obj.dollyEpsilon, set: (obj, value) => { obj.dollyEpsilon = value; } }, metadata: _metadata }, _dollyEpsilon_initializers, _dollyEpsilon_extraInitializers);
+            __esDecorate(null, null, _dollyScrollLerp_decorators, { kind: "field", name: "dollyScrollLerp", static: false, private: false, access: { has: obj => "dollyScrollLerp" in obj, get: obj => obj.dollyScrollLerp, set: (obj, value) => { obj.dollyScrollLerp = value; } }, metadata: _metadata }, _dollyScrollLerp_initializers, _dollyScrollLerp_extraInitializers);
+            __esDecorate(null, null, _dollyPinchSlowdown_decorators, { kind: "field", name: "dollyPinchSlowdown", static: false, private: false, access: { has: obj => "dollyPinchSlowdown" in obj, get: obj => obj.dollyPinchSlowdown, set: (obj, value) => { obj.dollyPinchSlowdown = value; } }, metadata: _metadata }, _dollyPinchSlowdown_initializers, _dollyPinchSlowdown_extraInitializers);
+            __esDecorate(null, null, _rotationEpsilon_decorators, { kind: "field", name: "rotationEpsilon", static: false, private: false, access: { has: obj => "rotationEpsilon" in obj, get: obj => obj.rotationEpsilon, set: (obj, value) => { obj.rotationEpsilon = value; } }, metadata: _metadata }, _rotationEpsilon_initializers, _rotationEpsilon_extraInitializers);
+            __esDecorate(null, null, _rotationSlowdown_decorators, { kind: "field", name: "rotationSlowdown", static: false, private: false, access: { has: obj => "rotationSlowdown" in obj, get: obj => obj.rotationSlowdown, set: (obj, value) => { obj.rotationSlowdown = value; } }, metadata: _metadata }, _rotationSlowdown_initializers, _rotationSlowdown_extraInitializers);
+            __esDecorate(null, null, _threeCamera_decorators, { kind: "field", name: "threeCamera", static: false, private: false, access: { has: obj => "threeCamera" in obj, get: obj => obj.threeCamera, set: (obj, value) => { obj.threeCamera = value; } }, metadata: _metadata }, _threeCamera_initializers, _threeCamera_extraInitializers);
+            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _rotationYTarget_extraInitializers);
+            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _rotationXTarget_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             CameraRig = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -245,14 +271,14 @@ let CameraRig = (() => {
          *
          * The lowest angle that the camera will rotate vertically.
          */
-        minVerticalAngle = __runInitializers(this, _minVerticalAngle_initializers, -90
+        minVerticalAngle = (__runInitializers(this, _verticalAngle_extraInitializers), __runInitializers(this, _minVerticalAngle_initializers, -90
         /**
          * @deprecated minPolarAngle has been renamed to minVerticalAngle.
          * @property {number} minPolarAngle
          *
          * *deprecated*: minPolarAngle has been renamed to minVerticalAngle.
          */
-        );
+        ));
         /**
          * @deprecated minPolarAngle has been renamed to minVerticalAngle.
          * @property {number} minPolarAngle
@@ -281,14 +307,14 @@ let CameraRig = (() => {
          *   verticalExample.content = cameraRigVerticalRotationExample
          * </script>
          */
-        maxVerticalAngle = __runInitializers(this, _maxVerticalAngle_initializers, 90
+        maxVerticalAngle = (__runInitializers(this, _minVerticalAngle_extraInitializers), __runInitializers(this, _maxVerticalAngle_initializers, 90
         /**
          * @deprecated maxPolarAngle has been renamed to maxVerticalAngle.
          * @property {number} maxPolarAngle
          *
          * *deprecated*: maxPolarAngle has been renamed to maxVerticalAngle.
          */
-        );
+        ));
         /**
          * @deprecated maxPolarAngle has been renamed to maxVerticalAngle.
          * @property {number} maxPolarAngle
@@ -312,7 +338,7 @@ let CameraRig = (() => {
          * right, the camera will move left or right as it rotates around the center.
          * The camera is always looking at the center.
          */
-        horizontalAngle = __runInitializers(this, _horizontalAngle_initializers, 0
+        horizontalAngle = (__runInitializers(this, _maxVerticalAngle_extraInitializers), __runInitializers(this, _horizontalAngle_initializers, 0
         /**
          * @property {number} minHorizontalAngle
          *
@@ -324,7 +350,7 @@ let CameraRig = (() => {
          * horizontally. The default of `-Infinity` means the camera will rotate
          * laterally around the focus point indefinitely.
          */
-        );
+        ));
         /**
          * @property {number} minHorizontalAngle
          *
@@ -336,7 +362,7 @@ let CameraRig = (() => {
          * horizontally. The default of `-Infinity` means the camera will rotate
          * laterally around the focus point indefinitely.
          */
-        minHorizontalAngle = __runInitializers(this, _minHorizontalAngle_initializers, -Infinity
+        minHorizontalAngle = (__runInitializers(this, _horizontalAngle_extraInitializers), __runInitializers(this, _minHorizontalAngle_initializers, -Infinity
         /**
          * @property {number} maxHorizontalAngle
          *
@@ -348,7 +374,7 @@ let CameraRig = (() => {
          * horizontally. The default of `Infinity` means the camera will rotate
          * laterally around the focus point indefinitely.
          */
-        );
+        ));
         /**
          * @property {number} maxHorizontalAngle
          *
@@ -360,7 +386,7 @@ let CameraRig = (() => {
          * horizontally. The default of `Infinity` means the camera will rotate
          * laterally around the focus point indefinitely.
          */
-        maxHorizontalAngle = __runInitializers(this, _maxHorizontalAngle_initializers, Infinity
+        maxHorizontalAngle = (__runInitializers(this, _minHorizontalAngle_extraInitializers), __runInitializers(this, _maxHorizontalAngle_initializers, Infinity
         /**
          * @property {number} distance
          *
@@ -376,7 +402,7 @@ let CameraRig = (() => {
          * [`.perspective`](../core/Scene#perspective), matching the behavior of
          * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
          */
-        );
+        ));
         /**
          * @property {number} distance
          *
@@ -392,15 +418,15 @@ let CameraRig = (() => {
          * [`.perspective`](../core/Scene#perspective), matching the behavior of
          * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
          */
-        distance = __runInitializers(this, _distance_initializers, -1);
-        __appliedDistance = __runInitializers(this, ___appliedDistance_initializers, defaultScenePerspective
+        distance = (__runInitializers(this, _maxHorizontalAngle_extraInitializers), __runInitializers(this, _distance_initializers, -1));
+        __appliedDistance = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, ___appliedDistance_initializers, defaultScenePerspective
         /**
          * @deprecated initialDistance has been renamed to distance.
          * @property {number} initialDistance
          *
          * *deprecated*: initialDistance has been renamed to distance.
          */
-        );
+        ));
         /**
          * @deprecated initialDistance has been renamed to distance.
          * @property {number} initialDistance
@@ -426,8 +452,8 @@ let CameraRig = (() => {
          * A value of `-1` means the value will automatically be half of whatever
          * the [`.distance`](#distance) value is.
          */
-        minDistance = __runInitializers(this, _minDistance_initializers, -1);
-        __appliedMinDistance = __runInitializers(this, ___appliedMinDistance_initializers, 200
+        minDistance = (__runInitializers(this, ___appliedDistance_extraInitializers), __runInitializers(this, _minDistance_initializers, -1));
+        __appliedMinDistance = (__runInitializers(this, _minDistance_extraInitializers), __runInitializers(this, ___appliedMinDistance_initializers, 200
         /**
          * @property {number} maxDistance
          *
@@ -441,7 +467,7 @@ let CameraRig = (() => {
          * A value of `-1` means the value will automatically be double of whatever
          * the [`.distance`](#distance) value is.
          */
-        );
+        ));
         /**
          * @property {number} maxDistance
          *
@@ -455,8 +481,8 @@ let CameraRig = (() => {
          * A value of `-1` means the value will automatically be double of whatever
          * the [`.distance`](#distance) value is.
          */
-        maxDistance = __runInitializers(this, _maxDistance_initializers, -1);
-        __appliedMaxDistance = __runInitializers(this, ___appliedMaxDistance_initializers, 800
+        maxDistance = (__runInitializers(this, ___appliedMinDistance_extraInitializers), __runInitializers(this, _maxDistance_initializers, -1));
+        __appliedMaxDistance = (__runInitializers(this, _maxDistance_extraInitializers), __runInitializers(this, ___appliedMaxDistance_initializers, 800
         /**
          * @property {boolean} active
          *
@@ -466,7 +492,7 @@ let CameraRig = (() => {
          *
          * When `true`, the underlying camera is set to [`active`](./PerspectiveCamera#active).
          */
-        );
+        ));
         /**
          * @property {boolean} active
          *
@@ -476,7 +502,7 @@ let CameraRig = (() => {
          *
          * When `true`, the underlying camera is set to [`active`](./PerspectiveCamera#active).
          */
-        active = __runInitializers(this, _active_initializers, true
+        active = (__runInitializers(this, ___appliedMaxDistance_extraInitializers), __runInitializers(this, _active_initializers, true
         /**
          * @property {number} dollySpeed
          *
@@ -484,7 +510,7 @@ let CameraRig = (() => {
          *
          * Default: `1`
          */
-        );
+        ));
         /**
          * @property {number} dollySpeed
          *
@@ -492,7 +518,7 @@ let CameraRig = (() => {
          *
          * Default: `1`
          */
-        dollySpeed = __runInitializers(this, _dollySpeed_initializers, 1
+        dollySpeed = (__runInitializers(this, _active_extraInitializers), __runInitializers(this, _dollySpeed_initializers, 1
         /**
          * @property {boolean} interactive
          *
@@ -503,7 +529,7 @@ let CameraRig = (() => {
          * When `false`, user interaction (ability to zoom or rotate the camera) is
          * disabled, but the camera rig can still be manipulated programmatically.
          */
-        );
+        ));
         /**
          * @property {boolean} interactive
          *
@@ -514,7 +540,7 @@ let CameraRig = (() => {
          * When `false`, user interaction (ability to zoom or rotate the camera) is
          * disabled, but the camera rig can still be manipulated programmatically.
          */
-        interactive = __runInitializers(this, _interactive_initializers, true
+        interactive = (__runInitializers(this, _dollySpeed_extraInitializers), __runInitializers(this, _interactive_initializers, true
         /**
          * @property {number} rotationSpeed
          *
@@ -524,7 +550,7 @@ let CameraRig = (() => {
          *
          * How much the camera rotates while dragging.
          */
-        );
+        ));
         /**
          * @property {number} rotationSpeed
          *
@@ -534,7 +560,7 @@ let CameraRig = (() => {
          *
          * How much the camera rotates while dragging.
          */
-        rotationSpeed = __runInitializers(this, _rotationSpeed_initializers, 1
+        rotationSpeed = (__runInitializers(this, _interactive_extraInitializers), __runInitializers(this, _rotationSpeed_initializers, 1
         /**
          * @property {boolean} dynamicDolly
          *
@@ -548,7 +574,7 @@ let CameraRig = (() => {
          * into an object and having the dolly movements not be disproportionately
          * huge while viewing fine details of the object.
          */
-        );
+        ));
         /**
          * @property {boolean} dynamicDolly
          *
@@ -562,7 +588,7 @@ let CameraRig = (() => {
          * into an object and having the dolly movements not be disproportionately
          * huge while viewing fine details of the object.
          */
-        dynamicDolly = __runInitializers(this, _dynamicDolly_initializers, false
+        dynamicDolly = (__runInitializers(this, _rotationSpeed_extraInitializers), __runInitializers(this, _dynamicDolly_initializers, false
         /**
          * @property {boolean} dynamicRotation
          *
@@ -576,7 +602,7 @@ let CameraRig = (() => {
          * zoomed in to see fine details of an object and having the rotation not be
          * disproportionately huge, for example when zooming into a 3D globe.
          */
-        );
+        ));
         /**
          * @property {boolean} dynamicRotation
          *
@@ -590,7 +616,7 @@ let CameraRig = (() => {
          * zoomed in to see fine details of an object and having the rotation not be
          * disproportionately huge, for example when zooming into a 3D globe.
          */
-        dynamicRotation = __runInitializers(this, _dynamicRotation_initializers, false
+        dynamicRotation = (__runInitializers(this, _dynamicDolly_extraInitializers), __runInitializers(this, _dynamicRotation_initializers, false
         /**
          * @property {number} dollyEpsilon
          *
@@ -603,7 +629,7 @@ let CameraRig = (() => {
          * this number, animation stops. Set this to a high value to prevent
          * smoothing.
          */
-        );
+        ));
         /**
          * @property {number} dollyEpsilon
          *
@@ -616,7 +642,7 @@ let CameraRig = (() => {
          * this number, animation stops. Set this to a high value to prevent
          * smoothing.
          */
-        dollyEpsilon = __runInitializers(this, _dollyEpsilon_initializers, 0.01
+        dollyEpsilon = (__runInitializers(this, _dynamicRotation_extraInitializers), __runInitializers(this, _dollyEpsilon_initializers, 0.01
         /**
          * @property {number} dollyScrollLerp
          *
@@ -627,7 +653,7 @@ let CameraRig = (() => {
          * The portion to lerp towards the dolly target position each frame after
          * scrolling to dolly the camera. Between 0 and 1.
          */
-        );
+        ));
         /**
          * @property {number} dollyScrollLerp
          *
@@ -638,7 +664,7 @@ let CameraRig = (() => {
          * The portion to lerp towards the dolly target position each frame after
          * scrolling to dolly the camera. Between 0 and 1.
          */
-        dollyScrollLerp = __runInitializers(this, _dollyScrollLerp_initializers, 0.3
+        dollyScrollLerp = (__runInitializers(this, _dollyEpsilon_extraInitializers), __runInitializers(this, _dollyScrollLerp_initializers, 0.3
         /**
          * @property {number} dollyPinchSlowdown
          *
@@ -650,7 +676,7 @@ let CameraRig = (() => {
          * animation after pinching to dolly the camera, i.e. how much to lerp
          * towards zero motion. Between 0 and 1.
          */
-        );
+        ));
         /**
          * @property {number} dollyPinchSlowdown
          *
@@ -662,7 +688,7 @@ let CameraRig = (() => {
          * animation after pinching to dolly the camera, i.e. how much to lerp
          * towards zero motion. Between 0 and 1.
          */
-        dollyPinchSlowdown = __runInitializers(this, _dollyPinchSlowdown_initializers, 0.05
+        dollyPinchSlowdown = (__runInitializers(this, _dollyScrollLerp_extraInitializers), __runInitializers(this, _dollyPinchSlowdown_initializers, 0.05
         /**
          * @property {number} rotationEpsilon
          *
@@ -674,7 +700,7 @@ let CameraRig = (() => {
          * When the current frame's change in rotation goes below this number,
          * animation stops. Set this to a high value to prevent inertial slowdown.
          */
-        );
+        ));
         /**
          * @property {number} rotationEpsilon
          *
@@ -686,7 +712,7 @@ let CameraRig = (() => {
          * When the current frame's change in rotation goes below this number,
          * animation stops. Set this to a high value to prevent inertial slowdown.
          */
-        rotationEpsilon = __runInitializers(this, _rotationEpsilon_initializers, 0.01
+        rotationEpsilon = (__runInitializers(this, _dollyPinchSlowdown_extraInitializers), __runInitializers(this, _rotationEpsilon_initializers, 0.01
         /**
          * @property {number} rotationSlowdown
          *
@@ -698,7 +724,7 @@ let CameraRig = (() => {
          * rotation after dragging to rotate the camera, i.e. how much to lerp
          * towards zero motion. Between 0 and 1.
          */
-        );
+        ));
         /**
          * @property {number} rotationSlowdown
          *
@@ -710,15 +736,15 @@ let CameraRig = (() => {
          * rotation after dragging to rotate the camera, i.e. how much to lerp
          * towards zero motion. Between 0 and 1.
          */
-        rotationSlowdown = __runInitializers(this, _rotationSlowdown_initializers, 0.05);
-        threeCamera = __runInitializers(this, _threeCamera_initializers, void 0);
+        rotationSlowdown = (__runInitializers(this, _rotationEpsilon_extraInitializers), __runInitializers(this, _rotationSlowdown_initializers, 0.05));
+        threeCamera = (__runInitializers(this, _rotationSlowdown_extraInitializers), __runInitializers(this, _threeCamera_initializers, void 0));
         /** @deprecated Use `.threeCamera` instead. */
         get cam() {
             return this.threeCamera;
         }
-        rotationYTarget = __runInitializers(this, _rotationYTarget_initializers, void 0);
-        rotationXTarget = __runInitializers(this, _rotationXTarget_initializers, void 0);
-        flingRotation = new FlingRotation();
+        rotationYTarget = (__runInitializers(this, _threeCamera_extraInitializers), __runInitializers(this, _rotationYTarget_initializers, void 0));
+        rotationXTarget = (__runInitializers(this, _rotationYTarget_extraInitializers), __runInitializers(this, _rotationXTarget_initializers, void 0));
+        flingRotation = (__runInitializers(this, _rotationXTarget_extraInitializers), new FlingRotation());
         scrollFling = new ScrollFling();
         pinchFling = new PinchFling();
         get #derivedInputDistance() {

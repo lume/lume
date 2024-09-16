@@ -50,15 +50,15 @@ let MeshBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = RenderableBehavior;
-    let _instanceExtraInitializers = [];
     let _meshComponent_decorators;
     let _meshComponent_initializers = [];
+    let _meshComponent_extraInitializers = [];
     var MeshBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _meshComponent_decorators = [signal];
-            __esDecorate(null, null, _meshComponent_decorators, { kind: "field", name: "meshComponent", static: false, private: false, access: { has: obj => "meshComponent" in obj, get: obj => obj.meshComponent, set: (obj, value) => { obj.meshComponent = value; } }, metadata: _metadata }, _meshComponent_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _meshComponent_decorators, { kind: "field", name: "meshComponent", static: false, private: false, access: { has: obj => "meshComponent" in obj, get: obj => obj.meshComponent, set: (obj, value) => { obj.meshComponent = value; } }, metadata: _metadata }, _meshComponent_initializers, _meshComponent_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             MeshBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -89,7 +89,11 @@ let MeshBehavior = (() => {
          * The component that this behavior manages, either a Material, or a
          * BufferGeometry.
          */
-        meshComponent = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _meshComponent_initializers, null));
+        meshComponent = __runInitializers(this, _meshComponent_initializers, null);
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _meshComponent_extraInitializers);
+        }
     };
     return MeshBehavior = _classThis;
 })();

@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import { createEffect, onCleanup } from 'solid-js';
 // import {stringAttribute, booleanAttribute} from '../attribute.js'
@@ -65,13 +65,17 @@ let ClipPlanesBehavior = (() => {
     let _instanceExtraInitializers = [];
     let _clipIntersection_decorators;
     let _clipIntersection_initializers = [];
+    let _clipIntersection_extraInitializers = [];
     let _clipShadows_decorators;
     let _clipShadows_initializers = [];
+    let _clipShadows_extraInitializers = [];
     let _get_clipPlanes_decorators;
     let _flipClip_decorators;
     let _flipClip_initializers = [];
+    let _flipClip_extraInitializers = [];
     let _clipDisabled_decorators;
     let _clipDisabled_initializers = [];
+    let _clipDisabled_extraInitializers = [];
     var ClipPlanesBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -82,10 +86,10 @@ let ClipPlanesBehavior = (() => {
             _flipClip_decorators = [booleanAttribute, receiver];
             _clipDisabled_decorators = [booleanAttribute, receiver];
             __esDecorate(this, null, _get_clipPlanes_decorators, { kind: "getter", name: "clipPlanes", static: false, private: false, access: { has: obj => "clipPlanes" in obj, get: obj => obj.clipPlanes }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _clipIntersection_decorators, { kind: "field", name: "clipIntersection", static: false, private: false, access: { has: obj => "clipIntersection" in obj, get: obj => obj.clipIntersection, set: (obj, value) => { obj.clipIntersection = value; } }, metadata: _metadata }, _clipIntersection_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _clipShadows_decorators, { kind: "field", name: "clipShadows", static: false, private: false, access: { has: obj => "clipShadows" in obj, get: obj => obj.clipShadows, set: (obj, value) => { obj.clipShadows = value; } }, metadata: _metadata }, _clipShadows_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _flipClip_decorators, { kind: "field", name: "flipClip", static: false, private: false, access: { has: obj => "flipClip" in obj, get: obj => obj.flipClip, set: (obj, value) => { obj.flipClip = value; } }, metadata: _metadata }, _flipClip_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _clipDisabled_decorators, { kind: "field", name: "clipDisabled", static: false, private: false, access: { has: obj => "clipDisabled" in obj, get: obj => obj.clipDisabled, set: (obj, value) => { obj.clipDisabled = value; } }, metadata: _metadata }, _clipDisabled_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _clipIntersection_decorators, { kind: "field", name: "clipIntersection", static: false, private: false, access: { has: obj => "clipIntersection" in obj, get: obj => obj.clipIntersection, set: (obj, value) => { obj.clipIntersection = value; } }, metadata: _metadata }, _clipIntersection_initializers, _clipIntersection_extraInitializers);
+            __esDecorate(null, null, _clipShadows_decorators, { kind: "field", name: "clipShadows", static: false, private: false, access: { has: obj => "clipShadows" in obj, get: obj => obj.clipShadows, set: (obj, value) => { obj.clipShadows = value; } }, metadata: _metadata }, _clipShadows_initializers, _clipShadows_extraInitializers);
+            __esDecorate(null, null, _flipClip_decorators, { kind: "field", name: "flipClip", static: false, private: false, access: { has: obj => "flipClip" in obj, get: obj => obj.flipClip, set: (obj, value) => { obj.flipClip = value; } }, metadata: _metadata }, _flipClip_initializers, _flipClip_extraInitializers);
+            __esDecorate(null, null, _clipDisabled_decorators, { kind: "field", name: "clipDisabled", static: false, private: false, access: { has: obj => "clipDisabled" in obj, get: obj => obj.clipDisabled, set: (obj, value) => { obj.clipDisabled = value; } }, metadata: _metadata }, _clipDisabled_initializers, _clipDisabled_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ClipPlanesBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -125,11 +129,11 @@ let ClipPlanesBehavior = (() => {
          * according to the clipping planes specified on this material. Default is
          * false.
          */
-        clipShadows = __runInitializers(this, _clipShadows_initializers, true
+        clipShadows = (__runInitializers(this, _clipIntersection_extraInitializers), __runInitializers(this, _clipShadows_initializers, true
         // TODO reactive array?
-        );
+        ));
         // TODO reactive array?
-        #clipPlanes = [];
+        #clipPlanes = (__runInitializers(this, _clipShadows_extraInitializers), []);
         #rawClipPlanes = [];
         /**
          * @property {string | Array<ClipPlane | string | null>} clipPlanes
@@ -254,11 +258,11 @@ let ClipPlanesBehavior = (() => {
          *
          * If `true`, clipping is not applied.
          */
-        clipDisabled = __runInitializers(this, _clipDisabled_initializers, false
+        clipDisabled = (__runInitializers(this, _flipClip_extraInitializers), __runInitializers(this, _clipDisabled_initializers, false
         /**
          * `reactive`
          */
-        );
+        ));
         /**
          * `reactive`
          */
@@ -266,7 +270,7 @@ let ClipPlanesBehavior = (() => {
             const mat = this.element.behaviors.find(name => name.endsWith('-material'));
             return mat?.meshComponent ?? null;
         }
-        #observer = null;
+        #observer = (__runInitializers(this, _clipDisabled_extraInitializers), null);
         connectedCallback() {
             super.connectedCallback();
             let lastScene = null;

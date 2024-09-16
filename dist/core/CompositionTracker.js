@@ -137,7 +137,7 @@ export function CompositionTracker(Base) {
             }
             else {
                 return [
-                    ...(this.__distributedChildren || []),
+                    ...(this.__distributedChildren || []), // TODO perhaps use slot.assignedElements instead?
                     // We only care about other nodes of the same type.
                     ...Array.from(this.children).filter((n) => n instanceof CompositionTracker),
                 ];

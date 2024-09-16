@@ -25,7 +25,7 @@ const isInstance = Symbol()
  * ```
  */
 export function Settable<T extends Constructor>(Base: T = Object as any) {
-	class Settable extends Base {
+	return class Settable extends Base {
 		// @ts-ignore, prevent downstream "has or is using private name" errors.
 		[isInstance as any] = true
 
@@ -54,10 +54,6 @@ export function Settable<T extends Constructor>(Base: T = Object as any) {
 			return this
 		}
 	}
-
-	Settable.prototype[isInstance] = true
-
-	return Settable
 }
 
 Object.defineProperty(Settable, Symbol.hasInstance, {

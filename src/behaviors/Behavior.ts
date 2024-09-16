@@ -109,8 +109,8 @@ export abstract class Behavior extends PropReceiver() {
 	#whenDefined: Promise<unknown> = null! as Promise<unknown>
 	#elementDefined = false
 
-	override __receiveInitialValues() {
-		super.__receiveInitialValues()
+	override receiveInitialValues() {
+		super.receiveInitialValues()
 		this.#fowardPreUpgradeValues()
 	}
 
@@ -126,7 +126,7 @@ export abstract class Behavior extends PropReceiver() {
 
 		this.#preUpgradeValuesHandled = true
 
-		for (const prop of this.__getReceivedProps()) {
+		for (const prop of this.receivedProperties ?? []) {
 			// prettier-ignore
 			const value = el.
 				// @ts-expect-error protected access is ok here

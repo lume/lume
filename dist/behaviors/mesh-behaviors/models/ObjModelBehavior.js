@@ -48,27 +48,28 @@ let ObjModelBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = RenderableBehavior;
-    let _instanceExtraInitializers = [];
     let _obj_decorators;
     let _obj_initializers = [];
+    let _obj_extraInitializers = [];
     let _mtl_decorators;
     let _mtl_initializers = [];
+    let _mtl_extraInitializers = [];
     var ObjModelBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _obj_decorators = [stringAttribute, receiver];
             _mtl_decorators = [stringAttribute, receiver];
-            __esDecorate(null, null, _obj_decorators, { kind: "field", name: "obj", static: false, private: false, access: { has: obj => "obj" in obj, get: obj => obj.obj, set: (obj, value) => { obj.obj = value; } }, metadata: _metadata }, _obj_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _mtl_decorators, { kind: "field", name: "mtl", static: false, private: false, access: { has: obj => "mtl" in obj, get: obj => obj.mtl, set: (obj, value) => { obj.mtl = value; } }, metadata: _metadata }, _mtl_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _obj_decorators, { kind: "field", name: "obj", static: false, private: false, access: { has: obj => "obj" in obj, get: obj => obj.obj, set: (obj, value) => { obj.obj = value; } }, metadata: _metadata }, _obj_initializers, _obj_extraInitializers);
+            __esDecorate(null, null, _mtl_decorators, { kind: "field", name: "mtl", static: false, private: false, access: { has: obj => "mtl" in obj, get: obj => obj.mtl, set: (obj, value) => { obj.mtl = value; } }, metadata: _metadata }, _mtl_initializers, _mtl_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ObjModelBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        obj = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _obj_initializers, ''));
-        mtl = __runInitializers(this, _mtl_initializers, '');
-        model;
+        obj = __runInitializers(this, _obj_initializers, '');
+        mtl = (__runInitializers(this, _obj_extraInitializers), __runInitializers(this, _mtl_initializers, ''));
+        model = __runInitializers(this, _mtl_extraInitializers);
         objLoader = (() => {
             const loader = new OBJLoader();
             loader.manager.onLoad = () => this.element.needsUpdate();

@@ -29,7 +29,7 @@ import type { PossiblyCustomElement } from './PossibleCustomElement.js';
 export declare function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(Base?: T): {
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: XYZValues, newValue: V): void;
-        _setPropertySingle<K_1 extends keyof any, V_1>(name: K_1, setter: (newValue: any[K_1]) => void, newValue: V_1): void;
+        _setPropertySingle<K extends keyof any, V>(name: K, setter: (newValue: any[K]) => void, newValue: V): void;
         "__#14@#propertyFunctions": Map<string, RenderTask> | null;
         "__#14@#settingValueFromPropFunction": boolean;
         "__#14@#handleXYZPropertyFunction"(fn: XYZNumberValuesPropertyFunction, name: keyof any, xyz: XYZValues): void;
