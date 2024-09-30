@@ -32,7 +32,7 @@
 			'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',
 
 			regexr: '/node_modules/regexr/dist/index.js',
-			'solid-js': '/node_modules/solid-js/dist/dev.js',
+			'solid-js': '/node_modules/solid-js/dist/solid.js',
 			'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
 			'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
 			'solid-js/store': '/node_modules/solid-js/store/dist/store.js',

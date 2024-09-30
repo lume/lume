@@ -35,6 +35,10 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 import { onCleanup } from 'solid-js';
 import html from 'solid-js/html';
 import { signal, syncSignals } from 'classy-solid';
@@ -75,14 +79,17 @@ let CameraRig = (() => {
     let _verticalAngle_initializers = [];
     let _verticalAngle_extraInitializers = [];
     let _get_initialPolarAngle_decorators;
+    let _set_initialPolarAngle_decorators;
     let _minVerticalAngle_decorators;
     let _minVerticalAngle_initializers = [];
     let _minVerticalAngle_extraInitializers = [];
     let _get_minPolarAngle_decorators;
+    let _set_minPolarAngle_decorators;
     let _maxVerticalAngle_decorators;
     let _maxVerticalAngle_initializers = [];
     let _maxVerticalAngle_extraInitializers = [];
     let _get_maxPolarAngle_decorators;
+    let _set_maxPolarAngle_decorators;
     let _horizontalAngle_decorators;
     let _horizontalAngle_initializers = [];
     let _horizontalAngle_extraInitializers = [];
@@ -95,22 +102,26 @@ let CameraRig = (() => {
     let _distance_decorators;
     let _distance_initializers = [];
     let _distance_extraInitializers = [];
-    let ___appliedDistance_decorators;
-    let ___appliedDistance_initializers = [];
-    let ___appliedDistance_extraInitializers = [];
+    let _private_appliedDistance_decorators;
+    let _private_appliedDistance_initializers = [];
+    let _private_appliedDistance_extraInitializers = [];
+    let _private_appliedDistance_descriptor;
     let _get_initialDistance_decorators;
+    let _set_initialDistance_decorators;
     let _minDistance_decorators;
     let _minDistance_initializers = [];
     let _minDistance_extraInitializers = [];
-    let ___appliedMinDistance_decorators;
-    let ___appliedMinDistance_initializers = [];
-    let ___appliedMinDistance_extraInitializers = [];
+    let _private_appliedMinDistance_decorators;
+    let _private_appliedMinDistance_initializers = [];
+    let _private_appliedMinDistance_extraInitializers = [];
+    let _private_appliedMinDistance_descriptor;
     let _maxDistance_decorators;
     let _maxDistance_initializers = [];
     let _maxDistance_extraInitializers = [];
-    let ___appliedMaxDistance_decorators;
-    let ___appliedMaxDistance_initializers = [];
-    let ___appliedMaxDistance_extraInitializers = [];
+    let _private_appliedMaxDistance_decorators;
+    let _private_appliedMaxDistance_initializers = [];
+    let _private_appliedMaxDistance_extraInitializers = [];
+    let _private_appliedMaxDistance_descriptor;
     let _active_decorators;
     let _active_initializers = [];
     let _active_extraInitializers = [];
@@ -159,20 +170,24 @@ let CameraRig = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _verticalAngle_decorators = [numberAttribute];
             _get_initialPolarAngle_decorators = [numberAttribute];
+            _set_initialPolarAngle_decorators = [numberAttribute];
             _minVerticalAngle_decorators = [numberAttribute];
             _get_minPolarAngle_decorators = [numberAttribute];
+            _set_minPolarAngle_decorators = [numberAttribute];
             _maxVerticalAngle_decorators = [numberAttribute];
             _get_maxPolarAngle_decorators = [numberAttribute];
+            _set_maxPolarAngle_decorators = [numberAttribute];
             _horizontalAngle_decorators = [numberAttribute];
             _minHorizontalAngle_decorators = [numberAttribute];
             _maxHorizontalAngle_decorators = [numberAttribute];
             _distance_decorators = [numberAttribute];
-            ___appliedDistance_decorators = [signal];
+            _private_appliedDistance_decorators = [signal];
             _get_initialDistance_decorators = [numberAttribute];
+            _set_initialDistance_decorators = [numberAttribute];
             _minDistance_decorators = [numberAttribute];
-            ___appliedMinDistance_decorators = [signal];
+            _private_appliedMinDistance_decorators = [signal];
             _maxDistance_decorators = [numberAttribute];
-            ___appliedMaxDistance_decorators = [signal];
+            _private_appliedMaxDistance_decorators = [signal];
             _active_decorators = [booleanAttribute];
             _dollySpeed_decorators = [numberAttribute];
             _interactive_decorators = [booleanAttribute];
@@ -188,9 +203,16 @@ let CameraRig = (() => {
             _rotationYTarget_decorators = [signal];
             _rotationXTarget_decorators = [signal];
             __esDecorate(this, null, _get_initialPolarAngle_decorators, { kind: "getter", name: "initialPolarAngle", static: false, private: false, access: { has: obj => "initialPolarAngle" in obj, get: obj => obj.initialPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_initialPolarAngle_decorators, { kind: "setter", name: "initialPolarAngle", static: false, private: false, access: { has: obj => "initialPolarAngle" in obj, set: (obj, value) => { obj.initialPolarAngle = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_minPolarAngle_decorators, { kind: "getter", name: "minPolarAngle", static: false, private: false, access: { has: obj => "minPolarAngle" in obj, get: obj => obj.minPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_minPolarAngle_decorators, { kind: "setter", name: "minPolarAngle", static: false, private: false, access: { has: obj => "minPolarAngle" in obj, set: (obj, value) => { obj.minPolarAngle = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_maxPolarAngle_decorators, { kind: "getter", name: "maxPolarAngle", static: false, private: false, access: { has: obj => "maxPolarAngle" in obj, get: obj => obj.maxPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_maxPolarAngle_decorators, { kind: "setter", name: "maxPolarAngle", static: false, private: false, access: { has: obj => "maxPolarAngle" in obj, set: (obj, value) => { obj.maxPolarAngle = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, _private_appliedDistance_descriptor = { get: __setFunctionName(function () { return this.#appliedDistance_accessor_storage; }, "#appliedDistance", "get"), set: __setFunctionName(function (value) { this.#appliedDistance_accessor_storage = value; }, "#appliedDistance", "set") }, _private_appliedDistance_decorators, { kind: "accessor", name: "#appliedDistance", static: false, private: true, access: { has: obj => #appliedDistance in obj, get: obj => obj.#appliedDistance, set: (obj, value) => { obj.#appliedDistance = value; } }, metadata: _metadata }, _private_appliedDistance_initializers, _private_appliedDistance_extraInitializers);
             __esDecorate(this, null, _get_initialDistance_decorators, { kind: "getter", name: "initialDistance", static: false, private: false, access: { has: obj => "initialDistance" in obj, get: obj => obj.initialDistance }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_initialDistance_decorators, { kind: "setter", name: "initialDistance", static: false, private: false, access: { has: obj => "initialDistance" in obj, set: (obj, value) => { obj.initialDistance = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, _private_appliedMinDistance_descriptor = { get: __setFunctionName(function () { return this.#appliedMinDistance_accessor_storage; }, "#appliedMinDistance", "get"), set: __setFunctionName(function (value) { this.#appliedMinDistance_accessor_storage = value; }, "#appliedMinDistance", "set") }, _private_appliedMinDistance_decorators, { kind: "accessor", name: "#appliedMinDistance", static: false, private: true, access: { has: obj => #appliedMinDistance in obj, get: obj => obj.#appliedMinDistance, set: (obj, value) => { obj.#appliedMinDistance = value; } }, metadata: _metadata }, _private_appliedMinDistance_initializers, _private_appliedMinDistance_extraInitializers);
+            __esDecorate(this, _private_appliedMaxDistance_descriptor = { get: __setFunctionName(function () { return this.#appliedMaxDistance_accessor_storage; }, "#appliedMaxDistance", "get"), set: __setFunctionName(function (value) { this.#appliedMaxDistance_accessor_storage = value; }, "#appliedMaxDistance", "set") }, _private_appliedMaxDistance_decorators, { kind: "accessor", name: "#appliedMaxDistance", static: false, private: true, access: { has: obj => #appliedMaxDistance in obj, get: obj => obj.#appliedMaxDistance, set: (obj, value) => { obj.#appliedMaxDistance = value; } }, metadata: _metadata }, _private_appliedMaxDistance_initializers, _private_appliedMaxDistance_extraInitializers);
             __esDecorate(null, null, _verticalAngle_decorators, { kind: "field", name: "verticalAngle", static: false, private: false, access: { has: obj => "verticalAngle" in obj, get: obj => obj.verticalAngle, set: (obj, value) => { obj.verticalAngle = value; } }, metadata: _metadata }, _verticalAngle_initializers, _verticalAngle_extraInitializers);
             __esDecorate(null, null, _minVerticalAngle_decorators, { kind: "field", name: "minVerticalAngle", static: false, private: false, access: { has: obj => "minVerticalAngle" in obj, get: obj => obj.minVerticalAngle, set: (obj, value) => { obj.minVerticalAngle = value; } }, metadata: _metadata }, _minVerticalAngle_initializers, _minVerticalAngle_extraInitializers);
             __esDecorate(null, null, _maxVerticalAngle_decorators, { kind: "field", name: "maxVerticalAngle", static: false, private: false, access: { has: obj => "maxVerticalAngle" in obj, get: obj => obj.maxVerticalAngle, set: (obj, value) => { obj.maxVerticalAngle = value; } }, metadata: _metadata }, _maxVerticalAngle_initializers, _maxVerticalAngle_extraInitializers);
@@ -198,11 +220,8 @@ let CameraRig = (() => {
             __esDecorate(null, null, _minHorizontalAngle_decorators, { kind: "field", name: "minHorizontalAngle", static: false, private: false, access: { has: obj => "minHorizontalAngle" in obj, get: obj => obj.minHorizontalAngle, set: (obj, value) => { obj.minHorizontalAngle = value; } }, metadata: _metadata }, _minHorizontalAngle_initializers, _minHorizontalAngle_extraInitializers);
             __esDecorate(null, null, _maxHorizontalAngle_decorators, { kind: "field", name: "maxHorizontalAngle", static: false, private: false, access: { has: obj => "maxHorizontalAngle" in obj, get: obj => obj.maxHorizontalAngle, set: (obj, value) => { obj.maxHorizontalAngle = value; } }, metadata: _metadata }, _maxHorizontalAngle_initializers, _maxHorizontalAngle_extraInitializers);
             __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _distance_extraInitializers);
-            __esDecorate(null, null, ___appliedDistance_decorators, { kind: "field", name: "__appliedDistance", static: false, private: false, access: { has: obj => "__appliedDistance" in obj, get: obj => obj.__appliedDistance, set: (obj, value) => { obj.__appliedDistance = value; } }, metadata: _metadata }, ___appliedDistance_initializers, ___appliedDistance_extraInitializers);
             __esDecorate(null, null, _minDistance_decorators, { kind: "field", name: "minDistance", static: false, private: false, access: { has: obj => "minDistance" in obj, get: obj => obj.minDistance, set: (obj, value) => { obj.minDistance = value; } }, metadata: _metadata }, _minDistance_initializers, _minDistance_extraInitializers);
-            __esDecorate(null, null, ___appliedMinDistance_decorators, { kind: "field", name: "__appliedMinDistance", static: false, private: false, access: { has: obj => "__appliedMinDistance" in obj, get: obj => obj.__appliedMinDistance, set: (obj, value) => { obj.__appliedMinDistance = value; } }, metadata: _metadata }, ___appliedMinDistance_initializers, ___appliedMinDistance_extraInitializers);
             __esDecorate(null, null, _maxDistance_decorators, { kind: "field", name: "maxDistance", static: false, private: false, access: { has: obj => "maxDistance" in obj, get: obj => obj.maxDistance, set: (obj, value) => { obj.maxDistance = value; } }, metadata: _metadata }, _maxDistance_initializers, _maxDistance_extraInitializers);
-            __esDecorate(null, null, ___appliedMaxDistance_decorators, { kind: "field", name: "__appliedMaxDistance", static: false, private: false, access: { has: obj => "__appliedMaxDistance" in obj, get: obj => obj.__appliedMaxDistance, set: (obj, value) => { obj.__appliedMaxDistance = value; } }, metadata: _metadata }, ___appliedMaxDistance_initializers, ___appliedMaxDistance_extraInitializers);
             __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _active_extraInitializers);
             __esDecorate(null, null, _dollySpeed_decorators, { kind: "field", name: "dollySpeed", static: false, private: false, access: { has: obj => "dollySpeed" in obj, get: obj => obj.dollySpeed, set: (obj, value) => { obj.dollySpeed = value; } }, metadata: _metadata }, _dollySpeed_initializers, _dollySpeed_extraInitializers);
             __esDecorate(null, null, _interactive_decorators, { kind: "field", name: "interactive", static: false, private: false, access: { has: obj => "interactive" in obj, get: obj => obj.interactive, set: (obj, value) => { obj.interactive = value; } }, metadata: _metadata }, _interactive_initializers, _interactive_extraInitializers);
@@ -419,7 +438,7 @@ let CameraRig = (() => {
          * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
          */
         distance = (__runInitializers(this, _maxHorizontalAngle_extraInitializers), __runInitializers(this, _distance_initializers, -1));
-        __appliedDistance = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, ___appliedDistance_initializers, defaultScenePerspective
+        #appliedDistance_accessor_storage = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, _private_appliedDistance_initializers, defaultScenePerspective
         /**
          * @deprecated initialDistance has been renamed to distance.
          * @property {number} initialDistance
@@ -427,6 +446,8 @@ let CameraRig = (() => {
          * *deprecated*: initialDistance has been renamed to distance.
          */
         ));
+        get #appliedDistance() { return _private_appliedDistance_descriptor.get.call(this); }
+        set #appliedDistance(value) { return _private_appliedDistance_descriptor.set.call(this, value); }
         /**
          * @deprecated initialDistance has been renamed to distance.
          * @property {number} initialDistance
@@ -452,8 +473,8 @@ let CameraRig = (() => {
          * A value of `-1` means the value will automatically be half of whatever
          * the [`.distance`](#distance) value is.
          */
-        minDistance = (__runInitializers(this, ___appliedDistance_extraInitializers), __runInitializers(this, _minDistance_initializers, -1));
-        __appliedMinDistance = (__runInitializers(this, _minDistance_extraInitializers), __runInitializers(this, ___appliedMinDistance_initializers, 200
+        minDistance = (__runInitializers(this, _private_appliedDistance_extraInitializers), __runInitializers(this, _minDistance_initializers, -1));
+        #appliedMinDistance_accessor_storage = (__runInitializers(this, _minDistance_extraInitializers), __runInitializers(this, _private_appliedMinDistance_initializers, 200
         /**
          * @property {number} maxDistance
          *
@@ -468,6 +489,8 @@ let CameraRig = (() => {
          * the [`.distance`](#distance) value is.
          */
         ));
+        get #appliedMinDistance() { return _private_appliedMinDistance_descriptor.get.call(this); }
+        set #appliedMinDistance(value) { return _private_appliedMinDistance_descriptor.set.call(this, value); }
         /**
          * @property {number} maxDistance
          *
@@ -481,8 +504,8 @@ let CameraRig = (() => {
          * A value of `-1` means the value will automatically be double of whatever
          * the [`.distance`](#distance) value is.
          */
-        maxDistance = (__runInitializers(this, ___appliedMinDistance_extraInitializers), __runInitializers(this, _maxDistance_initializers, -1));
-        __appliedMaxDistance = (__runInitializers(this, _maxDistance_extraInitializers), __runInitializers(this, ___appliedMaxDistance_initializers, 800
+        maxDistance = (__runInitializers(this, _private_appliedMinDistance_extraInitializers), __runInitializers(this, _maxDistance_initializers, -1));
+        #appliedMaxDistance_accessor_storage = (__runInitializers(this, _maxDistance_extraInitializers), __runInitializers(this, _private_appliedMaxDistance_initializers, 800
         /**
          * @property {boolean} active
          *
@@ -493,6 +516,8 @@ let CameraRig = (() => {
          * When `true`, the underlying camera is set to [`active`](./PerspectiveCamera#active).
          */
         ));
+        get #appliedMaxDistance() { return _private_appliedMaxDistance_descriptor.get.call(this); }
+        set #appliedMaxDistance(value) { return _private_appliedMaxDistance_descriptor.set.call(this, value); }
         /**
          * @property {boolean} active
          *
@@ -502,7 +527,7 @@ let CameraRig = (() => {
          *
          * When `true`, the underlying camera is set to [`active`](./PerspectiveCamera#active).
          */
-        active = (__runInitializers(this, ___appliedMaxDistance_extraInitializers), __runInitializers(this, _active_initializers, true
+        active = (__runInitializers(this, _private_appliedMaxDistance_extraInitializers), __runInitializers(this, _active_initializers, true
         /**
          * @property {number} dollySpeed
          *
@@ -736,7 +761,10 @@ let CameraRig = (() => {
          * rotation after dragging to rotate the camera, i.e. how much to lerp
          * towards zero motion. Between 0 and 1.
          */
-        rotationSlowdown = (__runInitializers(this, _rotationEpsilon_extraInitializers), __runInitializers(this, _rotationSlowdown_initializers, 0.05));
+        rotationSlowdown = (__runInitializers(this, _rotationEpsilon_extraInitializers), __runInitializers(this, _rotationSlowdown_initializers, 0.05
+        // TODO really bad name, its not the underlying three camera, but the lume camera.
+        ));
+        // TODO really bad name, its not the underlying three camera, but the lume camera.
         threeCamera = (__runInitializers(this, _rotationSlowdown_extraInitializers), __runInitializers(this, _threeCamera_initializers, void 0));
         /** @deprecated Use `.threeCamera` instead. */
         get cam() {
@@ -759,16 +787,16 @@ let CameraRig = (() => {
                     return;
                 // TODO replace with @memo once that's out in classy-solid
                 this.createEffect(() => {
-                    this.__appliedDistance = this.#derivedInputDistance;
-                    this.__appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2;
-                    this.__appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2;
+                    this.#appliedDistance = this.#derivedInputDistance;
+                    this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2;
+                    this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2;
                 });
                 // We set position here instead of in the template, otherwise
                 // pre-upgrade values from the template running before element
                 // upgrade (due to how Solid templates using cloneNode making them
                 // non-upgraded until connected) will override the initial
-                // __appliedDistance value.
-                this.createEffect(() => (this.threeCamera.position.z = this.__appliedDistance));
+                // appliedDistance value.
+                this.createEffect(() => (this.threeCamera.position.z = this.#appliedDistance));
                 const { scrollFling, pinchFling, flingRotation } = this;
                 flingRotation.interactionInitiator = this.scene;
                 flingRotation.interactionContainer = this.scene;
@@ -776,8 +804,8 @@ let CameraRig = (() => {
                 flingRotation.rotationXTarget = this.rotationXTarget;
                 scrollFling.target = this.scene;
                 pinchFling.target = this.scene;
-                // Sync __appliedDistance to scrollFling.y and vice versa
-                syncSignals(() => this.__appliedDistance, (d) => (this.__appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
+                // Sync appliedDistance to scrollFling.y and vice versa
+                syncSignals(() => this.#appliedDistance, (d) => (this.#appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
                 // Sync scrollFling.y to pinchFling.x and vice versa
                 syncSignals(() => this.scrollFling.y, (y) => (this.scrollFling.y = y), () => this.pinchFling.x, (x) => (this.pinchFling.x = x));
                 this.createEffect(() => {
@@ -788,8 +816,8 @@ let CameraRig = (() => {
                     flingRotation.factor = this.rotationSpeed;
                     flingRotation.epsilon = this.rotationEpsilon;
                     flingRotation.slowdownAmount = this.rotationSlowdown;
-                    scrollFling.minY = pinchFling.minX = this.__appliedMinDistance;
-                    scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance;
+                    scrollFling.minY = pinchFling.minX = this.#appliedMinDistance;
+                    scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance;
                     scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed;
                     scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon;
                     scrollFling.lerpAmount = this.dollyScrollLerp;
@@ -873,7 +901,7 @@ let CameraRig = (() => {
 						id="camera-rig-perspective-camera"
 						active=${() => this.active}
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
-						xposition=${() => [0, 0, this.__appliedDistance]}
+						xposition=${() => [0, 0, this.#appliedDistance]}
 						align-point="0.5 0.5 0.5"
 						far="100000"
 					>

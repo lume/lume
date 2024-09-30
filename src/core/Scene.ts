@@ -182,12 +182,10 @@ class Scene extends Super {
 	 *
 	 * *attribute*
 	 */
-	@attribute
-	@noSignal
-	get shadowmapType() {
+	@attribute @noSignal get shadowmapType() {
 		return this.shadowMode
 	}
-	set shadowmapType(v) {
+	@attribute set shadowmapType(v) {
 		this.shadowMode = v
 	}
 
@@ -509,7 +507,7 @@ class Scene extends Super {
 	@numberAttribute perspective = defaultScenePerspective
 
 	// Holds the default internal camera when a Camera elements is not in use.
-	@signal __defaultThreeCamera: ThreeCamera | null = null
+	@signal accessor #defaultThreeCamera: ThreeCamera | null = null
 
 	/**
 	 * @property {THREE.Camera} threeCamera -
@@ -536,7 +534,7 @@ class Scene extends Super {
 	 * Applies with both CSS and WebGL rendering.
 	 */
 	get threeCamera(): ThreeCamera {
-		return this.__threeCamera
+		return this.#threeCamera
 	}
 
 	// This holds the active camera. There can be many
@@ -545,7 +543,7 @@ class Scene extends Super {
 	// If there are no cameras in the tree, a virtual default camera is
 	// referenced here, who's perspective is that of the scene's
 	// perspective attribute.
-	__threeCamera!: ThreeCamera
+	#threeCamera!: ThreeCamera
 
 	/**
 	 * @property {Camera} camera
@@ -567,7 +565,7 @@ class Scene extends Super {
 	 * positioned starting at the top/left.
 	 */
 	get camera() {
-		return this.__camera
+		return this.#camera
 	}
 
 	#glRenderer: WebglRendererThree | null = null
@@ -601,10 +599,10 @@ class Scene extends Super {
 		return this.#cssRenderer?.sceneStates.get(this)?.renderer
 	}
 
-	@signal __camera: Camera | null = null
+	@signal accessor #camera: Camera | null = null
 
-	// This is toggled by ClipPlanesBehavior, not intended for direct use.
-	@signal __localClipping = false
+	/** Enables clipping. This is toggled by ClipPlanesBehavior, for example. */
+	@signal localClipping = false
 
 	override get scene() {
 		return this
@@ -722,7 +720,7 @@ class Scene extends Super {
 		})
 
 		createEffect(() => {
-			this.#glRenderer!.localClippingEnabled = this.__localClipping
+			this.#glRenderer!.localClippingEnabled = this.localClipping
 			this.needsUpdate()
 		})
 
@@ -845,10 +843,10 @@ class Scene extends Super {
 	cameraNearFarEffect = () => {
 		const {cameraNear, cameraFar} = this
 
-		if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera)) return
+		if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera)) return
 
-		this.__defaultThreeCamera.near = cameraNear
-		this.__defaultThreeCamera.far = cameraFar
+		this.#defaultThreeCamera.near = cameraNear
+		this.#defaultThreeCamera.far = cameraFar
 		this.needsUpdate()
 	}
 
@@ -991,14 +989,14 @@ class Scene extends Super {
 			// TODO CAMERA-DEFAULTS, get defaults from somewhere common.
 			// TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
 			// TODO update with calculatedSize in autorun
-			this.__defaultThreeCamera = this.__threeCamera = new ThreePerspectiveCamera(
-				this.__perspectiveFov,
+			this.#defaultThreeCamera = this.#threeCamera = new ThreePerspectiveCamera(
+				this.#perspectiveFov,
 				size.x / size.y || 1,
 				0.1,
 				10000,
 			)
-			this.__threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${
-				this.__threeCamera.type
+			this.#threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${
+				this.#threeCamera.type
 			})`
 			this.perspective = this.perspective
 		})
@@ -1009,56 +1007,56 @@ class Scene extends Super {
 	// positioned at the world origin 0,0,0, as described in the
 	// `perspective` property's description.
 	// For more details: https://discourse.threejs.org/t/269/28
-	get __perspectiveFov() {
+	get #perspectiveFov() {
 		return (180 * (2 * Math.atan(this.calculatedSize.y / 2 / this.perspective))) / Math.PI
 	}
 
 	_updateCameraPerspective() {
 		const perspective = this.perspective
 
-		if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera)) return
+		if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera)) return
 
-		this.__defaultThreeCamera.fov = this.__perspectiveFov
-		this.__defaultThreeCamera.position.z = perspective
+		this.#defaultThreeCamera.fov = this.#perspectiveFov
+		this.#defaultThreeCamera.position.z = perspective
 	}
 
 	_updateCameraAspect() {
-		if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera)) return
+		if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera)) return
 
-		this.__defaultThreeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
+		this.#defaultThreeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1
 	}
 
 	_updateCameraProjection() {
-		if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera)) return
+		if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera)) return
 
-		this.__defaultThreeCamera.updateProjectionMatrix()
+		this.#defaultThreeCamera.updateProjectionMatrix()
 	}
 
 	// holds active cameras found in the DOM tree (if this is empty, it
 	// means no camera elements are in the DOM, but this.#threeCamera
 	// will still have a reference to the default camera that scenes
 	// are rendered with when no camera elements exist).
-	__activeCameras?: Set<Camera>
+	#activeCameras?: Set<Camera>
 
 	_addCamera(camera: Camera) {
-		if (!this.__activeCameras) this.__activeCameras = new Set()
+		if (!this.#activeCameras) this.#activeCameras = new Set()
 
-		this.__activeCameras.add(camera)
-		this.__setCamera(camera)
+		this.#activeCameras.add(camera)
+		this.#setCamera(camera)
 	}
 
 	_removeCamera(camera: Camera) {
-		if (!this.__activeCameras) return
+		if (!this.#activeCameras) return
 
-		this.__activeCameras.delete(camera)
+		this.#activeCameras.delete(camera)
 
-		if (this.__activeCameras.size) {
+		if (this.#activeCameras.size) {
 			// get the last camera in the Set
-			this.__activeCameras.forEach(c => (camera = c))
-			this.__setCamera(camera)
+			this.#activeCameras.forEach(c => (camera = c))
+			this.#setCamera(camera)
 		} else {
-			this.__activeCameras = undefined
-			this.__setCamera()
+			this.#activeCameras = undefined
+			this.#setCamera()
 		}
 	}
 
@@ -1073,20 +1071,17 @@ class Scene extends Super {
 	 * elements don't have the concept of Z size and are always flat.
 	 */
 	override get parentSize(): XYZValuesObject<number> {
-		return this.composedLumeParent?.calculatedSize ?? this.__elementParentSize
+		return this.composedLumeParent?.calculatedSize ?? this.#elementParentSize
 	}
 
-	__setCamera(camera?: Camera) {
+	#setCamera(camera?: Camera) {
 		if (!camera) {
 			this._createDefaultCamera()
-			this.__camera = null
+			this.#camera = null
 		} else {
-			// TODO?: implement an changecamera event/method and emit/call
-			// that here, then move this logic to the renderer
-			// handler/method?
-			this.__defaultThreeCamera = null
-			this.__threeCamera = camera.three
-			this.__camera = camera
+			this.#defaultThreeCamera = null
+			this.#threeCamera = camera.three
+			this.#camera = camera
 			this._updateCameraAspect()
 			this._updateCameraProjection()
 			this.needsUpdate()
@@ -1096,7 +1091,7 @@ class Scene extends Super {
 	// TODO move the following parent size change stuff to a separate re-usable class.
 
 	// size of the element where the Scene is mounted
-	@signal __elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+	@signal accessor #elementParentSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	#resizeObserver: ResizeObserver | null = null
 
@@ -1166,14 +1161,14 @@ class Scene extends Super {
 	// NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
 	// we haven't taken that into consideration here.
 	#checkElementParentSize(x: number, y: number) {
-		const parentSize = this.__elementParentSize
+		const parentSize = this.#elementParentSize
 
 		// if we have a size change
 		if (parentSize.x != x || parentSize.y != y) {
 			parentSize.x = x
 			parentSize.y = y
 
-			this.__elementParentSize = parentSize
+			this.#elementParentSize = parentSize
 		}
 	}
 

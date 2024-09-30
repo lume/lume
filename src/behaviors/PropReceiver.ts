@@ -41,11 +41,6 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 		// (https://github.com/microsoft/TypeScript/issues/35822)
 		static [isPropReceiverClass as any] = true
 
-		constructor(...args: any[]) {
-			super(...args)
-			this._propChangedCallback = this._propChangedCallback.bind(this)
-		}
-
 		override connectedCallback() {
 			super.connectedCallback?.()
 			this.receiveProps()
@@ -68,7 +63,7 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 			throw new TypeError(`implement 'observedObject' in subclass`)
 		}
 
-		_propChangedCallback(propName: PropKey, value: any) {
+		#propChangedCallback = (propName: PropKey, value: any) => {
 			;(this as any)[propName] = value
 		}
 
@@ -78,13 +73,13 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 
 			this.receiveInitialValues()
 
-			observe(this.observedObject, this.#getReceivedProps() as never[], this._propChangedCallback, {
+			observe(this.observedObject, this.#getReceivedProps() as never[], this.#propChangedCallback, {
 				// inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
 			})
 		}
 
 		unreceiveProps() {
-			unobserve(this.observedObject, this.#getReceivedProps() as never[], this._propChangedCallback)
+			unobserve(this.observedObject, this.#getReceivedProps() as never[], this.#propChangedCallback)
 		}
 
 		/**
@@ -110,7 +105,7 @@ export function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base:
 				if (prop in observed) {
 					const value = (observed as any)[prop]
 					// @ts-expect-error indexed access of this
-					this._propChangedCallback(prop, value !== undefined ? value : this[prop])
+					this.#propChangedCallback(prop, value !== undefined ? value : this[prop])
 				}
 			}
 		}

@@ -174,7 +174,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 */
 	@numberAttribute @receiver materialOpacity = 1
 
-	__color: string | number = 'white'
+	#color: string | number = 'white'
 
 	/**
 	 * @property {string | number | Color} color -
@@ -192,18 +192,16 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color)
 	 * object.
 	 */
-	@stringAttribute
-	@receiver
-	get color(): string | number {
-		return this.__color
+	@stringAttribute @receiver get color(): string | number {
+		return this.#color
 	}
-	set color(val: string | number | Color) {
-		if (typeof val === 'object') this.__color = val.getStyle()
-		else this.__color = val
+	@stringAttribute set color(val: string | number | Color) {
+		if (typeof val === 'object') this.#color = val.getStyle()
+		else this.#color = val
 	}
 
 	// TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
-	__transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false))
+	#transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false))
 
 	/**
 	 * @property {} transparent -
@@ -215,7 +213,7 @@ class MaterialBehavior extends GeometryOrMaterialBehavior {
 	 * [`materialOpacity`](#materialOpacity) are less than 1.
 	 */
 	get transparent(): boolean {
-		return this.__transparent()
+		return this.#transparent()
 	}
 
 	override connectedCallback() {

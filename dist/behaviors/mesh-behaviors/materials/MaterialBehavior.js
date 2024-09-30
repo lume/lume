@@ -87,6 +87,7 @@ let MaterialBehavior = (() => {
     let _materialOpacity_initializers = [];
     let _materialOpacity_extraInitializers = [];
     let _get_color_decorators;
+    let _set_color_decorators;
     var MaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -101,7 +102,9 @@ let MaterialBehavior = (() => {
             _sidedness_decorators = [stringAttribute, receiver];
             _materialOpacity_decorators = [numberAttribute, receiver];
             _get_color_decorators = [stringAttribute, receiver];
+            _set_color_decorators = [stringAttribute];
             __esDecorate(this, null, _get_color_decorators, { kind: "getter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_color_decorators, { kind: "setter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _alphaTest_decorators, { kind: "field", name: "alphaTest", static: false, private: false, access: { has: obj => "alphaTest" in obj, get: obj => obj.alphaTest, set: (obj, value) => { obj.alphaTest = value; } }, metadata: _metadata }, _alphaTest_initializers, _alphaTest_extraInitializers);
             __esDecorate(null, null, _colorWrite_decorators, { kind: "field", name: "colorWrite", static: false, private: false, access: { has: obj => "colorWrite" in obj, get: obj => obj.colorWrite, set: (obj, value) => { obj.colorWrite = value; } }, metadata: _metadata }, _colorWrite_initializers, _colorWrite_extraInitializers);
             __esDecorate(null, null, _depthTest_decorators, { kind: "field", name: "depthTest", static: false, private: false, access: { has: obj => "depthTest" in obj, get: obj => obj.depthTest, set: (obj, value) => { obj.depthTest = value; } }, metadata: _metadata }, _depthTest_initializers, _depthTest_extraInitializers);
@@ -352,7 +355,7 @@ let MaterialBehavior = (() => {
          * the element's children.
          */
         materialOpacity = (__runInitializers(this, _sidedness_extraInitializers), __runInitializers(this, _materialOpacity_initializers, 1));
-        __color = (__runInitializers(this, _materialOpacity_extraInitializers), 'white');
+        #color = (__runInitializers(this, _materialOpacity_extraInitializers), 'white');
         /**
          * @property {string | number | Color} color -
          *
@@ -370,16 +373,16 @@ let MaterialBehavior = (() => {
          * object.
          */
         get color() {
-            return this.__color;
+            return this.#color;
         }
         set color(val) {
             if (typeof val === 'object')
-                this.__color = val.getStyle();
+                this.#color = val.getStyle();
             else
-                this.__color = val;
+                this.#color = val;
         }
         // TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
-        __transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false));
+        #transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false));
         /**
          * @property {} transparent -
          *
@@ -390,7 +393,7 @@ let MaterialBehavior = (() => {
          * [`materialOpacity`](#materialOpacity) are less than 1.
          */
         get transparent() {
-            return this.__transparent();
+            return this.#transparent();
         }
         connectedCallback() {
             super.connectedCallback();

@@ -85,6 +85,7 @@ let PointLight = (() => {
     let _decay_initializers = [];
     let _decay_extraInitializers = [];
     let _get_power_decorators;
+    let _set_power_decorators;
     var PointLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -94,7 +95,9 @@ let PointLight = (() => {
             _distance_decorators = [numberAttribute];
             _decay_decorators = [numberAttribute];
             _get_power_decorators = [numberAttribute];
+            _set_power_decorators = [numberAttribute];
             __esDecorate(this, null, _get_power_decorators, { kind: "getter", name: "power", static: false, private: false, access: { has: obj => "power" in obj, get: obj => obj.power }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_power_decorators, { kind: "setter", name: "power", static: false, private: false, access: { has: obj => "power" in obj, set: (obj, value) => { obj.power = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
             __esDecorate(null, null, _shadowCameraFov_decorators, { kind: "field", name: "shadowCameraFov", static: false, private: false, access: { has: obj => "shadowCameraFov" in obj, get: obj => obj.shadowCameraFov, set: (obj, value) => { obj.shadowCameraFov = value; } }, metadata: _metadata }, _shadowCameraFov_initializers, _shadowCameraFov_extraInitializers);
             __esDecorate(null, null, _distance_decorators, { kind: "field", name: "distance", static: false, private: false, access: { has: obj => "distance" in obj, get: obj => obj.distance, set: (obj, value) => { obj.distance = value; } }, metadata: _metadata }, _distance_initializers, _distance_extraInitializers);

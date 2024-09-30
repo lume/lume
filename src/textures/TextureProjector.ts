@@ -93,42 +93,42 @@ class TextureProjector extends Element3D {
 	// textureOffset?: Vector2
 
 	// TODO support also perspective projection
-	@signal _camera: PerspectiveCamera | OrthographicCamera | null = null
+	@signal threeCamera: PerspectiveCamera | OrthographicCamera | null = null
 
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this._camera = new OrthographicCamera()
-		this.three.add(this._camera)
+		this.threeCamera = new OrthographicCamera()
+		this.three.add(this.threeCamera)
 
 		// setTimeout(() => {
 		// 	setInterval(() => {
-		// 		this.three.remove(this._camera!)
-		// 		this._camera =
-		// 			this._camera instanceof OrthographicCamera ? new PerspectiveCamera() : new OrthographicCamera()
-		// 		this.three.add(this._camera)
+		// 		this.three.remove(this.threeCamera!)
+		// 		this.threeCamera =
+		// 			this.threeCamera instanceof OrthographicCamera ? new PerspectiveCamera() : new OrthographicCamera()
+		// 		this.three.add(this.threeCamera)
 		// 	}, 500)
 		// }, 3000)
 
 		// Motor.addRenderTask(() => {
-		// 	this._camera!.rotation.y += 0.005
+		// 	this.threeCamera!.rotation.y += 0.005
 		// })
 
 		this.createEffect(() => {
 			// CAM HELPER
 			// const sphere = new Mesh(new SphereGeometry(10), new MeshPhongMaterial({color: 'white'}))
-			// this._camera!.add(sphere)
-			// const helper = new CameraHelper(this._camera!)
+			// this.threeCamera!.add(sphere)
+			// const helper = new CameraHelper(this.threeCamera!)
 			// this.scene?.three.add(helper)
 			// createEffect(() => {
 			// 	this.version
-			// 	this._camera?.updateProjectionMatrix()
+			// 	this.threeCamera?.updateProjectionMatrix()
 			// 	helper.update()
 			// })
 
 			createEffect(() => {
 				const size = this.calculatedSize
-				const cam = this._camera!
+				const cam = this.threeCamera!
 
 				if (cam instanceof OrthographicCamera) {
 					cam.left = -size.x / 2
@@ -158,8 +158,8 @@ class TextureProjector extends Element3D {
 	override disconnectedCallback() {
 		super.disconnectedCallback()
 
-		this.three.remove(this._camera!)
-		this._camera = null
+		this.three.remove(this.threeCamera!)
+		this.threeCamera = null
 	}
 }
 

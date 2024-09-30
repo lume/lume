@@ -1,4 +1,6 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
+export declare const triggerChildComposedCallback: unique symbol;
+export declare const triggerChildUncomposedCallback: unique symbol;
 export declare function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T): {
     new (...a: any[]): {
         isScene: boolean;
@@ -18,27 +20,59 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         readonly isComposed: Element | null;
         __getComposedParent(): HTMLElement | null;
         readonly _composedChildren: any[];
-        __shadowRoot?: ShadowRoot;
-        __isPossiblyDistributedToShadowRoot: boolean;
-        __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
+        /** This element's ShadowRoot, if any (even if it is a closed shadow root, unlike the `shadowRoot` property) */
+        exposedShadowRoot?: ShadowRoot;
+        /**
+         * When true, it means this element's parent has a ShadowRoot, which
+         * means this element is possibly slotted into that parent's ShadowRoot.
+         * This doesn't mean that this element is slotted, it may not be slotted
+         * if there's no matching `<slot>` element to be slotted to.
+         *
+         * This is similar to `Boolean(this.parentElement.shadowRoot)`, except
+         * isPossiblySlotted is accurate even if the ShadowRoot mode is closed.
+         */
+        isPossiblySlotted: boolean;
+        "__#12@#prevAssignedNodes"?: WeakMap<HTMLSlotElement, Element[]>;
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
-        __distributedParent: any | null;
-        __shadowRootParent: any | null;
-        __distributedChildren?: Set<any>;
-        __shadowRootChildAdded(child: Element): void;
-        __shadowRootChildRemoved(child: Element): void;
+        /**
+         * If this element is slotted into a shadow tree, this will reference
+         * the parent element of the <slot> element where this element is
+         * slotted to. This element will render as a child of that parent
+         * element in the flat tree (composed tree).
+         *
+         * This is similar to `this.assignedSlot.parentElement`, except
+         * `slottedParent` returns a result even if the ShadowRoot mode is
+         * closed.
+         */
+        slottedParent: any | null;
+        /**
+         * If this element is a top-level child of a ShadowRoot, then this points
+         * to the ShadowRoot host. The ShadowRoot host is the prent element that
+         * this element renders relative to in the composed tree.
+         *
+         * This is similar to `this.parentNode.host ?? null`.
+         */
+        shadowParent: any | null;
+        /**
+         * If this element has a child `<slot>` element while in a ShadowRoot,
+         * then this will be a Set of the nodes slotted into the `<slot>`, and
+         * those nodes render relative to this element in the composed tree.
+         * This is `null` if there are no slotted children.
+         */
+        slottedChildren: Set<any> | null;
+        "__#12@#this": any;
+        "__#12@#shadowRootChildAdded"(child: Element): void;
+        "__#12@#shadowRootChildRemoved"(child: Element): void;
         readonly __onChildSlotChange: (event: Event) => void;
         __onChildSlotChange__?: (event: Event) => void;
         childComposedCallback?(composedChild: Element, compositionType: CompositionType): void;
         childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void;
-        "__#11@#discrepancy": boolean;
-        __triggerChildComposedCallback(child: any, compositionType: CompositionType): void;
-        __triggerChildUncomposedCallback(child: any, compositionType: CompositionType): void;
+        "__#12@#discrepancy": boolean;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): SlotDiff;
-        "__#11@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        "__#12@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;

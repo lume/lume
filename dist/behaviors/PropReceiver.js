@@ -36,10 +36,6 @@ export function PropReceiver(Base = Object) {
         // @ts-ignore Make this unknown to the type system, otherwise we get "has or is using private name" errors due to declaration emit. :(
         // (https://github.com/microsoft/TypeScript/issues/35822)
         static [isPropReceiverClass] = true;
-        constructor(...args) {
-            super(...args);
-            this._propChangedCallback = this._propChangedCallback.bind(this);
-        }
         connectedCallback() {
             super.connectedCallback?.();
             this.receiveProps();
@@ -59,21 +55,21 @@ export function PropReceiver(Base = Object) {
         get observedObject() {
             throw new TypeError(`implement 'observedObject' in subclass`);
         }
-        _propChangedCallback(propName, value) {
+        #propChangedCallback = (propName, value) => {
             ;
             this[propName] = value;
-        }
+        };
         receiveProps() {
             // Make it unique, before we pass it to observe(), just in case.
             if (this.receivedProperties)
                 this.receivedProperties = Array.from(new Set(this.receivedProperties));
             this.receiveInitialValues();
-            observe(this.observedObject, this.#getReceivedProps(), this._propChangedCallback, {
+            observe(this.observedObject, this.#getReceivedProps(), this.#propChangedCallback, {
             // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             });
         }
         unreceiveProps() {
-            unobserve(this.observedObject, this.#getReceivedProps(), this._propChangedCallback);
+            unobserve(this.observedObject, this.#getReceivedProps(), this.#propChangedCallback);
         }
         /**
          * @property {string[]} receivedProperties
@@ -96,7 +92,7 @@ export function PropReceiver(Base = Object) {
                 if (prop in observed) {
                     const value = observed[prop];
                     // @ts-expect-error indexed access of this
-                    this._propChangedCallback(prop, value !== undefined ? value : this[prop]);
+                    this.#propChangedCallback(prop, value !== undefined ? value : this[prop]);
                 }
             }
         }

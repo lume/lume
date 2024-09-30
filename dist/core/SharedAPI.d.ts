@@ -3,14 +3,14 @@ import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import type { Element3D } from './Element3D.js';
 import type { Scene } from './Scene.js';
-import type { CompositionType } from './CompositionTracker';
+import { type CompositionType } from './CompositionTracker.js';
 import type { TransformableAttributes } from './Transformable.js';
 import type { SinglePropertyFunction } from './PropertyAnimator.js';
 export type BaseAttributes = TransformableAttributes | 'opacity';
 declare const SharedAPI_base: {
     new (...args: any[]): {
         initialBehaviors?: Record<string, string>;
-        "__#17@#setBehaviors"(): void;
+        "__#19@#setBehaviors"(): void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
@@ -357,14 +357,14 @@ declare const SharedAPI_base: {
         disconnectedCallback(): void;
         childConnectedCallback?(_child: Element): void;
         childDisconnectedCallback?(_child: Element): void;
-        "__#16@#awaitedChildren": Set<Element>;
-        "__#16@#runChildConnectedCallbacks"(): void;
-        "__#16@#runChildConnect"(child: Element): void;
-        "__#16@#runChildDisconnectedCallbacks"(): void;
-        "__#16@#runChildDisconnect"(child: Element): void;
-        "__#16@#unobserveChildren": (() => void) | null;
-        "__#16@#createObserver"(): void;
-        "__#16@#destroyObserver"(): void;
+        "__#18@#awaitedChildren": Set<Element>;
+        "__#18@#runChildConnectedCallbacks"(): void;
+        "__#18@#runChildConnect"(child: Element): void;
+        "__#18@#runChildDisconnectedCallbacks"(): void;
+        "__#18@#runChildDisconnect"(child: Element): void;
+        "__#18@#unobserveChildren": (() => void) | null;
+        "__#18@#createObserver"(): void;
+        "__#18@#destroyObserver"(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
         accessKey: string;
@@ -774,7 +774,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * *readonly*
      */
     get cssLoaded(): boolean;
-    _scene: Scene | null;
     /**
      * @property {THREE.Scene} scene -
      *
@@ -788,7 +787,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * to a `<slot>` element of a ShadowRoot of the element's parent).
      */
     get scene(): Scene | null;
-    __three?: ReturnType<this['makeThreeObject3d']>;
     /**
      * @property {Object3D} three -
      *
@@ -799,8 +797,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
      */
     get three(): ReturnType<this['makeThreeObject3d']>;
-    __makeThreeObject3d(): ReturnType<this['makeThreeObject3d']>;
-    __disposeThree(): void;
     /**
      * @method recreateThree - Replaces the current three object with a new
      * one, reconnecting it to the same parent and children. This can be useful
@@ -808,7 +804,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * can only be updated via the constructor, requiring us to make a new object.
      */
     recreateThree(): void;
-    __threeCSS?: ReturnType<this['makeThreeCSSObject']>;
     /**
      * @property {Object3D} threeCSS -
      *
@@ -819,8 +814,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * [`THREE.Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
      */
     get threeCSS(): ReturnType<this['makeThreeCSSObject']>;
-    __makeThreeCSSObject(): ReturnType<this["makeThreeCSSObject"]>;
-    __disposeThreeCSS(): void;
     /**
      * @method recreateThreeCSS - Replaces the current threeCSS object with a new
      * one, reconnecting it to the same parent and children. This can be useful
@@ -904,8 +897,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * [THREE.CSS3DObject](https://github.com/mrdoob/three.js/blob/b13eccc8bf1b6aeecf6e5652ba18d2425f6ec22f/examples/js/renderers/CSS3DRenderer.js#L7).
      */
     makeThreeCSSObject(): Object3D;
-    __reconnectThree(): void;
-    __reconnectThreeCSS(): void;
     get composedLumeParent(): SharedAPI | null;
     get composedSceneGraphParent(): SharedAPI | null;
     /**

@@ -96,12 +96,10 @@ class ShapeGeometryBehavior extends GeometryBehavior {
 	 * A value of `null` (or when the attribute is removed) causes the
 	 * default shape to be rendered.
 	 */
-	@attribute
-	@receiver
-	get shape(): Shape {
+	@attribute @receiver get shape(): Shape {
 		return this.#shape
 	}
-	set shape(shape: string | number[] | Shape | null) {
+	@attribute set shape(shape: string | number[] | Shape | null) {
 		if (!shape) {
 			this.#shape.copy(defaultShape)
 		} else if (

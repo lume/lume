@@ -18,13 +18,13 @@ import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
 
 export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales' | 'colors'
 
-const _quat = new Quaternion()
-const _pos = new Vector3()
-const _scale = new Vector3()
-const _pivot = new Vector3()
-const _mat = new Matrix4()
-const _rot = new Euler()
-const _color = new Color()
+const quat = new Quaternion()
+const pos = new Vector3()
+const scale = new Vector3()
+const pivot = new Vector3()
+const mat = new Matrix4()
+const rot = new Euler()
+const color = new Color()
 
 // const threeJsPostAdjustment = [0, 0, 0]
 // const alignAdjustment = [0, 0, 0]
@@ -73,11 +73,10 @@ class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` rotations, those
 	 * rotations are ignored.
 	 */
-	@stringAttribute
-	get rotations(): number[] {
+	@stringAttribute get rotations(): number[] {
 		return this.#rotations
 	}
-	set rotations(v: number[] | string) {
+	@stringAttribute set rotations(v: number[] | string) {
 		this.#rotations = stringToNumberArray(v, 'rotations')
 	}
 
@@ -92,11 +91,10 @@ class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` positions, those
 	 * positions are ignored.
 	 */
-	@stringAttribute
-	get positions() {
+	@stringAttribute get positions() {
 		return this.#positions
 	}
-	set positions(v: number[]) {
+	@stringAttribute set positions(v: number[]) {
 		this.#positions = stringToNumberArray(v, 'positions')
 	}
 
@@ -111,11 +109,10 @@ class InstancedMesh extends Mesh {
 	 * values of zero. If it has more than `this.count` scales, those
 	 * scales are ignored.
 	 */
-	@stringAttribute
-	get scales() {
+	@stringAttribute get scales() {
 		return this.#scales
 	}
-	set scales(v: number[]) {
+	@stringAttribute set scales(v: number[]) {
 		this.#scales = stringToNumberArray(v, 'scales')
 	}
 
@@ -130,11 +127,10 @@ class InstancedMesh extends Mesh {
 	 * values of zero (black). If it has more than `this.count` colors, those
 	 * colors are ignored.
 	 */
-	@stringAttribute
-	get colors() {
+	@stringAttribute get colors() {
 		return this.#colors
 	}
-	set colors(v: number[]) {
+	@stringAttribute set colors(v: number[]) {
 		this.#colors = stringToNumberArray(v, 'colors')
 	}
 
@@ -266,22 +262,22 @@ class InstancedMesh extends Mesh {
 	// without recalculating other components (f.e. if only an instance position
 	// changed but not rotation)
 	#setMatrix(index: number) {
-		_rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0)
-		_quat.setFromEuler(_rot)
-		_pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0)
-		_scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1)
+		rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0)
+		quat.setFromEuler(rot)
+		pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0)
+		scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1)
 
 		// Modifies _mat in place.
-		this._calculateInstanceMatrix(_pos, _quat, _scale, _pivot, _mat)
+		this._calculateInstanceMatrix(pos, quat, scale, pivot, mat)
 
-		this.three.setMatrixAt(index / 3, _mat)
+		this.three.setMatrixAt(index / 3, mat)
 	}
 
 	// TODO a colorMode variable can specify whether colors are RGB triplets, or CSS string/hex values.
 	// TODO Set an update range so that if we're updating only one instance, we're not uploading the whole array each time.
 	#setColor(index: number, r: number, g: number, b: number) {
-		_color.setRGB(r, g, b)
-		this.three.setColorAt(index, _color)
+		color.setRGB(r, g, b)
+		this.three.setColorAt(index, color)
 	}
 
 	updateAllMatrices() {

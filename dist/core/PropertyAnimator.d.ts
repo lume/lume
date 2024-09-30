@@ -30,11 +30,11 @@ export declare function PropertyAnimator<T extends Constructor<PossiblyCustomEle
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: XYZValues, newValue: V): void;
         _setPropertySingle<K extends keyof any, V>(name: K, setter: (newValue: any[K]) => void, newValue: V): void;
-        "__#14@#propertyFunctions": Map<string, RenderTask> | null;
-        "__#14@#settingValueFromPropFunction": boolean;
-        "__#14@#handleXYZPropertyFunction"(fn: XYZNumberValuesPropertyFunction, name: keyof any, xyz: XYZValues): void;
-        "__#14@#handleSinglePropertyFunction"(fn: SinglePropertyFunction, name: keyof any): void;
-        "__#14@#removePropertyFunction"(name: keyof any): void;
+        "__#16@#propertyFunctions": Map<string, RenderTask> | null;
+        "__#16@#settingValueFromPropFunction": boolean;
+        "__#16@#handleXYZPropertyFunction"(fn: XYZNumberValuesPropertyFunction, name: keyof any, xyz: XYZValues): void;
+        "__#16@#handleSinglePropertyFunction"(fn: SinglePropertyFunction, name: keyof any): void;
+        "__#16@#removePropertyFunction"(name: keyof any): void;
         removeAllPropertyFunctions(): void;
         disconnectedCallback(): void;
         connectedCallback?(): void;

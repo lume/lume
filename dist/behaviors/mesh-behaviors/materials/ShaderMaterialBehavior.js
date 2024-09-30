@@ -51,6 +51,7 @@ let ShaderMaterialBehavior = (() => {
     let _classSuper = MaterialBehavior;
     let _instanceExtraInitializers = [];
     let _get_uniforms_decorators;
+    let _set_uniforms_decorators;
     let _vertexShader_decorators;
     let _vertexShader_initializers = [];
     let _vertexShader_extraInitializers = [];
@@ -62,9 +63,11 @@ let ShaderMaterialBehavior = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _get_uniforms_decorators = [attribute, receiver];
+            _set_uniforms_decorators = [attribute];
             _vertexShader_decorators = [stringAttribute, receiver];
             _fragmentShader_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_uniforms_decorators, { kind: "getter", name: "uniforms", static: false, private: false, access: { has: obj => "uniforms" in obj, get: obj => obj.uniforms }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_uniforms_decorators, { kind: "setter", name: "uniforms", static: false, private: false, access: { has: obj => "uniforms" in obj, set: (obj, value) => { obj.uniforms = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _vertexShader_decorators, { kind: "field", name: "vertexShader", static: false, private: false, access: { has: obj => "vertexShader" in obj, get: obj => obj.vertexShader, set: (obj, value) => { obj.vertexShader = value; } }, metadata: _metadata }, _vertexShader_initializers, _vertexShader_extraInitializers);
             __esDecorate(null, null, _fragmentShader_decorators, { kind: "field", name: "fragmentShader", static: false, private: false, access: { has: obj => "fragmentShader" in obj, get: obj => obj.fragmentShader, set: (obj, value) => { obj.fragmentShader = value; } }, metadata: _metadata }, _fragmentShader_initializers, _fragmentShader_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);

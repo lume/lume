@@ -32,6 +32,10 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 import { untrack } from 'solid-js';
 import { signal } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
@@ -46,6 +50,7 @@ import { toRadians } from './utils/index.js';
 import { ChildTracker } from './ChildTracker.js';
 import { InitialBehaviors } from '../behaviors/InitialBehaviors.js';
 import { isDomEnvironment, isElement3D } from './utils/isThisOrThat.js';
+import { triggerChildComposedCallback, triggerChildUncomposedCallback, } from './CompositionTracker.js';
 const threeJsPostAdjustment = [0, 0, 0];
 const alignAdjustment = [0, 0, 0];
 const mountPointAdjustment = [0, 0, 0];
@@ -79,12 +84,14 @@ let SharedAPI = (() => {
     let _classSuper = InitialBehaviors(ChildTracker(Settable(Transformable)));
     let _instanceExtraInitializers = [];
     let _set_opacity_decorators;
+    let _get_opacity_decorators;
     let _debug_decorators;
     let _debug_initializers = [];
     let _debug_extraInitializers = [];
-    let __scene_decorators;
-    let __scene_initializers = [];
-    let __scene_extraInitializers = [];
+    let _private_scene_decorators;
+    let _private_scene_initializers = [];
+    let _private_scene_extraInitializers = [];
+    let _private_scene_descriptor;
     let _version_decorators;
     let _version_initializers = [];
     let _version_extraInitializers = [];
@@ -93,12 +100,14 @@ let SharedAPI = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _set_opacity_decorators = [numberAttribute];
+            _get_opacity_decorators = [numberAttribute];
             _debug_decorators = [booleanAttribute];
-            __scene_decorators = [signal];
+            _private_scene_decorators = [signal];
             _version_decorators = [signal];
             __esDecorate(this, null, _set_opacity_decorators, { kind: "setter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, set: (obj, value) => { obj.opacity = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_opacity_decorators, { kind: "getter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, get: obj => obj.opacity }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, _private_scene_descriptor = { get: __setFunctionName(function () { return this.#scene_accessor_storage; }, "#scene", "get"), set: __setFunctionName(function (value) { this.#scene_accessor_storage = value; }, "#scene", "set") }, _private_scene_decorators, { kind: "accessor", name: "#scene", static: false, private: true, access: { has: obj => #scene in obj, get: obj => obj.#scene, set: (obj, value) => { obj.#scene = value; } }, metadata: _metadata }, _private_scene_initializers, _private_scene_extraInitializers);
             __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _debug_extraInitializers);
-            __esDecorate(null, null, __scene_decorators, { kind: "field", name: "_scene", static: false, private: false, access: { has: obj => "_scene" in obj, get: obj => obj._scene, set: (obj, value) => { obj._scene = value; } }, metadata: _metadata }, __scene_initializers, __scene_extraInitializers);
             __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _version_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SharedAPI = _classThis = _classDescriptor.value;
@@ -181,9 +190,7 @@ let SharedAPI = (() => {
         get cssLoaded() {
             return true;
         }
-        // stores a ref to this element's root Scene when/if this element is
-        // in a scene.
-        _scene = (__runInitializers(this, _debug_extraInitializers), __runInitializers(this, __scene_initializers, null
+        #scene_accessor_storage = (__runInitializers(this, _debug_extraInitializers), __runInitializers(this, _private_scene_initializers, null
         /**
          * @property {THREE.Scene} scene -
          *
@@ -197,6 +204,10 @@ let SharedAPI = (() => {
          * to a `<slot>` element of a ShadowRoot of the element's parent).
          */
         ));
+        // stores a ref to this element's root Scene when/if this element is
+        // in a scene.
+        get #scene() { return _private_scene_descriptor.get.call(this); }
+        set #scene(value) { return _private_scene_descriptor.set.call(this, value); }
         /**
          * @property {THREE.Scene} scene -
          *
@@ -210,7 +221,7 @@ let SharedAPI = (() => {
          * to a `<slot>` element of a ShadowRoot of the element's parent).
          */
         get scene() {
-            return this._scene;
+            return this.#scene;
         }
         // We use F-Bounded Polymorphism in the following `three` and `threeCSS`
         // properties by referring to `this` in their type definitions to make
@@ -226,11 +237,7 @@ let SharedAPI = (() => {
         // https://www.typescriptlang.org/play?#code/MYGwhgzhAECCB2BLAtmE0DeAoa0BmA9gdALzQCMATAMxYC+WWokMAwmAC7QCmAHh93gATGAhRpMOaACMwAJ1LQOcgK7d6jYAXgQuqANbcxqdGQDKAT2TSCIABQBKTeChwkJgDIEAbtwXYpAAc5RG9ObmgAfUiwdzQAfgAuaAAlbg4VOXgAFQtA7gAeDgALRAgAbQ487gI8aAMjOJAAXQA+RlwAek7oACFICOZXYJ9EIW4YMGhwAC8LaDluMCFtEHmAc3SBOQAaaAgVaSGICf3ighUQIWh4Ai54bm5rjmJFgFpxvEQHpVKIADopN1oNk-tAyuD4AJhE98AQFIJrioTnIYHZ8gRAiAIrc9GB9N91vtDscJnsQIhDNAABLZACyHk6ABEAPJ0+qxRCBS6ceEQByA3CbLickyOZJpDJZXL5Ip-SrVWocwzGNBtSS4XCIOp2ACEJTK-2iorQDl+huNTUUBoqDVVLUc0EgqXSmRy1TlZQVGLqdqabQ6muBTOIEAIyAiwVC4RkA2gx32GTwdQA7ogSuaAZbxCBA7hFlL4JmjTEmlIGECeqCITWoYjYYQFAcji5JioSnzoHY8P9uP9oBisRFPt9CTduCmlNUYEraQzmWyeNiI1D+VJyn6c81xW4cxrNQW3ePJ-by4HdJxEMBlY0c8kqj6b-bFJuTBomK3oOwOF5fAj+IiohNL+fj7sCzYJsAsTQJiHCINoaBrDBf4hOMmZ7C80ArAO8hwcAPIKAa8DrDAaYZiUETfBe8DAH2672iBcj-K+ao7t++75q6WTHl+nBnhWWg6Fw15kA8k7foxmjaLoTqKMA-wmiAQA
         // Original documentation on F-Bounded Polymorphism in TypeScript:
         // https://www.typescriptlang.org/docs/handbook/advanced-types.html#polymorphic-this-types
-        // TODO make this reactive, so that if we replace the three object outside
-        // code will know to clean up anything relying on the old object and adapt
-        // to the new object?
-        // @signal
-        __three = __runInitializers(this, __scene_extraInitializers);
+        #three = __runInitializers(this, _private_scene_extraInitializers);
         /**
          * @property {Object3D} three -
          *
@@ -241,11 +248,11 @@ let SharedAPI = (() => {
          * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
          */
         get three() {
-            if (!this.__three)
-                this.__three = this.__makeThreeObject3d();
-            return this.__three;
+            if (!this.#three)
+                this.#three = this.#makeThreeObject3d();
+            return this.#three;
         }
-        __makeThreeObject3d() {
+        #makeThreeObject3d() {
             const o = this.makeThreeObject3d();
             // Helpful for debugging when looking in devtools.
             // @prod-prune
@@ -256,12 +263,12 @@ let SharedAPI = (() => {
             o.matrixAutoUpdate = false;
             return o;
         }
-        __disposeThree() {
-            if (!this.__three)
+        #disposeThree() {
+            if (!this.#three)
                 return;
-            disposeObject(this.__three);
-            ourThreeObjects.delete(this.__three);
-            this.__three = undefined;
+            disposeObject(this.#three);
+            ourThreeObjects.delete(this.#three);
+            this.#three = undefined;
         }
         /**
          * @method recreateThree - Replaces the current three object with a new
@@ -270,15 +277,15 @@ let SharedAPI = (() => {
          * can only be updated via the constructor, requiring us to make a new object.
          */
         recreateThree() {
-            const children = this.__three?.children;
-            this.__disposeThree();
+            const children = this.#three?.children;
+            this.#disposeThree();
             // The three getter is used here, which makes a new instance
-            this.__reconnectThree();
+            this.#reconnectThree();
             // Three.js crashes on arrays of length 0.
             if (children && children.length)
                 this.three.add(...children);
         }
-        __threeCSS;
+        #threeCSS;
         /**
          * @property {Object3D} threeCSS -
          *
@@ -289,11 +296,11 @@ let SharedAPI = (() => {
          * [`THREE.Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
          */
         get threeCSS() {
-            if (!this.__threeCSS)
-                this.__threeCSS = this.__makeThreeCSSObject();
-            return this.__threeCSS;
+            if (!this.#threeCSS)
+                this.#threeCSS = this.#makeThreeCSSObject();
+            return this.#threeCSS;
         }
-        __makeThreeCSSObject() {
+        #makeThreeCSSObject() {
             const o = this.makeThreeCSSObject();
             // @prod-prune
             o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`;
@@ -303,12 +310,12 @@ let SharedAPI = (() => {
             o.matrixAutoUpdate = false;
             return o;
         }
-        __disposeThreeCSS() {
-            if (!this.__threeCSS)
+        #disposeThreeCSS() {
+            if (!this.#threeCSS)
                 return;
-            disposeObject(this.__threeCSS);
-            ourThreeObjects.delete(this.__threeCSS);
-            this.__threeCSS = undefined;
+            disposeObject(this.#threeCSS);
+            ourThreeObjects.delete(this.#threeCSS);
+            this.#threeCSS = undefined;
         }
         /**
          * @method recreateThreeCSS - Replaces the current threeCSS object with a new
@@ -317,10 +324,10 @@ let SharedAPI = (() => {
          * can only be updated via the constructor, requiring us to make a new object.
          */
         recreateThreeCSS() {
-            const children = this.__threeCSS?.children;
-            this.__disposeThreeCSS();
+            const children = this.#threeCSS?.children;
+            this.#disposeThreeCSS();
             // The threeCSS getter is used here, which makes a new instance
-            this.__reconnectThreeCSS();
+            this.#reconnectThreeCSS();
             // Three.js crashes on arrays of length 0.
             if (children && children.length)
                 this.threeCSS.add(...children);
@@ -383,9 +390,9 @@ let SharedAPI = (() => {
             // TODO Keep the .three object around (dispose it, but no need to delete
             // it and recreate it, it will be GC'd with the element if the element
             // is unref'd)
-            this.__disposeThree();
-            this.__disposeThreeCSS();
-            this._scene = null;
+            this.#disposeThree();
+            this.#disposeThreeCSS();
+            this.#scene = null;
         }
         composedCallback(composedParent, compositionType) {
             super.composedCallback?.(composedParent, compositionType);
@@ -394,24 +401,24 @@ let SharedAPI = (() => {
             }
             this.composedSceneGraphParent.three.add(this.three);
             this.composedSceneGraphParent.threeCSS.add(this.threeCSS);
-            this._scene = this.composedSceneGraphParent.scene;
-            if (this._scene)
+            this.#scene = this.composedSceneGraphParent.scene;
+            if (this.#scene)
                 this.#giveSceneToChildren();
         }
         uncomposedCallback(uncomposedParent, compositionType) {
             super.uncomposedCallback?.(uncomposedParent, compositionType);
             this.three.parent?.remove(this.three);
             this.threeCSS.parent?.remove(this.threeCSS);
-            this._scene = null;
+            this.#scene = null;
             this.#giveSceneToChildren(); // remove from children
         }
         #giveSceneToChildren() {
             this.traverseSceneGraph(el => {
                 if (el === this)
                     return;
-                if (el._scene === this._scene)
+                if (el.#scene === this.#scene)
                     return;
-                el._scene = this._scene;
+                el.#scene = this.#scene;
             });
         }
         /**
@@ -533,14 +540,14 @@ let SharedAPI = (() => {
                 throw 'API available only in DOM environment.';
             return new CSS3DObjectNested(this);
         }
-        __reconnectThree() {
+        #reconnectThree() {
             this.composedSceneGraphParent?.three.add(this.three);
             for (const child of this.composedLumeChildren) {
                 this.three.add(child.three);
             }
             this.needsUpdate();
         }
-        __reconnectThreeCSS() {
+        #reconnectThreeCSS() {
             this.composedSceneGraphParent?.threeCSS.add(this.threeCSS);
             for (const child of this.composedLumeChildren) {
                 this.threeCSS.add(child.threeCSS);
@@ -730,6 +737,7 @@ let SharedAPI = (() => {
         emit(eventName, data) {
             super.emit(eventName, data);
         }
+        #this = (__runInitializers(this, _version_extraInitializers), this);
         // TODO this needs to be moved into CompositionTracker so that triggering
         // childComposedCallback is generic, and filtering of element types needs
         // to be done by subclasses.
@@ -743,8 +751,8 @@ let SharedAPI = (() => {
                 // ShadowRoot that serves a different purpose than for Element3Ds. A
                 // Scene child's three objects will always be connected to the
                 // scene's three object regardless of its ShadowRoot.
-                if (!this.isScene && this.__shadowRoot) {
-                    child.__isPossiblyDistributedToShadowRoot = true;
+                if (!this.isScene && this.exposedShadowRoot) {
+                    child.isPossiblySlotted = true;
                     // We don't call childComposedCallback here because that
                     // will be called indirectly due to a slotchange event on a
                     // <slot> element if the added child will be distributed to
@@ -755,7 +763,7 @@ let SharedAPI = (() => {
                     // with connection type "actual". This is effectively a
                     // regular parent-child composition (no distribution, no
                     // children of a ShadowRoot).
-                    this.__triggerChildComposedCallback(child, 'actual');
+                    this.#this[triggerChildComposedCallback](child, 'actual');
                 }
             }
             else if (child instanceof HTMLSlotElement) {
@@ -795,14 +803,14 @@ let SharedAPI = (() => {
         }
         childDisconnectedCallback(child) {
             if (isElement3D(child)) {
-                if (!this.isScene && this.__shadowRoot) {
-                    child.__isPossiblyDistributedToShadowRoot = false;
+                if (!this.isScene && this.exposedShadowRoot) {
+                    child.isPossiblySlotted = false;
                 }
                 else {
                     // If there's no shadow root, call the
                     // childUncomposedCallback with connection type "actual".
                     // This is effectively similar to childDisconnectedCallback.
-                    this.__triggerChildUncomposedCallback(child, 'actual');
+                    this.#this[triggerChildUncomposedCallback](child, 'actual');
                 }
             }
             else if (child instanceof HTMLSlotElement) {
@@ -819,7 +827,7 @@ let SharedAPI = (() => {
         // FIXME This object/array spreading and cloning is sloooooooow, and becomes
         // apparent the more ShadowRoots a tree has.
         get _composedChildren() {
-            if (!this.isScene && this.__shadowRoot) {
+            if (!this.isScene && this.exposedShadowRoot) {
                 // FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
                 return [
                     ...this._distributedShadowRootChildren.filter(n => n instanceof SharedAPI),
@@ -830,7 +838,7 @@ let SharedAPI = (() => {
                 // FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
                 return [
                     // TODO perhaps use slot.assignedElements instead?
-                    ...[...(this.__distributedChildren || [])].filter(n => n instanceof SharedAPI),
+                    ...[...(this.slottedChildren || [])].filter(n => n instanceof SharedAPI),
                     // We only care about other elements of the same type.
                     ...Array.from(this.children).filter((n) => n instanceof SharedAPI),
                 ];
@@ -876,10 +884,6 @@ let SharedAPI = (() => {
 			/*box-shadow: 0 0 1px rgba(255, 255, 255, 0); currently is very very slow, https://crbug.com/1405629*/
 		}
 	`;
-        constructor() {
-            super(...arguments);
-            __runInitializers(this, _version_extraInitializers);
-        }
         static {
             __runInitializers(_classThis, _classExtraInitializers);
         }

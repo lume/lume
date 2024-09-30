@@ -125,7 +125,7 @@ let FbxModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
-            // In the following loader.load() callbacks, if __version doesn't
+            // In the following loader.load() callbacks, if #version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.

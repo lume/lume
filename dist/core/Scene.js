@@ -35,6 +35,10 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
 import { signal } from 'classy-solid';
@@ -103,6 +107,7 @@ let Scene = (() => {
     let _shadowMode_initializers = [];
     let _shadowMode_extraInitializers = [];
     let _get_shadowmapType_decorators;
+    let _set_shadowmapType_decorators;
     let _vr_decorators;
     let _vr_initializers = [];
     let _vr_extraInitializers = [];
@@ -154,18 +159,21 @@ let Scene = (() => {
     let _perspective_decorators;
     let _perspective_initializers = [];
     let _perspective_extraInitializers = [];
-    let ___defaultThreeCamera_decorators;
-    let ___defaultThreeCamera_initializers = [];
-    let ___defaultThreeCamera_extraInitializers = [];
-    let ___camera_decorators;
-    let ___camera_initializers = [];
-    let ___camera_extraInitializers = [];
-    let ___localClipping_decorators;
-    let ___localClipping_initializers = [];
-    let ___localClipping_extraInitializers = [];
-    let ___elementParentSize_decorators;
-    let ___elementParentSize_initializers = [];
-    let ___elementParentSize_extraInitializers = [];
+    let _private_defaultThreeCamera_decorators;
+    let _private_defaultThreeCamera_initializers = [];
+    let _private_defaultThreeCamera_extraInitializers = [];
+    let _private_defaultThreeCamera_descriptor;
+    let _private_camera_decorators;
+    let _private_camera_initializers = [];
+    let _private_camera_extraInitializers = [];
+    let _private_camera_descriptor;
+    let _localClipping_decorators;
+    let _localClipping_initializers = [];
+    let _localClipping_extraInitializers = [];
+    let _private_elementParentSize_decorators;
+    let _private_elementParentSize_initializers = [];
+    let _private_elementParentSize_extraInitializers = [];
+    let _private_elementParentSize_descriptor;
     var Scene = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -175,6 +183,7 @@ let Scene = (() => {
             _swapLayers_decorators = [booleanAttribute];
             _shadowMode_decorators = [attribute];
             _get_shadowmapType_decorators = [attribute, noSignal];
+            _set_shadowmapType_decorators = [attribute];
             _vr_decorators = [booleanAttribute];
             _backgroundColor_decorators = [attribute];
             _backgroundOpacity_decorators = [numberAttribute];
@@ -192,11 +201,15 @@ let Scene = (() => {
             _cameraNear_decorators = [numberAttribute];
             _cameraFar_decorators = [numberAttribute];
             _perspective_decorators = [numberAttribute];
-            ___defaultThreeCamera_decorators = [signal];
-            ___camera_decorators = [signal];
-            ___localClipping_decorators = [signal];
-            ___elementParentSize_decorators = [signal];
+            _private_defaultThreeCamera_decorators = [signal];
+            _private_camera_decorators = [signal];
+            _localClipping_decorators = [signal];
+            _private_elementParentSize_decorators = [signal];
             __esDecorate(this, null, _get_shadowmapType_decorators, { kind: "getter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, get: obj => obj.shadowmapType }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_shadowmapType_decorators, { kind: "setter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, set: (obj, value) => { obj.shadowmapType = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, _private_defaultThreeCamera_descriptor = { get: __setFunctionName(function () { return this.#defaultThreeCamera_accessor_storage; }, "#defaultThreeCamera", "get"), set: __setFunctionName(function (value) { this.#defaultThreeCamera_accessor_storage = value; }, "#defaultThreeCamera", "set") }, _private_defaultThreeCamera_decorators, { kind: "accessor", name: "#defaultThreeCamera", static: false, private: true, access: { has: obj => #defaultThreeCamera in obj, get: obj => obj.#defaultThreeCamera, set: (obj, value) => { obj.#defaultThreeCamera = value; } }, metadata: _metadata }, _private_defaultThreeCamera_initializers, _private_defaultThreeCamera_extraInitializers);
+            __esDecorate(this, _private_camera_descriptor = { get: __setFunctionName(function () { return this.#camera_accessor_storage; }, "#camera", "get"), set: __setFunctionName(function (value) { this.#camera_accessor_storage = value; }, "#camera", "set") }, _private_camera_decorators, { kind: "accessor", name: "#camera", static: false, private: true, access: { has: obj => #camera in obj, get: obj => obj.#camera, set: (obj, value) => { obj.#camera = value; } }, metadata: _metadata }, _private_camera_initializers, _private_camera_extraInitializers);
+            __esDecorate(this, _private_elementParentSize_descriptor = { get: __setFunctionName(function () { return this.#elementParentSize_accessor_storage; }, "#elementParentSize", "get"), set: __setFunctionName(function (value) { this.#elementParentSize_accessor_storage = value; }, "#elementParentSize", "set") }, _private_elementParentSize_decorators, { kind: "accessor", name: "#elementParentSize", static: false, private: true, access: { has: obj => #elementParentSize in obj, get: obj => obj.#elementParentSize, set: (obj, value) => { obj.#elementParentSize = value; } }, metadata: _metadata }, _private_elementParentSize_initializers, _private_elementParentSize_extraInitializers);
             __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _enableCss_extraInitializers);
             __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _webgl_extraInitializers);
             __esDecorate(null, null, _swapLayers_decorators, { kind: "field", name: "swapLayers", static: false, private: false, access: { has: obj => "swapLayers" in obj, get: obj => obj.swapLayers, set: (obj, value) => { obj.swapLayers = value; } }, metadata: _metadata }, _swapLayers_initializers, _swapLayers_extraInitializers);
@@ -218,10 +231,7 @@ let Scene = (() => {
             __esDecorate(null, null, _cameraNear_decorators, { kind: "field", name: "cameraNear", static: false, private: false, access: { has: obj => "cameraNear" in obj, get: obj => obj.cameraNear, set: (obj, value) => { obj.cameraNear = value; } }, metadata: _metadata }, _cameraNear_initializers, _cameraNear_extraInitializers);
             __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _cameraFar_extraInitializers);
             __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _perspective_extraInitializers);
-            __esDecorate(null, null, ___defaultThreeCamera_decorators, { kind: "field", name: "__defaultThreeCamera", static: false, private: false, access: { has: obj => "__defaultThreeCamera" in obj, get: obj => obj.__defaultThreeCamera, set: (obj, value) => { obj.__defaultThreeCamera = value; } }, metadata: _metadata }, ___defaultThreeCamera_initializers, ___defaultThreeCamera_extraInitializers);
-            __esDecorate(null, null, ___camera_decorators, { kind: "field", name: "__camera", static: false, private: false, access: { has: obj => "__camera" in obj, get: obj => obj.__camera, set: (obj, value) => { obj.__camera = value; } }, metadata: _metadata }, ___camera_initializers, ___camera_extraInitializers);
-            __esDecorate(null, null, ___localClipping_decorators, { kind: "field", name: "__localClipping", static: false, private: false, access: { has: obj => "__localClipping" in obj, get: obj => obj.__localClipping, set: (obj, value) => { obj.__localClipping = value; } }, metadata: _metadata }, ___localClipping_initializers, ___localClipping_extraInitializers);
-            __esDecorate(null, null, ___elementParentSize_decorators, { kind: "field", name: "__elementParentSize", static: false, private: false, access: { has: obj => "__elementParentSize" in obj, get: obj => obj.__elementParentSize, set: (obj, value) => { obj.__elementParentSize = value; } }, metadata: _metadata }, ___elementParentSize_initializers, ___elementParentSize_extraInitializers);
+            __esDecorate(null, null, _localClipping_decorators, { kind: "field", name: "localClipping", static: false, private: false, access: { has: obj => "localClipping" in obj, get: obj => obj.localClipping, set: (obj, value) => { obj.localClipping = value; } }, metadata: _metadata }, _localClipping_initializers, _localClipping_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Scene = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -942,8 +952,7 @@ let Scene = (() => {
         perspective = (__runInitializers(this, _cameraFar_extraInitializers), __runInitializers(this, _perspective_initializers, defaultScenePerspective
         // Holds the default internal camera when a Camera elements is not in use.
         ));
-        // Holds the default internal camera when a Camera elements is not in use.
-        __defaultThreeCamera = (__runInitializers(this, _perspective_extraInitializers), __runInitializers(this, ___defaultThreeCamera_initializers, null
+        #defaultThreeCamera_accessor_storage = (__runInitializers(this, _perspective_extraInitializers), __runInitializers(this, _private_defaultThreeCamera_initializers, null
         /**
          * @property {THREE.Camera} threeCamera -
          *
@@ -969,6 +978,9 @@ let Scene = (() => {
          * Applies with both CSS and WebGL rendering.
          */
         ));
+        // Holds the default internal camera when a Camera elements is not in use.
+        get #defaultThreeCamera() { return _private_defaultThreeCamera_descriptor.get.call(this); }
+        set #defaultThreeCamera(value) { return _private_defaultThreeCamera_descriptor.set.call(this, value); }
         /**
          * @property {THREE.Camera} threeCamera -
          *
@@ -994,7 +1006,7 @@ let Scene = (() => {
          * Applies with both CSS and WebGL rendering.
          */
         get threeCamera() {
-            return this.__threeCamera;
+            return this.#threeCamera;
         }
         // This holds the active camera. There can be many
         // cameras in the scene tree, but the last one with active="true"
@@ -1002,7 +1014,7 @@ let Scene = (() => {
         // If there are no cameras in the tree, a virtual default camera is
         // referenced here, who's perspective is that of the scene's
         // perspective attribute.
-        __threeCamera = __runInitializers(this, ___defaultThreeCamera_extraInitializers);
+        #threeCamera = __runInitializers(this, _private_defaultThreeCamera_extraInitializers);
         /**
          * @property {Camera} camera
          *
@@ -1023,7 +1035,7 @@ let Scene = (() => {
          * positioned starting at the top/left.
          */
         get camera() {
-            return this.__camera;
+            return this.#camera;
         }
         #glRenderer = null;
         /**
@@ -1052,11 +1064,13 @@ let Scene = (() => {
         get cssRenderer() {
             return this.#cssRenderer?.sceneStates.get(this)?.renderer;
         }
-        __camera = __runInitializers(this, ___camera_initializers, null
-        // This is toggled by ClipPlanesBehavior, not intended for direct use.
+        #camera_accessor_storage = __runInitializers(this, _private_camera_initializers, null
+        /** Enables clipping. This is toggled by ClipPlanesBehavior, for example. */
         );
-        // This is toggled by ClipPlanesBehavior, not intended for direct use.
-        __localClipping = (__runInitializers(this, ___camera_extraInitializers), __runInitializers(this, ___localClipping_initializers, false));
+        get #camera() { return _private_camera_descriptor.get.call(this); }
+        set #camera(value) { return _private_camera_descriptor.set.call(this, value); }
+        /** Enables clipping. This is toggled by ClipPlanesBehavior, for example. */
+        localClipping = (__runInitializers(this, _private_camera_extraInitializers), __runInitializers(this, _localClipping_initializers, false));
         get scene() {
             return this;
         }
@@ -1104,7 +1118,7 @@ let Scene = (() => {
             this.needsUpdate();
         }
         // WebGLRendererThree appends its content into here.
-        _glLayer = (__runInitializers(this, ___localClipping_extraInitializers), null);
+        _glLayer = (__runInitializers(this, _localClipping_extraInitializers), null);
         // CSS3DRendererThree appends its content into here.
         _cssLayer = null;
         // Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
@@ -1148,7 +1162,7 @@ let Scene = (() => {
                 this.#glRenderer = null;
             });
             createEffect(() => {
-                this.#glRenderer.localClippingEnabled = this.__localClipping;
+                this.#glRenderer.localClippingEnabled = this.localClipping;
                 this.needsUpdate();
             });
             createEffect(() => {
@@ -1250,10 +1264,10 @@ let Scene = (() => {
         };
         cameraNearFarEffect = () => {
             const { cameraNear, cameraFar } = this;
-            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__defaultThreeCamera.near = cameraNear;
-            this.__defaultThreeCamera.far = cameraFar;
+            this.#defaultThreeCamera.near = cameraNear;
+            this.#defaultThreeCamera.far = cameraFar;
             this.needsUpdate();
         };
         cameraEffect = () => {
@@ -1375,8 +1389,8 @@ let Scene = (() => {
                 // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
                 // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
                 // TODO update with calculatedSize in autorun
-                this.__defaultThreeCamera = this.__threeCamera = new ThreePerspectiveCamera(this.__perspectiveFov, size.x / size.y || 1, 0.1, 10000);
-                this.__threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${this.__threeCamera.type})`;
+                this.#defaultThreeCamera = this.#threeCamera = new ThreePerspectiveCamera(this.#perspectiveFov, size.x / size.y || 1, 0.1, 10000);
+                this.#threeCamera.name = `${this.tagName}${this.id ? '#' + this.id : ''} DEFAULT CAMERA (webgl, ${this.#threeCamera.type})`;
                 this.perspective = this.perspective;
             });
         }
@@ -1385,49 +1399,49 @@ let Scene = (() => {
         // positioned at the world origin 0,0,0, as described in the
         // `perspective` property's description.
         // For more details: https://discourse.threejs.org/t/269/28
-        get __perspectiveFov() {
+        get #perspectiveFov() {
             return (180 * (2 * Math.atan(this.calculatedSize.y / 2 / this.perspective))) / Math.PI;
         }
         _updateCameraPerspective() {
             const perspective = this.perspective;
-            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__defaultThreeCamera.fov = this.__perspectiveFov;
-            this.__defaultThreeCamera.position.z = perspective;
+            this.#defaultThreeCamera.fov = this.#perspectiveFov;
+            this.#defaultThreeCamera.position.z = perspective;
         }
         _updateCameraAspect() {
-            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__defaultThreeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1;
+            this.#defaultThreeCamera.aspect = this.calculatedSize.x / this.calculatedSize.y || 1;
         }
         _updateCameraProjection() {
-            if (!(this.__defaultThreeCamera instanceof ThreePerspectiveCamera))
+            if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
-            this.__defaultThreeCamera.updateProjectionMatrix();
+            this.#defaultThreeCamera.updateProjectionMatrix();
         }
         // holds active cameras found in the DOM tree (if this is empty, it
         // means no camera elements are in the DOM, but this.#threeCamera
         // will still have a reference to the default camera that scenes
         // are rendered with when no camera elements exist).
-        __activeCameras;
+        #activeCameras;
         _addCamera(camera) {
-            if (!this.__activeCameras)
-                this.__activeCameras = new Set();
-            this.__activeCameras.add(camera);
-            this.__setCamera(camera);
+            if (!this.#activeCameras)
+                this.#activeCameras = new Set();
+            this.#activeCameras.add(camera);
+            this.#setCamera(camera);
         }
         _removeCamera(camera) {
-            if (!this.__activeCameras)
+            if (!this.#activeCameras)
                 return;
-            this.__activeCameras.delete(camera);
-            if (this.__activeCameras.size) {
+            this.#activeCameras.delete(camera);
+            if (this.#activeCameras.size) {
                 // get the last camera in the Set
-                this.__activeCameras.forEach(c => (camera = c));
-                this.__setCamera(camera);
+                this.#activeCameras.forEach(c => (camera = c));
+                this.#setCamera(camera);
             }
             else {
-                this.__activeCameras = undefined;
-                this.__setCamera();
+                this.#activeCameras = undefined;
+                this.#setCamera();
             }
         }
         /**
@@ -1441,29 +1455,28 @@ let Scene = (() => {
          * elements don't have the concept of Z size and are always flat.
          */
         get parentSize() {
-            return this.composedLumeParent?.calculatedSize ?? this.__elementParentSize;
+            return this.composedLumeParent?.calculatedSize ?? this.#elementParentSize;
         }
-        __setCamera(camera) {
+        #setCamera(camera) {
             if (!camera) {
                 this._createDefaultCamera();
-                this.__camera = null;
+                this.#camera = null;
             }
             else {
-                // TODO?: implement an changecamera event/method and emit/call
-                // that here, then move this logic to the renderer
-                // handler/method?
-                this.__defaultThreeCamera = null;
-                this.__threeCamera = camera.three;
-                this.__camera = camera;
+                this.#defaultThreeCamera = null;
+                this.#threeCamera = camera.three;
+                this.#camera = camera;
                 this._updateCameraAspect();
                 this._updateCameraProjection();
                 this.needsUpdate();
             }
         }
+        #elementParentSize_accessor_storage = __runInitializers(this, _private_elementParentSize_initializers, { x: 0, y: 0, z: 0 });
         // TODO move the following parent size change stuff to a separate re-usable class.
         // size of the element where the Scene is mounted
-        __elementParentSize = __runInitializers(this, ___elementParentSize_initializers, { x: 0, y: 0, z: 0 });
-        #resizeObserver = (__runInitializers(this, ___elementParentSize_extraInitializers), null);
+        get #elementParentSize() { return _private_elementParentSize_descriptor.get.call(this); }
+        set #elementParentSize(value) { return _private_elementParentSize_descriptor.set.call(this, value); }
+        #resizeObserver = (__runInitializers(this, _private_elementParentSize_extraInitializers), null);
         // observe size changes on the scene's parent (it may not be a LUME element,
         // so we observe with ResizeObserver).
         #startParentSizeObservation() {
@@ -1524,12 +1537,12 @@ let Scene = (() => {
         // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
         // we haven't taken that into consideration here.
         #checkElementParentSize(x, y) {
-            const parentSize = this.__elementParentSize;
+            const parentSize = this.#elementParentSize;
             // if we have a size change
             if (parentSize.x != x || parentSize.y != y) {
                 parentSize.x = x;
                 parentSize.y = y;
-                this.__elementParentSize = parentSize;
+                this.#elementParentSize = parentSize;
             }
         }
         template = () => html `

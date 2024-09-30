@@ -6,9 +6,9 @@ import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
  * top of each other. Think of it like layers in Adobe Photoshop.
  */
 export class VisualLayers {
-    __layers = [];
-    __renderer;
-    __Scene;
+    #layers = [];
+    #renderer;
+    #Scene;
     /**
      * @param {THREE.Renderer} renderer The `THREE.Renderer` (f.e. `THREE.WebGLRenderer`) that
      * will be used to render the layers.
@@ -17,8 +17,8 @@ export class VisualLayers {
      */
     // IDEA: Optionally accept different Scene types per layer.
     constructor(renderer, Scene = ThreeScene) {
-        this.__renderer = renderer;
-        this.__Scene = Scene;
+        this.#renderer = renderer;
+        this.#Scene = Scene;
     }
     /**
      * Deletes all defined layers -- hence un-references contained objects so
@@ -27,7 +27,7 @@ export class VisualLayers {
      * of layering, or want to define a new set of layers, etc.
      */
     dispose() {
-        this.__layers.length = 0;
+        this.#layers.length = 0;
     }
     /**
      * Defines a new layer.
@@ -38,12 +38,12 @@ export class VisualLayers {
      * @returns {Layer} The created object representing the layer.
      */
     defineLayer(layerName, order = 0) {
-        const layer = this.__getOrMakeLayer(layerName);
+        const layer = this.#getOrMakeLayer(layerName);
         const previousOrder = layer.order;
         layer.order = order;
         // Sort only if order changed.
         if (previousOrder !== layer.order)
-            this.__layers.sort((a, b) => a.order - b.order);
+            this.#layers.sort((a, b) => a.order - b.order);
         return layer;
     }
     /**
@@ -53,25 +53,25 @@ export class VisualLayers {
      */
     setLayerVisible(layerNames, visible) {
         if (typeof layerNames == 'string')
-            return this.__setLayerVisible(layerNames, visible);
+            return this.#setLayerVisible(layerNames, visible);
         for (const name of layerNames)
-            this.__setLayerVisible(name, visible);
+            this.#setLayerVisible(name, visible);
     }
-    __setLayerVisible(layerName, visible) {
-        const layer = this.__layers.find(l => l.name === layerName);
+    #setLayerVisible(layerName, visible) {
+        const layer = this.#layers.find(l => l.name === layerName);
         if (!layer)
             throw new Error('Can not set visibility of layer that does not exist.');
         layer.visible = visible;
     }
     /** Get a layer by name (if it doesn't exist, creates it with default order 0). */
-    __getOrMakeLayer(layerName) {
-        let layer = this.__layers.find(l => l.name === layerName);
+    #getOrMakeLayer(layerName) {
+        let layer = this.#layers.find(l => l.name === layerName);
         if (!layer) {
-            layer = { name: layerName, backingScene: new this.__Scene(), order: 0, visible: true };
+            layer = { name: layerName, backingScene: new this.#Scene(), order: 0, visible: true };
             // @ts-expect-error legacy
             layer.backingScene.autoUpdate = false; // three <0.144
             layer.backingScene.matrixWorldAutoUpdate = false; // three >=0.144
-            this.__layers.push(layer);
+            this.#layers.push(layer);
         }
         return layer;
     }
@@ -80,7 +80,7 @@ export class VisualLayers {
      * @param {LayerName} layerName The name of the layer to remove.
      */
     removeLayer(layerName) {
-        const index = this.__layers.findIndex(l => {
+        const index = this.#layers.findIndex(l => {
             if (l.name === layerName) {
                 l.backingScene.children.length = 0;
                 return true;
@@ -88,7 +88,7 @@ export class VisualLayers {
             return false;
         });
         if (index >= 0)
-            this.__layers.splice(index, 1);
+            this.#layers.splice(index, 1);
     }
     /**
      * Check if a layer exists.
@@ -96,7 +96,7 @@ export class VisualLayers {
      * @returns {boolean} A boolean indicating if the layer exists.
      */
     hasLayer(layerName) {
-        return this.__layers.some(l => l.name === layerName);
+        return this.#layers.some(l => l.name === layerName);
     }
     /**
      * The number of layers.
@@ -104,7 +104,7 @@ export class VisualLayers {
      * @type {number}
      */
     get layerCount() {
-        return this.__layers.length;
+        return this.#layers.length;
     }
     /**
      * Add an object (anything that is or extends from THREE.Object3D) to the named layer (or named layers).
@@ -135,9 +135,9 @@ export class VisualLayers {
      */
     addObjectToLayer(obj, layerNames, withSubtree = false) {
         if (typeof layerNames == 'string')
-            return this.__addObjectToLayer(obj, layerNames, withSubtree);
+            return this.#addObjectToLayer(obj, layerNames, withSubtree);
         for (const name of layerNames)
-            this.__addObjectToLayer(obj, name, withSubtree);
+            this.#addObjectToLayer(obj, name, withSubtree);
     }
     /**
      * Similar to `addObjectToLayer`, but for adding multiple objects at once.
@@ -157,8 +157,8 @@ export class VisualLayers {
      * children. See `withSubtree` of `addObjectToLayer` for more details.
      */
     addObjectToAllLayers(obj, withSubtree = false) {
-        for (const layer of this.__layers)
-            this.__addObjectToLayer(obj, layer.name, withSubtree);
+        for (const layer of this.#layers)
+            this.#addObjectToLayer(obj, layer.name, withSubtree);
     }
     /**
      * Add a set of objects to all currently-defined layers.
@@ -170,11 +170,11 @@ export class VisualLayers {
         for (const obj of objects)
             this.addObjectToAllLayers(obj, withSubtree);
     }
-    __emptyArray = Object.freeze([]);
-    __addObjectToLayer(obj, layerName, withSubtree) {
-        const layer = this.__getOrMakeLayer(layerName);
-        if (!this.__layerHasObject(layer, obj)) {
-            const proxy = Object.create(obj, withSubtree ? {} : { children: { get: () => this.__emptyArray } });
+    #emptyArray = Object.freeze([]);
+    #addObjectToLayer(obj, layerName, withSubtree) {
+        const layer = this.#getOrMakeLayer(layerName);
+        if (!this.#layerHasObject(layer, obj)) {
+            const proxy = Object.create(obj, withSubtree ? {} : { children: { get: () => this.#emptyArray } });
             // We use `children.push()` here instead of `children.add()` so that the
             // added child will not be removed from its parent in its original scene.
             // This allows us to add an object to multiple layers, and to not
@@ -182,7 +182,7 @@ export class VisualLayers {
             layer.backingScene.children.push(proxy);
         }
     }
-    __layerHasObject(layer, obj) {
+    #layerHasObject(layer, obj) {
         return layer.backingScene.children.some(proxy => proxy.__proto__ === obj);
     }
     /**
@@ -192,12 +192,12 @@ export class VisualLayers {
      */
     removeObjectFromLayer(obj, layerNames) {
         if (typeof layerNames == 'string') {
-            const layer = this.__layers.find(l => l.name === layerNames);
-            return this.__removeObjectFromLayer(obj, layer);
+            const layer = this.#layers.find(l => l.name === layerNames);
+            return this.#removeObjectFromLayer(obj, layer);
         }
         for (const name of layerNames) {
-            const layer = this.__layers.find(l => l.name === name);
-            this.__removeObjectFromLayer(obj, layer);
+            const layer = this.#layers.find(l => l.name === name);
+            this.#removeObjectFromLayer(obj, layer);
         }
     }
     /**
@@ -214,8 +214,8 @@ export class VisualLayers {
      * @param {THREE.Object3D} obj The object to remove.
      */
     removeObjectFromAllLayers(obj) {
-        for (const layer of this.__layers)
-            this.__removeObjectFromLayer(obj, layer);
+        for (const layer of this.#layers)
+            this.#removeObjectFromLayer(obj, layer);
     }
     /**
      * Remove the given objects from all layers they may belong to.
@@ -225,7 +225,7 @@ export class VisualLayers {
         for (const obj of objects)
             this.removeObjectFromAllLayers(obj);
     }
-    __removeObjectFromLayer(obj, layer) {
+    #removeObjectFromLayer(obj, layer) {
         if (!layer)
             throw new Error('Can not remove object from layer that does not exist.');
         const children = layer.backingScene.children;
@@ -261,28 +261,28 @@ export class VisualLayers {
      */
     // IDEA: Allow different cameras per layer? It may not be common, but could
     // be useful for, for example, making background effects, etc.
-    render(camera, beforeAll = this.__defaultBeforeAllCallback, beforeEach = this.__defaultBeforeEachCallback, afterEach = this.__defaultAfterEachCallback) {
+    render(camera, beforeAll = this.#defaultBeforeAllCallback, beforeEach = this.#defaultBeforeEachCallback, afterEach = this.#defaultAfterEachCallback) {
         beforeAll();
-        for (const layer of this.__layers) {
+        for (const layer of this.#layers) {
             if (!layer.visible)
                 continue;
             beforeEach(layer.name);
-            this.__renderer.render(layer.backingScene, camera);
+            this.#renderer.render(layer.backingScene, camera);
             afterEach(layer.name);
         }
     }
-    __defaultBeforeAllCallback = () => {
-        if (this.__renderer instanceof WebGLRenderer) {
-            this.__renderer.autoClear = false;
-            this.__renderer.clear();
+    #defaultBeforeAllCallback = () => {
+        if (this.#renderer instanceof WebGLRenderer) {
+            this.#renderer.autoClear = false;
+            this.#renderer.clear();
         }
     };
-    __defaultBeforeEachCallback = () => { };
-    __defaultAfterEachCallback = () => {
+    #defaultBeforeEachCallback = () => { };
+    #defaultAfterEachCallback = () => {
         // By default, the depth of a WebGLRenderer is cleared, so that layers
         // render on top of each other in order from lowest to highest order value.
-        if (this.__renderer instanceof WebGLRenderer)
-            this.__renderer.clearDepth();
+        if (this.#renderer instanceof WebGLRenderer)
+            this.#renderer.clearDepth();
     };
 }
 //# sourceMappingURL=VisualLayers.js.map

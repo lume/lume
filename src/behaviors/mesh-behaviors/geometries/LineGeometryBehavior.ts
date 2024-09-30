@@ -67,12 +67,10 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * A value of `null` (or when the attribute is removed) causes no line to be
 	 * rendered.
 	 */
-	@attribute
-	@receiver
-	get points(): number[] {
+	@attribute @receiver get points(): number[] {
 		return this.#points
 	}
-	set points(points: string | number[] | null) {
+	@attribute set points(points: string | number[] | null) {
 		if (!points) {
 			this.#points.length = 0
 		} else if (typeof points === 'string' || Array.isArray(points)) {

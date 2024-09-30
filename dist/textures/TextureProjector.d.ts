@@ -56,7 +56,7 @@ export declare class TextureProjector extends Element3D {
      */
     fitment: Fitment;
     frontFacesOnly: boolean;
-    _camera: PerspectiveCamera | OrthographicCamera | null;
+    threeCamera: PerspectiveCamera | OrthographicCamera | null;
     connectedCallback(): void;
     disconnectedCallback(): void;
 }

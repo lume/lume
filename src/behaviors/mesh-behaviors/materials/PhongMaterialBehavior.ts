@@ -58,12 +58,10 @@ class PhongMaterialBehavior extends MaterialBehavior {
 	@stringAttribute @receiver emissiveMap = ''
 
 	// TODO this is not DRY, similar to the .color and .specular properties, consolidate.
-	@stringAttribute
-	@receiver
-	get emissive(): string | number {
+	@stringAttribute @receiver get emissive(): string | number {
 		return this.#emissive
 	}
-	set emissive(val: string | number | Color) {
+	@stringAttribute set emissive(val: string | number | Color) {
 		if (typeof val === 'object') this.#emissive = val.getStyle()
 		else this.#emissive = val
 	}
@@ -81,12 +79,10 @@ class PhongMaterialBehavior extends MaterialBehavior {
 	@numberAttribute @receiver reflectivity = 1
 	@stringAttribute @receiver specularMap = ''
 
-	@stringAttribute
-	@receiver
-	get specular(): string | number {
+	@stringAttribute @receiver get specular(): string | number {
 		return this.#specular
 	}
-	set specular(val: string | number | Color) {
+	@stringAttribute set specular(val: string | number | Color) {
 		if (typeof val === 'object') this.#specular = val.getStyle()
 		else this.#specular = val
 	}

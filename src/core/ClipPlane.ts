@@ -2,6 +2,7 @@
 // https://www.columbia.edu/~njn2118/journal/2019/2/18.html
 
 import {element, type ElementAttributes} from '@lume/element'
+import {signal} from 'classy-solid'
 import {Plane} from 'three/src/math/Plane.js'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {Element3D, type Element3DAttributes} from './Element3D.js'
@@ -40,29 +41,29 @@ export type ClipPlaneAttributes = Element3DAttributes
 export
 @element('lume-clip-plane', autoDefineElements)
 class ClipPlane extends Element3D {
-	// The __clip and __inverseClip properties are used by `ClipPlanesBehavior`
-
 	/**
 	 * *reactive* *readonly*
 	 *
 	 * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
 	 * for the scene and the element participates in rendering.
+	 * Used by `ClipPlanesBehavior`
 	 */
-	__clip: Plane = new Plane(new Vector3(...clipNormal))
+	@signal threeClip: Plane = new Plane(new Vector3(...clipNormal))
 
 	/**
 	 * *reactive* *readonly*
 	 *
 	 * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
 	 * for the scene and the element participates in rendering.
+	 * Used by `ClipPlanesBehavior`
 	 */
-	__inverseClip: Plane = new Plane(new Vector3(...clipNormal).negate())
+	@signal threeInverseClip: Plane = new Plane(new Vector3(...clipNormal).negate())
 
 	override updateWorldMatrices() {
 		super.updateWorldMatrices()
 
-		const plane = this.__clip
-		const inverse = this.__inverseClip
+		const plane = this.threeClip
+		const inverse = this.threeInverseClip
 
 		// These only exist if WebGL mode is enabled.
 		if (!plane || !inverse) return

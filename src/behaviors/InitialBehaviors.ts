@@ -18,7 +18,7 @@ export function InitialBehaviors<T extends Constructor<HTMLElement>>(Base: T) {
 	}
 }
 
-function _setBehaviors(el: Element, behaviors: Record<string, string>, replace: boolean) {
+export function setBehaviors(el: Element, behaviors: Record<string, string>, replace = true) {
 	let has = el.getAttribute('has') ?? ''
 	const parts = has.split(' ')
 
@@ -26,8 +26,4 @@ function _setBehaviors(el: Element, behaviors: Record<string, string>, replace: 
 		if (replace) el.setAttribute('has', (has = has.replace(r`/[a-z-]*-${category}/`, '') + ` ${type}-${category}`))
 		else if (!parts.some(b => b.endsWith('-' + category))) el.setAttribute('has', (has = has + ` ${type}-${category}`))
 	}
-}
-
-export function setBehaviors(el: Element, behaviors: Record<string, string>, replace = true) {
-	_setBehaviors(el, behaviors, replace)
 }

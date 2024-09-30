@@ -73,6 +73,7 @@ let SpotLight = (() => {
     let _penumbra_initializers = [];
     let _penumbra_extraInitializers = [];
     let _get_target_decorators;
+    let _set_target_decorators;
     var SpotLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -80,7 +81,9 @@ let SpotLight = (() => {
             _angle_decorators = [numberAttribute];
             _penumbra_decorators = [numberAttribute];
             _get_target_decorators = [stringAttribute];
+            _set_target_decorators = [stringAttribute];
             __esDecorate(this, null, _get_target_decorators, { kind: "getter", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_target_decorators, { kind: "setter", name: "target", static: false, private: false, access: { has: obj => "target" in obj, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _angle_decorators, { kind: "field", name: "angle", static: false, private: false, access: { has: obj => "angle" in obj, get: obj => obj.angle, set: (obj, value) => { obj.angle = value; } }, metadata: _metadata }, _angle_initializers, _angle_extraInitializers);
             __esDecorate(null, null, _penumbra_decorators, { kind: "field", name: "penumbra", static: false, private: false, access: { has: obj => "penumbra" in obj, get: obj => obj.penumbra, set: (obj, value) => { obj.penumbra = value; } }, metadata: _metadata }, _penumbra_initializers, _penumbra_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);

@@ -24,9 +24,9 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
 export
 @reactive
 abstract class XYZValues<T = any> extends Object {
-	#x: T = undefined!
-	#y: T = undefined!
-	#z: T = undefined!
+	@signal accessor #x: T = undefined!
+	@signal accessor #y: T = undefined!
+	@signal accessor #z: T = undefined!
 
 	/**
 	 * @property {any} x -
@@ -37,7 +37,6 @@ abstract class XYZValues<T = any> extends Object {
 	 *
 	 * The X value.
 	 */
-	@signal
 	set x(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('x', value)
 		if (!this.checkValue('x', value)) return
@@ -56,7 +55,6 @@ abstract class XYZValues<T = any> extends Object {
 	 *
 	 * The Y value.
 	 */
-	@signal
 	set y(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('y', value)
 		if (!this.checkValue('y', value)) return
@@ -75,7 +73,6 @@ abstract class XYZValues<T = any> extends Object {
 	 *
 	 * The Z value.
 	 */
-	@signal
 	set z(value: T) {
 		if (typeof value === 'string') value = this.deserializeValue('z', value)
 		if (!this.checkValue('z', value)) return
@@ -382,7 +379,9 @@ abstract class XYZValues<T = any> extends Object {
 
 // TODO make this a decorator
 function enumerable<T extends object>(obj: T, prop: keyof T) {
-	Object.defineProperty(obj, prop, {...getInheritedDescriptor(obj, prop), enumerable: true})
+	const desc = getInheritedDescriptor(obj, prop)
+	if (!desc) return
+	Object.defineProperty(desc.owner, prop, {...desc, enumerable: true})
 }
 
 enumerable(XYZValues.prototype, 'x')

@@ -6,8 +6,6 @@ import type {Element as LumeElement} from '@lume/element'
 import type {ElementWithBehaviors, PossibleBehaviorConstructor, PossibleBehaviorInstance} from 'element-behaviors'
 import type {AnyConstructor} from 'lowclass/dist/Constructor.js'
 
-type PropKey = string | symbol
-
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
  * classes. If a name is passed in, it defines an element behavior instead of a
@@ -133,7 +131,7 @@ export abstract class Behavior extends PropReceiver() {
 				_preUpgradeValues
 				.get(prop)
 
-			if (value !== undefined) this._propChangedCallback(prop as PropKey, value)
+			if (value !== undefined) this[prop as keyof this]
 		}
 	}
 

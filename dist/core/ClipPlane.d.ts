@@ -31,15 +31,17 @@ export declare class ClipPlane extends Element3D {
      *
      * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
      * for the scene and the element participates in rendering.
+     * Used by `ClipPlanesBehavior`
      */
-    __clip: Plane;
+    threeClip: Plane;
     /**
      * *reactive* *readonly*
      *
      * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
      * for the scene and the element participates in rendering.
+     * Used by `ClipPlanesBehavior`
      */
-    __inverseClip: Plane;
+    threeInverseClip: Plane;
     updateWorldMatrices(): void;
 }
 declare module 'solid-js' {

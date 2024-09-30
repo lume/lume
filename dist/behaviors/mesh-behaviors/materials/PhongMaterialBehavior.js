@@ -88,6 +88,7 @@ let PhongMaterialBehavior = (() => {
     let _emissiveMap_initializers = [];
     let _emissiveMap_extraInitializers = [];
     let _get_emissive_decorators;
+    let _set_emissive_decorators;
     let _emissiveIntensity_decorators;
     let _emissiveIntensity_initializers = [];
     let _emissiveIntensity_extraInitializers = [];
@@ -119,6 +120,7 @@ let PhongMaterialBehavior = (() => {
     let _specularMap_initializers = [];
     let _specularMap_extraInitializers = [];
     let _get_specular_decorators;
+    let _set_specular_decorators;
     let _shininess_decorators;
     let _shininess_initializers = [];
     let _shininess_extraInitializers = [];
@@ -136,6 +138,7 @@ let PhongMaterialBehavior = (() => {
             _displacementBias_decorators = [numberAttribute, receiver];
             _emissiveMap_decorators = [stringAttribute, receiver];
             _get_emissive_decorators = [stringAttribute, receiver];
+            _set_emissive_decorators = [stringAttribute];
             _emissiveIntensity_decorators = [numberAttribute, receiver];
             _envMap_decorators = [stringAttribute, receiver];
             _flatShading_decorators = [booleanAttribute, receiver];
@@ -147,9 +150,12 @@ let PhongMaterialBehavior = (() => {
             _reflectivity_decorators = [numberAttribute, receiver];
             _specularMap_decorators = [stringAttribute, receiver];
             _get_specular_decorators = [stringAttribute, receiver];
+            _set_specular_decorators = [stringAttribute];
             _shininess_decorators = [numberAttribute, receiver];
             __esDecorate(this, null, _get_emissive_decorators, { kind: "getter", name: "emissive", static: false, private: false, access: { has: obj => "emissive" in obj, get: obj => obj.emissive }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_emissive_decorators, { kind: "setter", name: "emissive", static: false, private: false, access: { has: obj => "emissive" in obj, set: (obj, value) => { obj.emissive = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_specular_decorators, { kind: "getter", name: "specular", static: false, private: false, access: { has: obj => "specular" in obj, get: obj => obj.specular }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_specular_decorators, { kind: "setter", name: "specular", static: false, private: false, access: { has: obj => "specular" in obj, set: (obj, value) => { obj.specular = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _alphaMap_decorators, { kind: "field", name: "alphaMap", static: false, private: false, access: { has: obj => "alphaMap" in obj, get: obj => obj.alphaMap, set: (obj, value) => { obj.alphaMap = value; } }, metadata: _metadata }, _alphaMap_initializers, _alphaMap_extraInitializers);
             __esDecorate(null, null, _aoMap_decorators, { kind: "field", name: "aoMap", static: false, private: false, access: { has: obj => "aoMap" in obj, get: obj => obj.aoMap, set: (obj, value) => { obj.aoMap = value; } }, metadata: _metadata }, _aoMap_initializers, _aoMap_extraInitializers);
             __esDecorate(null, null, _aoMapIntensity_decorators, { kind: "field", name: "aoMapIntensity", static: false, private: false, access: { has: obj => "aoMapIntensity" in obj, get: obj => obj.aoMapIntensity, set: (obj, value) => { obj.aoMapIntensity = value; } }, metadata: _metadata }, _aoMapIntensity_initializers, _aoMapIntensity_extraInitializers);

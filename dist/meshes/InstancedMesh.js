@@ -47,13 +47,13 @@ import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
 import { stringToNumberArray } from './utils.js';
 import { queueMicrotaskOnceOnly } from '../utils/queueMicrotaskOnceOnly.js';
-const _quat = new Quaternion();
-const _pos = new Vector3();
-const _scale = new Vector3();
-const _pivot = new Vector3();
-const _mat = new Matrix4();
-const _rot = new Euler();
-const _color = new Color();
+const quat = new Quaternion();
+const pos = new Vector3();
+const scale = new Vector3();
+const pivot = new Vector3();
+const mat = new Matrix4();
+const rot = new Euler();
+const color = new Color();
 // const threeJsPostAdjustment = [0, 0, 0]
 // const alignAdjustment = [0, 0, 0]
 // const mountPointAdjustment = [0, 0, 0]
@@ -92,22 +92,34 @@ let InstancedMesh = (() => {
     let _count_initializers = [];
     let _count_extraInitializers = [];
     let _get_rotations_decorators;
+    let _set_rotations_decorators;
     let _get_positions_decorators;
+    let _set_positions_decorators;
     let _get_scales_decorators;
+    let _set_scales_decorators;
     let _get_colors_decorators;
+    let _set_colors_decorators;
     var InstancedMesh = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _count_decorators = [numberAttribute];
             _get_rotations_decorators = [stringAttribute];
+            _set_rotations_decorators = [stringAttribute];
             _get_positions_decorators = [stringAttribute];
+            _set_positions_decorators = [stringAttribute];
             _get_scales_decorators = [stringAttribute];
+            _set_scales_decorators = [stringAttribute];
             _get_colors_decorators = [stringAttribute];
+            _set_colors_decorators = [stringAttribute];
             __esDecorate(this, null, _get_rotations_decorators, { kind: "getter", name: "rotations", static: false, private: false, access: { has: obj => "rotations" in obj, get: obj => obj.rotations }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_rotations_decorators, { kind: "setter", name: "rotations", static: false, private: false, access: { has: obj => "rotations" in obj, set: (obj, value) => { obj.rotations = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_positions_decorators, { kind: "getter", name: "positions", static: false, private: false, access: { has: obj => "positions" in obj, get: obj => obj.positions }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_positions_decorators, { kind: "setter", name: "positions", static: false, private: false, access: { has: obj => "positions" in obj, set: (obj, value) => { obj.positions = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_scales_decorators, { kind: "getter", name: "scales", static: false, private: false, access: { has: obj => "scales" in obj, get: obj => obj.scales }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_scales_decorators, { kind: "setter", name: "scales", static: false, private: false, access: { has: obj => "scales" in obj, set: (obj, value) => { obj.scales = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_colors_decorators, { kind: "getter", name: "colors", static: false, private: false, access: { has: obj => "colors" in obj, get: obj => obj.colors }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_colors_decorators, { kind: "setter", name: "colors", static: false, private: false, access: { has: obj => "colors" in obj, set: (obj, value) => { obj.colors = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _count_decorators, { kind: "field", name: "count", static: false, private: false, access: { has: obj => "count" in obj, get: obj => obj.count, set: (obj, value) => { obj.count = value; } }, metadata: _metadata }, _count_initializers, _count_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             InstancedMesh = _classThis = _classDescriptor.value;
@@ -278,19 +290,19 @@ let InstancedMesh = (() => {
         // without recalculating other components (f.e. if only an instance position
         // changed but not rotation)
         #setMatrix(index) {
-            _rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0);
-            _quat.setFromEuler(_rot);
-            _pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0);
-            _scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1);
+            rot.set(this.rotations[index + 0] ?? 0, this.rotations[index + 1] ?? 0, this.rotations[index + 2] ?? 0);
+            quat.setFromEuler(rot);
+            pos.set(this.positions[index + 0] ?? 0, this.positions[index + 1] ?? 0, this.positions[index + 2] ?? 0);
+            scale.set(this.scales[index + 0] ?? 1, this.scales[index + 1] ?? 1, this.scales[index + 2] ?? 1);
             // Modifies _mat in place.
-            this._calculateInstanceMatrix(_pos, _quat, _scale, _pivot, _mat);
-            this.three.setMatrixAt(index / 3, _mat);
+            this._calculateInstanceMatrix(pos, quat, scale, pivot, mat);
+            this.three.setMatrixAt(index / 3, mat);
         }
         // TODO a colorMode variable can specify whether colors are RGB triplets, or CSS string/hex values.
         // TODO Set an update range so that if we're updating only one instance, we're not uploading the whole array each time.
         #setColor(index, r, g, b) {
-            _color.setRGB(r, g, b);
-            this.three.setColorAt(index, _color);
+            color.setRGB(r, g, b);
+            this.three.setColorAt(index, color);
         }
         updateAllMatrices() {
             for (let i = 0, l = this.count; i < l; i += 1)

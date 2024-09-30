@@ -81,7 +81,7 @@ export class Behavior extends PropReceiver() {
                 _preUpgradeValues
                 .get(prop);
             if (value !== undefined)
-                this._propChangedCallback(prop, value);
+                this[prop];
         }
     }
     // TODO add a test to make sure this check works

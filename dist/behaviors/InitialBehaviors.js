@@ -14,7 +14,7 @@ export function InitialBehaviors(Base) {
         }
     };
 }
-function _setBehaviors(el, behaviors, replace) {
+export function setBehaviors(el, behaviors, replace = true) {
     let has = el.getAttribute('has') ?? '';
     const parts = has.split(' ');
     for (const [category, type] of Object.entries(behaviors)) {
@@ -23,8 +23,5 @@ function _setBehaviors(el, behaviors, replace) {
         else if (!parts.some(b => b.endsWith('-' + category)))
             el.setAttribute('has', (has = has + ` ${type}-${category}`));
     }
-}
-export function setBehaviors(el, behaviors, replace = true) {
-    _setBehaviors(el, behaviors, replace);
 }
 //# sourceMappingURL=InitialBehaviors.js.map

@@ -405,7 +405,6 @@ export declare class Scene extends Super {
      * Applies with both CSS and WebGL rendering.
      */
     perspective: number;
-    __defaultThreeCamera: ThreeCamera | null;
     /**
      * @property {THREE.Camera} threeCamera -
      *
@@ -431,7 +430,6 @@ export declare class Scene extends Super {
      * Applies with both CSS and WebGL rendering.
      */
     get threeCamera(): ThreeCamera;
-    __threeCamera: ThreeCamera;
     /**
      * @property {Camera} camera
      *
@@ -473,8 +471,8 @@ export declare class Scene extends Super {
      * structure) for custom uses, or `null` when CSS rendering is not enabled.
      */
     get cssRenderer(): import("../renderers/CSS3DRendererNested.js").CSS3DRendererNested | undefined;
-    __camera: Camera | null;
-    __localClipping: boolean;
+    /** Enables clipping. This is toggled by ClipPlanesBehavior, for example. */
+    localClipping: boolean;
     get scene(): this;
     constructor();
     _glLayer: HTMLDivElement | null;
@@ -525,11 +523,9 @@ export declare class Scene extends Super {
      */
     traverseSceneGraph(visitor: (el: Element3D) => void, waitForUpgrade?: boolean): Promise<void> | void;
     _createDefaultCamera(): void;
-    get __perspectiveFov(): number;
     _updateCameraPerspective(): void;
     _updateCameraAspect(): void;
     _updateCameraProjection(): void;
-    __activeCameras?: Set<Camera>;
     _addCamera(camera: Camera): void;
     _removeCamera(camera: Camera): void;
     /**
@@ -543,8 +539,6 @@ export declare class Scene extends Super {
      * elements don't have the concept of Z size and are always flat.
      */
     get parentSize(): XYZValuesObject<number>;
-    __setCamera(camera?: Camera): void;
-    __elementParentSize: XYZValuesObject<number>;
     template: () => Node | Node[];
     static css: string;
 }

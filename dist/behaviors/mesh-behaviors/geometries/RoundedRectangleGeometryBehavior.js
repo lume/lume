@@ -54,6 +54,7 @@ let RoundedRectangleGeometryBehavior = (() => {
     let _thickness_initializers = [];
     let _thickness_extraInitializers = [];
     let _get_quadraticCorners_decorators;
+    let _set_quadraticCorners_decorators;
     var RoundedRectangleGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -61,7 +62,9 @@ let RoundedRectangleGeometryBehavior = (() => {
             _cornerRadius_decorators = [attribute({ from: Number }), receiver];
             _thickness_decorators = [attribute({ from: Number }), receiver];
             _get_quadraticCorners_decorators = [attribute, receiver];
+            _set_quadraticCorners_decorators = [attribute];
             __esDecorate(this, null, _get_quadraticCorners_decorators, { kind: "getter", name: "quadraticCorners", static: false, private: false, access: { has: obj => "quadraticCorners" in obj, get: obj => obj.quadraticCorners }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_quadraticCorners_decorators, { kind: "setter", name: "quadraticCorners", static: false, private: false, access: { has: obj => "quadraticCorners" in obj, set: (obj, value) => { obj.quadraticCorners = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _cornerRadius_decorators, { kind: "field", name: "cornerRadius", static: false, private: false, access: { has: obj => "cornerRadius" in obj, get: obj => obj.cornerRadius, set: (obj, value) => { obj.cornerRadius = value; } }, metadata: _metadata }, _cornerRadius_initializers, _cornerRadius_extraInitializers);
             __esDecorate(null, null, _thickness_decorators, { kind: "field", name: "thickness", static: false, private: false, access: { has: obj => "thickness" in obj, get: obj => obj.thickness, set: (obj, value) => { obj.thickness = value; } }, metadata: _metadata }, _thickness_initializers, _thickness_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);

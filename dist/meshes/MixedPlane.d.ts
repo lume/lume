@@ -28,12 +28,6 @@ export declare class MixedPlane extends Mesh {
         geometry: string;
         material: string;
     };
-    /**
-     * @property {true} isMixedPlane - An always-`true` property signaling that
-     * this element is a `MixedPlane`. Useful for duck typing, especially in
-     * plain JavaScript as opposed to TypeScript.
-     */
-    get isMixedPlane(): boolean;
 }
 declare module 'solid-js' {
     namespace JSX {

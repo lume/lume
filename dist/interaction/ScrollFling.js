@@ -32,7 +32,11 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { createSignal, onCleanup, untrack } from 'solid-js';
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
+import { onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
@@ -44,71 +48,83 @@ let ScrollFling = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Effects;
-    let __x_decorators;
-    let __x_initializers = [];
-    let __x_extraInitializers = [];
-    let __y_decorators;
-    let __y_initializers = [];
-    let __y_extraInitializers = [];
+    let _private_x_decorators;
+    let _private_x_initializers = [];
+    let _private_x_extraInitializers = [];
+    let _private_x_descriptor;
+    let _private_y_decorators;
+    let _private_y_initializers = [];
+    let _private_y_extraInitializers = [];
+    let _private_y_descriptor;
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
     let _hasInteracted_extraInitializers = [];
+    let _private_isStarted_decorators;
+    let _private_isStarted_initializers = [];
+    let _private_isStarted_extraInitializers = [];
+    let _private_isStarted_descriptor;
     var ScrollFling = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            __x_decorators = [signal];
-            __y_decorators = [signal];
+            _private_x_decorators = [signal];
+            _private_y_decorators = [signal];
             _hasInteracted_decorators = [signal];
-            __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, __x_extraInitializers);
-            __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, __y_extraInitializers);
+            _private_isStarted_decorators = [signal];
+            __esDecorate(this, _private_x_descriptor = { get: __setFunctionName(function () { return this.#x_accessor_storage; }, "#x", "get"), set: __setFunctionName(function (value) { this.#x_accessor_storage = value; }, "#x", "set") }, _private_x_decorators, { kind: "accessor", name: "#x", static: false, private: true, access: { has: obj => #x in obj, get: obj => obj.#x, set: (obj, value) => { obj.#x = value; } }, metadata: _metadata }, _private_x_initializers, _private_x_extraInitializers);
+            __esDecorate(this, _private_y_descriptor = { get: __setFunctionName(function () { return this.#y_accessor_storage; }, "#y", "get"), set: __setFunctionName(function (value) { this.#y_accessor_storage = value; }, "#y", "set") }, _private_y_decorators, { kind: "accessor", name: "#y", static: false, private: true, access: { has: obj => #y in obj, get: obj => obj.#y, set: (obj, value) => { obj.#y = value; } }, metadata: _metadata }, _private_y_initializers, _private_y_extraInitializers);
+            __esDecorate(this, _private_isStarted_descriptor = { get: __setFunctionName(function () { return this.#isStarted_accessor_storage; }, "#isStarted", "get"), set: __setFunctionName(function (value) { this.#isStarted_accessor_storage = value; }, "#isStarted", "set") }, _private_isStarted_decorators, { kind: "accessor", name: "#isStarted", static: false, private: true, access: { has: obj => #isStarted in obj, get: obj => obj.#isStarted, set: (obj, value) => { obj.#isStarted = value; } }, metadata: _metadata }, _private_isStarted_initializers, _private_isStarted_extraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        _x = __runInitializers(this, __x_initializers, 0
+        #x_accessor_storage = __runInitializers(this, _private_x_initializers, 0
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
         );
+        get #x() { return _private_x_descriptor.get.call(this); }
+        set #x(value) { return _private_x_descriptor.set.call(this, value); }
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
         get x() {
-            return this._x;
+            return this.#x;
         }
         set x(val) {
             this.#stopAnimation();
-            this._x = val;
             this.#targetX = val;
+            this.#x = val;
         }
-        _y = (__runInitializers(this, __x_extraInitializers), __runInitializers(this, __y_initializers, 0
+        #y_accessor_storage = (__runInitializers(this, _private_x_extraInitializers), __runInitializers(this, _private_y_initializers, 0
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
         ));
+        get #y() { return _private_y_descriptor.get.call(this); }
+        set #y(value) { return _private_y_descriptor.set.call(this, value); }
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
         get y() {
-            return this._y;
+            return this.#y;
         }
         set y(val) {
             this.#stopAnimation();
-            this._y = val;
+            this.#y = val;
             this.#targetY = val;
         }
-        minX = (__runInitializers(this, __y_extraInitializers), -Infinity);
+        minX = (__runInitializers(this, _private_y_extraInitializers), -Infinity);
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
@@ -123,19 +139,18 @@ let ScrollFling = (() => {
         #targetX = 0;
         #targetY = 0;
         #task;
-        #isStarted = (() => {
-            const { 0: get, 1: set } = createSignal(false);
-            return { get, set };
-        })();
+        #isStarted_accessor_storage = __runInitializers(this, _private_isStarted_initializers, false);
+        get #isStarted() { return _private_isStarted_descriptor.get.call(this); }
+        set #isStarted(value) { return _private_isStarted_descriptor.set.call(this, value); }
         get isStarted() {
-            return this.#isStarted.get();
+            return this.#isStarted;
         }
-        #aborter = new AbortController();
+        #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
         constructor(options = {}) {
             super();
             Object.assign(this, options);
-            this.#targetX = this._x;
-            this.#targetY = this._y;
+            this.#targetX = this.#x;
+            this.#targetY = this.#y;
         }
         #onWheel = (event) => {
             this.hasInteracted = true;
@@ -147,12 +162,12 @@ let ScrollFling = (() => {
             this.#stopAnimation();
             // lerp towards the target values
             this.#task = Motor.addRenderTask((_t, dt) => {
-                const dx = this.#targetX - this._x;
-                const dy = this.#targetY - this._y;
+                const dx = this.#targetX - this.#x;
+                const dy = this.#targetY - this.#y;
                 const fpsRatio = dt / 16.6666;
                 // Multiply by fpsRatio so that the lerpAmount is consistent over time no matter the fps.
-                this._x += dx * fpsRatio * this.lerpAmount;
-                this._y += dy * fpsRatio * this.lerpAmount;
+                this.#x += dx * fpsRatio * this.lerpAmount;
+                this.#y += dy * fpsRatio * this.lerpAmount;
                 // Stop the fling update loop once the deltas are small enough
                 // that we no longer notice a change.
                 if (Math.abs(dx) < this.epsilon && Math.abs(dy) < this.epsilon)
@@ -160,9 +175,9 @@ let ScrollFling = (() => {
             });
         };
         start() {
-            if (untrack(this.#isStarted.get))
+            if (untrack(() => this.#isStarted))
                 return this;
-            this.#isStarted.set(true);
+            this.#isStarted = true;
             this.createEffect(() => {
                 this.target; // any time the target changes make new events on that target
                 this.#aborter = new AbortController();
@@ -176,9 +191,9 @@ let ScrollFling = (() => {
             return this;
         }
         stop() {
-            if (!untrack(this.#isStarted.get))
+            if (!untrack(() => this.#isStarted))
                 return this;
-            this.#isStarted.set(false);
+            this.#isStarted = false;
             this.stopEffects();
             return this;
         }

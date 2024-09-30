@@ -70,6 +70,7 @@ let ClipPlanesBehavior = (() => {
     let _clipShadows_initializers = [];
     let _clipShadows_extraInitializers = [];
     let _get_clipPlanes_decorators;
+    let _set_clipPlanes_decorators;
     let _flipClip_decorators;
     let _flipClip_initializers = [];
     let _flipClip_extraInitializers = [];
@@ -83,9 +84,11 @@ let ClipPlanesBehavior = (() => {
             _clipIntersection_decorators = [booleanAttribute, receiver];
             _clipShadows_decorators = [booleanAttribute, receiver];
             _get_clipPlanes_decorators = [stringAttribute, receiver];
+            _set_clipPlanes_decorators = [stringAttribute];
             _flipClip_decorators = [booleanAttribute, receiver];
             _clipDisabled_decorators = [booleanAttribute, receiver];
             __esDecorate(this, null, _get_clipPlanes_decorators, { kind: "getter", name: "clipPlanes", static: false, private: false, access: { has: obj => "clipPlanes" in obj, get: obj => obj.clipPlanes }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_clipPlanes_decorators, { kind: "setter", name: "clipPlanes", static: false, private: false, access: { has: obj => "clipPlanes" in obj, set: (obj, value) => { obj.clipPlanes = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _clipIntersection_decorators, { kind: "field", name: "clipIntersection", static: false, private: false, access: { has: obj => "clipIntersection" in obj, get: obj => obj.clipIntersection, set: (obj, value) => { obj.clipIntersection = value; } }, metadata: _metadata }, _clipIntersection_initializers, _clipIntersection_extraInitializers);
             __esDecorate(null, null, _clipShadows_decorators, { kind: "field", name: "clipShadows", static: false, private: false, access: { has: obj => "clipShadows" in obj, get: obj => obj.clipShadows, set: (obj, value) => { obj.clipShadows = value; } }, metadata: _metadata }, _clipShadows_initializers, _clipShadows_extraInitializers);
             __esDecorate(null, null, _flipClip_decorators, { kind: "field", name: "flipClip", static: false, private: false, access: { has: obj => "flipClip" in obj, get: obj => obj.flipClip, set: (obj, value) => { obj.flipClip = value; } }, metadata: _metadata }, _flipClip_initializers, _flipClip_extraInitializers);
@@ -286,7 +289,7 @@ let ClipPlanesBehavior = (() => {
                 // worrying about code execution order. https://github.com/lume/lume/issues/279
                 this.clipPlanes = this.#rawClipPlanes;
                 if (!refCount)
-                    this.element.scene.__localClipping = true;
+                    this.element.scene.localClipping = true;
                 refCount++;
                 // TODO we need to observe all the way up the composed tree, or we
                 // should make the querying scoped only to the nearest root, for
@@ -317,7 +320,7 @@ let ClipPlanesBehavior = (() => {
                     mat.clipIntersection = clipIntersection;
                     mat.clipShadows = clipShadows;
                     for (const plane of clipPlanes) {
-                        mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip);
+                        mat.clippingPlanes.push(flipClip ? plane.threeInverseClip : plane.threeClip);
                     }
                 });
                 onCleanup(() => {
@@ -325,7 +328,7 @@ let ClipPlanesBehavior = (() => {
                     this.#observer = null;
                     refCount--;
                     if (!refCount)
-                        lastScene.__localClipping = false;
+                        lastScene.localClipping = false;
                     lastScene = null;
                 });
             });

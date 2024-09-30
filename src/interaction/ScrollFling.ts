@@ -1,4 +1,4 @@
-import {createSignal, onCleanup, untrack} from 'solid-js'
+import {onCleanup, untrack} from 'solid-js'
 import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
@@ -28,7 +28,7 @@ window.debug = true
 export
 @reactive
 class ScrollFling extends Effects {
-	@signal _x = 0
+	@signal accessor #x = 0
 
 	/**
 	 * During scroll, this value will change. It is a signal so that it can be
@@ -36,15 +36,15 @@ class ScrollFling extends Effects {
 	 * value. Setting the value immediately stops any smoothing animation.
 	 */
 	get x() {
-		return this._x
+		return this.#x
 	}
 	set x(val) {
 		this.#stopAnimation()
-		this._x = val
 		this.#targetX = val
+		this.#x = val
 	}
 
-	@signal _y = 0
+	@signal accessor #y = 0
 
 	/**
 	 * During scroll, this value will change. It is a signal so that it can be
@@ -52,11 +52,11 @@ class ScrollFling extends Effects {
 	 * value. Setting the value immediately stops any smoothing animation.
 	 */
 	get y() {
-		return this._y
+		return this.#y
 	}
 	set y(val) {
 		this.#stopAnimation()
-		this._y = val
+		this.#y = val
 		this.#targetY = val
 	}
 
@@ -83,13 +83,10 @@ class ScrollFling extends Effects {
 
 	#task?: RenderTask
 
-	#isStarted = (() => {
-		const {0: get, 1: set} = createSignal(false)
-		return {get, set}
-	})()
+	@signal accessor #isStarted = false
 
 	get isStarted() {
-		return this.#isStarted.get()
+		return this.#isStarted
 	}
 
 	#aborter = new AbortController()
@@ -97,8 +94,8 @@ class ScrollFling extends Effects {
 	constructor(options: Options = {}) {
 		super()
 		Object.assign(this, options)
-		this.#targetX = this._x
-		this.#targetY = this._y
+		this.#targetX = this.#x
+		this.#targetY = this.#y
 	}
 
 	#onWheel = (event: WheelEvent) => {
@@ -116,13 +113,13 @@ class ScrollFling extends Effects {
 
 		// lerp towards the target values
 		this.#task = Motor.addRenderTask((_t, dt): false | void => {
-			const dx = this.#targetX - this._x
-			const dy = this.#targetY - this._y
+			const dx = this.#targetX - this.#x
+			const dy = this.#targetY - this.#y
 			const fpsRatio = dt / 16.6666
 
 			// Multiply by fpsRatio so that the lerpAmount is consistent over time no matter the fps.
-			this._x += dx * fpsRatio * this.lerpAmount
-			this._y += dy * fpsRatio * this.lerpAmount
+			this.#x += dx * fpsRatio * this.lerpAmount
+			this.#y += dy * fpsRatio * this.lerpAmount
 
 			// Stop the fling update loop once the deltas are small enough
 			// that we no longer notice a change.
@@ -131,8 +128,8 @@ class ScrollFling extends Effects {
 	}
 
 	start(): this {
-		if (untrack(this.#isStarted.get)) return this
-		this.#isStarted.set(true)
+		if (untrack(() => this.#isStarted)) return this
+		this.#isStarted = true
 
 		this.createEffect(() => {
 			this.target // any time the target changes make new events on that target
@@ -152,8 +149,8 @@ class ScrollFling extends Effects {
 	}
 
 	stop(): this {
-		if (!untrack(this.#isStarted.get)) return this
-		this.#isStarted.set(false)
+		if (!untrack(() => this.#isStarted)) return this
+		this.#isStarted = false
 
 		this.stopEffects()
 

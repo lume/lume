@@ -5,11 +5,13 @@ declare module 'three/src/core/Object3D.js' {
         pivot: Vector3;
     }
 }
+declare const pivot: unique symbol;
 export declare class Object3DWithPivot extends Object3D {
     type: string;
-    __pivot?: Vector3;
+    [pivot]?: Vector3;
     get pivot(): Vector3;
     set pivot(v: Vector3);
     updateMatrix(): void;
 }
+export {};
 //# sourceMappingURL=Object3DWithPivot.d.ts.map

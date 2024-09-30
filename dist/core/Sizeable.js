@@ -32,6 +32,10 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 import { signal } from 'classy-solid';
 import { attribute, element, noSignal } from '@lume/element';
 import { TreeNode } from './TreeNode.js';
@@ -60,27 +64,34 @@ let Sizeable = (() => {
     let _classThis;
     let _classSuper = PropertyAnimator(CompositionTracker(TreeNode));
     let _instanceExtraInitializers = [];
-    let ___calculatedSize_decorators;
-    let ___calculatedSize_initializers = [];
-    let ___calculatedSize_extraInitializers = [];
+    let _private_calculatedSize_decorators;
+    let _private_calculatedSize_initializers = [];
+    let _private_calculatedSize_extraInitializers = [];
+    let _private_calculatedSize_descriptor;
     let _set_sizeMode_decorators;
+    let _get_sizeMode_decorators;
     let _set_size_decorators;
+    let _get_size_decorators;
     var Sizeable = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            ___calculatedSize_decorators = [signal];
+            _private_calculatedSize_decorators = [signal];
             _set_sizeMode_decorators = [attribute, noSignal];
+            _get_sizeMode_decorators = [attribute, noSignal];
             _set_size_decorators = [attribute, noSignal];
+            _get_size_decorators = [attribute, noSignal];
+            __esDecorate(this, _private_calculatedSize_descriptor = { get: __setFunctionName(function () { return this.#calculatedSize_accessor_storage; }, "#calculatedSize", "get"), set: __setFunctionName(function (value) { this.#calculatedSize_accessor_storage = value; }, "#calculatedSize", "set") }, _private_calculatedSize_decorators, { kind: "accessor", name: "#calculatedSize", static: false, private: true, access: { has: obj => #calculatedSize in obj, get: obj => obj.#calculatedSize, set: (obj, value) => { obj.#calculatedSize = value; } }, metadata: _metadata }, _private_calculatedSize_initializers, _private_calculatedSize_extraInitializers);
             __esDecorate(this, null, _set_sizeMode_decorators, { kind: "setter", name: "sizeMode", static: false, private: false, access: { has: obj => "sizeMode" in obj, set: (obj, value) => { obj.sizeMode = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_sizeMode_decorators, { kind: "getter", name: "sizeMode", static: false, private: false, access: { has: obj => "sizeMode" in obj, get: obj => obj.sizeMode }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_size_decorators, { kind: "setter", name: "size", static: false, private: false, access: { has: obj => "size" in obj, set: (obj, value) => { obj.size = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, ___calculatedSize_decorators, { kind: "field", name: "__calculatedSize", static: false, private: false, access: { has: obj => "__calculatedSize" in obj, get: obj => obj.__calculatedSize, set: (obj, value) => { obj.__calculatedSize = value; } }, metadata: _metadata }, ___calculatedSize_initializers, ___calculatedSize_extraInitializers);
+            __esDecorate(this, null, _get_size_decorators, { kind: "getter", name: "size", static: false, private: false, access: { has: obj => "size" in obj, get: obj => obj.size }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Sizeable = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        __calculatedSize = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, ___calculatedSize_initializers, { x: 0, y: 0, z: 0 }
+        #calculatedSize_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _private_calculatedSize_initializers, { x: 0, y: 0, z: 0 }
         /**
          * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
          *
@@ -106,6 +117,8 @@ let Sizeable = (() => {
          * along that axis.
          */
         ));
+        get #calculatedSize() { return _private_calculatedSize_descriptor.get.call(this); }
+        set #calculatedSize(value) { return _private_calculatedSize_descriptor.set.call(this, value); }
         /**
          * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
          *
@@ -198,9 +211,9 @@ let Sizeable = (() => {
             // TODO we can re-calculate the actual size lazily, this way it can
             // normally be deferred to a Motor render task, unless a user
             // explicitly needs it and reads the value.
-            // if (this.__sizeDirty) this._calcSize
+            // if (this.#sizeDirty) this._calcSize
             // TODO make it a readonly reactive object instead of cloning.
-            return { ...(this.__calculatedSize ?? { x: 0, y: 0, z: 0 }) };
+            return { ...this.#calculatedSize };
         }
         get composedLumeParent() {
             const result = this.composedParent;
@@ -224,7 +237,7 @@ let Sizeable = (() => {
             return this.composedLumeParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
         }
         _calcSize() {
-            const calculatedSize = this.__calculatedSize ?? { x: 0, y: 0, z: 0 };
+            const calculatedSize = this.#calculatedSize;
             Object.assign(previousSize, calculatedSize);
             const size = this.size;
             const sizeMode = this.sizeMode;
@@ -249,7 +262,7 @@ let Sizeable = (() => {
                 calculatedSize.z = parentSize.z * size.z;
             }
             // We set it to the same value to trigger reactivity.
-            this.__calculatedSize = calculatedSize;
+            this.#calculatedSize = calculatedSize;
             if (previousSize.x !== calculatedSize.x ||
                 previousSize.y !== calculatedSize.y ||
                 previousSize.z !== calculatedSize.z) {
@@ -259,7 +272,7 @@ let Sizeable = (() => {
         }
         constructor() {
             super(...arguments);
-            __runInitializers(this, ___calculatedSize_extraInitializers);
+            __runInitializers(this, _private_calculatedSize_extraInitializers);
         }
     };
     return Sizeable = _classThis;

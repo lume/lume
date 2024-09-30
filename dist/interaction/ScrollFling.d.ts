@@ -2,7 +2,6 @@ import { Effects } from 'classy-solid';
 type Options = Partial<Pick<ScrollFling, 'target' | 'x' | 'y' | 'minX' | 'maxX' | 'minY' | 'maxY' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'lerpAmount'>>;
 export declare class ScrollFling extends Effects {
     #private;
-    _x: number;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
@@ -10,7 +9,6 @@ export declare class ScrollFling extends Effects {
      */
     get x(): number;
     set x(val: number);
-    _y: number;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain

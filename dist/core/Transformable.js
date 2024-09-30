@@ -62,27 +62,45 @@ let Transformable = (() => {
     let _classSuper = Sizeable;
     let _instanceExtraInitializers = [];
     let _set_position_decorators;
+    let _get_position_decorators;
     let _set_rotation_decorators;
+    let _get_rotation_decorators;
     let _set_scale_decorators;
+    let _get_scale_decorators;
     let _set_origin_decorators;
+    let _get_origin_decorators;
     let _set_alignPoint_decorators;
+    let _get_alignPoint_decorators;
     let _set_mountPoint_decorators;
+    let _get_mountPoint_decorators;
     var Transformable = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _set_position_decorators = [attribute, noSignal];
+            _get_position_decorators = [attribute, noSignal];
             _set_rotation_decorators = [attribute, noSignal];
+            _get_rotation_decorators = [attribute, noSignal];
             _set_scale_decorators = [attribute, noSignal];
+            _get_scale_decorators = [attribute, noSignal];
             _set_origin_decorators = [attribute, noSignal];
+            _get_origin_decorators = [attribute, noSignal];
             _set_alignPoint_decorators = [attribute, noSignal];
+            _get_alignPoint_decorators = [attribute, noSignal];
             _set_mountPoint_decorators = [attribute, noSignal];
+            _get_mountPoint_decorators = [attribute, noSignal];
             __esDecorate(this, null, _set_position_decorators, { kind: "setter", name: "position", static: false, private: false, access: { has: obj => "position" in obj, set: (obj, value) => { obj.position = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_position_decorators, { kind: "getter", name: "position", static: false, private: false, access: { has: obj => "position" in obj, get: obj => obj.position }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_rotation_decorators, { kind: "setter", name: "rotation", static: false, private: false, access: { has: obj => "rotation" in obj, set: (obj, value) => { obj.rotation = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_rotation_decorators, { kind: "getter", name: "rotation", static: false, private: false, access: { has: obj => "rotation" in obj, get: obj => obj.rotation }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_scale_decorators, { kind: "setter", name: "scale", static: false, private: false, access: { has: obj => "scale" in obj, set: (obj, value) => { obj.scale = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_scale_decorators, { kind: "getter", name: "scale", static: false, private: false, access: { has: obj => "scale" in obj, get: obj => obj.scale }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_origin_decorators, { kind: "setter", name: "origin", static: false, private: false, access: { has: obj => "origin" in obj, set: (obj, value) => { obj.origin = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_origin_decorators, { kind: "getter", name: "origin", static: false, private: false, access: { has: obj => "origin" in obj, get: obj => obj.origin }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_alignPoint_decorators, { kind: "setter", name: "alignPoint", static: false, private: false, access: { has: obj => "alignPoint" in obj, set: (obj, value) => { obj.alignPoint = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_alignPoint_decorators, { kind: "getter", name: "alignPoint", static: false, private: false, access: { has: obj => "alignPoint" in obj, get: obj => obj.alignPoint }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_mountPoint_decorators, { kind: "setter", name: "mountPoint", static: false, private: false, access: { has: obj => "mountPoint" in obj, set: (obj, value) => { obj.mountPoint = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _get_mountPoint_decorators, { kind: "getter", name: "mountPoint", static: false, private: false, access: { has: obj => "mountPoint" in obj, get: obj => obj.mountPoint }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Transformable = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });

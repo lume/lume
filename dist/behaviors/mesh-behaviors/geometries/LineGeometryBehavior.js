@@ -66,6 +66,7 @@ let LineGeometryBehavior = (() => {
     let _classSuper = GeometryBehavior;
     let _instanceExtraInitializers = [];
     let _get_points_decorators;
+    let _set_points_decorators;
     let _centerGeometry_decorators;
     let _centerGeometry_initializers = [];
     let _centerGeometry_extraInitializers = [];
@@ -77,9 +78,11 @@ let LineGeometryBehavior = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _get_points_decorators = [attribute, receiver];
+            _set_points_decorators = [attribute];
             _centerGeometry_decorators = [booleanAttribute, receiver];
             _fitment_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_points_decorators, { kind: "getter", name: "points", static: false, private: false, access: { has: obj => "points" in obj, get: obj => obj.points }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_points_decorators, { kind: "setter", name: "points", static: false, private: false, access: { has: obj => "points" in obj, set: (obj, value) => { obj.points = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
             __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _fitment_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);

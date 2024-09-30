@@ -23,15 +23,15 @@ import type { AnyConstructor } from 'lowclass/dist/Constructor.js';
 export declare function behavior(name: string): <T extends AnyConstructor<PossibleBehaviorInstance>>(Class: T, context?: ClassDecoratorContext) => T;
 export declare function behavior<T extends AnyConstructor<PossibleBehaviorInstance>>(Class: T, context?: ClassDecoratorContext): T;
 declare const Behavior_base: {
-    new (...args: any[]): {
+    new (...a: any[]): {
         connectedCallback(): void;
         disconnectedCallback(): void;
         readonly observedObject: object;
-        _propChangedCallback(propName: string | symbol, value: any): void;
+        "__#6@#propChangedCallback": (propName: string | symbol, value: any) => void;
         receiveProps(): void;
         unreceiveProps(): void;
         receivedProperties?: never[] | undefined;
-        "__#5@#getReceivedProps"(): never[];
+        "__#6@#getReceivedProps"(): never[];
         receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;

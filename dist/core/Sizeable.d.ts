@@ -1,18 +1,17 @@
 import { TreeNode } from './TreeNode.js';
 import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
-import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import { type XYZNonNegativeNumberValuesProperty, type XYZNonNegativeNumberValuesPropertyFunction, type XYZSizeModeValuesProperty } from './PropertyAnimator.js';
 export type SizeableAttributes = 'sizeMode' | 'size';
 declare const Sizeable_base: {
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: import("../xyz-values/XYZValues.js").XYZValues, newValue: V): void;
         _setPropertySingle<K extends keyof any, V>(name: K, setter: (newValue: any[K]) => void, newValue: V): void;
-        "__#14@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
-        "__#14@#settingValueFromPropFunction": boolean;
-        "__#14@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues): void;
-        "__#14@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
-        "__#14@#removePropertyFunction"(name: keyof any): void;
+        "__#16@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
+        "__#16@#settingValueFromPropFunction": boolean;
+        "__#16@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues): void;
+        "__#16@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
+        "__#16@#removePropertyFunction"(name: keyof any): void;
         removeAllPropertyFunctions(): void;
         disconnectedCallback(): void;
         connectedCallback?(): void;
@@ -38,30 +37,29 @@ declare const Sizeable_base: {
         readonly isComposed: Element | null;
         __getComposedParent(): HTMLElement | null;
         readonly _composedChildren: any[];
-        __shadowRoot?: ShadowRoot;
-        __isPossiblyDistributedToShadowRoot: boolean;
-        __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
+        exposedShadowRoot?: ShadowRoot;
+        isPossiblySlotted: boolean;
+        "__#12@#prevAssignedNodes"?: WeakMap<HTMLSlotElement, Element[]>;
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
-        __distributedParent: any | null;
-        __shadowRootParent: any | null;
-        __distributedChildren?: Set<any> | undefined;
-        __shadowRootChildAdded(child: Element): void;
-        __shadowRootChildRemoved(child: Element): void;
+        slottedParent: any | null;
+        shadowParent: any | null;
+        slottedChildren: Set<any> | null;
+        "__#12@#this": any;
+        "__#12@#shadowRootChildAdded"(child: Element): void;
+        "__#12@#shadowRootChildRemoved"(child: Element): void;
         readonly __onChildSlotChange: (event: Event) => void;
         __onChildSlotChange__?: ((event: Event) => void) | undefined;
         childComposedCallback?(composedChild: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         childUncomposedCallback?(uncomposedChild: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
-        "__#11@#discrepancy": boolean;
-        __triggerChildComposedCallback(child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
-        __triggerChildUncomposedCallback(child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
+        "__#12@#discrepancy": boolean;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): {
             added: Node[];
             removed: Node[];
         };
-        "__#11@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        "__#12@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
@@ -410,7 +408,7 @@ declare const Sizeable_base: {
  * @extends TreeNode
  */
 export declare class Sizeable extends Sizeable_base {
-    __calculatedSize?: XYZValuesObject<number>;
+    #private;
     /**
      * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
      *

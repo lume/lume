@@ -30,7 +30,7 @@ import type { PossiblyCustomElement } from '../core/PossibleCustomElement.js';
  * ```
  */
 export declare function PropReceiver<T extends Constructor<PossiblyCustomElement>>(Base?: T): {
-    new (...args: any[]): {
+    new (...a: any[]): {
         connectedCallback(): void;
         disconnectedCallback(): void;
         /**
@@ -42,7 +42,7 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
          * A subclass should specify the object to observe by defining a `get observedObject` getter.
          */
         readonly observedObject: object;
-        _propChangedCallback(propName: PropKey, value: any): void;
+        "__#6@#propChangedCallback": (propName: PropKey, value: any) => void;
         receiveProps(): void;
         unreceiveProps(): void;
         /**
@@ -53,7 +53,7 @@ export declare function PropReceiver<T extends Constructor<PossiblyCustomElement
          * An array of strings, the properties of observedObject to observe.
          */
         receivedProperties?: never[] | undefined;
-        "__#5@#getReceivedProps"(): never[];
+        "__#6@#getReceivedProps"(): never[];
         receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;

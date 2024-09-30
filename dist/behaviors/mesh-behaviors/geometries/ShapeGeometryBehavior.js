@@ -84,6 +84,7 @@ let ShapeGeometryBehavior = (() => {
     let _classSuper = GeometryBehavior;
     let _instanceExtraInitializers = [];
     let _get_shape_decorators;
+    let _set_shape_decorators;
     let _curveSegments_decorators;
     let _curveSegments_initializers = [];
     let _curveSegments_extraInitializers = [];
@@ -107,6 +108,7 @@ let ShapeGeometryBehavior = (() => {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _get_shape_decorators = [attribute, receiver];
+            _set_shape_decorators = [attribute];
             _curveSegments_decorators = [numberAttribute, receiver];
             _bevel_decorators = [booleanAttribute, receiver];
             _bevelSegments_decorators = [numberAttribute, receiver];
@@ -114,6 +116,7 @@ let ShapeGeometryBehavior = (() => {
             _centerGeometry_decorators = [booleanAttribute, receiver];
             _fitment_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_shape_decorators, { kind: "getter", name: "shape", static: false, private: false, access: { has: obj => "shape" in obj, get: obj => obj.shape }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_shape_decorators, { kind: "setter", name: "shape", static: false, private: false, access: { has: obj => "shape" in obj, set: (obj, value) => { obj.shape = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _curveSegments_decorators, { kind: "field", name: "curveSegments", static: false, private: false, access: { has: obj => "curveSegments" in obj, get: obj => obj.curveSegments, set: (obj, value) => { obj.curveSegments = value; } }, metadata: _metadata }, _curveSegments_initializers, _curveSegments_extraInitializers);
             __esDecorate(null, null, _bevel_decorators, { kind: "field", name: "bevel", static: false, private: false, access: { has: obj => "bevel" in obj, get: obj => obj.bevel, set: (obj, value) => { obj.bevel = value; } }, metadata: _metadata }, _bevel_initializers, _bevel_extraInitializers);
             __esDecorate(null, null, _bevelSegments_decorators, { kind: "field", name: "bevelSegments", static: false, private: false, access: { has: obj => "bevelSegments" in obj, get: obj => obj.bevelSegments, set: (obj, value) => { obj.bevelSegments = value; } }, metadata: _metadata }, _bevelSegments_initializers, _bevelSegments_extraInitializers);
