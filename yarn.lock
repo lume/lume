@@ -9524,16 +9524,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classy-solid@npm:0.1.2":
-  version: 0.1.2
-  resolution: "classy-solid@npm:0.1.2"
-  dependencies:
-    lowclass: "npm:^5.0.0"
-    solid-js: "npm:^1.3.13"
-  checksum: 3f96e8668e5458c8d43634d4ba102cbbf4f6fc90ec137179263a804475dbe8b980a1dfaf19b66f4f75f92cda75da3c891e66e423a078f62bf07170c2dea9b754
-  languageName: node
-  linkType: hard
-
 "classy-solid@npm:^0.3.0":
   version: 0.3.9
   resolution: "classy-solid@npm:0.3.9"
@@ -9544,7 +9534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classy-solid@npm:^0.4.0, classy-solid@workspace:packages/classy-solid":
+"classy-solid@npm:^0.4.0, classy-solid@npm:^0.4.2, classy-solid@workspace:packages/classy-solid":
   version: 0.0.0-use.local
   resolution: "classy-solid@workspace:packages/classy-solid"
   dependencies:
@@ -13792,20 +13782,21 @@ __metadata:
     "@babel/plugin-proposal-optional-chaining": "npm:^7.11.0"
     "@babel/runtime": "npm:^7.15.4"
     "@lume/cli": "npm:^0.13.0"
-    "@lume/element": "npm:^0.6.0"
+    "@lume/element": "npm:^0.13.0"
     "@solid-primitives/debounce": "npm:1.2.0"
     "@solid-primitives/throttle": "npm:1.1.3"
     "@tweenjs/tween.js": "npm:^18.6.4"
     "@types/lodash.throttle": "npm:^4.1.6"
     "@types/meteor": "npm:^2.6.2"
+    "@types/three": "npm:>=0.139.0"
     babel-preset-solid: "npm:1.3.13"
-    classy-solid: "npm:0.1.2"
+    classy-solid: "npm:^0.4.2"
     lodash.throttle: "npm:^4.1.1"
-    lowclass: "npm:^5.0.0"
-    lume: "npm:0.3.0-alpha.10"
+    lowclass: "npm:^8.0.0"
+    lume: "npm:^0.3.0-alpha.43"
     meteor-node-stubs: "npm:^1.0.0"
     prettier: "npm:3.0.3"
-    solid-js: "npm:1.3.14"
+    solid-js: "npm:^1.8.0"
     three: "npm:>=0.139.0"
   languageName: unknown
   linkType: soft
@@ -18924,24 +18915,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:0.3.0-alpha.10":
-  version: 0.3.0-alpha.10
-  resolution: "lume@npm:0.3.0-alpha.10"
-  dependencies:
-    "@lume/autolayout": "npm:^0.8.0"
-    "@lume/element": "npm:^0.6.0"
-    "@lume/eventful": "npm:^0.2.2"
-    element-behaviors: "npm:^2.3.4"
-    james-bond: "npm:^0.5.0"
-    lowclass: "npm:^5.0.0"
-    regexr: "npm:^1.5.1"
-    resize-observer-polyfill: "npm:^1.5.1"
-    three: "npm:^0.139.0"
-    three-projected-material: "npm:^2.0.5"
-  checksum: e892ead3aa1cc7f52db4537e8295a657efc4162fdf33fd67fbce4779ae18860d78dc3acf5165285a95ab0773ca73d9074d850cef242332fc437c4dd20d2989dd
-  languageName: node
-  linkType: hard
-
 "lume@npm:0.3.0-alpha.9":
   version: 0.3.0-alpha.9
   resolution: "lume@npm:0.3.0-alpha.9"
@@ -18960,7 +18933,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.37, lume@workspace:.":
+"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.37, lume@npm:^0.3.0-alpha.43, lume@workspace:.":
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
   dependencies:
@@ -24562,13 +24535,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solid-js@npm:1.3.14":
-  version: 1.3.14
-  resolution: "solid-js@npm:1.3.14"
-  checksum: 93331abbb7834678231e138d1b25003b503a9e89e97830b822b95fbc0f5effa17fe6483ea995b4e9662829900ed67bbbd3b782e1e19a87acf5e27beabed171a7
-  languageName: node
-  linkType: hard
-
 "solid-js@npm:1.4.x":
   version: 1.4.8
   resolution: "solid-js@npm:1.4.8"
@@ -24584,6 +24550,17 @@ __metadata:
     seroval: "npm:^1.1.0"
     seroval-plugins: "npm:^1.1.0"
   checksum: bb631114bbf19d072634ac0e22493d4e6427060c2ef6c4c21ff40469ba01bd69e966d997c42c0ff2ffa8d54a4cd4656bfd17618b140de340a95273044307c0a9
+  languageName: node
+  linkType: hard
+
+"solid-js@npm:^1.8.0":
+  version: 1.9.1
+  resolution: "solid-js@npm:1.9.1"
+  dependencies:
+    csstype: "npm:^3.1.0"
+    seroval: "npm:^1.1.0"
+    seroval-plugins: "npm:^1.1.0"
+  checksum: 32209babd637980eae2be6163d788093e43a27b24b11fc590be69696c5ada7b0ec00904a998c09da991e22f116e36b2c2916ce2b0e1bd629cfdcb4d160dd1b77
   languageName: node
   linkType: hard
 
@@ -25917,13 +25894,6 @@ __metadata:
   version: 0.124.0
   resolution: "three@npm:0.124.0"
   checksum: 976fad0039a301a0ac8a85d197d00dd338370ae090831524bbb6f7a9cef4b696ff608681401610cfef0900cd8b8839565dd9c94127b9cbe6b2489e55e82a180e
-  languageName: node
-  linkType: hard
-
-"three@npm:^0.139.0":
-  version: 0.139.2
-  resolution: "three@npm:0.139.2"
-  checksum: cf89f84921424a28e5ffcf824879ad3624afd95aa00400b9a8b83c486f5c22a9d0f0112b47cd0912db3e8b2a0cf0ea4217e35221e6a19cf0151449aef00a6e64
   languageName: node
   linkType: hard
 
