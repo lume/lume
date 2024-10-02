@@ -125,9 +125,9 @@ class ShapeGeometryBehavior extends GeometryBehavior {
 					throw new Error('shape path must have an even number of numbers, each pair of numbers being a point.')
 
 				this.#shape.copy(emptyShape)
-				this.#shape.moveTo(points[0], points[1])
+				this.#shape.moveTo(points[0]!, points[1]!)
 
-				if (points.length > 2) for (let i = 2; i < points.length; i += 2) this.#shape.lineTo(points[i], points[i + 1])
+				if (points.length > 2) for (let i = 2; i < points.length; i += 2) this.#shape.lineTo(points[i]!, points[i + 1]!)
 			}
 		} else {
 			// Three.js bug: Copying a shape from itself breaks, causing
@@ -217,12 +217,12 @@ class ShapeGeometryBehavior extends GeometryBehavior {
 		let minY = Number.MAX_VALUE
 		let maxY = -Number.MAX_VALUE
 
-		const verts = geometry.attributes.position.array
+		const verts = geometry.attributes.position!.array
 		const stride = 3
 
 		for (let i = 0, l = verts.length / stride; i < l; i++) {
-			const x = verts[i * stride + 0]
-			const y = verts[i * stride + 1]
+			const x = verts[i * stride + 0]!
+			const y = verts[i * stride + 1]!
 			if (x < minX) minX = x
 			if (x > maxX) maxX = x
 			if (y < minY) minY = y

@@ -110,6 +110,7 @@ class PinchFling extends Effects {
 		if (this.#pointers.size < 2) return
 
 		const [one, two] = this.#pointers.values()
+		if (!one || !two) throw 'not possible'
 
 		if (event.pointerId === one.id) {
 			one.x = event.clientX

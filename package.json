@@ -49,7 +49,7 @@
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
-		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume",
+		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume",
 		"unlink": "npm run unlink:unix || npm run --script-shell=pwsh unlink:windows",
 		"unlink:unix": "rm -rf `find . -name node_modules`",
 		"unlink:windows": "Get-ChildItem -r -i node_modules | rm -r -fo",
@@ -87,7 +87,7 @@
 		"three": ">=0.139.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.13.0",
+		"@lume/cli": "^0.14.0",
 		"@types/three": ">=0.139.0",
 		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",

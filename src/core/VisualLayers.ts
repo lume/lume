@@ -255,7 +255,7 @@ export class VisualLayers {
 		const index = children.findIndex(proxy => (proxy as any).__proto__ === obj)
 
 		if (index >= 0) {
-			children[index] = children[children.length - 1]
+			children[index] = children[children.length - 1]!
 			children.pop()
 		}
 	}

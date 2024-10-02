@@ -488,7 +488,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 				const diff: SlotDiff = {added: newNodes, removed: []}
 
 				for (let i = 0, l = previousNodes.length; i < l; i += 1) {
-					const oldNode = previousNodes[i]
+					const oldNode = previousNodes[i]!
 					const newIndex = newNodes.indexOf(oldNode)
 
 					// if it exists in the previousNodes but not the newNodes, then

@@ -82,7 +82,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 				if (_points.length % 3 !== 0) throw new Error('The points array needs to have 3 numbers per point.')
 
 				if (this.#points.length !== _points.length) this.#points.length = _points.length
-				for (let i = 0, l = _points.length; i < l; i += 1) this.#points[i] = _points[i]
+				for (let i = 0, l = _points.length; i < l; i += 1) this.#points[i] = _points[i]!
 			}
 		}
 	}

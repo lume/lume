@@ -1125,7 +1125,7 @@ class Scene extends Super {
 					// item, it means the observed element is split across
 					// multiple CSS columns. But not all browsers support the Array
 					// form yet (f.e. Firefox) so fallback in that case:
-					const contentBoxSize = change.contentBoxSize[0] || change.contentBoxSize
+					const contentBoxSize = change.contentBoxSize[0]! || change.contentBoxSize
 
 					// TODO If the Scene is used as display:inline{-block},
 					// ensure that it is the size of the column in which it is

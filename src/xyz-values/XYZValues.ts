@@ -342,9 +342,9 @@ abstract class XYZValues<T = any> extends Object {
 		const values = stringToArray(string, separator)
 		const result = [] as unknown as XYZPartialValuesArray<T>
 		const length = values.length
-		if (length > 0) result[0] = this.deserializeValue('x', values[0])
-		if (length > 1) result[1] = this.deserializeValue('y', values[1])
-		if (length > 2) result[2] = this.deserializeValue('z', values[2])
+		if (length > 0) result[0] = this.deserializeValue('x', values[0]!)
+		if (length > 1) result[1] = this.deserializeValue('y', values[1]!)
+		if (length > 2) result[2] = this.deserializeValue('z', values[2]!)
 		return result
 	}
 
