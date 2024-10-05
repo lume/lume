@@ -1,1 +1,1 @@
-{"version":3,"file":"InstancedMesh.test.d.ts","sourceRoot":"","sources":["../../src/meshes/InstancedMesh.test.ts"],"names":[],"mappings":";AAOA,OAAO,CAAC,MAAM,CAAC;IACd,MAAM,SAAS,EAAE,OAAO,MAAM,CAAA;IAC9B,MAAM,QAAQ,EAAE,OAAO,KAAK,CAAA;CAC5B"}
+{"version":3,"file":"InstancedMesh.test.d.ts","sourceRoot":"","sources":["../../src/meshes/InstancedMesh.test.ts"],"names":[],"mappings":"AAOA,OAAO,CAAC,MAAM,CAAC;IACd,MAAM,SAAS,EAAE,OAAO,MAAM,CAAA;IAC9B,MAAM,QAAQ,EAAE,OAAO,KAAK,CAAA;CAC5B"}

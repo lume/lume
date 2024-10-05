@@ -51,15 +51,15 @@ let AmbientLight = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Light;
-    let _instanceExtraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
+    let _intensity_extraInitializers = [];
     var AmbientLight = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _intensity_decorators = [numberAttribute];
-            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             AmbientLight = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -77,9 +77,13 @@ let AmbientLight = (() => {
          * The intensity of this element does not change behavior when [physically
          * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
          */
-        intensity = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _intensity_initializers, 1));
+        intensity = __runInitializers(this, _intensity_initializers, 1);
         makeThreeObject3d() {
             return new ThreeAmbientLight();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _intensity_extraInitializers);
         }
     };
     return AmbientLight = _classThis;

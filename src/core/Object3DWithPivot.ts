@@ -14,17 +14,19 @@ declare module 'three/src/core/Object3D.js' {
 	}
 }
 
-export class Object3DWithPivot extends Object3D {
-	override type = 'Object3DWithPivot'
+const pivot = Symbol('pivot')
 
-	__pivot?: Vector3
+export class Object3DWithPivot extends Object3D {
+	override type = 'Object3DWithPivot';
+
+	[pivot]?: Vector3
 
 	override get pivot(): Vector3 {
-		if (!this.__pivot) this.__pivot = new Vector3()
-		return this.__pivot
+		if (!this[pivot]) this[pivot] = new Vector3()
+		return this[pivot]
 	}
 	override set pivot(v: Vector3) {
-		this.__pivot = v
+		this[pivot] = v
 	}
 
 	// This overrides Object3D to have a `.pivot` property of type

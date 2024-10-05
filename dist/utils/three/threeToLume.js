@@ -60,8 +60,7 @@ export function threeToLume(three) {
     else {
         // For now all other objects are converted to Element3D. TODO support more Three objects.
         el = document.createElement('lume-element3d');
-        el.three; // Read it first so that .__three exists.
-        el.__three = three.clone(false); // TODO make el.three have a setter instead of using private field here?
+        el.three.add(three.clone(false));
     }
     if (three.name)
         el.id = three.name;

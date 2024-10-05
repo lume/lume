@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,13 +32,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 import 'element-behaviors';
 import { untrack } from 'solid-js';
 import { attribute, stringAttribute } from '@lume/element';
@@ -51,20 +51,25 @@ let ShaderMaterialBehavior = (() => {
     let _classSuper = MaterialBehavior;
     let _instanceExtraInitializers = [];
     let _get_uniforms_decorators;
+    let _set_uniforms_decorators;
     let _vertexShader_decorators;
     let _vertexShader_initializers = [];
+    let _vertexShader_extraInitializers = [];
     let _fragmentShader_decorators;
     let _fragmentShader_initializers = [];
+    let _fragmentShader_extraInitializers = [];
     var ShaderMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _get_uniforms_decorators = [attribute, receiver];
+            _set_uniforms_decorators = [attribute];
             _vertexShader_decorators = [stringAttribute, receiver];
             _fragmentShader_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_uniforms_decorators, { kind: "getter", name: "uniforms", static: false, private: false, access: { has: obj => "uniforms" in obj, get: obj => obj.uniforms }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _vertexShader_decorators, { kind: "field", name: "vertexShader", static: false, private: false, access: { has: obj => "vertexShader" in obj, get: obj => obj.vertexShader, set: (obj, value) => { obj.vertexShader = value; } }, metadata: _metadata }, _vertexShader_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fragmentShader_decorators, { kind: "field", name: "fragmentShader", static: false, private: false, access: { has: obj => "fragmentShader" in obj, get: obj => obj.fragmentShader, set: (obj, value) => { obj.fragmentShader = value; } }, metadata: _metadata }, _fragmentShader_initializers, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_uniforms_decorators, { kind: "setter", name: "uniforms", static: false, private: false, access: { has: obj => "uniforms" in obj, set: (obj, value) => { obj.uniforms = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _vertexShader_decorators, { kind: "field", name: "vertexShader", static: false, private: false, access: { has: obj => "vertexShader" in obj, get: obj => obj.vertexShader, set: (obj, value) => { obj.vertexShader = value; } }, metadata: _metadata }, _vertexShader_initializers, _vertexShader_extraInitializers);
+            __esDecorate(null, null, _fragmentShader_decorators, { kind: "field", name: "fragmentShader", static: false, private: false, access: { has: obj => "fragmentShader" in obj, get: obj => obj.fragmentShader, set: (obj, value) => { obj.fragmentShader = value; } }, metadata: _metadata }, _fragmentShader_initializers, _fragmentShader_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ShaderMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -97,7 +102,7 @@ let ShaderMaterialBehavior = (() => {
         }
         #uniforms = (__runInitializers(this, _instanceExtraInitializers), {});
         vertexShader = __runInitializers(this, _vertexShader_initializers, default_vertex);
-        fragmentShader = __runInitializers(this, _fragmentShader_initializers, default_fragment);
+        fragmentShader = (__runInitializers(this, _vertexShader_extraInitializers), __runInitializers(this, _fragmentShader_initializers, default_fragment));
         _createComponent() {
             // untrack, we subsequently update the properties using an effect.
             return untrack(() => {
@@ -120,6 +125,10 @@ let ShaderMaterialBehavior = (() => {
                 this.element.needsUpdate();
             });
             super.connectedCallback();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _fragmentShader_extraInitializers);
         }
     };
     return ShaderMaterialBehavior = _classThis;

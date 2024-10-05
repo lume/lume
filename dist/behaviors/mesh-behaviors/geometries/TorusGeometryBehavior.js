@@ -59,15 +59,18 @@ let TorusGeometryBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = GeometryBehavior;
-    let _instanceExtraInitializers = [];
     let _tubeThickness_decorators;
     let _tubeThickness_initializers = [];
+    let _tubeThickness_extraInitializers = [];
     let _radialSegments_decorators;
     let _radialSegments_initializers = [];
+    let _radialSegments_extraInitializers = [];
     let _tubularSegments_decorators;
     let _tubularSegments_initializers = [];
+    let _tubularSegments_extraInitializers = [];
     let _arc_decorators;
     let _arc_initializers = [];
+    let _arc_extraInitializers = [];
     var TorusGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -76,10 +79,10 @@ let TorusGeometryBehavior = (() => {
             _radialSegments_decorators = [numberAttribute, receiver];
             _tubularSegments_decorators = [numberAttribute, receiver];
             _arc_decorators = [numberAttribute, receiver];
-            __esDecorate(null, null, _tubeThickness_decorators, { kind: "field", name: "tubeThickness", static: false, private: false, access: { has: obj => "tubeThickness" in obj, get: obj => obj.tubeThickness, set: (obj, value) => { obj.tubeThickness = value; } }, metadata: _metadata }, _tubeThickness_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _radialSegments_decorators, { kind: "field", name: "radialSegments", static: false, private: false, access: { has: obj => "radialSegments" in obj, get: obj => obj.radialSegments, set: (obj, value) => { obj.radialSegments = value; } }, metadata: _metadata }, _radialSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _tubularSegments_decorators, { kind: "field", name: "tubularSegments", static: false, private: false, access: { has: obj => "tubularSegments" in obj, get: obj => obj.tubularSegments, set: (obj, value) => { obj.tubularSegments = value; } }, metadata: _metadata }, _tubularSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _arc_decorators, { kind: "field", name: "arc", static: false, private: false, access: { has: obj => "arc" in obj, get: obj => obj.arc, set: (obj, value) => { obj.arc = value; } }, metadata: _metadata }, _arc_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _tubeThickness_decorators, { kind: "field", name: "tubeThickness", static: false, private: false, access: { has: obj => "tubeThickness" in obj, get: obj => obj.tubeThickness, set: (obj, value) => { obj.tubeThickness = value; } }, metadata: _metadata }, _tubeThickness_initializers, _tubeThickness_extraInitializers);
+            __esDecorate(null, null, _radialSegments_decorators, { kind: "field", name: "radialSegments", static: false, private: false, access: { has: obj => "radialSegments" in obj, get: obj => obj.radialSegments, set: (obj, value) => { obj.radialSegments = value; } }, metadata: _metadata }, _radialSegments_initializers, _radialSegments_extraInitializers);
+            __esDecorate(null, null, _tubularSegments_decorators, { kind: "field", name: "tubularSegments", static: false, private: false, access: { has: obj => "tubularSegments" in obj, get: obj => obj.tubularSegments, set: (obj, value) => { obj.tubularSegments = value; } }, metadata: _metadata }, _tubularSegments_initializers, _tubularSegments_extraInitializers);
+            __esDecorate(null, null, _arc_decorators, { kind: "field", name: "arc", static: false, private: false, access: { has: obj => "arc" in obj, get: obj => obj.arc, set: (obj, value) => { obj.arc = value; } }, metadata: _metadata }, _arc_initializers, _arc_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             TorusGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -98,7 +101,7 @@ let TorusGeometryBehavior = (() => {
          * element's `x` size). The default `0.1` value means the donut's tube
          * thickness is 10% of the overall diameter.
          */
-        tubeThickness = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _tubeThickness_initializers, 0.1
+        tubeThickness = __runInitializers(this, _tubeThickness_initializers, 0.1
         /**
          * @property {number} radialSegments -
          *
@@ -108,20 +111,30 @@ let TorusGeometryBehavior = (() => {
          *
          * The number of segments (or edges) of the circular cross section of the
          * donut tube.
+         */
+        );
+        /**
+         * @property {number} radialSegments -
+         *
+         * `attribute`
+         *
+         * Default: `16`
+         *
+         * The number of segments (or edges) of the circular cross section of the
+         * donut tube.
+         */
+        radialSegments = (__runInitializers(this, _tubeThickness_extraInitializers), __runInitializers(this, _radialSegments_initializers, 16
+        /**
+         * @property {number} tubularSegments -
+         *
+         * `attribute`
+         *
+         * Default: `32`
+         *
+         * The number of tube sections around the donut.
          */
         ));
         /**
-         * @property {number} radialSegments -
-         *
-         * `attribute`
-         *
-         * Default: `16`
-         *
-         * The number of segments (or edges) of the circular cross section of the
-         * donut tube.
-         */
-        radialSegments = __runInitializers(this, _radialSegments_initializers, 16
-        /**
          * @property {number} tubularSegments -
          *
          * `attribute`
@@ -130,17 +143,7 @@ let TorusGeometryBehavior = (() => {
          *
          * The number of tube sections around the donut.
          */
-        );
-        /**
-         * @property {number} tubularSegments -
-         *
-         * `attribute`
-         *
-         * Default: `32`
-         *
-         * The number of tube sections around the donut.
-         */
-        tubularSegments = __runInitializers(this, _tubularSegments_initializers, 32
+        tubularSegments = (__runInitializers(this, _radialSegments_extraInitializers), __runInitializers(this, _tubularSegments_initializers, 32
         /**
          * @property {number} arc -
          *
@@ -153,7 +156,7 @@ let TorusGeometryBehavior = (() => {
          * to form a whole donut. A value of `180` means we get a half of a donut
          * shape.
          */
-        );
+        ));
         /**
          * @property {number} arc -
          *
@@ -166,7 +169,7 @@ let TorusGeometryBehavior = (() => {
          * to form a whole donut. A value of `180` means we get a half of a donut
          * shape.
          */
-        arc = __runInitializers(this, _arc_initializers, 360);
+        arc = (__runInitializers(this, _tubularSegments_extraInitializers), __runInitializers(this, _arc_initializers, 360));
         _createComponent() {
             const outerDiameter = this.element.calculatedSize.x;
             const outerRadius = outerDiameter / 2;
@@ -174,6 +177,10 @@ let TorusGeometryBehavior = (() => {
             const literalThickness = tubeThickness * outerDiameter;
             const radius = outerRadius - literalThickness / 2;
             return new TorusGeometry(radius, literalThickness, radialSegments, tubularSegments, toRadians(arc));
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _arc_extraInitializers);
         }
     };
     return TorusGeometryBehavior = _classThis;

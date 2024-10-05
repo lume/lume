@@ -8,7 +8,7 @@ export function stringToNumberArray(v: number[] | string, prop: string): number[
 
 	// @prod-prune
 	for (let i = 0, l = v.length; i < l; i += 1) {
-		if (isNaN(v[i])) throw new TypeError(`Array for property "${prop}" should have numbers only.`)
+		if (isNaN(v[i]!)) throw new TypeError(`Array for property "${prop}" should have numbers only.`)
 	}
 
 	return v

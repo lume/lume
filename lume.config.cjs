@@ -7,7 +7,7 @@ module.exports = {
 	prettierIgnorePath: '.prettierignore.lumecli',
 
 	testFiles: process.env.TEST_ALL
-		? ['dist/**/*.test.js', 'packages/*/dist/**/*.test.js', '!packages/{classy-solid,readem}/dist/**/*.test.js']
+		? ['dist/**/*.test.js', 'packages/*/dist/**/*.test.js', '!packages/{readem,}/dist/**/*.test.js']
 		: 'dist/**/*.test.js',
 
 	importMap: {
@@ -22,6 +22,7 @@ module.exports = {
 			'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
 			'@lume/autolayout': '/node_modules/@lume/autolayout/dist/AutoLayout.js',
 			lowclass: '/node_modules/lowclass/dist/index.js',
+			'lowclass/': '/node_modules/lowclass/',
 			'james-bond': '/node_modules/james-bond/dist/index.js',
 			regexr: '/node_modules/regexr/dist/index.js',
 			'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
@@ -34,6 +35,7 @@ module.exports = {
 			'three/': '/node_modules/three/',
 
 			// <code-mirror> stuff
+			'code-mirror-el': '/packages/code-mirror-el/dist/index.js',
 			'@babel/runtime/helpers/extends': '/packages/code-mirror-el/node_modules/@babel/runtime/helpers/esm/extends.js',
 			'@codemirror/autocomplete': '/packages/code-mirror-el/node_modules/@codemirror/autocomplete/dist/index.js',
 			'@codemirror/commands': '/packages/code-mirror-el/node_modules/@codemirror/commands/dist/index.js',
@@ -55,12 +57,11 @@ module.exports = {
 			'@uiw/codemirror-theme-noctis-lilac':
 				'/packages/code-mirror-el/node_modules/@uiw/codemirror-theme-noctis-lilac/esm/index.js',
 			'@uiw/codemirror-themes': '/packages/code-mirror-el/node_modules/@uiw/codemirror-themes/esm/index.js',
-			'code-mirror-el': '/node_modules/code-mirror-el/dist/index.js',
 			codemirror: '/packages/code-mirror-el/node_modules/codemirror/dist/index.js',
 			crelt: '/packages/code-mirror-el/node_modules/crelt/index.js',
 			'lodash-es/': '/packages/code-mirror-el/node_modules/lodash-es/',
 			'style-mod': '/packages/code-mirror-el/node_modules/style-mod/src/style-mod.js',
-			'thememirror/': '/packages/code-mirror-el/node_modules/thememirror/',
+			'thememirror/': '/packages/live-code/node_modules/thememirror/',
 			'w3c-keyname': '/packages/code-mirror-el/node_modules/w3c-keyname/index.js',
 		},
 	},

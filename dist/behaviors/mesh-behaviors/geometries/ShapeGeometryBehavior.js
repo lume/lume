@@ -84,23 +84,31 @@ let ShapeGeometryBehavior = (() => {
     let _classSuper = GeometryBehavior;
     let _instanceExtraInitializers = [];
     let _get_shape_decorators;
+    let _set_shape_decorators;
     let _curveSegments_decorators;
     let _curveSegments_initializers = [];
+    let _curveSegments_extraInitializers = [];
     let _bevel_decorators;
     let _bevel_initializers = [];
+    let _bevel_extraInitializers = [];
     let _bevelSegments_decorators;
     let _bevelSegments_initializers = [];
+    let _bevelSegments_extraInitializers = [];
     let _bevelThickness_decorators;
     let _bevelThickness_initializers = [];
+    let _bevelThickness_extraInitializers = [];
     let _centerGeometry_decorators;
     let _centerGeometry_initializers = [];
+    let _centerGeometry_extraInitializers = [];
     let _fitment_decorators;
     let _fitment_initializers = [];
+    let _fitment_extraInitializers = [];
     var ShapeGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _get_shape_decorators = [attribute, receiver];
+            _set_shape_decorators = [attribute];
             _curveSegments_decorators = [numberAttribute, receiver];
             _bevel_decorators = [booleanAttribute, receiver];
             _bevelSegments_decorators = [numberAttribute, receiver];
@@ -108,12 +116,13 @@ let ShapeGeometryBehavior = (() => {
             _centerGeometry_decorators = [booleanAttribute, receiver];
             _fitment_decorators = [stringAttribute, receiver];
             __esDecorate(this, null, _get_shape_decorators, { kind: "getter", name: "shape", static: false, private: false, access: { has: obj => "shape" in obj, get: obj => obj.shape }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _curveSegments_decorators, { kind: "field", name: "curveSegments", static: false, private: false, access: { has: obj => "curveSegments" in obj, get: obj => obj.curveSegments, set: (obj, value) => { obj.curveSegments = value; } }, metadata: _metadata }, _curveSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bevel_decorators, { kind: "field", name: "bevel", static: false, private: false, access: { has: obj => "bevel" in obj, get: obj => obj.bevel, set: (obj, value) => { obj.bevel = value; } }, metadata: _metadata }, _bevel_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bevelSegments_decorators, { kind: "field", name: "bevelSegments", static: false, private: false, access: { has: obj => "bevelSegments" in obj, get: obj => obj.bevelSegments, set: (obj, value) => { obj.bevelSegments = value; } }, metadata: _metadata }, _bevelSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _bevelThickness_decorators, { kind: "field", name: "bevelThickness", static: false, private: false, access: { has: obj => "bevelThickness" in obj, get: obj => obj.bevelThickness, set: (obj, value) => { obj.bevelThickness = value; } }, metadata: _metadata }, _bevelThickness_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_shape_decorators, { kind: "setter", name: "shape", static: false, private: false, access: { has: obj => "shape" in obj, set: (obj, value) => { obj.shape = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _curveSegments_decorators, { kind: "field", name: "curveSegments", static: false, private: false, access: { has: obj => "curveSegments" in obj, get: obj => obj.curveSegments, set: (obj, value) => { obj.curveSegments = value; } }, metadata: _metadata }, _curveSegments_initializers, _curveSegments_extraInitializers);
+            __esDecorate(null, null, _bevel_decorators, { kind: "field", name: "bevel", static: false, private: false, access: { has: obj => "bevel" in obj, get: obj => obj.bevel, set: (obj, value) => { obj.bevel = value; } }, metadata: _metadata }, _bevel_initializers, _bevel_extraInitializers);
+            __esDecorate(null, null, _bevelSegments_decorators, { kind: "field", name: "bevelSegments", static: false, private: false, access: { has: obj => "bevelSegments" in obj, get: obj => obj.bevelSegments, set: (obj, value) => { obj.bevelSegments = value; } }, metadata: _metadata }, _bevelSegments_initializers, _bevelSegments_extraInitializers);
+            __esDecorate(null, null, _bevelThickness_decorators, { kind: "field", name: "bevelThickness", static: false, private: false, access: { has: obj => "bevelThickness" in obj, get: obj => obj.bevelThickness, set: (obj, value) => { obj.bevelThickness = value; } }, metadata: _metadata }, _bevelThickness_initializers, _bevelThickness_extraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
+            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _fitment_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ShapeGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -218,47 +227,47 @@ let ShapeGeometryBehavior = (() => {
          * of the shape edges.
          * @default false
          */
-        bevel = __runInitializers(this, _bevel_initializers, false
+        bevel = (__runInitializers(this, _curveSegments_extraInitializers), __runInitializers(this, _bevel_initializers, false
         /**
          * @property {number} bevelSegments - When the shape is extruded, determines
          * the number of sections for the bevel. A higher number makes the model
          * look smoother, but cost more time to render.
          * @default 4
          */
-        );
+        ));
         /**
          * @property {number} bevelSegments - When the shape is extruded, determines
          * the number of sections for the bevel. A higher number makes the model
          * look smoother, but cost more time to render.
          * @default 4
          */
-        bevelSegments = __runInitializers(this, _bevelSegments_initializers, 4
+        bevelSegments = (__runInitializers(this, _bevel_extraInitializers), __runInitializers(this, _bevelSegments_initializers, 4
         /**
          * @property {number} bevelThickness - When the shape is extruded,
          * determines the thickness of the bevel. Roughly like the amount of
          * radius for the rounded edges.
          * @default 4
          */
-        );
+        ));
         /**
          * @property {number} bevelThickness - When the shape is extruded,
          * determines the thickness of the bevel. Roughly like the amount of
          * radius for the rounded edges.
          * @default 4
          */
-        bevelThickness = __runInitializers(this, _bevelThickness_initializers, 4
+        bevelThickness = (__runInitializers(this, _bevelSegments_extraInitializers), __runInitializers(this, _bevelThickness_initializers, 4
         /**
          * @property {boolean} centerGeometry - When true, centers the shape geometry
          * within the host element's size space.
          * @default true
          */
-        );
+        ));
         /**
          * @property {boolean} centerGeometry - When true, centers the shape geometry
          * within the host element's size space.
          * @default true
          */
-        centerGeometry = __runInitializers(this, _centerGeometry_initializers, true
+        centerGeometry = (__runInitializers(this, _bevelThickness_extraInitializers), __runInitializers(this, _centerGeometry_initializers, true
         /**
          * @property {string} fitment - Determines how to fit a shape within the
          * size area on X and Y. The Z size dictates the shape extrusion separately.
@@ -266,7 +275,7 @@ let ShapeGeometryBehavior = (() => {
          * values. See https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values
          * for details.
          */
-        );
+        ));
         /**
          * @property {string} fitment - Determines how to fit a shape within the
          * size area on X and Y. The Z size dictates the shape extrusion separately.
@@ -274,9 +283,9 @@ let ShapeGeometryBehavior = (() => {
          * values. See https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit#values
          * for details.
          */
-        fitment = __runInitializers(this, _fitment_initializers, 'none'
+        fitment = (__runInitializers(this, _centerGeometry_extraInitializers), __runInitializers(this, _fitment_initializers, 'none'
         // TODO attribute to apply smoothing to the geometry (calculate normals)?
-        );
+        ));
         // TODO attribute to apply smoothing to the geometry (calculate normals)?
         _createComponent() {
             let geometry;
@@ -354,6 +363,10 @@ let ShapeGeometryBehavior = (() => {
                 }
             }
             return geometry;
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _fitment_extraInitializers);
         }
     };
     return ShapeGeometryBehavior = _classThis;

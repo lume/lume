@@ -1,4 +1,4 @@
-import type {Constructor} from 'lowclass'
+import type {Constructor} from 'lowclass/dist/Constructor.js'
 import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import type {Group} from 'three/src/objects/Group.js'

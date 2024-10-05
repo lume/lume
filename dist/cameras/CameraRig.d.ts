@@ -149,7 +149,6 @@ export declare class CameraRig extends Element3D {
      * [CSS `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
      */
     distance: number;
-    __appliedDistance: number;
     /**
      * @deprecated initialDistance has been renamed to distance.
      * @property {number} initialDistance
@@ -172,7 +171,6 @@ export declare class CameraRig extends Element3D {
      * the [`.distance`](#distance) value is.
      */
     minDistance: number;
-    __appliedMinDistance: number;
     /**
      * @property {number} maxDistance
      *
@@ -187,7 +185,6 @@ export declare class CameraRig extends Element3D {
      * the [`.distance`](#distance) value is.
      */
     maxDistance: number;
-    __appliedMaxDistance: number;
     /**
      * @property {boolean} active
      *

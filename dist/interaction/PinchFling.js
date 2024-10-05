@@ -32,7 +32,11 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { createSignal, onCleanup, untrack } from 'solid-js';
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
+import { onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
@@ -42,13 +46,23 @@ let PinchFling = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Effects;
-    let _instanceExtraInitializers = [];
     let _x_decorators;
     let _x_initializers = [];
+    let _x_extraInitializers = [];
     let _target_decorators;
     let _target_initializers = [];
+    let _target_extraInitializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
+    let _hasInteracted_extraInitializers = [];
+    let _private_interacting_decorators;
+    let _private_interacting_initializers = [];
+    let _private_interacting_extraInitializers = [];
+    let _private_interacting_descriptor;
+    let _private_isStarted_decorators;
+    let _private_isStarted_initializers = [];
+    let _private_isStarted_extraInitializers = [];
+    let _private_isStarted_descriptor;
     var PinchFling = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -56,9 +70,13 @@ let PinchFling = (() => {
             _x_decorators = [signal];
             _target_decorators = [signal];
             _hasInteracted_decorators = [signal];
-            __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _instanceExtraInitializers);
+            _private_interacting_decorators = [signal];
+            _private_isStarted_decorators = [signal];
+            __esDecorate(this, _private_interacting_descriptor = { get: __setFunctionName(function () { return this.#interacting_accessor_storage; }, "#interacting", "get"), set: __setFunctionName(function (value) { this.#interacting_accessor_storage = value; }, "#interacting", "set") }, _private_interacting_decorators, { kind: "accessor", name: "#interacting", static: false, private: true, access: { has: obj => #interacting in obj, get: obj => obj.#interacting, set: (obj, value) => { obj.#interacting = value; } }, metadata: _metadata }, _private_interacting_initializers, _private_interacting_extraInitializers);
+            __esDecorate(this, _private_isStarted_descriptor = { get: __setFunctionName(function () { return this.#isStarted_accessor_storage; }, "#isStarted", "get"), set: __setFunctionName(function (value) { this.#isStarted_accessor_storage = value; }, "#isStarted", "set") }, _private_isStarted_decorators, { kind: "accessor", name: "#isStarted", static: false, private: true, access: { has: obj => #isStarted in obj, get: obj => obj.#isStarted, set: (obj, value) => { obj.#isStarted = value; } }, metadata: _metadata }, _private_isStarted_initializers, _private_isStarted_extraInitializers);
+            __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _x_extraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
+            __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PinchFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -69,34 +87,32 @@ let PinchFling = (() => {
          * observed. Set this value initially if you want to start at a certain
          * value.
          */
-        x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _x_initializers, 0));
-        minX = -Infinity;
+        x = __runInitializers(this, _x_initializers, 0);
+        minX = (__runInitializers(this, _x_extraInitializers), -Infinity);
         maxX = Infinity;
         target = __runInitializers(this, _target_initializers, document.documentElement);
-        sensitivity = 1;
+        sensitivity = (__runInitializers(this, _target_extraInitializers), 1);
         hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
-        epsilon = 0.01;
+        epsilon = (__runInitializers(this, _hasInteracted_extraInitializers), 0.01);
         /**
          * Portion of the change in value that is removed each frame to
          * cause slowdown. Between 0 and 1.
          */
         slowdownAmount = 0.05;
         #task;
-        #interacting = (() => {
-            const { 0: get, 1: set } = createSignal(false);
-            return { get, set };
-        })();
+        #interacting_accessor_storage = __runInitializers(this, _private_interacting_initializers, false);
+        get #interacting() { return _private_interacting_descriptor.get.call(this); }
+        set #interacting(value) { return _private_interacting_descriptor.set.call(this, value); }
         get interacting() {
-            return this.#interacting.get();
+            return this.#interacting;
         }
-        #isStarted = (() => {
-            const { 0: get, 1: set } = createSignal(false);
-            return { get, set };
-        })();
+        #isStarted_accessor_storage = (__runInitializers(this, _private_interacting_extraInitializers), __runInitializers(this, _private_isStarted_initializers, false));
+        get #isStarted() { return _private_isStarted_descriptor.get.call(this); }
+        set #isStarted(value) { return _private_isStarted_descriptor.set.call(this, value); }
         get isStarted() {
-            return this.#isStarted.get();
+            return this.#isStarted;
         }
-        #aborter = new AbortController();
+        #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
         constructor(options = {}) {
             super();
             Object.assign(this, options);
@@ -133,7 +149,7 @@ let PinchFling = (() => {
                 // go two fingers
                 // @ts-expect-error TypeScript type for `event` is wrong
                 this.target.addEventListener('pointermove', this.#onMove, { signal: this.#aborter.signal });
-                this.#interacting.set(true);
+                this.#interacting = true;
             }
         };
         #lastDistance = -1;
@@ -143,6 +159,8 @@ let PinchFling = (() => {
             if (this.#pointers.size < 2)
                 return;
             const [one, two] = this.#pointers.values();
+            if (!one || !two)
+                throw 'not possible';
             if (event.pointerId === one.id) {
                 one.x = event.clientX;
                 one.y = event.clientY;
@@ -166,13 +184,13 @@ let PinchFling = (() => {
             if (this.#pointers.size === 1) {
                 // @ts-expect-error TypeScript type for `event` is wrong
                 this.target.removeEventListener('pointermove', this.#onMove);
-                this.#interacting.set(false);
+                this.#interacting = false;
             }
         };
         start() {
-            if (untrack(this.#isStarted.get))
+            if (untrack(() => this.#isStarted))
                 return this;
-            this.#isStarted.set(true);
+            this.#isStarted = true;
             this.createEffect(() => {
                 this.target; // any time the target changes make new events on that target
                 this.#aborter = new AbortController();
@@ -190,9 +208,9 @@ let PinchFling = (() => {
             return this;
         }
         stop() {
-            if (!untrack(this.#isStarted.get))
+            if (!untrack(() => this.#isStarted))
                 return this;
-            this.#isStarted.set(false);
+            this.#isStarted = false;
             this.stopEffects();
             return this;
         }

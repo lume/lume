@@ -60,15 +60,15 @@ let PerspectiveCamera = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Camera;
-    let _instanceExtraInitializers = [];
     let _fov_decorators;
     let _fov_initializers = [];
+    let _fov_extraInitializers = [];
     var PerspectiveCamera = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _fov_decorators = [numberAttribute];
-            __esDecorate(null, null, _fov_decorators, { kind: "field", name: "fov", static: false, private: false, access: { has: obj => "fov" in obj, get: obj => obj.fov, set: (obj, value) => { obj.fov = value; } }, metadata: _metadata }, _fov_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _fov_decorators, { kind: "field", name: "fov", static: false, private: false, access: { has: obj => "fov" in obj, get: obj => obj.fov, set: (obj, value) => { obj.fov = value; } }, metadata: _metadata }, _fov_initializers, _fov_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PerspectiveCamera = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -88,7 +88,7 @@ let PerspectiveCamera = (() => {
          * [`.perspective`](../core/Scene#perspective), matching the behavior of [CSS
          * `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
          */
-        fov = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _fov_initializers, 0));
+        fov = __runInitializers(this, _fov_initializers, 0);
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
@@ -147,6 +147,10 @@ let PerspectiveCamera = (() => {
         }
         makeThreeObject3d() {
             return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _fov_extraInitializers);
         }
     };
     return PerspectiveCamera = _classThis;

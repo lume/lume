@@ -31,15 +31,6 @@ export
 @element('lume-mixed-plane', autoDefineElements)
 class MixedPlane extends Mesh {
 	override initialBehaviors = {geometry: 'mixedplane', material: 'mixedplane'}
-
-	/**
-	 * @property {true} isMixedPlane - An always-`true` property signaling that
-	 * this element is a `MixedPlane`. Useful for duck typing, especially in
-	 * plain JavaScript as opposed to TypeScript.
-	 */
-	get isMixedPlane() {
-		return true
-	}
 }
 
 declare module 'solid-js' {

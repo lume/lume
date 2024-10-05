@@ -75,15 +75,18 @@ let TextureProjector = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
+    let _src_extraInitializers = [];
     let _fitment_decorators;
     let _fitment_initializers = [];
+    let _fitment_extraInitializers = [];
     let _frontFacesOnly_decorators;
     let _frontFacesOnly_initializers = [];
-    let __camera_decorators;
-    let __camera_initializers = [];
+    let _frontFacesOnly_extraInitializers = [];
+    let _threeCamera_decorators;
+    let _threeCamera_initializers = [];
+    let _threeCamera_extraInitializers = [];
     var TextureProjector = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -91,11 +94,11 @@ let TextureProjector = (() => {
             _src_decorators = [stringAttribute];
             _fitment_decorators = [stringAttribute];
             _frontFacesOnly_decorators = [booleanAttribute];
-            __camera_decorators = [signal];
-            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _frontFacesOnly_decorators, { kind: "field", name: "frontFacesOnly", static: false, private: false, access: { has: obj => "frontFacesOnly" in obj, get: obj => obj.frontFacesOnly, set: (obj, value) => { obj.frontFacesOnly = value; } }, metadata: _metadata }, _frontFacesOnly_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __camera_decorators, { kind: "field", name: "_camera", static: false, private: false, access: { has: obj => "_camera" in obj, get: obj => obj._camera, set: (obj, value) => { obj._camera = value; } }, metadata: _metadata }, __camera_initializers, _instanceExtraInitializers);
+            _threeCamera_decorators = [signal];
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
+            __esDecorate(null, null, _fitment_decorators, { kind: "field", name: "fitment", static: false, private: false, access: { has: obj => "fitment" in obj, get: obj => obj.fitment, set: (obj, value) => { obj.fitment = value; } }, metadata: _metadata }, _fitment_initializers, _fitment_extraInitializers);
+            __esDecorate(null, null, _frontFacesOnly_decorators, { kind: "field", name: "frontFacesOnly", static: false, private: false, access: { has: obj => "frontFacesOnly" in obj, get: obj => obj.frontFacesOnly, set: (obj, value) => { obj.frontFacesOnly = value; } }, metadata: _metadata }, _frontFacesOnly_initializers, _frontFacesOnly_extraInitializers);
+            __esDecorate(null, null, _threeCamera_decorators, { kind: "field", name: "threeCamera", static: false, private: false, access: { has: obj => "threeCamera" in obj, get: obj => obj.threeCamera, set: (obj, value) => { obj.threeCamera = value; } }, metadata: _metadata }, _threeCamera_initializers, _threeCamera_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             TextureProjector = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -115,7 +118,7 @@ let TextureProjector = (() => {
          * The path to an image to be used as a projected
          * texture.
          */
-        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''
+        src = __runInitializers(this, _src_initializers, ''
         /**
          * @property {'cover' | 'contain'} fitment
          *
@@ -125,19 +128,34 @@ let TextureProjector = (() => {
          *
          * Fitment of the image within the size area on X and Y. Similar to the CSS
          * object-fit property, but supporting only "cover" and "contain" fitments.
+         */
+        );
+        /**
+         * @property {'cover' | 'contain'} fitment
+         *
+         * `attribute`
+         *
+         * Default: `'cover'`
+         *
+         * Fitment of the image within the size area on X and Y. Similar to the CSS
+         * object-fit property, but supporting only "cover" and "contain" fitments.
+         */
+        fitment = (__runInitializers(this, _src_extraInitializers), __runInitializers(this, _fitment_initializers, 'cover'
+        /* FIXME - documentation not exposed yet, experimental, does not work yet due to this issue:
+         * https://github.com/marcofugaro/three-projected-material/issues/46
+         *
+         * @property {boolean} frontFacesOnly
+         *
+         * `attribute`
+         *
+         * Default: `false`
+         *
+         * If `true`, the texture is projected only onto faces facing the projector
+         * (this element), similar to a real life projector. Otherwise, the
+         * projection hits all surfaces, even those facing away from the projector
+         * (this element).
          */
         ));
-        /**
-         * @property {'cover' | 'contain'} fitment
-         *
-         * `attribute`
-         *
-         * Default: `'cover'`
-         *
-         * Fitment of the image within the size area on X and Y. Similar to the CSS
-         * object-fit property, but supporting only "cover" and "contain" fitments.
-         */
-        fitment = __runInitializers(this, _fitment_initializers, 'cover'
         /* FIXME - documentation not exposed yet, experimental, does not work yet due to this issue:
          * https://github.com/marcofugaro/three-projected-material/issues/46
          *
@@ -152,59 +170,44 @@ let TextureProjector = (() => {
          * projection hits all surfaces, even those facing away from the projector
          * (this element).
          */
-        );
-        /* FIXME - documentation not exposed yet, experimental, does not work yet due to this issue:
-         * https://github.com/marcofugaro/three-projected-material/issues/46
-         *
-         * @property {boolean} frontFacesOnly
-         *
-         * `attribute`
-         *
-         * Default: `false`
-         *
-         * If `true`, the texture is projected only onto faces facing the projector
-         * (this element), similar to a real life projector. Otherwise, the
-         * projection hits all surfaces, even those facing away from the projector
-         * (this element).
-         */
-        frontFacesOnly = __runInitializers(this, _frontFacesOnly_initializers, false
+        frontFacesOnly = (__runInitializers(this, _fitment_extraInitializers), __runInitializers(this, _frontFacesOnly_initializers, false
         // textureScale?: number
         // textureOffset?: Vector2
         // TODO support also perspective projection
-        );
+        ));
         // textureScale?: number
         // textureOffset?: Vector2
         // TODO support also perspective projection
-        _camera = __runInitializers(this, __camera_initializers, null);
+        threeCamera = (__runInitializers(this, _frontFacesOnly_extraInitializers), __runInitializers(this, _threeCamera_initializers, null));
         connectedCallback() {
             super.connectedCallback();
-            this._camera = new OrthographicCamera();
-            this.three.add(this._camera);
+            this.threeCamera = new OrthographicCamera();
+            this.three.add(this.threeCamera);
             // setTimeout(() => {
             // 	setInterval(() => {
-            // 		this.three.remove(this._camera!)
-            // 		this._camera =
-            // 			this._camera instanceof OrthographicCamera ? new PerspectiveCamera() : new OrthographicCamera()
-            // 		this.three.add(this._camera)
+            // 		this.three.remove(this.threeCamera!)
+            // 		this.threeCamera =
+            // 			this.threeCamera instanceof OrthographicCamera ? new PerspectiveCamera() : new OrthographicCamera()
+            // 		this.three.add(this.threeCamera)
             // 	}, 500)
             // }, 3000)
             // Motor.addRenderTask(() => {
-            // 	this._camera!.rotation.y += 0.005
+            // 	this.threeCamera!.rotation.y += 0.005
             // })
             this.createEffect(() => {
                 // CAM HELPER
                 // const sphere = new Mesh(new SphereGeometry(10), new MeshPhongMaterial({color: 'white'}))
-                // this._camera!.add(sphere)
-                // const helper = new CameraHelper(this._camera!)
+                // this.threeCamera!.add(sphere)
+                // const helper = new CameraHelper(this.threeCamera!)
                 // this.scene?.three.add(helper)
                 // createEffect(() => {
                 // 	this.version
-                // 	this._camera?.updateProjectionMatrix()
+                // 	this.threeCamera?.updateProjectionMatrix()
                 // 	helper.update()
                 // })
                 createEffect(() => {
                     const size = this.calculatedSize;
-                    const cam = this._camera;
+                    const cam = this.threeCamera;
                     if (cam instanceof OrthographicCamera) {
                         cam.left = -size.x / 2;
                         cam.right = size.x / 2;
@@ -229,8 +232,12 @@ let TextureProjector = (() => {
         }
         disconnectedCallback() {
             super.disconnectedCallback();
-            this.three.remove(this._camera);
-            this._camera = null;
+            this.three.remove(this.threeCamera);
+            this.threeCamera = null;
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _threeCamera_extraInitializers);
         }
     };
     return TextureProjector = _classThis;

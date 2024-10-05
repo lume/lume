@@ -108,13 +108,12 @@ class PointLight extends LightWithShadow {
 	 * is enabled, power is the luminous power of the light measured in lumens
 	 * (lm).
 	 */
-	@numberAttribute // (1 * 4 * Math.PI) // intensity 1
-	get power() {
+	@numberAttribute get power() {
 		// compute the light's luminous power (in lumens) from its intensity (in candela)
 		// for an isotropic light source, luminous power (lm) = 4 π luminous intensity (cd)
 		return this.intensity * 4 * Math.PI
 	}
-	set power(power) {
+	@numberAttribute set power(power) {
 		// set the light's intensity (in candela) from the desired luminous power (in lumens)
 		this.intensity = power / (4 * Math.PI)
 	}

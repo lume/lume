@@ -1,4 +1,4 @@
-import type {Constructor} from 'lowclass'
+import type {Constructor} from 'lowclass/dist/Constructor.js'
 import {Motor, type RenderTask} from './Motor.js'
 import {XYZSizeModeValues, type SizeModeValue} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
@@ -30,7 +30,7 @@ const isInstance = Symbol()
  * deltaTime, and should return the new desired opacity.
  */
 export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
-	class PropertyAnimator extends Base {
+	return class PropertyAnimator extends Base {
 		// @ts-ignore, prevent downstream "has or is using private name" errors.
 		[isInstance as any] = true
 
@@ -138,10 +138,6 @@ export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(B
 			this.removeAllPropertyFunctions()
 		}
 	}
-
-	PropertyAnimator.prototype[isInstance] = true
-
-	return PropertyAnimator
 }
 
 Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {

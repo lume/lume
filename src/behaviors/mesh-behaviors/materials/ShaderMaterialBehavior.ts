@@ -24,12 +24,10 @@ class ShaderMaterialBehavior extends MaterialBehavior {
 	// specific data handling and type definitions for each one. This would
 	// make it easier to animate particular uniforms instead of replacing the
 	// whole object each time.
-	@attribute
-	@receiver
-	get uniforms(): Record<string, any> {
+	@attribute @receiver get uniforms(): Record<string, any> {
 		return this.#uniforms
 	}
-	set uniforms(u: string | Record<string, any> | null) {
+	@attribute set uniforms(u: string | Record<string, any> | null) {
 		if (!u) {
 			this.#uniforms = {}
 			return

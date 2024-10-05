@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -24,13 +31,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     }
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
-};
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
 };
 import { numberAttribute, element, stringAttribute } from '@lume/element';
 import { SpotLight as ThreeSpotLight } from 'three/src/lights/SpotLight.js';
@@ -68,9 +68,12 @@ let SpotLight = (() => {
     let _instanceExtraInitializers = [];
     let _angle_decorators;
     let _angle_initializers = [];
+    let _angle_extraInitializers = [];
     let _penumbra_decorators;
     let _penumbra_initializers = [];
+    let _penumbra_extraInitializers = [];
     let _get_target_decorators;
+    let _set_target_decorators;
     var SpotLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -78,9 +81,11 @@ let SpotLight = (() => {
             _angle_decorators = [numberAttribute];
             _penumbra_decorators = [numberAttribute];
             _get_target_decorators = [stringAttribute];
+            _set_target_decorators = [stringAttribute];
             __esDecorate(this, null, _get_target_decorators, { kind: "getter", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _angle_decorators, { kind: "field", name: "angle", static: false, private: false, access: { has: obj => "angle" in obj, get: obj => obj.angle, set: (obj, value) => { obj.angle = value; } }, metadata: _metadata }, _angle_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _penumbra_decorators, { kind: "field", name: "penumbra", static: false, private: false, access: { has: obj => "penumbra" in obj, get: obj => obj.penumbra, set: (obj, value) => { obj.penumbra = value; } }, metadata: _metadata }, _penumbra_initializers, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_target_decorators, { kind: "setter", name: "target", static: false, private: false, access: { has: obj => "target" in obj, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _angle_decorators, { kind: "field", name: "angle", static: false, private: false, access: { has: obj => "angle" in obj, get: obj => obj.angle, set: (obj, value) => { obj.angle = value; } }, metadata: _metadata }, _angle_initializers, _angle_extraInitializers);
+            __esDecorate(null, null, _penumbra_decorators, { kind: "field", name: "penumbra", static: false, private: false, access: { has: obj => "penumbra" in obj, get: obj => obj.penumbra, set: (obj, value) => { obj.penumbra = value; } }, metadata: _metadata }, _penumbra_initializers, _penumbra_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SpotLight = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -132,17 +137,17 @@ let SpotLight = (() => {
          * half way to the center, and 0 means that there is no fade in which gives
          * the oval a sharp/crisp outline.
          */
-        penumbra = __runInitializers(this, _penumbra_initializers, 1
+        penumbra = (__runInitializers(this, _angle_extraInitializers), __runInitializers(this, _penumbra_initializers, 1
         // TODO color map, like an old-school projector. We need to further abstract
         // _handleTexture from the behaviors (f.e. make it a mixin so we can pull it
         // in here, or make a new material behavior just for this light).
         // @stringAttribute colorMap = ""
-        );
+        ));
         // TODO color map, like an old-school projector. We need to further abstract
         // _handleTexture from the behaviors (f.e. make it a mixin so we can pull it
         // in here, or make a new material behavior just for this light).
         // @stringAttribute colorMap = ""
-        #target = [];
+        #target = (__runInitializers(this, _penumbra_extraInitializers), []);
         #rawTarget = '';
         #observer = null;
         // TODO Consolidate target selector functionality with similar clipPlanes

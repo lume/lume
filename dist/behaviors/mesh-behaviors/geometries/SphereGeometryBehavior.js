@@ -59,19 +59,20 @@ let SphereGeometryBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = GeometryBehavior;
-    let _instanceExtraInitializers = [];
     let _horizontalSegments_decorators;
     let _horizontalSegments_initializers = [];
+    let _horizontalSegments_extraInitializers = [];
     let _verticalSegments_decorators;
     let _verticalSegments_initializers = [];
+    let _verticalSegments_extraInitializers = [];
     var SphereGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _horizontalSegments_decorators = [numberAttribute, receiver];
             _verticalSegments_decorators = [numberAttribute, receiver];
-            __esDecorate(null, null, _horizontalSegments_decorators, { kind: "field", name: "horizontalSegments", static: false, private: false, access: { has: obj => "horizontalSegments" in obj, get: obj => obj.horizontalSegments, set: (obj, value) => { obj.horizontalSegments = value; } }, metadata: _metadata }, _horizontalSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _verticalSegments_decorators, { kind: "field", name: "verticalSegments", static: false, private: false, access: { has: obj => "verticalSegments" in obj, get: obj => obj.verticalSegments, set: (obj, value) => { obj.verticalSegments = value; } }, metadata: _metadata }, _verticalSegments_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _horizontalSegments_decorators, { kind: "field", name: "horizontalSegments", static: false, private: false, access: { has: obj => "horizontalSegments" in obj, get: obj => obj.horizontalSegments, set: (obj, value) => { obj.horizontalSegments = value; } }, metadata: _metadata }, _horizontalSegments_initializers, _horizontalSegments_extraInitializers);
+            __esDecorate(null, null, _verticalSegments_decorators, { kind: "field", name: "verticalSegments", static: false, private: false, access: { has: obj => "verticalSegments" in obj, get: obj => obj.verticalSegments, set: (obj, value) => { obj.verticalSegments = value; } }, metadata: _metadata }, _verticalSegments_initializers, _verticalSegments_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             SphereGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -87,7 +88,7 @@ let SphereGeometryBehavior = (() => {
          * The number of divisions around the equator of the sphere. A sphere with 10
          * horizontal segments and 10 vertical segments is made up of 100 flat faces.
          */
-        horizontalSegments = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _horizontalSegments_initializers, 32
+        horizontalSegments = __runInitializers(this, _horizontalSegments_initializers, 32
         /**
          * @property {number} verticalSegments -
          *
@@ -98,7 +99,7 @@ let SphereGeometryBehavior = (() => {
          * The number of divisions across the height of the sphere. A sphere with 10
          * horizontal segments and 10 vertical segments is made up of 100 flat faces.
          */
-        ));
+        );
         /**
          * @property {number} verticalSegments -
          *
@@ -109,9 +110,13 @@ let SphereGeometryBehavior = (() => {
          * The number of divisions across the height of the sphere. A sphere with 10
          * horizontal segments and 10 vertical segments is made up of 100 flat faces.
          */
-        verticalSegments = __runInitializers(this, _verticalSegments_initializers, 32);
+        verticalSegments = (__runInitializers(this, _horizontalSegments_extraInitializers), __runInitializers(this, _verticalSegments_initializers, 32));
         _createComponent() {
             return new SphereGeometry(this.element.calculatedSize.x / 2, this.horizontalSegments, this.verticalSegments);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _verticalSegments_extraInitializers);
         }
     };
     return SphereGeometryBehavior = _classThis;

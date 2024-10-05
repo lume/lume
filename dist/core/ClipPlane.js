@@ -35,6 +35,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import { signal } from 'classy-solid';
 import { Plane } from 'three/src/math/Plane.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { Element3D } from './Element3D.js';
@@ -72,34 +73,53 @@ let ClipPlane = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
+    let _threeClip_decorators;
+    let _threeClip_initializers = [];
+    let _threeClip_extraInitializers = [];
+    let _threeInverseClip_decorators;
+    let _threeInverseClip_initializers = [];
+    let _threeInverseClip_extraInitializers = [];
     var ClipPlane = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _threeClip_decorators = [signal];
+            _threeInverseClip_decorators = [signal];
+            __esDecorate(null, null, _threeClip_decorators, { kind: "field", name: "threeClip", static: false, private: false, access: { has: obj => "threeClip" in obj, get: obj => obj.threeClip, set: (obj, value) => { obj.threeClip = value; } }, metadata: _metadata }, _threeClip_initializers, _threeClip_extraInitializers);
+            __esDecorate(null, null, _threeInverseClip_decorators, { kind: "field", name: "threeInverseClip", static: false, private: false, access: { has: obj => "threeInverseClip" in obj, get: obj => obj.threeInverseClip, set: (obj, value) => { obj.threeInverseClip = value; } }, metadata: _metadata }, _threeInverseClip_initializers, _threeInverseClip_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ClipPlane = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        // The __clip and __inverseClip properties are used by `ClipPlanesBehavior`
         /**
          * *reactive* *readonly*
          *
          * Returns the underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
          * for the scene and the element participates in rendering.
+         * Used by `ClipPlanesBehavior`
          */
-        __clip = new Plane(new Vector3(...clipNormal));
+        threeClip = __runInitializers(this, _threeClip_initializers, new Plane(new Vector3(...clipNormal))
         /**
          * *reactive* *readonly*
          *
          * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
          * for the scene and the element participates in rendering.
+         * Used by `ClipPlanesBehavior`
          */
-        __inverseClip = new Plane(new Vector3(...clipNormal).negate());
+        );
+        /**
+         * *reactive* *readonly*
+         *
+         * Returns the inverse underlying `THREE.Plane` if applicable: when WebGL rendering is enabled
+         * for the scene and the element participates in rendering.
+         * Used by `ClipPlanesBehavior`
+         */
+        threeInverseClip = (__runInitializers(this, _threeClip_extraInitializers), __runInitializers(this, _threeInverseClip_initializers, new Plane(new Vector3(...clipNormal).negate())));
         updateWorldMatrices() {
             super.updateWorldMatrices();
-            const plane = this.__clip;
-            const inverse = this.__inverseClip;
+            const plane = this.threeClip;
+            const inverse = this.threeInverseClip;
             // These only exist if WebGL mode is enabled.
             if (!plane || !inverse)
                 return;
@@ -110,6 +130,10 @@ let ClipPlane = (() => {
             // Clip planes are world-positioned.
             plane.applyMatrix4(this.three.matrixWorld);
             inverse.applyMatrix4(this.three.matrixWorld);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _threeInverseClip_extraInitializers);
         }
     };
     return ClipPlane = _classThis;

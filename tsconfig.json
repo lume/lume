@@ -1,21 +1,7 @@
 {
 	"extends": "./node_modules/@lume/cli/config/ts.config.json",
-	"compilerOptions": {
-		// TODO this is not working
-		"jsxImportSource": "solid-js", // TODO move to lume/cli
 
-		// TODO make the following options default in lume/cli
-
-		"noImplicitOverride": true // TODO move to lume/cli
-		// "noUncheckedIndexedAccess": true // TODO enable, fix errors,
-	},
-
-	// TODO Ideally we don't want test API type defs showing up in source code,
-	// but disabling this otherwise causes tests to be skipped (because lume
-	// cli runs tests from the dist folder so we need to not exclude test
-	// files so that they get built to dist)...
-	// "exclude": ["./src/**/*.test.ts", "./src/**/*.test.tsx", "./src/**/*.test.common.ts", "./src/**/*.react-jsx.d.ts"]
-
-	// ...so for now we do not exclude tests.
+	// Exclude these as they are type-only files for users to optionally import,
+	// they do not need to be compiled.
 	"exclude": ["./src/**/*.react-jsx.d.ts"]
 }

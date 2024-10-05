@@ -19,12 +19,10 @@ class RoundedRectangleGeometryBehavior extends GeometryBehavior {
 
 	#quadraticCorners = false
 
-	@attribute
-	@receiver
-	get quadraticCorners() {
+	@attribute @receiver get quadraticCorners() {
 		return this.#quadraticCorners
 	}
-	set quadraticCorners(val: boolean) {
+	@attribute set quadraticCorners(val: boolean) {
 		// @ts-ignore handle incoming attribute values
 		if (val === null || val === 'false') this.#quadraticCorners = false
 		else this.#quadraticCorners = true

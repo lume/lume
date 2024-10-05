@@ -27,12 +27,15 @@ export type ProjectedMaterialBehaviorAttributes = PhysicalMaterialBehaviorAttrib
  * ></lume-box>
  * ```
  *
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.content = projectedTextureExample
+ * </script>
+ *
  * @extends PhysicalMaterialBehavior
  */
 export declare class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
     #private;
-    /** The computed value after the user sets this.textureProjectors. F.e. any strings are queried from DOM, and this array contains only DOM element references. */
-    __associatedProjectors: Array<TextureProjector>;
     /**
      * @property {Array<TextureProjector>} associatedProjectors
      *

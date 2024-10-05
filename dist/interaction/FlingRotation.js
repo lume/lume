@@ -46,15 +46,18 @@ let FlingRotation = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Effects;
-    let _instanceExtraInitializers = [];
     let _rotationYTarget_decorators;
     let _rotationYTarget_initializers = [];
+    let _rotationYTarget_extraInitializers = [];
     let _rotationXTarget_decorators;
     let _rotationXTarget_initializers = [];
+    let _rotationXTarget_extraInitializers = [];
     let _interactionInitiator_decorators;
     let _interactionInitiator_initializers = [];
+    let _interactionInitiator_extraInitializers = [];
     let _interactionContainer_decorators;
     let _interactionContainer_initializers = [];
+    let _interactionContainer_extraInitializers = [];
     var FlingRotation = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -63,44 +66,44 @@ let FlingRotation = (() => {
             _rotationXTarget_decorators = [signal];
             _interactionInitiator_decorators = [signal];
             _interactionContainer_decorators = [signal];
-            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _interactionInitiator_decorators, { kind: "field", name: "interactionInitiator", static: false, private: false, access: { has: obj => "interactionInitiator" in obj, get: obj => obj.interactionInitiator, set: (obj, value) => { obj.interactionInitiator = value; } }, metadata: _metadata }, _interactionInitiator_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _interactionContainer_decorators, { kind: "field", name: "interactionContainer", static: false, private: false, access: { has: obj => "interactionContainer" in obj, get: obj => obj.interactionContainer, set: (obj, value) => { obj.interactionContainer = value; } }, metadata: _metadata }, _interactionContainer_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _rotationYTarget_extraInitializers);
+            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _rotationXTarget_extraInitializers);
+            __esDecorate(null, null, _interactionInitiator_decorators, { kind: "field", name: "interactionInitiator", static: false, private: false, access: { has: obj => "interactionInitiator" in obj, get: obj => obj.interactionInitiator, set: (obj, value) => { obj.interactionInitiator = value; } }, metadata: _metadata }, _interactionInitiator_initializers, _interactionInitiator_extraInitializers);
+            __esDecorate(null, null, _interactionContainer_decorators, { kind: "field", name: "interactionContainer", static: false, private: false, access: { has: obj => "interactionContainer" in obj, get: obj => obj.interactionContainer, set: (obj, value) => { obj.interactionContainer = value; } }, metadata: _metadata }, _interactionContainer_initializers, _interactionContainer_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             FlingRotation = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /** The object that will be rotated on Y. Required. */
-        rotationYTarget = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _rotationYTarget_initializers, void 0));
+        rotationYTarget = __runInitializers(this, _rotationYTarget_initializers, void 0);
         /**
          * The object that will be rotated on X. Defaults to the element inside the
          * rotationYTarget (it's like a gimball).
          */
-        rotationXTarget = __runInitializers(this, _rotationXTarget_initializers, void 0);
+        rotationXTarget = (__runInitializers(this, _rotationYTarget_extraInitializers), __runInitializers(this, _rotationXTarget_initializers, void 0));
         /**
          * The element on which the pointer should be placed down on in order to
          * initiate drag tracking. This defaults to rotationXTarget.
          */
-        interactionInitiator = __runInitializers(this, _interactionInitiator_initializers, void 0);
+        interactionInitiator = (__runInitializers(this, _rotationXTarget_extraInitializers), __runInitializers(this, _interactionInitiator_initializers, void 0));
         /**
          * The area in which drag tacking will happen. Defaults to
          * document.documentElement for tracking in the whole viewport.
          */
         // TODO we only need the initiator (just call it target) and we can remove
         // this in favor of pointer capture.
-        interactionContainer = __runInitializers(this, _interactionContainer_initializers, document.documentElement
+        interactionContainer = (__runInitializers(this, _interactionInitiator_extraInitializers), __runInitializers(this, _interactionContainer_initializers, document.documentElement
         /**
          * The X rotation can not go below this value. Defaults to -90 which means
          * facing straight up.
          */
-        );
+        ));
         /**
          * The X rotation can not go below this value. Defaults to -90 which means
          * facing straight up.
          */
-        minFlingRotationX = -90;
+        minFlingRotationX = (__runInitializers(this, _interactionContainer_extraInitializers), -90);
         /**
          * The X rotation can not go above this value. Defaults to 90 which means
          * facing straight down.

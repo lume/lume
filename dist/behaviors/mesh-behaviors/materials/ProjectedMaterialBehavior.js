@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,12 +32,9 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
@@ -69,6 +73,11 @@ import { querySelectorUpward } from '../../../utils/querySelectorUpward.js';
  * ></lume-box>
  * ```
  *
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.content = projectedTextureExample
+ * </script>
+ *
  * @extends PhysicalMaterialBehavior
  */
 let ProjectedMaterialBehavior = (() => {
@@ -78,27 +87,34 @@ let ProjectedMaterialBehavior = (() => {
     let _classThis;
     let _classSuper = PhysicalMaterialBehavior;
     let _instanceExtraInitializers = [];
-    let ___associatedProjectors_decorators;
-    let ___associatedProjectors_initializers = [];
+    let _private_associatedProjectors_decorators;
+    let _private_associatedProjectors_initializers = [];
+    let _private_associatedProjectors_extraInitializers = [];
+    let _private_associatedProjectors_descriptor;
     let _get_textureProjectors_decorators;
+    let _set_textureProjectors_decorators;
     let _get_projectedTextures_decorators;
+    let _set_projectedTextures_decorators;
     var ProjectedMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            ___associatedProjectors_decorators = [signal];
+            _private_associatedProjectors_decorators = [signal];
             _get_textureProjectors_decorators = [stringAttribute, receiver];
+            _set_textureProjectors_decorators = [stringAttribute];
             _get_projectedTextures_decorators = [stringAttribute, receiver];
+            _set_projectedTextures_decorators = [stringAttribute];
+            __esDecorate(this, _private_associatedProjectors_descriptor = { get: __setFunctionName(function () { return this.#associatedProjectors_accessor_storage; }, "#associatedProjectors", "get"), set: __setFunctionName(function (value) { this.#associatedProjectors_accessor_storage = value; }, "#associatedProjectors", "set") }, _private_associatedProjectors_decorators, { kind: "accessor", name: "#associatedProjectors", static: false, private: true, access: { has: obj => #associatedProjectors in obj, get: obj => obj.#associatedProjectors, set: (obj, value) => { obj.#associatedProjectors = value; } }, metadata: _metadata }, _private_associatedProjectors_initializers, _private_associatedProjectors_extraInitializers);
             __esDecorate(this, null, _get_textureProjectors_decorators, { kind: "getter", name: "textureProjectors", static: false, private: false, access: { has: obj => "textureProjectors" in obj, get: obj => obj.textureProjectors }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_textureProjectors_decorators, { kind: "setter", name: "textureProjectors", static: false, private: false, access: { has: obj => "textureProjectors" in obj, set: (obj, value) => { obj.textureProjectors = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_projectedTextures_decorators, { kind: "getter", name: "projectedTextures", static: false, private: false, access: { has: obj => "projectedTextures" in obj, get: obj => obj.projectedTextures }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, ___associatedProjectors_decorators, { kind: "field", name: "__associatedProjectors", static: false, private: false, access: { has: obj => "__associatedProjectors" in obj, get: obj => obj.__associatedProjectors, set: (obj, value) => { obj.__associatedProjectors = value; } }, metadata: _metadata }, ___associatedProjectors_initializers, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_projectedTextures_decorators, { kind: "setter", name: "projectedTextures", static: false, private: false, access: { has: obj => "projectedTextures" in obj, set: (obj, value) => { obj.projectedTextures = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ProjectedMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        /** The computed value after the user sets this.textureProjectors. F.e. any strings are queried from DOM, and this array contains only DOM element references. */
-        __associatedProjectors = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, ___associatedProjectors_initializers, []
+        #associatedProjectors_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _private_associatedProjectors_initializers, []
         /**
          * @property {Array<TextureProjector>} associatedProjectors
          *
@@ -114,6 +130,9 @@ let ProjectedMaterialBehavior = (() => {
          * [`.textureProjectors`](#textureprojectors).
          */
         ));
+        /** The computed value after the user sets this.textureProjectors. F.e. any strings are queried from DOM, and this array contains only DOM element references. */
+        get #associatedProjectors() { return _private_associatedProjectors_descriptor.get.call(this); }
+        set #associatedProjectors(value) { return _private_associatedProjectors_descriptor.set.call(this, value); }
         /**
          * @property {Array<TextureProjector>} associatedProjectors
          *
@@ -129,10 +148,10 @@ let ProjectedMaterialBehavior = (() => {
          * [`.textureProjectors`](#textureprojectors).
          */
         get associatedProjectors() {
-            return this.__associatedProjectors;
+            return this.#associatedProjectors;
         }
         /** The raw value the user set on this.textureProjectors */
-        #textureProjectorsRaw = [];
+        #textureProjectorsRaw = (__runInitializers(this, _private_associatedProjectors_extraInitializers), []);
         /**
          * @property {string | Array<TextureProjector | string | null>} textureProjectors
          *
@@ -271,11 +290,11 @@ let ProjectedMaterialBehavior = (() => {
                             // be found here. We could wait for upgrade.
                         }
                     }
-                    this.__associatedProjectors = projectors; // trigger
+                    this.#associatedProjectors = projectors; // trigger
                 });
-                this._handleTexture(() => this.__associatedProjectors[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
+                this._handleTexture(() => this.#associatedProjectors[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
                 createEffect(() => {
-                    const tex = this.__associatedProjectors[0];
+                    const tex = this.#associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -285,11 +304,11 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.__associatedProjectors[0];
+                    const tex = this.#associatedProjectors[0];
                     if (!tex)
                         return;
                     // if the camera changes
-                    const cam = tex._camera;
+                    const cam = tex.threeCamera;
                     if (!cam)
                         return;
                     if (three.material !== mat)
@@ -314,7 +333,7 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.__associatedProjectors[0];
+                    const tex = this.#associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -331,7 +350,7 @@ let ProjectedMaterialBehavior = (() => {
                     mat.project(three, false);
                 });
                 createEffect(() => {
-                    const tex = this.__associatedProjectors[0];
+                    const tex = this.#associatedProjectors[0];
                     if (!tex)
                         return;
                     createEffect(() => {

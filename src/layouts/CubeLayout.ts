@@ -105,8 +105,8 @@ class CubeLayout extends Element3D {
 	 */
 	setContent(content: Element3D[]) {
 		for (let index = 0; index < 6; index += 1) {
-			this.#sides[index].innerHTML = ''
-			this.#sides[index].append(content[index])
+			this.#sides[index]!.innerHTML = ''
+			this.#sides[index]!.append(content[index]!)
 		}
 
 		return this

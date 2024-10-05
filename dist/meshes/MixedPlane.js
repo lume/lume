@@ -73,14 +73,6 @@ let MixedPlane = (() => {
             __runInitializers(_classThis, _classExtraInitializers);
         }
         initialBehaviors = { geometry: 'mixedplane', material: 'mixedplane' };
-        /**
-         * @property {true} isMixedPlane - An always-`true` property signaling that
-         * this element is a `MixedPlane`. Useful for duck typing, especially in
-         * plain JavaScript as opposed to TypeScript.
-         */
-        get isMixedPlane() {
-            return true;
-        }
     };
     return MixedPlane = _classThis;
 })();

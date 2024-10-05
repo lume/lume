@@ -24,5 +24,5 @@ import type { Object3D } from 'three/src/Three';
  * attributes are available but with default values not from the loaded model
  * (TODO).
  */
-export declare function threeToLume(three: Object3D): import("../../core/Element3D.js").Element3D;
+export declare function threeToLume(three: Object3D): import("../../index.js").Element3D;
 //# sourceMappingURL=threeToLume.d.ts.map

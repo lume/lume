@@ -47,23 +47,23 @@ let TdsModelBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = RenderableBehavior;
-    let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
+    let _src_extraInitializers = [];
     var TdsModelBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _src_decorators = [stringAttribute, receiver];
-            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             TdsModelBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /** Path to a .3ds file. */
-        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''));
-        loader = new TDSLoader();
+        src = __runInitializers(this, _src_initializers, '');
+        loader = (__runInitializers(this, _src_extraInitializers), new TDSLoader());
         model;
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
@@ -88,7 +88,7 @@ let TdsModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
-            // In the following loader.load() callbacks, if __version doesn't
+            // In the following loader.load() callbacks, if #version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.

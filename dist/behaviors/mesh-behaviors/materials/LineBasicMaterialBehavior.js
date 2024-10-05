@@ -62,15 +62,15 @@ let LineBasicMaterialBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = MaterialBehavior;
-    let _instanceExtraInitializers = [];
     let _texture_decorators;
     let _texture_initializers = [];
+    let _texture_extraInitializers = [];
     var LineBasicMaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _texture_decorators = [stringAttribute, receiver];
-            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _texture_decorators, { kind: "field", name: "texture", static: false, private: false, access: { has: obj => "texture" in obj, get: obj => obj.texture, set: (obj, value) => { obj.texture = value; } }, metadata: _metadata }, _texture_initializers, _texture_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             LineBasicMaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -82,13 +82,17 @@ let LineBasicMaterialBehavior = (() => {
          * material. Most likely you'll supply UVs by copying data from a modeling
          * program like Blender, probably not something you'd program manually.
          */
-        texture = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _texture_initializers, ''));
+        texture = __runInitializers(this, _texture_initializers, '');
         _createComponent() {
             return new LineBasicMaterial();
         }
         connectedCallback() {
             super.connectedCallback();
             this._handleTexture(() => this.texture, (mat, tex) => (mat.map = tex), mat => !!mat.map, () => { }, true);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _texture_extraInitializers);
         }
     };
     return LineBasicMaterialBehavior = _classThis;
