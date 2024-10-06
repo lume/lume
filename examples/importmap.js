@@ -63,6 +63,7 @@
 				'@lume/three-projected-material/': 'https://raw.githack.com/lume/three-projected-material/<GITREF>/',
 				'@lume/autolayout': 'https://raw.githack.com/lume/autolayout/<GITREF>/dist/AutoLayout.js',
 				lowclass: 'https://raw.githack.com/trusktr/lowclass/<GITREF>/dist/index.js',
+				'lowclass/': 'https://raw.githack.com/trusktr/lowclass/<GITREF>/',
 				'james-bond': 'https://raw.githack.com/trusktr/james-bond/<GITREF>/dist/index.js',
 				'element-behaviors': 'https://raw.githack.com/lume/element-behaviors/<GITREF>/dist/index.js',
 				'@lume/custom-attributes/': 'https://raw.githack.com/lume/custom-attributes/<GITREF>/',
