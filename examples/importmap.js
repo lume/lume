@@ -41,6 +41,7 @@
 		},
 	}
 
+	const location = basedLocation()
 	const isGithack = location.origin.includes('githack.com')
 
 	// Special case for raw.githack.com for viewing examples directly off of GitHub
@@ -48,6 +49,13 @@
 	const map = isGithack ? makeGithackImportmap() : localMap
 
 	document.write(/*html*/ `<script type="importmap">${JSON.stringify(map, undefined, '\t')}</script>`)
+
+	/** Returns a URL object with `href` and other properties modified similar to what elements see due to any <base> element having modified the base href (window.location.href is not affected by <base>) */
+	function basedLocation() {
+		const a = document.createElement('a')
+		a.href = './foo.html'
+		return new URL(a.href)
+	}
 
 	function makeGithackImportmap() {
 		const gitref = location.href.split('/')[5] ?? 'develop'
