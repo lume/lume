@@ -356,11 +356,10 @@ class WebglRendererThree {
 	}
 
 	// TODO: at the moment this has only been tested toggling it on
-	// once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
-	// TODO Update to WebXR (WebXRManager in Three)
+	// once. Should we be able to turn it off too (f.e. the xr attribute is removed)?
 	enableVR(scene: Scene, enable: boolean) {
 		const state = this.sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
+		if (!state) throw new ReferenceError('Unable to enable XR. Scene state should be initialized first.')
 
 		const {renderer} = state
 		renderer.xr.enabled = enable
@@ -370,7 +369,7 @@ class WebglRendererThree {
 	// TODO Update to WebXR
 	createDefaultVRButton(scene: Scene): HTMLElement {
 		const state = this.sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
+		if (!state) throw new ReferenceError('Unable to create XR button. Scene state should be initialized first.')
 
 		const {renderer} = state
 		return VRButton.createButton(renderer)
