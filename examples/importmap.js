@@ -77,12 +77,12 @@
 				'@lume/custom-attributes/': 'https://raw.githack.com/lume/custom-attributes/<GITREF>/',
 
 				regexr: 'https://raw.githack.com/trusktr/regexr/v2.0.4/dist/index.js',
-				'solid-js': 'https://unpkg.com/solid-js@1.4.8/dist/solid.js',
-				'solid-js/web': 'https://unpkg.com/solid-js@1.4.8/web/dist/web.js',
-				'solid-js/html': 'https://unpkg.com/solid-js@1.4.8/html/dist/html.js',
-				'solid-js/store': 'https://unpkg.com/solid-js@1.4.8/store/dist/store.js',
-				three: 'https://raw.githack.com/mrdoob/three.js/r158/build/three.module.js',
-				'three/': 'https://raw.githack.com/mrdoob/three.js/r158/',
+				'solid-js': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/dist/solid.js',
+				'solid-js/web': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/web/dist/web.js',
+				'solid-js/html': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/html/dist/html.js',
+				'solid-js/store': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/store/dist/store.js',
+				three: 'https://raw.githack.com/mrdoob/three.js/r168/build/three.module.js',
+				'three/': 'https://raw.githack.com/mrdoob/three.js/r168/',
 			},
 		}
 
