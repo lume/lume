@@ -43,15 +43,18 @@ let DragFling = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Settable(Effects);
-    let _instanceExtraInitializers = [];
     let __x_decorators;
     let __x_initializers = [];
+    let __x_extraInitializers = [];
     let __y_decorators;
     let __y_initializers = [];
+    let __y_extraInitializers = [];
     let _target_decorators;
     let _target_initializers = [];
+    let _target_extraInitializers = [];
     let _pointerTypes_decorators;
     let _pointerTypes_initializers = [];
+    let _pointerTypes_extraInitializers = [];
     var DragFling = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -60,22 +63,22 @@ let DragFling = (() => {
             __y_decorators = [signal];
             _target_decorators = [signal];
             _pointerTypes_decorators = [signal];
-            __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _pointerTypes_decorators, { kind: "field", name: "pointerTypes", static: false, private: false, access: { has: obj => "pointerTypes" in obj, get: obj => obj.pointerTypes, set: (obj, value) => { obj.pointerTypes = value; } }, metadata: _metadata }, _pointerTypes_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, __x_decorators, { kind: "field", name: "_x", static: false, private: false, access: { has: obj => "_x" in obj, get: obj => obj._x, set: (obj, value) => { obj._x = value; } }, metadata: _metadata }, __x_initializers, __x_extraInitializers);
+            __esDecorate(null, null, __y_decorators, { kind: "field", name: "_y", static: false, private: false, access: { has: obj => "_y" in obj, get: obj => obj._y, set: (obj, value) => { obj._y = value; } }, metadata: _metadata }, __y_initializers, __y_extraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
+            __esDecorate(null, null, _pointerTypes_decorators, { kind: "field", name: "pointerTypes", static: false, private: false, access: { has: obj => "pointerTypes" in obj, get: obj => obj.pointerTypes, set: (obj, value) => { obj.pointerTypes = value; } }, metadata: _metadata }, _pointerTypes_initializers, _pointerTypes_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             DragFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        _x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, __x_initializers, 0
+        _x = __runInitializers(this, __x_initializers, 0
         /**
          * During drag, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value.
          */
-        ));
+        );
         /**
          * During drag, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
@@ -88,13 +91,13 @@ let DragFling = (() => {
             this.#stopAnimation();
             this._x = val;
         }
-        _y = __runInitializers(this, __y_initializers, 0
+        _y = (__runInitializers(this, __x_extraInitializers), __runInitializers(this, __y_initializers, 0
         /**
          * During drag, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value.
          */
-        );
+        ));
         /**
          * During drag, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
@@ -107,12 +110,12 @@ let DragFling = (() => {
             this.#stopAnimation();
             this._y = val;
         }
-        minX = -Infinity;
+        minX = (__runInitializers(this, __y_extraInitializers), -Infinity);
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
         target = __runInitializers(this, _target_initializers, document.documentElement);
-        sensitivity = 1;
+        sensitivity = (__runInitializers(this, _target_extraInitializers), 1);
         epsilon = 0.01;
         /**
          * Portion of the change in value that is removed each frame to
@@ -126,7 +129,7 @@ let DragFling = (() => {
          * 'touch'). Default is all of them.
          */
         pointerTypes = __runInitializers(this, _pointerTypes_initializers, ['mouse', 'pen', 'touch']);
-        #task;
+        #task = __runInitializers(this, _pointerTypes_extraInitializers);
         #interacting = (() => {
             const [get, set] = createSignal(false);
             return { get, set };

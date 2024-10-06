@@ -4,9 +4,7 @@ import {PropReceiver} from './PropReceiver.js'
 
 import type {Element as LumeElement} from '@lume/element'
 import type {ElementWithBehaviors, PossibleBehaviorConstructor, PossibleBehaviorInstance} from 'element-behaviors'
-import type {AnyConstructor} from 'lowclass/dist/utils.js'
-
-type PropKey = string | symbol
+import type {AnyConstructor} from 'lowclass/dist/Constructor.js'
 
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
@@ -109,8 +107,8 @@ export abstract class Behavior extends PropReceiver() {
 	#whenDefined: Promise<unknown> = null! as Promise<unknown>
 	#elementDefined = false
 
-	override __receiveInitialValues() {
-		super.__receiveInitialValues()
+	override receiveInitialValues() {
+		super.receiveInitialValues()
 		this.#fowardPreUpgradeValues()
 	}
 
@@ -126,14 +124,14 @@ export abstract class Behavior extends PropReceiver() {
 
 		this.#preUpgradeValuesHandled = true
 
-		for (const prop of this.__getReceivedProps()) {
+		for (const prop of this.receivedProperties ?? []) {
 			// prettier-ignore
 			const value = el.
 				// @ts-expect-error protected access is ok here
 				_preUpgradeValues
 				.get(prop)
 
-			if (value !== undefined) this._propChangedCallback(prop as PropKey, value)
+			if (value !== undefined) this[prop as keyof this]
 		}
 	}
 

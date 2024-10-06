@@ -1,6 +1,6 @@
 {
 	"name": "lume",
-	"version": "0.3.0-alpha.43",
+	"version": "0.3.0-alpha.44",
 	"description": "Build next-level interactive web applications.",
 	"license": "MIT",
 	"homepage": "http://lume.io",
@@ -47,7 +47,7 @@
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
-		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume",
+		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume",
 		"unlink": "npm run unlink:unix || npm run --script-shell=pwsh unlink:windows",
 		"unlink:unix": "rm -rf `find . -name node_modules`",
 		"unlink:windows": "Get-ChildItem -r -i node_modules | rm -r -fo",
@@ -57,8 +57,8 @@
 		"clean:all": "corepack yarn lerna run clean --parallel || echo 'clean:all failed, skipping.'",
 		"// Note, we don't run tests in topological order with the -t option because all packages are already built in topological order first.": "",
 		"// Note, we run all web test-runner tests first, then other packages' tests second, otherwise other packages somehow causes web test-runner to have module-not-found errors.": "",
-		"test:all": "cross-env TEST_ALL=true npm test && corepack yarn lerna run test --parallel --scope '{readem,@lume/kiwi,@lume/autolayout,@lume/three-projected-material,@lume/live-code}'",
-		"test:watch:all": "echo TODO corepack yarn lerna run test:watch --parallel --scope lume --include-dependencies # https://github.com/modernweb-dev/web/discussions/2522",
+		"test:all": "cross-env TEST_ALL=true npm test && corepack yarn lerna run test --parallel --scope '{readem,@lume/kiwi,@lume/autolayout,@lume/three-projected-material}'",
+		"test:watch:all": "cross-env TEST_ALL=true npm run test:watch",
 		"prettier:all": "corepack yarn lerna run prettier --parallel",
 		"prettier:check:all": "corepack yarn lerna run prettier:check --parallel",
 		"XXXX WEBSITE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
@@ -71,13 +71,13 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.10.0",
-		"@lume/element": "^0.11.6",
+		"@lume/element": "^0.13.0",
 		"@lume/eventful": "^0.3.0",
 		"@lume/three-projected-material": "^0.3.0",
-		"classy-solid": "^0.3.7",
+		"classy-solid": "^0.4.0",
 		"element-behaviors": "^5.0.0",
 		"james-bond": "^0.7.0",
-		"lowclass": "^7.0.0",
+		"lowclass": "^8.0.0",
 		"regexr": "^2.0.0",
 		"solid-js": "^1.0.0"
 	},
@@ -85,7 +85,7 @@
 		"three": ">=0.152.0"
 	},
 	"devDependencies": {
-		"@lume/cli": "^0.12.1",
+		"@lume/cli": "^0.14.0",
 		"@types/three": ">=0.152.0",
 		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",
@@ -95,7 +95,7 @@
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.152.0",
-		"typescript": "5.2.x"
+		"typescript": "^5.0.0"
 	},
 	"repository": {
 		"type": "git",

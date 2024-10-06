@@ -10,10 +10,10 @@ declare const TreeNode_base: (new (...a: any[]) => {
     "__#1@#createEffect2"(fn: () => void): void;
     "__#1@#stopEffects2"(): void;
 }) & (new (...a: any[]) => {
+    "__#1@#eventMap": Map<string, Set<[Function, any]>> | null;
     on(eventName: string, callback: Function, context?: any): void;
-    off(eventName: string, callback?: Function | undefined, context?: any): void;
+    off(eventName: string, callback?: Function, context?: any): void;
     emit(eventName: string, data?: any): void;
-    "__#1@#eventMap": Map<string, [Function, any][]> | null;
 }) & typeof LumeElement;
 /**
  * @class TreeNode - The `TreeNode` class represents objects that are connected

@@ -57,23 +57,30 @@ let LightWithShadow = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Light;
-    let _instanceExtraInitializers = [];
     let _castShadow_decorators;
     let _castShadow_initializers = [];
+    let _castShadow_extraInitializers = [];
     let _shadowMapWidth_decorators;
     let _shadowMapWidth_initializers = [];
+    let _shadowMapWidth_extraInitializers = [];
     let _shadowMapHeight_decorators;
     let _shadowMapHeight_initializers = [];
+    let _shadowMapHeight_extraInitializers = [];
     let _shadowRadius_decorators;
     let _shadowRadius_initializers = [];
+    let _shadowRadius_extraInitializers = [];
     let _shadowBias_decorators;
     let _shadowBias_initializers = [];
+    let _shadowBias_extraInitializers = [];
     let _shadowNormalBias_decorators;
     let _shadowNormalBias_initializers = [];
+    let _shadowNormalBias_extraInitializers = [];
     let _shadowCameraNear_decorators;
     let _shadowCameraNear_initializers = [];
+    let _shadowCameraNear_extraInitializers = [];
     let _shadowCameraFar_decorators;
     let _shadowCameraFar_initializers = [];
+    let _shadowCameraFar_extraInitializers = [];
     var LightWithShadow = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -86,14 +93,14 @@ let LightWithShadow = (() => {
             _shadowNormalBias_decorators = [numberAttribute];
             _shadowCameraNear_decorators = [numberAttribute];
             _shadowCameraFar_decorators = [numberAttribute];
-            __esDecorate(null, null, _castShadow_decorators, { kind: "field", name: "castShadow", static: false, private: false, access: { has: obj => "castShadow" in obj, get: obj => obj.castShadow, set: (obj, value) => { obj.castShadow = value; } }, metadata: _metadata }, _castShadow_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowMapWidth_decorators, { kind: "field", name: "shadowMapWidth", static: false, private: false, access: { has: obj => "shadowMapWidth" in obj, get: obj => obj.shadowMapWidth, set: (obj, value) => { obj.shadowMapWidth = value; } }, metadata: _metadata }, _shadowMapWidth_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowMapHeight_decorators, { kind: "field", name: "shadowMapHeight", static: false, private: false, access: { has: obj => "shadowMapHeight" in obj, get: obj => obj.shadowMapHeight, set: (obj, value) => { obj.shadowMapHeight = value; } }, metadata: _metadata }, _shadowMapHeight_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowRadius_decorators, { kind: "field", name: "shadowRadius", static: false, private: false, access: { has: obj => "shadowRadius" in obj, get: obj => obj.shadowRadius, set: (obj, value) => { obj.shadowRadius = value; } }, metadata: _metadata }, _shadowRadius_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowBias_decorators, { kind: "field", name: "shadowBias", static: false, private: false, access: { has: obj => "shadowBias" in obj, get: obj => obj.shadowBias, set: (obj, value) => { obj.shadowBias = value; } }, metadata: _metadata }, _shadowBias_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowNormalBias_decorators, { kind: "field", name: "shadowNormalBias", static: false, private: false, access: { has: obj => "shadowNormalBias" in obj, get: obj => obj.shadowNormalBias, set: (obj, value) => { obj.shadowNormalBias = value; } }, metadata: _metadata }, _shadowNormalBias_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraNear_decorators, { kind: "field", name: "shadowCameraNear", static: false, private: false, access: { has: obj => "shadowCameraNear" in obj, get: obj => obj.shadowCameraNear, set: (obj, value) => { obj.shadowCameraNear = value; } }, metadata: _metadata }, _shadowCameraNear_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraFar_decorators, { kind: "field", name: "shadowCameraFar", static: false, private: false, access: { has: obj => "shadowCameraFar" in obj, get: obj => obj.shadowCameraFar, set: (obj, value) => { obj.shadowCameraFar = value; } }, metadata: _metadata }, _shadowCameraFar_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _castShadow_decorators, { kind: "field", name: "castShadow", static: false, private: false, access: { has: obj => "castShadow" in obj, get: obj => obj.castShadow, set: (obj, value) => { obj.castShadow = value; } }, metadata: _metadata }, _castShadow_initializers, _castShadow_extraInitializers);
+            __esDecorate(null, null, _shadowMapWidth_decorators, { kind: "field", name: "shadowMapWidth", static: false, private: false, access: { has: obj => "shadowMapWidth" in obj, get: obj => obj.shadowMapWidth, set: (obj, value) => { obj.shadowMapWidth = value; } }, metadata: _metadata }, _shadowMapWidth_initializers, _shadowMapWidth_extraInitializers);
+            __esDecorate(null, null, _shadowMapHeight_decorators, { kind: "field", name: "shadowMapHeight", static: false, private: false, access: { has: obj => "shadowMapHeight" in obj, get: obj => obj.shadowMapHeight, set: (obj, value) => { obj.shadowMapHeight = value; } }, metadata: _metadata }, _shadowMapHeight_initializers, _shadowMapHeight_extraInitializers);
+            __esDecorate(null, null, _shadowRadius_decorators, { kind: "field", name: "shadowRadius", static: false, private: false, access: { has: obj => "shadowRadius" in obj, get: obj => obj.shadowRadius, set: (obj, value) => { obj.shadowRadius = value; } }, metadata: _metadata }, _shadowRadius_initializers, _shadowRadius_extraInitializers);
+            __esDecorate(null, null, _shadowBias_decorators, { kind: "field", name: "shadowBias", static: false, private: false, access: { has: obj => "shadowBias" in obj, get: obj => obj.shadowBias, set: (obj, value) => { obj.shadowBias = value; } }, metadata: _metadata }, _shadowBias_initializers, _shadowBias_extraInitializers);
+            __esDecorate(null, null, _shadowNormalBias_decorators, { kind: "field", name: "shadowNormalBias", static: false, private: false, access: { has: obj => "shadowNormalBias" in obj, get: obj => obj.shadowNormalBias, set: (obj, value) => { obj.shadowNormalBias = value; } }, metadata: _metadata }, _shadowNormalBias_initializers, _shadowNormalBias_extraInitializers);
+            __esDecorate(null, null, _shadowCameraNear_decorators, { kind: "field", name: "shadowCameraNear", static: false, private: false, access: { has: obj => "shadowCameraNear" in obj, get: obj => obj.shadowCameraNear, set: (obj, value) => { obj.shadowCameraNear = value; } }, metadata: _metadata }, _shadowCameraNear_initializers, _shadowCameraNear_extraInitializers);
+            __esDecorate(null, null, _shadowCameraFar_decorators, { kind: "field", name: "shadowCameraFar", static: false, private: false, access: { has: obj => "shadowCameraFar" in obj, get: obj => obj.shadowCameraFar, set: (obj, value) => { obj.shadowCameraFar = value; } }, metadata: _metadata }, _shadowCameraFar_initializers, _shadowCameraFar_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             LightWithShadow = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -117,7 +124,7 @@ let LightWithShadow = (() => {
          * [`Mesh.castShadow`](../meshes/Mesh#castShadow) and
          * [`Mesh.receiveShadow`](../meshes/Mesh#receiveShadow)).
          */
-        castShadow = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _castShadow_initializers, true
+        castShadow = __runInitializers(this, _castShadow_initializers, true
         // These map to THREE.LightShadow properties.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/LightShadow
         /**
@@ -128,6 +135,40 @@ let LightWithShadow = (() => {
          * Default: `512`
          *
          * The width of the shadow map used for projecting shadows.
+         *
+         * Higher values give better quality shadows at the cost of computation
+         * time. Values must be powers of 2 (256, 512, 1024, etc), up to the
+         * [`WebGLRenderer.capabilities.maxTextureSize`](https://threejs.org/docs/index.html?q=lightshadow#api/en/renderers/WebGLRenderer.capabilities)
+         * for a given device, although the width and height don't have to be the
+         * same (for example (512, 1024) is valid).
+         */
+        );
+        // These map to THREE.LightShadow properties.
+        // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/LightShadow
+        /**
+         * @property {number} shadowMapWidth -
+         *
+         * `attribute`
+         *
+         * Default: `512`
+         *
+         * The width of the shadow map used for projecting shadows.
+         *
+         * Higher values give better quality shadows at the cost of computation
+         * time. Values must be powers of 2 (256, 512, 1024, etc), up to the
+         * [`WebGLRenderer.capabilities.maxTextureSize`](https://threejs.org/docs/index.html?q=lightshadow#api/en/renderers/WebGLRenderer.capabilities)
+         * for a given device, although the width and height don't have to be the
+         * same (for example (512, 1024) is valid).
+         */
+        shadowMapWidth = (__runInitializers(this, _castShadow_extraInitializers), __runInitializers(this, _shadowMapWidth_initializers, 512
+        /**
+         * @property {number} shadowMapHeight -
+         *
+         * `attribute`
+         *
+         * Default: `512`
+         *
+         * The height of the shadow map used for projecting shadows.
          *
          * Higher values give better quality shadows at the cost of computation
          * time. Values must be powers of 2 (256, 512, 1024, etc), up to the
@@ -136,24 +177,6 @@ let LightWithShadow = (() => {
          * same (for example (512, 1024) is valid).
          */
         ));
-        // These map to THREE.LightShadow properties.
-        // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/LightShadow
-        /**
-         * @property {number} shadowMapWidth -
-         *
-         * `attribute`
-         *
-         * Default: `512`
-         *
-         * The width of the shadow map used for projecting shadows.
-         *
-         * Higher values give better quality shadows at the cost of computation
-         * time. Values must be powers of 2 (256, 512, 1024, etc), up to the
-         * [`WebGLRenderer.capabilities.maxTextureSize`](https://threejs.org/docs/index.html?q=lightshadow#api/en/renderers/WebGLRenderer.capabilities)
-         * for a given device, although the width and height don't have to be the
-         * same (for example (512, 1024) is valid).
-         */
-        shadowMapWidth = __runInitializers(this, _shadowMapWidth_initializers, 512
         /**
          * @property {number} shadowMapHeight -
          *
@@ -169,23 +192,7 @@ let LightWithShadow = (() => {
          * for a given device, although the width and height don't have to be the
          * same (for example (512, 1024) is valid).
          */
-        );
-        /**
-         * @property {number} shadowMapHeight -
-         *
-         * `attribute`
-         *
-         * Default: `512`
-         *
-         * The height of the shadow map used for projecting shadows.
-         *
-         * Higher values give better quality shadows at the cost of computation
-         * time. Values must be powers of 2 (256, 512, 1024, etc), up to the
-         * [`WebGLRenderer.capabilities.maxTextureSize`](https://threejs.org/docs/index.html?q=lightshadow#api/en/renderers/WebGLRenderer.capabilities)
-         * for a given device, although the width and height don't have to be the
-         * same (for example (512, 1024) is valid).
-         */
-        shadowMapHeight = __runInitializers(this, _shadowMapHeight_initializers, 512
+        shadowMapHeight = (__runInitializers(this, _shadowMapWidth_extraInitializers), __runInitializers(this, _shadowMapHeight_initializers, 512
         /**
          * @property {number} shadowRadius -
          *
@@ -206,7 +213,7 @@ let LightWithShadow = (() => {
          * `"basic"`, radius also has no effect, and there is no further way to
          * adjust shadow softness.
          */
-        );
+        ));
         /**
          * @property {number} shadowRadius -
          *
@@ -227,7 +234,7 @@ let LightWithShadow = (() => {
          * `"basic"`, radius also has no effect, and there is no further way to
          * adjust shadow softness.
          */
-        shadowRadius = __runInitializers(this, _shadowRadius_initializers, 3
+        shadowRadius = (__runInitializers(this, _shadowMapHeight_extraInitializers), __runInitializers(this, _shadowRadius_initializers, 3
         // TODO make our own guide on shadow acne with live examples.
         /**
          * @property {number} shadowBias -
@@ -249,7 +256,7 @@ let LightWithShadow = (() => {
          * - https://digitalrune.github.io/DigitalRune-Documentation/html/3f4d959e-9c98-4a97-8d85-7a73c26145d7.htm
          * - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
          */
-        );
+        ));
         // TODO make our own guide on shadow acne with live examples.
         /**
          * @property {number} shadowBias -
@@ -271,7 +278,7 @@ let LightWithShadow = (() => {
          * - https://digitalrune.github.io/DigitalRune-Documentation/html/3f4d959e-9c98-4a97-8d85-7a73c26145d7.htm
          * - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
          */
-        shadowBias = __runInitializers(this, _shadowBias_initializers, 0
+        shadowBias = (__runInitializers(this, _shadowRadius_extraInitializers), __runInitializers(this, _shadowBias_initializers, 0
         /**
          * @property {number} shadowNormalBias -
          *
@@ -288,7 +295,7 @@ let LightWithShadow = (() => {
          * large scenes where light shines onto geometry at a shallow angle. The
          * downside is that shadows may appear warped with larger values.
          */
-        );
+        ));
         /**
          * @property {number} shadowNormalBias -
          *
@@ -305,7 +312,7 @@ let LightWithShadow = (() => {
          * large scenes where light shines onto geometry at a shallow angle. The
          * downside is that shadows may appear warped with larger values.
          */
-        shadowNormalBias = __runInitializers(this, _shadowNormalBias_initializers, 0
+        shadowNormalBias = (__runInitializers(this, _shadowBias_extraInitializers), __runInitializers(this, _shadowNormalBias_initializers, 0
         // TODO: auto-adjust near and far planes like we will with Camera,
         // unless the user supplies a manual value.
         /**
@@ -317,7 +324,7 @@ let LightWithShadow = (() => {
          *
          * Adjusts the near plane of the internal camera used for shadow projection.
          */
-        );
+        ));
         // TODO: auto-adjust near and far planes like we will with Camera,
         // unless the user supplies a manual value.
         /**
@@ -329,7 +336,7 @@ let LightWithShadow = (() => {
          *
          * Adjusts the near plane of the internal camera used for shadow projection.
          */
-        shadowCameraNear = __runInitializers(this, _shadowCameraNear_initializers, 1
+        shadowCameraNear = (__runInitializers(this, _shadowNormalBias_extraInitializers), __runInitializers(this, _shadowCameraNear_initializers, 1
         /**
          * @property {number} shadowCameraFar -
          *
@@ -339,7 +346,7 @@ let LightWithShadow = (() => {
          *
          * Adjusts the far plane of the internal camera used for shadow projection.
          */
-        );
+        ));
         /**
          * @property {number} shadowCameraFar -
          *
@@ -349,7 +356,7 @@ let LightWithShadow = (() => {
          *
          * Adjusts the far plane of the internal camera used for shadow projection.
          */
-        shadowCameraFar = __runInitializers(this, _shadowCameraFar_initializers, 2000);
+        shadowCameraFar = (__runInitializers(this, _shadowCameraNear_extraInitializers), __runInitializers(this, _shadowCameraFar_initializers, 2000));
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
@@ -367,6 +374,10 @@ let LightWithShadow = (() => {
                 shadow.needsUpdate = true;
                 this.needsUpdate();
             });
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _shadowCameraFar_extraInitializers);
         }
     };
     return LightWithShadow = _classThis;

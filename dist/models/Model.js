@@ -47,15 +47,15 @@ let Model = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _threeModel_decorators;
     let _threeModel_initializers = [];
+    let _threeModel_extraInitializers = [];
     var Model = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _threeModel_decorators = [signal];
-            __esDecorate(null, null, _threeModel_decorators, { kind: "field", name: "threeModel", static: false, private: false, access: { has: obj => "threeModel" in obj, get: obj => obj.threeModel, set: (obj, value) => { obj.threeModel = value; } }, metadata: _metadata }, _threeModel_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _threeModel_decorators, { kind: "field", name: "threeModel", static: false, private: false, access: { has: obj => "threeModel" in obj, get: obj => obj.threeModel, set: (obj, value) => { obj.threeModel = value; } }, metadata: _metadata }, _threeModel_initializers, _threeModel_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Model = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -66,7 +66,7 @@ let Model = (() => {
          *
          * `signal`
          */
-        threeModel = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _threeModel_initializers, null));
+        threeModel = __runInitializers(this, _threeModel_initializers, null);
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
@@ -75,6 +75,10 @@ let Model = (() => {
                 if (this.debug)
                     skeletonHelper(this);
             });
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _threeModel_extraInitializers);
         }
     };
     return Model = _classThis;

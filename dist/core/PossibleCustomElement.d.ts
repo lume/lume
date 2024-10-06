@@ -1,4 +1,4 @@
-import type { Constructor } from 'lowclass';
+import type { Constructor } from 'lowclass/dist/Constructor.js';
 export interface PossiblyCustomElement {
     connectedCallback?(): void;
     disconnectedCallback?(): void;

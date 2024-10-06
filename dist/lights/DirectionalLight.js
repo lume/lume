@@ -76,17 +76,21 @@ let DirectionalLight = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = LightWithShadow;
-    let _instanceExtraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
+    let _intensity_extraInitializers = [];
     let _shadowCameraTop_decorators;
     let _shadowCameraTop_initializers = [];
+    let _shadowCameraTop_extraInitializers = [];
     let _shadowCameraRight_decorators;
     let _shadowCameraRight_initializers = [];
+    let _shadowCameraRight_extraInitializers = [];
     let _shadowCameraBottom_decorators;
     let _shadowCameraBottom_initializers = [];
+    let _shadowCameraBottom_extraInitializers = [];
     let _shadowCameraLeft_decorators;
     let _shadowCameraLeft_initializers = [];
+    let _shadowCameraLeft_extraInitializers = [];
     var DirectionalLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -96,11 +100,11 @@ let DirectionalLight = (() => {
             _shadowCameraRight_decorators = [numberAttribute];
             _shadowCameraBottom_decorators = [numberAttribute];
             _shadowCameraLeft_decorators = [numberAttribute];
-            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraTop_decorators, { kind: "field", name: "shadowCameraTop", static: false, private: false, access: { has: obj => "shadowCameraTop" in obj, get: obj => obj.shadowCameraTop, set: (obj, value) => { obj.shadowCameraTop = value; } }, metadata: _metadata }, _shadowCameraTop_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraRight_decorators, { kind: "field", name: "shadowCameraRight", static: false, private: false, access: { has: obj => "shadowCameraRight" in obj, get: obj => obj.shadowCameraRight, set: (obj, value) => { obj.shadowCameraRight = value; } }, metadata: _metadata }, _shadowCameraRight_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraBottom_decorators, { kind: "field", name: "shadowCameraBottom", static: false, private: false, access: { has: obj => "shadowCameraBottom" in obj, get: obj => obj.shadowCameraBottom, set: (obj, value) => { obj.shadowCameraBottom = value; } }, metadata: _metadata }, _shadowCameraBottom_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowCameraLeft_decorators, { kind: "field", name: "shadowCameraLeft", static: false, private: false, access: { has: obj => "shadowCameraLeft" in obj, get: obj => obj.shadowCameraLeft, set: (obj, value) => { obj.shadowCameraLeft = value; } }, metadata: _metadata }, _shadowCameraLeft_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
+            __esDecorate(null, null, _shadowCameraTop_decorators, { kind: "field", name: "shadowCameraTop", static: false, private: false, access: { has: obj => "shadowCameraTop" in obj, get: obj => obj.shadowCameraTop, set: (obj, value) => { obj.shadowCameraTop = value; } }, metadata: _metadata }, _shadowCameraTop_initializers, _shadowCameraTop_extraInitializers);
+            __esDecorate(null, null, _shadowCameraRight_decorators, { kind: "field", name: "shadowCameraRight", static: false, private: false, access: { has: obj => "shadowCameraRight" in obj, get: obj => obj.shadowCameraRight, set: (obj, value) => { obj.shadowCameraRight = value; } }, metadata: _metadata }, _shadowCameraRight_initializers, _shadowCameraRight_extraInitializers);
+            __esDecorate(null, null, _shadowCameraBottom_decorators, { kind: "field", name: "shadowCameraBottom", static: false, private: false, access: { has: obj => "shadowCameraBottom" in obj, get: obj => obj.shadowCameraBottom, set: (obj, value) => { obj.shadowCameraBottom = value; } }, metadata: _metadata }, _shadowCameraBottom_initializers, _shadowCameraBottom_extraInitializers);
+            __esDecorate(null, null, _shadowCameraLeft_decorators, { kind: "field", name: "shadowCameraLeft", static: false, private: false, access: { has: obj => "shadowCameraLeft" in obj, get: obj => obj.shadowCameraLeft, set: (obj, value) => { obj.shadowCameraLeft = value; } }, metadata: _metadata }, _shadowCameraLeft_initializers, _shadowCameraLeft_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             DirectionalLight = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -118,16 +122,16 @@ let DirectionalLight = (() => {
          * The intensity of this element does not change behavior when [physically
          * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
          */
-        intensity = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _intensity_initializers, 1
+        intensity = __runInitializers(this, _intensity_initializers, 1
         // These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
-        ));
+        );
         // These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
-        shadowCameraTop = __runInitializers(this, _shadowCameraTop_initializers, 1000);
-        shadowCameraRight = __runInitializers(this, _shadowCameraRight_initializers, 1000);
-        shadowCameraBottom = __runInitializers(this, _shadowCameraBottom_initializers, -1000);
-        shadowCameraLeft = __runInitializers(this, _shadowCameraLeft_initializers, -1000);
+        shadowCameraTop = (__runInitializers(this, _intensity_extraInitializers), __runInitializers(this, _shadowCameraTop_initializers, 1000));
+        shadowCameraRight = (__runInitializers(this, _shadowCameraTop_extraInitializers), __runInitializers(this, _shadowCameraRight_initializers, 1000));
+        shadowCameraBottom = (__runInitializers(this, _shadowCameraRight_extraInitializers), __runInitializers(this, _shadowCameraBottom_initializers, -1000));
+        shadowCameraLeft = (__runInitializers(this, _shadowCameraBottom_extraInitializers), __runInitializers(this, _shadowCameraLeft_initializers, -1000));
         connectedCallback() {
             super.connectedCallback();
             this.three.castShadow = true;
@@ -166,6 +170,10 @@ let DirectionalLight = (() => {
         }
         makeThreeObject3d() {
             return new ThreeDirectionalLight();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _shadowCameraLeft_extraInitializers);
         }
     };
     return DirectionalLight = _classThis;

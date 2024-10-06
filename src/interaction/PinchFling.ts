@@ -1,4 +1,4 @@
-import {createSignal, onCleanup, untrack} from 'solid-js'
+import {onCleanup, untrack} from 'solid-js'
 import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
@@ -34,22 +34,16 @@ class PinchFling extends Settable(Effects) {
 
 	#task?: RenderTask
 
-	#interacting = (() => {
-		const [get, set] = createSignal(false)
-		return {get, set}
-	})()
+	@signal accessor #interacting = false
 
 	get interacting() {
-		return this.#interacting.get()
+		return this.#interacting
 	}
 
-	#isStarted = (() => {
-		const [get, set] = createSignal(false)
-		return {get, set}
-	})()
+	@signal accessor #isStarted = false
 
 	get isStarted() {
-		return this.#isStarted.get()
+		return this.#isStarted
 	}
 
 	#aborter = new AbortController()
@@ -96,7 +90,7 @@ class PinchFling extends Settable(Effects) {
 
 			// @ts-expect-error TypeScript type for `event` is wrong
 			this.target.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
-			this.#interacting.set(true)
+			this.#interacting = true
 		}
 	}
 
@@ -107,6 +101,7 @@ class PinchFling extends Settable(Effects) {
 		if (this.#pointers.size < 2) return
 
 		const [one, two] = this.#pointers.values()
+		if (!one || !two) throw 'not possible'
 
 		if (event.pointerId === one.id) {
 			one.x = event.clientX
@@ -132,13 +127,13 @@ class PinchFling extends Settable(Effects) {
 		if (this.#pointers.size === 1) {
 			// @ts-expect-error TypeScript type for `event` is wrong
 			this.target.removeEventListener('pointermove', this.#onMove)
-			this.#interacting.set(false)
+			this.#interacting = false
 		}
 	}
 
 	start(): this {
-		if (untrack(this.#isStarted.get)) return this
-		this.#isStarted.set(true)
+		if (untrack(() => this.#isStarted)) return this
+		this.#isStarted = true
 
 		this.createEffect(() => {
 			this.target // any time the target changes make new events on that target
@@ -155,7 +150,7 @@ class PinchFling extends Settable(Effects) {
 				if (this.#task) Motor.removeRenderTask(this.#task)
 
 				this.#aborter.abort()
-				this.#interacting.set(false)
+				this.#interacting = false
 			})
 		})
 
@@ -163,8 +158,8 @@ class PinchFling extends Settable(Effects) {
 	}
 
 	stop(): this {
-		if (!untrack(this.#isStarted.get)) return this
-		this.#isStarted.set(false)
+		if (!untrack(() => this.#isStarted)) return this
+		this.#isStarted = false
 
 		this.stopEffects()
 

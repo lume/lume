@@ -59,19 +59,20 @@ let PlaneGeometryBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = GeometryBehavior;
-    let _instanceExtraInitializers = [];
     let _widthSegments_decorators;
     let _widthSegments_initializers = [];
+    let _widthSegments_extraInitializers = [];
     let _heightSegments_decorators;
     let _heightSegments_initializers = [];
+    let _heightSegments_extraInitializers = [];
     var PlaneGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _widthSegments_decorators = [numberAttribute, receiver];
             _heightSegments_decorators = [numberAttribute, receiver];
-            __esDecorate(null, null, _widthSegments_decorators, { kind: "field", name: "widthSegments", static: false, private: false, access: { has: obj => "widthSegments" in obj, get: obj => obj.widthSegments, set: (obj, value) => { obj.widthSegments = value; } }, metadata: _metadata }, _widthSegments_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _heightSegments_decorators, { kind: "field", name: "heightSegments", static: false, private: false, access: { has: obj => "heightSegments" in obj, get: obj => obj.heightSegments, set: (obj, value) => { obj.heightSegments = value; } }, metadata: _metadata }, _heightSegments_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _widthSegments_decorators, { kind: "field", name: "widthSegments", static: false, private: false, access: { has: obj => "widthSegments" in obj, get: obj => obj.widthSegments, set: (obj, value) => { obj.widthSegments = value; } }, metadata: _metadata }, _widthSegments_initializers, _widthSegments_extraInitializers);
+            __esDecorate(null, null, _heightSegments_decorators, { kind: "field", name: "heightSegments", static: false, private: false, access: { has: obj => "heightSegments" in obj, get: obj => obj.heightSegments, set: (obj, value) => { obj.heightSegments = value; } }, metadata: _metadata }, _heightSegments_initializers, _heightSegments_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PlaneGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -88,7 +89,7 @@ let PlaneGeometryBehavior = (() => {
          * width segments and 10 height segments is essentially made up of 100 cells
          * (or 10 rows and 10 columns of smaller planes)
          */
-        widthSegments = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _widthSegments_initializers, 1
+        widthSegments = __runInitializers(this, _widthSegments_initializers, 1
         /**
          * @property {number} heightSegments -
          *
@@ -100,7 +101,7 @@ let PlaneGeometryBehavior = (() => {
          * width segments and 10 height segments is essentially made up of 100 cells
          * (or 10 rows and 10 columns of smaller planes)
          */
-        ));
+        );
         /**
          * @property {number} heightSegments -
          *
@@ -112,9 +113,13 @@ let PlaneGeometryBehavior = (() => {
          * width segments and 10 height segments is essentially made up of 100 cells
          * (or 10 rows and 10 columns of smaller planes)
          */
-        heightSegments = __runInitializers(this, _heightSegments_initializers, 1);
+        heightSegments = (__runInitializers(this, _widthSegments_extraInitializers), __runInitializers(this, _heightSegments_initializers, 1));
         _createComponent() {
             return new PlaneGeometry(this.element.calculatedSize.x, this.element.calculatedSize.y, this.widthSegments, this.heightSegments);
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _heightSegments_extraInitializers);
         }
     };
     return PlaneGeometryBehavior = _classThis;

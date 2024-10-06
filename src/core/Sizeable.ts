@@ -33,7 +33,7 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 export
 @element
 class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
-	@signal __calculatedSize?: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
+	@signal accessor #calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
 	 * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
@@ -59,14 +59,12 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	 * value along that axis will be a proportion of the object's parent's size
 	 * along that axis.
 	 */
-	@attribute
-	@noSignal
-	set sizeMode(newValue: XYZSizeModeValuesProperty) {
+	@attribute @noSignal set sizeMode(newValue: XYZSizeModeValuesProperty) {
 		if (typeof newValue === 'function') throw new TypeError('property functions are not allowed for sizeMode')
 		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
 		this._setPropertyXYZ('sizeMode', sizeMode.get(this)!, newValue)
 	}
-	get sizeMode(): XYZSizeModeValues {
+	@attribute @noSignal get sizeMode(): XYZSizeModeValues {
 		if (!sizeMode.has(this)) sizeMode.set(this, new XYZSizeModeValues('literal', 'literal', 'literal'))
 		return sizeMode.get(this)!
 	}
@@ -101,13 +99,13 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	 * size, and the Z size is a literal value of `30`. It is easy this way to
 	 * mix literal and proportional sizes for the different axes.
 	 */
-	@attribute
-	@noSignal
-	set size(newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction) {
+	@attribute @noSignal set size(
+		newValue: XYZNonNegativeNumberValuesProperty | XYZNonNegativeNumberValuesPropertyFunction,
+	) {
 		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
 		this._setPropertyXYZ('size', size.get(this)!, newValue)
 	}
-	get size(): XYZNonNegativeValues {
+	@attribute @noSignal get size(): XYZNonNegativeValues {
 		if (!size.has(this)) size.set(this, new XYZNonNegativeValues(0, 0, 0))
 		return size.get(this)!
 	}
@@ -129,10 +127,10 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 		// TODO we can re-calculate the actual size lazily, this way it can
 		// normally be deferred to a Motor render task, unless a user
 		// explicitly needs it and reads the value.
-		// if (this.__sizeDirty) this._calcSize
+		// if (this.#sizeDirty) this._calcSize
 
 		// TODO make it a readonly reactive object instead of cloning.
-		return {...(this.__calculatedSize ?? {x: 0, y: 0, z: 0})}
+		return {...this.#calculatedSize}
 	}
 
 	get composedLumeParent(): Sizeable | null {
@@ -161,7 +159,7 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	#sizechangeEvent = new Event('sizechange')
 
 	_calcSize() {
-		const calculatedSize = this.__calculatedSize ?? {x: 0, y: 0, z: 0}
+		const calculatedSize = this.#calculatedSize
 
 		Object.assign(previousSize, calculatedSize)
 
@@ -189,7 +187,7 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 		}
 
 		// We set it to the same value to trigger reactivity.
-		this.__calculatedSize = calculatedSize
+		this.#calculatedSize = calculatedSize
 
 		if (
 			previousSize.x !== calculatedSize.x ||

@@ -41,7 +41,7 @@ export function triangleBlurTexture(
 		uniforms: UniformsUtils.clone(shader.uniforms),
 	})
 
-	blurMaterial.uniforms.delta.value = new Vector2(1, 1)
+	blurMaterial.uniforms.delta!.value = new Vector2(1, 1)
 
 	// fullscreen quad
 
@@ -57,8 +57,8 @@ export function triangleBlurTexture(
 	while (passes--) {
 		// vertical pass
 
-		blurMaterial.uniforms.blurTexture.value = lastTexture
-		blurMaterial.uniforms.delta.value = new Vector2(blur, 0)
+		blurMaterial.uniforms.blurTexture!.value = lastTexture
+		blurMaterial.uniforms.delta!.value = new Vector2(blur, 0)
 
 		renderer.setRenderTarget(renderTarget1)
 		renderer.render(sceneRTT, cameraRTT)
@@ -68,8 +68,8 @@ export function triangleBlurTexture(
 
 		// horizontal pass
 
-		blurMaterial.uniforms.blurTexture.value = lastTexture
-		blurMaterial.uniforms.delta.value = new Vector2(0, blur)
+		blurMaterial.uniforms.blurTexture!.value = lastTexture
+		blurMaterial.uniforms.delta!.value = new Vector2(0, blur)
 
 		renderer.setRenderTarget(renderTarget2)
 		renderer.render(sceneRTT, cameraRTT)
@@ -146,7 +146,7 @@ export function verticalHorizontalGaussianBlurTexture(renderer: WebGLRenderer, t
 		uniforms: UniformsUtils.clone(HorizontalBlurShader.uniforms),
 	})
 
-	hBlurMaterial.uniforms.h.value = 1 / width
+	hBlurMaterial.uniforms.h!.value = 1 / width
 
 	const vBlurMaterial = new ShaderMaterial({
 		vertexShader: VerticalBlurShader.vertexShader,
@@ -154,7 +154,7 @@ export function verticalHorizontalGaussianBlurTexture(renderer: WebGLRenderer, t
 		uniforms: UniformsUtils.clone(VerticalBlurShader.uniforms),
 	})
 
-	vBlurMaterial.uniforms.v.value = 1 / height
+	vBlurMaterial.uniforms.v!.value = 1 / height
 
 	// fullscreen quad
 
@@ -171,7 +171,7 @@ export function verticalHorizontalGaussianBlurTexture(renderer: WebGLRenderer, t
 		// horizontal pass
 
 		fullScreenQuad.material = hBlurMaterial
-		hBlurMaterial.uniforms.tDiffuse.value = lastTexture
+		hBlurMaterial.uniforms.tDiffuse!.value = lastTexture
 
 		renderer.setRenderTarget(renderTarget1)
 		renderer.render(sceneRTT, cameraRTT)
@@ -182,7 +182,7 @@ export function verticalHorizontalGaussianBlurTexture(renderer: WebGLRenderer, t
 		// vertical pass
 
 		fullScreenQuad.material = vBlurMaterial
-		vBlurMaterial.uniforms.tDiffuse.value = lastTexture
+		vBlurMaterial.uniforms.tDiffuse!.value = lastTexture
 
 		renderer.setRenderTarget(renderTarget2)
 		renderer.render(sceneRTT, cameraRTT)

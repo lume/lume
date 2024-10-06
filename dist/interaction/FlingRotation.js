@@ -46,29 +46,39 @@ let FlingRotation = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Settable(Effects);
-    let _instanceExtraInitializers = [];
     let _rotationYTarget_decorators;
     let _rotationYTarget_initializers = [];
+    let _rotationYTarget_extraInitializers = [];
     let _rotationXTarget_decorators;
     let _rotationXTarget_initializers = [];
+    let _rotationXTarget_extraInitializers = [];
     let _target_decorators;
     let _target_initializers = [];
+    let _target_extraInitializers = [];
     let _minRotationX_decorators;
     let _minRotationX_initializers = [];
+    let _minRotationX_extraInitializers = [];
     let _maxRotationX_decorators;
     let _maxRotationX_initializers = [];
+    let _maxRotationX_extraInitializers = [];
     let _minRotationY_decorators;
     let _minRotationY_initializers = [];
+    let _minRotationY_extraInitializers = [];
     let _maxRotationY_decorators;
     let _maxRotationY_initializers = [];
+    let _maxRotationY_extraInitializers = [];
     let _sensitivity_decorators;
     let _sensitivity_initializers = [];
+    let _sensitivity_extraInitializers = [];
     let _epsilon_decorators;
     let _epsilon_initializers = [];
+    let _epsilon_extraInitializers = [];
     let _slowdownAmount_decorators;
     let _slowdownAmount_initializers = [];
+    let _slowdownAmount_extraInitializers = [];
     let _pointerTypes_decorators;
     let _pointerTypes_initializers = [];
+    let _pointerTypes_extraInitializers = [];
     var FlingRotation = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -84,98 +94,98 @@ let FlingRotation = (() => {
             _epsilon_decorators = [signal];
             _slowdownAmount_decorators = [signal];
             _pointerTypes_decorators = [signal];
-            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _minRotationX_decorators, { kind: "field", name: "minRotationX", static: false, private: false, access: { has: obj => "minRotationX" in obj, get: obj => obj.minRotationX, set: (obj, value) => { obj.minRotationX = value; } }, metadata: _metadata }, _minRotationX_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _maxRotationX_decorators, { kind: "field", name: "maxRotationX", static: false, private: false, access: { has: obj => "maxRotationX" in obj, get: obj => obj.maxRotationX, set: (obj, value) => { obj.maxRotationX = value; } }, metadata: _metadata }, _maxRotationX_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _minRotationY_decorators, { kind: "field", name: "minRotationY", static: false, private: false, access: { has: obj => "minRotationY" in obj, get: obj => obj.minRotationY, set: (obj, value) => { obj.minRotationY = value; } }, metadata: _metadata }, _minRotationY_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _maxRotationY_decorators, { kind: "field", name: "maxRotationY", static: false, private: false, access: { has: obj => "maxRotationY" in obj, get: obj => obj.maxRotationY, set: (obj, value) => { obj.maxRotationY = value; } }, metadata: _metadata }, _maxRotationY_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _sensitivity_decorators, { kind: "field", name: "sensitivity", static: false, private: false, access: { has: obj => "sensitivity" in obj, get: obj => obj.sensitivity, set: (obj, value) => { obj.sensitivity = value; } }, metadata: _metadata }, _sensitivity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _epsilon_decorators, { kind: "field", name: "epsilon", static: false, private: false, access: { has: obj => "epsilon" in obj, get: obj => obj.epsilon, set: (obj, value) => { obj.epsilon = value; } }, metadata: _metadata }, _epsilon_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _slowdownAmount_decorators, { kind: "field", name: "slowdownAmount", static: false, private: false, access: { has: obj => "slowdownAmount" in obj, get: obj => obj.slowdownAmount, set: (obj, value) => { obj.slowdownAmount = value; } }, metadata: _metadata }, _slowdownAmount_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _pointerTypes_decorators, { kind: "field", name: "pointerTypes", static: false, private: false, access: { has: obj => "pointerTypes" in obj, get: obj => obj.pointerTypes, set: (obj, value) => { obj.pointerTypes = value; } }, metadata: _metadata }, _pointerTypes_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _rotationYTarget_decorators, { kind: "field", name: "rotationYTarget", static: false, private: false, access: { has: obj => "rotationYTarget" in obj, get: obj => obj.rotationYTarget, set: (obj, value) => { obj.rotationYTarget = value; } }, metadata: _metadata }, _rotationYTarget_initializers, _rotationYTarget_extraInitializers);
+            __esDecorate(null, null, _rotationXTarget_decorators, { kind: "field", name: "rotationXTarget", static: false, private: false, access: { has: obj => "rotationXTarget" in obj, get: obj => obj.rotationXTarget, set: (obj, value) => { obj.rotationXTarget = value; } }, metadata: _metadata }, _rotationXTarget_initializers, _rotationXTarget_extraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
+            __esDecorate(null, null, _minRotationX_decorators, { kind: "field", name: "minRotationX", static: false, private: false, access: { has: obj => "minRotationX" in obj, get: obj => obj.minRotationX, set: (obj, value) => { obj.minRotationX = value; } }, metadata: _metadata }, _minRotationX_initializers, _minRotationX_extraInitializers);
+            __esDecorate(null, null, _maxRotationX_decorators, { kind: "field", name: "maxRotationX", static: false, private: false, access: { has: obj => "maxRotationX" in obj, get: obj => obj.maxRotationX, set: (obj, value) => { obj.maxRotationX = value; } }, metadata: _metadata }, _maxRotationX_initializers, _maxRotationX_extraInitializers);
+            __esDecorate(null, null, _minRotationY_decorators, { kind: "field", name: "minRotationY", static: false, private: false, access: { has: obj => "minRotationY" in obj, get: obj => obj.minRotationY, set: (obj, value) => { obj.minRotationY = value; } }, metadata: _metadata }, _minRotationY_initializers, _minRotationY_extraInitializers);
+            __esDecorate(null, null, _maxRotationY_decorators, { kind: "field", name: "maxRotationY", static: false, private: false, access: { has: obj => "maxRotationY" in obj, get: obj => obj.maxRotationY, set: (obj, value) => { obj.maxRotationY = value; } }, metadata: _metadata }, _maxRotationY_initializers, _maxRotationY_extraInitializers);
+            __esDecorate(null, null, _sensitivity_decorators, { kind: "field", name: "sensitivity", static: false, private: false, access: { has: obj => "sensitivity" in obj, get: obj => obj.sensitivity, set: (obj, value) => { obj.sensitivity = value; } }, metadata: _metadata }, _sensitivity_initializers, _sensitivity_extraInitializers);
+            __esDecorate(null, null, _epsilon_decorators, { kind: "field", name: "epsilon", static: false, private: false, access: { has: obj => "epsilon" in obj, get: obj => obj.epsilon, set: (obj, value) => { obj.epsilon = value; } }, metadata: _metadata }, _epsilon_initializers, _epsilon_extraInitializers);
+            __esDecorate(null, null, _slowdownAmount_decorators, { kind: "field", name: "slowdownAmount", static: false, private: false, access: { has: obj => "slowdownAmount" in obj, get: obj => obj.slowdownAmount, set: (obj, value) => { obj.slowdownAmount = value; } }, metadata: _metadata }, _slowdownAmount_initializers, _slowdownAmount_extraInitializers);
+            __esDecorate(null, null, _pointerTypes_decorators, { kind: "field", name: "pointerTypes", static: false, private: false, access: { has: obj => "pointerTypes" in obj, get: obj => obj.pointerTypes, set: (obj, value) => { obj.pointerTypes = value; } }, metadata: _metadata }, _pointerTypes_initializers, _pointerTypes_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             FlingRotation = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /** The object that will be rotated on Y. Required. */
-        rotationYTarget = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _rotationYTarget_initializers, void 0));
+        rotationYTarget = __runInitializers(this, _rotationYTarget_initializers, void 0);
         /**
          * The object that will be rotated on X. Defaults to the element inside the
          * rotationYTarget (it's like a gimball).
          */
-        rotationXTarget = __runInitializers(this, _rotationXTarget_initializers, void 0);
+        rotationXTarget = (__runInitializers(this, _rotationYTarget_extraInitializers), __runInitializers(this, _rotationXTarget_initializers, void 0));
         /**
          * The element that will used for drag handling, defaults to
          * rotationXTarget. You could set it to a <lume-scene>, for example, to make
          * the rotation interaction start anywhere in a scene, not specifically on
          * the object to be rotated.
          */
-        target = __runInitializers(this, _target_initializers, void 0);
+        target = (__runInitializers(this, _rotationXTarget_extraInitializers), __runInitializers(this, _target_initializers, void 0));
         /**
          * The X rotation can not go below this value. Defaults to -90 which means
          * facing straight up.
          */
-        minRotationX = __runInitializers(this, _minRotationX_initializers, -90
+        minRotationX = (__runInitializers(this, _target_extraInitializers), __runInitializers(this, _minRotationX_initializers, -90
         /**
          * The X rotation can not go above this value. Defaults to 90 which means
          * facing straight down.
          */
-        );
+        ));
         /**
          * The X rotation can not go above this value. Defaults to 90 which means
          * facing straight down.
          */
-        maxRotationX = __runInitializers(this, _maxRotationX_initializers, 90
+        maxRotationX = (__runInitializers(this, _minRotationX_extraInitializers), __runInitializers(this, _maxRotationX_initializers, 90
         /**
          * The Y rotation can not go below this value. Defaults to -Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        );
+        ));
         /**
          * The Y rotation can not go below this value. Defaults to -Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        minRotationY = __runInitializers(this, _minRotationY_initializers, -Infinity
+        minRotationY = (__runInitializers(this, _maxRotationX_extraInitializers), __runInitializers(this, _minRotationY_initializers, -Infinity
         /**
          * The Y rotation can not go below this value. Defaults to Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        );
+        ));
         /**
          * The Y rotation can not go below this value. Defaults to Infinity which
          * means the camera can keep rotating laterally around the focus point
          * indefinitely.
          */
-        maxRotationY = __runInitializers(this, _maxRotationY_initializers, Infinity);
-        sensitivity = __runInitializers(this, _sensitivity_initializers, 1);
-        epsilon = __runInitializers(this, _epsilon_initializers, 0.01
+        maxRotationY = (__runInitializers(this, _minRotationY_extraInitializers), __runInitializers(this, _maxRotationY_initializers, Infinity));
+        sensitivity = (__runInitializers(this, _maxRotationY_extraInitializers), __runInitializers(this, _sensitivity_initializers, 1));
+        epsilon = (__runInitializers(this, _sensitivity_extraInitializers), __runInitializers(this, _epsilon_initializers, 0.01
         /**
          * Portion of the change in rotation that is removed each frame to
          * cause slowdown. Between 0 and 1.
          */
-        );
+        ));
         /**
          * Portion of the change in rotation that is removed each frame to
          * cause slowdown. Between 0 and 1.
          */
-        slowdownAmount = __runInitializers(this, _slowdownAmount_initializers, 0.05
+        slowdownAmount = (__runInitializers(this, _epsilon_extraInitializers), __runInitializers(this, _slowdownAmount_initializers, 0.05
         /**
          * The allowed pointer types to use for dragging ('mouse', 'pen', or
          * 'touch'). Default is all of them.
          */
-        );
+        ));
         /**
          * The allowed pointer types to use for dragging ('mouse', 'pen', or
          * 'touch'). Default is all of them.
          */
-        pointerTypes = __runInitializers(this, _pointerTypes_initializers, ['mouse', 'pen', 'touch']);
-        #isStarted = false;
+        pointerTypes = (__runInitializers(this, _slowdownAmount_extraInitializers), __runInitializers(this, _pointerTypes_initializers, ['mouse', 'pen', 'touch']));
+        #isStarted = (__runInitializers(this, _pointerTypes_extraInitializers), false);
         start() {
             if (this.#isStarted)
                 return this;

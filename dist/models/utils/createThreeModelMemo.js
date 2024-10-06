@@ -2,7 +2,7 @@ import { createMemo } from 'solid-js';
 import { Group } from 'three/src/objects/Group.js';
 import { Model } from '../Model.js';
 import { createBehaviorMemo } from './createBehaviorMemo.js';
-import { ModelBehavior } from '../../behaviors/index.js';
+import { ModelBehavior } from '../../behaviors/mesh-behaviors/models/ModelBehavior.js';
 /**
  * Given a Model element, returns a signal that will contain the element's
  * loaded model (undefined until loaded). The signal also changes any time the

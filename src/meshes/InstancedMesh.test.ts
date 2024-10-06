@@ -102,9 +102,9 @@ describe('InstancedMesh', () => {
 	function verifyMatrices(positions: number[], rotations: number[], scales: number[]) {
 		for (let index = 0; index < mesh.count; index += 1) {
 			mesh._calculateInstanceMatrix(
-				position.set(positions[index * 3 + 0], positions[index * 3 + 1], positions[index * 3 + 2]),
-				quat.setFromEuler(eul.set(rotations[index * 3 + 0], rotations[index * 3 + 1], rotations[index * 3 + 2])),
-				scale.set(scales[index * 3 + 0], scales[index * 3 + 1], scales[index * 3 + 2]),
+				position.set(positions[index * 3 + 0]!, positions[index * 3 + 1]!, positions[index * 3 + 2]!),
+				quat.setFromEuler(eul.set(rotations[index * 3 + 0]!, rotations[index * 3 + 1]!, rotations[index * 3 + 2]!)),
+				scale.set(scales[index * 3 + 0]!, scales[index * 3 + 1]!, scales[index * 3 + 2]!),
 				pivot,
 				mat1,
 			)

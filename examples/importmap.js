@@ -26,12 +26,13 @@
 			'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
 			'@lume/autolayout': '/node_modules/@lume/autolayout/dist/AutoLayout.js',
 			lowclass: '/node_modules/lowclass/dist/index.js',
+			'lowclass/': '/node_modules/lowclass/',
 			'james-bond': '/node_modules/james-bond/dist/index.js',
 			'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
 			'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',
 
 			regexr: '/node_modules/regexr/dist/index.js',
-			'solid-js': '/node_modules/solid-js/dist/dev.js',
+			'solid-js': '/node_modules/solid-js/dist/solid.js',
 			'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
 			'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
 			'solid-js/store': '/node_modules/solid-js/store/dist/store.js',
@@ -40,6 +41,7 @@
 		},
 	}
 
+	const location = basedLocation()
 	const isGithack = location.origin.includes('githack.com')
 
 	// Special case for raw.githack.com for viewing examples directly off of GitHub
@@ -47,6 +49,13 @@
 	const map = isGithack ? makeGithackImportmap() : localMap
 
 	document.write(/*html*/ `<script type="importmap">${JSON.stringify(map, undefined, '\t')}</script>`)
+
+	/** Returns a URL object with `href` and other properties modified similar to what elements see due to any <base> element having modified the base href (window.location.href is not affected by <base>) */
+	function basedLocation() {
+		const a = document.createElement('a')
+		a.href = './foo.html'
+		return new URL(a.href)
+	}
 
 	function makeGithackImportmap() {
 		const gitref = location.href.split('/')[5] ?? 'develop'
@@ -62,17 +71,18 @@
 				'@lume/three-projected-material/': 'https://raw.githack.com/lume/three-projected-material/<GITREF>/',
 				'@lume/autolayout': 'https://raw.githack.com/lume/autolayout/<GITREF>/dist/AutoLayout.js',
 				lowclass: 'https://raw.githack.com/trusktr/lowclass/<GITREF>/dist/index.js',
+				'lowclass/': 'https://raw.githack.com/trusktr/lowclass/<GITREF>/',
 				'james-bond': 'https://raw.githack.com/trusktr/james-bond/<GITREF>/dist/index.js',
 				'element-behaviors': 'https://raw.githack.com/lume/element-behaviors/<GITREF>/dist/index.js',
 				'@lume/custom-attributes/': 'https://raw.githack.com/lume/custom-attributes/<GITREF>/',
 
 				regexr: 'https://raw.githack.com/trusktr/regexr/v2.0.4/dist/index.js',
-				'solid-js': 'https://unpkg.com/solid-js@1.4.8/dist/solid.js',
-				'solid-js/web': 'https://unpkg.com/solid-js@1.4.8/web/dist/web.js',
-				'solid-js/html': 'https://unpkg.com/solid-js@1.4.8/html/dist/html.js',
-				'solid-js/store': 'https://unpkg.com/solid-js@1.4.8/store/dist/store.js',
-				three: 'https://raw.githack.com/mrdoob/three.js/r158/build/three.module.js',
-				'three/': 'https://raw.githack.com/mrdoob/three.js/r158/',
+				'solid-js': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/dist/solid.js',
+				'solid-js/web': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/web/dist/web.js',
+				'solid-js/html': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/html/dist/html.js',
+				'solid-js/store': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/store/dist/store.js',
+				three: 'https://raw.githack.com/mrdoob/three.js/r168/build/three.module.js',
+				'three/': 'https://raw.githack.com/mrdoob/three.js/r168/',
 			},
 		}
 

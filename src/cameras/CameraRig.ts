@@ -93,11 +93,10 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialPolarAngle has been renamed to verticalAngle.
 	 */
-	@numberAttribute
-	get initialPolarAngle() {
+	@numberAttribute get initialPolarAngle() {
 		return this.verticalAngle
 	}
-	set initialPolarAngle(value) {
+	@numberAttribute set initialPolarAngle(value) {
 		this.verticalAngle = value
 	}
 
@@ -118,11 +117,10 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: minPolarAngle has been renamed to minVerticalAngle.
 	 */
-	@numberAttribute
-	get minPolarAngle() {
+	@numberAttribute get minPolarAngle() {
 		return this.minVerticalAngle
 	}
-	set minPolarAngle(value) {
+	@numberAttribute set minPolarAngle(value) {
 		this.minVerticalAngle = value
 	}
 
@@ -150,11 +148,10 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: maxPolarAngle has been renamed to maxVerticalAngle.
 	 */
-	@numberAttribute
-	get maxPolarAngle() {
+	@numberAttribute get maxPolarAngle() {
 		return this.maxVerticalAngle
 	}
-	set maxPolarAngle(value) {
+	@numberAttribute set maxPolarAngle(value) {
 		this.maxVerticalAngle = value
 	}
 
@@ -214,7 +211,7 @@ class CameraRig extends Element3D {
 	 */
 	@numberAttribute distance = -1
 
-	@signal __appliedDistance = defaultScenePerspective
+	@signal accessor #appliedDistance = defaultScenePerspective
 
 	/**
 	 * @deprecated initialDistance has been renamed to distance.
@@ -222,11 +219,10 @@ class CameraRig extends Element3D {
 	 *
 	 * *deprecated*: initialDistance has been renamed to distance.
 	 */
-	@numberAttribute
-	get initialDistance() {
+	@numberAttribute get initialDistance() {
 		return this.distance
 	}
-	set initialDistance(value) {
+	@numberAttribute set initialDistance(value) {
 		this.distance = value
 	}
 
@@ -245,7 +241,7 @@ class CameraRig extends Element3D {
 	 */
 	@numberAttribute minDistance = -1
 
-	@signal __appliedMinDistance = 200
+	@signal accessor #appliedMinDistance = 200
 
 	/**
 	 * @property {number} maxDistance
@@ -262,7 +258,7 @@ class CameraRig extends Element3D {
 	 */
 	@numberAttribute maxDistance = -1
 
-	@signal __appliedMaxDistance = 800
+	@signal accessor #appliedMaxDistance = 800
 
 	/**
 	 * @property {boolean} active
@@ -402,6 +398,7 @@ class CameraRig extends Element3D {
 	 */
 	@numberAttribute rotationSlowdown = 0.05
 
+	// TODO really bad name, its not the underlying three camera, but the lume camera.
 	@signal threeCamera?: PerspectiveCamera
 
 	/** @deprecated Use `.threeCamera` instead. */
@@ -432,17 +429,17 @@ class CameraRig extends Element3D {
 
 			// TODO replace with @memo once that's out in classy-solid
 			this.createEffect(() => {
-				this.__appliedDistance = this.#derivedInputDistance
-				this.__appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2
-				this.__appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2
+				this.#appliedDistance = this.#derivedInputDistance
+				this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2
+				this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2
 			})
 
 			// We set position here instead of in the template, otherwise
 			// pre-upgrade values from the template running before element
 			// upgrade (due to how Solid templates using cloneNode making them
 			// non-upgraded until connected) will override the initial
-			// __appliedDistance value.
-			this.createEffect(() => (threeCamera.position.z = this.__appliedDistance))
+			// appliedDistance value.
+			this.createEffect(() => (threeCamera.position.z = this.#appliedDistance))
 
 			const {scrollFling, pinchFling, flingRotation} = this
 
@@ -454,10 +451,10 @@ class CameraRig extends Element3D {
 				pinchFling.target = scene
 			})
 
-			// Sync __appliedDistance to scrollFling.y and vice versa
+			// Sync appliedDistance to scrollFling.y and vice versa
 			syncSignals(
-				() => this.__appliedDistance,
-				(d: number) => (this.__appliedDistance = d),
+				() => this.#appliedDistance,
+				(d: number) => (this.#appliedDistance = d),
 				() => this.scrollFling!.y,
 				(y: number) => (this.scrollFling!.y = y),
 			)
@@ -478,8 +475,8 @@ class CameraRig extends Element3D {
 				flingRotation.epsilon = this.rotationEpsilon
 				flingRotation.slowdownAmount = this.rotationSlowdown
 
-				scrollFling.minY = pinchFling.minX = this.__appliedMinDistance
-				scrollFling.maxY = pinchFling.maxX = this.__appliedMaxDistance
+				scrollFling.minY = pinchFling.minX = this.#appliedMinDistance
+				scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance
 				scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
 				scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon
 				scrollFling.lerpAmount = this.dollyScrollLerp
@@ -573,7 +570,7 @@ class CameraRig extends Element3D {
 						id="camera-rig-perspective-camera"
 						active=${() => this.active}
 						comment="We don't set position here because it triggers the pre-upgrade handling due to the template running before perspective-camera is upgraded (due to Solid specifics) which causes the initial value to override the initial position calculated from scene.perspective."
-						xposition=${() => [0, 0, this.__appliedDistance]}
+						xposition=${() => [0, 0, this.#appliedDistance]}
 						align-point="0.5 0.5 0.5"
 						far="100000"
 					>

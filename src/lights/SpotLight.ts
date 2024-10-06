@@ -75,11 +75,10 @@ class SpotLight extends PointLight {
 	// TODO Consolidate "selector ref" functionality in SpotLight,
 	// ClipPlanesBehavior, ProjectedMaterialBehavior, etc
 	// (https://github.com/lume/lume/issues/300).
-	@stringAttribute
-	get target(): Element3D | null {
+	@stringAttribute get target(): Element3D | null {
 		return this.#target[0] ?? null
 	}
-	set target(value: string | Element3D | null | Array<Element3D | string>) {
+	@stringAttribute set target(value: string | Element3D | null | Array<Element3D | string>) {
 		this.#rawTarget = value
 
 		let array: Array<Element3D | string> = []

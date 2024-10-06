@@ -1,6 +1,6 @@
 import 'element-behaviors';
 import type { ElementWithBehaviors, PossibleBehaviorInstance } from 'element-behaviors';
-import type { AnyConstructor } from 'lowclass/dist/utils.js';
+import type { AnyConstructor } from 'lowclass/dist/Constructor.js';
 /**
  * Alias of the `@element` decorator used on custom elements for use on Behavior
  * classes. If a name is passed in, it defines an element behavior instead of a
@@ -23,19 +23,19 @@ import type { AnyConstructor } from 'lowclass/dist/utils.js';
 export declare function behavior(name: string): <T extends AnyConstructor<PossibleBehaviorInstance>>(Class: T, context?: ClassDecoratorContext) => T;
 export declare function behavior<T extends AnyConstructor<PossibleBehaviorInstance>>(Class: T, context?: ClassDecoratorContext): T;
 declare const Behavior_base: {
-    new (...args: any[]): {
+    new (...a: any[]): {
         connectedCallback(): void;
         disconnectedCallback(): void;
         readonly observedObject: object;
-        _propChangedCallback(propName: string | symbol, value: any): void;
-        "__#5@#observeProps"(): void;
-        "__#5@#unobserveProps"(): void;
-        __getReceivedProps(): never[];
-        __receiveInitialValues(): void;
+        "__#6@#propChangedCallback": (propName: string | symbol, value: any) => void;
+        receiveProps(): void;
+        unreceiveProps(): void;
+        receivedProperties?: never[] | undefined;
+        "__#6@#getReceivedProps"(): never[];
+        receiveInitialValues(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
-    receivedProperties?: (string | symbol)[] | undefined;
 } & (new (...a: any[]) => import("../index.js").PossiblyCustomElement);
 /**
  * @class Behavior
@@ -72,7 +72,7 @@ export declare abstract class Behavior extends Behavior_base {
         prototype: Element;
     }[];
     get observedObject(): Element;
-    __receiveInitialValues(): void;
+    receiveInitialValues(): void;
 }
 export {};
 //# sourceMappingURL=Behavior.d.ts.map

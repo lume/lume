@@ -50,17 +50,21 @@ let Camera = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _aspect_decorators;
     let _aspect_initializers = [];
+    let _aspect_extraInitializers = [];
     let _near_decorators;
     let _near_initializers = [];
+    let _near_extraInitializers = [];
     let _far_decorators;
     let _far_initializers = [];
+    let _far_extraInitializers = [];
     let _active_decorators;
     let _active_initializers = [];
+    let _active_extraInitializers = [];
     let _zoom_decorators;
     let _zoom_initializers = [];
+    let _zoom_extraInitializers = [];
     var Camera = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -70,11 +74,11 @@ let Camera = (() => {
             _far_decorators = [numberAttribute];
             _active_decorators = [booleanAttribute];
             _zoom_decorators = [numberAttribute];
-            __esDecorate(null, null, _aspect_decorators, { kind: "field", name: "aspect", static: false, private: false, access: { has: obj => "aspect" in obj, get: obj => obj.aspect, set: (obj, value) => { obj.aspect = value; } }, metadata: _metadata }, _aspect_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _near_decorators, { kind: "field", name: "near", static: false, private: false, access: { has: obj => "near" in obj, get: obj => obj.near, set: (obj, value) => { obj.near = value; } }, metadata: _metadata }, _near_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _far_decorators, { kind: "field", name: "far", static: false, private: false, access: { has: obj => "far" in obj, get: obj => obj.far, set: (obj, value) => { obj.far = value; } }, metadata: _metadata }, _far_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _zoom_decorators, { kind: "field", name: "zoom", static: false, private: false, access: { has: obj => "zoom" in obj, get: obj => obj.zoom, set: (obj, value) => { obj.zoom = value; } }, metadata: _metadata }, _zoom_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _aspect_decorators, { kind: "field", name: "aspect", static: false, private: false, access: { has: obj => "aspect" in obj, get: obj => obj.aspect, set: (obj, value) => { obj.aspect = value; } }, metadata: _metadata }, _aspect_initializers, _aspect_extraInitializers);
+            __esDecorate(null, null, _near_decorators, { kind: "field", name: "near", static: false, private: false, access: { has: obj => "near" in obj, get: obj => obj.near, set: (obj, value) => { obj.near = value; } }, metadata: _metadata }, _near_initializers, _near_extraInitializers);
+            __esDecorate(null, null, _far_decorators, { kind: "field", name: "far", static: false, private: false, access: { has: obj => "far" in obj, get: obj => obj.far, set: (obj, value) => { obj.far = value; } }, metadata: _metadata }, _far_initializers, _far_extraInitializers);
+            __esDecorate(null, null, _active_decorators, { kind: "field", name: "active", static: false, private: false, access: { has: obj => "active" in obj, get: obj => obj.active, set: (obj, value) => { obj.active = value; } }, metadata: _metadata }, _active_initializers, _active_extraInitializers);
+            __esDecorate(null, null, _zoom_decorators, { kind: "field", name: "zoom", static: false, private: false, access: { has: obj => "zoom" in obj, get: obj => obj.zoom, set: (obj, value) => { obj.zoom = value; } }, metadata: _metadata }, _zoom_initializers, _zoom_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Camera = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -92,7 +96,7 @@ let Camera = (() => {
          * case of stretched or squished display, this can be adjusted appropriately
          * to unstretch or unsquish the view of the 3d world.
          */
-        aspect = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _aspect_initializers, 0
+        aspect = __runInitializers(this, _aspect_initializers, 0
         /**
          * @property {number} near
          *
@@ -101,19 +105,29 @@ let Camera = (() => {
          * Default: `1`
          *
          * Anything closer to the camera than this value will not be rendered.
+         */
+        );
+        /**
+         * @property {number} near
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         *
+         * Anything closer to the camera than this value will not be rendered.
+         */
+        near = (__runInitializers(this, _aspect_extraInitializers), __runInitializers(this, _near_initializers, 1
+        /**
+         * @property {number} far
+         *
+         * *attribute*
+         *
+         * Default: `3000`
+         *
+         * Anything further from the camera than this value will not be rendered.
          */
         ));
         /**
-         * @property {number} near
-         *
-         * *attribute*
-         *
-         * Default: `1`
-         *
-         * Anything closer to the camera than this value will not be rendered.
-         */
-        near = __runInitializers(this, _near_initializers, 1
-        /**
          * @property {number} far
          *
          * *attribute*
@@ -122,17 +136,7 @@ let Camera = (() => {
          *
          * Anything further from the camera than this value will not be rendered.
          */
-        );
-        /**
-         * @property {number} far
-         *
-         * *attribute*
-         *
-         * Default: `3000`
-         *
-         * Anything further from the camera than this value will not be rendered.
-         */
-        far = __runInitializers(this, _far_initializers, 3000
+        far = (__runInitializers(this, _near_extraInitializers), __runInitializers(this, _far_initializers, 3000
         /**
          * @property {boolean} active
          *
@@ -145,7 +149,7 @@ let Camera = (() => {
          * camera that was set (and is still) active will be used, or if no other
          * cameras are active the scene's default camera will be used.
          */
-        );
+        ));
         /**
          * @property {boolean} active
          *
@@ -158,7 +162,7 @@ let Camera = (() => {
          * camera that was set (and is still) active will be used, or if no other
          * cameras are active the scene's default camera will be used.
          */
-        active = __runInitializers(this, _active_initializers, false
+        active = (__runInitializers(this, _far_extraInitializers), __runInitializers(this, _active_initializers, false
         /**
          * @property {number} zoom
          *
@@ -171,7 +175,7 @@ let Camera = (() => {
          * versa. At zoom level `1`, the effective field of view is equivalent to
          * [`fov`](#fov).
          */
-        );
+        ));
         /**
          * @property {number} zoom
          *
@@ -184,10 +188,10 @@ let Camera = (() => {
          * versa. At zoom level `1`, the effective field of view is equivalent to
          * [`fov`](#fov).
          */
-        zoom = __runInitializers(this, _zoom_initializers, 1
+        zoom = (__runInitializers(this, _active_extraInitializers), __runInitializers(this, _zoom_initializers, 1
         // TODO lookat property
         // @attribute lookAt: string | Element3D | null = null
-        );
+        ));
         // TODO lookat property
         // @attribute lookAt: string | Element3D | null = null
         connectedCallback() {
@@ -211,6 +215,10 @@ let Camera = (() => {
         // `Camera` as a type place holder f.e. in the `Scene` class.
         makeThreeObject3d() {
             return new ThreeCamera();
+        }
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _zoom_extraInitializers);
         }
     };
     return Camera = _classThis;

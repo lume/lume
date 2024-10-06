@@ -12,6 +12,7 @@ export type MaterialBehaviorAttributes = 'alphaTest' | 'colorWrite' | 'depthTest
  * @extends GeometryOrMaterialBehavior
  */
 export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
+    #private;
     type: MeshComponentType;
     /**
      * @property {number} alphaTest -
@@ -128,7 +129,6 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
      * the element's children.
      */
     materialOpacity: number;
-    __color: string | number;
     /**
      * @property {string | number | Color} color -
      *
@@ -147,7 +147,6 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
      */
     get color(): string | number;
     set color(val: string | number | Color);
-    __transparent: import("solid-js").Accessor<boolean>;
     /**
      * @property {} transparent -
      *

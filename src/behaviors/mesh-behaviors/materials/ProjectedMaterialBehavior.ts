@@ -43,13 +43,18 @@ export type ProjectedMaterialBehaviorAttributes =
  * ></lume-box>
  * ```
  *
+ * <live-code id="example"></live-code>
+ * <script>
+ *   example.content = projectedTextureExample
+ * </script>
+ *
  * @extends PhysicalMaterialBehavior
  */
 export
 @behavior
 class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	/** The computed value after the user sets this.textureProjectors. F.e. any strings are queried from DOM, and this array contains only DOM element references. */
-	@signal __associatedProjectors: Array<TextureProjector> = []
+	@signal accessor #associatedProjectors: Array<TextureProjector> = []
 
 	/**
 	 * @property {Array<TextureProjector>} associatedProjectors
@@ -66,7 +71,7 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 * [`.textureProjectors`](#textureprojectors).
 	 */
 	get associatedProjectors() {
-		return this.__associatedProjectors
+		return this.#associatedProjectors
 	}
 
 	/** The raw value the user set on this.textureProjectors */
@@ -119,12 +124,10 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 * element that is connected into the DOM but not slotted to its parent's
 	 * `.shadowRoot` will not participate in the visual output.
 	 */
-	@stringAttribute
-	@receiver
-	get textureProjectors(): string | Array<TextureProjector | string> {
+	@stringAttribute @receiver get textureProjectors(): string | Array<TextureProjector | string> {
 		return this.#textureProjectorsRaw
 	}
-	set textureProjectors(value: string | Array<TextureProjector | string>) {
+	@stringAttribute set textureProjectors(value: string | Array<TextureProjector | string>) {
 		this.#textureProjectorsRaw = value
 	}
 
@@ -136,12 +139,10 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 *
 	 * *deprecated*: renamed to [`.textureProjectors`](#textureprojectors).
 	 */
-	@stringAttribute
-	@receiver
-	get projectedTextures() {
+	@stringAttribute @receiver get projectedTextures() {
 		return this.textureProjectors
 	}
-	set projectedTextures(value) {
+	@stringAttribute set projectedTextures(value) {
 		this.textureProjectors = value
 	}
 
@@ -227,10 +228,10 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 					}
 				}
 
-				this.__associatedProjectors = projectors // trigger
+				this.#associatedProjectors = projectors // trigger
 			})
 
-			const associatedProjectors = createArrayMemo(() => this.__associatedProjectors)
+			const associatedProjectors = createArrayMemo(() => this.#associatedProjectors)
 			// For now we use only the first projector. No support for multiple projectors yet.
 			const projector = createMemo<TextureProjector | undefined>(() => associatedProjectors()[0])
 			const projectorSrc = createMemo(() => projector()?.src ?? '')
@@ -259,7 +260,7 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 				if (!tex) return
 
 				// if the camera changes
-				const cam = tex._camera
+				const cam = tex.threeCamera
 				if (!cam) return
 
 				if (three.material !== mat) return

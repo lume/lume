@@ -67,12 +67,10 @@ export class LineGeometryBehavior extends GeometryBehavior {
 	 * A value of `null` (or when the attribute is removed) causes no line to be
 	 * rendered.
 	 */
-	@attribute
-	@receiver
-	get points(): number[] {
+	@attribute @receiver get points(): number[] {
 		return this.#points
 	}
-	set points(points: string | number[] | null) {
+	@attribute set points(points: string | number[] | null) {
 		if (!points) {
 			this.#points.length = 0
 		} else if (typeof points === 'string' || Array.isArray(points)) {
@@ -84,7 +82,7 @@ export class LineGeometryBehavior extends GeometryBehavior {
 				if (_points.length % 3 !== 0) throw new Error('The points array needs to have 3 numbers per point.')
 
 				if (this.#points.length !== _points.length) this.#points.length = _points.length
-				for (let i = 0, l = _points.length; i < l; i += 1) this.#points[i] = _points[i]
+				for (let i = 0, l = _points.length; i < l; i += 1) this.#points[i] = _points[i]!
 			}
 		}
 	}

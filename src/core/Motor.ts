@@ -123,7 +123,7 @@ class _Motor {
 	#requestFrame = globalThis.requestAnimationFrame?.bind(globalThis)
 
 	/**
-	 * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
+	 * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
 	 * As long as there are tasks in the stack, the loop continues. When the
 	 * stack becomes empty due to removal of tasks, the
 	 * requestAnimationFrame loop stops and the app sits there doing nothing
@@ -179,7 +179,7 @@ class _Motor {
 
 	#runRenderTasks(timestamp: number, deltaTime: number) {
 		for (this.#taskIterationIndex = 0; this.#taskIterationIndex < this.#numberOfTasks; this.#taskIterationIndex += 1) {
-			const task = this.#allRenderTasks[this.#taskIterationIndex]
+			const task = this.#allRenderTasks[this.#taskIterationIndex]!
 
 			if (task(timestamp, deltaTime) === false) this.removeRenderTask(task)
 		}

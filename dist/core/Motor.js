@@ -100,7 +100,7 @@ class _Motor {
     // Using ?. here in case of a non-DOM env.
     #requestFrame = globalThis.requestAnimationFrame?.bind(globalThis);
     /**
-     * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
+     * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
      * As long as there are tasks in the stack, the loop continues. When the
      * stack becomes empty due to removal of tasks, the
      * requestAnimationFrame loop stops and the app sits there doing nothing
@@ -140,7 +140,7 @@ class _Motor {
     }
     #animationFrame() {
         return Promise.race([
-            this.#earlyFrame(),
+            this.#earlyFrame(), // this resolves first if this.runTasks() is called.
             new Promise(r => this.#requestFrame(r)),
         ]);
     }

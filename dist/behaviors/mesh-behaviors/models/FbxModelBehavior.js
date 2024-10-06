@@ -58,26 +58,27 @@ let FbxModelBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = ModelBehavior;
-    let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
+    let _src_extraInitializers = [];
     let _centerGeometry_decorators;
     let _centerGeometry_initializers = [];
+    let _centerGeometry_extraInitializers = [];
     var FbxModelBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _src_decorators = [stringAttribute, receiver];
             _centerGeometry_decorators = [booleanAttribute, receiver];
-            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             FbxModelBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /** Path to a .fbx file. */
-        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''
+        src = __runInitializers(this, _src_initializers, ''
         /**
          * @attribute
          * @property {boolean} centerGeometry - When `true`, all geometry of the
@@ -88,7 +89,7 @@ let FbxModelBehavior = (() => {
          * position to revert to when centerGeometry goes back to `false` (PRs
          * welcome!).
          */
-        ));
+        );
         /**
          * @attribute
          * @property {boolean} centerGeometry - When `true`, all geometry of the
@@ -99,8 +100,8 @@ let FbxModelBehavior = (() => {
          * position to revert to when centerGeometry goes back to `false` (PRs
          * welcome!).
          */
-        centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
-        loader = new FBXLoader();
+        centerGeometry = (__runInitializers(this, _src_extraInitializers), __runInitializers(this, _centerGeometry_initializers, false));
+        loader = (__runInitializers(this, _centerGeometry_extraInitializers), new FBXLoader());
         requiredElementType() {
             return [FbxModel];
         }
@@ -136,7 +137,7 @@ let FbxModelBehavior = (() => {
             const version = this.#version;
             if (!src)
                 return;
-            // In the following loader.load() callbacks, if __version doesn't
+            // In the following loader.load() callbacks, if #version doesn't
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.

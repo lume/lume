@@ -67,15 +67,15 @@ let Autolayout = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _visualFormat_decorators;
     let _visualFormat_initializers = [];
+    let _visualFormat_extraInitializers = [];
     var Autolayout = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _visualFormat_decorators = [attribute];
-            __esDecorate(null, null, _visualFormat_decorators, { kind: "field", name: "visualFormat", static: false, private: false, access: { has: obj => "visualFormat" in obj, get: obj => obj.visualFormat, set: (obj, value) => { obj.visualFormat = value; } }, metadata: _metadata }, _visualFormat_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _visualFormat_decorators, { kind: "field", name: "visualFormat", static: false, private: false, access: { has: obj => "visualFormat" in obj, get: obj => obj.visualFormat, set: (obj, value) => { obj.visualFormat = value; } }, metadata: _metadata }, _visualFormat_initializers, _visualFormat_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Autolayout = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -84,7 +84,7 @@ let Autolayout = (() => {
             extended: true,
             strict: false,
         };
-        visualFormat = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _visualFormat_initializers, ''
+        visualFormat = __runInitializers(this, _visualFormat_initializers, ''
         /**
          * Constructor
          *
@@ -93,7 +93,7 @@ let Autolayout = (() => {
          * @param {Object} [options.layoutOptions] Options such as viewport, spacing, etc... TODO make this a reactive property.
          * @return {Autolayout} this
          */
-        ));
+        );
         /**
          * Constructor
          *
@@ -124,7 +124,7 @@ let Autolayout = (() => {
                 this.setVisualFormat(this.visualFormat || '');
             });
         }
-        #autoLayoutView;
+        #autoLayoutView = __runInitializers(this, _visualFormat_extraInitializers);
         childConnectedCallback(child) {
             // @prod-prune
             if (!(child instanceof Element3D))

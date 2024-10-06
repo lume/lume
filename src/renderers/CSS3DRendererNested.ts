@@ -123,7 +123,7 @@ export class CSS3DRendererNested {
 		}
 
 		for (let i = 0, l = object.children.length; i < l; i++) {
-			this.#renderObject(object.children[i], camera)
+			this.#renderObject(object.children[i]!, camera)
 		}
 	}
 

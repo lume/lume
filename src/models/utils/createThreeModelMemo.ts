@@ -6,7 +6,7 @@ import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
 import {Model} from '../Model.js'
 import {createBehaviorMemo} from './createBehaviorMemo.js'
-import {ModelBehavior} from '../../behaviors/index.js'
+import {ModelBehavior} from '../../behaviors/mesh-behaviors/models/ModelBehavior.js'
 
 export type ThreeModelAsset =
 	| GLTF // GltfModel

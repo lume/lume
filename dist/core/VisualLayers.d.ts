@@ -6,9 +6,7 @@ import type * as THREE from 'three';
  * top of each other. Think of it like layers in Adobe Photoshop.
  */
 export declare class VisualLayers {
-    __layers: Array<Layer>;
-    __renderer: Renderer;
-    __Scene: typeof ThreeScene;
+    #private;
     /**
      * @param {THREE.Renderer} renderer The `THREE.Renderer` (f.e. `THREE.WebGLRenderer`) that
      * will be used to render the layers.
@@ -38,9 +36,6 @@ export declare class VisualLayers {
      * @param {boolean} visible A boolean indicating whether the layer or layers should be visible.
      */
     setLayerVisible(layerNames: LayerNames, visible: boolean): void;
-    __setLayerVisible(layerName: LayerName, visible: boolean): void;
-    /** Get a layer by name (if it doesn't exist, creates it with default order 0). */
-    __getOrMakeLayer(layerName: LayerName): Layer;
     /**
      * Remove a layer.
      * @param {LayerName} layerName The name of the layer to remove.
@@ -108,9 +103,6 @@ export declare class VisualLayers {
      * children. See `withSubtree` of `addObjectToLayer` for more details.
      */
     addObjectsToAllLayers(objects: Object3D[], withSubtree?: boolean): void;
-    readonly __emptyArray: readonly never[];
-    __addObjectToLayer(obj: Object3D, layerName: LayerName, withSubtree: boolean): void;
-    __layerHasObject(layer: Layer, obj: Object3D): boolean;
     /**
      * Remove an object from a layer or set of layers.
      * @param {THREE.Object3D} obj The object to remove from the specified layer or layers.
@@ -133,7 +125,6 @@ export declare class VisualLayers {
      * @param {THREE.Object3D[]} objects The objects to remove.
      */
     removeObjectsFromAllLayers(objects: Object3D[]): void;
-    __removeObjectFromLayer(obj: Object3D, layer: Layer | undefined): void;
     /**
      * Render visible layers.
      *
@@ -159,9 +150,6 @@ export declare class VisualLayers {
      * top of each other.
      */
     render(camera: Camera, beforeAll?: BeforeAllCallback, beforeEach?: BeforeEachCallback, afterEach?: AfterEachCallback): void;
-    __defaultBeforeAllCallback: () => void;
-    __defaultBeforeEachCallback: () => void;
-    __defaultAfterEachCallback: () => void;
 }
 /** @typedef {string} LayerName */
 type LayerName = string;

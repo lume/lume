@@ -1,10 +1,3 @@
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -32,8 +25,19 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
 import { reactive, signal } from 'classy-solid';
-import { getInheritedDescriptor } from 'lowclass';
+import { getInheritedDescriptor } from 'lowclass/dist/getInheritedDescriptor.js';
 import { stringToArray } from './utils.js';
 import { batch } from 'solid-js';
 const defaultValues = { x: undefined, y: undefined, z: undefined };
@@ -53,28 +57,52 @@ let XYZValues = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Object;
-    let _instanceExtraInitializers = [];
-    let _set_x_decorators;
-    let _set_y_decorators;
-    let _set_z_decorators;
+    let _private_x_decorators;
+    let _private_x_initializers = [];
+    let _private_x_extraInitializers = [];
+    let _private_x_descriptor;
+    let _private_y_decorators;
+    let _private_y_initializers = [];
+    let _private_y_extraInitializers = [];
+    let _private_y_descriptor;
+    let _private_z_decorators;
+    let _private_z_initializers = [];
+    let _private_z_extraInitializers = [];
+    let _private_z_descriptor;
     var XYZValues = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _set_x_decorators = [signal];
-            _set_y_decorators = [signal];
-            _set_z_decorators = [signal];
-            __esDecorate(this, null, _set_x_decorators, { kind: "setter", name: "x", static: false, private: false, access: { has: obj => "x" in obj, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, null, _set_y_decorators, { kind: "setter", name: "y", static: false, private: false, access: { has: obj => "y" in obj, set: (obj, value) => { obj.y = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, null, _set_z_decorators, { kind: "setter", name: "z", static: false, private: false, access: { has: obj => "z" in obj, set: (obj, value) => { obj.z = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            _private_x_decorators = [signal];
+            _private_y_decorators = [signal];
+            _private_z_decorators = [signal];
+            __esDecorate(this, _private_x_descriptor = { get: __setFunctionName(function () { return this.#x_accessor_storage; }, "#x", "get"), set: __setFunctionName(function (value) { this.#x_accessor_storage = value; }, "#x", "set") }, _private_x_decorators, { kind: "accessor", name: "#x", static: false, private: true, access: { has: obj => #x in obj, get: obj => obj.#x, set: (obj, value) => { obj.#x = value; } }, metadata: _metadata }, _private_x_initializers, _private_x_extraInitializers);
+            __esDecorate(this, _private_y_descriptor = { get: __setFunctionName(function () { return this.#y_accessor_storage; }, "#y", "get"), set: __setFunctionName(function (value) { this.#y_accessor_storage = value; }, "#y", "set") }, _private_y_decorators, { kind: "accessor", name: "#y", static: false, private: true, access: { has: obj => #y in obj, get: obj => obj.#y, set: (obj, value) => { obj.#y = value; } }, metadata: _metadata }, _private_y_initializers, _private_y_extraInitializers);
+            __esDecorate(this, _private_z_descriptor = { get: __setFunctionName(function () { return this.#z_accessor_storage; }, "#z", "get"), set: __setFunctionName(function (value) { this.#z_accessor_storage = value; }, "#z", "set") }, _private_z_decorators, { kind: "accessor", name: "#z", static: false, private: true, access: { has: obj => #z in obj, get: obj => obj.#z, set: (obj, value) => { obj.#z = value; } }, metadata: _metadata }, _private_z_initializers, _private_z_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             XYZValues = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        #x = (__runInitializers(this, _instanceExtraInitializers), undefined);
-        #y = undefined;
-        #z = undefined;
+        #x_accessor_storage = __runInitializers(this, _private_x_initializers, undefined);
+        get #x() { return _private_x_descriptor.get.call(this); }
+        set #x(value) { return _private_x_descriptor.set.call(this, value); }
+        #y_accessor_storage = (__runInitializers(this, _private_x_extraInitializers), __runInitializers(this, _private_y_initializers, undefined));
+        get #y() { return _private_y_descriptor.get.call(this); }
+        set #y(value) { return _private_y_descriptor.set.call(this, value); }
+        #z_accessor_storage = (__runInitializers(this, _private_y_extraInitializers), __runInitializers(this, _private_z_initializers, undefined
+        /**
+         * @property {any} x -
+         *
+         * *signal*
+         *
+         * Default: `undefined`
+         *
+         * The X value.
+         */
+        ));
+        get #z() { return _private_z_descriptor.get.call(this); }
+        set #z(value) { return _private_z_descriptor.set.call(this, value); }
         /**
          * @property {any} x -
          *
@@ -402,19 +430,22 @@ let XYZValues = (() => {
          * A method that when called in a effect makes all three x/y/z properties a
          * dependency of the effect.
          */
-        asDependency = () => {
+        asDependency = (__runInitializers(this, _private_z_extraInitializers), () => {
             this.x;
             this.y;
             this.z;
             return this;
-        };
+        });
     };
     return XYZValues = _classThis;
 })();
 export { XYZValues };
 // TODO make this a decorator
 function enumerable(obj, prop) {
-    Object.defineProperty(obj, prop, { ...getInheritedDescriptor(obj, prop), enumerable: true });
+    const desc = getInheritedDescriptor(obj, prop);
+    if (!desc)
+        return;
+    Object.defineProperty(desc.owner, prop, { ...desc, enumerable: true });
 }
 enumerable(XYZValues.prototype, 'x');
 enumerable(XYZValues.prototype, 'y');

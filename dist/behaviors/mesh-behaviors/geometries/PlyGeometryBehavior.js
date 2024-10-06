@@ -67,19 +67,20 @@ let PlyGeometryBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = GeometryBehavior;
-    let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
+    let _src_extraInitializers = [];
     let _model_decorators;
     let _model_initializers = [];
+    let _model_extraInitializers = [];
     var PlyGeometryBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _src_decorators = [stringAttribute, receiver];
             _model_decorators = [signal];
-            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _model_decorators, { kind: "field", name: "model", static: false, private: false, access: { has: obj => "model" in obj, get: obj => obj.model, set: (obj, value) => { obj.model = value; } }, metadata: _metadata }, _model_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
+            __esDecorate(null, null, _model_decorators, { kind: "field", name: "model", static: false, private: false, access: { has: obj => "model" in obj, get: obj => obj.model, set: (obj, value) => { obj.model = value; } }, metadata: _metadata }, _model_initializers, _model_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             PlyGeometryBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -94,8 +95,8 @@ let PlyGeometryBehavior = (() => {
          *
          * Path to a `.ply` file to load points from.
          */
-        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''));
-        loader = new PLYLoader();
+        src = __runInitializers(this, _src_initializers, '');
+        loader = (__runInitializers(this, _src_extraInitializers), new PLYLoader());
         model = __runInitializers(this, _model_initializers, null);
         _createComponent() {
             // An empty geometry to start with. It will be replaced once the PLY file is loaded.
@@ -106,7 +107,7 @@ let PlyGeometryBehavior = (() => {
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
-        #version = 0;
+        #version = (__runInitializers(this, _model_extraInitializers), 0);
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {

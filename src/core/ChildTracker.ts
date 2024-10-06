@@ -1,4 +1,4 @@
-import {Constructor} from 'lowclass'
+import {Constructor} from 'lowclass/dist/Constructor.js'
 import {observeChildren} from './utils/observeChildren.js'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement.js'
 

@@ -15,7 +15,11 @@ import {isDomEnvironment, isElement3D} from './utils/isThisOrThat.js'
 
 import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
-import type {CompositionType} from './CompositionTracker'
+import {
+	triggerChildComposedCallback,
+	triggerChildUncomposedCallback,
+	type CompositionType,
+} from './CompositionTracker.js'
 import type {TransformableAttributes} from './Transformable.js'
 import type {SinglePropertyFunction} from './PropertyAnimator.js'
 
@@ -85,12 +89,11 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
 	 */
 	// TODO convert opacity to multiplicative down the tree for gl materials.
-	@numberAttribute
-	set opacity(newValue: number | SinglePropertyFunction) {
+	@numberAttribute set opacity(newValue: number | SinglePropertyFunction) {
 		if (!opacity.has(this)) opacity.set(this, 1)
 		this._setPropertySingle('opacity', v => opacity.set(this, v), newValue)
 	}
-	get opacity(): number {
+	@numberAttribute get opacity(): number {
 		if (!opacity.has(this)) opacity.set(this, 1)
 		return opacity.get(this)!
 	}
@@ -133,7 +136,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 	// stores a ref to this element's root Scene when/if this element is
 	// in a scene.
-	@signal _scene: Scene | null = null
+	@signal accessor #scene: Scene | null = null
 
 	/**
 	 * @property {THREE.Scene} scene -
@@ -148,7 +151,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * to a `<slot>` element of a ShadowRoot of the element's parent).
 	 */
 	get scene(): Scene | null {
-		return this._scene
+		return this.#scene
 	}
 
 	// We use F-Bounded Polymorphism in the following `three` and `threeCSS`
@@ -166,11 +169,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	// Original documentation on F-Bounded Polymorphism in TypeScript:
 	// https://www.typescriptlang.org/docs/handbook/advanced-types.html#polymorphic-this-types
 
-	// TODO make this reactive, so that if we replace the three object outside
-	// code will know to clean up anything relying on the old object and adapt
-	// to the new object?
-	// @signal
-	__three?: ReturnType<this['makeThreeObject3d']>
+	#three?: ReturnType<this['makeThreeObject3d']>
 
 	/**
 	 * @property {Object3D} three -
@@ -182,12 +181,12 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
 	 */
 	get three(): ReturnType<this['makeThreeObject3d']> {
-		if (!this.__three) this.__three = this.__makeThreeObject3d()
+		if (!this.#three) this.#three = this.#makeThreeObject3d()
 
-		return this.__three
+		return this.#three
 	}
 
-	__makeThreeObject3d(): ReturnType<this['makeThreeObject3d']> {
+	#makeThreeObject3d(): ReturnType<this['makeThreeObject3d']> {
 		const o = this.makeThreeObject3d() as ReturnType<this['makeThreeObject3d']>
 		// Helpful for debugging when looking in devtools.
 		// @prod-prune
@@ -199,11 +198,11 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		return o
 	}
 
-	__disposeThree() {
-		if (!this.__three) return
-		disposeObject(this.__three)
-		ourThreeObjects.delete(this.__three)
-		this.__three = undefined
+	#disposeThree() {
+		if (!this.#three) return
+		disposeObject(this.#three)
+		ourThreeObjects.delete(this.#three)
+		this.#three = undefined
 	}
 
 	/**
@@ -213,17 +212,17 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * can only be updated via the constructor, requiring us to make a new object.
 	 */
 	recreateThree() {
-		const children = this.__three?.children
+		const children = this.#three?.children
 
-		this.__disposeThree()
+		this.#disposeThree()
 		// The three getter is used here, which makes a new instance
-		this.__reconnectThree()
+		this.#reconnectThree()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.three.add(...children)
 	}
 
-	__threeCSS?: ReturnType<this['makeThreeCSSObject']>
+	#threeCSS?: ReturnType<this['makeThreeCSSObject']>
 
 	/**
 	 * @property {Object3D} threeCSS -
@@ -235,12 +234,12 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * [`THREE.Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
 	 */
 	get threeCSS(): ReturnType<this['makeThreeCSSObject']> {
-		if (!this.__threeCSS) this.__threeCSS = this.__makeThreeCSSObject()
+		if (!this.#threeCSS) this.#threeCSS = this.#makeThreeCSSObject()
 
-		return this.__threeCSS
+		return this.#threeCSS
 	}
 
-	__makeThreeCSSObject() {
+	#makeThreeCSSObject() {
 		const o = this.makeThreeCSSObject() as ReturnType<this['makeThreeCSSObject']>
 		// @prod-prune
 		o.name = `${this.tagName}${this.id ? '#' + this.id : ''} (css3d, ${o.type})`
@@ -251,11 +250,11 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		return o
 	}
 
-	__disposeThreeCSS() {
-		if (!this.__threeCSS) return
-		disposeObject(this.__threeCSS)
-		ourThreeObjects.delete(this.__threeCSS)
-		this.__threeCSS = undefined
+	#disposeThreeCSS() {
+		if (!this.#threeCSS) return
+		disposeObject(this.#threeCSS)
+		ourThreeObjects.delete(this.#threeCSS)
+		this.#threeCSS = undefined
 	}
 
 	/**
@@ -265,10 +264,10 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	 * can only be updated via the constructor, requiring us to make a new object.
 	 */
 	recreateThreeCSS() {
-		const children = this.__threeCSS?.children
-		this.__disposeThreeCSS()
+		const children = this.#threeCSS?.children
+		this.#disposeThreeCSS()
 		// The threeCSS getter is used here, which makes a new instance
-		this.__reconnectThreeCSS()
+		this.#reconnectThreeCSS()
 
 		// Three.js crashes on arrays of length 0.
 		if (children && children.length) this.threeCSS.add(...children)
@@ -344,10 +343,10 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		// TODO Keep the .three object around (dispose it, but no need to delete
 		// it and recreate it, it will be GC'd with the element if the element
 		// is unref'd)
-		this.__disposeThree()
-		this.__disposeThreeCSS()
+		this.#disposeThree()
+		this.#disposeThreeCSS()
 
-		this._scene = null
+		this.#scene = null
 	}
 
 	override composedCallback(composedParent: Element, compositionType: CompositionType) {
@@ -361,8 +360,8 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 		this.composedSceneGraphParent!.three.add(this.three)
 		this.composedSceneGraphParent!.threeCSS.add(this.threeCSS)
-		this._scene = this.composedSceneGraphParent!.scene
-		if (this._scene) this.#giveSceneToChildren()
+		this.#scene = this.composedSceneGraphParent!.scene
+		if (this.#scene) this.#giveSceneToChildren()
 	}
 
 	override uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType) {
@@ -370,15 +369,15 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 		this.three.parent?.remove(this.three)
 		this.threeCSS.parent?.remove(this.threeCSS)
-		this._scene = null
+		this.#scene = null
 		this.#giveSceneToChildren() // remove from children
 	}
 
 	#giveSceneToChildren() {
 		this.traverseSceneGraph(el => {
 			if (el === this) return
-			if (el._scene === this._scene) return
-			el._scene = this._scene
+			if (el.#scene === this.#scene) return
+			el.#scene = this.#scene
 		})
 	}
 
@@ -508,7 +507,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		return new CSS3DObjectNested(this)
 	}
 
-	__reconnectThree(): void {
+	#reconnectThree(): void {
 		this.composedSceneGraphParent?.three.add(this.three)
 
 		for (const child of this.composedLumeChildren) {
@@ -518,7 +517,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		this.needsUpdate()
 	}
 
-	__reconnectThreeCSS(): void {
+	#reconnectThreeCSS(): void {
 		this.composedSceneGraphParent?.threeCSS.add(this.threeCSS)
 
 		for (const child of this.composedLumeChildren) {
@@ -751,6 +750,8 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		this._elementOperations.applyProperties()
 	}
 
+	#this = this as any
+
 	// TODO this needs to be moved into CompositionTracker so that triggering
 	// childComposedCallback is generic, and filtering of element types needs
 	// to be done by subclasses.
@@ -764,8 +765,8 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 			// ShadowRoot that serves a different purpose than for Element3Ds. A
 			// Scene child's three objects will always be connected to the
 			// scene's three object regardless of its ShadowRoot.
-			if (!this.isScene && this.__shadowRoot) {
-				child.__isPossiblyDistributedToShadowRoot = true
+			if (!this.isScene && this.exposedShadowRoot) {
+				child.isPossiblySlotted = true
 
 				// We don't call childComposedCallback here because that
 				// will be called indirectly due to a slotchange event on a
@@ -777,7 +778,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 				// regular parent-child composition (no distribution, no
 				// children of a ShadowRoot).
 
-				this.__triggerChildComposedCallback(child, 'actual')
+				this.#this[triggerChildComposedCallback](child, 'actual')
 			}
 		} else if (child instanceof HTMLSlotElement) {
 			// COMPOSED TREE TRACKING: Detecting slots here is part of composed
@@ -819,13 +820,13 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 
 	override childDisconnectedCallback(child: Element) {
 		if (isElement3D(child)) {
-			if (!this.isScene && this.__shadowRoot) {
-				child.__isPossiblyDistributedToShadowRoot = false
+			if (!this.isScene && this.exposedShadowRoot) {
+				child.isPossiblySlotted = false
 			} else {
 				// If there's no shadow root, call the
 				// childUncomposedCallback with connection type "actual".
 				// This is effectively similar to childDisconnectedCallback.
-				this.__triggerChildUncomposedCallback(child, 'actual')
+				this.#this[triggerChildUncomposedCallback](child, 'actual')
 			}
 		} else if (child instanceof HTMLSlotElement) {
 			// COMPOSED TREE TRACKING:
@@ -844,7 +845,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 	// FIXME This object/array spreading and cloning is sloooooooow, and becomes
 	// apparent the more ShadowRoots a tree has.
 	override get _composedChildren(): SharedAPI[] {
-		if (!this.isScene && this.__shadowRoot) {
+		if (!this.isScene && this.exposedShadowRoot) {
 			// FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
 			return [
 				...(this._distributedShadowRootChildren.filter(n => n instanceof SharedAPI) as SharedAPI[]),
@@ -854,7 +855,7 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 			// FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
 			return [
 				// TODO perhaps use slot.assignedElements instead?
-				...([...(this.__distributedChildren || [])].filter(n => n instanceof SharedAPI) as SharedAPI[]),
+				...([...(this.slottedChildren || [])].filter(n => n instanceof SharedAPI) as SharedAPI[]),
 
 				// We only care about other elements of the same type.
 				...Array.from(this.children).filter((n): n is SharedAPI => n instanceof SharedAPI),

@@ -61,23 +61,33 @@ let MaterialBehavior = (() => {
     let _instanceExtraInitializers = [];
     let _alphaTest_decorators;
     let _alphaTest_initializers = [];
+    let _alphaTest_extraInitializers = [];
     let _colorWrite_decorators;
     let _colorWrite_initializers = [];
+    let _colorWrite_extraInitializers = [];
     let _depthTest_decorators;
     let _depthTest_initializers = [];
+    let _depthTest_extraInitializers = [];
     let _depthWrite_decorators;
     let _depthWrite_initializers = [];
+    let _depthWrite_extraInitializers = [];
     let _dithering_decorators;
     let _dithering_initializers = [];
+    let _dithering_extraInitializers = [];
     let _fog_decorators;
     let _fog_initializers = [];
+    let _fog_extraInitializers = [];
     let _wireframe_decorators;
     let _wireframe_initializers = [];
+    let _wireframe_extraInitializers = [];
     let _sidedness_decorators;
     let _sidedness_initializers = [];
+    let _sidedness_extraInitializers = [];
     let _materialOpacity_decorators;
     let _materialOpacity_initializers = [];
+    let _materialOpacity_extraInitializers = [];
     let _get_color_decorators;
+    let _set_color_decorators;
     var MaterialBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -92,16 +102,18 @@ let MaterialBehavior = (() => {
             _sidedness_decorators = [stringAttribute, receiver];
             _materialOpacity_decorators = [numberAttribute, receiver];
             _get_color_decorators = [stringAttribute, receiver];
+            _set_color_decorators = [stringAttribute];
             __esDecorate(this, null, _get_color_decorators, { kind: "getter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _alphaTest_decorators, { kind: "field", name: "alphaTest", static: false, private: false, access: { has: obj => "alphaTest" in obj, get: obj => obj.alphaTest, set: (obj, value) => { obj.alphaTest = value; } }, metadata: _metadata }, _alphaTest_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _colorWrite_decorators, { kind: "field", name: "colorWrite", static: false, private: false, access: { has: obj => "colorWrite" in obj, get: obj => obj.colorWrite, set: (obj, value) => { obj.colorWrite = value; } }, metadata: _metadata }, _colorWrite_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _depthTest_decorators, { kind: "field", name: "depthTest", static: false, private: false, access: { has: obj => "depthTest" in obj, get: obj => obj.depthTest, set: (obj, value) => { obj.depthTest = value; } }, metadata: _metadata }, _depthTest_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _depthWrite_decorators, { kind: "field", name: "depthWrite", static: false, private: false, access: { has: obj => "depthWrite" in obj, get: obj => obj.depthWrite, set: (obj, value) => { obj.depthWrite = value; } }, metadata: _metadata }, _depthWrite_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dithering_decorators, { kind: "field", name: "dithering", static: false, private: false, access: { has: obj => "dithering" in obj, get: obj => obj.dithering, set: (obj, value) => { obj.dithering = value; } }, metadata: _metadata }, _dithering_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _fog_decorators, { kind: "field", name: "fog", static: false, private: false, access: { has: obj => "fog" in obj, get: obj => obj.fog, set: (obj, value) => { obj.fog = value; } }, metadata: _metadata }, _fog_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _wireframe_decorators, { kind: "field", name: "wireframe", static: false, private: false, access: { has: obj => "wireframe" in obj, get: obj => obj.wireframe, set: (obj, value) => { obj.wireframe = value; } }, metadata: _metadata }, _wireframe_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _sidedness_decorators, { kind: "field", name: "sidedness", static: false, private: false, access: { has: obj => "sidedness" in obj, get: obj => obj.sidedness, set: (obj, value) => { obj.sidedness = value; } }, metadata: _metadata }, _sidedness_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _materialOpacity_decorators, { kind: "field", name: "materialOpacity", static: false, private: false, access: { has: obj => "materialOpacity" in obj, get: obj => obj.materialOpacity, set: (obj, value) => { obj.materialOpacity = value; } }, metadata: _metadata }, _materialOpacity_initializers, _instanceExtraInitializers);
+            __esDecorate(this, null, _set_color_decorators, { kind: "setter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _alphaTest_decorators, { kind: "field", name: "alphaTest", static: false, private: false, access: { has: obj => "alphaTest" in obj, get: obj => obj.alphaTest, set: (obj, value) => { obj.alphaTest = value; } }, metadata: _metadata }, _alphaTest_initializers, _alphaTest_extraInitializers);
+            __esDecorate(null, null, _colorWrite_decorators, { kind: "field", name: "colorWrite", static: false, private: false, access: { has: obj => "colorWrite" in obj, get: obj => obj.colorWrite, set: (obj, value) => { obj.colorWrite = value; } }, metadata: _metadata }, _colorWrite_initializers, _colorWrite_extraInitializers);
+            __esDecorate(null, null, _depthTest_decorators, { kind: "field", name: "depthTest", static: false, private: false, access: { has: obj => "depthTest" in obj, get: obj => obj.depthTest, set: (obj, value) => { obj.depthTest = value; } }, metadata: _metadata }, _depthTest_initializers, _depthTest_extraInitializers);
+            __esDecorate(null, null, _depthWrite_decorators, { kind: "field", name: "depthWrite", static: false, private: false, access: { has: obj => "depthWrite" in obj, get: obj => obj.depthWrite, set: (obj, value) => { obj.depthWrite = value; } }, metadata: _metadata }, _depthWrite_initializers, _depthWrite_extraInitializers);
+            __esDecorate(null, null, _dithering_decorators, { kind: "field", name: "dithering", static: false, private: false, access: { has: obj => "dithering" in obj, get: obj => obj.dithering, set: (obj, value) => { obj.dithering = value; } }, metadata: _metadata }, _dithering_initializers, _dithering_extraInitializers);
+            __esDecorate(null, null, _fog_decorators, { kind: "field", name: "fog", static: false, private: false, access: { has: obj => "fog" in obj, get: obj => obj.fog, set: (obj, value) => { obj.fog = value; } }, metadata: _metadata }, _fog_initializers, _fog_extraInitializers);
+            __esDecorate(null, null, _wireframe_decorators, { kind: "field", name: "wireframe", static: false, private: false, access: { has: obj => "wireframe" in obj, get: obj => obj.wireframe, set: (obj, value) => { obj.wireframe = value; } }, metadata: _metadata }, _wireframe_initializers, _wireframe_extraInitializers);
+            __esDecorate(null, null, _sidedness_decorators, { kind: "field", name: "sidedness", static: false, private: false, access: { has: obj => "sidedness" in obj, get: obj => obj.sidedness, set: (obj, value) => { obj.sidedness = value; } }, metadata: _metadata }, _sidedness_initializers, _sidedness_extraInitializers);
+            __esDecorate(null, null, _materialOpacity_decorators, { kind: "field", name: "materialOpacity", static: false, private: false, access: { has: obj => "materialOpacity" in obj, get: obj => obj.materialOpacity, set: (obj, value) => { obj.materialOpacity = value; } }, metadata: _metadata }, _materialOpacity_initializers, _materialOpacity_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             MaterialBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -147,7 +159,7 @@ let MaterialBehavior = (() => {
          * with a mesh's renderOrder property to create invisible objects that
          * occlude other objects.
          */
-        colorWrite = __runInitializers(this, _colorWrite_initializers, true
+        colorWrite = (__runInitializers(this, _alphaTest_extraInitializers), __runInitializers(this, _colorWrite_initializers, true
         // defines
         // depthFunc
         /**
@@ -159,7 +171,7 @@ let MaterialBehavior = (() => {
          *
          * Whether to have depth test enabled when rendering this material.
          */
-        );
+        ));
         // defines
         // depthFunc
         /**
@@ -171,7 +183,7 @@ let MaterialBehavior = (() => {
          *
          * Whether to have depth test enabled when rendering this material.
          */
-        depthTest = __runInitializers(this, _depthTest_initializers, true
+        depthTest = (__runInitializers(this, _colorWrite_extraInitializers), __runInitializers(this, _depthTest_initializers, true
         /**
          * @property {boolean} depthWrite -
          *
@@ -185,7 +197,7 @@ let MaterialBehavior = (() => {
          * order to layer several things together without creating z-index
          * artifacts.
          */
-        );
+        ));
         /**
          * @property {boolean} depthWrite -
          *
@@ -199,7 +211,7 @@ let MaterialBehavior = (() => {
          * order to layer several things together without creating z-index
          * artifacts.
          */
-        depthWrite = __runInitializers(this, _depthWrite_initializers, true
+        depthWrite = (__runInitializers(this, _depthTest_extraInitializers), __runInitializers(this, _depthWrite_initializers, true
         /**
          * @property {boolean} dithering -
          *
@@ -210,7 +222,7 @@ let MaterialBehavior = (() => {
          * Whether to apply dithering to the color to remove the appearance of
          * banding.
          */
-        );
+        ));
         /**
          * @property {boolean} dithering -
          *
@@ -221,7 +233,7 @@ let MaterialBehavior = (() => {
          * Whether to apply dithering to the color to remove the appearance of
          * banding.
          */
-        dithering = __runInitializers(this, _dithering_initializers, false
+        dithering = (__runInitializers(this, _depthWrite_extraInitializers), __runInitializers(this, _dithering_initializers, false
         /**
          * @property {boolean} fog -
          *
@@ -231,7 +243,7 @@ let MaterialBehavior = (() => {
          *
          * Whether the material is affected by a [scene's fog](../../../core/Scene#fogMode).
          */
-        );
+        ));
         /**
          * @property {boolean} fog -
          *
@@ -241,7 +253,7 @@ let MaterialBehavior = (() => {
          *
          * Whether the material is affected by a [scene's fog](../../../core/Scene#fogMode).
          */
-        fog = __runInitializers(this, _fog_initializers, true
+        fog = (__runInitializers(this, _dithering_extraInitializers), __runInitializers(this, _fog_initializers, true
         // TODO wireframe works with -geometry behaviors, but not with obj-model
         // because obj-model doesn't inherit from geometry. We should share common
         // props like wireframe...
@@ -255,7 +267,7 @@ let MaterialBehavior = (() => {
          * Whether to render geometry as wireframe, i.e. outlines of polygons. The
          * default of `false` renders geometries as smooth shaded.
          */
-        );
+        ));
         // TODO wireframe works with -geometry behaviors, but not with obj-model
         // because obj-model doesn't inherit from geometry. We should share common
         // props like wireframe...
@@ -269,7 +281,7 @@ let MaterialBehavior = (() => {
          * Whether to render geometry as wireframe, i.e. outlines of polygons. The
          * default of `false` renders geometries as smooth shaded.
          */
-        wireframe = __runInitializers(this, _wireframe_initializers, false
+        wireframe = (__runInitializers(this, _fog_extraInitializers), __runInitializers(this, _wireframe_initializers, false
         /**
          * @property {'front' | 'back' | 'double'} sidedness -
          *
@@ -282,7 +294,7 @@ let MaterialBehavior = (() => {
          * camera, the polygon will be invisible. Use "both" if you want the
          * polygons to always be visible no matter which side faces the camera.
          */
-        );
+        ));
         /**
          * @property {'front' | 'back' | 'double'} sidedness -
          *
@@ -295,7 +307,7 @@ let MaterialBehavior = (() => {
          * camera, the polygon will be invisible. Use "both" if you want the
          * polygons to always be visible no matter which side faces the camera.
          */
-        sidedness = __runInitializers(this, _sidedness_initializers, 'front'
+        sidedness = (__runInitializers(this, _wireframe_extraInitializers), __runInitializers(this, _sidedness_initializers, 'front'
         /**
          * @property {number} materialOpacity -
          *
@@ -318,7 +330,7 @@ let MaterialBehavior = (() => {
          * whereas modifying an element's `opacity` affects CSS rendering including
          * the element's children.
          */
-        );
+        ));
         /**
          * @property {number} materialOpacity -
          *
@@ -341,8 +353,8 @@ let MaterialBehavior = (() => {
          * whereas modifying an element's `opacity` affects CSS rendering including
          * the element's children.
          */
-        materialOpacity = __runInitializers(this, _materialOpacity_initializers, 1);
-        __color = 'white';
+        materialOpacity = (__runInitializers(this, _sidedness_extraInitializers), __runInitializers(this, _materialOpacity_initializers, 1));
+        #color = (__runInitializers(this, _materialOpacity_extraInitializers), 'white');
         /**
          * @property {string | number | Color} color -
          *
@@ -360,16 +372,16 @@ let MaterialBehavior = (() => {
          * object.
          */
         get color() {
-            return this.__color;
+            return this.#color;
         }
         set color(val) {
             if (typeof val === 'object')
-                this.__color = val.getStyle();
+                this.#color = val.getStyle();
             else
-                this.__color = val;
+                this.#color = val;
         }
         // TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
-        __transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false));
+        #transparent = createMemo(() => (this.element.opacity < 1 || this.materialOpacity < 1 ? true : false));
         /**
          * @property {} transparent -
          *
@@ -380,7 +392,7 @@ let MaterialBehavior = (() => {
          * [`materialOpacity`](#materialOpacity) are less than 1.
          */
         get transparent() {
-            return this.__transparent();
+            return this.#transparent();
         }
         connectedCallback() {
             super.connectedCallback();

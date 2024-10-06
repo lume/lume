@@ -47,15 +47,15 @@ let ModelBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = RenderableBehavior;
-    let _instanceExtraInitializers = [];
     let _model_decorators;
     let _model_initializers = [];
+    let _model_extraInitializers = [];
     var ModelBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _model_decorators = [signal];
-            __esDecorate(null, null, _model_decorators, { kind: "field", name: "model", static: false, private: false, access: { has: obj => "model" in obj, get: obj => obj.model, set: (obj, value) => { obj.model = value; } }, metadata: _metadata }, _model_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _model_decorators, { kind: "field", name: "model", static: false, private: false, access: { has: obj => "model" in obj, get: obj => obj.model, set: (obj, value) => { obj.model = value; } }, metadata: _metadata }, _model_initializers, _model_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ModelBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -65,7 +65,11 @@ let ModelBehavior = (() => {
             return [Model];
         }
         /** @deprecated access `.threeModel` on the model element instead. */
-        model = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _model_initializers, null));
+        model = __runInitializers(this, _model_initializers, null);
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, _model_extraInitializers);
+        }
     };
     return ModelBehavior = _classThis;
 })();

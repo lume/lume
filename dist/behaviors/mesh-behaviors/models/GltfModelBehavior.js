@@ -67,13 +67,15 @@ let GltfModelBehavior = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = ModelBehavior;
-    let _instanceExtraInitializers = [];
     let _src_decorators;
     let _src_initializers = [];
+    let _src_extraInitializers = [];
     let _dracoDecoder_decorators;
     let _dracoDecoder_initializers = [];
+    let _dracoDecoder_extraInitializers = [];
     let _centerGeometry_decorators;
     let _centerGeometry_initializers = [];
+    let _centerGeometry_extraInitializers = [];
     var GltfModelBehavior = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -81,16 +83,16 @@ let GltfModelBehavior = (() => {
             _src_decorators = [attribute, receiver];
             _dracoDecoder_decorators = [stringAttribute, receiver];
             _centerGeometry_decorators = [booleanAttribute, receiver];
-            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _dracoDecoder_decorators, { kind: "field", name: "dracoDecoder", static: false, private: false, access: { has: obj => "dracoDecoder" in obj, get: obj => obj.dracoDecoder, set: (obj, value) => { obj.dracoDecoder = value; } }, metadata: _metadata }, _dracoDecoder_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
+            __esDecorate(null, null, _dracoDecoder_decorators, { kind: "field", name: "dracoDecoder", static: false, private: false, access: { has: obj => "dracoDecoder" in obj, get: obj => obj.dracoDecoder, set: (obj, value) => { obj.dracoDecoder = value; } }, metadata: _metadata }, _dracoDecoder_initializers, _dracoDecoder_extraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             GltfModelBehavior = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
-        src = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _src_initializers, ''
+        src = __runInitializers(this, _src_initializers, ''
         /**
          * @property {string | null} dracoDecoder -
          *
@@ -99,33 +101,19 @@ let GltfModelBehavior = (() => {
          * Path to the draco decoder that
          * will unpack decode compressed assets of the GLTF file. This does not need
          * to be supplied unless you explicitly know you need it.
-         */
-        ));
-        /**
-         * @property {string | null} dracoDecoder -
-         *
-         * `attribute`
-         *
-         * Path to the draco decoder that
-         * will unpack decode compressed assets of the GLTF file. This does not need
-         * to be supplied unless you explicitly know you need it.
-         */
-        dracoDecoder = __runInitializers(this, _dracoDecoder_initializers, defaultDracoDecoder
-        /**
-         * @property {boolean} centerGeometry -
-         *
-         * `attribute`
-         *
-         * When `true`, all geometry of the
-         * loaded model will be centered at the local origin.
-         *
-         * Note, changing this value at runtime is expensive because the whole model
-         * will be re-created. We improve this by tracking the initial center
-         * position to revert to when centerGeometry goes back to `false` (PRs
-         * welcome!).
          */
         );
         /**
+         * @property {string | null} dracoDecoder -
+         *
+         * `attribute`
+         *
+         * Path to the draco decoder that
+         * will unpack decode compressed assets of the GLTF file. This does not need
+         * to be supplied unless you explicitly know you need it.
+         */
+        dracoDecoder = (__runInitializers(this, _src_extraInitializers), __runInitializers(this, _dracoDecoder_initializers, defaultDracoDecoder
+        /**
          * @property {boolean} centerGeometry -
          *
          * `attribute`
@@ -138,8 +126,22 @@ let GltfModelBehavior = (() => {
          * position to revert to when centerGeometry goes back to `false` (PRs
          * welcome!).
          */
-        centerGeometry = __runInitializers(this, _centerGeometry_initializers, false);
-        loader = new GLTFLoader();
+        ));
+        /**
+         * @property {boolean} centerGeometry -
+         *
+         * `attribute`
+         *
+         * When `true`, all geometry of the
+         * loaded model will be centered at the local origin.
+         *
+         * Note, changing this value at runtime is expensive because the whole model
+         * will be re-created. We improve this by tracking the initial center
+         * position to revert to when centerGeometry goes back to `false` (PRs
+         * welcome!).
+         */
+        centerGeometry = (__runInitializers(this, _dracoDecoder_extraInitializers), __runInitializers(this, _centerGeometry_initializers, false));
+        loader = (__runInitializers(this, _centerGeometry_extraInitializers), new GLTFLoader());
         requiredElementType() {
             return [GltfModel];
         }

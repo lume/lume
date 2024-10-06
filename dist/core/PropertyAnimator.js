@@ -24,7 +24,7 @@ const isInstance = Symbol();
  * deltaTime, and should return the new desired opacity.
  */
 export function PropertyAnimator(Base = Object) {
-    class PropertyAnimator extends Base {
+    return class PropertyAnimator extends Base {
         // @ts-ignore, prevent downstream "has or is using private name" errors.
         [isInstance] = true;
         _setPropertyXYZ(name, xyz, newValue) {
@@ -114,9 +114,7 @@ export function PropertyAnimator(Base = Object) {
             super.disconnectedCallback?.();
             this.removeAllPropertyFunctions();
         }
-    }
-    PropertyAnimator.prototype[isInstance] = true;
-    return PropertyAnimator;
+    };
 }
 Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {
     value(obj) {

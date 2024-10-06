@@ -205,7 +205,7 @@ describe('ShadowDOM support', () => {
 		expect(node.threeCSS.parent).toBe(scene.threeCSS)
 
 		expect(scene.children.length).toBe(1)
-		expect(scene.children[0].tagName).toBe('SLOT')
+		expect(scene.children[0]!.tagName).toBe('SLOT')
 		expect(scene.composedLumeChildren.length).toBe(1)
 		expect(scene.composedLumeChildren[0]).toBe(node)
 		expect(scene.three.children.length).toBe(1)

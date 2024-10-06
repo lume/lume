@@ -49,13 +49,11 @@ class Transformable extends Sizeable {
 	 */
 	// TODO evalute being able to set reactive arrays or objects and
 	// re-rendering based on updates to those arrays.
-	@attribute
-	@noSignal
-	set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set position(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!position.has(this)) position.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('position', position.get(this)!, newValue)
 	}
-	get position(): XYZNumberValues {
+	@attribute @noSignal get position(): XYZNumberValues {
 		if (!position.has(this)) position.set(this, new XYZNumberValues(0, 0, 0))
 		return position.get(this)!
 	}
@@ -76,13 +74,11 @@ class Transformable extends Sizeable {
 	 * order is X, Y, Z, meaning that an X rotation rotates the object's Y and Z
 	 * axes, and a Y rotation rotates the object's Z axis.
 	 */
-	@attribute
-	@noSignal
-	set rotation(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set rotation(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!rotation.has(this)) rotation.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('rotation', rotation.get(this)!, newValue)
 	}
-	get rotation(): XYZNumberValues {
+	@attribute @noSignal get rotation(): XYZNumberValues {
 		if (!rotation.has(this)) rotation.set(this, new XYZNumberValues(0, 0, 0))
 		return rotation.get(this)!
 	}
@@ -97,13 +93,11 @@ class Transformable extends Sizeable {
 	 * Set the scale of the object in 3D space, relative to its parent,
 	 * by specifying scale along the X, Y, and Z axes.
 	 */
-	@attribute
-	@noSignal
-	set scale(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set scale(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!scale.has(this)) scale.set(this, new XYZNumberValues(1, 1, 1))
 		this._setPropertyXYZ('scale', scale.get(this)!, newValue)
 	}
-	get scale(): XYZNumberValues {
+	@attribute @noSignal get scale(): XYZNumberValues {
 		if (!scale.has(this)) scale.set(this, new XYZNumberValues(1, 1, 1))
 		return scale.get(this)!
 	}
@@ -135,13 +129,11 @@ class Transformable extends Sizeable {
 	 *
 	 * <live-code src="../../guide/positioning/origin.html"></live-code>
 	 */
-	@attribute
-	@noSignal
-	set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set origin(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!origin.has(this)) origin.set(this, new XYZNumberValues(0.5, 0.5, 0.5))
 		this._setPropertyXYZ('origin', origin.get(this)!, newValue)
 	}
-	get origin(): XYZNumberValues {
+	@attribute @noSignal get origin(): XYZNumberValues {
 		if (!origin.has(this)) origin.set(this, new XYZNumberValues(0.5, 0.5, 0.5))
 		return origin.get(this)!
 	}
@@ -166,13 +158,11 @@ class Transformable extends Sizeable {
 	 * and a value of `1 1 1` places the origin at the bottom/right/front of the
 	 * parent's size space.
 	 */
-	@attribute
-	@noSignal
-	set alignPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set alignPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!alignPoint.has(this)) alignPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('alignPoint', alignPoint.get(this)!, newValue)
 	}
-	get alignPoint(): XYZNumberValues {
+	@attribute @noSignal get alignPoint(): XYZNumberValues {
 		if (!alignPoint.has(this)) alignPoint.set(this, new XYZNumberValues(0, 0, 0))
 		return alignPoint.get(this)!
 	}
@@ -198,13 +188,11 @@ class Transformable extends Sizeable {
 	 * and a value of `1 1 1` places the origin at the bottom/right/front of the
 	 * object's size space.
 	 */
-	@attribute
-	@noSignal
-	set mountPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
+	@attribute @noSignal set mountPoint(newValue: XYZNumberValuesProperty | XYZNumberValuesPropertyFunction) {
 		if (!mountPoint.has(this)) mountPoint.set(this, new XYZNumberValues(0, 0, 0))
 		this._setPropertyXYZ('mountPoint', mountPoint.get(this)!, newValue)
 	}
-	get mountPoint(): XYZNumberValues {
+	@attribute @noSignal get mountPoint(): XYZNumberValues {
 		if (!mountPoint.has(this)) mountPoint.set(this, new XYZNumberValues(0, 0, 0))
 		return mountPoint.get(this)!
 	}

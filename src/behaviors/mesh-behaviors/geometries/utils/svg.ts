@@ -30,7 +30,7 @@ export function parseSvgPathDAttribute(d: string | null) {
 	}
 
 	for (let i = 0, l = commands.length; i < l; i++) {
-		const command = commands[i]
+		const command = commands[i]!
 
 		const type = command.charAt(0)
 		const data = command.slice(1).trim()
@@ -46,8 +46,8 @@ export function parseSvgPathDAttribute(d: string | null) {
 			case 'M':
 				numbers = parseFloats(data)
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
-					point.x = numbers[j + 0]
-					point.y = numbers[j + 1]
+					point.x = numbers[j + 0]!
+					point.y = numbers[j + 1]!
 					control.x = point.x
 					control.y = point.y
 
@@ -66,7 +66,7 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j++) {
-					point.x = numbers[j]
+					point.x = numbers[j]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -80,7 +80,7 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j++) {
-					point.y = numbers[j]
+					point.y = numbers[j]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -94,8 +94,8 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
-					point.x = numbers[j + 0]
-					point.y = numbers[j + 1]
+					point.x = numbers[j + 0]!
+					point.y = numbers[j + 1]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -110,17 +110,17 @@ export function parseSvgPathDAttribute(d: string | null) {
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 6) {
 					path.bezierCurveTo(
-						numbers[j + 0],
-						numbers[j + 1],
-						numbers[j + 2],
-						numbers[j + 3],
-						numbers[j + 4],
-						numbers[j + 5],
+						numbers[j + 0]!,
+						numbers[j + 1]!,
+						numbers[j + 2]!,
+						numbers[j + 3]!,
+						numbers[j + 4]!,
+						numbers[j + 5]!,
 					)
-					control.x = numbers[j + 2]
-					control.y = numbers[j + 3]
-					point.x = numbers[j + 4]
-					point.y = numbers[j + 5]
+					control.x = numbers[j + 2]!
+					control.y = numbers[j + 3]!
+					point.x = numbers[j + 4]!
+					point.y = numbers[j + 5]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -134,15 +134,15 @@ export function parseSvgPathDAttribute(d: string | null) {
 					path.bezierCurveTo(
 						getReflection(point.x, control.x),
 						getReflection(point.y, control.y),
-						numbers[j + 0],
-						numbers[j + 1],
-						numbers[j + 2],
-						numbers[j + 3],
+						numbers[j + 0]!,
+						numbers[j + 1]!,
+						numbers[j + 2]!,
+						numbers[j + 3]!,
 					)
-					control.x = numbers[j + 0]
-					control.y = numbers[j + 1]
-					point.x = numbers[j + 2]
-					point.y = numbers[j + 3]
+					control.x = numbers[j + 0]!
+					control.y = numbers[j + 1]!
+					point.x = numbers[j + 2]!
+					point.y = numbers[j + 3]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -153,11 +153,11 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 4) {
-					path.quadraticCurveTo(numbers[j + 0], numbers[j + 1], numbers[j + 2], numbers[j + 3])
-					control.x = numbers[j + 0]
-					control.y = numbers[j + 1]
-					point.x = numbers[j + 2]
-					point.y = numbers[j + 3]
+					path.quadraticCurveTo(numbers[j + 0]!, numbers[j + 1]!, numbers[j + 2]!, numbers[j + 3]!)
+					control.x = numbers[j + 0]!
+					control.y = numbers[j + 1]!
+					point.x = numbers[j + 2]!
+					point.y = numbers[j + 3]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -170,11 +170,11 @@ export function parseSvgPathDAttribute(d: string | null) {
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
 					const rx = getReflection(point.x, control.x)
 					const ry = getReflection(point.y, control.y)
-					path.quadraticCurveTo(rx, ry, numbers[j + 0], numbers[j + 1])
+					path.quadraticCurveTo(rx, ry, numbers[j + 0]!, numbers[j + 1]!)
 					control.x = rx
 					control.y = ry
-					point.x = numbers[j + 0]
-					point.y = numbers[j + 1]
+					point.x = numbers[j + 0]!
+					point.y = numbers[j + 1]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -189,17 +189,17 @@ export function parseSvgPathDAttribute(d: string | null) {
 					if (numbers[j + 5] == point.x && numbers[j + 6] == point.y) continue
 
 					const start = point.clone()
-					point.x = numbers[j + 5]
-					point.y = numbers[j + 6]
+					point.x = numbers[j + 5]!
+					point.y = numbers[j + 6]!
 					control.x = point.x
 					control.y = point.y
 					parseArcCommand(
 						path,
-						numbers[j],
-						numbers[j + 1],
-						numbers[j + 2],
-						numbers[j + 3],
-						numbers[j + 4],
+						numbers[j]!,
+						numbers[j + 1]!,
+						numbers[j + 2]!,
+						numbers[j + 3]!,
+						numbers[j + 4]!,
 						start,
 						point,
 					)
@@ -213,8 +213,8 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
-					point.x += numbers[j + 0]
-					point.y += numbers[j + 1]
+					point.x += numbers[j + 0]!
+					point.y += numbers[j + 1]!
 					control.x = point.x
 					control.y = point.y
 
@@ -233,7 +233,7 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j++) {
-					point.x += numbers[j]
+					point.x += numbers[j]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -247,7 +247,7 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j++) {
-					point.y += numbers[j]
+					point.y += numbers[j]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -261,8 +261,8 @@ export function parseSvgPathDAttribute(d: string | null) {
 				numbers = parseFloats(data)
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
-					point.x += numbers[j + 0]
-					point.y += numbers[j + 1]
+					point.x += numbers[j + 0]!
+					point.y += numbers[j + 1]!
 					control.x = point.x
 					control.y = point.y
 					path.lineTo(point.x, point.y)
@@ -277,17 +277,17 @@ export function parseSvgPathDAttribute(d: string | null) {
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 6) {
 					path.bezierCurveTo(
-						point.x + numbers[j + 0],
-						point.y + numbers[j + 1],
-						point.x + numbers[j + 2],
-						point.y + numbers[j + 3],
-						point.x + numbers[j + 4],
-						point.y + numbers[j + 5],
+						point.x + numbers[j + 0]!,
+						point.y + numbers[j + 1]!,
+						point.x + numbers[j + 2]!,
+						point.y + numbers[j + 3]!,
+						point.x + numbers[j + 4]!,
+						point.y + numbers[j + 5]!,
 					)
-					control.x = point.x + numbers[j + 2]
-					control.y = point.y + numbers[j + 3]
-					point.x += numbers[j + 4]
-					point.y += numbers[j + 5]
+					control.x = point.x + numbers[j + 2]!
+					control.y = point.y + numbers[j + 3]!
+					point.x += numbers[j + 4]!
+					point.y += numbers[j + 5]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -301,15 +301,15 @@ export function parseSvgPathDAttribute(d: string | null) {
 					path.bezierCurveTo(
 						getReflection(point.x, control.x),
 						getReflection(point.y, control.y),
-						point.x + numbers[j + 0],
-						point.y + numbers[j + 1],
-						point.x + numbers[j + 2],
-						point.y + numbers[j + 3],
+						point.x + numbers[j + 0]!,
+						point.y + numbers[j + 1]!,
+						point.x + numbers[j + 2]!,
+						point.y + numbers[j + 3]!,
 					)
-					control.x = point.x + numbers[j + 0]
-					control.y = point.y + numbers[j + 1]
-					point.x += numbers[j + 2]
-					point.y += numbers[j + 3]
+					control.x = point.x + numbers[j + 0]!
+					control.y = point.y + numbers[j + 1]!
+					point.x += numbers[j + 2]!
+					point.y += numbers[j + 3]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -321,15 +321,15 @@ export function parseSvgPathDAttribute(d: string | null) {
 
 				for (let j = 0, jl = numbers.length; j < jl; j += 4) {
 					path.quadraticCurveTo(
-						point.x + numbers[j + 0],
-						point.y + numbers[j + 1],
-						point.x + numbers[j + 2],
-						point.y + numbers[j + 3],
+						point.x + numbers[j + 0]!,
+						point.y + numbers[j + 1]!,
+						point.x + numbers[j + 2]!,
+						point.y + numbers[j + 3]!,
 					)
-					control.x = point.x + numbers[j + 0]
-					control.y = point.y + numbers[j + 1]
-					point.x += numbers[j + 2]
-					point.y += numbers[j + 3]
+					control.x = point.x + numbers[j + 0]!
+					control.y = point.y + numbers[j + 1]!
+					point.x += numbers[j + 2]!
+					point.y += numbers[j + 3]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -342,11 +342,11 @@ export function parseSvgPathDAttribute(d: string | null) {
 				for (let j = 0, jl = numbers.length; j < jl; j += 2) {
 					const rx = getReflection(point.x, control.x)
 					const ry = getReflection(point.y, control.y)
-					path.quadraticCurveTo(rx, ry, point.x + numbers[j + 0], point.y + numbers[j + 1])
+					path.quadraticCurveTo(rx, ry, point.x + numbers[j + 0]!, point.y + numbers[j + 1]!)
 					control.x = rx
 					control.y = ry
-					point.x = point.x + numbers[j + 0]
-					point.y = point.y + numbers[j + 1]
+					point.x = point.x + numbers[j + 0]!
+					point.y = point.y + numbers[j + 1]!
 
 					if (j === 0 && doSetFirstPoint === true) firstPoint.copy(point)
 				}
@@ -361,17 +361,17 @@ export function parseSvgPathDAttribute(d: string | null) {
 					if (numbers[j + 5] == 0 && numbers[j + 6] == 0) continue
 
 					const start = point.clone()
-					point.x += numbers[j + 5]
-					point.y += numbers[j + 6]
+					point.x += numbers[j + 5]!
+					point.y += numbers[j + 6]!
 					control.x = point.x
 					control.y = point.y
 					parseArcCommand(
 						path,
-						numbers[j],
-						numbers[j + 1],
-						numbers[j + 2],
-						numbers[j + 3],
-						numbers[j + 4],
+						numbers[j]!,
+						numbers[j + 1]!,
+						numbers[j + 2]!,
+						numbers[j + 3]!,
+						numbers[j + 4]!,
 						start,
 						point,
 					)
@@ -464,7 +464,7 @@ function parseFloats(input: string, flags?: number[], stride?: number): number[]
 	const length = input.length
 
 	for (let i = 0; i < length; i++) {
-		current = input[i]
+		current = input[i]!
 
 		// check for flags
 		if (Array.isArray(flags) && flags.includes(result.length % stride!) && RE.FLAGS.test(current)) {
@@ -523,7 +523,7 @@ function parseFloats(input: string, flags?: number[], stride?: number): number[]
 			}
 
 			// throw on double signs ("-+1"), but not on sign as separator ("-1-2")
-			if (RE.SIGN.test(current) && number.length === 1 && RE.SIGN.test(number[0])) {
+			if (RE.SIGN.test(current) && number.length === 1 && RE.SIGN.test(number[0]!)) {
 				throwSyntaxError(current, i, result)
 			}
 		}

@@ -1,5 +1,5 @@
 declare const _ErrorEvent: {
-    new (type: string, eventInitDict?: ErrorEventInit | undefined): globalThis.ErrorEvent;
+    new (type: string, eventInitDict?: ErrorEventInit): globalThis.ErrorEvent;
     prototype: globalThis.ErrorEvent;
 };
 /**

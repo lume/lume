@@ -43,19 +43,24 @@ let FlickeringOrb = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
-    let _instanceExtraInitializers = [];
     let _color_decorators;
     let _color_initializers = [];
+    let _color_extraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
+    let _intensity_extraInitializers = [];
     let _shadowBias_decorators;
     let _shadowBias_initializers = [];
+    let _shadowBias_extraInitializers = [];
     let _flickerRange_decorators;
     let _flickerRange_initializers = [];
+    let _flickerRange_extraInitializers = [];
     let _shadowMapWidth_decorators;
     let _shadowMapWidth_initializers = [];
+    let _shadowMapWidth_extraInitializers = [];
     let _shadowMapHeight_decorators;
     let _shadowMapHeight_initializers = [];
+    let _shadowMapHeight_extraInitializers = [];
     var FlickeringOrb = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -66,24 +71,24 @@ let FlickeringOrb = (() => {
             _flickerRange_decorators = [numberAttribute];
             _shadowMapWidth_decorators = [numberAttribute];
             _shadowMapHeight_decorators = [numberAttribute];
-            __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowBias_decorators, { kind: "field", name: "shadowBias", static: false, private: false, access: { has: obj => "shadowBias" in obj, get: obj => obj.shadowBias, set: (obj, value) => { obj.shadowBias = value; } }, metadata: _metadata }, _shadowBias_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _flickerRange_decorators, { kind: "field", name: "flickerRange", static: false, private: false, access: { has: obj => "flickerRange" in obj, get: obj => obj.flickerRange, set: (obj, value) => { obj.flickerRange = value; } }, metadata: _metadata }, _flickerRange_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowMapWidth_decorators, { kind: "field", name: "shadowMapWidth", static: false, private: false, access: { has: obj => "shadowMapWidth" in obj, get: obj => obj.shadowMapWidth, set: (obj, value) => { obj.shadowMapWidth = value; } }, metadata: _metadata }, _shadowMapWidth_initializers, _instanceExtraInitializers);
-            __esDecorate(null, null, _shadowMapHeight_decorators, { kind: "field", name: "shadowMapHeight", static: false, private: false, access: { has: obj => "shadowMapHeight" in obj, get: obj => obj.shadowMapHeight, set: (obj, value) => { obj.shadowMapHeight = value; } }, metadata: _metadata }, _shadowMapHeight_initializers, _instanceExtraInitializers);
+            __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _color_extraInitializers);
+            __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
+            __esDecorate(null, null, _shadowBias_decorators, { kind: "field", name: "shadowBias", static: false, private: false, access: { has: obj => "shadowBias" in obj, get: obj => obj.shadowBias, set: (obj, value) => { obj.shadowBias = value; } }, metadata: _metadata }, _shadowBias_initializers, _shadowBias_extraInitializers);
+            __esDecorate(null, null, _flickerRange_decorators, { kind: "field", name: "flickerRange", static: false, private: false, access: { has: obj => "flickerRange" in obj, get: obj => obj.flickerRange, set: (obj, value) => { obj.flickerRange = value; } }, metadata: _metadata }, _flickerRange_initializers, _flickerRange_extraInitializers);
+            __esDecorate(null, null, _shadowMapWidth_decorators, { kind: "field", name: "shadowMapWidth", static: false, private: false, access: { has: obj => "shadowMapWidth" in obj, get: obj => obj.shadowMapWidth, set: (obj, value) => { obj.shadowMapWidth = value; } }, metadata: _metadata }, _shadowMapWidth_initializers, _shadowMapWidth_extraInitializers);
+            __esDecorate(null, null, _shadowMapHeight_decorators, { kind: "field", name: "shadowMapHeight", static: false, private: false, access: { has: obj => "shadowMapHeight" in obj, get: obj => obj.shadowMapHeight, set: (obj, value) => { obj.shadowMapHeight = value; } }, metadata: _metadata }, _shadowMapHeight_initializers, _shadowMapHeight_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             FlickeringOrb = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        color = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _color_initializers, 'royalblue'));
-        intensity = __runInitializers(this, _intensity_initializers, 1.3);
-        shadowBias = __runInitializers(this, _shadowBias_initializers, 0);
-        flickerRange = __runInitializers(this, _flickerRange_initializers, 0.4);
-        shadowMapWidth = __runInitializers(this, _shadowMapWidth_initializers, 512);
-        shadowMapHeight = __runInitializers(this, _shadowMapHeight_initializers, 512);
-        light;
+        color = __runInitializers(this, _color_initializers, 'royalblue');
+        intensity = (__runInitializers(this, _color_extraInitializers), __runInitializers(this, _intensity_initializers, 1.3));
+        shadowBias = (__runInitializers(this, _intensity_extraInitializers), __runInitializers(this, _shadowBias_initializers, 0));
+        flickerRange = (__runInitializers(this, _shadowBias_extraInitializers), __runInitializers(this, _flickerRange_initializers, 0.4));
+        shadowMapWidth = (__runInitializers(this, _flickerRange_extraInitializers), __runInitializers(this, _shadowMapWidth_initializers, 512));
+        shadowMapHeight = (__runInitializers(this, _shadowMapWidth_extraInitializers), __runInitializers(this, _shadowMapHeight_initializers, 512));
+        light = __runInitializers(this, _shadowMapHeight_extraInitializers);
         sphere;
         template = () => html `
 		<lume-point-light

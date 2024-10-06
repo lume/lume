@@ -102,12 +102,10 @@ class ClipPlanesBehavior extends MeshBehavior {
 	 * slot in a ShadowRoot).
 	 */
 	// TODO #279, move setter logic into an effect like we did with ProjectedMaterialBehavior.
-	@stringAttribute
-	@receiver
-	get clipPlanes(): Array<ClipPlane> {
+	@stringAttribute @receiver get clipPlanes(): Array<ClipPlane> {
 		return this.#clipPlanes
 	}
-	set clipPlanes(value: string | Array<ClipPlane | string>) {
+	@stringAttribute set clipPlanes(value: string | Array<ClipPlane | string>) {
 		this.#rawClipPlanes = value
 
 		let array: Array<ClipPlane | string> = []
@@ -219,7 +217,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 			// worrying about code execution order. https://github.com/lume/lume/issues/279
 			this.clipPlanes = this.#rawClipPlanes
 
-			if (!refCount) this.element.scene.__localClipping = true
+			if (!refCount) this.element.scene.localClipping = true
 			refCount++
 
 			this.#observer = new MutationObserver(() => {
@@ -257,7 +255,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 				mat.clipShadows = clipShadows
 
 				for (const plane of clipPlanes) {
-					mat.clippingPlanes.push(flipClip ? plane.__inverseClip : plane.__clip)
+					mat.clippingPlanes.push(flipClip ? plane.threeInverseClip : plane.threeClip)
 				}
 			})
 
@@ -266,7 +264,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 				this.#observer = null
 
 				refCount--
-				if (!refCount) lastScene!.__localClipping = false
+				if (!refCount) lastScene!.localClipping = false
 				lastScene = null
 			})
 		})

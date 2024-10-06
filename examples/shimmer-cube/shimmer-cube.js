@@ -5,7 +5,7 @@ import {createEffect} from 'solid-js'
 
 export const ShimmerSurface = element('shimmer-surface')(
 	class ShimmerSurface extends Element3D {
-		static observedAttributes = {
+		static observedAttributeHandlers = {
 			color: attribute.string(),
 		}
 
@@ -59,7 +59,7 @@ export const ShimmerSurface = element('shimmer-surface')(
 
 export const ShimmerCube = element('shimmer-cube')(
 	class ShimmerCube extends Element3D {
-		static observedAttributes = {
+		static observedAttributeHandlers = {
 			color: attribute.string(),
 		}
 

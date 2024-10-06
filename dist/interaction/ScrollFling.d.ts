@@ -6,7 +6,6 @@ declare const ScrollFling_base: {
 } & typeof Effects;
 export declare class ScrollFling extends ScrollFling_base {
     #private;
-    private _x;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain
@@ -14,7 +13,6 @@ export declare class ScrollFling extends ScrollFling_base {
      */
     get x(): number;
     set x(val: number);
-    private _y;
     /**
      * During scroll, this value will change. It is a signal so that it can be
      * observed. Set this value initially if you want to start at a certain

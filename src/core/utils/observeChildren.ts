@@ -79,7 +79,7 @@ export function createChildObserver(onConnect: any, onDisconnect: any, includeTe
 		// We're just counting how many times each child node was added and
 		// removed from the parent we're observing.
 		for (let i = 0, l = changes.length; i < l; i += 1) {
-			const change = changes[i]
+			const change = changes[i]!
 
 			if (change.type != 'childList') continue
 
