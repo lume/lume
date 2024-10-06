@@ -1,0 +1,18 @@
+{
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "rimraf dist && vite build",
+		"preview": "vite preview"
+	},
+	"// NOTE: Replace file:../../../ with the latest version of Lume.": "",
+	"dependencies": {
+		"lume": "file:../../../",
+		"preact": "^10.20.0"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"vite": "^5.2.2"
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"outDir": ".tmp/",
+		"rootDir": "./",
+
+		"strict": true,
+		"jsx": "preserve",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+
+		"experimentalDecorators": true,
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"lib": ["DOM", "ESNext"],
+
+		"types": [],
+		"typeRoots": [],
+
+		// disable this, lib types have some errors (help wanted)
+		"skipLibCheck": true
+	},
+	"include": ["./src/**/*"]
+}
