@@ -11833,7 +11833,7 @@ __metadata:
     "@solid-devtools/logger": "npm:^0.8.3"
     "@uiw/codemirror-theme-noctis-lilac": "npm:^4.0.0"
     browser-sync: "npm:^2.27.11"
-    classy-solid: "npm:^0.3.0"
+    classy-solid: "npm:^0.4.0"
     code-mirror-el: "npm:^0.1.0"
     codemirror: "npm:^6.0.0"
     cpr: "npm:^3.0.1"
@@ -11847,7 +11847,7 @@ __metadata:
     james-bond: "npm:^0.7.0"
     lodash-es: "npm:^4.17.0"
     lowclass: "npm:^8.0.0"
-    lume: "npm:^0.3.0-alpha.37"
+    lume: "npm:^0.3.0-alpha.44"
     mkdirp: "npm:^1.0.4"
     prettier: "npm:3.0.3"
     prismjs: "npm:^1.29.0"
@@ -18911,7 +18911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.37, lume@npm:^0.3.0-alpha.43, lume@workspace:.":
+"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.43, lume@npm:^0.3.0-alpha.44, lume@workspace:.":
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
   dependencies:
