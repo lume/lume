@@ -36,6 +36,7 @@ import { onCleanup, untrack } from 'solid-js';
 import { booleanAttribute, element, numberAttribute } from '@lume/element';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { Element3D } from '../core/Element3D.js';
+import { OrthographicCamera, PerspectiveCamera } from 'three';
 // | 'lookAt' // TODO
 /**
  * @class Camera
@@ -209,6 +210,24 @@ let Camera = (() => {
                     lastScene = null;
                 });
             });
+            if (this.three instanceof PerspectiveCamera || this.three instanceof OrthographicCamera) {
+                const camera = this.three || OrthographicCamera;
+                this.createEffect(() => {
+                    camera.near = this.near;
+                    camera.updateProjectionMatrix();
+                    this.needsUpdate();
+                });
+                this.createEffect(() => {
+                    camera.far = this.far;
+                    camera.updateProjectionMatrix();
+                    this.needsUpdate();
+                });
+                this.createEffect(() => {
+                    camera.zoom = this.zoom;
+                    camera.updateProjectionMatrix();
+                    this.needsUpdate();
+                });
+            }
         }
         // This is not called because this class is abstract and should be extended
         // by concrete camera elements, but it provides types for locations that use

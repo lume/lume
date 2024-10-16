@@ -129,21 +129,6 @@ let PerspectiveCamera = (() => {
                 this.three.updateProjectionMatrix();
                 this.needsUpdate();
             });
-            this.createEffect(() => {
-                this.three.near = this.near;
-                this.three.updateProjectionMatrix();
-                this.needsUpdate();
-            });
-            this.createEffect(() => {
-                this.three.far = this.far;
-                this.three.updateProjectionMatrix();
-                this.needsUpdate();
-            });
-            this.createEffect(() => {
-                this.three.zoom = this.zoom;
-                this.three.updateProjectionMatrix();
-                this.needsUpdate();
-            });
         }
         makeThreeObject3d() {
             return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000);

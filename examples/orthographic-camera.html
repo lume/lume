@@ -1,0 +1,30 @@
+<script src="./template.js" template="./template.html" title="<lume-orthographic-camera>"></script>
+
+<lume-scene
+	id="scene"
+	perspective="800"
+	webgl
+	physically-correct-lights
+	environment="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
+>
+	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+
+	<lume-camera-rig active distance="200" max-distance="1700" min-distance="100">
+		<lume-orthographic-camera slot="camera" active near="-500"
+			><lume-point-light position="200 -200 200" intensity="600" color="white"></lume-point-light
+		></lume-orthographic-camera>
+	</lume-camera-rig>
+
+	<lume-element3d rotation="90 0 0" position="0 450 -200">
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/head.3ds"></lume-3ds-model>
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/body.3ds"></lume-3ds-model>
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/left_arm.3ds"></lume-3ds-model>
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/right_arm.3ds"></lume-3ds-model>
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/left_leg.3ds"></lume-3ds-model>
+		<lume-3ds-model id="model" rotation="0 0 0" src="./models/ChuckChuck/right_leg.3ds"></lume-3ds-model>
+	</lume-element3d>
+</lume-scene>
+
+<script type="module">
+	import 'lume'
+</script>

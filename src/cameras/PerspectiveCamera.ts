@@ -95,24 +95,6 @@ class PerspectiveCamera extends Camera {
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
 		})
-
-		this.createEffect(() => {
-			this.three.near = this.near
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
-
-		this.createEffect(() => {
-			this.three.far = this.far
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
-
-		this.createEffect(() => {
-			this.three.zoom = this.zoom
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
 	}
 
 	override makeThreeObject3d() {

@@ -2,6 +2,7 @@ import {onCleanup, untrack} from 'solid-js'
 import {booleanAttribute, element, numberAttribute} from '@lume/element'
 import {Camera as ThreeCamera} from 'three/src/cameras/Camera.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import {OrthographicCamera, PerspectiveCamera} from 'three'
 
 export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' | 'active' | 'zoom'
 // | 'lookAt' // TODO
@@ -102,6 +103,28 @@ class Camera extends Element3D {
 				lastScene = null
 			})
 		})
+
+		if (this.three instanceof PerspectiveCamera || this.three instanceof OrthographicCamera) {
+			const camera = this.three as PerspectiveCamera || OrthographicCamera
+
+			this.createEffect(() => {
+				camera.near = this.near
+				camera.updateProjectionMatrix()
+				this.needsUpdate()
+			})
+
+			this.createEffect(() => {
+				camera.far = this.far
+				camera.updateProjectionMatrix()
+				this.needsUpdate()
+			})
+
+			this.createEffect(() => {
+				camera.zoom = this.zoom
+				camera.updateProjectionMatrix()
+				this.needsUpdate()
+			})
+		}
 	}
 
 	// This is not called because this class is abstract and should be extended
