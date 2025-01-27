@@ -6,8 +6,8 @@
 
 <h3>
   <a href="//lume.io">Home</a>&nbsp;&nbsp;·&nbsp;
-  <a href="//lume.io/docs">Documentation</a>&nbsp;&nbsp;·&nbsp;
-  <a href="//lume.io/docs/#/examples/hello3d">Examples</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//docs.lume.io">Documentation</a>&nbsp;&nbsp;·&nbsp;
+  <a href="//docs.lume.io/examples/hello-world/">Examples</a>&nbsp;&nbsp;·&nbsp;
   <a href="//lume.community">Forum</a>&nbsp;&nbsp;·&nbsp;
   <a href="//discord.gg/PgeyevP">Chat</a>&nbsp;&nbsp;·&nbsp;
   <a href="//github.com/lume/lume">Source</a>
@@ -58,7 +58,7 @@ A first-person shooter game foundation made with LUME, Solid.js, and Meteor.
 
 There are various ways to get involved!
 
-- Visit the [documentation](//lume.io/docs) and make something awesome!
+- Visit the [documentation](//docs.lume.io) and make something awesome!
 - Submit fixes or new features to any packages or the website! See the
   [contributing](./CONTRIBUTING.md) guide.
 - Discuss LUME, get help, or help others in the [forums](//lume.community) or
