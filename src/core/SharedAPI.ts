@@ -6,7 +6,7 @@ import {Transformable} from './Transformable.js'
 import {ElementOperations} from './ElementOperations.js'
 import {Motor} from './Motor.js'
 import {CSS3DObjectNested} from '../renderers/CSS3DRendererNested.js'
-import {disposeObject} from '../utils/three.js'
+import {disposeObject} from '../utils/three/dispose.js'
 import {Settable} from '../utils/Settable.js'
 import {toRadians} from './utils/index.js'
 import {ChildTracker} from './ChildTracker.js'
@@ -748,16 +748,6 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		this._calculateMatrix()
 
 		this._elementOperations.applyProperties()
-	}
-
-	/** @deprecated Use `addEventListener()` instead. */
-	override on(eventName: string, callback: Function, context?: any) {
-		super.on(eventName, callback, context)
-	}
-
-	/** @deprecated Use `dispatchEvent()` instead. */
-	override emit(eventName: string, data?: any) {
-		super.emit(eventName, data)
 	}
 
 	#this = this as any

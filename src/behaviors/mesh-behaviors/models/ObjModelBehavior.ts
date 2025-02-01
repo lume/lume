@@ -1,18 +1,22 @@
 import 'element-behaviors'
+import type {ElementBehaviors} from 'element-behaviors'
 import {stringAttribute} from '@lume/element'
 import {onCleanup} from 'solid-js'
-import {disposeObjectTree, setRandomColorPhongMaterial, isRenderItem} from '../../../utils/three.js'
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader.js'
+import type {Object3D} from 'three/src/core/Object3D.js'
+import type {Group} from 'three/src/objects/Group.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
+import {setRandomColorPhongMaterial} from '../../../utils/three/material.js'
+import {isRenderItem} from '../../../utils/three/is.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-
-import type {Object3D} from 'three/src/core/Object3D.js'
+import {ModelBehavior} from './ModelBehavior.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
-import type {Group} from 'three/src/objects/Group.js'
-import type {ElementBehaviors} from 'element-behaviors'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {ObjModel} from '../../../models/ObjModel.js'
+import {ErrorEvent, normalizeError} from '../../../models/ErrorEvent.js'
 
 // TODO move this somewhere better, perhaps element-behaviors
 declare global {
@@ -21,13 +25,26 @@ declare global {
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
 
+/**
+ * A behavior containing the logic that loads OBJ models for `<lume-obj-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-obj-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class ObjModelBehavior extends RenderableBehavior {
+class ObjModelBehavior extends ModelBehavior {
 	@stringAttribute @receiver obj = ''
 	@stringAttribute @receiver mtl = ''
 
-	model?: Group
+	/** @deprecated access `.threeModel` on the lume-obj-model element instead. */
+	declare model?: Group
+
+	declare element: ObjModel
+
+	override requiredElementType() {
+		return [ObjModel]
+	}
 
 	objLoader = (() => {
 		const loader = new OBJLoader()
@@ -59,13 +76,14 @@ class ObjModelBehavior extends RenderableBehavior {
 			this.#loadModel()
 
 			onCleanup(() => {
-				if (this.model) {
-					disposeObjectTree(this.model, {
+				if (this.element.threeModel) {
+					disposeObjectTree(this.element.threeModel, {
 						destroyMaterial: !this.#materialIsFromMaterialBehavior,
 					})
 				}
 				this.#materialIsFromMaterialBehavior = false
 				this.model = undefined
+				this.element.threeModel = null
 				// Increment this in case the loader is still loading, so it will ignore the result.
 				this.#version++
 			})
@@ -100,7 +118,9 @@ class ObjModelBehavior extends RenderableBehavior {
 		this.objLoader!.load(
 			this.obj,
 			model => version == this.#version && this.#setModel(model, hasMtl),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -110,9 +130,10 @@ class ObjModelBehavior extends RenderableBehavior {
 			this.mtl
 		}". See the following error.`
 		console.warn(message)
-		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		const err = normalizeError(error)
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(new ErrorEvent(err))
 	}
 
 	#setModel(model: Group, hasMtl: boolean) {
@@ -143,9 +164,12 @@ class ObjModelBehavior extends RenderableBehavior {
 			}
 		}
 
-		this.model = model
 		this.element.three.add(model)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: 'obj', model})
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

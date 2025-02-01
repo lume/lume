@@ -5,11 +5,9 @@ import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Motor} from '../core/Motor.js'
 import {triangleBlurTexture} from '../utils/three/texture-blur.js'
-
 import './handle-DOM-absence.js'
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js'
 // TODO import {ARButton}  from 'three/examples/jsm/webxr/ARButton.js'
-
 import type {Scene} from '../core/Scene.js'
 import type {Texture} from 'three/src/Three.js'
 
@@ -182,15 +180,6 @@ class WebglRendererThree {
 		} else if (type == 'basic') {
 			state.renderer.shadowMap.type = BasicShadowMap
 		}
-	}
-
-	setPhysicallyCorrectLights(scene: Scene, value: boolean) {
-		const state = this.sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to set value. Scene state should be initialized first.')
-		// @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
-		state.renderer.physicallyCorrectLights = value // <0.150
-		// @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
-		state.renderer.useLegacyLights = !value // >=0.150
 	}
 
 	#bgVersion = 0
@@ -367,11 +356,10 @@ class WebglRendererThree {
 	}
 
 	// TODO: at the moment this has only been tested toggling it on
-	// once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
-	// TODO Update to WebXR (WebXRManager in Three)
+	// once. Should we be able to turn it off too (f.e. the xr attribute is removed)?
 	enableVR(scene: Scene, enable: boolean) {
 		const state = this.sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.')
+		if (!state) throw new ReferenceError('Unable to enable XR. Scene state should be initialized first.')
 
 		const {renderer} = state
 		renderer.xr.enabled = enable
@@ -381,7 +369,7 @@ class WebglRendererThree {
 	// TODO Update to WebXR
 	createDefaultVRButton(scene: Scene): HTMLElement {
 		const state = this.sceneStates.get(scene)
-		if (!state) throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.')
+		if (!state) throw new ReferenceError('Unable to create XR button. Scene state should be initialized first.')
 
 		const {renderer} = state
 		return VRButton.createButton(renderer)

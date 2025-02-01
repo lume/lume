@@ -156,6 +156,8 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 		return this.composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
 
+	#sizechangeEvent = new Event('sizechange')
+
 	_calcSize() {
 		const calculatedSize = this.#calculatedSize
 
@@ -194,6 +196,7 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 		) {
 			// TODO replace events with reactivity
 			this.emit('sizechange', {...calculatedSize})
+			this.dispatchEvent(this.#sizechangeEvent)
 		}
 	}
 }

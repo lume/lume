@@ -1,9 +1,16 @@
 import 'element-behaviors';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { FbxModel } from '../../../models/FbxModel.js';
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry';
-export declare class FbxModelBehavior extends RenderableBehavior {
+/**
+ * A behavior containing the logic that loads FBX models for `<lume-fbx-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-fbx-model>` element.
+ * @extends ModelBehavior
+ */
+export declare class FbxModelBehavior extends ModelBehavior {
     #private;
     /** Path to a .fbx file. */
     src: string;
@@ -19,7 +26,10 @@ export declare class FbxModelBehavior extends RenderableBehavior {
      */
     centerGeometry: boolean;
     loader: FBXLoader;
+    /** @deprecated access `.threeModel` on the lume-fbx-model element instead. */
     model?: Group;
+    element: FbxModel;
+    requiredElementType(): (typeof FbxModel)[];
     connectedCallback(): void;
 }
 //# sourceMappingURL=FbxModelBehavior.d.ts.map

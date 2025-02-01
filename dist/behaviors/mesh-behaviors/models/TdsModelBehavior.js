@@ -36,17 +36,26 @@ import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
 import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
-import { disposeObjectTree } from '../../../utils/three.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
+import { TdsModel } from '../../../models/TdsModel.js';
+import { ErrorEvent, normalizeError } from '../../../models/ErrorEvent.js';
+/**
+ * A behavior containing the logic that loads 3DS models for `<lume-3ds-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-3ds-model>` element.
+ * @extends ModelBehavior
+ */
 let TdsModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _src_decorators;
     let _src_initializers = [];
     let _src_extraInitializers = [];
@@ -64,7 +73,9 @@ let TdsModelBehavior = (() => {
         /** Path to a .3ds file. */
         src = __runInitializers(this, _src_initializers, '');
         loader = (__runInitializers(this, _src_extraInitializers), new TDSLoader());
-        model;
+        requiredElementType() {
+            return [TdsModel];
+        }
         // This is incremented any time we need to cancel a pending load() (f.e. on
         // src change, or on disconnect), so that the loader will ignore the
         // result when a version change has happened.
@@ -75,9 +86,10 @@ let TdsModelBehavior = (() => {
                 this.src;
                 this.#loadModel();
                 onCleanup(() => {
-                    if (this.model)
-                        disposeObjectTree(this.model);
+                    if (this.element.threeModel)
+                        disposeObjectTree(this.element.threeModel);
                     this.model = undefined;
+                    this.element.threeModel = null;
                     // Increment this in case the loader is still loading, so it will ignore the result.
                     this.#version++;
                 });
@@ -92,19 +104,23 @@ let TdsModelBehavior = (() => {
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.
-            this.loader.load(src, model => version === this.#version && this.#setModel(model), progress => version === this.#version && this.element.emit(Events.PROGRESS, progress), error => version === this.#version && this.#onError(error));
+            this.loader.load(src, model => version === this.#version && this.#setModel(model), progress => version === this.#version &&
+                (this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)), error => version === this.#version && this.#onError(error));
         }
         #onError(error) {
             const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}". See the following error.`;
             console.warn(message);
-            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            const err = normalizeError(error);
             console.error(err);
             this.element.emit(Events.MODEL_ERROR, err);
+            this.element.dispatchEvent(new ErrorEvent(err));
         }
         #setModel(model) {
-            this.model = model;
             this.element.three.add(model);
+            this.model = model;
+            this.element.threeModel = model;
             this.element.emit(Events.MODEL_LOAD, { format: '3ds', model });
+            this.element.dispatchEvent(new LoadEvent());
             this.element.needsUpdate();
         }
     };

@@ -33,7 +33,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
-import { Element3D } from '../core/Element3D.js';
+import { Model } from './Model.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
  * @element lume-gltf-model
@@ -53,7 +53,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   <lume-gltf-model id="myModel" src="path/to/model.gltf"></lume-gltf-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -65,16 +65,18 @@ import { autoDefineElements } from '../LumeConfig.js';
  * document.body.append(scene)
  * const model = new GltfModel
  * model.src = 'path/to/model.gltf'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 let GltfModel = (() => {
     let _classDecorators = [element('lume-gltf-model', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = Model;
     var GltfModel = class extends _classSuper {
         static { _classThis = this; }
         static {

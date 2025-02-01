@@ -83,9 +83,47 @@ export declare class InstancedMesh extends Mesh {
         material: string;
     };
     makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material, import("three/src/objects/InstancedMesh.js").InstancedMeshEventMap>;
+    /**
+     * @method setInstancePosition - Set the position of a specific instance at
+     * the given index. Use this instead of the [`positions`](#positions)
+     * attribute when you only need to update a small number of instances for
+     * optimization.
+     * @param {number} index - The instance index.
+     * @param {number} x - The x component of the position.
+     * @param {number} y - The y component of the position.
+     * @param {number} z - The z component of the position.
+     */
     setInstancePosition(index: number, x: number, y: number, z: number): void;
+    /**
+     * @method setInstanceScale - Set the scale of a specific instance at the
+     * given index. Use this instead of the [`scales`](#scales) attribute when
+     * you only need to update a small number of instances for optimization.
+     * @param {number} index - The instance index.
+     * @param {number} x - The x component of the scale.
+     * @param {number} y - The y component of the scale.
+     * @param {number} z - The z component of the scale.
+     */
     setInstanceScale(index: number, x: number, y: number, z: number): void;
+    /**
+     * @method setInstanceRotation - Set the rotation of a specific instance at
+     * the given index. Use this instead of the [`rotations`](#rotations)
+     * attribute when you only need to update a small number of instances for
+     * optimization.
+     * @param {number} index - The instance index.
+     * @param {number} x - The x component of the rotation.
+     * @param {number} y - The y component of the rotation.
+     * @param {number} z - The z component of the rotation.
+     */
     setInstanceRotation(index: number, x: number, y: number, z: number): void;
+    /**
+     * @method setInstanceColor - Set the color of a specific instance at the
+     * given index. Use this instead of the [`colors`](#colors) attribute when
+     * you only need to update a small number of instances for optimization.
+     * @param {number} index - The instance index.
+     * @param {number} r - The r component of the color.
+     * @param {number} g - The g component of the color.
+     * @param {number} b - The b component of the color.
+     */
     setInstanceColor(index: number, r: number, g: number, b: number): void;
     updateAllMatrices(): void;
     updateAllColors(): void;

@@ -105,8 +105,8 @@ let Autolayout = (() => {
         constructor(options) {
             super();
             // PORTED {
-            this.on('sizechange', this.#layout);
-            this.on('reflow', this.#layout);
+            this.addEventListener('sizechange', this.#layout);
+            this.addEventListener('reflow', this.#layout);
             // }
             // TODO use Settable.set instead.
             if (options) {
@@ -150,6 +150,7 @@ let Autolayout = (() => {
             }
             this.#checkNodes();
         }
+        #reflowEvent = new Event('reflow');
         /**
          * Forces a reflow of the layout.
          *
@@ -158,7 +159,7 @@ let Autolayout = (() => {
         reflowLayout() {
             if (!this.#reflowLayout) {
                 this.#reflowLayout = true;
-                Motor.once(() => this.emit('reflow')); // PORTED
+                Motor.once(() => (this.emit('reflow'), this.dispatchEvent(this.#reflowEvent))); // PORTED
             }
             return this;
         }

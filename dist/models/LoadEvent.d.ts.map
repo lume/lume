@@ -1,0 +1,1 @@
+{"version":3,"file":"LoadEvent.d.ts","sourceRoot":"","sources":["../../src/models/LoadEvent.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAmGG;AACH,qBAAa,SAAU,SAAQ,KAAK;IACnC,MAAM,CAAC,IAAI,SAAS;IACpB,MAAM,CAAC,cAAc,EAAE,SAAS,CAAsC;gBAE1D,OAAO,GAAE,SAAc;CAGnC"}

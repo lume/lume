@@ -12,9 +12,7 @@
 	},
 	"workspaces": [
 		"apps/*",
-		"packages/*",
-		"examples/react",
-		"examples/react-typescript"
+		"packages/*"
 	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {
@@ -75,7 +73,7 @@
 		"@lume/autolayout": "^0.10.0",
 		"@lume/element": "^0.13.0",
 		"@lume/eventful": "^0.3.0",
-		"@lume/three-projected-material": "^0.3.0",
+		"@lume/three-projected-material": "^0.4.0",
 		"classy-solid": "^0.4.0",
 		"element-behaviors": "^5.0.0",
 		"james-bond": "^0.7.0",
@@ -84,11 +82,11 @@
 		"solid-js": "^1.0.0"
 	},
 	"peerDependencies": {
-		"three": ">=0.139.0"
+		"three": ">=0.152.0"
 	},
 	"devDependencies": {
 		"@lume/cli": "^0.14.0",
-		"@types/three": ">=0.139.0",
+		"@types/three": ">=0.152.0",
 		"cross-env": "^7.0.3",
 		"five-server": "^0.3.1",
 		"husky": "^8.0.3",
@@ -96,7 +94,7 @@
 		"lint-staged": "^15.0.0",
 		"prettier": "3.0.3",
 		"symlink-dir": "^5.2.0",
-		"three": ">=0.139.0",
+		"three": ">=0.152.0",
 		"typescript": "^5.0.0"
 	},
 	"repository": {

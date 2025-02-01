@@ -1,0 +1,36 @@
+{
+	"scripts": {
+		"start": "npm run build && five-server dist",
+		"dev": "webpack serve --mode development --open",
+		"build": "rimraf dist && webpack --mode production",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"lume": "file:../../../",
+		"react": "^19.0.0-rc",
+		"react-dom": "^19.0.0-rc"
+	},
+	"// TODO switch back to @types/react after React 19 release": "",
+	"devDependencies": {
+		"@babel/core": "^7.12.16",
+		"@babel/preset-react": "^7.12.10",
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc",
+		"babel-loader": "^8.2.2",
+		"file-loader": "^6.2.0",
+		"five-server": "^0.3.1",
+		"html-webpack-plugin": "^4.5.1",
+		"rimraf": "^6.0.1",
+		"source-map-loader": "^2.0.0",
+		"ts-loader": "^8.0.14",
+		"typescript": "^4.3.0-beta",
+		"url-loader": "^4.1.1",
+		"webpack": "^5.21.2",
+		"webpack-cli": "^4.5.0",
+		"webpack-dev-server": "^3.11.2"
+	},
+	"overrides": {
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc"
+	}
+}

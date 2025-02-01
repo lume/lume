@@ -159,6 +159,12 @@ export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
     get transparent(): boolean;
     connectedCallback(): void;
     _createComponent(): Material;
+    static textureCache: {
+        [url: string]: {
+            refcount: number;
+            texture: Texture;
+        };
+    };
     _handleTexture(textureUrl: () => string, setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void, hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean, onLoad?: () => void, isColor?: boolean): void;
 }
 //# sourceMappingURL=MaterialBehavior.d.ts.map

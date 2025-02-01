@@ -2,9 +2,10 @@
 
 import {Scene as ThreeScene} from 'three/src/scenes/Scene.js'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
-
 import type {Camera, Object3D, Renderer} from 'three'
+// @ts-expect-warning
 import type * as THREE from 'three'
+import {threejsVersion} from '../utils/three/threeVersion.js'
 
 /**
  * Allows rendering objects into one ore more visual layers that are stacked on
@@ -80,7 +81,7 @@ export class VisualLayers {
 		if (!layer) {
 			layer = {name: layerName, backingScene: new this.#Scene(), order: 0, visible: true}
 			// @ts-expect-error legacy
-			layer.backingScene.autoUpdate = false // three <0.144
+			if (threejsVersion < 144) layer.backingScene.autoUpdate = false // three <0.144
 			layer.backingScene.matrixWorldAutoUpdate = false // three >=0.144
 			this.#layers.push(layer)
 		}

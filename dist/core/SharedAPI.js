@@ -44,7 +44,7 @@ import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
 import { CSS3DObjectNested } from '../renderers/CSS3DRendererNested.js';
-import { disposeObject } from '../utils/three.js';
+import { disposeObject } from '../utils/three/dispose.js';
 import { Settable } from '../utils/Settable.js';
 import { toRadians } from './utils/index.js';
 import { ChildTracker } from './ChildTracker.js';
@@ -728,14 +728,6 @@ let SharedAPI = (() => {
             // changed, only if position/align/mountPoint changed, etc)
             this._calculateMatrix();
             this._elementOperations.applyProperties();
-        }
-        /** @deprecated Use `addEventListener()` instead. */
-        on(eventName, callback, context) {
-            super.on(eventName, callback, context);
-        }
-        /** @deprecated Use `dispatchEvent()` instead. */
-        emit(eventName, data) {
-            super.emit(eventName, data);
         }
         #this = (__runInitializers(this, _version_extraInitializers), this);
         // TODO this needs to be moved into CompositionTracker so that triggering

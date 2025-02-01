@@ -1,6 +1,6 @@
 <script src="./template.js" template="./template.html" title="<lume-3ds-model>"></script>
 
-<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
+<lume-scene id="scene" perspective="800" webgl>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active distance="1200" max-distance="3000" min-distance="400">
@@ -26,10 +26,15 @@
 </lume-scene>
 
 <script type="module">
-	import 'lume'
+	import {createEffect} from 'lume'
 
 	const models = Array.from(document.querySelectorAll('lume-3ds-model'))
 
-	for (const model of models)
-		model.on('MODEL_LOAD', () => model.three.traverse(n => n.isMesh && (n.material.shininess = 8)))
+	for (const model of models) {
+		// Recommended: use an effect to observe when the model is loaded:
+		createEffect(() => {
+			if (!model.threeModel) return
+			model.threeModel.traverse(n => n.isMesh && (n.material.shininess = 8))
+		})
+	}
 </script>

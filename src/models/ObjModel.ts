@@ -1,10 +1,11 @@
 import {element, type ElementAttributes} from '@lume/element'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import type {Group} from 'three/src/objects/Group.js'
+import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {ObjModelBehavior, ObjModelBehaviorAttributes} from '../behaviors/index.js'
 
-export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttributes
+export type ObjModelAttributes = ModelAttributes | ObjModelBehaviorAttributes
 
 /**
  * @element lume-obj-model
@@ -21,7 +22,7 @@ export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttribute
  *   <lume-obj-model id="myModel" obj="path/to/model.obj" mtl="path/to/model.mtl"></lume-obj-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -34,14 +35,24 @@ export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttribute
  * const model = new ObjModel
  * model.obj = 'path/to/model.obj'
  * model.mtl = 'path/to/model.mtl'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 export
 @element('lume-obj-model', autoDefineElements)
-class ObjModel extends Element3D {
+class ObjModel extends Model {
 	override initialBehaviors = {model: 'obj'}
+
+	/**
+	 * @property {Group | null} threeModel - The loaded OBJ model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: Group | null
 }
 
 export interface ObjModel extends ElementWithBehaviors<ObjModelBehavior, ObjModelBehaviorAttributes> {}

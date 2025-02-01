@@ -40,12 +40,13 @@ import { onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
+import { Settable } from '../utils/Settable.js';
 let PinchFling = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _x_decorators;
     let _x_initializers = [];
     let _x_extraInitializers = [];
@@ -113,10 +114,6 @@ let PinchFling = (() => {
             return this.#isStarted;
         }
         #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-        }
         #onPinch = (dx) => {
             this.hasInteracted = true;
             dx = dx * this.sensitivity;
@@ -203,6 +200,7 @@ let PinchFling = (() => {
                     if (this.#task)
                         Motor.removeRenderTask(this.#task);
                     this.#aborter.abort();
+                    this.#interacting = false;
                 });
             });
             return this;

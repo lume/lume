@@ -1,6 +1,7 @@
 // Work started at https://discourse.threejs.org/t/12503/35
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
+import { threejsVersion } from '../utils/three/threeVersion.js';
 /**
  * Allows rendering objects into one ore more visual layers that are stacked on
  * top of each other. Think of it like layers in Adobe Photoshop.
@@ -69,7 +70,8 @@ export class VisualLayers {
         if (!layer) {
             layer = { name: layerName, backingScene: new this.#Scene(), order: 0, visible: true };
             // @ts-expect-error legacy
-            layer.backingScene.autoUpdate = false; // three <0.144
+            if (threejsVersion < 144)
+                layer.backingScene.autoUpdate = false; // three <0.144
             layer.backingScene.matrixWorldAutoUpdate = false; // three >=0.144
             this.#layers.push(layer);
         }

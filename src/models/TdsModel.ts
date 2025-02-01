@@ -1,10 +1,11 @@
 import {element, type ElementAttributes} from '@lume/element'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import type {Group} from 'three/src/objects/Group.js'
+import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {TdsModelBehavior, TdsModelBehaviorAttributes} from '../behaviors/index.js'
 
-export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttributes
+export type TdsModelAttributes = ModelAttributes | TdsModelBehaviorAttributes
 
 /**
  * @element lume-3ds-model
@@ -24,7 +25,7 @@ export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttribute
  *   <lume-3ds-model id="myModel" src="path/to/model.3ds"></lume-3ds-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -36,14 +37,24 @@ export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttribute
  * document.body.append(scene)
  * const model = new TdsModel
  * model.src = 'path/to/model.3ds'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 export
 @element('lume-3ds-model', autoDefineElements)
-class TdsModel extends Element3D {
+class TdsModel extends Model {
 	override initialBehaviors = {model: '3ds'}
+
+	/**
+	 * @property {Group | null} threeModel - The loaded 3DS model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: Group | null
 }
 
 export interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {}

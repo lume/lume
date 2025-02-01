@@ -55,6 +55,10 @@ export declare class TreeNode extends TreeNode_base {
      */
     get lumeChildCount(): number;
     disconnectedCallback(): void;
+    /** @deprecated Use `addEventListener()` instead. */
+    on(eventName: string, callback: Function, context?: any): void;
+    /** @deprecated Use `dispatchEvent()` instead. */
+    emit(eventName: string, data?: any): void;
 }
 export {};
 //# sourceMappingURL=TreeNode.d.ts.map

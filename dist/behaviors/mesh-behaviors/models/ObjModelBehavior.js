@@ -35,19 +35,30 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
 import { onCleanup } from 'solid-js';
-import { disposeObjectTree, setRandomColorPhongMaterial, isRenderItem } from '../../../utils/three.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { disposeObjectTree } from '../../../utils/three/dispose.js';
+import { setRandomColorPhongMaterial } from '../../../utils/three/material.js';
+import { isRenderItem } from '../../../utils/three/is.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
-import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { ModelBehavior } from './ModelBehavior.js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
+import { ObjModel } from '../../../models/ObjModel.js';
+import { ErrorEvent, normalizeError } from '../../../models/ErrorEvent.js';
+/**
+ * A behavior containing the logic that loads OBJ models for `<lume-obj-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-obj-model>` element.
+ * @extends ModelBehavior
+ */
 let ObjModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = RenderableBehavior;
+    let _classSuper = ModelBehavior;
     let _obj_decorators;
     let _obj_initializers = [];
     let _obj_extraInitializers = [];
@@ -68,13 +79,17 @@ let ObjModelBehavior = (() => {
             __runInitializers(_classThis, _classExtraInitializers);
         }
         obj = __runInitializers(this, _obj_initializers, '');
-        mtl = (__runInitializers(this, _obj_extraInitializers), __runInitializers(this, _mtl_initializers, ''));
-        model = __runInitializers(this, _mtl_extraInitializers);
-        objLoader = (() => {
+        mtl = (__runInitializers(this, _obj_extraInitializers), __runInitializers(this, _mtl_initializers, ''
+        /** @deprecated access `.threeModel` on the lume-obj-model element instead. */
+        ));
+        requiredElementType() {
+            return [ObjModel];
+        }
+        objLoader = (__runInitializers(this, _mtl_extraInitializers), (() => {
             const loader = new OBJLoader();
             loader.manager.onLoad = () => this.element.needsUpdate();
             return loader;
-        })();
+        })());
         mtlLoader = (() => {
             const loader = new MTLLoader(this.objLoader.manager);
             // Allow cross-origin images to be loaded.
@@ -94,13 +109,14 @@ let ObjModelBehavior = (() => {
                 // instead of reloading the whole object.
                 this.#loadModel();
                 onCleanup(() => {
-                    if (this.model) {
-                        disposeObjectTree(this.model, {
+                    if (this.element.threeModel) {
+                        disposeObjectTree(this.element.threeModel, {
                             destroyMaterial: !this.#materialIsFromMaterialBehavior,
                         });
                     }
                     this.#materialIsFromMaterialBehavior = false;
                     this.model = undefined;
+                    this.element.threeModel = null;
                     // Increment this in case the loader is still loading, so it will ignore the result.
                     this.#version++;
                 });
@@ -127,14 +143,16 @@ let ObjModelBehavior = (() => {
             }
         }
         #loadObj(version, hasMtl) {
-            this.objLoader.load(this.obj, model => version == this.#version && this.#setModel(model, hasMtl), progress => version === this.#version && this.element.emit(Events.PROGRESS, progress), error => version === this.#version && this.#onError(error));
+            this.objLoader.load(this.obj, model => version == this.#version && this.#setModel(model, hasMtl), progress => version === this.#version &&
+                (this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)), error => version === this.#version && this.#onError(error));
         }
         #onError(error) {
             const message = `Failed to load ${this.element.tagName.toLowerCase()} with obj value "${this.obj}" and mtl value "${this.mtl}". See the following error.`;
             console.warn(message);
-            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            const err = normalizeError(error);
             console.error(err);
             this.element.emit(Events.MODEL_ERROR, err);
+            this.element.dispatchEvent(new ErrorEvent(err));
         }
         #setModel(model, hasMtl) {
             // If the OBJ model does not have an MTL, then use the material behavior if any.
@@ -165,9 +183,11 @@ let ObjModelBehavior = (() => {
                     setRandomColorPhongMaterial(model);
                 }
             }
-            this.model = model;
             this.element.three.add(model);
+            this.model = model;
+            this.element.threeModel = model;
             this.element.emit(Events.MODEL_LOAD, { format: 'obj', model });
+            this.element.dispatchEvent(new LoadEvent());
             this.element.needsUpdate();
         }
     };

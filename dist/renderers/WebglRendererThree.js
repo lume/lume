@@ -189,15 +189,6 @@ let WebglRendererThree = (() => {
                 state.renderer.shadowMap.type = BasicShadowMap;
             }
         }
-        setPhysicallyCorrectLights(scene, value) {
-            const state = this.sceneStates.get(scene);
-            if (!state)
-                throw new ReferenceError('Unable to set value. Scene state should be initialized first.');
-            // @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
-            state.renderer.physicallyCorrectLights = value; // <0.150
-            // @ts-expect-error legacy, FIXME legacy mode will be removed and only physical lights will remain, we shall remove this feature.
-            state.renderer.useLegacyLights = !value; // >=0.150
-        }
         #bgVersion = (__runInitializers(this, _localClippingEnabled_extraInitializers), 0);
         /**
          * @method enableBackground - Enable background texture handling for the given scene.
@@ -345,12 +336,11 @@ let WebglRendererThree = (() => {
                 renderer.animate(fn);
         }
         // TODO: at the moment this has only been tested toggling it on
-        // once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
-        // TODO Update to WebXR (WebXRManager in Three)
+        // once. Should we be able to turn it off too (f.e. the xr attribute is removed)?
         enableVR(scene, enable) {
             const state = this.sceneStates.get(scene);
             if (!state)
-                throw new ReferenceError('Unable to enable VR. Scene state should be initialized first.');
+                throw new ReferenceError('Unable to enable XR. Scene state should be initialized first.');
             const { renderer } = state;
             renderer.xr.enabled = enable;
         }
@@ -359,7 +349,7 @@ let WebglRendererThree = (() => {
         createDefaultVRButton(scene) {
             const state = this.sceneStates.get(scene);
             if (!state)
-                throw new ReferenceError('Unable to create VR button. Scene state should be initialized first.');
+                throw new ReferenceError('Unable to create XR button. Scene state should be initialized first.');
             const { renderer } = state;
             return VRButton.createButton(renderer);
         }

@@ -33,7 +33,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
-import { Element3D } from '../core/Element3D.js';
+import { Model } from './Model.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
  * @element lume-collada-model
@@ -53,7 +53,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   <lume-collada-model id="myModel" src="path/to/model.dae"></lume-collada-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -65,18 +65,18 @@ import { autoDefineElements } from '../LumeConfig.js';
  * document.body.append(scene)
  * const model = new ColladaModel
  * model.src = 'path/to/model.dae'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *
- * @extends Element3D
+ * @extends Model
  */
 let ColladaModel = (() => {
     let _classDecorators = [element('lume-collada-model', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = Model;
     var ColladaModel = class extends _classSuper {
         static { _classThis = this; }
         static {

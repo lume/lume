@@ -2,7 +2,7 @@ import type {RoundedRectangle, RoundedRectangleAttributes} from './RoundedRectan
 import type {ReactElementAttributes} from '@lume/element/src/react'
 
 // React users can import this to have appropriate types for the element in their JSX markup.
-declare global {
+declare module 'react' {
 	namespace JSX {
 		interface IntrinsicElements {
 			'lume-rounded-rectangle': ReactElementAttributes<RoundedRectangle, RoundedRectangleAttributes>

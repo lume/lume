@@ -1,10 +1,11 @@
 import {element, type ElementAttributes} from '@lume/element'
-import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {Model, type ModelAttributes} from './Model.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {GltfModelBehavior, GltfModelBehaviorAttributes} from '../behaviors/index.js'
 
-export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttributes
+export type GltfModelAttributes = ModelAttributes | GltfModelBehaviorAttributes
 
 /**
  * @element lume-gltf-model
@@ -24,7 +25,7 @@ export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttribu
  *   <lume-gltf-model id="myModel" src="path/to/model.gltf"></lume-gltf-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -36,14 +37,24 @@ export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttribu
  * document.body.append(scene)
  * const model = new GltfModel
  * model.src = 'path/to/model.gltf'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 export
 @element('lume-gltf-model', autoDefineElements)
-class GltfModel extends Element3D {
+class GltfModel extends Model {
 	override initialBehaviors = {model: 'gltf'}
+
+	/**
+	 * @property {GLTF | null} threeModel - The loaded GLTF model, or null when
+	 * not loaded or while loading.
+	 *
+	 * `signal`
+	 */
+	declare threeModel: GLTF | null
 }
 
 export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {}

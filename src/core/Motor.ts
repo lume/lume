@@ -92,6 +92,18 @@ class _Motor {
 		this.#requestFrame = requester
 	}
 
+	/**
+	 * If any tasks are queued, this will run them immediately in the next
+	 * microtask instead of in the next animation frame, causing elements to be
+	 * updated and affected scenes to be re-drawn.
+	 */
+	forceTick(time = performance.now()) {
+		// If the loop is not already ticking, make it tick
+		this.#startAnimationLoop()
+		// and then make the next tick happen immediately.
+		this.#earlyFrameResolve(time)
+	}
+
 	#loopStarted = false
 	#taskIterationIndex = 0
 	#numberOfTasks = 0
@@ -152,8 +164,17 @@ class _Motor {
 		}
 	}
 
+	#earlyFrameResolve = (_time: number) => {}
+
+	#earlyFrame() {
+		return new Promise<number>(r => (this.#earlyFrameResolve = r))
+	}
+
 	#animationFrame(): Promise<number> {
-		return new Promise(r => this.#requestFrame(r))
+		return Promise.race([
+			this.#earlyFrame(), // this resolves first if this.runTasks() is called.
+			new Promise<number>(r => this.#requestFrame(r)),
+		])
 	}
 
 	#runRenderTasks(timestamp: number, deltaTime: number) {

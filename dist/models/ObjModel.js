@@ -33,7 +33,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
-import { Element3D } from '../core/Element3D.js';
+import { Model } from './Model.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
  * @element lume-obj-model
@@ -50,7 +50,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   <lume-obj-model id="myModel" obj="path/to/model.obj" mtl="path/to/model.mtl"></lume-obj-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -63,16 +63,18 @@ import { autoDefineElements } from '../LumeConfig.js';
  * const model = new ObjModel
  * model.obj = 'path/to/model.obj'
  * model.mtl = 'path/to/model.mtl'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
 let ObjModel = (() => {
     let _classDecorators = [element('lume-obj-model', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = Model;
     var ObjModel = class extends _classSuper {
         static { _classThis = this; }
         static {

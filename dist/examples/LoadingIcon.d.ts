@@ -1,3 +1,7 @@
+declare const LoadingIcon_base: {
+    new (): HTMLElement;
+    prototype: HTMLElement;
+};
 /**
  * @class LoadingIcon - A `<loading-icon>` element useful for an initial loading
  * animation while assets are loading. The element has no dependencies, so it
@@ -8,7 +12,7 @@
  *
  * Hit "Rerun" to see the loading icon again.
  *
- * <live-code src="../../examples/skateboard-configurator/index.html"></live-code>
+ * <live-code src="../../examples/skateboard-configurator/example.html"></live-code>
  * <script>
  *   // A small hack to scale the size of the demo to make it easier to view inside the live-code preview.
  *   const livecode = document.querySelector('live-code')
@@ -99,7 +103,7 @@
  *
  * @extends HTMLElement
  */
-export declare class LoadingIcon extends HTMLElement {
+export declare class LoadingIcon extends LoadingIcon_base {
     connectedCallback(): void;
 }
 declare module 'solid-js' {
@@ -114,4 +118,5 @@ declare global {
         'loading-icon': LoadingIcon;
     }
 }
+export {};
 //# sourceMappingURL=LoadingIcon.d.ts.map

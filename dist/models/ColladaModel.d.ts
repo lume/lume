@@ -1,8 +1,9 @@
 import { type ElementAttributes } from '@lume/element';
-import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+import type { Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
+import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { ColladaModelBehavior, ColladaModelBehaviorAttributes } from '../behaviors/index.js';
-export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorAttributes;
+export type ColladaModelAttributes = ModelAttributes | ColladaModelBehaviorAttributes;
 /**
  * @element lume-collada-model
  * @class ColladaModel -
@@ -21,7 +22,7 @@ export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorA
  *   <lume-collada-model id="myModel" src="path/to/model.dae"></lume-collada-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -33,16 +34,23 @@ export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorA
  * document.body.append(scene)
  * const model = new ColladaModel
  * model.src = 'path/to/model.dae'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
  *
- * @extends Element3D
+ * @extends Model
  */
-export declare class ColladaModel extends Element3D {
+export declare class ColladaModel extends Model {
     initialBehaviors: {
         model: string;
     };
+    /**
+     * @property {Collada | null} threeModel - The loaded Collada model, or null
+     * when not loaded or while loading.
+     *
+     * `signal`
+     */
+    threeModel: Collada | null;
 }
 export interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {
 }

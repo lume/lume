@@ -1,23 +1,40 @@
 import 'element-behaviors'
 import {stringAttribute} from '@lume/element'
+import {onCleanup} from 'solid-js'
 import {ColladaLoader, type Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import {disposeObjectTree} from '../../../utils/three.js'
+import {disposeObjectTree} from '../../../utils/three/dispose.js'
 import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
-import {RenderableBehavior} from '../../RenderableBehavior.js'
-import {onCleanup} from 'solid-js'
+import {ModelBehavior} from './ModelBehavior.js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {ColladaModel} from '../../../models/ColladaModel.js'
+import {ErrorEvent, normalizeError} from '../../../models/ErrorEvent.js'
 
 export type ColladaModelBehaviorAttributes = 'src'
 
+/**
+ * A behavior containing the logic that loads Collada models for `<lume-collada-model>`
+ * elements.
+ * @deprecated Don't use this behavior directly, instead use a `<lume-collada-model>` element.
+ * @extends ModelBehavior
+ */
 export
 @behavior
-class ColladaModelBehavior extends RenderableBehavior {
+class ColladaModelBehavior extends ModelBehavior {
 	/** Path to a .dae file. */
 	@stringAttribute @receiver src = ''
 
 	loader = new ColladaLoader()
-	model?: Collada
+
+	/** @deprecated access `.threeModel` on the lume-collada-model element instead. */
+	declare model?: Collada
+
+	declare element: ColladaModel
+
+	override requiredElementType() {
+		return [ColladaModel]
+	}
 
 	// This is incremented any time we need to cancel a pending load() (f.e. on
 	// src change, or on disconnect), so that the loader will ignore the
@@ -33,8 +50,9 @@ class ColladaModelBehavior extends RenderableBehavior {
 			this.#loadModel()
 
 			onCleanup(() => {
-				if (this.model) disposeObjectTree(this.model.scene)
+				if (this.element.threeModel) disposeObjectTree(this.element.threeModel.scene)
 				this.model = undefined
+				this.element.threeModel = null
 				// Increment this in case the loader is still loading, so it will ignore the result.
 				this.#version++
 			})
@@ -55,7 +73,9 @@ class ColladaModelBehavior extends RenderableBehavior {
 		this.loader.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -65,15 +85,19 @@ class ColladaModelBehavior extends RenderableBehavior {
 			this.src
 		}". See the following error.`
 		console.warn(message)
-		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		const err = normalizeError(error)
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(new ErrorEvent(err))
 	}
 
 	#setModel(model: Collada) {
-		this.model = model
 		this.element.three.add(model.scene)
+		this.model = model
+		this.element.threeModel = model
+
 		this.element.emit(Events.MODEL_LOAD, {format: 'collada', model})
+		this.element.dispatchEvent(new LoadEvent())
 		this.element.needsUpdate()
 	}
 }

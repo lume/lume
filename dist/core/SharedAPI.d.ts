@@ -931,10 +931,6 @@ export declare class SharedAPI extends SharedAPI_base {
      * task that calls update).
      */
     update(_timestamp: number, _deltaTime: number): void;
-    /** @deprecated Use `addEventListener()` instead. */
-    on(eventName: string, callback: Function, context?: any): void;
-    /** @deprecated Use `dispatchEvent()` instead. */
-    emit(eventName: string, data?: any): void;
     childConnectedCallback(child: Element): void;
     childDisconnectedCallback(child: Element): void;
     setAttribute(attr: string, value: any): void;

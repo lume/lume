@@ -4,7 +4,6 @@
 	id="scene"
 	perspective="800"
 	webgl
-	physically-correct-lights
 	environment="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
 >
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
@@ -35,17 +34,19 @@
 </lume-scene>
 
 <script type="module">
-	import 'lume'
+	import {createEffect} from 'lume'
 	import {MeshPhysicalMaterial} from 'three/src/materials/MeshPhysicalMaterial.js'
 	import {toCreasedNormals} from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-	model.on('MODEL_LOAD', () => {
-		model.three.traverse(obj => {
+	createEffect(() => {
+		if (!model.threeModel) return
+
+		model.threeModel.traverse(obj => {
 			if (obj.isMesh) {
 				// Make the parts of the helmet look metallic or plastic.
 				if (obj.material.name.startsWith('Chrome') || obj.material.name.startsWith('Steel')) {
 					// metal
-					obj.material = new MeshPhysicalMaterial({color: 'white', metalness: 1, roughness: 0.15})
+					obj.material = new MeshPhysicalMaterial({color: '#aaa', metalness: 1, roughness: 0.2})
 				} else {
 					// black plastic visor
 					obj.material = new MeshPhysicalMaterial({

@@ -8,6 +8,8 @@ import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
 import {Events} from '../../../core/Events.js'
 import {GeometryBehavior} from './GeometryBehavior.js'
 import {onCleanup} from 'solid-js'
+import {LoadEvent} from '../../../models/LoadEvent.js'
+import {ErrorEvent, normalizeError} from '../../../models/ErrorEvent.js'
 
 /**
  * @class PlyGeometryBehavior -
@@ -86,7 +88,9 @@ class PlyGeometryBehavior extends GeometryBehavior {
 		this.loader!.load(
 			src,
 			model => version === this.#version && this.#setModel(model),
-			progress => version === this.#version && this.element.emit(Events.PROGRESS, progress),
+			progress =>
+				version === this.#version &&
+				(this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)),
 			error => version === this.#version && this.#onError(error),
 		)
 	}
@@ -96,15 +100,20 @@ class PlyGeometryBehavior extends GeometryBehavior {
 			this.src
 		}". See the following error.`
 		console.warn(message)
-		const err = error instanceof ErrorEvent && error.error ? error.error : error
+		const err = normalizeError(error)
 		console.error(err)
 		this.element.emit(Events.MODEL_ERROR, err)
+		this.element.dispatchEvent(new ErrorEvent(err))
 	}
 
 	#setModel(model: BufferGeometry) {
 		model.computeVertexNormals()
 		this.model = model // triggers the resetMeshComponent effect
 		this.element.emit(Events.MODEL_LOAD, {format: 'ply', model})
+
+		// TODO we fire a load event here, but there is no Model
+		// element for this behavior. Make a <lume-ply-model> element instead.
+		this.element.dispatchEvent(new LoadEvent())
 	}
 }
 

@@ -3,12 +3,12 @@ import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { type ShadowMapTypeString } from '../renderers/WebglRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
-import type { TColor } from '../utils/three.js';
+import type { TColor } from '../utils/three/material.js';
 import type { Camera } from '../cameras/Camera.js';
 import type { XYZValuesObject } from '../xyz-values/XYZValues.js';
 import type { SizeableAttributes } from './Sizeable.js';
 import type { Element3D } from './Element3D.js';
-export type SceneAttributes = SizeableAttributes | 'shadowMode' | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'physicallyCorrectLights' | 'cameraNear' | 'cameraFar' | 'perspective';
+export type SceneAttributes = SizeableAttributes | 'shadowMode' | 'shadowmapType' | 'vr' | 'webgl' | 'enableCss' | 'swapLayers' | 'backgroundColor' | 'backgroundOpacity' | 'background' | 'backgroundIntensity' | 'backgroundBlur' | 'equirectangularBackground' | 'environment' | 'fogMode' | 'fogNear' | 'fogFar' | 'fogColor' | 'fogDensity' | 'cameraNear' | 'cameraFar' | 'perspective';
 declare const Super: typeof SharedAPI;
 /**
  * @class Scene -
@@ -321,29 +321,6 @@ export declare class Scene extends Super {
      * Applies only if [`webgl`](#webgl) is `true`.
      */
     fogDensity: number;
-    /**
-     * @deprecated This property/attribute will be removed when Three.js r165 is
-     * released (estimated), and physically correct lighting will become the
-     * default option for enhanced interoperability with other graphics engines
-     * (f.e. Blender). To be ready for the removal, set this to true, and
-     * adjust lighting (intensity values may need to be notably higher as they
-     * are now in candela units assuming world units are in meters) to achieve a
-     * similar effect as before.
-     *
-     * @property {boolean} physicallyCorrectLights -
-     *
-     * `attribute`
-     *
-     * Default: `false`
-     *
-     * Whether to use physically correct lighting mode or not. This affects only
-     * [`PointLight`](../lights/PointLight) <!-- and `SpotLight` --> elements
-     * <!-- ; `RectArea` lights do this automatically -->. See the [lights /
-     * physical example](https://threejs.org/examples/#webgl_lights_physical)
-     * from Three.js and "physicallyCorrectLights" in the Three.js manual's
-     * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
-     */
-    physicallyCorrectLights: boolean;
     /**
      * @property {number} cameraNear -
      *

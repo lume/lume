@@ -42,6 +42,8 @@ import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 import { Events } from '../../../core/Events.js';
 import { GeometryBehavior } from './GeometryBehavior.js';
 import { onCleanup } from 'solid-js';
+import { LoadEvent } from '../../../models/LoadEvent.js';
+import { ErrorEvent, normalizeError } from '../../../models/ErrorEvent.js';
 /**
  * @class PlyGeometryBehavior -
  *
@@ -129,19 +131,24 @@ let PlyGeometryBehavior = (() => {
             // match, it means this.src or this.dracoDecoder changed while
             // a previous model was loading, in which case we ignore that
             // result and wait for the next model to load.
-            this.loader.load(src, model => version === this.#version && this.#setModel(model), progress => version === this.#version && this.element.emit(Events.PROGRESS, progress), error => version === this.#version && this.#onError(error));
+            this.loader.load(src, model => version === this.#version && this.#setModel(model), progress => version === this.#version &&
+                (this.element.emit(Events.PROGRESS, progress), this.element.dispatchEvent(progress)), error => version === this.#version && this.#onError(error));
         }
         #onError(error) {
             const message = `Failed to load ${this.element.tagName.toLowerCase()} with src "${this.src}". See the following error.`;
             console.warn(message);
-            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            const err = normalizeError(error);
             console.error(err);
             this.element.emit(Events.MODEL_ERROR, err);
+            this.element.dispatchEvent(new ErrorEvent(err));
         }
         #setModel(model) {
             model.computeVertexNormals();
             this.model = model; // triggers the resetMeshComponent effect
             this.element.emit(Events.MODEL_LOAD, { format: 'ply', model });
+            // TODO we fire a load event here, but there is no Model
+            // element for this behavior. Make a <lume-ply-model> element instead.
+            this.element.dispatchEvent(new LoadEvent());
         }
     };
     return PlyGeometryBehavior = _classThis;

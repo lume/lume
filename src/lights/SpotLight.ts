@@ -7,6 +7,7 @@ import {createEffect, onCleanup} from 'solid-js'
 import {PointLight, type PointLightAttributes} from './PointLight.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, toRadians} from '../core/index.js'
+import {upwardRoots} from '../utils/upwardRoots.js'
 
 export type SpotLightAttributes = PointLightAttributes
 
@@ -71,8 +72,9 @@ class SpotLight extends PointLight {
 	#rawTarget: string | Element3D | null | Array<Element3D | string> = ''
 	#observer: MutationObserver | null = null
 
-	// TODO Consolidate target selector functionality with similar clipPlanes
-	// functionality in ClipPlanesBehavior.
+	// TODO Consolidate "selector ref" functionality in SpotLight,
+	// ClipPlanesBehavior, ProjectedMaterialBehavior, etc
+	// (https://github.com/lume/lume/issues/300).
 	@stringAttribute get target(): Element3D | null {
 		return this.#target[0] ?? null
 	}
@@ -198,16 +200,14 @@ class SpotLight extends PointLight {
 			// worrying about code execution order. https://github.com/lume/lume/issues/279
 			this.target = this.#rawTarget
 
-			// TODO we need to observe all the way up the composed tree, or we
-			// should make the querying scoped only to the nearest root, for
-			// consistency. This covers most cases, for now.
 			this.#observer = new MutationObserver(() => {
 				// TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
 				// This triggers the setter logic.
 				this.target = this.#rawTarget
 			})
 
-			this.#observer.observe(this.getRootNode(), {childList: true, subtree: true})
+			// TODO This queries in upward roots only. I think we want to also branch downward into sibling roots.
+			for (const root of upwardRoots(this)) this.#observer.observe(root, {childList: true, subtree: true})
 
 			createEffect(() => {
 				const target = this.target

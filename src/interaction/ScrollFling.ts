@@ -2,32 +2,12 @@ import {onCleanup, untrack} from 'solid-js'
 import {Effects, reactive, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
-
 import type {RenderTask} from '../core/index.js'
-
-type Options = Partial<
-	Pick<
-		ScrollFling,
-		| 'target'
-		| 'x'
-		| 'y'
-		| 'minX'
-		| 'maxX'
-		| 'minY'
-		| 'maxY'
-		| 'sensitivity'
-		| 'hasInteracted'
-		| 'epsilon'
-		| 'lerpAmount'
-	>
->
-
-// @ts-ignore
-window.debug = true
+import {Settable} from '../utils/Settable.js'
 
 export
 @reactive
-class ScrollFling extends Effects {
+class ScrollFling extends Settable(Effects) {
 	@signal accessor #x = 0
 
 	/**
@@ -65,11 +45,9 @@ class ScrollFling extends Effects {
 	minY = -Infinity
 	maxY = Infinity
 
-	target: Element = document.documentElement
+	@signal target: Element = document.documentElement
 
 	sensitivity = 1
-
-	@signal hasInteracted = false
 
 	epsilon = 0.01
 
@@ -77,6 +55,15 @@ class ScrollFling extends Effects {
 	 * The portion to lerp towards the target values each frame. Between 0 and 1.
 	 */
 	lerpAmount = 0.3
+
+	@signal hasInteracted = false
+
+	/**
+	 * Whether or not the underlying wheel event is passive. Defaults to false
+	 * because we typically depend on our logic to do custom scroll animation,
+	 * rather than the browser doing any actual scrolling.
+	 */
+	@signal passive = false
 
 	#targetX = 0
 	#targetY = 0
@@ -90,13 +77,6 @@ class ScrollFling extends Effects {
 	}
 
 	#aborter = new AbortController()
-
-	constructor(options: Options = {}) {
-		super()
-		Object.assign(this, options)
-		this.#targetX = this.#x
-		this.#targetY = this.#y
-	}
 
 	#onWheel = (event: WheelEvent) => {
 		this.hasInteracted = true
@@ -133,11 +113,12 @@ class ScrollFling extends Effects {
 
 		this.createEffect(() => {
 			this.target // any time the target changes make new events on that target
+			this.passive
 
 			this.#aborter = new AbortController()
 
 			// @ts-expect-error, whyyyyy TypeScript
-			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
+			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal, passive: this.passive})
 
 			onCleanup(() => {
 				this.#stopAnimation()
@@ -162,6 +143,3 @@ class ScrollFling extends Effects {
 		if (this.#task) Motor.removeRenderTask(this.#task)
 	}
 }
-
-// @ts-ignore
-window.debug = false

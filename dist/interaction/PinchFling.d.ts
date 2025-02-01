@@ -1,6 +1,10 @@
 import { Effects } from 'classy-solid';
-type Options = Partial<Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'slowdownAmount'>>;
-export declare class PinchFling extends Effects {
+declare const PinchFling_base: {
+    new (...a: any[]): {
+        set<T extends any, K extends keyof T, V extends T[K]>(props: Partial<Record<K, V>>): any;
+    };
+} & typeof Effects;
+export declare class PinchFling extends PinchFling_base {
     #private;
     /**
      * During pinch, this value will change. It is a signal so that it can be
@@ -21,7 +25,6 @@ export declare class PinchFling extends Effects {
     slowdownAmount: number;
     get interacting(): boolean;
     get isStarted(): boolean;
-    constructor(options?: Options);
     start(): this;
     stop(): this;
 }

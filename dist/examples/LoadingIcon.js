@@ -10,7 +10,7 @@
  *
  * Hit "Rerun" to see the loading icon again.
  *
- * <live-code src="../../examples/skateboard-configurator/index.html"></live-code>
+ * <live-code src="../../examples/skateboard-configurator/example.html"></live-code>
  * <script>
  *   // A small hack to scale the size of the demo to make it easier to view inside the live-code preview.
  *   const livecode = document.querySelector('live-code')
@@ -101,7 +101,7 @@
  *
  * @extends HTMLElement
  */
-export class LoadingIcon extends HTMLElement {
+export class LoadingIcon extends (globalThis.window?.HTMLElement ?? null) {
     connectedCallback() {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = /*html*/ `
@@ -159,5 +159,5 @@ export class LoadingIcon extends HTMLElement {
 		`;
     }
 }
-customElements.define('loading-icon', LoadingIcon);
+globalThis.window?.customElements?.define('loading-icon', LoadingIcon);
 //# sourceMappingURL=LoadingIcon.js.map

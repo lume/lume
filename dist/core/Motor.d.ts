@@ -39,6 +39,12 @@ declare class _Motor {
      * the XR headset.
      */
     setFrameRequester(requester: (fn: FrameRequestCallback) => number): void;
+    /**
+     * If any tasks are queued, this will run them immediately in the next
+     * microtask instead of in the next animation frame, causing elements to be
+     * updated and affected scenes to be re-drawn.
+     */
+    forceTick(time?: number): void;
 }
 export declare const Motor: _Motor;
 export {};

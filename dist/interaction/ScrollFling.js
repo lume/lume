@@ -40,14 +40,13 @@ import { onCleanup, untrack } from 'solid-js';
 import { Effects, reactive, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
-// @ts-ignore
-window.debug = true;
+import { Settable } from '../utils/Settable.js';
 let ScrollFling = (() => {
     let _classDecorators = [reactive];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Effects;
+    let _classSuper = Settable(Effects);
     let _private_x_decorators;
     let _private_x_initializers = [];
     let _private_x_extraInitializers = [];
@@ -56,9 +55,15 @@ let ScrollFling = (() => {
     let _private_y_initializers = [];
     let _private_y_extraInitializers = [];
     let _private_y_descriptor;
+    let _target_decorators;
+    let _target_initializers = [];
+    let _target_extraInitializers = [];
     let _hasInteracted_decorators;
     let _hasInteracted_initializers = [];
     let _hasInteracted_extraInitializers = [];
+    let _passive_decorators;
+    let _passive_initializers = [];
+    let _passive_extraInitializers = [];
     let _private_isStarted_decorators;
     let _private_isStarted_initializers = [];
     let _private_isStarted_extraInitializers = [];
@@ -69,12 +74,16 @@ let ScrollFling = (() => {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private_x_decorators = [signal];
             _private_y_decorators = [signal];
+            _target_decorators = [signal];
             _hasInteracted_decorators = [signal];
+            _passive_decorators = [signal];
             _private_isStarted_decorators = [signal];
             __esDecorate(this, _private_x_descriptor = { get: __setFunctionName(function () { return this.#x_accessor_storage; }, "#x", "get"), set: __setFunctionName(function (value) { this.#x_accessor_storage = value; }, "#x", "set") }, _private_x_decorators, { kind: "accessor", name: "#x", static: false, private: true, access: { has: obj => #x in obj, get: obj => obj.#x, set: (obj, value) => { obj.#x = value; } }, metadata: _metadata }, _private_x_initializers, _private_x_extraInitializers);
             __esDecorate(this, _private_y_descriptor = { get: __setFunctionName(function () { return this.#y_accessor_storage; }, "#y", "get"), set: __setFunctionName(function (value) { this.#y_accessor_storage = value; }, "#y", "set") }, _private_y_decorators, { kind: "accessor", name: "#y", static: false, private: true, access: { has: obj => #y in obj, get: obj => obj.#y, set: (obj, value) => { obj.#y = value; } }, metadata: _metadata }, _private_y_initializers, _private_y_extraInitializers);
             __esDecorate(this, _private_isStarted_descriptor = { get: __setFunctionName(function () { return this.#isStarted_accessor_storage; }, "#isStarted", "get"), set: __setFunctionName(function (value) { this.#isStarted_accessor_storage = value; }, "#isStarted", "set") }, _private_isStarted_decorators, { kind: "accessor", name: "#isStarted", static: false, private: true, access: { has: obj => #isStarted in obj, get: obj => obj.#isStarted, set: (obj, value) => { obj.#isStarted = value; } }, metadata: _metadata }, _private_isStarted_initializers, _private_isStarted_extraInitializers);
+            __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
+            __esDecorate(null, null, _passive_decorators, { kind: "field", name: "passive", static: false, private: false, access: { has: obj => "passive" in obj, get: obj => obj.passive, set: (obj, value) => { obj.passive = value; } }, metadata: _metadata }, _passive_initializers, _passive_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             ScrollFling = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -128,15 +137,27 @@ let ScrollFling = (() => {
         maxX = Infinity;
         minY = -Infinity;
         maxY = Infinity;
-        target = document.documentElement;
-        sensitivity = 1;
-        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false);
-        epsilon = (__runInitializers(this, _hasInteracted_extraInitializers), 0.01);
+        target = __runInitializers(this, _target_initializers, document.documentElement);
+        sensitivity = (__runInitializers(this, _target_extraInitializers), 1);
+        epsilon = 0.01;
         /**
          * The portion to lerp towards the target values each frame. Between 0 and 1.
          */
         lerpAmount = 0.3;
-        #targetX = 0;
+        hasInteracted = __runInitializers(this, _hasInteracted_initializers, false
+        /**
+         * Whether or not the underlying wheel event is passive. Defaults to false
+         * because we typically depend on our logic to do custom scroll animation,
+         * rather than the browser doing any actual scrolling.
+         */
+        );
+        /**
+         * Whether or not the underlying wheel event is passive. Defaults to false
+         * because we typically depend on our logic to do custom scroll animation,
+         * rather than the browser doing any actual scrolling.
+         */
+        passive = (__runInitializers(this, _hasInteracted_extraInitializers), __runInitializers(this, _passive_initializers, false));
+        #targetX = (__runInitializers(this, _passive_extraInitializers), 0);
         #targetY = 0;
         #task;
         #isStarted_accessor_storage = __runInitializers(this, _private_isStarted_initializers, false);
@@ -146,12 +167,6 @@ let ScrollFling = (() => {
             return this.#isStarted;
         }
         #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
-        constructor(options = {}) {
-            super();
-            Object.assign(this, options);
-            this.#targetX = this.#x;
-            this.#targetY = this.#y;
-        }
         #onWheel = (event) => {
             this.hasInteracted = true;
             event.preventDefault();
@@ -180,9 +195,10 @@ let ScrollFling = (() => {
             this.#isStarted = true;
             this.createEffect(() => {
                 this.target; // any time the target changes make new events on that target
+                this.passive;
                 this.#aborter = new AbortController();
                 // @ts-expect-error, whyyyyy TypeScript
-                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
+                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal, passive: this.passive });
                 onCleanup(() => {
                     this.#stopAnimation();
                     this.#aborter.abort();
@@ -206,6 +222,4 @@ let ScrollFling = (() => {
     return ScrollFling = _classThis;
 })();
 export { ScrollFling };
-// @ts-ignore
-window.debug = false;
 //# sourceMappingURL=ScrollFling.js.map

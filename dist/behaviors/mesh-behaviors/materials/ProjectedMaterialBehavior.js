@@ -38,7 +38,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
 };
 import 'element-behaviors';
 import { stringAttribute } from '@lume/element';
-import { onCleanup, createEffect } from 'solid-js';
+import { onCleanup, createEffect, createMemo } from 'solid-js';
 import { signal } from 'classy-solid';
 import { ProjectedMaterial } from '@lume/three-projected-material/dist/ProjectedMaterial.js';
 import { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
@@ -49,6 +49,7 @@ import { PhysicalMaterialBehavior } from './PhysicalMaterialBehavior.js';
 import { TextureProjector } from '../../../textures/TextureProjector.js';
 import { upwardRoots } from '../../../utils/upwardRoots.js';
 import { querySelectorUpward } from '../../../utils/querySelectorUpward.js';
+import { createArrayMemo } from '../../../utils/createArrayMemo.js';
 /**
  * @class ProjectedMaterialBehavior
  *
@@ -245,6 +246,7 @@ let ProjectedMaterialBehavior = (() => {
                     this.textureProjectors = this.#textureProjectorsRaw;
                 }, 0);
             });
+            // TODO This queries in upward roots only. I think we want to also branch downward into sibling roots.
             for (const root of upwardRoots(this.element))
                 this.#observer.observe(root, { childList: true, subtree: true });
             this.createEffect(() => {
@@ -292,9 +294,13 @@ let ProjectedMaterialBehavior = (() => {
                     }
                     this.#associatedProjectors = projectors; // trigger
                 });
-                this._handleTexture(() => this.#associatedProjectors[0]?.src ?? '', (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
+                const associatedProjectors = createArrayMemo(() => this.#associatedProjectors);
+                // For now we use only the first projector. No support for multiple projectors yet.
+                const projector = createMemo(() => associatedProjectors()[0]);
+                const projectorSrc = createMemo(() => projector()?.src ?? '');
+                this._handleTexture(projectorSrc, (mat, tex) => (mat.texture = tex || new Texture()), mat => !!mat.texture, () => { }, true);
                 createEffect(() => {
-                    const tex = this.#associatedProjectors[0];
+                    const tex = projector();
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -304,7 +310,7 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.#associatedProjectors[0];
+                    const tex = projector();
                     if (!tex)
                         return;
                     // if the camera changes
@@ -333,7 +339,7 @@ let ProjectedMaterialBehavior = (() => {
                     });
                 });
                 createEffect(() => {
-                    const tex = this.#associatedProjectors[0];
+                    const tex = projector();
                     if (!tex)
                         return;
                     createEffect(() => {
@@ -350,7 +356,7 @@ let ProjectedMaterialBehavior = (() => {
                     mat.project(three, false);
                 });
                 createEffect(() => {
-                    const tex = this.#associatedProjectors[0];
+                    const tex = projector();
                     if (!tex)
                         return;
                     createEffect(() => {

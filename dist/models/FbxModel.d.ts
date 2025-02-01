@@ -1,8 +1,9 @@
 import { type ElementAttributes } from '@lume/element';
-import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
+import type { Group } from 'three/src/objects/Group.js';
+import { Model, type ModelAttributes } from './Model.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { FbxModelBehavior, FbxModelBehaviorAttributes } from '../behaviors/index.js';
-export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttributes;
+export type FbxModelAttributes = ModelAttributes | FbxModelBehaviorAttributes;
 /**
  * @element lume-fbx-model
  * @class FbxModel -
@@ -21,7 +22,7 @@ export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttribute
  *   <lume-fbx-model id="myModel" src="path/to/model.fbx"></lume-fbx-model>
  * </lume-scene>
  * <script>
- *   myModel.on('MODEL_LOAD', () => console.log('loaded'))
+ *   myModel.addEventListener('load', () => console.log('loaded'))
  * </script>
  * ```
  *
@@ -33,14 +34,23 @@ export type FbxModelAttributes = Element3DAttributes | FbxModelBehaviorAttribute
  * document.body.append(scene)
  * const model = new FbxModel
  * model.src = 'path/to/model.fbx'
- * model.on('MODEL_LOAD', () => console.log('loaded'))
+ * model.addEventListener('load', () => console.log('loaded'))
  * scene.add(model)
  * ```
+ *
+ * @extends Model
  */
-export declare class FbxModel extends Element3D {
+export declare class FbxModel extends Model {
     initialBehaviors: {
         model: string;
     };
+    /**
+     * @property {FbxModel | null} threeModel - The loaded FBX model, or null
+     * when not loaded or while loading.
+     *
+     * `signal`
+     */
+    threeModel: Group | null;
 }
 export interface FbxModel extends ElementWithBehaviors<FbxModelBehavior, FbxModelBehaviorAttributes> {
 }

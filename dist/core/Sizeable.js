@@ -236,6 +236,7 @@ let Sizeable = (() => {
         get parentSize() {
             return this.composedLumeParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
         }
+        #sizechangeEvent = (__runInitializers(this, _private_calculatedSize_extraInitializers), new Event('sizechange'));
         _calcSize() {
             const calculatedSize = this.#calculatedSize;
             Object.assign(previousSize, calculatedSize);
@@ -268,11 +269,8 @@ let Sizeable = (() => {
                 previousSize.z !== calculatedSize.z) {
                 // TODO replace events with reactivity
                 this.emit('sizechange', { ...calculatedSize });
+                this.dispatchEvent(this.#sizechangeEvent);
             }
-        }
-        constructor() {
-            super(...arguments);
-            __runInitializers(this, _private_calculatedSize_extraInitializers);
         }
     };
     return Sizeable = _classThis;

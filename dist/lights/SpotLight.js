@@ -41,6 +41,7 @@ import { createEffect, onCleanup } from 'solid-js';
 import { PointLight } from './PointLight.js';
 import { autoDefineElements } from '../LumeConfig.js';
 import { Element3D, toRadians } from '../core/index.js';
+import { upwardRoots } from '../utils/upwardRoots.js';
 /**
  * @element lume-spot-light
  * @class SpotLight -
@@ -150,8 +151,9 @@ let SpotLight = (() => {
         #target = (__runInitializers(this, _penumbra_extraInitializers), []);
         #rawTarget = '';
         #observer = null;
-        // TODO Consolidate target selector functionality with similar clipPlanes
-        // functionality in ClipPlanesBehavior.
+        // TODO Consolidate "selector ref" functionality in SpotLight,
+        // ClipPlanesBehavior, ProjectedMaterialBehavior, etc
+        // (https://github.com/lume/lume/issues/300).
         get target() {
             return this.#target[0] ?? null;
         }
@@ -257,15 +259,14 @@ let SpotLight = (() => {
                 // from getters/setters, make all logic fully reactive to avoid
                 // worrying about code execution order. https://github.com/lume/lume/issues/279
                 this.target = this.#rawTarget;
-                // TODO we need to observe all the way up the composed tree, or we
-                // should make the querying scoped only to the nearest root, for
-                // consistency. This covers most cases, for now.
                 this.#observer = new MutationObserver(() => {
                     // TODO this could be more efficient if we check the added nodes directly, but for now we re-run the query logic.
                     // This triggers the setter logic.
                     this.target = this.#rawTarget;
                 });
-                this.#observer.observe(this.getRootNode(), { childList: true, subtree: true });
+                // TODO This queries in upward roots only. I think we want to also branch downward into sibling roots.
+                for (const root of upwardRoots(this))
+                    this.#observer.observe(root, { childList: true, subtree: true });
                 createEffect(() => {
                     const target = this.target;
                     if (target)

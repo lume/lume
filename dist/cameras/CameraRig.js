@@ -39,7 +39,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
     if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
-import { onCleanup } from 'solid-js';
+import { batch, onCleanup } from 'solid-js';
 import html from 'solid-js/html';
 import { signal, syncSignals } from 'classy-solid';
 import { element, numberAttribute, booleanAttribute } from '@lume/element';
@@ -781,9 +781,10 @@ let CameraRig = (() => {
         connectedCallback() {
             super.connectedCallback();
             this.createEffect(() => {
+                const { scene, rotationYTarget, rotationXTarget, threeCamera } = this;
                 // We start interaction if we have a scene (we're in the composed
                 // tree) and have the needed DOM nodes.
-                if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera))
+                if (!(scene && rotationYTarget && rotationXTarget && threeCamera))
                     return;
                 // TODO replace with @memo once that's out in classy-solid
                 this.createEffect(() => {
@@ -796,24 +797,25 @@ let CameraRig = (() => {
                 // upgrade (due to how Solid templates using cloneNode making them
                 // non-upgraded until connected) will override the initial
                 // appliedDistance value.
-                this.createEffect(() => (this.threeCamera.position.z = this.#appliedDistance));
+                this.createEffect(() => (threeCamera.position.z = this.#appliedDistance));
                 const { scrollFling, pinchFling, flingRotation } = this;
-                flingRotation.interactionInitiator = this.scene;
-                flingRotation.interactionContainer = this.scene;
-                flingRotation.rotationYTarget = this.rotationYTarget;
-                flingRotation.rotationXTarget = this.rotationXTarget;
-                scrollFling.target = this.scene;
-                pinchFling.target = this.scene;
+                batch(() => {
+                    flingRotation.target = scene;
+                    flingRotation.rotationYTarget = rotationYTarget;
+                    flingRotation.rotationXTarget = rotationXTarget;
+                    scrollFling.target = scene;
+                    pinchFling.target = scene;
+                });
                 // Sync appliedDistance to scrollFling.y and vice versa
                 syncSignals(() => this.#appliedDistance, (d) => (this.#appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
                 // Sync scrollFling.y to pinchFling.x and vice versa
                 syncSignals(() => this.scrollFling.y, (y) => (this.scrollFling.y = y), () => this.pinchFling.x, (x) => (this.pinchFling.x = x));
                 this.createEffect(() => {
-                    flingRotation.minFlingRotationX = this.minVerticalAngle;
-                    flingRotation.maxFlingRotationX = this.maxVerticalAngle;
-                    flingRotation.minFlingRotationY = this.minHorizontalAngle;
-                    flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
-                    flingRotation.factor = this.rotationSpeed;
+                    flingRotation.minRotationX = this.minVerticalAngle;
+                    flingRotation.maxRotationX = this.maxVerticalAngle;
+                    flingRotation.minRotationY = this.minHorizontalAngle;
+                    flingRotation.maxRotationY = this.maxHorizontalAngle;
+                    flingRotation.sensitivity = this.rotationSpeed;
                     flingRotation.epsilon = this.rotationEpsilon;
                     flingRotation.slowdownAmount = this.rotationSlowdown;
                     scrollFling.minY = pinchFling.minX = this.#appliedMinDistance;
@@ -852,7 +854,7 @@ let CameraRig = (() => {
                     const degreesPerPixel = 180 / planeSize;
                     // Counteract the FlingRotation's delta modifier to get exact angular movement.
                     const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed;
-                    this.flingRotation.factor = sens <= 0 ? 1 : sens;
+                    this.flingRotation.sensitivity = sens <= 0 ? 1 : sens;
                 });
                 this.createEffect(() => {
                     if (this.interactive && !this.pinchFling?.interacting)

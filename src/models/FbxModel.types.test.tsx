@@ -37,4 +37,11 @@ import {XYZValues} from '../xyz-values/XYZValues.js'
 	{/* @ts-expect-error this error is good, a number is invalid */}
 	<lume-fbx-model src={123} />
 	<lume-fbx-model src={'foo.fbx'} />
+
+	<lume-fbx-model
+		// event props
+		onload={(event: Event) => console.log(event)}
+		onerror={(event: Event) => console.log(event)}
+		onprogress={(event: Event) => console.log(event)}
+	></lume-fbx-model>
 </>

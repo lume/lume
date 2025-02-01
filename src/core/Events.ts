@@ -1,26 +1,37 @@
 import type {Constructor} from 'lowclass/dist/Constructor.js'
-import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type {BufferGeometry, Group} from 'three/src/Three.js'
 import type {Collada} from 'three/examples/jsm/loaders/ColladaLoader.js'
-import type {Group} from 'three/src/objects/Group.js'
-import type {BufferGeometry} from 'three/src/core/BufferGeometry.js'
+import type {GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export class EventTypes {
 	constructor(
-		// This event is fired when a *-model element, or a node element with a
-		// *-model behavior, has loaded it's model.
+		/**
+		 * This event is fired when a *-model element, or a node element with a
+		 * *-model behavior, has loaded it's model.
+		 * @deprecated Use DOM `load` event instead, f.e. `element.addEventListener('load', instead)`
+		 */
 		public MODEL_LOAD: {
-			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply'
+			format: 'obj' | 'gltf' | 'collada' | 'fbx' | 'ply' | '3ds'
 			model: Group | GLTF | Collada | BufferGeometry
 		},
-		// Fired if a *-model element, or node element with *-model behavior,
-		// has an error during load.
+		/**
+		 * @deprecated
+		 * Fired if a *-model element, or node element with *-model behavior,
+		 * has an error during load.
+		 */
+		// CONTINUE: ErrorEvents
 		public MODEL_ERROR: Error,
-		// Fired by elements that load resources. See
-		// https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+		/**
+		 * @deprecated
+		 * Fired by elements that load resources. See
+		 * https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent
+		 */
 		public PROGRESS: ProgressEvent,
 	) {}
 }
 
+/** @deprecated Elements dispatch native DOM `Event`s now. Use `element.addEventListener()`, `element.removeEventListener()`, and `element.dispatchEvent()`. */
 export const Events = makeEnumFromClassProperties(EventTypes)
 
 // loop on the keys of a dummy class instance in order to create an enum-like
