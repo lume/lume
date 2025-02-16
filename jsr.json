@@ -1,0 +1,6 @@
+{
+	"name": "@lume/lume",
+	"version": "0.3.0-alpha.44",
+	"license": "MIT",
+	"exports": "./dist/index.js"
+}
