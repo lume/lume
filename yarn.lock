@@ -11833,7 +11833,7 @@ __metadata:
     "@solid-devtools/logger": "npm:^0.8.3"
     "@uiw/codemirror-theme-noctis-lilac": "npm:^4.0.0"
     browser-sync: "npm:^2.27.11"
-    classy-solid: "npm:^0.3.0"
+    classy-solid: "npm:^0.4.0"
     code-mirror-el: "npm:^0.1.0"
     codemirror: "npm:^6.0.0"
     cpr: "npm:^3.0.1"
@@ -11847,7 +11847,7 @@ __metadata:
     james-bond: "npm:^0.7.0"
     lodash-es: "npm:^4.17.0"
     lowclass: "npm:^8.0.0"
-    lume: "npm:^0.3.0-alpha.37"
+    lume: "npm:^0.3.0-alpha.44"
     mkdirp: "npm:^1.0.4"
     prettier: "npm:3.0.3"
     prismjs: "npm:^1.29.0"
@@ -18911,7 +18911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.37, lume@npm:^0.3.0-alpha.43, lume@workspace:.":
+"lume@npm:^0.3.0-alpha.30, lume@npm:^0.3.0-alpha.43, lume@npm:^0.3.0-alpha.44, lume@workspace:.":
   version: 0.0.0-use.local
   resolution: "lume@workspace:."
   dependencies:
@@ -24521,13 +24521,13 @@ __metadata:
   linkType: hard
 
 "solid-js@npm:^1.0.0, solid-js@npm:^1.3.13, solid-js@npm:^1.3.6":
-  version: 1.8.22
-  resolution: "solid-js@npm:1.8.22"
+  version: 1.9.5
+  resolution: "solid-js@npm:1.9.5"
   dependencies:
     csstype: "npm:^3.1.0"
     seroval: "npm:^1.1.0"
     seroval-plugins: "npm:^1.1.0"
-  checksum: bb631114bbf19d072634ac0e22493d4e6427060c2ef6c4c21ff40469ba01bd69e966d997c42c0ff2ffa8d54a4cd4656bfd17618b140de340a95273044307c0a9
+  checksum: 9008282891709178a42296418a4118e5bdf04efb31a4d783c68b490ff450d5dc02515ccb7d6252cca8f64e8376adf74a18b62480329f4cd00db4ebcf0f1551af
   languageName: node
   linkType: hard
 
