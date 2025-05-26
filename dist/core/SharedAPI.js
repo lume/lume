@@ -77,7 +77,7 @@ const opacity = new WeakMap();
  * @extends Transformable
  */
 let SharedAPI = (() => {
-    let _classDecorators = [element];
+    let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;

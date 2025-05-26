@@ -73,7 +73,7 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.10.0",
-		"@lume/element": "^0.13.0",
+		"@lume/element": "^0.16.0",
 		"@lume/eventful": "^0.3.0",
 		"@lume/three-projected-material": "^0.3.0",
 		"classy-solid": "^0.4.0",

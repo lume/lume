@@ -14,7 +14,7 @@ export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' |
  * @extends Element3D
  */
 export
-@element
+@element({autoDefine: false})
 class Camera extends Element3D {
 	/**
 	 * @property {number} aspect

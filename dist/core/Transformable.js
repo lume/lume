@@ -55,7 +55,7 @@ const mountPoint = new WeakMap();
  * @extends Sizeable
  */
 let Transformable = (() => {
-    let _classDecorators = [element];
+    let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;

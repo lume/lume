@@ -20,7 +20,7 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
  * @extends Element3D
  */
 export
-@element
+@element({autoDefine: false})
 abstract class Light extends Element3D {
 	/**
 	 * @property {string | number | THREE.Color} color -

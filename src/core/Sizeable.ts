@@ -31,7 +31,7 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
 export
-@element
+@element({autoDefine: false})
 class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	@signal accessor #calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
