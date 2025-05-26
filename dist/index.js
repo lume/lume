@@ -19,5 +19,5 @@ export * from './textures/index.js';
 export * from './utils/index.js';
 export * from './xyz-values/index.js';
 export * from './defineElements.js';
-export const version = '0.3.0-alpha.44';
+export const version = '0.3.0-alpha.45';
 //# sourceMappingURL=index.js.map
