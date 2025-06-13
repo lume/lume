@@ -52,7 +52,7 @@ import { Light } from './Light.js';
  * @extends Light
  */
 let LightWithShadow = (() => {
-    let _classDecorators = [element];
+    let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;

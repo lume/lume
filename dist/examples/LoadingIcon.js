@@ -112,6 +112,7 @@ export class LoadingIcon extends HTMLElement {
 
 			<style>
 				:host {
+					position: relative;
 					--loading-icon-color: 120,130,140;
 					--loading-icon-outer-radius: 20px;
 					/**
@@ -121,8 +122,8 @@ export class LoadingIcon extends HTMLElement {
 					 */
 					--loading-icon-inner-radius: calc(0.7 * var(--loading-icon-outer-radius));
 
-					width: var(--loading-icon-outer-radius);
-					height: var(--loading-icon-outer-radius);
+					width: calc(2 * var(--loading-icon-outer-radius));
+					height: calc(2 * var(--loading-icon-outer-radius));
 				}
 
 				.top, .right, .bottom, .left {

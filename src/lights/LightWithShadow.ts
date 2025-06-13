@@ -31,7 +31,7 @@ export type LightWithShadowAttributes =
  * @extends Light
  */
 export
-@element
+@element({autoDefine: false})
 abstract class LightWithShadow extends Light {
 	/**
 	 * @property {boolean} castShadow -

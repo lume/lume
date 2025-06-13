@@ -58,11 +58,11 @@ export type BaseAttributes = TransformableAttributes | 'opacity'
  * @extends Transformable
  */
 export
-@element
+@element({autoDefine: false})
 class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) {
 	/** @deprecated use `.defineElement()` instead */
 	static define(name?: string) {
-		this.defineElement(name)
+		this.defineElement(name!)
 	}
 
 	// TODO re-organize variables like isScene and isElement3D, so they come from a

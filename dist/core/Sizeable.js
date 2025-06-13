@@ -58,7 +58,7 @@ const size = new WeakMap();
 // about their `parent` when calculating proportional sizes or world matrices
 // based on parent values.
 let Sizeable = (() => {
-    let _classDecorators = [element];
+    let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;

@@ -48,7 +48,7 @@ import { Element3D } from '../core/Element3D.js';
  * @extends Element3D
  */
 let Light = (() => {
-    let _classDecorators = [element];
+    let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;

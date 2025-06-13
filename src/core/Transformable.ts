@@ -32,7 +32,7 @@ const mountPoint = new WeakMap<Transformable, XYZNumberValues>()
  * @extends Sizeable
  */
 export
-@element
+@element({autoDefine: false})
 class Transformable extends Sizeable {
 	// TODO readem's JSDoc parser can not handle the following type if it is
 	// split onto multiple lines.
