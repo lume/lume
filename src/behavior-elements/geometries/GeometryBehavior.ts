@@ -1,7 +1,7 @@
 import {BufferGeometry} from 'three/src/core/BufferGeometry.js'
-import {GeometryOrMaterialBehavior} from './GeometryOrMaterialBehavior.js'
+import {GeometryOrMaterialBehavior} from '../GeometryOrMaterialBehavior.js'
 
-import type {MeshComponentType} from './MeshBehavior.js'
+import type {MeshComponentType} from '../MeshBehavior.js'
 
 /**
  * @class GeometryBehavior -

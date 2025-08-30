@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Test</title>
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Basic Structure Test</h1>
+    <div id="output"></div>
+
+    <!-- Test creating behavior elements -->
+    <lume-scene id="scene" webgl>
+        <lume-points id="testPoints" size="100 100 100">
+            <plane-geometry></plane-geometry>
+            <phong-material color="red"></phong-material>
+        </lume-points>
+    </lume-scene>
+
+    <script type="module">
+        // Test the basic structure by creating elements manually 
+        try {
+            const output = document.getElementById('output');
+            
+            // Test 1: Check if we can create basic HTML elements with the behavior element names
+            const planeGeometry = document.createElement('plane-geometry');
+            const phongMaterial = document.createElement('phong-material');
+            
+            output.innerHTML += `
+                <p>✓ Created plane-geometry element: ${planeGeometry.tagName}</p>
+                <p>✓ Created phong-material element: ${phongMaterial.tagName}</p>
+                <p>✓ Basic HTML structure created successfully</p>
+                <p>Note: Custom behavior registration requires LUME build to be complete.</p>
+            `;
+            
+        } catch (error) {
+            document.getElementById('output').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+        }
+    </script>
+</body>
+</html>

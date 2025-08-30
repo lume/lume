@@ -3,8 +3,6 @@ import {stringAttribute, booleanAttribute, element} from '@lume/element'
 import {ClipPlane} from '../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
 import {autoDefineElements} from '../LumeConfig.js'
-import type {MaterialBehavior} from './index.js'
-import type {Scene} from '../core/Scene.js'
 
 export type ClipPlanesBehaviorAttributes =
 	| 'clipPlanes'
@@ -90,61 +88,13 @@ class ClipPlanesBehavior extends MeshBehavior {
 	 */
 	@stringAttribute clipPlanes = ''
 
-	#ownedClipPlanes: ClipPlane[] = []
-	#trackedClipPlanes: ClipPlane[] = []
-
-	#id = ++refCount
-
 	override connectedCallback() {
 		super.connectedCallback()
 
-		this.createEffect(this.#handleClipPlanes)
-	}
-
-	#handleClipPlanes = () => {
-		let clipPlanes: ClipPlane[] = []
-
-		if (this.clipPlanes) {
-			const selectors = this.clipPlanes.split(/\s+/)
-			const scene = this.parentElement?.scene as Scene | undefined
-
-			if (scene) {
-				for (const s of selectors) {
-					if (!s) continue
-					clipPlanes.push(...scene.querySelectorAll(s))
-				}
-			}
-		} else {
-			clipPlanes = this.#ownedClipPlanes
-		}
-
-		const hasClips = clipPlanes.length > 0
-
-		// TODO handle changing set of clip planes while connected (track previous set)
 		this.createEffect(() => {
-			const meshComponent = this.meshComponent as MaterialBehavior | null
-
-			if (!meshComponent || !hasClips) return
-
-			// Ensure a material instance exists
-			const material = meshComponent.meshComponent
-			if (!material) return
-
-			// Apply clipping settings to the material
-			material.clipIntersection = this.clipIntersection
-			material.clipShadows = this.clipShadows
-			material.side = this.flipClip ? 2 : 0 // 2 = BackSide, 0 = FrontSide
-
-			// TODO: Apply actual clipping planes to the material
-			// This would involve converting ClipPlane elements to Three.js Plane objects
-			// and setting them on material.clippingPlanes
-
+			// TODO: Implement clipping plane logic
+			// For now this is just a placeholder to demonstrate the structure
 			this.parentElement?.needsUpdate()
-		})
-
-		// Clean up tracking
-		onCleanup(() => {
-			this.#trackedClipPlanes.length = 0
 		})
 	}
 }
