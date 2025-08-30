@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Behavior Elements</title>
+</head>
+<body>
+    <h1>Testing New Behavior Elements</h1>
+    
+    <lume-scene>
+        <!-- Test shape geometry -->
+        <lume-mesh>
+            <shape-geometry shape="0,0 100,0 100,100 0,100"></shape-geometry>
+            <basic-material color="red"></basic-material>
+        </lume-mesh>
+        
+        <!-- Test lambert material -->
+        <lume-box>
+            <lambert-material color="blue"></lambert-material>
+        </lume-box>
+        
+        <!-- Test physical material -->
+        <lume-sphere>
+            <physical-material color="green"></physical-material>
+        </lume-sphere>
+        
+        <!-- Test projected material -->
+        <lume-plane>
+            <projected-material texture-projectors="#projector1"></projected-material>
+        </lume-plane>
+        
+        <!-- Test shader material -->
+        <lume-mesh>
+            <box-geometry></box-geometry>
+            <shader-material vertex-shader="vertex" fragment-shader="fragment"></shader-material>
+        </lume-mesh>
+        
+        <!-- Test model loaders -->
+        <fbx-model src="./test.fbx"></fbx-model>
+        <obj-model obj="./test.obj" mtl="./test.mtl"></obj-model>
+        <collada-model src="./test.dae"></collada-model>
+        <tds-model src="./test.3ds"></tds-model>
+        
+        <lume-texture-projector id="projector1"></lume-texture-projector>
+    </lume-scene>
+    
+    <script type="module">
+        console.log('Testing behavior elements...')
+        
+        // Test that the elements exist
+        const elements = [
+            'shape-geometry',
+            'lambert-material', 
+            'physical-material',
+            'projected-material',
+            'shader-material',
+            'line-material',
+            'mixedplane-material',
+            'fbx-model',
+            'obj-model',
+            'collada-model',
+            'tds-model'
+        ]
+        
+        elements.forEach(tagName => {
+            const element = document.createElement(tagName)
+            console.log(`${tagName}:`, element.constructor.name)
+        })
+    </script>
+</body>
+</html>
