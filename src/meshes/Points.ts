@@ -40,7 +40,7 @@ export type PointsAttributes = Element3DAttributes
 export
 @element('lume-points', autoDefineElements)
 class Points extends Element3D {
-	override initialBehaviors = {geometry: 'box', material: 'points'}
+	// override initialBehaviors = {geometry: 'box', material: 'points'}
 
 	override makeThreeObject3d() {
 		return new ThreePoints()
