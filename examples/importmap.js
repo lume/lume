@@ -15,30 +15,56 @@
 		),
 	)
 
-	const localMap = {
-		imports: {
-			lume: '/dist/index.js',
-			'lume/': '/',
-			'@lume/element': '/node_modules/@lume/element/dist/index.js',
-			'classy-solid': '/node_modules/classy-solid/dist/index.js',
-			'@lume/eventful': '/node_modules/@lume/eventful/dist/index.js',
-			'@lume/kiwi': '/node_modules/@lume/autolayout/node_modules/@lume/kiwi/dist/kiwi.js',
-			'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
-			'@lume/autolayout': '/node_modules/@lume/autolayout/dist/AutoLayout.js',
-			lowclass: '/node_modules/lowclass/dist/index.js',
-			'lowclass/': '/node_modules/lowclass/',
-			'james-bond': '/node_modules/james-bond/dist/index.js',
-			'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
-			'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',
+	const useCDN = true
 
-			regexr: '/node_modules/regexr/dist/index.js',
-			'solid-js': '/node_modules/solid-js/dist/solid.js',
-			'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
-			'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
-			'solid-js/store': '/node_modules/solid-js/store/dist/store.js',
-			three: '/node_modules/three/src/Three.js',
-			'three/': '/node_modules/three/',
-		},
+	const localMap = {
+		imports: !useCDN
+			? {
+					lume: '/dist/index.js',
+					'lume/': '/',
+					'@lume/element': '/node_modules/@lume/element/dist/index.js',
+					'classy-solid': '/node_modules/classy-solid/dist/index.js',
+					'@lume/eventful': '/node_modules/@lume/eventful/dist/index.js',
+					'@lume/kiwi': '/node_modules/@lume/autolayout/node_modules/@lume/kiwi/dist/kiwi.js',
+					'@lume/three-projected-material/': '/node_modules/@lume/three-projected-material/',
+					'@lume/autolayout': '/node_modules/@lume/autolayout/dist/AutoLayout.js',
+					lowclass: '/node_modules/lowclass/dist/index.js',
+					'lowclass/': '/node_modules/lowclass/',
+					'james-bond': '/node_modules/james-bond/dist/index.js',
+					'element-behaviors': '/node_modules/element-behaviors/dist/index.js',
+					'@lume/custom-attributes/': '/node_modules/element-behaviors/node_modules/@lume/custom-attributes/',
+
+					regexr: '/node_modules/regexr/dist/index.js',
+					'solid-js': '/node_modules/solid-js/dist/solid.js',
+					'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
+					'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
+					'solid-js/store': '/node_modules/solid-js/store/dist/store.js',
+					three: '/node_modules/three/src/Three.js',
+					'three/': '/node_modules/three/',
+			  }
+			: {
+					lume: 'https://cdn.jsdelivr.net/npm/lume@0.3.0-alpha.46/dist/index.js',
+					'@lume/autolayout': 'https://cdn.jsdelivr.net/npm/@lume/autolayout@0.10.2/dist/AutoLayout.js',
+					'@lume/custom-attributes/dist/index.js':
+						'https://cdn.jsdelivr.net/npm/@lume/custom-attributes@0.2.4/dist/index.js',
+					'@lume/element': 'https://cdn.jsdelivr.net/npm/@lume/element@0.16.2/dist/index.js',
+					'@lume/eventful': 'https://cdn.jsdelivr.net/npm/@lume/eventful@0.3.3/dist/index.js',
+					'@lume/kiwi': 'https://cdn.jsdelivr.net/npm/@lume/kiwi@0.4.4/dist/kiwi.js',
+					'@lume/three-projected-material/dist/ProjectedMaterial.js':
+						'https://cdn.jsdelivr.net/npm/@lume/three-projected-material@0.3.1/dist/ProjectedMaterial.js',
+					'classy-solid': 'https://cdn.jsdelivr.net/npm/classy-solid@0.4.3/dist/index.js',
+					'element-behaviors': 'https://cdn.jsdelivr.net/npm/element-behaviors@5.0.5/dist/index.js',
+					'james-bond': 'https://cdn.jsdelivr.net/npm/james-bond@0.7.4/dist/index.js',
+					'lowclass/dist/': 'https://cdn.jsdelivr.net/npm/lowclass@8.0.2/dist/',
+
+					regexr: 'https://cdn.jsdelivr.net/npm/regexr@2.0.4/dist/index.js',
+					'solid-js': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.8/dist/dev.js',
+					'solid-js/html': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.8/html/dist/html.js',
+					'solid-js/store': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.8/store/dist/dev.js',
+					'solid-js/web': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.8/web/dist/dev.js',
+					three: 'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js',
+					'three/': 'https://cdn.jsdelivr.net/npm/three@0.155.0/',
+			  },
 	}
 
 	const location = basedLocation()

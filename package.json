@@ -7,10 +7,7 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"type": "module",
-	"engines": {
-		"node": ">=14"
-	},
-	"workspaces": [
+	"//workspaces": [
 		"apps/*",
 		"packages/*",
 		"examples/react",
