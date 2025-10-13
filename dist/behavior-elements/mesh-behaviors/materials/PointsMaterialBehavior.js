@@ -75,7 +75,7 @@ let PointsMaterialBehavior = (() => {
             __runInitializers(_classThis, _classExtraInitializers);
         }
         texture = __runInitializers(this, _texture_initializers, '');
-        sizeAttenuation = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _sizeAttenuation_initializers, true));
+        sizeAttenuation = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _sizeAttenuation_initializers, false));
         pointSize = (__runInitializers(this, _sizeAttenuation_extraInitializers), __runInitializers(this, _pointSize_initializers, 1));
         _createComponent() {
             return new PointsMaterial({ color: 0x00ff00 });

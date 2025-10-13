@@ -17,7 +17,7 @@ export
 @element('points-material', autoDefineElements)
 class PointsMaterialBehavior extends MaterialBehavior {
 	@stringAttribute texture = ''
-	@booleanAttribute sizeAttenuation = true
+	@booleanAttribute sizeAttenuation = false
 	@numberAttribute pointSize = 1
 
 	override _createComponent() {

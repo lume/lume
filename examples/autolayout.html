@@ -12,28 +12,28 @@
 	}
 </style>
 
-<lume-scene id="scene" webgl physically-correct-lights>
-	<lume-ambient-light intensity="0.1"></lume-ambient-light>
+<lume-scene id="scene" webgl>
+	<lume-ambient-light intensity="0.2"></lume-ambient-light>
 	<lume-point-light
 		id="light"
 		color="white"
 		position="300 300 120"
 		size="0 0 0"
 		cast-shadow="true"
-		intensity="100000"
+		intensity="20000"
 		shadow-radius="2"
 		distance="800"
 		shadow-bias="-0.01"
 	>
 		<lume-mesh
-			has="sphere-geometry basic-material"
 			size="10 10 10"
-			color="white"
 			receive-shadow="false"
 			cast-shadow="false"
 			mount-point="0.5 0.5 0.5"
 			style="pointer-events: none"
 		>
+			<sphere-geometry></sphere-geometry>
+			<basic-material color="deeppink"></basic-material>
 		</lume-mesh>
 	</lume-point-light>
 	<lume-autolayout

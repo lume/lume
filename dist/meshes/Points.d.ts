@@ -17,7 +17,7 @@ export type PointsAttributes = Element3DAttributes;
  *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
  * the `points-material` is used by default, which renders any geometry's
- * verticies as points instead of filled triangles.
+ * vertices as points instead of filled triangles.
  *
  * It can be useful to have
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
@@ -27,6 +27,7 @@ export type PointsAttributes = Element3DAttributes;
  */
 export declare class Points extends Element3D {
     hasShadow: boolean;
+    has: string;
     template: () => Node | Node[];
     makeThreeObject3d(): ThreePoints<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
 }
