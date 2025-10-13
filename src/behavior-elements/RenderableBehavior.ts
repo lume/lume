@@ -1,6 +1,6 @@
-import {Effectful} from 'classy-solid'
-import {element} from '@lume/element'
+import {Behavior} from './Behavior.js'
 import {Element3D} from '../core/Element3D.js'
+import {onCleanup} from 'solid-js'
 
 /**
  * @class RenderableBehavior
@@ -8,15 +8,16 @@ import {Element3D} from '../core/Element3D.js'
  *
  * @extends HTMLElement
  */
-// @ts-expect-error broken type checking in latest TypeScript (https://github.com/microsoft/TypeScript/issues/56330)
-export abstract class RenderableBehavior extends Effectful(HTMLElement) {
-	declare parentElement: Element3D | null
+export abstract class RenderableBehavior extends Behavior {
+	declare readonly composedParent: Element3D | null
 
-	connectedCallback() {
-		this.parentElement?.needsUpdate()
+	override requiredParentType() {
+		return [Element3D]
 	}
 
-	disconnectedCallback() {
-		this.parentElement?.needsUpdate()
+	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {
+		super._parentDefinedEffect(parent)
+		parent.needsUpdate()
+		onCleanup(() => parent.needsUpdate())
 	}
 }

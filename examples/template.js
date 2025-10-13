@@ -32,5 +32,5 @@
 
 	// Each example specifies the title for its tab by putting a title="foo"
 	// attribute on the tag that is executing this code.
-	document.title = 'LUME - ' + title
+	document.title = 'Lume - ' + title
 }

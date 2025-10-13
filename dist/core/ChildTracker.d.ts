@@ -44,14 +44,14 @@ export declare function ChildTracker<T extends Constructor<HTMLElement>>(Base: T
          * is disconnected, with the disconnected child passed as an argument.
          */
         childDisconnectedCallback?(_child: Element): void;
-        "__#18@#awaitedChildren": Set<Element>;
-        "__#18@#runChildConnectedCallbacks"(): void;
-        "__#18@#runChildConnect"(child: Element): void;
-        "__#18@#runChildDisconnectedCallbacks"(): void;
-        "__#18@#runChildDisconnect"(child: Element): void;
-        "__#18@#unobserveChildren": (() => void) | null;
-        "__#18@#createObserver"(): void;
-        "__#18@#destroyObserver"(): void;
+        "__#12@#awaitedChildren": Set<Element>;
+        "__#12@#runChildConnectedCallbacks"(): void;
+        "__#12@#runChildConnect"(child: Element): void;
+        "__#12@#runChildDisconnectedCallbacks"(): void;
+        "__#12@#runChildDisconnect"(child: Element): void;
+        "__#12@#unobserveChildren": (() => void) | null;
+        "__#12@#createObserver"(): void;
+        "__#12@#destroyObserver"(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
         accessKey: string;

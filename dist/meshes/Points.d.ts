@@ -26,10 +26,8 @@ export type PointsAttributes = Element3DAttributes;
  * @extends Element3D
  */
 export declare class Points extends Element3D {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    hasShadow: boolean;
+    template: () => Node | Node[];
     makeThreeObject3d(): ThreePoints<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
 }
 export interface Points extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {

@@ -33,6 +33,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Points as ThreePoints } from 'three/src/objects/Points.js';
 import { Element3D } from '../core/Element3D.js';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -71,7 +72,16 @@ let Points = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'box', material: 'points' };
+        // override initialBehaviors = {geometry: 'box', material: 'points'}
+        hasShadow = true;
+        template = () => html `
+		<slot name="geometry">
+			<box-geometry></box-geometry>
+		</slot>
+		<slot name="material">
+			<points-material point-size="10"></points-material>
+		</slot>
+	`;
         makeThreeObject3d() {
             return new ThreePoints();
         }

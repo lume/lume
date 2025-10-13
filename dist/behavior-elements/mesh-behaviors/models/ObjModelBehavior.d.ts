@@ -1,0 +1,15 @@
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { RenderableBehavior } from '../../RenderableBehavior.js';
+import type { Group } from 'three/src/objects/Group.js';
+export type ObjModelBehaviorAttributes = 'obj' | 'mtl';
+export declare class ObjModelBehavior extends RenderableBehavior {
+    #private;
+    obj: string;
+    mtl: string;
+    model?: Group;
+    objLoader: OBJLoader;
+    mtlLoader: MTLLoader;
+    protected _parentDefinedEffect(parent?: NonNullable<this['composedParent']>): void;
+}
+//# sourceMappingURL=ObjModelBehavior.d.ts.map

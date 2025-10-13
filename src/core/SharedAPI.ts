@@ -9,17 +9,13 @@ import {CSS3DObjectNested} from '../renderers/CSS3DRendererNested.js'
 import {disposeObject} from '../utils/three.js'
 import {Settable} from '../utils/Settable.js'
 import {toRadians} from './utils/index.js'
-import {ChildTracker} from './ChildTracker.js'
+// import {ChildTracker} from './ChildTracker.js'
 import {InitialBehaviors} from '../behaviors/InitialBehaviors.js'
 import {isDomEnvironment, isElement3D} from './utils/isThisOrThat.js'
 
 import type {Element3D} from './Element3D.js'
 import type {Scene} from './Scene.js'
-import {
-	triggerChildComposedCallback,
-	triggerChildUncomposedCallback,
-	type CompositionType,
-} from './CompositionTracker.js'
+import {type CompositionType} from './CompositionTracker.js'
 import type {TransformableAttributes} from './Transformable.js'
 import type {SinglePropertyFunction} from './PropertyAnimator.js'
 
@@ -59,7 +55,7 @@ export type BaseAttributes = TransformableAttributes | 'opacity'
  */
 export
 @element({autoDefine: false})
-class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) {
+class SharedAPI extends InitialBehaviors(/*ChildTracker(*/ Settable(Transformable) /*)*/) {
 	/** @deprecated use `.defineElement()` instead */
 	static define(name?: string) {
 		this.defineElement(name!)
@@ -760,92 +756,90 @@ class SharedAPI extends InitialBehaviors(ChildTracker(Settable(Transformable))) 
 		super.emit(eventName, data)
 	}
 
-	#this = this as any
-
-	// TODO this needs to be moved into CompositionTracker so that triggering
+	// CONTINUE this needs to be moved into CompositionTracker so that triggering
 	// childComposedCallback is generic, and filtering of element types needs
 	// to be done by subclasses.
-	override childConnectedCallback(child: Element) {
-		// This code handles two cases: the element has a ShadowRoot
-		// ("composed children" are children of the ShadowRoot), or it has a
-		// <slot> child ("composed children" are elements that may be
-		// distributed to the <slot>).
-		if (isElement3D(child)) {
-			// We skip Scene here because we know it already has a
-			// ShadowRoot that serves a different purpose than for Element3Ds. A
-			// Scene child's three objects will always be connected to the
-			// scene's three object regardless of its ShadowRoot.
-			if (!this.isScene && this.exposedShadowRoot) {
-				child.isPossiblySlotted = true
+	// override childConnectedCallback(child: Element) {
+	// 	// This code handles two cases: the element has a ShadowRoot
+	// 	// ("composed children" are children of the ShadowRoot), or it has a
+	// 	// <slot> child ("composed children" are elements that may be
+	// 	// distributed to the <slot>).
+	// 	if (isElement3D(child)) {
+	// 		// We skip Scene here because we know it already has a
+	// 		// ShadowRoot that serves a different purpose than for Element3Ds. A
+	// 		// Scene child's three objects will always be connected to the
+	// 		// scene's three object regardless of its ShadowRoot.
+	// 		if (!this.isScene && this.exposedShadowRoot) {
+	// 			child.isPossiblySlotted = true
 
-				// We don't call childComposedCallback here because that
-				// will be called indirectly due to a slotchange event on a
-				// <slot> element if the added child will be distributed to
-				// a slot.
-			} else {
-				// If there's no shadow root, call the childComposedCallback
-				// with connection type "actual". This is effectively a
-				// regular parent-child composition (no distribution, no
-				// children of a ShadowRoot).
+	// 			// We don't call childComposedCallback here because that
+	// 			// will be called indirectly due to a slotchange event on a
+	// 			// <slot> element if the added child will be distributed to
+	// 			// a slot.
+	// 		} else {
+	// 			// If there's no shadow root, call the childComposedCallback
+	// 			// with connection type "actual". This is effectively a
+	// 			// regular parent-child composition (no distribution, no
+	// 			// children of a ShadowRoot).
 
-				this.#this[triggerChildComposedCallback](child, 'actual')
-			}
-		} else if (child instanceof HTMLSlotElement) {
-			// COMPOSED TREE TRACKING: Detecting slots here is part of composed
-			// tree tracking (detecting when a child is distributed to an element).
+	// 			this.__triggerChildComposedCallback(child, 'actual')
+	// 		}
+	// 	} else if (child instanceof HTMLSlotElement) {
+	// 		// COMPOSED TREE TRACKING: Detecting slots here is part of composed
+	// 		// tree tracking (detecting when a child is distributed to an element).
 
-			child.addEventListener('slotchange', this.__onChildSlotChange)
+	// 		child.addEventListener('slotchange', this.__onChildSlotChange)
 
-			// XXX Do we need __handleSlottedChildren for initial slotted
-			// elements? The answer seems to be "yes, sometimes". When slots are
-			// appended, their slotchange events will fire. However, this
-			// `childConnectedCallback` is fired later from when a child is
-			// actually connected, in a MutationObserver task. Because of this,
-			// an appended slot's slotchange event *may* have already fired,
-			// and we will not have had the chance to add a slotchange event
-			// handler yet, therefore we need to fire
-			// __handleSlottedChildren here to handle that missed
-			// opportunity.
-			//
-			// Also we need to defer() here because otherwise, this
-			// childConnectedCallback will fire once for when a child is
-			// connected into the light DOM and run the logic in the `if
-			// (isElement3D(child))` branch *after* childConnectedCallback is fired
-			// and executes this __handleSlottedChildren call for a shadow
-			// DOM slot, and in that case the distribution will not be detected
-			// (why is that?).  By deferring, this __handleSlottedChildren
-			// call correctly happens *after* the above `if (isElement3D(child))`
-			// branch and then things will work as expected. This is all due to
-			// using MutationObserver, which fires event in a later task than
-			// when child connections actually happen.
-			//
-			// TODO ^, Can we make WithChildren call this callback right when
-			// children are added, synchronously?  If so then we could rely on
-			// a slot's slotchange event upon it being connected without having
-			// to call __handleSlottedChildren here (which means also not
-			// having to use defer for anything).
-			queueMicrotask(() => this.__handleSlottedChildren(child))
-		}
-	}
+	// 		// XXX Do we need __handleSlottedChildren for initial slotted
+	// 		// elements? The answer seems to be "yes, sometimes". When slots are
+	// 		// appended, their slotchange events will fire. However, this
+	// 		// `childConnectedCallback` is fired later from when a child is
+	// 		// actually connected, in a MutationObserver task. Because of this,
+	// 		// an appended slot's slotchange event *may* have already fired,
+	// 		// and we will not have had the chance to add a slotchange event
+	// 		// handler yet, therefore we need to fire
+	// 		// __handleSlottedChildren here to handle that missed
+	// 		// opportunity.
+	// 		//
+	// 		// Also we need to defer() here because otherwise, this
+	// 		// childConnectedCallback will fire once for when a child is
+	// 		// connected into the light DOM and run the logic in the `if
+	// 		// (isElement3D(child))` branch *after* childConnectedCallback is fired
+	// 		// and executes this __handleSlottedChildren call for a shadow
+	// 		// DOM slot, and in that case the distribution will not be detected
+	// 		// (why is that?).  By deferring, this __handleSlottedChildren
+	// 		// call correctly happens *after* the above `if (isElement3D(child))`
+	// 		// branch and then things will work as expected. This is all due to
+	// 		// using MutationObserver, which fires event in a later task than
+	// 		// when child connections actually happen.
+	// 		//
+	// 		// TODO ^, Can we make WithChildren call this callback right when
+	// 		// children are added, synchronously?  If so then we could rely on
+	// 		// a slot's slotchange event upon it being connected without having
+	// 		// to call __handleSlottedChildren here (which means also not
+	// 		// having to use defer for anything).
+	// 		queueMicrotask(() => this.__handleSlottedChildren(child))
+	// 	}
+	// }
 
-	override childDisconnectedCallback(child: Element) {
-		if (isElement3D(child)) {
-			if (!this.isScene && this.exposedShadowRoot) {
-				child.isPossiblySlotted = false
-			} else {
-				// If there's no shadow root, call the
-				// childUncomposedCallback with connection type "actual".
-				// This is effectively similar to childDisconnectedCallback.
-				this.#this[triggerChildUncomposedCallback](child, 'actual')
-			}
-		} else if (child instanceof HTMLSlotElement) {
-			// COMPOSED TREE TRACKING:
-			child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
+	// override childDisconnectedCallback(child: Element) {
+	// 	if (isElement3D(child)) {
+	// 		if (!this.isScene && this.exposedShadowRoot) {
+	// 			child.isPossiblySlotted = false
+	// 		} else {
+	// 			// If there's no shadow root, call the
+	// 			// childUncomposedCallback with connection type "actual".
+	// 			// This is effectively similar to childDisconnectedCallback.
+	// 			this.__triggerChildUncomposedCallback(child, 'actual')
+	// 		}
+	// 	} else if (child instanceof HTMLSlotElement) {
+	// 		// COMPOSED TREE TRACKING:
+	// 		child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
 
-			this.__handleSlottedChildren(child)
-			this.__previousSlotAssignedNodes.delete(child)
-		}
-	}
+	// 		this.__handleSlottedChildren(child)
+	// 		this.__previousSlotAssignedNodes.delete(child)
+	// 	}
+	// }
 
 	// TODO: make setAttribute accept non-string values.
 	override setAttribute(attr: string, value: any) {
