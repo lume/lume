@@ -18,10 +18,9 @@ export type BoxAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Box extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    hasShadow: boolean;
+    has: string;
+    template: () => Node | Node[];
 }
 declare module 'solid-js' {
     namespace JSX {

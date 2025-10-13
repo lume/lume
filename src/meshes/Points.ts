@@ -1,4 +1,4 @@
-import {element, type ElementAttributes} from '@lume/element'
+import {attribute, element, type ElementAttributes} from '@lume/element'
 import html from 'solid-js/html'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Element3D} from '../core/Element3D.js'
@@ -15,10 +15,11 @@ import type {
 	PointsMaterialBehavior,
 	PointsMaterialBehaviorAttributes,
 } from '../behaviors/index.js'
+import {Show} from 'solid-js'
 
 export type PointsAttributes = Element3DAttributes
 
-// CONTINUE update docs to point to new behaviors
+// CONTINUE update jsdoc comments to point to new behavior classes
 /**
  * @class Points -
  *
@@ -31,7 +32,7 @@ export type PointsAttributes = Element3DAttributes
  *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
  * the `points-material` is used by default, which renders any geometry's
- * verticies as points instead of filled triangles.
+ * vertices as points instead of filled triangles.
  *
  * It can be useful to have
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
@@ -46,14 +47,23 @@ class Points extends Element3D {
 
 	override hasShadow = true
 
-	override template = () => html`
-		<slot name="geometry">
-			<box-geometry></box-geometry>
-		</slot>
+	// Legacy behavior support: if the has attribute has values, disable the
+	// behavior element slots, so that explicitly-defined legacy behaviors
+	// continue to work and take precedence, for now.
+	@attribute has = ''
 
-		<slot name="material">
-			<points-material point-size="10"></points-material>
-		</slot>
+	override template = () => html`
+		<${Show} when=${!this.has}>
+			<slot name="geometry">
+				<box-geometry></box-geometry>
+			</slot>
+
+			<slot name="material">
+				<points-material></points-material>
+			</slot>
+		</>
+
+		<slot></slot>
 	`
 
 	override makeThreeObject3d() {
