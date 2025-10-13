@@ -37,15 +37,16 @@ import html from 'solid-js/html';
 import { Points as ThreePoints } from 'three/src/objects/Points.js';
 import { Element3D } from '../core/Element3D.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// CONTINUE update docs to point to new behaviors
 /**
  * @class Points -
  *
  * Element: `<lume-points>`
  *
  * Applies default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
+ * [`<box-geometry>`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
  * and
- * [`points-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<points-material>`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
  * the `points-material` is used by default, which renders any geometry's
@@ -78,6 +79,7 @@ let Points = (() => {
 		<slot name="geometry">
 			<box-geometry></box-geometry>
 		</slot>
+
 		<slot name="material">
 			<points-material point-size="10"></points-material>
 		</slot>
