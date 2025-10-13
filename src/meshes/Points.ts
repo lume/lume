@@ -1,4 +1,5 @@
 import {element, type ElementAttributes} from '@lume/element'
+import html from 'solid-js/html'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -41,6 +42,18 @@ export
 @element('lume-points', autoDefineElements)
 class Points extends Element3D {
 	// override initialBehaviors = {geometry: 'box', material: 'points'}
+
+	override hasShadow = true
+
+	override template = () => html`
+		<slot name="geometry">
+			<box-geometry></box-geometry>
+		</slot>
+
+		<slot name="material">
+			<points-material point-size="10"></points-material>
+		</slot>
+	`
 
 	override makeThreeObject3d() {
 		return new ThreePoints()

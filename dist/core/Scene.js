@@ -819,7 +819,7 @@ let Scene = (() => {
          * from Three.js and "physicallyCorrectLights" in the Three.js manual's
          * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
          */
-        physicallyCorrectLights = (__runInitializers(this, _fogDensity_extraInitializers), __runInitializers(this, _physicallyCorrectLights_initializers, false
+        physicallyCorrectLights = (__runInitializers(this, _fogDensity_extraInitializers), __runInitializers(this, _physicallyCorrectLights_initializers, true
         /**
          * @property {number} cameraNear -
          *
@@ -1047,6 +1047,7 @@ let Scene = (() => {
          * [THREE.WebGLRenderer](https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer)
          * for custom uses, or `null` when GL rendering is not enabled.
          */
+        // TODO make properties like this reactive (see https://github.com/lume/lume/issues/279)
         get glRenderer() {
             return this.#glRenderer?.sceneStates.get(this)?.renderer;
         }

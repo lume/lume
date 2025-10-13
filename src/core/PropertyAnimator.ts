@@ -31,7 +31,7 @@ const isInstance = Symbol()
  */
 export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
 	return class PropertyAnimator extends Base {
-		// @ts-ignore, prevent downstream "has or is using private name" errors.
+		// @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
 		[isInstance as any] = true
 
 		_setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V) {
