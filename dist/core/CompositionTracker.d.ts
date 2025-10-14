@@ -1,8 +1,6 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
-export declare const triggerChildComposedCallback: unique symbol;
-export declare const triggerChildUncomposedCallback: unique symbol;
 export declare function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T): {
-    new (...a: any[]): {
+    new (...args: any[]): {
         isScene: boolean;
         isElement3D: boolean;
         skipShadowObservation: boolean;
@@ -32,7 +30,7 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
          * isPossiblySlotted is accurate even if the ShadowRoot mode is closed.
          */
         isPossiblySlotted: boolean;
-        "__#12@#prevAssignedNodes"?: WeakMap<HTMLSlotElement, Element[]>;
+        __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
         /**
          * If this element is slotted into a shadow tree, this will reference
@@ -60,22 +58,35 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
          * This is `null` if there are no slotted children.
          */
         slottedChildren: Set<any> | null;
-        "__#12@#this": any;
-        "__#12@#shadowRootChildAdded"(child: Element): void;
-        "__#12@#shadowRootChildRemoved"(child: Element): void;
+        __shadowRootChildAdded(child: Element): void;
+        __shadowRootChildRemoved(child: Element): void;
         readonly __onChildSlotChange: (event: Event) => void;
         __onChildSlotChange__?: (event: Event) => void;
         childComposedCallback?(composedChild: Element, compositionType: CompositionType): void;
         childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void;
-        "__#12@#discrepancy": boolean;
+        __discrepancy: boolean;
+        __triggerChildComposedCallback(child: any, compositionType: CompositionType): void;
+        __triggerChildUncomposedCallback(child: any, compositionType: CompositionType): void;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): SlotDiff;
-        "__#12@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        __getCurrentAssignedNodes(slot: HTMLSlotElement): Element[];
+        childConnectedCallback(child: Element): void;
+        childDisconnectedCallback(child: Element): void;
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
-        connectedCallback?(): void;
-        disconnectedCallback?(): void;
+        awaitChildrenDefined: boolean;
+        syncChildCallbacks: boolean;
+        connectedCallback: (() => void) & (() => void);
+        disconnectedCallback: (() => void) & (() => void);
+        "__#12@#awaitedChildren": Set<Element>;
+        "__#12@#runChildConnectedCallbacks"(): void;
+        "__#12@#runChildConnect"(child: Element): void;
+        "__#12@#runChildDisconnectedCallbacks"(): void;
+        "__#12@#runChildDisconnect"(child: Element): void;
+        "__#12@#unobserveChildren": (() => void) | null;
+        "__#12@#createObserver"(): void;
+        "__#12@#destroyObserver"(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
         accessKey: string;
@@ -410,6 +421,7 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         blur(): void;
         focus(options?: FocusOptions): void;
     };
+    [Symbol.hasInstance](obj: any): boolean;
     observedAttributes?: string[];
 } & T;
 export type CompositionType = 'root' | 'slot' | 'actual';

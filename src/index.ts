@@ -46,6 +46,8 @@ export * from '@lume/element'
 export * from 'classy-solid'
 
 export * from './behaviors/index.js'
+// export * from './behavior-elements/index.js' // CONTINUE name clashes
+import './behavior-elements/index.js'
 export * from './cameras/index.js'
 export * from './core/index.js'
 export * from './examples/index.js'

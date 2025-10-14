@@ -1,4 +1,5 @@
-import {element, type ElementAttributes} from '@lume/element'
+import {attribute, element, type ElementAttributes} from '@lume/element'
+import html from 'solid-js/html'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
 import {Element3D} from '../core/Element3D.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -14,22 +15,24 @@ import type {
 	PointsMaterialBehavior,
 	PointsMaterialBehaviorAttributes,
 } from '../behaviors/index.js'
+import {Show} from 'solid-js'
 
 export type PointsAttributes = Element3DAttributes
 
+// CONTINUE update jsdoc comments to point to new behavior classes
 /**
  * @class Points -
  *
  * Element: `<lume-points>`
  *
  * Applies default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
+ * [`<box-geometry>`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
  * and
- * [`points-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<points-material>`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
  * the `points-material` is used by default, which renders any geometry's
- * verticies as points instead of filled triangles.
+ * vertices as points instead of filled triangles.
  *
  * It can be useful to have
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
@@ -40,7 +43,28 @@ export type PointsAttributes = Element3DAttributes
 export
 @element('lume-points', autoDefineElements)
 class Points extends Element3D {
-	override initialBehaviors = {geometry: 'box', material: 'points'}
+	// override initialBehaviors = {geometry: 'box', material: 'points'}
+
+	override hasShadow = true
+
+	// Legacy behavior support: if the has attribute has values, disable the
+	// behavior element slots, so that explicitly-defined legacy behaviors
+	// continue to work and take precedence, for now.
+	@attribute has = ''
+
+	override template = () => html`
+		<${Show} when=${!this.has}>
+			<slot name="geometry">
+				<box-geometry></box-geometry>
+			</slot>
+
+			<slot name="material">
+				<points-material></points-material>
+			</slot>
+		</>
+
+		<slot></slot>
+	`
 
 	override makeThreeObject3d() {
 		return new ThreePoints()

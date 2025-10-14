@@ -32,9 +32,11 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { element } from '@lume/element';
+import { attribute, element } from '@lume/element';
+import html from 'solid-js/html';
 import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
+import { Show } from 'solid-js';
 /**
  * @class Box -
  *
@@ -56,16 +58,39 @@ let Box = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Mesh;
+    let _has_decorators;
+    let _has_initializers = [];
+    let _has_extraInitializers = [];
     var Box = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _has_decorators = [attribute];
+            __esDecorate(null, null, _has_decorators, { kind: "field", name: "has", static: false, private: false, access: { has: obj => "has" in obj, get: obj => obj.has, set: (obj, value) => { obj.has = value; } }, metadata: _metadata }, _has_initializers, _has_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Box = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'box', material: 'physical' };
+        // override initialBehaviors = {geometry: 'box', material: 'physical'}
+        hasShadow = true;
+        // Legacy behavior support: if the has attribute has values, disable the
+        // behavior element slots, so that explicitly-defined legacy behaviors
+        // continue to work and take precedence, for now.
+        has = __runInitializers(this, _has_initializers, '');
+        template = (__runInitializers(this, _has_extraInitializers), () => html `
+		<${Show} when=${!this.has}>
+			<slot name="geometry">
+				<box-geometry></box-geometry>
+			</slot>
+
+			<slot name="material">
+				<physical-material></physical-material>
+			</slot>
+		</>
+
+		<slot></slot>
+	`);
     };
     return Box = _classThis;
 })();

@@ -11,13 +11,13 @@ export type PointsAttributes = Element3DAttributes;
  * Element: `<lume-points>`
  *
  * Applies default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
+ * [`<box-geometry>`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
  * and
- * [`points-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<points-material>`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
  *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
  * the `points-material` is used by default, which renders any geometry's
- * verticies as points instead of filled triangles.
+ * vertices as points instead of filled triangles.
  *
  * It can be useful to have
  * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
@@ -26,10 +26,9 @@ export type PointsAttributes = Element3DAttributes;
  * @extends Element3D
  */
 export declare class Points extends Element3D {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    hasShadow: boolean;
+    has: string;
+    template: () => Node | Node[];
     makeThreeObject3d(): ThreePoints<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three").Object3DEventMap>;
 }
 export interface Points extends ElementWithBehaviors<BehaviorInstanceTypes, BehaviorAttributes> {

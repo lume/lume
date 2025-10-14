@@ -25,7 +25,7 @@ const isInstance = Symbol();
  */
 export function PropertyAnimator(Base = Object) {
     return class PropertyAnimator extends Base {
-        // @ts-ignore, prevent downstream "has or is using private name" errors.
+        // @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
         [isInstance] = true;
         _setPropertyXYZ(name, xyz, newValue) {
             // @ts-ignore

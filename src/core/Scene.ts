@@ -436,7 +436,7 @@ class Scene extends Super {
 	 * from Three.js and "physicallyCorrectLights" in the Three.js manual's
 	 * [Lights](https://threejs.org/manual/?q=lig#en/lights) doc.
 	 */
-	@booleanAttribute physicallyCorrectLights = false
+	@booleanAttribute physicallyCorrectLights = true
 
 	/**
 	 * @property {number} cameraNear -
@@ -579,6 +579,7 @@ class Scene extends Super {
 	 * [THREE.WebGLRenderer](https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer)
 	 * for custom uses, or `null` when GL rendering is not enabled.
 	 */
+	// TODO make properties like this reactive (see https://github.com/lume/lume/issues/279)
 	get glRenderer() {
 		return this.#glRenderer?.sceneStates.get(this)?.renderer
 	}

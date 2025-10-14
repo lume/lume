@@ -23,7 +23,7 @@ const isInstance = Symbol();
  */
 export function Settable(Base = Object) {
     return class Settable extends Base {
-        // @ts-ignore, prevent downstream "has or is using private name" errors.
+        // @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
         [isInstance] = true;
         /**
          * @method set - Convenience method for setting all (or some)
