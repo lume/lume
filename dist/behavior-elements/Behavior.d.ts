@@ -1,30 +1,23 @@
 import { Element as LumeElement } from '@lume/element';
 import { type CompositionType } from '../core/CompositionTracker.js';
-declare const Behavior_base: {
+declare const BehaviorEl_base: {
     new (...args: any[]): {
-        isScene: boolean;
-        isElement3D: boolean;
-        skipShadowObservation: boolean;
         attachShadow(options: ShadowRootInit): ShadowRoot;
-        readonly _hasShadowRoot: boolean;
-        readonly _isPossiblyDistributedToShadowRoot: boolean;
-        readonly _shadowRootParent: any | null;
-        readonly _shadowRootChildren: any[];
-        readonly _distributedShadowRootChildren: any[];
-        readonly _distributedParent: any | null;
-        readonly _distributedChildren: any[] | null;
+        readonly shadowRootChildren: any[];
+        readonly shadowRootSlottedChildren: any[];
         __composedParent: Element | null;
         readonly composedParent: Element | null;
-        readonly __isComposed: Element | null;
-        readonly isComposed: Element | null;
+        readonly isComposed: boolean;
         __getComposedParent(): HTMLElement | null;
-        readonly _composedChildren: any[];
+        readonly composedChildren: any[];
         exposedShadowRoot?: ShadowRoot;
         isPossiblySlotted: boolean;
         __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
-        slottedParent: any | null;
+        terminalSlottedParent: any | null;
         shadowParent: any | null;
+        terminalSlottedChildren: Set<any> | null;
+        slottedParent: any | null;
         slottedChildren: Set<any> | null;
         __shadowRootChildAdded(child: Element): void;
         __shadowRootChildRemoved(child: Element): void;
@@ -34,22 +27,23 @@ declare const Behavior_base: {
         childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void;
+        __lastComposedParent: any | null;
+        __lastCompositionType: CompositionType;
         __discrepancy: boolean;
-        __triggerChildComposedCallback(child: any, compositionType: CompositionType): void;
-        __triggerChildUncomposedCallback(child: any, compositionType: CompositionType): void;
+        __triggerChildComposedCallback(parent: any, child: any, compositionType: CompositionType): void;
+        __triggerChildUncomposedCallback(parent: any, child: any, compositionType: CompositionType): void;
+        connectedCallback(): void;
+        disconnectedCallback(): void;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): {
             added: Node[];
             removed: Node[];
         };
-        __getCurrentAssignedNodes(slot: HTMLSlotElement): Element[];
         childConnectedCallback(child: Element): void;
         childDisconnectedCallback(child: Element): void;
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
         awaitChildrenDefined: boolean;
         syncChildCallbacks: boolean;
-        connectedCallback: (() => void) & (() => void);
-        disconnectedCallback: (() => void) & (() => void);
         "__#12@#awaitedChildren": Set<Element>;
         "__#12@#runChildConnectedCallbacks"(): void;
         "__#12@#runChildConnect"(child: Element): void;
@@ -165,6 +159,7 @@ declare const Behavior_base: {
         setPointerCapture(pointerId: number): void;
         toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
+        readonly behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
         readonly firstChild: ChildNode | null;
@@ -279,7 +274,6 @@ declare const Behavior_base: {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         replaceChildren(...nodes: (Node | string)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
-        behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly attributeStyleMap: StylePropertyMap;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
@@ -392,18 +386,19 @@ declare const Behavior_base: {
         blur(): void;
         focus(options?: FocusOptions): void;
     };
-    [Symbol.hasInstance](obj: any): boolean;
     observedAttributes?: string[];
 } & (new (...a: any[]) => {
-    "__#1@#effects": Set<import("classy-solid").Effect>;
+    "__#1@#effectFunctions": Array<() => void>;
+    "__#1@#started": boolean;
     createEffect(fn: () => void): void;
+    addEffectFn(fn: () => void): void;
+    "__#1@#isRestarting": boolean;
+    startEffects(): void;
     stopEffects(): void;
-    "__#1@#createEffect1"(fn: () => void): void;
-    "__#1@#stopEffects1"(): void;
+    clearEffects(): void;
     "__#1@#owner": import("solid-js").Owner | null;
     "__#1@#dispose": (() => void) | null;
-    "__#1@#createEffect2"(fn: () => void): void;
-    "__#1@#stopEffects2"(): void;
+    "__#1@#createEffect"(fn: () => void): void;
 }) & typeof LumeElement;
 /**
  * @class Behavior
@@ -476,7 +471,7 @@ declare const Behavior_base: {
  *
  * @extends HTMLElement
  */
-export declare abstract class Behavior extends Behavior_base {
+export declare abstract class BehaviorEl extends BehaviorEl_base {
     #private;
     readonly composedParent: Element | null;
     /**
@@ -500,9 +495,8 @@ export declare abstract class Behavior extends Behavior_base {
      * @returns {(typeof LumeElement)[]}
      */
     requiredParentType(): (typeof Element)[];
-    connectedCallback(): void;
     composedCallback(composedParent: Element, compositionType: CompositionType): void;
-    uncomposedCallback(_uncomposedParent: Element, _compositionType: CompositionType): void;
+    uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType): void;
     /**
      * @protected
      * @method _parentDefinedEffect - Subclasses can provide this method instead
@@ -512,9 +506,7 @@ export declare abstract class Behavior extends Behavior_base {
      *
      * This method is an effect. Any signals accessed in this method will make
      * it re-run. onCleanup can be used to do cleanup when the effect re-runs or
-     * when the behavior is disconnected. Because this method is an effect,
-     * this.createEffect() is not necessary, plain createEffect() from Solid.js
-     * can be used (and is recommended, to avoid extra wrappers).
+     * when the behavior is disconnected.
      *
      * Example:
      *
@@ -536,10 +528,13 @@ export declare abstract class Behavior extends Behavior_base {
      * }
      * ```
      *
-     * @param CONTINUE
+     * @param {NonNullable<this['composedParent']>} composedParent The composed
+     * parent element, guaranteed to be defined and of the correct type as
+     * specified by `requiredParentType()`.
      */
     protected _parentDefinedEffect(composedParent?: NonNullable<this['composedParent']>): void;
     css: string;
+    private __init_effects_ignore;
 }
 export {};
 //# sourceMappingURL=Behavior.d.ts.map

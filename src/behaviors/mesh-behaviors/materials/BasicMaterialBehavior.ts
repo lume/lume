@@ -7,6 +7,9 @@ import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehav
 
 export type BasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'specularMap'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-basic-material>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class BasicMaterialBehavior extends MaterialBehavior {

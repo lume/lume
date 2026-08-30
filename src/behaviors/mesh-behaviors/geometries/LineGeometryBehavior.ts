@@ -26,6 +26,7 @@ export type LineGeometryBehaviorAttributes = 'points' | 'centerGeometry' | 'fitm
  * </script>
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-line-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 @behavior
 export class LineGeometryBehavior extends GeometryBehavior {

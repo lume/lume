@@ -46,7 +46,8 @@
 		>
 			<lume-ambient-light color="white" intensity="0.3"></lume-ambient-light>
 
-			<lume-mixed-plane size-mode="proportional proportional" size="1 1 0" style="background: #0e99d9" color="#252525">
+			<lume-mixed-plane size-mode="proportional proportional" size="1 1 0" style="background: #0e99d9">
+				<lume-physical-material  color="#252525"></lume-physical-material>
 				<h1>HTML content, with lighting and shadows!</h1>
 
 				<lume-mixed-plane
@@ -61,7 +62,8 @@
 			</lume-mixed-plane>
 
 			<lume-element3d id="root" align-point="0.5 0.5 0.5" size="0 0 0" position="0 0 100">
-				<lume-mixed-plane size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490" color="#444444">
+				<lume-mixed-plane size="200 200 0" mount-point="0.5 0.5 0.5" style="background: #a1d490">
+					<lume-physical-material  color="#444444"></lume-physical-material>
 					<h1>Hello</h1>
 				</lume-mixed-plane>
 
@@ -103,17 +105,19 @@
 					</lume-mixed-plane>
 				</lume-mixed-plane>
 
-				<lume-box id="cube" size="50 50 50" mount-point="0.5 0 0.5" position="-60 20 80" color="#ff6157"></lume-box>
+				<lume-box id="cube" size="50 50 50" mount-point="0.5 0 0.5" position="-60 20 80">
+					<lume-physical-material  color="#ff6157"></lume-physical-material>
+				</lume-box>
 
 				<lume-mesh
 					id="lightMesh"
-					has="sphere-geometry basic-material"
 					size="10 10 10"
-					color="#ffffcc"
 					position="10 0 130"
 					receive-shadow="false"
 					cast-shadow="false"
 				>
+					<lume-sphere-geometry></lume-sphere-geometry>
+					<lume-basic-material color="#ffffcc"></lume-basic-material>
 					<lume-point-light
 						id="light"
 						color="#ffffff"
@@ -235,7 +239,9 @@
 <!-- WORKS ======================================================== -->
 
 <!-- <lume-scene webgl="true">
-			<lume-box size="100 100 100" has="basic-material" color="pink"></lume-box>
+			<lume-box size="100 100 100">
+				<lume-basic-material  color="pink"></lume-basic-material>
+			</lume-box>
 			<lume-perspective-camera
 				TODO-mode="choose mode: render in CSS pixels, or 1 meter units like Three.js"
 				active="true"

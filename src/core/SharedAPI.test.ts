@@ -1,6 +1,7 @@
 import {createEffect, createRoot} from 'solid-js'
 import {Element3D} from './Element3D.js'
 import {Scene} from './Scene.js'
+import { SharedAPI } from './SharedAPI.js'
 import '../index.js'
 
 describe('SharedAPI', () => {
@@ -19,6 +20,15 @@ describe('SharedAPI', () => {
 		newScene()
 	})
 
+	it('.constructor', () => {
+		expect(typeof SharedAPI).toBe('function')
+
+		const t = new SharedAPI()
+
+		expect(t.lumeChildren).toEqual([])
+		expect(t.lumeChildren.length).toBe(0)
+	})
+
 	describe('.scene', () => {
 		it('tells us what scene a node is in', async () => {
 			const n = new Element3D()
@@ -27,6 +37,8 @@ describe('SharedAPI', () => {
 			expect(scene.scene).toBe(scene)
 
 			scene.append(n)
+
+			expect(scene.lumeChildren).toEqual([n])
 
 			// It is reactive
 			let count = 0
@@ -47,9 +59,11 @@ describe('SharedAPI', () => {
 
 			n.remove()
 			expect(n.scene).toBe(null)
+			expect(scene.lumeChildren).toEqual([])
 
 			newScene()
 			scene.append(n)
+			expect(scene.lumeChildren).toEqual([n])
 			await Promise.resolve() // allow MutationObserver to operate first.
 			expect(n.scene).toBe(scene)
 
@@ -57,6 +71,8 @@ describe('SharedAPI', () => {
 			const scene2 = new Scene()
 			root.append(scene2)
 			scene2.append(n)
+			expect(scene.lumeChildren).toEqual([])
+			expect(scene2.lumeChildren).toEqual([n])
 			await Promise.resolve() // allow MutationObserver to operate first.
 			expect(n.scene).toBe(scene2)
 

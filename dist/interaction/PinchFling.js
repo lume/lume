@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,27 +32,17 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
     if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { onCleanup, untrack } from 'solid-js';
-import { Effects, reactive, signal } from 'classy-solid';
+import { effect, Effects, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
 let PinchFling = (() => {
-    let _classDecorators = [reactive];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
     let _classSuper = Effects;
+    let _instanceExtraInitializers = [];
     let _x_decorators;
     let _x_initializers = [];
     let _x_extraInitializers = [];
@@ -63,8 +60,11 @@ let PinchFling = (() => {
     let _private_isStarted_initializers = [];
     let _private_isStarted_extraInitializers = [];
     let _private_isStarted_descriptor;
-    var PinchFling = class extends _classSuper {
-        static { _classThis = this; }
+    let _pinchFlingEffect_decorators;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
+    return class PinchFling extends _classSuper {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _x_decorators = [signal];
@@ -72,22 +72,23 @@ let PinchFling = (() => {
             _hasInteracted_decorators = [signal];
             _private_interacting_decorators = [signal];
             _private_isStarted_decorators = [signal];
+            _pinchFlingEffect_decorators = [effect];
+            ___init_effects_ignore_decorators = [signal];
             __esDecorate(this, _private_interacting_descriptor = { get: __setFunctionName(function () { return this.#interacting_accessor_storage; }, "#interacting", "get"), set: __setFunctionName(function (value) { this.#interacting_accessor_storage = value; }, "#interacting", "set") }, _private_interacting_decorators, { kind: "accessor", name: "#interacting", static: false, private: true, access: { has: obj => #interacting in obj, get: obj => obj.#interacting, set: (obj, value) => { obj.#interacting = value; } }, metadata: _metadata }, _private_interacting_initializers, _private_interacting_extraInitializers);
             __esDecorate(this, _private_isStarted_descriptor = { get: __setFunctionName(function () { return this.#isStarted_accessor_storage; }, "#isStarted", "get"), set: __setFunctionName(function (value) { this.#isStarted_accessor_storage = value; }, "#isStarted", "set") }, _private_isStarted_decorators, { kind: "accessor", name: "#isStarted", static: false, private: true, access: { has: obj => #isStarted in obj, get: obj => obj.#isStarted, set: (obj, value) => { obj.#isStarted = value; } }, metadata: _metadata }, _private_isStarted_initializers, _private_isStarted_extraInitializers);
+            __esDecorate(this, null, _pinchFlingEffect_decorators, { kind: "method", name: "pinchFlingEffect", static: false, private: false, access: { has: obj => "pinchFlingEffect" in obj, get: obj => obj.pinchFlingEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _x_decorators, { kind: "field", name: "x", static: false, private: false, access: { has: obj => "x" in obj, get: obj => obj.x, set: (obj, value) => { obj.x = value; } }, metadata: _metadata }, _x_initializers, _x_extraInitializers);
             __esDecorate(null, null, _target_decorators, { kind: "field", name: "target", static: false, private: false, access: { has: obj => "target" in obj, get: obj => obj.target, set: (obj, value) => { obj.target = value; } }, metadata: _metadata }, _target_initializers, _target_extraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            PinchFling = _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
+            if (_metadata) Object.defineProperty(this, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
         /**
          * During pinch, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value.
          */
-        x = __runInitializers(this, _x_initializers, 0);
+        x = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _x_initializers, 0));
         minX = (__runInitializers(this, _x_extraInitializers), -Infinity);
         maxX = Infinity;
         target = __runInitializers(this, _target_initializers, document.documentElement);
@@ -115,6 +116,7 @@ let PinchFling = (() => {
         #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
         constructor(options = {}) {
             super();
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
             Object.assign(this, options);
         }
         #onPinch = (dx) => {
@@ -191,20 +193,7 @@ let PinchFling = (() => {
             if (untrack(() => this.#isStarted))
                 return this;
             this.#isStarted = true;
-            this.createEffect(() => {
-                this.target; // any time the target changes make new events on that target
-                this.#aborter = new AbortController();
-                // @ts-expect-error, whyyyyy TypeScript
-                this.target.addEventListener('pointerdown', this.#onDown, { signal: this.#aborter.signal });
-                // @ts-expect-error, whyyyyy TypeScript
-                this.target.addEventListener('pointerup', this.#onUp, { signal: this.#aborter.signal });
-                onCleanup(() => {
-                    // Stop any current animation, if any.
-                    if (this.#task)
-                        Motor.removeRenderTask(this.#task);
-                    this.#aborter.abort();
-                });
-            });
+            this.startEffects();
             return this;
         }
         stop() {
@@ -214,8 +203,23 @@ let PinchFling = (() => {
             this.stopEffects();
             return this;
         }
+        pinchFlingEffect() {
+            this.target; // any time the target changes make new events on that target
+            this.#aborter = new AbortController();
+            // @ts-expect-error, whyyyyy TypeScript
+            this.target.addEventListener('pointerdown', this.#onDown, { signal: this.#aborter.signal });
+            // @ts-expect-error, whyyyyy TypeScript
+            this.target.addEventListener('pointerup', this.#onUp, { signal: this.#aborter.signal });
+            onCleanup(() => {
+                // Stop any current animation, if any.
+                if (this.#task)
+                    Motor.removeRenderTask(this.#task);
+                this.#aborter.abort();
+            });
+        }
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = __runInitializers(this, ___init_effects_ignore_initializers, 0);
     };
-    return PinchFling = _classThis;
 })();
 export { PinchFling };
 //# sourceMappingURL=PinchFling.js.map

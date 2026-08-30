@@ -91,7 +91,7 @@ Total composed nodes: 15
 	let rig
 	let otherSphere
 
-	bodyRoot.append(html`
+	bodyRoot.append(html/*html*/ `
 		<div ref=${el => (bodyRootContent = el)} style="width: 100%; height: 100%; border: 5px solid blue;">
 			<div
 				style="width: 100%; height: 100%; border: 5px solid pink;"
@@ -108,14 +108,7 @@ Total composed nodes: 15
 
 					<lume-ambient-light intensity="0.7" color="skyblue"></lume-ambient-light>
 
-					<lume-point-light
-						id="light"
-						color="white"
-						position="300 300 400"
-						size="0 0 0"
-						cast-shadow="true"
-						intensity="600"
-					>
+					<lume-point-light id="light" position="300 300 400" size="0 0 0" cast-shadow="true" intensity="600">
 					</lume-point-light>
 
 					<slot name="outsidenode">
@@ -123,38 +116,42 @@ Total composed nodes: 15
 					</slot>
 
 					<lume-box
-						id="lightdom"
-						ref=${e => (lightdom = e)}
 						rotation="0 0 0"
 						align-point="0.5 0.4 0"
 						mount-point="0.5 0.5 0.5"
 						position="-80 -80 -80"
 						size="40 40 40"
-						color="white"
-						texture="../../apps/docs/textures/cement.jpg"
 					>
-						<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
+						<lume-element3d id="lightdom" ref=${e => (lightdom = e)} size-mode="p p p" size="1 1 1">
+							<!-- A ShadowRoot will be added here, and the <lume-sphere> will be distributed. -->
 
-						<lume-sphere
-							id="otherSphere"
-							ref=${e => (otherSphere = e)}
-							color="rebeccapurple"
-							slot="root"
-							size="40 40 40"
-							position="-30 30 20"
-						></lume-sphere>
+							<lume-physical-material texture="../../apps/docs/textures/cement.jpg"></lume-physical-material>
 
-						<lume-sphere
-							id="distributedSphere"
-							ref=${e => (distributedSphere = e)}
-							color="pink"
-							slot="plane"
-							size="40 40 40"
-							position="30 30 20"
-							texture="../../apps/docs/textures/cement.jpg"
-						>
-							<lume-camera-rig ref=${e => (rig = e)} align-point="0.5 0.5 0.5"></lume-camera-rig>
-						</lume-sphere>
+							<lume-sphere
+								id="otherSphere"
+								ref=${e => (otherSphere = e)}
+								slot="root"
+								size="40 40 40"
+								position="-30 30 20"
+							>
+								<lume-physical-material color="rebeccapurple"></lume-physical-material>
+							</lume-sphere>
+
+							<lume-sphere
+								id="distributedSphere"
+								ref=${e => (distributedSphere = e)}
+								slot="plane"
+								size="40 40 40"
+								position="30 30 20"
+							>
+								<lume-physical-material
+									color="pink"
+									texture="../../apps/docs/textures/cement.jpg"
+								></lume-physical-material>
+
+								<lume-camera-rig ref=${e => (rig = e)} align-point="0.5 0.5 0.5"></lume-camera-rig>
+							</lume-sphere>
+						</lume-element3d>
 					</lume-box>
 				</lume-scene>
 			</div>
@@ -190,38 +187,43 @@ Total composed nodes: 15
 		const root = lightdom.attachShadow({mode: 'open'})
 
 		root.append(
-			...html`
+			...html/*html*/ `
 				<!-- A slot that is child of a ShadowRoot. Any content (distributed, or fallback) renders relative to the shadow host. -->
 				<slot name="root">
 					<!-- Default content to render when nothing is assigned to this slot. -->
-					<lume-sphere id="default-sphere-orange" color="orange" size="50 50 50" position="40 40 20"></lume-sphere>
+					<lume-sphere id="default-sphere-orange" size="50 50 50" position="40 40 20">
+						<lume-physical-material color="orange"></lume-physical-material>
+					</lume-sphere>
 				</slot>
 				<!-- A LUME element as child of a ShadowRoot renders relative to the shadow host. -->
-				<lume-box id="box" size="50 50 50" position="80 80 40" color="royalblue">
+				<lume-box id="box" size="50 50 50" position="80 80 40">
+					<lume-physical-material color="royalblue"></lume-physical-material>
 					<slot name="box">
 						<!-- Default content to render when nothing is assigned to this slot. -->
-						<lume-sphere id="default-sphere-white" color="white" size="50 50 50" position="40 40 20"></lume-sphere>
+						<lume-sphere id="default-sphere-white" size="50 50 50" position="40 40 20">
+							<lume-physical-material color="white"></lume-physical-material>
+						</lume-sphere>
 					</slot>
 				</lume-box>
 				<lume-element3d position="160 160 80">
 					<lume-mixed-plane
-						id="planeSlotContainer"
-						color="black"
-						ref=${el => (planeSlotContainer = el)}
 						position="0 0 20"
 						rotation="0 0 0"
 						size="50 50"
 						style="background: skyblue; padding: 5px; font-size: 0.5rem"
-						material-opacity="0.4"
 					>
-						<h4>This is DOM content.</h4>
+						<lume-element3d id="planeSlotContainer" ref=${el => (planeSlotContainer = el)} size-mode="p p" size="1 1">
+							<h4>This is DOM content.</h4>
 
-						<!-- This slot is further assigned to a deeper slot, so LUME elements assigned here
-						will not render relative to here, but relative to the parent of the deeper slot.  -->
-						<slot name="plane" slot="deeper" ref=${el => (planeSlot = el)}>
-							<!-- Default content to render when nothing is assigned to this slot. -->
-							<lume-sphere id="default-sphere-teal" color="teal" size="50 50 50" position="10 10 10"></lume-sphere>
-						</slot>
+							<!-- This slot is further assigned to a deeper slot, so LUME elements assigned here
+							will not render relative to here, but relative to the parent of the deeper slot.  -->
+							<slot name="plane" slot="deeper" ref=${el => (planeSlot = el)}>
+								<!-- Default content to render when nothing is assigned to this slot. -->
+								<lume-sphere id="default-sphere-teal" size="50 50 50" position="10 10 10">
+									<lume-physical-material color="teal"></lume-physical-material>
+								</lume-sphere>
+							</slot>
+						</lume-element3d>
 					</lume-mixed-plane>
 				</lume-element3d>
 			`,
@@ -238,12 +240,17 @@ Total composed nodes: 15
 					The <h4> from the above ShadowRoot is always distributed here, so
 					this yellow sphere will never render.
 					-->
-					<lume-sphere id="default-sphere-yellow" color="yellow" size="50 50 50" position="10 10 10"></lume-sphere>
+					<lume-sphere id="default-sphere-yellow" size="50 50 50" position="10 10 10">
+						<lume-physical-material color="yellow"></lume-physical-material>
+					</lume-sphere>
 				</slot>
-				<lume-box id="deeperbox" size="20 20 20" position="40 40 20" color="deeppink">
+				<lume-box id="deeperbox" size="20 20 20" position="40 40 20">
+					<lume-physical-material color="deeppink"></lume-physical-material>
 					<slot name="deeper">
 						<!-- Default content to render when nothing is assigned to this slot. -->
-						<lume-sphere id="default-sphere-green" color="green" size="50 50 50" position="40 40 20"></lume-sphere>
+						<lume-sphere id="default-sphere-green" size="50 50 50" position="40 40 20">
+							<lume-physical-material color="green"></lume-physical-material>
+						</lume-sphere>
 					</slot>
 				</lume-box>
 			`,
@@ -386,6 +393,8 @@ Total composed nodes: 15
 		//
 		// setInterval(toggle7, 2000)
 		// toggle7(); toggle7()
+
+		// setInterval(toggle8, 2000)
 
 		/////////////////////////////////////////////////////
 	}, 2000)

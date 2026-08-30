@@ -118,7 +118,7 @@ class SpotLight extends PointLight {
 					if (!el) continue
 
 					// Find only planes participating in rendering (i.e. in the
-					// composed tree, noting that .scene is null when not
+					// flat tree, noting that .scene is null when not
 					// composed)
 					// TODO #279: This setter is non-reactive to el.scene, so it will
 					// not update if the element becomes composed into a Lume scene.

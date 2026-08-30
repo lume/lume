@@ -15,8 +15,8 @@ export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | '
  * as separate Mesh instances would otherwise incur one draw call to the GPU
  * per mesh which will be slower.
  *
- * For sake of simplicity, `<lume-instanced-mesh>` has a box-geometry and
- * phong-material by default.
+ * A `<lume-instanced-mesh>` has a `<lume-box-geometry>` and
+ * `<lume-physical-material>` by default.
  *
  * ## Example
  *
@@ -78,11 +78,7 @@ export declare class InstancedMesh extends Mesh {
      */
     get colors(): number[];
     set colors(v: number[]);
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
-    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material, import("three/src/objects/InstancedMesh.js").InstancedMeshEventMap>;
+    makeThreeObject3d(): ThreeInstancedMesh<import("three").BufferGeometry<import("three").NormalBufferAttributes>, import("three").Material | import("three").Material[], import("three/src/objects/InstancedMesh.js").InstancedMeshEventMap>;
     setInstancePosition(index: number, x: number, y: number, z: number): void;
     setInstanceScale(index: number, x: number, y: number, z: number): void;
     setInstanceRotation(index: number, x: number, y: number, z: number): void;

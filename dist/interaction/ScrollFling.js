@@ -1,3 +1,13 @@
+// CONTINUE also for some reason scrolling some demos broke, and the outer page
+// scrolls in the docs. F.e. picture frame example scrolls page while zooming
+// the scene.
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,29 +35,17 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
     if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { onCleanup, untrack } from 'solid-js';
-import { Effects, reactive, signal } from 'classy-solid';
+import { effect, Effects, signal } from 'classy-solid';
 import { Motor } from '../core/Motor.js';
 import { clamp } from '../math/clamp.js';
-// @ts-ignore
-window.debug = true;
 let ScrollFling = (() => {
-    let _classDecorators = [reactive];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
     let _classSuper = Effects;
+    let _instanceExtraInitializers = [];
     let _private_x_decorators;
     let _private_x_initializers = [];
     let _private_x_extraInitializers = [];
@@ -63,30 +61,34 @@ let ScrollFling = (() => {
     let _private_isStarted_initializers = [];
     let _private_isStarted_extraInitializers = [];
     let _private_isStarted_descriptor;
-    var ScrollFling = class extends _classSuper {
-        static { _classThis = this; }
+    let _scrollFlingEffect_decorators;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
+    return class ScrollFling extends _classSuper {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private_x_decorators = [signal];
             _private_y_decorators = [signal];
             _hasInteracted_decorators = [signal];
             _private_isStarted_decorators = [signal];
+            _scrollFlingEffect_decorators = [effect];
+            ___init_effects_ignore_decorators = [signal];
             __esDecorate(this, _private_x_descriptor = { get: __setFunctionName(function () { return this.#x_accessor_storage; }, "#x", "get"), set: __setFunctionName(function (value) { this.#x_accessor_storage = value; }, "#x", "set") }, _private_x_decorators, { kind: "accessor", name: "#x", static: false, private: true, access: { has: obj => #x in obj, get: obj => obj.#x, set: (obj, value) => { obj.#x = value; } }, metadata: _metadata }, _private_x_initializers, _private_x_extraInitializers);
             __esDecorate(this, _private_y_descriptor = { get: __setFunctionName(function () { return this.#y_accessor_storage; }, "#y", "get"), set: __setFunctionName(function (value) { this.#y_accessor_storage = value; }, "#y", "set") }, _private_y_decorators, { kind: "accessor", name: "#y", static: false, private: true, access: { has: obj => #y in obj, get: obj => obj.#y, set: (obj, value) => { obj.#y = value; } }, metadata: _metadata }, _private_y_initializers, _private_y_extraInitializers);
             __esDecorate(this, _private_isStarted_descriptor = { get: __setFunctionName(function () { return this.#isStarted_accessor_storage; }, "#isStarted", "get"), set: __setFunctionName(function (value) { this.#isStarted_accessor_storage = value; }, "#isStarted", "set") }, _private_isStarted_decorators, { kind: "accessor", name: "#isStarted", static: false, private: true, access: { has: obj => #isStarted in obj, get: obj => obj.#isStarted, set: (obj, value) => { obj.#isStarted = value; } }, metadata: _metadata }, _private_isStarted_initializers, _private_isStarted_extraInitializers);
+            __esDecorate(this, null, _scrollFlingEffect_decorators, { kind: "method", name: "scrollFlingEffect", static: false, private: false, access: { has: obj => "scrollFlingEffect" in obj, get: obj => obj.scrollFlingEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _hasInteracted_decorators, { kind: "field", name: "hasInteracted", static: false, private: false, access: { has: obj => "hasInteracted" in obj, get: obj => obj.hasInteracted, set: (obj, value) => { obj.hasInteracted = value; } }, metadata: _metadata }, _hasInteracted_initializers, _hasInteracted_extraInitializers);
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            ScrollFling = _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
+            if (_metadata) Object.defineProperty(this, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
-        #x_accessor_storage = __runInitializers(this, _private_x_initializers, 0
+        #x_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _private_x_initializers, 0
         /**
          * During scroll, this value will change. It is a signal so that it can be
          * observed. Set this value initially if you want to start at a certain
          * value. Setting the value immediately stops any smoothing animation.
          */
-        );
+        ));
         get #x() { return _private_x_descriptor.get.call(this); }
         set #x(value) { return _private_x_descriptor.set.call(this, value); }
         /**
@@ -148,6 +150,7 @@ let ScrollFling = (() => {
         #aborter = (__runInitializers(this, _private_isStarted_extraInitializers), new AbortController());
         constructor(options = {}) {
             super();
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
             Object.assign(this, options);
             this.#targetX = this.#x;
             this.#targetY = this.#y;
@@ -178,17 +181,18 @@ let ScrollFling = (() => {
             if (untrack(() => this.#isStarted))
                 return this;
             this.#isStarted = true;
-            this.createEffect(() => {
-                this.target; // any time the target changes make new events on that target
-                this.#aborter = new AbortController();
-                // @ts-expect-error, whyyyyy TypeScript
-                this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
-                onCleanup(() => {
-                    this.#stopAnimation();
-                    this.#aborter.abort();
-                });
-            });
+            this.startEffects();
             return this;
+        }
+        scrollFlingEffect() {
+            this.target; // any time the target changes make new events on that target
+            this.#aborter = new AbortController();
+            // @ts-expect-error, whyyyyy TypeScript
+            this.target.addEventListener('wheel', this.#onWheel, { signal: this.#aborter.signal });
+            onCleanup(() => {
+                this.#stopAnimation();
+                this.#aborter.abort();
+            });
         }
         stop() {
             if (!untrack(() => this.#isStarted))
@@ -202,10 +206,9 @@ let ScrollFling = (() => {
             if (this.#task)
                 Motor.removeRenderTask(this.#task);
         }
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = __runInitializers(this, ___init_effects_ignore_initializers, 0);
     };
-    return ScrollFling = _classThis;
 })();
 export { ScrollFling };
-// @ts-ignore
-window.debug = false;
 //# sourceMappingURL=ScrollFling.js.map

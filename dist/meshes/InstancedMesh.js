@@ -35,8 +35,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
 import { batch, untrack } from 'solid-js';
 import { element, numberAttribute, stringAttribute } from '@lume/element';
 import { InstancedMesh as ThreeInstancedMesh } from 'three/src/objects/InstancedMesh.js';
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry.js';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
 import { DynamicDrawUsage } from 'three/src/constants.js';
 import { Quaternion } from 'three/src/math/Quaternion.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
@@ -68,8 +66,8 @@ const appliedPosition = [0, 0, 0];
  * as separate Mesh instances would otherwise incur one draw call to the GPU
  * per mesh which will be slower.
  *
- * For sake of simplicity, `<lume-instanced-mesh>` has a box-geometry and
- * phong-material by default.
+ * A `<lume-instanced-mesh>` has a `<lume-box-geometry>` and
+ * `<lume-physical-material>` by default.
  *
  * ## Example
  *
@@ -195,19 +193,13 @@ let InstancedMesh = (() => {
             this.#colors = stringToNumberArray(v, 'colors');
         }
         #colors = [];
-        initialBehaviors = { geometry: 'box', material: 'physical' };
         // This class will have a THREE.InstancedMesh for its .three property.
         makeThreeObject3d() {
-            let geometryBehavior = null;
-            let materialBehavior = null;
-            for (const [name, behavior] of this.behaviors) {
-                if (name.endsWith('-geometry'))
-                    geometryBehavior = behavior;
-                else if (name.endsWith('-material'))
-                    materialBehavior = behavior;
-            }
-            // Use the existing geometry and material from the behaviors in case we are in the recreateThree process.
-            const mesh = new ThreeInstancedMesh(geometryBehavior?.meshComponent || new BoxGeometry(), materialBehavior?.meshComponent || new MeshPhongMaterial(), this.#biggestCount);
+            const mesh = new ThreeInstancedMesh(
+            // We pass undefined here, and the geometry and material behaviors
+            // react to changes in .three and set .geometry and .material as
+            // needed.
+            undefined, undefined, this.#biggestCount);
             // TODO make this configurable. Most people probably won't care about this.
             mesh.instanceMatrix.setUsage(DynamicDrawUsage);
             const original = mesh.setColorAt;
@@ -414,6 +406,8 @@ let InstancedMesh = (() => {
                         });
                     });
                 }
+                // Untrack because we call recreateThree on count change above. Is
+                // this better off in a separate effect?
                 untrack(() => (this.three.count = this.count));
                 this.needsUpdate();
             });

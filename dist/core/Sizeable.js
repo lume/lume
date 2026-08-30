@@ -37,12 +37,13 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { signal } from 'classy-solid';
-import { attribute, element, noSignal } from '@lume/element';
-import { TreeNode } from './TreeNode.js';
+import { attribute, element, noSignal, Element as LumeElement } from '@lume/element';
+import { Eventful } from '@lume/eventful';
 import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
 import { CompositionTracker } from './CompositionTracker.js';
 import { PropertyAnimator, } from './PropertyAnimator.js';
+import { isSizeable } from './utils/isThisOrThat.js';
 const previousSize = {};
 const sizeMode = new WeakMap();
 const size = new WeakMap();
@@ -52,17 +53,14 @@ const size = new WeakMap();
  * The properties of `Sizeable` all follow a common usage pattern,
  * described in the [`Common Attributes`](../../guide/common-attributes) doc.
  *
- * @extends TreeNode
+ * @extends LumeElement
  */
-// Sizeable and its subclass Transformable extend from TreeNode because they know
-// about their `parent` when calculating proportional sizes or world matrices
-// based on parent values.
 let Sizeable = (() => {
     let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = PropertyAnimator(CompositionTracker(TreeNode));
+    let _classSuper = PropertyAnimator(CompositionTracker(Eventful(LumeElement)));
     let _instanceExtraInitializers = [];
     let _private_calculatedSize_decorators;
     let _private_calculatedSize_initializers = [];
@@ -91,7 +89,15 @@ let Sizeable = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        #calculatedSize_accessor_storage = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _private_calculatedSize_initializers, { x: 0, y: 0, z: 0 }
+        /**
+         * @property {true} isSizeable -
+         *
+         * *readonly*
+         *
+         * Always `true` for elements that are or inherit from `Sizeable`.
+         */
+        isSizeable = (__runInitializers(this, _instanceExtraInitializers), true);
+        #calculatedSize_accessor_storage = __runInitializers(this, _private_calculatedSize_initializers, { x: 0, y: 0, z: 0 }
         /**
          * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
          *
@@ -116,7 +122,7 @@ let Sizeable = (() => {
          * value along that axis will be a proportion of the object's parent's size
          * along that axis.
          */
-        ));
+        );
         get #calculatedSize() { return _private_calculatedSize_descriptor.get.call(this); }
         set #calculatedSize(value) { return _private_calculatedSize_descriptor.set.call(this, value); }
         /**
@@ -215,14 +221,13 @@ let Sizeable = (() => {
             // TODO make it a readonly reactive object instead of cloning.
             return { ...this.#calculatedSize };
         }
-        get composedLumeParent() {
-            const result = this.composedParent;
-            if (!(result instanceof Sizeable))
-                return null;
-            return result;
+        /** Returns the composed parent (flat tree parent) only if it is a Sizeable instance, null otherwise. */
+        get composedSizeableParent() {
+            return isSizeable(this.composedParent) ? this.composedParent : null;
         }
-        get composedLumeChildren() {
-            return super._composedChildren;
+        /** Returns the composed children (flat tree children) that are Sizeable instances if any. */
+        get composedSizeableChildren() {
+            return super.composedChildren.filter(child => isSizeable(child));
         }
         /**
          * @property {{x: number, y: number, z: number}} parentSize
@@ -234,7 +239,7 @@ let Sizeable = (() => {
          * parent, the size is 0,0,0.
          */
         get parentSize() {
-            return this.composedLumeParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
+            return this.composedSizeableParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
         }
         _calcSize() {
             const calculatedSize = this.#calculatedSize;

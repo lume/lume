@@ -21,6 +21,7 @@ export function ChildTracker<T extends Constructor<HTMLElement>>(Base: T) {
 		 * then `childDisconnectedCallback` will not be called and any pending
 		 * `childConnectedCallback` will be canceled.
 		 */
+		 // TODO CompositionTracker should honor this too for composition callbacks.
 		awaitChildrenDefined = true
 
 		/**

@@ -4,7 +4,7 @@
 
 import {createEffect, onCleanup, untrack} from 'solid-js'
 import html from 'solid-js/html'
-import {signal} from 'classy-solid'
+import {effect, signal} from 'classy-solid'
 import {
 	booleanAttribute,
 	attribute,
@@ -25,6 +25,7 @@ import {WebglRendererThree, type ShadowMapTypeString} from '../renderers/WebglRe
 import {Css3dRendererThree} from '../renderers/Css3dRendererThree.js'
 import {SharedAPI} from './SharedAPI.js'
 import {Motor} from './Motor.js'
+import {isElement3D} from './utils/isThisOrThat.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {version} from '../index.js' // TODO replace with version.ts for vanilla ES Module tree shakability
 import {defaultScenePerspective} from '../constants.js'
@@ -34,7 +35,9 @@ import type {XYZValuesObject} from '../xyz-values/XYZValues.js'
 import type {SizeableAttributes} from './Sizeable.js'
 import type {Element3D} from './Element3D.js'
 
-const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
+function magic() {
+	return ` LUME ✨ v${version} 👉 https://github.com/lume/lume `
+}
 
 // Queue a microtask because otherwise this fires before the module graph has
 // executed the version variable initializer.
@@ -105,14 +108,6 @@ class Scene extends Super {
 	 */
 	// TODO @readonly jsdoc tag
 	override readonly isScene = true
-
-	// Skip ShadowRoot observation for Scene instances, and consider composed
-	// children to always be the Scene's direct children, not any in its
-	// ShadowRoot. Only a Scene's actual children or distributed children are
-	// considered to be in the LUME scene graph because Scene's ShadowRoot
-	// serves a specific purpose in the rendering implementation and is not the
-	// user's.
-	override skipShadowObservation = this.isScene
 
 	/**
 	 * @property {boolean} enableCss -
@@ -661,13 +656,13 @@ class Scene extends Super {
 	}
 
 	// WebGLRendererThree appends its content into here.
-	_glLayer: HTMLDivElement | null = null
+	@signal _glLayer: HTMLDivElement | null = null
 
 	// CSS3DRendererThree appends its content into here.
-	_cssLayer: HTMLDivElement | null = null
+	@signal _cssLayer: HTMLDivElement | null = null
 
 	// Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
-	_miscLayer: HTMLDivElement | null = null
+	@signal _miscLayer: HTMLDivElement | null = null
 
 	drawScene() {
 		this.#glRenderer?.drawScene(this)
@@ -677,31 +672,10 @@ class Scene extends Super {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		//////////////////////// GL
-
-		// We don't let Three update any matrices, we supply our own world
-		// matrices.
-		// @ts-expect-error legacy
-		this.three.autoUpdate = false // three <0.144
-		this.three.matrixWorldAutoUpdate = false // three >=0.144
-
 		// TODO: default ambient light when no AmbientLight elements are
 		// present in the Scene.
 		//const ambientLight = new AmbientLight( 0x353535 )
 		//this.three.add( ambientLight )
-
-		this.createEffect(this.glRendererEffect)
-		this.createEffect(this.fogEffect)
-		this.createEffect(this.cameraNearFarEffect)
-		this.createEffect(this.cameraEffect)
-
-		//////////////////////// CSS
-
-		this.createEffect(this.cssRendererEffect)
-
-		////////////////////////
-
-		this.createEffect(this.parentSizeEffect)
 
 		// Queue a microtask because with autoDefineElements true then
 		// connectedCallback fires before the module graph has executed the
@@ -709,8 +683,31 @@ class Scene extends Super {
 		queueMicrotask(() => this.shadowRoot!.prepend(new Comment(magic())))
 	}
 
-	glRendererEffect = () => {
-		if (!this.webgl) return
+	/**
+	 * Scene's ShadowRoot is an internal rendering implementation detail.
+	 * Compose Element3D children directly to Scene via the public composition
+	 * hooks, so that they participate in the 3D scene graph.
+	 */
+	override childConnectedCallback(child: Element) {
+		super.childConnectedCallback(child)
+
+		if (isElement3D(child)) {
+			this.childComposedCallback?.(child, 'actual')
+			child.composedCallback?.(this, 'actual')
+		}
+	}
+
+    override childDisconnectedCallback(child: Element) {
+		super.childDisconnectedCallback(child)
+
+		if (isElement3D(child)) {
+			child.uncomposedCallback?.(this, 'actual')
+			this.childUncomposedCallback?.(child, 'actual')
+		}
+	}
+
+	@effect glRendererEffect() {
+		if (!this.webgl || !this._glLayer) return
 
 		this.#glRenderer = WebglRendererThree.singleton()
 		this.#glRenderer.initialize(this)
@@ -746,6 +743,8 @@ class Scene extends Super {
 		})
 
 		createEffect(() => {
+			if (!this.webgl || !this._miscLayer) return
+
 			this.#glRenderer!.enableVR(this, this.vr)
 
 			if (this.vr) {
@@ -824,7 +823,7 @@ class Scene extends Super {
 		})
 	}
 
-	fogEffect = () => {
+	@effect fogEffect() {
 		if (this.fogMode === 'none') {
 			this.three.fog = null
 		} else if (this.fogMode === 'linear') {
@@ -841,7 +840,7 @@ class Scene extends Super {
 		this.needsUpdate()
 	}
 
-	cameraNearFarEffect = () => {
+	@effect cameraNearFarEffect() {
 		const {cameraNear, cameraFar} = this
 
 		if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera)) return
@@ -851,7 +850,7 @@ class Scene extends Super {
 		this.needsUpdate()
 	}
 
-	cameraEffect = () => {
+	@effect cameraEffect() {
 		this._updateCameraAspect()
 		this._updateCameraPerspective()
 
@@ -859,7 +858,10 @@ class Scene extends Super {
 		this.needsUpdate()
 	}
 
-	parentSizeEffect = () => {
+	// This effect is created in connectedCallback because it relies on
+	// this.composedParent which is currently not reactive. See further comments
+	// there.
+	@effect parentSizeEffect() {
 		// If no rendering is enbled
 		if (!this.webgl && !this.enableCss) return
 
@@ -883,8 +885,8 @@ class Scene extends Super {
 		// with dynamic looks, etc).
 	}
 
-	cssRendererEffect = () => {
-		if (!this.enableCss) return
+	@effect cssRendererEffect() {
+		if (!this.enableCss || !this._cssLayer) return
 
 		this.#cssRenderer = Css3dRendererThree.singleton()
 		this.#cssRenderer.initialize(this)
@@ -917,15 +919,23 @@ class Scene extends Super {
 	}
 
 	override makeThreeObject3d() {
-		return new ThreeScene()
+		const scene = new ThreeScene()
+		// We don't let Three update any matrices, we supply our own world
+		// matrices.
+		// @ts-expect-error legacy
+		scene.autoUpdate = false // three <0.144
+		scene.matrixWorldAutoUpdate = false // three >=0.144
+		return scene
 	}
 
 	override makeThreeCSSObject() {
+		// CONTINUE apparently we weren't applying matrixWorldAutoUpdate=false
+		// to the CSS scene similar to makeThreeObject3d. Do we need to?
 		return new ThreeScene()
 	}
 
 	/**
-	 * @method traverseSceneGraph - This traverses the composed tree of LUME 3D
+	 * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
 	 * elements (the scene graph) not including the scene element, starting from
 	 * the scene's children, in pre-order. It skips non-LUME elements. The given
 	 * callback will be called for each element in the traversal.
@@ -945,7 +955,7 @@ class Scene extends Super {
 	 * ```
 	 *
 	 * @param {(el: Element3D) => void} visitor - A function called for each
-	 * LUME element in the scene graph (the composed tree).
+	 * LUME element in the render scene graph (traverses the flat tree).
 	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
 	 * the traversal will wait for custom elements to be defined (with
 	 * customElements.whenDefined) before traversing to them.
@@ -956,9 +966,10 @@ class Scene extends Super {
 	 * returned so that it is possible to wait for the traversal to complete.
 	 */
 	override traverseSceneGraph(visitor: (el: Element3D) => void, waitForUpgrade = false): Promise<void> | void {
-		if (!waitForUpgrade) {
-			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
+		// visitor(this) // Explicitly disabled for Scene, so that we only traverse child Element3D elements.
 
+		if (!waitForUpgrade) {
+			for (const child of this.composedSceneGraphChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
 			return
 		}
 
@@ -966,7 +977,7 @@ class Scene extends Super {
 		// traversal order is still the same as when waitForUpgrade is false.
 		let promise: Promise<any> = Promise.resolve()
 
-		for (const child of this.composedLumeChildren) {
+		for (const child of this.composedSceneGraphChildren) {
 			const isUpgraded = child.matches(':defined')
 
 			if (isUpgraded) {
@@ -1072,7 +1083,7 @@ class Scene extends Super {
 	 * elements don't have the concept of Z size and are always flat.
 	 */
 	override get parentSize(): XYZValuesObject<number> {
-		return this.composedLumeParent?.calculatedSize ?? this.#elementParentSize
+		return this.composedSceneGraphParent?.calculatedSize ?? this.#elementParentSize
 	}
 
 	#setCamera(camera?: Camera) {
@@ -1214,6 +1225,8 @@ class Scene extends Super {
 
 			/* Prevent default browser behaviors like drag-and-drop to avoid pointercancel interfering with interaction features. */
 			touch-action: none;
+			user-select: none;
+			-webkit-user-select: none;
 		}
 
 		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
@@ -1266,6 +1279,9 @@ class Scene extends Super {
 			border-color: black;
 		}
 	`
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }
 
 // Put initial value on the prototype to make it available during construction

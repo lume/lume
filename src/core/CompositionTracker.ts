@@ -1,5 +1,3 @@
-// TODO Remove isScene and isNode specifics out of here here
-
 // CONTINUE Some logic in SharedAPI actually belongs in here, and relies on
 // childConnectedCallback. Untangle that from SharedAPI so CompositionTracker
 // can fully contain the composition tracking.
@@ -22,51 +20,75 @@
 // future, then we should enact similar logic as in this class in the
 // arbitrary parent element's ShadowRoot.
 
+// TODO update MDN docs on "composed trees" and "flat trees", https://github.com/mdn/content/pull/20703
+
 import {Constructor} from 'lowclass/dist/Constructor.js'
 import {observeChildren} from './utils/observeChildren.js'
 import type {PossibleCustomElement, PossibleCustomElementConstructor} from './PossibleCustomElement.js'
-import {isDomEnvironment, isScene} from './utils/isThisOrThat.js'
+import {isDomEnvironment} from './utils/isThisOrThat.js'
 import {ChildTracker} from './ChildTracker.js'
 
 const isInstance = Symbol()
 
+/**
+ * A class that allows tracking the DOM composed tree (Shadow DOM), ultimately
+ * allowing consumers to write logic against the shape of the DOM flat tree.
+ *
+ * Native HTML/CSS engines track the DOM flat tree in order to render built-in
+ * elements (<img>, <div>, <button>, etc) the way you expect after composing
+ * them with Shadow DOM.
+ *
+ * An excellent explainer on Shadow DOM concepts:
+ * https://hayatoito.github.io/2026/dom/
+ *
+ * This mixin allows tracking the flat tree just as native browser engines do,
+ * but for scenarios such as custom rendering with canvas (e.g. with 2D, WebGL,
+ * or WebGPU APIs). When the custom elements with custom rendering are composed
+ * with Shadow DOM, their JavaScript implementation will want to know the shape
+ * of the flat tree so that rendering can be implemented exactly as the
+ * composition of the elements implies.
+ *
+ * As a concrete example, a library of custom elements could implement rendering
+ * using a library like Playcanvas (https://playcanvas.com) that has its own
+ * pure-JS concept of a tree of render objects. The custom element
+ * implementation would want to ensure that it connects the Playcanvas render
+ * objects into a render tree hierarchy that matches with the shape of the DOM
+ * flat tree that is formed by composing the custom elements. This includes
+ * child elements that are "slotted" to `<slot>` elements in a Shadow DOM, very
+ * much similar to concepts such as props.children in React, Preact, and Solid,
+ * slots in Vue and Svelte (loosely based on the same concept as Shadow DOM
+ * slots), or transclusion in Angular.
+ *
+ * NOTE: This class exposes closed ShadowRoots and elements inside ShadowRoots.
+ * Tracking the flat tree is not easy without access to ShadowRoots and their
+ * DOM, so using `closed` roots with this mixin is counterintuitive. This class
+ * adds a new `exposedShadowRoot` property that references an attached
+ * ShadowRoot even if it is closed, and other properties such as `terminalSlottedParent`
+ * that reference elements inside ShadowRoots even if they are closed.
+ */
 export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) {
+	if (Base.prototype instanceof CompositionTracker)
+		throw new Error('Base class already extends CompositionTracker, no need to apply the mixin again.')
+
 	return class CompositionTracker extends ChildTracker(
 		Constructor<PossibleCustomElement, PossibleCustomElementConstructor & T>(Base),
 	) {
-		// @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
-		[isInstance as any] = true
-
-		// from Scene
-		isScene = false
-
-		// from Element3D
-		isElement3D = false
-
-		// A subclass can set this to false to skip observation of its ShadowRoot.
-		skipShadowObservation = false
-
-		// TODO report TS issue: if we change the return type from 'boolean' to
-		// 'obj is CompositionTracker' we gets lots of type errors. I haven't
-		// been able to reproduce with this simple example: https://tinyurl.com/bdhzummr
-		static override [Symbol.hasInstance](obj: any): boolean /* obj is CompositionTracker */ {
-			if (!obj || typeof obj !== 'object') return false
-			return !!obj[isInstance]
+		// Use `any` to prevent subclass "has or is using private name" errors.
+		get [isInstance as any]() {
+			return true
 		}
 
-		// COMPOSED TREE TRACKING:
 		// Overriding HTMLElement.prototype.attachShadow here is part of our
 		// implementation for tracking the composed tree and connecting THREE
-		// objects in the same structure as the DOM composed tree so that it will
+		// objects in the same structure as the DOM flat tree so that it will
 		// render as expected when end users compose elements with ShadowDOM and
 		// slots.
 		override attachShadow(options: ShadowRootInit): ShadowRoot {
 			const root = super.attachShadow(options)
 
-			if (this.skipShadowObservation) return root
-
 			this.exposedShadowRoot = root
 
+			// Wrapper over MutationObserver
 			observeChildren({
 				target: root,
 				onConnect: this.__shadowRootChildAdded.bind(this),
@@ -77,47 +99,41 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			const children = Array.from(this.children)
 
 			for (const child of children) {
-				if (!(child instanceof CompositionTracker)) continue
+				if (!isAnyCompositionTracker(child)) continue
 
 				child.isPossiblySlotted = true
-				this.__triggerChildUncomposedCallback(child, 'actual')
+				this.__triggerChildUncomposedCallback(this, child, 'actual')
 			}
 
 			return root
 		}
 
-		// COMPOSED TREE TRACKING:
-		get _hasShadowRoot(): boolean {
-			return !!this.exposedShadowRoot
-		}
-
-		// COMPOSED TREE TRACKING:
-		get _isPossiblyDistributedToShadowRoot(): boolean {
-			return this.isPossiblySlotted
-		}
-
-		// COMPOSED TREE TRACKING:
-		get _shadowRootParent(): CompositionTracker | null {
-			return this.shadowParent
-		}
-
-		get _shadowRootChildren(): CompositionTracker[] {
+		/**
+		 * The children of this element's ShadowRoot, if any, otherwise an empty
+		 * array.
+		 *
+		 * This is similar to `[...this.shadowRoot.children]`, except that it
+		 * gets the children even if the ShadowRoot is closed.
+		 */
+		get shadowRootChildren(): CompositionTracker[] {
 			if (!this.exposedShadowRoot) return []
 
-			return Array.from(this.exposedShadowRoot.children).filter(
-				(n): n is CompositionTracker => n instanceof CompositionTracker,
+			return Array.from(this.exposedShadowRoot.children).filter((n): n is CompositionTracker =>
+				isAnyCompositionTracker(n),
 			)
 		}
 
-		// COMPOSED TREE TRACKING: Elements that are slotted to a slot that is
-		// child of a ShadowRoot of this element.
-		get _distributedShadowRootChildren(): CompositionTracker[] {
+		/**
+		 * Elements that are slotted to a slot that is child of a ShadowRoot of
+		 * this element.
+		 */
+		get shadowRootSlottedChildren(): CompositionTracker[] {
 			const result: CompositionTracker[] = []
 
 			for (const child of Array.from(this.exposedShadowRoot?.children || [])) {
 				if (child instanceof HTMLSlotElement && !child.assignedSlot) {
 					for (const slotted of child.assignedElements({flatten: true})) {
-						if (slotted instanceof CompositionTracker) result.push(slotted)
+						if (isAnyCompositionTracker(slotted)) result.push(slotted)
 					}
 				}
 			}
@@ -125,18 +141,13 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			return result
 		}
 
-		// COMPOSED TREE TRACKING:
-		get _distributedParent(): CompositionTracker | null {
-			return this.slottedParent
-		}
-
-		// COMPOSED TREE TRACKING:
-		get _distributedChildren(): CompositionTracker[] | null {
-			return this.slottedChildren ? [...this.slottedChildren] : null
-		}
-
+		/** @private */
 		__composedParent: Element | null = null
 
+		/**
+		 * The parent this element is composed to, i.e. this element's parent in
+		 * the flat tree.
+		 */
 		get composedParent(): Element | null {
 			let result = this.__composedParent
 
@@ -147,29 +158,23 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			return result
 		}
 
-		// Returns composed state calculated only during composition, which can
-		// be incorrect in the edge case described in
-		// __getSlottedChildDifference (faster).
-		get __isComposed() {
-			return this.__composedParent
-		}
-
-		// Returns the correct composed state even if our tracking is incorrect,
-		// by inspecting the DOM (slower).
+		/**
+		 * True when this element has a composed parent, i.e. when this element
+		 * is (has a parent) in the flat tree.
+		 */
 		get isComposed() {
-			return this.composedParent
+			return !!this.composedParent
 		}
 
-		// COMPOSED TREE TRACKING: The composed parent is the parent that this element renders relative
-		// to in the flat tree (composed tree).
+		/**
+		 * @private
+		 *
+		 * Traverses to find the parent that this element renders relative to in
+		 * the flat tree, if any (no parent means this element is not in the
+		 * flat tree).
+		 */
 		__getComposedParent(): HTMLElement | null {
-			let parent: Node | null = this.parentElement
-
-			// Special case only for Nodes that are children of a Scene.
-			// TODO filtering should be done by subclasses
-			if (parent && isScene(parent)) return parent
-
-			parent = this.slottedParent || this.shadowParent
+			let parent = this.terminalSlottedParent || this.shadowParent
 
 			// Shortcut in case we have already detected slotted or shadowRoot parent.
 			if (parent) return parent as HTMLElement
@@ -177,114 +182,152 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			return getComposedParent(this)
 		}
 
-		// COMPOSED TREE TRACKING: Composed children are the children that render relative to this
-		// element in the flat tree (composed tree), whether as children of a
-		// shadow root, or slotted children (assigned nodes) of a <slot>
-		// element.
-		get _composedChildren(): CompositionTracker[] {
+		/**
+		 * Children that are composed to this element, i.e. that render as
+		 * children of this element in the flat tree. Flat tree children may be
+		 * regular children of a shadow root in the composed tree, or slotted
+		 * children (assigned nodes) of a <slot> element in a shadow root.
+		 */
+		get composedChildren(): CompositionTracker[] {
+			// FIXME This object/array spreading and cloning is sloooooooow, and becomes
+			// apparent the more ShadowRoots a tree has.
 			if (this.exposedShadowRoot) {
-				return [...this._distributedShadowRootChildren, ...this._shadowRootChildren]
+				return [...this.shadowRootSlottedChildren, ...this.shadowRootChildren]
 			} else {
 				return [
-					...(this.slottedChildren || []), // TODO perhaps use slot.assignedElements instead?
+					...(this.terminalSlottedChildren || []), // TODO perhaps use slot.assignedElements instead?
 					// We only care about other nodes of the same type.
-					...Array.from(this.children).filter((n): n is CompositionTracker => n instanceof CompositionTracker),
+					...Array.from(this.children).filter((n): n is CompositionTracker => isAnyCompositionTracker(n)),
 				]
 			}
 		}
 
-		// COMPOSED TREE TRACKING:
-		/** This element's ShadowRoot, if any (even if it is a closed shadow root, unlike the `shadowRoot` property) */
+		/**
+		 * This element's ShadowRoot, if any (even if it is a closed shadow
+		 * root, unlike the `shadowRoot` property).
+		 */
 		exposedShadowRoot?: ShadowRoot
 
-		// COMPOSED TREE TRACKING:
 		/**
-		 * When true, it means this element's parent has a ShadowRoot, which
-		 * means this element is possibly slotted into that parent's ShadowRoot.
-		 * This doesn't mean that this element is slotted, it may not be slotted
-		 * if there's no matching `<slot>` element to be slotted to.
+		 * When true, this element's parent has a ShadowRoot, which means this
+		 * element is possibly slotted into a slot in that parent's ShadowRoot.
+		 * This doesn't guarantee that this element is slotted, it may not be
+		 * slotted if there's no matching `<slot>` element to be slotted to.
 		 *
 		 * This is similar to `Boolean(this.parentElement.shadowRoot)`, except
-		 * isPossiblySlotted is accurate even if the ShadowRoot mode is closed.
+		 * this is accurate even if the ShadowRoot mode is closed.
 		 */
 		isPossiblySlotted = false
 
+		/** @private */
 		__prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>
 
-		// COMPOSED TREE TRACKING:
-		// A map of the slot elements that are children of this element and
-		// their last-known assigned elements. When a slotchange happens while
-		// this element is in a shadow root and has a slot child, we can
-		// detect what the difference is between the last known assigned elements and the new
-		// ones.
+		/**
+		 * A map of the slot elements that are children of this element and
+		 * their last-known assigned elements. When a slotchange happens while
+		 * this element is in a shadow root and has a slot child, we can detect
+		 * what the difference is between the last known assigned elements and
+		 * the new ones.
+		 * @private
+		 */
 		get __previousSlotAssignedNodes() {
 			if (!this.__prevAssignedNodes) this.__prevAssignedNodes = new WeakMap()
 			return this.__prevAssignedNodes
 		}
 
-		// COMPOSED TREE TRACKING:
 		/**
 		 * If this element is slotted into a shadow tree, this will reference
 		 * the parent element of the <slot> element where this element is
 		 * slotted to. This element will render as a child of that parent
 		 * element in the flat tree (composed tree).
 		 *
-		 * This is similar to `this.assignedSlot.parentElement`, except
-		 * `slottedParent` returns a result even if the ShadowRoot mode is
-		 * closed.
+		 * This is similar to `this.assignedSlot.parentElement`, except this
+		 * returns a result even if the ShadowRoot mode is closed.
 		 */
-		slottedParent: CompositionTracker | null = null
+		terminalSlottedParent: CompositionTracker | null = null
 
-		// COMPOSED TREE TRACKING:
 		/**
-		 * If this element is a top-level child of a ShadowRoot, then this points
-		 * to the ShadowRoot host. The ShadowRoot host is the prent element that
-		 * this element renders relative to in the composed tree.
+		 * If this element is a top-level child of a ShadowRoot, this points to
+		 * the ShadowRoot host. The ShadowRoot host is the prent element that
+		 * this element renders relative to (is a child of) in the flat tree.
 		 *
 		 * This is similar to `this.parentNode.host ?? null`.
 		 */
 		shadowParent: CompositionTracker | null = null
 
-		// COMPOSED TREE TRACKING:
 		/**
 		 * If this element has a child `<slot>` element while in a ShadowRoot,
-		 * then this will be a Set of the nodes slotted into the `<slot>`, and
-		 * those nodes render relative to this element in the composed tree.
-		 * This is `null` if there are no slotted children.
+		 * this will be a Set of the nodes slotted into that `<slot>`, and that
+		 * Set of nodes render relative to (are children of) this element in the
+		 * flat tree. This is `null` if there are no slotted children.
+		 */
+		terminalSlottedChildren: Set<CompositionTracker> | null = null
+
+		/**
+		 * The parent whose child <slot> this element is assigned to,
+		 * regardless of whether that slot itself is assigned to a
+		 * deeper slot. This is the direct slot parent.
+		 *
+		 * Compare with terminalSlottedParent, which follows slot
+		 * chaining to the final distributed parent.
+		 */
+		slottedParent: CompositionTracker | null = null
+
+		/**
+		 * Elements directly assigned to this element's child <slot>,
+		 * regardless of whether this slot is assigned to a deeper slot.
+		 * These are the direct slotted children.
+		 *
+		 * Compare with terminalSlottedChildren, which only contains
+		 * children whose slot is NOT forwarded further down.
 		 */
 		slottedChildren: Set<CompositionTracker> | null = null
 
-		// COMPOSED TREE TRACKING: Called when a child is added to the ShadowRoot of this element.
-		// This does not run for Scene instances, which already have a root for their rendering implementation.
+		/**
+		 * Called when a child is added to the ShadowRoot of this element to
+		 * establish composed relationships and trigger composedCallback.
+		 * @private
+		 */
 		__shadowRootChildAdded(child: Element) {
 			// NOTE Logic here is similar to childConnectedCallback
 
-			if (child instanceof CompositionTracker) {
+			if (isAnyCompositionTracker(child)) {
 				child.shadowParent = this
-				this.__triggerChildComposedCallback(child, 'root')
+				this.__triggerChildComposedCallback(this, child, 'root')
 			} else if (child instanceof HTMLSlotElement) {
 				child.addEventListener('slotchange', this.__onChildSlotChange)
-				this.__handleSlottedChildren(child)
+				// CONTINUE This call *sometimes* runs redundantly here in addition
+				// to the one in slotchange for added slots, doing extra work.
+				// Why?
+				queueMicrotask(() => this.__handleSlottedChildren(child))
 			}
 		}
 
-		// COMPOSED TREE TRACKING: Called when a child is removed from the ShadowRoot of this element.
-		// This does not run for Scene instances, which already have a root for their rendering implementation.
+		/**
+		 * Called when a child is removed from the ShadowRoot of this element to
+		 * remove composed relationships and trigger uncomposedCallback.
+		 */
 		__shadowRootChildRemoved(child: Element) {
 			// NOTE Logic here is similar to childDisconnectedCallback
 
-			if (child instanceof CompositionTracker) {
+			if (isAnyCompositionTracker(child)) {
 				child.shadowParent = null
-				this.__triggerChildUncomposedCallback(child, 'root')
+				this.__triggerChildUncomposedCallback(this, child, 'root')
 			} else if (child instanceof HTMLSlotElement) {
-				child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
-				this.__handleSlottedChildren(child)
+				child.removeEventListener('slotchange', this.__onChildSlotChange)
+				queueMicrotask(() => this.__handleSlottedChildren(child))
 				this.__previousSlotAssignedNodes.delete(child)
 			}
 		}
 
-		// COMPOSED TREE TRACKING: Called when a slot child of this element emits a slotchange event.
-		// TODO we need an @lazy decorator instead of making this a getter manually.
+		/**
+		 * Called when a slot child of this element emits a slotchange event.
+		 */
+		// TODO we need an @lazy decorator instead of making this a getter
+		// manually to lazily create a value when it is needed. The decorator
+		// would delay running the initializer.
+		// Class field decorator example: https://tinyurl.com/lazy-field-decorator
+		// Can do similar with a getter decorator.
 		get __onChildSlotChange(): (event: Event) => void {
 			if (this.__onChildSlotChange__) return this.__onChildSlotChange__
 
@@ -301,26 +344,61 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			return this.__onChildSlotChange__
 		}
 
+		/** @private */
 		__onChildSlotChange__?: (event: Event) => void
 
-		// COMPOSED TREE TRACKING: Life cycle methods for use by subclasses to run
-		// logic when children are composed or uncomposed to them in the composed
-		// tree.
+		/**
+		 * Implement this method in a subclass to run logic when a child is
+		 * composed to this element in the flat tree.
+		 */
 		childComposedCallback?(composedChild: Element, compositionType: CompositionType): void
+		/**
+		 * Implement this method in a subclass to run logic when a child is
+		 * uncomposed from this element in the flat tree.
+		 */
 		childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void
+		/**
+		 * Implement this method in a subclass to run logic when this element is
+		 * composed to a parent in the flat tree.
+		 */
 		composedCallback?(composedParent: Element, compositionType: CompositionType): void
+		/**
+		 * Implement this method in a subclass to run logic when this element is
+		 * uncomposed from a parent in the flat tree.
+		 */
 		uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void
 
+		/** @private */
+		__lastComposedParent: CompositionTracker | null = null
+		/** @private */
+		__lastCompositionType: CompositionType = 'actual'
+
+		/**
+		 * When we detect the slotchange ordering discrepancy (see __discrepancy
+		 * usage sites), regular composition callbacks will be skipped, and
+		 * special logic will run later to ensure we call composition methods in
+		 * correct order.
+		 * @private
+		 */
 		__discrepancy = false
 
-		__triggerChildComposedCallback(child: CompositionTracker, compositionType: CompositionType) {
+		/** @private */
+		__triggerChildComposedCallback(parent: CompositionTracker, child: CompositionTracker, compositionType: CompositionType) {
+			// If we detected the discrepancy, return, the slotchange handler
+			// will rerun this again in correct ordering.
 			if (child.__discrepancy) return
 
-			child.__composedParent = this
+			if (child.__composedParent) return
+
+			child.__composedParent = parent
+
+			// Small hack: track last state. See description in connectedCallback.
+			child.__lastComposedParent = child.__composedParent as CompositionTracker
+			child.__lastCompositionType = compositionType
 
 			const trigger = () => {
-				this.childComposedCallback?.(child, compositionType)
-				child.composedCallback?.(this, compositionType)
+				parent.childComposedCallback?.(child, compositionType)
+				child.composedCallback?.(parent, compositionType)
 			}
 
 			const isUpgraded = child.matches(':defined')
@@ -329,86 +407,143 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			else customElements.whenDefined(child.tagName.toLowerCase()).then(trigger)
 		}
 
-		__triggerChildUncomposedCallback(child: CompositionTracker, compositionType: CompositionType) {
-			// If we detected the discrepancy, return, the slotchange handler will rerun this appropriately.
+		/** @private */
+		__triggerChildUncomposedCallback(parent: CompositionTracker, child: CompositionTracker, compositionType: CompositionType) {
+			// If we detected the discrepancy, return, the slotchange handler
+			// will rerun this again in correct ordering.
 			if (child.__discrepancy) return
+
+			if (!child.__composedParent) return
 
 			child.__composedParent = null
 
 			// We don't need to defer here like we did in
 			// __triggerChildComposedCallback because if an element is uncomposed,
 			// it won't load anything even if its class gets defined later.
-			this.childUncomposedCallback?.(child, compositionType)
-			child.uncomposedCallback?.(this, compositionType)
+			parent.childUncomposedCallback?.(child, compositionType)
+			child.uncomposedCallback?.(parent, compositionType)
 		}
 
-		// COMPOSED TREE TRACKING: This is called in certain cases when slotted
-		// children may have changed, f.e. when a slot was added to this element, or
-		// when a child slot of this element has had assigned nodes changed
-		// (slotchange).
+		override connectedCallback() {
+			// Small hack: immediately restore previous composition state. If
+			// composition changed, our subsequent processing will update the
+			// state to the new correct state. This solves an edge case where if
+			// a child is disconnected and reconnect to the same parent
+			// synchronously, we cannot detect this using slotchange events if
+			// the removed/added child is slotted, because slotchange events do
+			// not tell us individual mutations like MutationObserver does.
+			if (this.__lastComposedParent)
+				this.__triggerChildComposedCallback(this.__lastComposedParent, this, this.__lastCompositionType)
+
+
+			super.connectedCallback()
+		}
+
+		override disconnectedCallback() : void {
+			super.disconnectedCallback()
+
+			// Small hack: immediately uncompose and track previous composition
+			// state for connectedCallback. See description there.
+			if (this.__lastComposedParent)
+				this.__triggerChildUncomposedCallback(this.__lastComposedParent, this, this.__lastCompositionType)
+		}
+
+		/**
+		 * This is called in certain cases when slotted children may have
+		 * changed, f.e. when a slot was added to this element, or when a child
+		 * slot of this element has had assigned nodes changed (slotchange).
+		 * @private
+		 */
 		__handleSlottedChildren(slot: HTMLSlotElement) {
 			const diff = this.__getSlottedChildDifference(slot)
+			const isForwarded = !!slot.assignedSlot
 
 			const {removed} = diff
 			for (let l = removed.length, i = 0; i < l; i += 1) {
 				const removedNode = removed[i]
 
-				if (!(removedNode instanceof CompositionTracker)) continue
+				if (!isAnyCompositionTracker(removedNode)) continue
 
-				removedNode.slottedParent = null
+				// --- Direct slotted* — the nearest slot-owning parent ---
+				// Only clear if this IS the current direct slot parent.
+				if (removedNode.slottedParent === this) {
+					removedNode.slottedParent = null
+					if (this.slottedChildren) {
+						this.slottedChildren.delete(removedNode)
+						if (!this.slottedChildren.size) this.slottedChildren = null
+					}
 
-				// The node may have already been deleted, and
-				// __distributedChildren set to undefined, in the `added`
-				// for-loop of another slot.
-				if (this.slottedChildren) {
-					this.slottedChildren.delete(removedNode)
-					if (this.slottedChildren.size) this.slottedChildren = null
+					this.__triggerChildUncomposedCallback(this, removedNode, 'slot')
 				}
 
-				this.__triggerChildUncomposedCallback(removedNode, 'slot')
+				// --- Terminal slotted* (only when NOT forwarded) ---
+				if (!isForwarded) {
+					removedNode.terminalSlottedParent = null
+					if (this.terminalSlottedChildren) {
+						this.terminalSlottedChildren.delete(removedNode)
+						if (!this.terminalSlottedChildren.size) this.terminalSlottedChildren = null
+					}
+
+					this.__triggerChildUncomposedCallback(this, removedNode, 'terminal-slot')
+				}
 			}
 
 			const {added} = diff
 			for (let l = added.length, i = 0; i < l; i += 1) {
 				const addedNode = added[i]
 
-				if (!(addedNode instanceof CompositionTracker)) continue
+				if (!isAnyCompositionTracker(addedNode)) continue
 
-				// Keep track of the final distribution of a node.
-				//
-				// If the given slot is assigned to another
-				// slot, then this logic will run again for the next slot on
-				// that next slot's slotchange, so we remove the slotted
-				// node from the previous distributedParent and add it to the next
-				// one. If we don't do this, then the slotted node will
-				// exist in multiple distributedChildren lists when there is a
-				// chain of assigned slots. For more info, see
-				// https://github.com/w3c/webcomponents/issues/611
-				const distributedParent = addedNode.slottedParent
-				if (distributedParent) {
-					const distributedChildren = distributedParent.slottedChildren
-					if (distributedChildren) {
-						distributedChildren.delete(addedNode)
-						if (!distributedChildren.size) distributedParent.slottedChildren = null
-					}
+				// --- Direct slotted* — the nearest slot-owning parent ---
+				// Only set if this is the first slot this node is assigned to.
+				// Subsequent redistribution through forwarded slots does NOT
+				// change the direct slottedParent (it stays at the nearest slot).
+				if (!addedNode.slottedParent) {
+					addedNode.slottedParent = this
+					if (!this.slottedChildren) this.slottedChildren = new Set()
+					this.slottedChildren.add(addedNode)
+
+					this.__triggerChildComposedCallback(this, addedNode, 'slot')
 				}
 
-				// The node is now slotted to `this` element.
-				addedNode.slottedParent = this
-				if (!this.slottedChildren) this.slottedChildren = new Set()
-				this.slottedChildren.add(addedNode)
+				// --- Terminal slotted* (only when NOT forwarded) ---
+				if (!isForwarded) {
+					// Keep track of the final distribution of a node.
+					//
+					// If the given slot is assigned to another
+					// slot, then this logic will run again for the next slot on
+					// that next slot's slotchange, so we remove the slotted
+					// node from the previous terminalSlottedParent and add it to the next
+					// one. If we don't do this, then the slotted node will
+					// exist in multiple terminalSlottedChildren lists when there is a
+					// chain of assigned slots. For more info, see
+					// https://github.com/w3c/webcomponents/issues/611
+					const terminalParent = addedNode.terminalSlottedParent
+					if (terminalParent) {
+						const children = terminalParent.terminalSlottedChildren
+						if (children) {
+							children.delete(addedNode)
+							if (!children.size) terminalParent.terminalSlottedChildren = null
+						}
+					}
 
-				// This is true then the reaction order is incorrect due to the
-				// order of slot change events.
-				//
-				// This discrepancy detection is only for slot composition
-				// right now. We need to add more tests to see if this is a
-				// problem with other composition types, and possibly
-				// combinations of composition types (f.e. uncomposed from a
-				// shadow root host, then composed to a slot parent, etc).
-				if (addedNode.__composedParent) addedNode.__discrepancy = true
+					// The node is now slotted to `this` element.
+					addedNode.terminalSlottedParent = this
+					if (!this.terminalSlottedChildren) this.terminalSlottedChildren = new Set()
+					this.terminalSlottedChildren.add(addedNode)
 
-				this.__triggerChildComposedCallback(addedNode, 'slot')
+					// This is true then the reaction order is incorrect due to the
+					// order of slot change events.
+					//
+					// This discrepancy detection is only for slot composition
+					// right now. We need to add more tests to see if this is a
+					// problem with other composition types, and possibly
+					// combinations of composition types (f.e. uncomposed from a
+					// shadow root host, then composed to a slot parent, etc).
+					if (addedNode.__composedParent) addedNode.__discrepancy = true
+
+					this.__triggerChildComposedCallback(this, addedNode, 'terminal-slot')
+				}
 			}
 
 			// If there is the detected discrepancy for any of the added nodes,
@@ -428,104 +563,56 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			queueMicrotask(() => {
 				for (let l = added.length, i = 0; i < l; i += 1) {
 					const addedNode = added[i]
-					if (!(addedNode instanceof CompositionTracker)) continue
-					// if (addedNode.isConnected && !addedNode.__isComposed && addedNode.isComposed) {
+					if (!isAnyCompositionTracker(addedNode)) continue
 					if (addedNode.isConnected && addedNode.__discrepancy) {
-						// addedNode.recompose()
 						addedNode.__discrepancy = false
-						this.__triggerChildUncomposedCallback(addedNode, 'slot')
-						this.__triggerChildComposedCallback(addedNode, 'slot')
+						this.__triggerChildUncomposedCallback(this, addedNode, 'terminal-slot')
+						this.__triggerChildComposedCallback(this, addedNode, 'terminal-slot')
 					}
 				}
 			})
 		}
 
-		// COMPOSED TREE TRACKING: Get the difference between the last assigned
-		// elements and current assigned elements of a child slot of this element.
+		/**
+		 * Get the difference between the last assigned elements and current
+		 * assigned elements of a child slot of this element.
+		 *
+		 * This does a diff that allows us to run slotted/unslotted reactions
+		 * only for nodes that were detected to have been added or removed, but
+		 * it fails to detect nodes that were both removed and added within the
+		 * same tick synchronously because `slotchange` runs in the next
+		 * microtask and does not give us a way to see all slot assignment
+		 * change records (like we can with MutationObserver), we can only see
+		 * the current set of slotted nodes with slot.assignedNodes.
+		 *
+		 * @private
+		 */
 		__getSlottedChildDifference(slot: HTMLSlotElement): SlotDiff {
-			const bruteForceMethod = true
+			const previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
+			const newNodes = slot.assignedElements({flatten: true})
 
-			if (bruteForceMethod) {
-				//////////////////////
-				// This method behaves *more* correct (not fully) than the other
-				// method, but does extra work because it runs unslotted
-				// reactions for *all* previous nodes, and then slotted
-				// reactions for *all* current nodes even if any of those nodes
-				// were not removed and added, to be sure that we catch
-				// synchronous changes where the same node was both removed and
-				// added or similar. We are not able to see all the mutations
-				// like we can with MutationObserver.
-				//
-				// This method might not catch cases when a node is added and
-				// then removed in the same tick. It might also not run
-				// reactions in a correct order across multiple slots (f.e.
-				// given a node removed from one slot then added to another, the
-				// slot that received the node may have its callback ran first
-				// and added reactions will fire, then the slot that had the
-				// node removed may have its *after*, causing the net effect on
-				// the node to be removed), which is the same problems as with
-				// MutationObserver callbacks described in
-				// https://github.com/whatwg/dom/issues/1111.
-				//
-				// Discussion: https://github.com/WICG/webcomponents/issues/1042
-				//////////////////////
+			// Save the newNodes to be used as the previousNodes for next time
+			// (clone it so the following in-place modification doesn't ruin any
+			// assumptions in the next round).
+			this.__previousSlotAssignedNodes.set(slot, [...newNodes])
 
-				const previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
-				const newNodes = this.__getCurrentAssignedNodes(slot)
-				this.__previousSlotAssignedNodes.set(slot, [...newNodes])
-				return {removed: previousNodes, added: newNodes}
-			} else {
-				//////////////////////
-				// This method is potentially more optimized because it does a
-				// diff, and runs reactions only for nodes that were detected to
-				// actually be added or removed, but it fails to detect nodes
-				// that were both removed and added in the same tick because
-				// `slotchange` is synchronous and we do not have a way to see
-				// all mutation records, we can only see the current set of
-				// slotted nodes with slot.assignedNodes.
-				//////////////////////
+			const diff: SlotDiff = {added: newNodes, removed: []}
 
-				const previousNodes = this.__previousSlotAssignedNodes.get(slot) ?? []
+			for (let i = 0, l = previousNodes.length; i < l; i += 1) {
+				const oldNode = previousNodes[i]!
+				const newIndex = newNodes.indexOf(oldNode)
+				const newIncludesOld = newIndex >= 0
 
-				const newNodes = this.__getCurrentAssignedNodes(slot)
-
-				// Save the newNodes to be used as the previousNodes for next time
-				// (clone it so the following in-place modification doesn't ruin any
-				// assumptions in the next round).
-				this.__previousSlotAssignedNodes.set(slot, [...newNodes])
-
-				const diff: SlotDiff = {added: newNodes, removed: []}
-
-				for (let i = 0, l = previousNodes.length; i < l; i += 1) {
-					const oldNode = previousNodes[i]!
-					const newIndex = newNodes.indexOf(oldNode)
-
-					// if it exists in the previousNodes but not the newNodes, then
-					// the node was removed.
-					if (!(newIndex >= 0)) diff.removed.push(oldNode)
-					// otherwise the node wasn't added or removed.
-					else newNodes.splice(i, 1)
-				}
-
-				// The remaining nodes in newNodes must have been added.
-
-				return diff
+				// if it exists in the previousNodes but not the newNodes, then
+				// the node was removed.
+				if (!newIncludesOld) diff.removed.push(oldNode)
+				// otherwise the node wasn't added or removed.
+				else newNodes.splice(newIndex, 1)
 			}
-		}
 
-		__getCurrentAssignedNodes(slot: HTMLSlotElement) {
-			// If this slot is assigned to another slot, then we don't consider any
-			// of the slot's assigned nodes as being slotted to the current element,
-			// because instead they are slotted to an element further down in the
-			// composed tree where this slot is assigned to.
-			//
-			// Special case for Scenes: we don't care if slot children of a Scene
-			// distribute to a deeper slot, because a Scene's ShadowRoot is for the rendering
-			// implementation and not the user's distribution, so we only want to detect
-			// elements slotted directly to the Scene in that case.
-			// TODO filtering should be done by subclasses
-			// TODO move filtering to parent
-			return !this.isScene && slot.assignedSlot ? [] : slot.assignedElements({flatten: true})
+			// The remaining nodes in newNodes must have been added.
+
+			return diff
 		}
 
 		override childConnectedCallback(child: Element) {
@@ -533,12 +620,12 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			// ("composed children" are children of the ShadowRoot), or it has a
 			// <slot> child ("composed children" are elements that may be
 			// distributed to the <slot>).
-			if (child instanceof CompositionTracker) {
+			if (isAnyCompositionTracker(child)) {
 				// We skip Scene here because we know it already has a
 				// ShadowRoot that serves a different purpose than for Element3Ds. A
 				// Scene child's three objects will always be connected to the
 				// scene's three object regardless of its ShadowRoot.
-				if (!this.isScene && this.exposedShadowRoot) {
+				if (this.exposedShadowRoot) {
 					child.isPossiblySlotted = true
 
 					// We don't call childComposedCallback here because that
@@ -551,10 +638,10 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 					// regular parent-child composition (no distribution, no
 					// children of a ShadowRoot).
 
-					this.__triggerChildComposedCallback(child, 'actual')
+					this.__triggerChildComposedCallback(this, child, 'actual')
 				}
 			} else if (child instanceof HTMLSlotElement) {
-				// COMPOSED TREE TRACKING: Detecting slots here is part of composed
+				// FLAT TREE TRACKING: Detecting slots here is part of composed
 				// tree tracking (detecting when a child is distributed to an element).
 
 				child.addEventListener('slotchange', this.__onChildSlotChange)
@@ -587,34 +674,40 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 				// a slot's slotchange event upon it being connected without having
 				// to call __handleSlottedChildren here (which means also not
 				// having to use defer for anything).
+
 				queueMicrotask(() => this.__handleSlottedChildren(child))
 			}
 		}
 
 		override childDisconnectedCallback(child: Element) {
-			if (child instanceof CompositionTracker) {
-				if (!this.isScene && this.exposedShadowRoot) {
+			if (isAnyCompositionTracker(child)) {
+				if (this.exposedShadowRoot) {
 					child.isPossiblySlotted = false
 				} else {
 					// If there's no shadow root, call the
 					// childUncomposedCallback with connection type "actual".
 					// This is effectively similar to childDisconnectedCallback.
-					this.__triggerChildUncomposedCallback(child, 'actual')
+					this.__triggerChildUncomposedCallback(this, child, 'actual')
 				}
 			} else if (child instanceof HTMLSlotElement) {
-				// COMPOSED TREE TRACKING:
-				child.removeEventListener('slotchange', this.__onChildSlotChange, {capture: true})
+				// FLAT TREE TRACKING:
+				child.removeEventListener('slotchange', this.__onChildSlotChange)
 
-				this.__handleSlottedChildren(child)
+				queueMicrotask(() => this.__handleSlottedChildren(child))
 				this.__previousSlotAssignedNodes.delete(child)
 			}
 		}
 
+		/**
+		 * Visit nodes in the DOM composed tree starting at this element in such
+		 * a way that nodes are visited as if the implicit flat tree were
+		 * traversed in pre-order. Essentially, traverse the flat tree.
+		 */
 		traverseComposed(visitor: (el: CompositionTracker) => void, waitForUpgrade = false): Promise<void> | void {
 			visitor(this)
 
 			if (!waitForUpgrade) {
-				for (const child of this._composedChildren) child.traverseComposed(visitor, waitForUpgrade)
+				for (const child of this.composedChildren) child.traverseComposed(visitor, waitForUpgrade)
 				return
 			}
 
@@ -622,7 +715,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 			// order is still the same as when waitForUpgrade is false.
 			let promise: Promise<any> = Promise.resolve()
 
-			for (const child of this._composedChildren) {
+			for (const child of this.composedChildren) {
 				const isUpgraded = child.matches(':defined')
 
 				if (isUpgraded) {
@@ -639,7 +732,15 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 	}
 }
 
-export type CompositionType = 'root' | 'slot' | 'actual'
+export type AnyCompositionTracker = InstanceType<ReturnType<typeof CompositionTracker>>
+
+export function isAnyCompositionTracker(o: any): o is AnyCompositionTracker {
+	return o[isInstance]
+}
+
+Object.defineProperty(CompositionTracker, Symbol.hasInstance, {value: isAnyCompositionTracker})
+
+export type CompositionType = 'root' | 'slot' | 'terminal-slot' | 'actual'
 
 const shadowHosts: WeakSet<Element> = new WeakSet()
 
@@ -698,10 +799,3 @@ export function getComposedParent(el: HTMLElement): HTMLElement | null {
 }
 
 type SlotDiff = {added: Node[]; removed: Node[]}
-
-Object.defineProperty(CompositionTracker, Symbol.hasInstance, {
-	value(obj: any): boolean {
-		if (!obj || typeof obj !== 'object') return false
-		return !!obj[isInstance]
-	},
-})

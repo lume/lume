@@ -1,5 +1,5 @@
 import {onCleanup, untrack} from 'solid-js'
-import {Effects, reactive, signal} from 'classy-solid'
+import {effect, Effects, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
@@ -9,9 +9,7 @@ type Options = Partial<
 	Pick<PinchFling, 'target' | 'x' | 'minX' | 'maxX' | 'sensitivity' | 'hasInteracted' | 'epsilon' | 'slowdownAmount'>
 >
 
-export
-@reactive
-class PinchFling extends Effects {
+export class PinchFling extends Effects {
 	/**
 	 * During pinch, this value will change. It is a signal so that it can be
 	 * observed. Set this value initially if you want to start at a certain
@@ -144,23 +142,7 @@ class PinchFling extends Effects {
 		if (untrack(() => this.#isStarted)) return this
 		this.#isStarted = true
 
-		this.createEffect(() => {
-			this.target // any time the target changes make new events on that target
-
-			this.#aborter = new AbortController()
-
-			// @ts-expect-error, whyyyyy TypeScript
-			this.target.addEventListener('pointerdown', this.#onDown, {signal: this.#aborter.signal})
-			// @ts-expect-error, whyyyyy TypeScript
-			this.target.addEventListener('pointerup', this.#onUp, {signal: this.#aborter.signal})
-
-			onCleanup(() => {
-				// Stop any current animation, if any.
-				if (this.#task) Motor.removeRenderTask(this.#task)
-
-				this.#aborter.abort()
-			})
-		})
+		this.startEffects()
 
 		return this
 	}
@@ -173,4 +155,25 @@ class PinchFling extends Effects {
 
 		return this
 	}
+
+	@effect pinchFlingEffect() {
+		this.target // any time the target changes make new events on that target
+
+		this.#aborter = new AbortController()
+
+		// @ts-expect-error, whyyyyy TypeScript
+		this.target.addEventListener('pointerdown', this.#onDown, {signal: this.#aborter.signal})
+		// @ts-expect-error, whyyyyy TypeScript
+		this.target.addEventListener('pointerup', this.#onUp, {signal: this.#aborter.signal})
+
+		onCleanup(() => {
+			// Stop any current animation, if any.
+			if (this.#task) Motor.removeRenderTask(this.#task)
+
+			this.#aborter.abort()
+		})
+	}
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }

@@ -1,6 +1,6 @@
 import {signal} from 'classy-solid'
-import {attribute, element, noSignal} from '@lume/element'
-import {TreeNode} from './TreeNode.js'
+import {attribute, element, noSignal, Element as LumeElement} from '@lume/element'
+import { Eventful } from '@lume/eventful'
 import {XYZSizeModeValues} from '../xyz-values/XYZSizeModeValues.js'
 import {XYZNonNegativeValues} from '../xyz-values/XYZNonNegativeValues.js'
 import {CompositionTracker} from './CompositionTracker.js'
@@ -11,6 +11,7 @@ import {
 	type XYZNonNegativeNumberValuesPropertyFunction,
 	type XYZSizeModeValuesProperty,
 } from './PropertyAnimator.js'
+import { isSizeable } from './utils/isThisOrThat.js'
 
 const previousSize: Partial<XYZValuesObject<number>> = {}
 
@@ -25,14 +26,20 @@ const size = new WeakMap<Sizeable, XYZNonNegativeValues>()
  * The properties of `Sizeable` all follow a common usage pattern,
  * described in the [`Common Attributes`](../../guide/common-attributes) doc.
  *
- * @extends TreeNode
+ * @extends LumeElement
  */
-// Sizeable and its subclass Transformable extend from TreeNode because they know
-// about their `parent` when calculating proportional sizes or world matrices
-// based on parent values.
 export
 @element({autoDefine: false})
-class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
+class Sizeable extends PropertyAnimator(CompositionTracker(Eventful(LumeElement))) {
+	/**
+	 * @property {true} isSizeable -
+	 *
+	 * *readonly*
+	 *
+	 * Always `true` for elements that are or inherit from `Sizeable`.
+	 */
+	readonly isSizeable = true
+
 	@signal accessor #calculatedSize: XYZValuesObject<number> = {x: 0, y: 0, z: 0}
 
 	/**
@@ -133,14 +140,14 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 		return {...this.#calculatedSize}
 	}
 
-	get composedLumeParent(): Sizeable | null {
-		const result = this.composedParent
-		if (!(result instanceof Sizeable)) return null
-		return result
+	/** Returns the composed parent (flat tree parent) only if it is a Sizeable instance, null otherwise. */
+	get composedSizeableParent(): Sizeable | null {
+		return isSizeable(this.composedParent) ? this.composedParent : null
 	}
 
-	get composedLumeChildren(): Sizeable[] {
-		return super._composedChildren as Sizeable[]
+	/** Returns the composed children (flat tree children) that are Sizeable instances if any. */
+	get composedSizeableChildren(): Sizeable[] {
+		return super.composedChildren.filter(child => isSizeable(child))
 	}
 
 	/**
@@ -153,7 +160,7 @@ class Sizeable extends PropertyAnimator(CompositionTracker(TreeNode)) {
 	 * parent, the size is 0,0,0.
 	 */
 	get parentSize() {
-		return this.composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
+		return this.composedSizeableParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
 
 	_calcSize() {

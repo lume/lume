@@ -1,5 +1,5 @@
 import {css, Element as LumeElement, element} from '@lume/element'
-import {Effectful, signal} from 'classy-solid'
+import {effect, Effectful, signal} from 'classy-solid'
 import {CompositionTracker, type CompositionType} from '../core/CompositionTracker.js'
 
 /**
@@ -74,7 +74,7 @@ import {CompositionTracker, type CompositionType} from '../core/CompositionTrack
  * @extends HTMLElement
  */
 @element({autoDefine: false})
-export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)) {
+export abstract class BehaviorEl extends CompositionTracker(Effectful(LumeElement)) {
 	// @ts-expect-error override accessor type with field type
 	declare readonly composedParent: Element | null
 
@@ -107,12 +107,10 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 
 	#uncomposedPromise: PromiseWithResolvers<void> | null = null
 
-	override connectedCallback() {
-		this.createEffect(() => {
-			if (!this.#parentIsDefined) return
-
-			this._parentDefinedEffect(this.composedParent!)
-		})
+	// @ts-expect-error private effect
+	@effect #whenParentDefinedEffect() {
+		if (!this.#parentIsDefined) return
+		this._parentDefinedEffect(this.composedParent!)
 	}
 
 	override composedCallback(composedParent: Element, compositionType: CompositionType) {
@@ -131,7 +129,7 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 				new Promise(r => setTimeout(r, 1000)),
 				this.#uncomposedPromise.promise,
 			]).then(() => {
-				if (!this.isConnected) return
+				if (!this.composedParent) return
 				// @prod-prune
 				this.#checkElementType()
 				this.#parentIsDefined = true
@@ -143,7 +141,8 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 		}
 	}
 
-	override uncomposedCallback(_uncomposedParent: Element, _compositionType: CompositionType) {
+	override uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType) {
+		super.uncomposedCallback?.(uncomposedParent, compositionType)
 		this.#uncomposedPromise?.resolve()
 		this.#uncomposedPromise = null
 		this.#parentIsDefined = false
@@ -158,9 +157,7 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 	 *
 	 * This method is an effect. Any signals accessed in this method will make
 	 * it re-run. onCleanup can be used to do cleanup when the effect re-runs or
-	 * when the behavior is disconnected. Because this method is an effect,
-	 * this.createEffect() is not necessary, plain createEffect() from Solid.js
-	 * can be used (and is recommended, to avoid extra wrappers).
+	 * when the behavior is disconnected.
 	 *
 	 * Example:
 	 *
@@ -182,7 +179,9 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 	 * }
 	 * ```
 	 *
-	 * @param CONTINUE
+	 * @param {NonNullable<this['composedParent']>} composedParent The composed
+	 * parent element, guaranteed to be defined and of the correct type as
+	 * specified by `requiredParentType()`.
 	 */
 	protected _parentDefinedEffect(composedParent: NonNullable<this['composedParent']> = this.composedParent!) {
 		composedParent
@@ -191,7 +190,7 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 	// Checks composedParent is the type specified by a subclass's requiredParentType.
 	// TODO add a test to make sure this check works
 	// @prod-prune
-	async #checkElementType() {
+	#checkElementType() {
 		const element = this.composedParent!
 		const classes = this.requiredParentType()
 
@@ -216,9 +215,12 @@ export abstract class Behavior extends CompositionTracker(Effectful(LumeElement)
 			display: none;
 		}
 	`
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }
 
-function thro(msg: string, classes: (typeof Element)[]) {
+function thro(msg: string, classes: (typeof Element)[]): never {
 	console.error(msg, classes)
 	throw new Error(`${msg}\n\n${classes.map(c => c.name).join(', ')}`)
 }

@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,19 +32,12 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
     if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { css, Element as LumeElement, element } from '@lume/element';
-import { Effectful, signal } from 'classy-solid';
+import { effect, Effectful, signal } from 'classy-solid';
 import { CompositionTracker } from '../core/CompositionTracker.js';
 /**
  * @class Behavior
@@ -110,24 +110,38 @@ import { CompositionTracker } from '../core/CompositionTracker.js';
  *
  * @extends HTMLElement
  */
-let Behavior = (() => {
+let BehaviorEl = (() => {
     let _classDecorators = [element({ autoDefine: false })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = CompositionTracker(Effectful(LumeElement));
+    let _instanceExtraInitializers = [];
     let _private_parentIsDefined_decorators;
     let _private_parentIsDefined_initializers = [];
     let _private_parentIsDefined_extraInitializers = [];
     let _private_parentIsDefined_descriptor;
-    var Behavior = class extends _classSuper {
+    let _private_whenParentDefinedEffect_decorators;
+    let _private_whenParentDefinedEffect_descriptor;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
+    var BehaviorEl = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private_parentIsDefined_decorators = [signal];
+            _private_whenParentDefinedEffect_decorators = [effect];
+            ___init_effects_ignore_decorators = [signal];
             __esDecorate(this, _private_parentIsDefined_descriptor = { get: __setFunctionName(function () { return this.#parentIsDefined_accessor_storage; }, "#parentIsDefined", "get"), set: __setFunctionName(function (value) { this.#parentIsDefined_accessor_storage = value; }, "#parentIsDefined", "set") }, _private_parentIsDefined_decorators, { kind: "accessor", name: "#parentIsDefined", static: false, private: true, access: { has: obj => #parentIsDefined in obj, get: obj => obj.#parentIsDefined, set: (obj, value) => { obj.#parentIsDefined = value; } }, metadata: _metadata }, _private_parentIsDefined_initializers, _private_parentIsDefined_extraInitializers);
+            __esDecorate(this, _private_whenParentDefinedEffect_descriptor = { value: __setFunctionName(function () {
+                    if (!this.#parentIsDefined)
+                        return;
+                    this._parentDefinedEffect(this.composedParent);
+                }, "#whenParentDefinedEffect") }, _private_whenParentDefinedEffect_decorators, { kind: "method", name: "#whenParentDefinedEffect", static: false, private: true, access: { has: obj => #whenParentDefinedEffect in obj, get: obj => obj.#whenParentDefinedEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            Behavior = _classThis = _classDescriptor.value;
+            BehaviorEl = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
@@ -137,7 +151,7 @@ let Behavior = (() => {
          * behavior can use this signal to wait until the parent element is defined
          * and upgraded before trying to access it in `createEffect()`.
          */
-        _awaitElementDefined = true;
+        _awaitElementDefined = (__runInitializers(this, _instanceExtraInitializers), true);
         #parentIsDefined_accessor_storage = __runInitializers(this, _private_parentIsDefined_initializers, false
         /**
          * @method requiredParentType - A subclass can override this method in
@@ -172,13 +186,8 @@ let Behavior = (() => {
             return [Element];
         }
         #uncomposedPromise = (__runInitializers(this, _private_parentIsDefined_extraInitializers), null);
-        connectedCallback() {
-            this.createEffect(() => {
-                if (!this.#parentIsDefined)
-                    return;
-                this._parentDefinedEffect(this.composedParent);
-            });
-        }
+        // @ts-expect-error private effect
+        get #whenParentDefinedEffect() { return _private_whenParentDefinedEffect_descriptor.value; }
         composedCallback(composedParent, compositionType) {
             super.composedCallback?.(composedParent, compositionType);
             const parent = composedParent;
@@ -192,7 +201,7 @@ let Behavior = (() => {
                     new Promise(r => setTimeout(r, 1000)),
                     this.#uncomposedPromise.promise,
                 ]).then(() => {
-                    if (!this.isConnected)
+                    if (!this.composedParent)
                         return;
                     // @prod-prune
                     this.#checkElementType();
@@ -205,7 +214,8 @@ let Behavior = (() => {
                 this.#parentIsDefined = true;
             }
         }
-        uncomposedCallback(_uncomposedParent, _compositionType) {
+        uncomposedCallback(uncomposedParent, compositionType) {
+            super.uncomposedCallback?.(uncomposedParent, compositionType);
             this.#uncomposedPromise?.resolve();
             this.#uncomposedPromise = null;
             this.#parentIsDefined = false;
@@ -219,9 +229,7 @@ let Behavior = (() => {
          *
          * This method is an effect. Any signals accessed in this method will make
          * it re-run. onCleanup can be used to do cleanup when the effect re-runs or
-         * when the behavior is disconnected. Because this method is an effect,
-         * this.createEffect() is not necessary, plain createEffect() from Solid.js
-         * can be used (and is recommended, to avoid extra wrappers).
+         * when the behavior is disconnected.
          *
          * Example:
          *
@@ -243,7 +251,9 @@ let Behavior = (() => {
          * }
          * ```
          *
-         * @param CONTINUE
+         * @param {NonNullable<this['composedParent']>} composedParent The composed
+         * parent element, guaranteed to be defined and of the correct type as
+         * specified by `requiredParentType()`.
          */
         _parentDefinedEffect(composedParent = this.composedParent) {
             composedParent;
@@ -251,7 +261,7 @@ let Behavior = (() => {
         // Checks composedParent is the type specified by a subclass's requiredParentType.
         // TODO add a test to make sure this check works
         // @prod-prune
-        async #checkElementType() {
+        #checkElementType() {
             const element = this.composedParent;
             const classes = this.requiredParentType();
             const correctElementType = classes.some(Class => element instanceof Class);
@@ -271,10 +281,16 @@ let Behavior = (() => {
 			display: none;
 		}
 	`;
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = __runInitializers(this, ___init_effects_ignore_initializers, 0);
+        constructor() {
+            super(...arguments);
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
+        }
     };
-    return Behavior = _classThis;
+    return BehaviorEl = _classThis;
 })();
-export { Behavior };
+export { BehaviorEl };
 function thro(msg, classes) {
     console.error(msg, classes);
     throw new Error(`${msg}\n\n${classes.map(c => c.name).join(', ')}`);

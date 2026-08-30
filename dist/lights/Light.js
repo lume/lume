@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,13 +32,7 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
+import { effect, signal } from 'classy-solid';
 import { Color } from 'three/src/math/Color.js';
 import { Light as ThreeLight } from 'three/src/lights/Light.js';
 import { attribute, element, numberAttribute } from '@lume/element';
@@ -53,20 +54,32 @@ let Light = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
+    let _instanceExtraInitializers = [];
     let _color_decorators;
     let _color_initializers = [];
     let _color_extraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
     let _intensity_extraInitializers = [];
+    let _colorEffect_decorators;
+    let _intensityEffect_decorators;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
     var Light = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _color_decorators = [attribute];
             _intensity_decorators = [numberAttribute];
+            _colorEffect_decorators = [effect];
+            _intensityEffect_decorators = [effect];
+            ___init_effects_ignore_decorators = [signal];
+            __esDecorate(this, null, _colorEffect_decorators, { kind: "method", name: "colorEffect", static: false, private: false, access: { has: obj => "colorEffect" in obj, get: obj => obj.colorEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _intensityEffect_decorators, { kind: "method", name: "intensityEffect", static: false, private: false, access: { has: obj => "intensityEffect" in obj, get: obj => obj.intensityEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _color_extraInitializers);
             __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Light = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -92,7 +105,7 @@ let Light = (() => {
          * `THREE.Color` after assignment will have no effect; instead you can
          * assign it again each time you wish to update the color.
          */
-        color = __runInitializers(this, _color_initializers, 'white'
+        color = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _color_initializers, 'white'
         /**
          * @property {number} intensity -
          *
@@ -106,7 +119,7 @@ let Light = (() => {
          * is enabled, the units of intensity depend on the type of light (f.e.
          * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
          */
-        );
+        ));
         /**
          * @property {number} intensity -
          *
@@ -132,22 +145,21 @@ let Light = (() => {
             // @ts-expect-error Threelight is abstract
             return new ThreeLight();
         }
-        connectedCallback() {
-            super.connectedCallback();
-            this.createEffect(() => {
-                if (typeof this.color === 'object')
-                    this.three.color = this.color;
-                this.three.color = new Color(this.color);
-                this.needsUpdate();
-            });
-            this.createEffect(() => {
-                this.three.intensity = this.intensity;
-                this.needsUpdate();
-            });
+        colorEffect() {
+            if (typeof this.color === 'object')
+                this.three.color = this.color;
+            this.three.color = new Color(this.color);
+            this.needsUpdate();
         }
+        intensityEffect() {
+            this.three.intensity = this.intensity;
+            this.needsUpdate();
+        }
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = (__runInitializers(this, _intensity_extraInitializers), __runInitializers(this, ___init_effects_ignore_initializers, 0));
         constructor() {
             super(...arguments);
-            __runInitializers(this, _intensity_extraInitializers);
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
         }
     };
     return Light = _classThis;

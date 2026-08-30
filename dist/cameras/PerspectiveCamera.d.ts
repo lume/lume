@@ -34,7 +34,11 @@ export declare class PerspectiveCamera extends Camera {
      * `perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective).
      */
     fov: number;
-    connectedCallback(): void;
+    __updateProjection(): void;
+    __updateAspect(): void;
+    __updateNear(): void;
+    __updateFar(): void;
+    __updateZoom(): void;
     makeThreeObject3d(): ThreePerspectiveCamera;
 }
 declare module 'solid-js' {

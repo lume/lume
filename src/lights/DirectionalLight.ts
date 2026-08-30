@@ -1,5 +1,6 @@
 import {numberAttribute, element, type ElementAttributes} from '@lume/element'
 import {onCleanup} from 'solid-js'
+import {effect} from 'classy-solid'
 import {DirectionalLight as ThreeDirectionalLight} from 'three/src/lights/DirectionalLight.js'
 import {DirectionalLightHelper} from 'three/src/helpers/DirectionalLightHelper.js'
 import {CameraHelper} from 'three/src/helpers/CameraHelper.js'
@@ -68,52 +69,48 @@ class DirectionalLight extends LightWithShadow {
 	@numberAttribute shadowCameraBottom = -1000
 	@numberAttribute shadowCameraLeft = -1000
 
-	override connectedCallback() {
-		super.connectedCallback()
+	@effect lightShadowEffect() {
+		const light = this.three
+		const shadow = light.shadow
 
-		this.three.castShadow = true
+		shadow.camera.top = this.shadowCameraTop
+		shadow.camera.right = this.shadowCameraRight
+		shadow.camera.bottom = this.shadowCameraBottom
+		shadow.camera.left = this.shadowCameraLeft
 
-		this.createEffect(() => {
-			const light = this.three
-			const shadow = light.shadow
+		shadow.needsUpdate = true
+		this.needsUpdate()
+	}
 
-			shadow.camera.top = this.shadowCameraTop
-			shadow.camera.right = this.shadowCameraRight
-			shadow.camera.bottom = this.shadowCameraBottom
-			shadow.camera.left = this.shadowCameraLeft
+	@effect debugHelpersEffect() {
+		if (!this.debug) return
+		if (!this.scene) return
 
-			shadow.needsUpdate = true
-			this.needsUpdate()
+		const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom)
+		this.scene.three.add(lightHelper)
+
+		const camHelper = new CameraHelper(this.three.shadow.camera)
+		this.scene.three.add(camHelper)
+
+		const task = Motor.addRenderTask(() => {
+			lightHelper.update()
+			camHelper.update()
+			this.scene!.needsUpdate()
 		})
 
-		this.createEffect(() => {
-			if (!this.debug) return
-			if (!this.scene) return
-
-			const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom)
-			this.scene.three.add(lightHelper)
-
-			const camHelper = new CameraHelper(this.three.shadow.camera)
-			this.scene.three.add(camHelper)
-
-			const task = Motor.addRenderTask(() => {
-				lightHelper.update()
-				camHelper.update()
-				this.scene!.needsUpdate()
-			})
-
-			onCleanup(() => {
-				Motor.removeRenderTask(task)
-				lightHelper.dispose()
-				this.scene!.three.remove(lightHelper)
-				camHelper.dispose()
-				this.scene!.three.remove(camHelper)
-			})
+		onCleanup(() => {
+			Motor.removeRenderTask(task)
+			lightHelper.dispose()
+			this.scene!.three.remove(lightHelper)
+			camHelper.dispose()
+			this.scene!.three.remove(camHelper)
 		})
 	}
 
 	override makeThreeObject3d() {
-		return new ThreeDirectionalLight()
+		const light = new ThreeDirectionalLight()
+		light.castShadow = true
+		return light
 	}
 }
 

@@ -8,6 +8,7 @@ import { GeometryOrMaterialBehavior } from '../GeometryOrMaterialBehavior.js';
  * `THREE.BufferGeometry` by default.
  *
  * @extends GeometryOrMaterialBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child geometry elements instead. Legacy behaviors will be removed in a future version.
  */
 export class GeometryBehavior extends GeometryOrMaterialBehavior {
     type = 'geometry';

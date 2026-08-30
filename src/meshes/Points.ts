@@ -1,7 +1,7 @@
-import {attribute, element, type ElementAttributes} from '@lume/element'
+import {element, type ElementAttributes} from '@lume/element'
 import html from 'solid-js/html'
 import {Points as ThreePoints} from 'three/src/objects/Points.js'
-import {Element3D} from '../core/Element3D.js'
+import {MeshLike} from './MeshLike.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -15,56 +15,39 @@ import type {
 	PointsMaterialBehavior,
 	PointsMaterialBehaviorAttributes,
 } from '../behaviors/index.js'
-import {Show} from 'solid-js'
+// Import this lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/materials/PointsMaterial.js')
 
 export type PointsAttributes = Element3DAttributes
 
-// CONTINUE update jsdoc comments to point to new behavior classes
 /**
  * @class Points -
  *
  * Element: `<lume-points>`
  *
- * Applies default behaviors of
- * [`<box-geometry>`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
- * and
- * [`<points-material>`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
- *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
- * the `points-material` is used by default, which renders any geometry's
+ * the `<lume-points-material>` is used by default, which renders any geometry's
  * vertices as points instead of filled triangles.
  *
- * It can be useful to have
- * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
- * behavior on this element to load a set of points from a file for example.
+ * Applies default behaviors of
+ * [`<lume-box-geometry>`](../behavior-elements/mesh-behaviors/geometries/BoxGeometry)
+ * and
+ * [`<lume-points-material>`](../behavior-elements/mesh-behaviors/materials/PointsMaterial).
  *
- * @extends Element3D
+ * It can be useful along with a
+ * [`<lume-ply-geometry>`](../behavior-elements/mesh-behaviors/geometries/PlyGeometry)
+ * child element to load a set of points from a file. For example:
+ *
+ * <live-code src="../../examples/shelby-gt350-points/example.html"></live-code>
+ *
+ * @extends MeshLike
  */
 export
 @element('lume-points', autoDefineElements)
-class Points extends Element3D {
-	// override initialBehaviors = {geometry: 'box', material: 'points'}
-
-	override hasShadow = true
-
-	// Legacy behavior support: if the has attribute has values, disable the
-	// behavior element slots, so that explicitly-defined legacy behaviors
-	// continue to work and take precedence, for now.
-	@attribute has = ''
-
-	override template = () => html`
-		<${Show} when=${!this.has}>
-			<slot name="geometry">
-				<box-geometry></box-geometry>
-			</slot>
-
-			<slot name="material">
-				<points-material></points-material>
-			</slot>
-		</>
-
-		<slot></slot>
-	`
+class Points extends MeshLike {
+	protected override _defaultMaterial = () => html`<lume-points-material></lume-points-material>`
 
 	override makeThreeObject3d() {
 		return new ThreePoints()

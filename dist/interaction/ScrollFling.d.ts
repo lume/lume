@@ -31,7 +31,9 @@ export declare class ScrollFling extends Effects {
     get isStarted(): boolean;
     constructor(options?: Options);
     start(): this;
+    scrollFlingEffect(): void;
     stop(): this;
+    private __init_effects_ignore;
 }
 export {};
 //# sourceMappingURL=ScrollFling.d.ts.map

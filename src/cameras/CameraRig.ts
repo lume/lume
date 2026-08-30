@@ -4,7 +4,7 @@
 
 import {onCleanup} from 'solid-js'
 import html from 'solid-js/html'
-import {signal, syncSignals} from 'classy-solid'
+import {effect, signal, syncSignals} from 'classy-solid'
 import {element, numberAttribute, booleanAttribute, type ElementAttributes} from '@lume/element'
 import {autoDefineElements} from '../LumeConfig.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
@@ -414,132 +414,127 @@ class CameraRig extends Element3D {
 	pinchFling = new PinchFling()
 
 	get #derivedInputDistance() {
-		return this.distance !== -1 ? this.distance : this.scene?.perspective ?? defaultScenePerspective
+		return this.distance !== -1 ? this.distance : (this.scene?.perspective ?? defaultScenePerspective)
 	}
 
-	override connectedCallback() {
-		super.connectedCallback()
+	@effect effects() {
+		// We start interaction if we have a scene (we're in the composed
+		// tree) and have the needed DOM nodes.
+		if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera)) return
+
+		// TODO replace with @memo once that's out in classy-solid
+		this.createEffect(() => {
+			this.#appliedDistance = this.#derivedInputDistance
+			this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2
+			this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2
+		})
+
+		// We set position here instead of in the template, otherwise
+		// pre-upgrade values from the template running before element
+		// upgrade (due to how Solid templates using cloneNode making them
+		// non-upgraded until connected) will override the initial
+		// appliedDistance value.
+		this.createEffect(() => (this.threeCamera!.position.z = this.#appliedDistance))
+
+		const {scrollFling, pinchFling, flingRotation} = this
+
+		flingRotation.interactionContainer = this.scene
+		flingRotation.rotationYTarget = this.rotationYTarget
+		flingRotation.rotationXTarget = this.rotationXTarget
+		scrollFling.target = this.scene
+		pinchFling.target = this.scene
+
+		// Sync appliedDistance to scrollFling.y and vice versa
+		syncSignals(
+			() => this.#appliedDistance,
+			(d: number) => (this.#appliedDistance = d),
+			() => this.scrollFling!.y,
+			(y: number) => (this.scrollFling!.y = y),
+		)
+		// Sync scrollFling.y to pinchFling.x and vice versa
+		syncSignals(
+			() => this.scrollFling.y,
+			(y: number) => (this.scrollFling.y = y),
+			() => this.pinchFling.x,
+			(x: number) => (this.pinchFling.x = x),
+		)
 
 		this.createEffect(() => {
-			// We start interaction if we have a scene (we're in the composed
-			// tree) and have the needed DOM nodes.
-			if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera)) return
+			flingRotation.minFlingRotationX = this.minVerticalAngle
+			flingRotation.maxFlingRotationX = this.maxVerticalAngle
+			flingRotation.minFlingRotationY = this.minHorizontalAngle
+			flingRotation.maxFlingRotationY = this.maxHorizontalAngle
+			flingRotation.factor = this.rotationSpeed
+			flingRotation.epsilon = this.rotationEpsilon
+			flingRotation.slowdownAmount = this.rotationSlowdown
 
-			// TODO replace with @memo once that's out in classy-solid
-			this.createEffect(() => {
-				this.#appliedDistance = this.#derivedInputDistance
-				this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2
-				this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2
-			})
+			scrollFling.minY = pinchFling.minX = this.#appliedMinDistance
+			scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance
+			scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
+			scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon
+			scrollFling.lerpAmount = this.dollyScrollLerp
+			pinchFling.slowdownAmount = this.dollyPinchSlowdown
+		})
 
-			// We set position here instead of in the template, otherwise
-			// pre-upgrade values from the template running before element
-			// upgrade (due to how Solid templates using cloneNode making them
-			// non-upgraded until connected) will override the initial
-			// appliedDistance value.
-			this.createEffect(() => (this.threeCamera!.position.z = this.#appliedDistance))
+		this.createEffect(() => {
+			if (!this.dynamicDolly) return
 
-			const {scrollFling, pinchFling, flingRotation} = this
+			// Dolly speed when position is at minDistance
+			const minDollySpeed = 0.001
 
-			flingRotation.interactionInitiator = this.scene
-			flingRotation.interactionContainer = this.scene
-			flingRotation.rotationYTarget = this.rotationYTarget
-			flingRotation.rotationXTarget = this.rotationXTarget
-			scrollFling.target = this.scene
-			pinchFling.target = this.scene
+			// Dolly speed when position is at maxDistance
+			const maxDollySpeed = 2 * this.dollySpeed
 
-			// Sync appliedDistance to scrollFling.y and vice versa
-			syncSignals(
-				() => this.#appliedDistance,
-				(d: number) => (this.#appliedDistance = d),
-				() => this.scrollFling!.y,
-				(y: number) => (this.scrollFling!.y = y),
-			)
-			// Sync scrollFling.y to pinchFling.x and vice versa
-			syncSignals(
-				() => this.scrollFling.y,
-				(y: number) => (this.scrollFling.y = y),
-				() => this.pinchFling.x,
-				(x: number) => (this.pinchFling.x = x),
-			)
+			// Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+			const sens =
+				((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+					(this.threeCamera!.position.z - this.minDistance) +
+				minDollySpeed
 
-			this.createEffect(() => {
-				flingRotation.minFlingRotationX = this.minVerticalAngle
-				flingRotation.maxFlingRotationX = this.maxVerticalAngle
-				flingRotation.minFlingRotationY = this.minHorizontalAngle
-				flingRotation.maxFlingRotationY = this.maxHorizontalAngle
-				flingRotation.factor = this.rotationSpeed
-				flingRotation.epsilon = this.rotationEpsilon
-				flingRotation.slowdownAmount = this.rotationSlowdown
+			scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens
+		})
+		this.createEffect(() => {
+			if (!this.dynamicRotation) return
 
-				scrollFling.minY = pinchFling.minX = this.#appliedMinDistance
-				scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance
-				scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed
-				scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon
-				scrollFling.lerpAmount = this.dollyScrollLerp
-				pinchFling.slowdownAmount = this.dollyPinchSlowdown
-			})
+			// This only depends on the size of the scene and the FOV of the camera. The only
+			// issue is the camera's FOV is not reactive and is set by the scene at some point.
+			// In the case where the camera's FOV is not set yet, use the scene's perspective.
+			const perspective = this.threeCamera!.three.fov
+				? this.scene!.calculatedSize.y / 2 / Math.tan((this.threeCamera!.three.fov * Math.PI) / 360)
+				: this.scene!.perspective
 
-			this.createEffect(() => {
-				if (!this.dynamicDolly) return
+			// Plane positioned at origin facing camera with width equal to `minDistance`.
+			// `minDistance` is doubled because the expected `minDistance` should barely touch
+			// the object, whose size would be double `minDistance`.
+			const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera!.position.z
 
-				// Dolly speed when position is at minDistance
-				const minDollySpeed = 0.001
+			const degreesPerPixel = 180 / planeSize
 
-				// Dolly speed when position is at maxDistance
-				const maxDollySpeed = 2 * this.dollySpeed
+			// Counteract the FlingRotation's delta modifier to get exact angular movement.
+			const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed
 
-				// Scroll sensitivity is linear between min/max dolly speed and min/max distance.
-				const sens =
-					((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
-						(this.threeCamera!.position.z - this.minDistance) +
-					minDollySpeed
+			this.flingRotation.factor = sens <= 0 ? 1 : sens
+		})
 
-				scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens
-			})
-			this.createEffect(() => {
-				if (!this.dynamicRotation) return
+		this.createEffect(() => {
+			if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
+			else flingRotation.stop()
+		})
 
-				// This only depends on the size of the scene and the FOV of the camera. The only
-				// issue is the camera's FOV is not reactive and is set by the scene at some point.
-				// In the case where the camera's FOV is not set yet, use the scene's perspective.
-				const perspective = this.threeCamera!.three.fov
-					? this.scene!.calculatedSize.y / 2 / Math.tan((this.threeCamera!.three.fov * Math.PI) / 360)
-					: this.scene!.perspective
+		this.createEffect(() => {
+			if (this.interactive) {
+				scrollFling.start()
+				pinchFling.start()
+			} else {
+				scrollFling.stop()
+				pinchFling.stop()
+			}
+		})
 
-				// Plane positioned at origin facing camera with width equal to `minDistance`.
-				// `minDistance` is doubled because the expected `minDistance` should barely touch
-				// the object, whose size would be double `minDistance`.
-				const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera!.position.z
-
-				const degreesPerPixel = 180 / planeSize
-
-				// Counteract the FlingRotation's delta modifier to get exact angular movement.
-				const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed
-
-				this.flingRotation.factor = sens <= 0 ? 1 : sens
-			})
-
-			this.createEffect(() => {
-				if (this.interactive && !this.pinchFling?.interacting) flingRotation.start()
-				else flingRotation.stop()
-			})
-
-			this.createEffect(() => {
-				if (this.interactive) {
-					scrollFling.start()
-					pinchFling.start()
-				} else {
-					scrollFling.stop()
-					pinchFling.stop()
-				}
-			})
-
-			onCleanup(() => {
-				this.flingRotation.stop()
-				this.scrollFling.stop()
-				this.pinchFling.stop()
-			})
+		onCleanup(() => {
+			this.flingRotation.stop()
+			this.scrollFling.stop()
+			this.pinchFling.stop()
 		})
 	}
 

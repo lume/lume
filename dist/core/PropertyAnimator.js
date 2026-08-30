@@ -24,9 +24,13 @@ const isInstance = Symbol();
  * deltaTime, and should return the new desired opacity.
  */
 export function PropertyAnimator(Base = Object) {
+    if (Base.prototype instanceof PropertyAnimator)
+        throw new Error('Base class already extends PropertyAnimator, no need to apply the mixin again.');
     return class PropertyAnimator extends Base {
-        // @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
-        [isInstance] = true;
+        // Use `any` to prevent subclass "has or is using private name" errors.
+        get [isInstance]() {
+            return true;
+        }
         _setPropertyXYZ(name, xyz, newValue) {
             // @ts-ignore
             if (newValue === xyz)
@@ -116,15 +120,10 @@ export function PropertyAnimator(Base = Object) {
         }
     };
 }
-Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {
-    value(obj) {
-        if (!obj)
-            return false;
-        if (obj[isInstance])
-            return true;
-        return false;
-    },
-});
+export function isAnyPropertyAnimator(o) {
+    return o[isInstance];
+}
+Object.defineProperty(PropertyAnimator, Symbol.hasInstance, { value: isAnyPropertyAnimator });
 // the following type guards are used above just to satisfy the type system,
 // though the actual runtime check does not guarantee that the functions are of
 // the expected shape.

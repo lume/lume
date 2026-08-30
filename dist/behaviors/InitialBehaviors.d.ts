@@ -1,8 +1,19 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
+/**
+ * @deprecated Use child element behaviors instead. For default behaviors,
+ * define them in `<slot>` elements of the mesh element as shown in the
+ * `<lume-box>` and `<lume-points>` examples.
+ */
 export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Base: T): {
     new (...args: any[]): {
+        /**
+         * @deprecated This, and the has= attribute, are deprecated. Use child
+         * behavior elements instead. For example see how the `Sphere` class
+         * specifies a default `<lume-sphere-geometry>` element instead of a
+         * legacy attribute-based behavior.
+         */
         initialBehaviors?: Record<string, string>;
-        "__#18@#setBehaviors"(): void;
+        "__#19@#setBehaviors"(): void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
@@ -113,6 +124,7 @@ export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Bas
         setPointerCapture(pointerId: number): void;
         toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
+        readonly behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
         readonly firstChild: ChildNode | null;
@@ -227,7 +239,6 @@ export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Bas
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         replaceChildren(...nodes: (Node | string)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
-        behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly attributeStyleMap: StylePropertyMap;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
@@ -342,5 +353,4 @@ export declare function InitialBehaviors<T extends Constructor<HTMLElement>>(Bas
     };
     observedAttributes?: string[];
 } & T;
-export declare function setBehaviors(el: Element, behaviors: Record<string, string>, replace?: boolean): void;
 //# sourceMappingURL=InitialBehaviors.d.ts.map

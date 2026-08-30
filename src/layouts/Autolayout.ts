@@ -21,6 +21,7 @@
 
 import AutoLayout from '@lume/autolayout'
 import {attribute, element, type ElementAttributes} from '@lume/element'
+import {effect, signal} from 'classy-solid'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
 import {Motor} from '../core/Motor.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -82,12 +83,10 @@ class Autolayout extends Element3D {
 		}
 	}
 
-	override connectedCallback() {
-		super.connectedCallback()
+	// CONTINUE converting effects to use @effect in all classes except deprecated behaviors
 
-		this.createEffect(() => {
-			this.setVisualFormat(this.visualFormat || '')
-		})
+	@effect visualFormatEffect() {
+		this.setVisualFormat(this.visualFormat || '')
 	}
 
 	#autoLayoutView?: any | undefined
@@ -367,6 +366,9 @@ class Autolayout extends Element3D {
 			else _idToNode[id].visible = false
 		}
 	}
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }
 
 declare module 'solid-js' {

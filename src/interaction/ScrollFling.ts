@@ -1,5 +1,9 @@
+// CONTINUE also for some reason scrolling some demos broke, and the outer page
+// scrolls in the docs. F.e. picture frame example scrolls page while zooming
+// the scene.
+
 import {onCleanup, untrack} from 'solid-js'
-import {Effects, reactive, signal} from 'classy-solid'
+import {effect, Effects, signal} from 'classy-solid'
 import {Motor} from '../core/Motor.js'
 import {clamp} from '../math/clamp.js'
 
@@ -22,12 +26,7 @@ type Options = Partial<
 	>
 >
 
-// @ts-ignore
-window.debug = true
-
-export
-@reactive
-class ScrollFling extends Effects {
+export class ScrollFling extends Effects {
 	@signal accessor #x = 0
 
 	/**
@@ -131,21 +130,23 @@ class ScrollFling extends Effects {
 		if (untrack(() => this.#isStarted)) return this
 		this.#isStarted = true
 
-		this.createEffect(() => {
-			this.target // any time the target changes make new events on that target
-
-			this.#aborter = new AbortController()
-
-			// @ts-expect-error, whyyyyy TypeScript
-			this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
-
-			onCleanup(() => {
-				this.#stopAnimation()
-				this.#aborter.abort()
-			})
-		})
+		this.startEffects()
 
 		return this
+	}
+
+	@effect scrollFlingEffect() {
+		this.target // any time the target changes make new events on that target
+
+		this.#aborter = new AbortController()
+
+		// @ts-expect-error, whyyyyy TypeScript
+		this.target.addEventListener('wheel', this.#onWheel, {signal: this.#aborter.signal})
+
+		onCleanup(() => {
+			this.#stopAnimation()
+			this.#aborter.abort()
+		})
 	}
 
 	stop(): this {
@@ -161,7 +162,7 @@ class ScrollFling extends Effects {
 		// Stop any current animation, if any.
 		if (this.#task) Motor.removeRenderTask(this.#task)
 	}
-}
 
-// @ts-ignore
-window.debug = false
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
+}

@@ -24,6 +24,8 @@ export declare class PinchFling extends Effects {
     constructor(options?: Options);
     start(): this;
     stop(): this;
+    pinchFlingEffect(): void;
+    private __init_effects_ignore;
 }
 export {};
 //# sourceMappingURL=PinchFling.d.ts.map

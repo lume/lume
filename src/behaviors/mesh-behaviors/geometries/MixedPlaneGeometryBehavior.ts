@@ -12,6 +12,7 @@ import {GeometryBehavior} from './GeometryBehavior.js'
  * <live-code src="../../../../../examples/buttons-with-shadow/example.html"></live-code>
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-mixed-plane-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export class MixedPlaneGeometryBehavior extends GeometryBehavior {
 	override _createComponent() {

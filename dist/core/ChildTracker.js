@@ -18,6 +18,7 @@ export function ChildTracker(Base) {
          * then `childDisconnectedCallback` will not be called and any pending
          * `childConnectedCallback` will be canceled.
          */
+        // TODO CompositionTracker should honor this too for composition callbacks.
         awaitChildrenDefined = true;
         /**
          * @property {boolean} syncChildCallbacks When `true`,

@@ -15,6 +15,7 @@ export type TorusGeometryBehaviorAttributes = 'tubeThickness' | 'radialSegments'
  * [`tubeThickness`](#tubethickness).
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-torus-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class TorusGeometryBehavior extends GeometryBehavior {
     /**

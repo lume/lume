@@ -8,6 +8,13 @@
  * @copyright Gloey Apps, 2015
  * @copyright Joe Pea, 2018
  */
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -35,13 +42,6 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 // TODO:
 // - Use MutationObserver to watch for className changes and update laid-out nodes.
 // - Perhaps once we get to the ShadowDOM stuff we can use slots instead. It'll
@@ -53,6 +53,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 // - Allow visual-format to be fetch by path (like img src attribute).
 import AutoLayout from '@lume/autolayout';
 import { attribute, element } from '@lume/element';
+import { effect, signal } from 'classy-solid';
 import { Element3D } from '../core/Element3D.js';
 import { Motor } from '../core/Motor.js';
 import { autoDefineElements } from '../LumeConfig.js';
@@ -67,15 +68,24 @@ let Autolayout = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
+    let _instanceExtraInitializers = [];
     let _visualFormat_decorators;
     let _visualFormat_initializers = [];
     let _visualFormat_extraInitializers = [];
+    let _visualFormatEffect_decorators;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
     var Autolayout = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _visualFormat_decorators = [attribute];
+            _visualFormatEffect_decorators = [effect];
+            ___init_effects_ignore_decorators = [signal];
+            __esDecorate(this, null, _visualFormatEffect_decorators, { kind: "method", name: "visualFormatEffect", static: false, private: false, access: { has: obj => "visualFormatEffect" in obj, get: obj => obj.visualFormatEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _visualFormat_decorators, { kind: "field", name: "visualFormat", static: false, private: false, access: { has: obj => "visualFormat" in obj, get: obj => obj.visualFormat, set: (obj, value) => { obj.visualFormat = value; } }, metadata: _metadata }, _visualFormat_initializers, _visualFormat_extraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Autolayout = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -84,7 +94,7 @@ let Autolayout = (() => {
             extended: true,
             strict: false,
         };
-        visualFormat = __runInitializers(this, _visualFormat_initializers, ''
+        visualFormat = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _visualFormat_initializers, ''
         /**
          * Constructor
          *
@@ -93,7 +103,7 @@ let Autolayout = (() => {
          * @param {Object} [options.layoutOptions] Options such as viewport, spacing, etc... TODO make this a reactive property.
          * @return {Autolayout} this
          */
-        );
+        ));
         /**
          * Constructor
          *
@@ -104,6 +114,7 @@ let Autolayout = (() => {
          */
         constructor(options) {
             super();
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
             // PORTED {
             this.on('sizechange', this.#layout);
             this.on('reflow', this.#layout);
@@ -118,11 +129,9 @@ let Autolayout = (() => {
                 }
             }
         }
-        connectedCallback() {
-            super.connectedCallback();
-            this.createEffect(() => {
-                this.setVisualFormat(this.visualFormat || '');
-            });
+        // CONTINUE converting effects to use @effect in all classes except deprecated behaviors
+        visualFormatEffect() {
+            this.setVisualFormat(this.visualFormat || '');
         }
         #autoLayoutView = __runInitializers(this, _visualFormat_extraInitializers);
         childConnectedCallback(child) {
@@ -390,6 +399,8 @@ let Autolayout = (() => {
                     _idToNode[id].visible = false;
             }
         }
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = __runInitializers(this, ___init_effects_ignore_initializers, 0);
         static {
             __runInitializers(_classThis, _classExtraInitializers);
         }

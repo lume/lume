@@ -22,6 +22,7 @@ export type LambertMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'te
  * </script>
  *
  * @extends MaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-lambert-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export
 @behavior

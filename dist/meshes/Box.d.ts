@@ -7,10 +7,10 @@ export type BoxAttributes = MeshAttributes;
  *
  * Element: `<lume-box>`
  *
- * Extends from `Mesh` to apply default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
+ * A `Mesh` subclass with a default
+ * [`<lume-box-geometry>`](../behavior-elements/mesh-behaviors/geometries/BoxGeometry)
  * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial).
  *
  * The dimensions of the box are determined by the
  * [`size`](../core/Sizeable#size) of the element.
@@ -18,9 +18,6 @@ export type BoxAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Box extends Mesh {
-    hasShadow: boolean;
-    has: string;
-    template: () => Node | Node[];
 }
 declare module 'solid-js' {
     namespace JSX {

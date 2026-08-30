@@ -7,9 +7,9 @@ export type PlaneAttributes = MeshAttributes;
  * Element: `<lume-plane>`
  *
  * Extends from `Mesh` to apply default behaviors of
- * [`plane-geometry`](../behaviors/mesh-behaviors/geometries/PlaneGeometryBehavior)
+ * [`<lume-plane-geometry>`](../behavior-elements/mesh-behaviors/geometries/PlaneGeometry.md)
  * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial.md).
  *
  * The dimensions of the plane are determined by the
  * [`size`](../core/Sizeable#size) of the element on `x` and `y`.
@@ -17,10 +17,7 @@ export type PlaneAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class Plane extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
 }
 declare module 'solid-js' {
     namespace JSX {

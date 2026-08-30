@@ -42,6 +42,10 @@ import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+import { thro } from '../../../utils/thro.js';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-obj-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let ObjModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;
@@ -176,7 +180,4 @@ let ObjModelBehavior = (() => {
 export { ObjModelBehavior };
 if (globalThis.window?.document && !elementBehaviors.has('obj-model'))
     elementBehaviors.define('obj-model', ObjModelBehavior);
-const thro = (err) => {
-    throw err;
-};
 //# sourceMappingURL=ObjModelBehavior.js.map

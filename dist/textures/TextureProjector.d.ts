@@ -10,18 +10,18 @@ export type TextureProjectorAttributes = Element3DAttributes | 'src' | 'fitment'
  * Element: `<lume-texture-projector>`
  *
  * An non-rendered plane that can be placed anywhere in 3D space to project a
- * texture onto mesh elements that have `projected-material` behaviors.
+ * texture onto mesh elements that have `<lume-projected-material>` behaviors.
  *
  * For now only one `<lume-texture-projector>` can be associated to a mesh, and
- * only with an orthographic projection (perpendicular to the plane, i.e. along
- * the direction the plane is facing). Later on we'll support perspective
- * projection and multiple projections.
+ * only with an orthographic projection (perpendicular to the texture plane,
+ * i.e. along the direction the plane is facing). Later on we'll support
+ * perspective projection and multiple projections.
  *
  * To project a texture onto a mesh element, add a
- * [`projected-material`](../behaviors/mesh-behaviors/ProjectedMaterialBehavior)
- * behavior to the element using the `has=""` attribute, then assign an array of
+ * [`<lume-projected-material>`](../behavior-elements/mesh-behaviors/materials/ProjectedMaterial)
+ * behavior to the element as a child element, then assign an array of
  * `<lume-texture-projector>` elements, or a string of comma-separated CSS
- * selectors, to the element's `projectedTextures` property. The equivalent
+ * selectors, to the element's `textureProjectors` property. The equivalent
  * dash-case attribute accepts only the string of selectors. Only the first
  * texture is used, for now.
  *

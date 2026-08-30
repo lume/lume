@@ -14,10 +14,11 @@ import { GeometryBehavior } from './GeometryBehavior.js';
  *
  * It can be useful to use this behavior on a
  * [`<lume-points>`](../../../meshes/Points) element, which has a
- * [`points-material`](../materials/PointsMaterialBehavior) behavior for
+ * [`<lume-points-material>`](../materials/PointsMaterialBehavior) behavior for
  * configuring how points are rendered.
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-ply-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class PlyGeometryBehavior extends GeometryBehavior {
     #private;

@@ -9,11 +9,13 @@ import type { BufferGeometry } from 'three/src/core/BufferGeometry.js';
  * _createComponent() - return a BufferGeometry or Material instance.
  *
  * @extends MeshBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child geometry/material elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare abstract class GeometryOrMaterialBehavior extends MeshBehavior {
     #private;
     abstract type: MeshComponentType;
     connectedCallback(): void;
+    disconnectedCallback(): void;
     resetMeshComponent(): void;
     _createComponent(): BufferGeometry | Material;
 }

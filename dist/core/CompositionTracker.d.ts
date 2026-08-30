@@ -1,36 +1,108 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
+/**
+ * A class that allows tracking the DOM composed tree (Shadow DOM), ultimately
+ * allowing consumers to write logic against the shape of the DOM flat tree.
+ *
+ * Native HTML/CSS engines track the DOM flat tree in order to render built-in
+ * elements (<img>, <div>, <button>, etc) the way you expect after composing
+ * them with Shadow DOM.
+ *
+ * An excellent explainer on Shadow DOM concepts:
+ * https://hayatoito.github.io/2026/dom/
+ *
+ * This mixin allows tracking the flat tree just as native browser engines do,
+ * but for scenarios such as custom rendering with canvas (e.g. with 2D, WebGL,
+ * or WebGPU APIs). When the custom elements with custom rendering are composed
+ * with Shadow DOM, their JavaScript implementation will want to know the shape
+ * of the flat tree so that rendering can be implemented exactly as the
+ * composition of the elements implies.
+ *
+ * As a concrete example, a library of custom elements could implement rendering
+ * using a library like Playcanvas (https://playcanvas.com) that has its own
+ * pure-JS concept of a tree of render objects. The custom element
+ * implementation would want to ensure that it connects the Playcanvas render
+ * objects into a render tree hierarchy that matches with the shape of the DOM
+ * flat tree that is formed by composing the custom elements. This includes
+ * child elements that are "slotted" to `<slot>` elements in a Shadow DOM, very
+ * much similar to concepts such as props.children in React, Preact, and Solid,
+ * slots in Vue and Svelte (loosely based on the same concept as Shadow DOM
+ * slots), or transclusion in Angular.
+ *
+ * NOTE: This class exposes closed ShadowRoots and elements inside ShadowRoots.
+ * Tracking the flat tree is not easy without access to ShadowRoots and their
+ * DOM, so using `closed` roots with this mixin is counterintuitive. This class
+ * adds a new `exposedShadowRoot` property that references an attached
+ * ShadowRoot even if it is closed, and other properties such as `terminalSlottedParent`
+ * that reference elements inside ShadowRoots even if they are closed.
+ */
 export declare function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T): {
     new (...args: any[]): {
-        isScene: boolean;
-        isElement3D: boolean;
-        skipShadowObservation: boolean;
         attachShadow(options: ShadowRootInit): ShadowRoot;
-        readonly _hasShadowRoot: boolean;
-        readonly _isPossiblyDistributedToShadowRoot: boolean;
-        readonly _shadowRootParent: any | null;
-        readonly _shadowRootChildren: any[];
-        readonly _distributedShadowRootChildren: any[];
-        readonly _distributedParent: any | null;
-        readonly _distributedChildren: any[] | null;
+        /**
+         * The children of this element's ShadowRoot, if any, otherwise an empty
+         * array.
+         *
+         * This is similar to `[...this.shadowRoot.children]`, except that it
+         * gets the children even if the ShadowRoot is closed.
+         */
+        readonly shadowRootChildren: any[];
+        /**
+         * Elements that are slotted to a slot that is child of a ShadowRoot of
+         * this element.
+         */
+        readonly shadowRootSlottedChildren: any[];
+        /** @private */
         __composedParent: Element | null;
+        /**
+         * The parent this element is composed to, i.e. this element's parent in
+         * the flat tree.
+         */
         readonly composedParent: Element | null;
-        readonly __isComposed: Element | null;
-        readonly isComposed: Element | null;
+        /**
+         * True when this element has a composed parent, i.e. when this element
+         * is (has a parent) in the flat tree.
+         */
+        readonly isComposed: boolean;
+        /**
+         * @private
+         *
+         * Traverses to find the parent that this element renders relative to in
+         * the flat tree, if any (no parent means this element is not in the
+         * flat tree).
+         */
         __getComposedParent(): HTMLElement | null;
-        readonly _composedChildren: any[];
-        /** This element's ShadowRoot, if any (even if it is a closed shadow root, unlike the `shadowRoot` property) */
+        /**
+         * Children that are composed to this element, i.e. that render as
+         * children of this element in the flat tree. Flat tree children may be
+         * regular children of a shadow root in the composed tree, or slotted
+         * children (assigned nodes) of a <slot> element in a shadow root.
+         */
+        readonly composedChildren: any[];
+        /**
+         * This element's ShadowRoot, if any (even if it is a closed shadow
+         * root, unlike the `shadowRoot` property).
+         */
         exposedShadowRoot?: ShadowRoot;
         /**
-         * When true, it means this element's parent has a ShadowRoot, which
-         * means this element is possibly slotted into that parent's ShadowRoot.
-         * This doesn't mean that this element is slotted, it may not be slotted
-         * if there's no matching `<slot>` element to be slotted to.
+         * When true, this element's parent has a ShadowRoot, which means this
+         * element is possibly slotted into a slot in that parent's ShadowRoot.
+         * This doesn't guarantee that this element is slotted, it may not be
+         * slotted if there's no matching `<slot>` element to be slotted to.
          *
          * This is similar to `Boolean(this.parentElement.shadowRoot)`, except
-         * isPossiblySlotted is accurate even if the ShadowRoot mode is closed.
+         * this is accurate even if the ShadowRoot mode is closed.
          */
         isPossiblySlotted: boolean;
+        /** @private */
         __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
+        /**
+         * A map of the slot elements that are children of this element and
+         * their last-known assigned elements. When a slotchange happens while
+         * this element is in a shadow root and has a slot child, we can detect
+         * what the difference is between the last known assigned elements and
+         * the new ones.
+         * @private
+         */
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
         /**
          * If this element is slotted into a shadow tree, this will reference
@@ -38,47 +110,130 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
          * slotted to. This element will render as a child of that parent
          * element in the flat tree (composed tree).
          *
-         * This is similar to `this.assignedSlot.parentElement`, except
-         * `slottedParent` returns a result even if the ShadowRoot mode is
-         * closed.
+         * This is similar to `this.assignedSlot.parentElement`, except this
+         * returns a result even if the ShadowRoot mode is closed.
          */
-        slottedParent: any | null;
+        terminalSlottedParent: any | null;
         /**
-         * If this element is a top-level child of a ShadowRoot, then this points
-         * to the ShadowRoot host. The ShadowRoot host is the prent element that
-         * this element renders relative to in the composed tree.
+         * If this element is a top-level child of a ShadowRoot, this points to
+         * the ShadowRoot host. The ShadowRoot host is the prent element that
+         * this element renders relative to (is a child of) in the flat tree.
          *
          * This is similar to `this.parentNode.host ?? null`.
          */
         shadowParent: any | null;
         /**
          * If this element has a child `<slot>` element while in a ShadowRoot,
-         * then this will be a Set of the nodes slotted into the `<slot>`, and
-         * those nodes render relative to this element in the composed tree.
-         * This is `null` if there are no slotted children.
+         * this will be a Set of the nodes slotted into that `<slot>`, and that
+         * Set of nodes render relative to (are children of) this element in the
+         * flat tree. This is `null` if there are no slotted children.
+         */
+        terminalSlottedChildren: Set<any> | null;
+        /**
+         * The parent whose child <slot> this element is assigned to,
+         * regardless of whether that slot itself is assigned to a
+         * deeper slot. This is the direct slot parent.
+         *
+         * Compare with terminalSlottedParent, which follows slot
+         * chaining to the final distributed parent.
+         */
+        slottedParent: any | null;
+        /**
+         * Elements directly assigned to this element's child <slot>,
+         * regardless of whether this slot is assigned to a deeper slot.
+         * These are the direct slotted children.
+         *
+         * Compare with terminalSlottedChildren, which only contains
+         * children whose slot is NOT forwarded further down.
          */
         slottedChildren: Set<any> | null;
+        /**
+         * Called when a child is added to the ShadowRoot of this element to
+         * establish composed relationships and trigger composedCallback.
+         * @private
+         */
         __shadowRootChildAdded(child: Element): void;
+        /**
+         * Called when a child is removed from the ShadowRoot of this element to
+         * remove composed relationships and trigger uncomposedCallback.
+         */
         __shadowRootChildRemoved(child: Element): void;
+        /**
+         * Called when a slot child of this element emits a slotchange event.
+         */
         readonly __onChildSlotChange: (event: Event) => void;
+        /** @private */
         __onChildSlotChange__?: (event: Event) => void;
+        /**
+         * Implement this method in a subclass to run logic when a child is
+         * composed to this element in the flat tree.
+         */
         childComposedCallback?(composedChild: Element, compositionType: CompositionType): void;
+        /**
+         * Implement this method in a subclass to run logic when a child is
+         * uncomposed from this element in the flat tree.
+         */
         childUncomposedCallback?(uncomposedChild: Element, compositionType: CompositionType): void;
+        /**
+         * Implement this method in a subclass to run logic when this element is
+         * composed to a parent in the flat tree.
+         */
         composedCallback?(composedParent: Element, compositionType: CompositionType): void;
+        /**
+         * Implement this method in a subclass to run logic when this element is
+         * uncomposed from a parent in the flat tree.
+         */
         uncomposedCallback?(uncomposedParent: Element, compositionType: CompositionType): void;
+        /** @private */
+        __lastComposedParent: any | null;
+        /** @private */
+        __lastCompositionType: CompositionType;
+        /**
+         * When we detect the slotchange ordering discrepancy (see __discrepancy
+         * usage sites), regular composition callbacks will be skipped, and
+         * special logic will run later to ensure we call composition methods in
+         * correct order.
+         * @private
+         */
         __discrepancy: boolean;
-        __triggerChildComposedCallback(child: any, compositionType: CompositionType): void;
-        __triggerChildUncomposedCallback(child: any, compositionType: CompositionType): void;
+        /** @private */
+        __triggerChildComposedCallback(parent: any, child: any, compositionType: CompositionType): void;
+        /** @private */
+        __triggerChildUncomposedCallback(parent: any, child: any, compositionType: CompositionType): void;
+        connectedCallback(): void;
+        disconnectedCallback(): void;
+        /**
+         * This is called in certain cases when slotted children may have
+         * changed, f.e. when a slot was added to this element, or when a child
+         * slot of this element has had assigned nodes changed (slotchange).
+         * @private
+         */
         __handleSlottedChildren(slot: HTMLSlotElement): void;
+        /**
+         * Get the difference between the last assigned elements and current
+         * assigned elements of a child slot of this element.
+         *
+         * This does a diff that allows us to run slotted/unslotted reactions
+         * only for nodes that were detected to have been added or removed, but
+         * it fails to detect nodes that were both removed and added within the
+         * same tick synchronously because `slotchange` runs in the next
+         * microtask and does not give us a way to see all slot assignment
+         * change records (like we can with MutationObserver), we can only see
+         * the current set of slotted nodes with slot.assignedNodes.
+         *
+         * @private
+         */
         __getSlottedChildDifference(slot: HTMLSlotElement): SlotDiff;
-        __getCurrentAssignedNodes(slot: HTMLSlotElement): Element[];
         childConnectedCallback(child: Element): void;
         childDisconnectedCallback(child: Element): void;
+        /**
+         * Visit nodes in the DOM composed tree starting at this element in such
+         * a way that nodes are visited as if the implicit flat tree were
+         * traversed in pre-order. Essentially, traverse the flat tree.
+         */
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
         awaitChildrenDefined: boolean;
         syncChildCallbacks: boolean;
-        connectedCallback: (() => void) & (() => void);
-        disconnectedCallback: (() => void) & (() => void);
         "__#12@#awaitedChildren": Set<Element>;
         "__#12@#runChildConnectedCallbacks"(): void;
         "__#12@#runChildConnect"(child: Element): void;
@@ -194,6 +349,7 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         setPointerCapture(pointerId: number): void;
         toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
+        readonly behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
         readonly firstChild: ChildNode | null;
@@ -308,7 +464,6 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         replaceChildren(...nodes: (Node | string)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
-        behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly attributeStyleMap: StylePropertyMap;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
@@ -421,10 +576,11 @@ export declare function CompositionTracker<T extends Constructor<HTMLElement>>(B
         blur(): void;
         focus(options?: FocusOptions): void;
     };
-    [Symbol.hasInstance](obj: any): boolean;
     observedAttributes?: string[];
 } & T;
-export type CompositionType = 'root' | 'slot' | 'actual';
+export type AnyCompositionTracker = InstanceType<ReturnType<typeof CompositionTracker>>;
+export declare function isAnyCompositionTracker(o: any): o is AnyCompositionTracker;
+export type CompositionType = 'root' | 'slot' | 'terminal-slot' | 'actual';
 export declare function hasShadow(el: Element): boolean;
 export declare function getComposedParent(el: HTMLElement): HTMLElement | null;
 type SlotDiff = {

@@ -33,8 +33,13 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/ShapeGeometry.js');
 /**
  * @class Shape - Allows creating a 2D shape that can be extruded.
  *
@@ -42,15 +47,13 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * Default behaviors:
  *
- * - [`shape-geometry`](../behaviors/mesh-behaviors/geometries/ShapeGeometryBehavior.md)
- * - [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior.md)
+ * - [`<lume-shape-geometry>`](../behavior-elements/mesh-behaviors/geometries/ShapeGeometry.md)
+ * - [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial.md)
  *
  * <live-code id="example"></live-code>
  * <script>
  *   example.content = shapesExample
  * </script>
- *
- * Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geometries/ShapeGeometryBehavior.md).
  *
  * @extends Mesh
  */
@@ -69,7 +72,7 @@ let Shape = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'shape', material: 'physical' };
+        _defaultGeometry = () => html `<lume-shape-geometry></lume-shape-geometry>`;
     };
     return Shape = _classThis;
 })();

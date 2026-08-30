@@ -33,8 +33,14 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/MixedplaneGeometry.js');
+import('../behavior-elements/mesh-behaviors/materials/MixedplaneMaterial.js');
 /**
  * @class MixedPlane -
  *
@@ -50,7 +56,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  * border radius (for now), otherwise transparent parts of the regular DOM
  * content will not receal 3D content that would be expected to be behind them.
  *
- * See [`MixedPlaneGeometryBehavior`](../behaviors/mesh-behaviors/geometries/MixedPlaneGeometryBehavior) and [`MixedPlaneMaterialBehavior`](../behaviors/mesh-behaviors/materials/MixedPlaneMaterialBehavior) for
+ * See [`<lume-mixed-plane-geometry>`](../behavior-elements/mesh-behaviors/geometries/MixedPlaneGeometry) and [`<lume-mixed-plane-material>`](../behavior-elements/mesh-behaviors/materials/MixedPlaneMaterial) for
  * available properties.
  *
  * <live-code src="../../../examples/buttons-with-shadow/example.html"></live-code>
@@ -72,7 +78,8 @@ let MixedPlane = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'mixedplane', material: 'mixedplane' };
+        _defaultGeometry = () => html `<lume-mixedplane-geometry></lume-mixedplane-geometry>`;
+        _defaultMaterial = () => html `<lume-mixedplane-material></lume-mixedplane-material>`;
     };
     return MixedPlane = _classThis;
 })();

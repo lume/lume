@@ -4,22 +4,19 @@ import type { MeshAttributes } from './Mesh.js';
 import type { ElementWithBehaviors, TorusGeometryBehavior, TorusGeometryBehaviorAttributes } from '../behaviors/index.js';
 export type TorusAttributes = MeshAttributes | TorusGeometryBehaviorAttributes;
 /**
- * @class Torus -
+ * @class Torus
  *
  * Element: `<lume-torus>`
  *
  * Extends from `Mesh` to apply default behaviors of
- * [`torus-geometry`](../behaviors/mesh-behaviors/geometries/TorusGeometryBehavior)
+ * [`<lume-torus-geometry>`](../behavior-elements/mesh-behaviors/geometries/TorusGeometry)
  * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial).
  *
  * @extends Mesh
  */
 export declare class Torus extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
 }
 export interface Torus extends ElementWithBehaviors<TorusGeometryBehavior, TorusGeometryBehaviorAttributes> {
 }

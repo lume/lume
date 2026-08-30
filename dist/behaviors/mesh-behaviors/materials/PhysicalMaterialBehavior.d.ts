@@ -11,6 +11,7 @@ export type PhysicalMaterialBehaviorAttributes = StandardMaterialBehaviorAttribu
  * Backed by Three.js [`THREE.MeshPhysicalMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshPhysicalMaterial)
  *
  * @extends MaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-physical-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class PhysicalMaterialBehavior extends StandardMaterialBehavior {
     clearcoat: number;

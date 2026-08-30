@@ -2,30 +2,38 @@
 
 <lume-scene id="scene" perspective="800" webgl>
 	<lume-camera-rig active distance="1000" max-distance="6000" min-distance="10"></lume-camera-rig>
-
-	<lume-line id="line" color="deeppink" rotation="90 0 0"></lume-line>
 </lume-scene>
 
-<script type="module">
-	import 'lume'
+<style>
+	body {
+		/* dark deep pink to dark gray radial gradient */
+		background: radial-gradient(circle, #460126 0%, #2f2f2f 100%);
+	}
+</style>
 
-	// Generate points for a spiral-shaped line.
-	const points = []
+<script type="module">
+	import {html} from 'lume'
+
 	let angle = 0
 	let distance = 0
 	let z = 0
-	for (const _ of Array(1200).map((_, i) => i)) {
-		const x = distance * Math.cos(angle)
-		const y = distance * Math.sin(angle)
-		points.push(x, y, 200 * Math.sin(z))
 
-		angle += Math.PI / 64
-		distance += 2.5
-		z += Math.PI / 20
-	}
+	scene.append(html/*html*/ `
+		<lume-line id="line" rotation="90 0 0" rotation=${() => (x, y, z) => [x, y, z - 1]}>
+			<lume-basicline-material color="deeppink"></lume-basicline-material>
 
-	line.points = points
+			<lume-line-geometry
+				points=${Array.from({length: 1200}).reduce((points, _, i) => {
+					// Generate points for a spiral-shaped line.
+					points.push(distance * Math.cos(angle), distance * Math.sin(angle), 200 * Math.sin(z))
 
-	// Give the spiral some rotation around Z.
-	line.rotation = (x, y, z) => [x, y, z - 1]
+					angle += Math.PI / 64
+					distance += 2.5
+					z += Math.PI / 20
+
+					return points
+				}, [])}
+			></lume-line-geometry>
+		</lume-line>
+	`)
 </script>

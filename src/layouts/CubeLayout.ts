@@ -71,14 +71,14 @@ class CubeLayout extends Element3D {
 			index === 0
 				? 'front'
 				: index === 1
-				? 'right'
-				: index === 2
-				? 'back'
-				: index === 3
-				? 'left'
-				: index === 4
-				? 'top'
-				: 'bottom'
+					? 'right'
+					: index === 2
+						? 'back'
+						: index === 3
+							? 'left'
+							: index === 4
+								? 'top'
+								: 'bottom'
 
 		// rotate and place each side.
 		if (index < 4)

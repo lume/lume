@@ -25,9 +25,14 @@ const isInstance = Symbol()
  * ```
  */
 export function Settable<T extends Constructor>(Base: T = Object as any) {
+	if (Base.prototype instanceof Settable)
+		throw new Error('Base class already extends Settable, no need to apply the mixin again.')
+
 	return class Settable extends Base {
-		// @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
-		[isInstance as any] = true
+		// Use `any` to prevent subclass "has or is using private name" errors.
+		get [isInstance as any]() {
+			return true
+		}
 
 		/**
 		 * @method set - Convenience method for setting all (or some)
@@ -56,12 +61,10 @@ export function Settable<T extends Constructor>(Base: T = Object as any) {
 	}
 }
 
-Object.defineProperty(Settable, Symbol.hasInstance, {
-	value(obj: any): boolean {
-		if (!obj) return false
-		if (obj[isInstance]) return true
-		return false
-	},
-})
+export type AnySettable = InstanceType<ReturnType<typeof Settable>>
 
-export type SettableInstance = InstanceType<ReturnType<typeof Settable>>
+export function isAnySettable(o: any): o is AnySettable {
+	return o[isInstance]
+}
+
+Object.defineProperty(Settable, Symbol.hasInstance, {value: isAnySettable})

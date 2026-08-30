@@ -16,6 +16,7 @@ export type SphereGeometryBehaviorAttributes = 'horizontalSegments' | 'verticalS
  *
  * @extends GeometryBehavior
  * @behavior sphere-geometry TODO @behavior jsdoc tag
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-sphere-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class SphereGeometryBehavior extends GeometryBehavior {
     /**

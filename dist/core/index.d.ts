@@ -8,10 +8,11 @@ export * from './Motor.js';
 export * from './Node.js';
 export * from './Object3DWithPivot.js';
 export * from './PossibleCustomElement.js';
+export * from './PropertyAnimator.js';
 export * from './Scene.js';
 export * from './SharedAPI.js';
 export * from './Sizeable.js';
 export * from './Transformable.js';
-export * from './TreeNode.js';
+export * from './VisualLayers.js';
 export * from './utils/index.js';
 //# sourceMappingURL=index.d.ts.map

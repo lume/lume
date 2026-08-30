@@ -43,6 +43,9 @@ import default_fragment from 'three/src/renderers/shaders/ShaderChunk/default_fr
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { MaterialBehavior } from './MaterialBehavior.js';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-shader-material>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let ShaderMaterialBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;

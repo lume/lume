@@ -8,20 +8,15 @@ export type SphereAttributes = MeshAttributes;
  *
  * Element: `<lume-sphere>`
  *
- * Extends from `Mesh` to apply default behaviors of
- * [`sphere-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
- * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * Extends from `Mesh` to apply a default
+ * [`<lume-sphere-geometry>`](../behavior-elements/mesh-behaviors/geometries/SphereGeometry).
  *
  * The diameter of the sphere is determined by the `x` size of the element.
  *
  * @extends Mesh
  */
 export declare class Sphere extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
 }
 export interface Sphere extends ElementWithBehaviors<SphereGeometryBehavior, SphereGeometryBehaviorAttributes> {
 }

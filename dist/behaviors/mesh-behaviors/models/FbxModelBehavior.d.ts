@@ -3,6 +3,9 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 import type { Group } from 'three/src/objects/Group.js';
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-fbx-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export declare class FbxModelBehavior extends RenderableBehavior {
     #private;
     /** Path to a .fbx file. */

@@ -2,6 +2,9 @@ import 'element-behaviors';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-gltf-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export declare class GltfModelBehavior extends RenderableBehavior {
     #private;
     /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */

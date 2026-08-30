@@ -51,6 +51,7 @@ import { GeometryOrMaterialBehavior } from '../GeometryOrMaterialBehavior.js';
  * Base class for material behaviors.
  *
  * @extends GeometryOrMaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use child material elements instead. Legacy behaviors will be removed in a future version.
  */
 let MaterialBehavior = (() => {
     let _classDecorators = [behavior];

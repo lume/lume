@@ -1,18 +1,13 @@
 import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
-import type { GltfModelBehavior, GltfModelBehaviorAttributes } from '../behaviors/index.js';
-export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttributes;
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+export type GltfModelAttributes = Element3DAttributes | 'src' | 'dracoDecoder' | 'centerGeometry';
 /**
  * @element lume-gltf-model
  * @class GltfModel -
  *
- * Defines the `<lume-gltf-model>` element, short for `<lume-element3d
- * has="gltf-model">`, for loading 3D models in the glTF format (`.gltf` or
- * `.glb` files).
- *
- * See [`GltfModelBehavior`](../behaviors/mesh-behaviors/models/GltfModelBehavior)
- * for attributes/properties available on this element.
+ * Defines the `<lume-gltf-model>` element for loading 3D models in the
+ * glTF format (`.gltf` or `.glb` files).
  *
  * HTML Example:
  *
@@ -38,11 +33,36 @@ export type GltfModelAttributes = Element3DAttributes | GltfModelBehaviorAttribu
  * ```
  */
 export declare class GltfModel extends Element3D {
-    initialBehaviors: {
-        model: string;
-    };
-}
-export interface GltfModel extends ElementWithBehaviors<GltfModelBehavior, GltfModelBehaviorAttributes> {
+    #private;
+    /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
+    src: string | null;
+    /**
+     * @property {string | null} dracoDecoder -
+     *
+     * `attribute`
+     *
+     * Path to the draco decoder that
+     * will unpack decode compressed assets of the GLTF file. This does not need
+     * to be supplied unless you explicitly know you need it.
+     */
+    dracoDecoder: string;
+    /**
+     * @property {boolean} centerGeometry -
+     *
+     * `attribute`
+     *
+     * When `true`, all geometry of the
+     * loaded model will be centered at the local origin.
+     *
+     * Note, changing this value at runtime is expensive because the whole model
+     * will be re-created. We improve this by tracking the initial center
+     * position to revert to when centerGeometry goes back to `false` (PRs
+     * welcome!).
+     */
+    centerGeometry: boolean;
+    loader: GLTFLoader;
+    model: GLTF | null;
+    connectedCallback(): void;
 }
 declare module 'solid-js' {
     namespace JSX {

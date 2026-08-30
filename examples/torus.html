@@ -1,0 +1,25 @@
+<script src="./template.js" template="./template.html" title="<lume-torus>"></script>
+
+<lume-scene webgl>
+	<lume-ambient-light intensity="0.8"></lume-ambient-light>
+	<lume-point-light position="200 200 200" intensity="200000"></lume-point-light>
+	<lume-camera-rig distance="300" max-distance="1000" min-distance="50"></lume-camera-rig>
+
+	<lume-torus id="torus" size="100 100 100" mount-point="0.5 0.5 0.5" rotation="45 45 0">
+		<lume-torus-geometry tube-thickness="0.15"></lume-torus-geometry>
+		<lume-physical-material color="#14edff" metalness="0.7" roughness="0.2" reflectivity="0.5"></lume-physical-material>
+	</lume-torus>
+</lume-scene>
+
+<style>
+	body {
+		/* radial gradient from dark blue to black */
+		background: radial-gradient(circle, #093d40, #111 50%);
+	}
+</style>
+
+<script type="module">
+	import 'lume'
+
+	torus.rotation = (x, y, z) => [x, y + 1, z + 1]
+</script>

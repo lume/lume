@@ -16,7 +16,7 @@ export type MixedPlaneAttributes = MeshAttributes;
  * border radius (for now), otherwise transparent parts of the regular DOM
  * content will not receal 3D content that would be expected to be behind them.
  *
- * See [`MixedPlaneGeometryBehavior`](../behaviors/mesh-behaviors/geometries/MixedPlaneGeometryBehavior) and [`MixedPlaneMaterialBehavior`](../behaviors/mesh-behaviors/materials/MixedPlaneMaterialBehavior) for
+ * See [`<lume-mixed-plane-geometry>`](../behavior-elements/mesh-behaviors/geometries/MixedPlaneGeometry) and [`<lume-mixed-plane-material>`](../behavior-elements/mesh-behaviors/materials/MixedPlaneMaterial) for
  * available properties.
  *
  * <live-code src="../../../examples/buttons-with-shadow/example.html"></live-code>
@@ -24,10 +24,8 @@ export type MixedPlaneAttributes = MeshAttributes;
  * @extends Mesh
  */
 export declare class MixedPlane extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
+    protected _defaultMaterial: () => Node | Node[];
 }
 declare module 'solid-js' {
     namespace JSX {

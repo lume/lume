@@ -43,6 +43,7 @@ import { Line } from '../../meshes/Line.js';
  * @class MeshBehavior
  *
  * @extends RenderableBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child behavior elements instead. Legacy behaviors will be removed in a future version.
  */
 let MeshBehavior = (() => {
     let _classDecorators = [behavior];

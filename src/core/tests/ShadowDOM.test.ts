@@ -47,8 +47,7 @@ describe('ShadowDOM support', () => {
 		// Although a Scene has ShadowDOM, child Nodes are considered
 		// composed to the Scene instead of the ShadowDOM for our 3D
 		// rendering purposes.
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
+		expect(node.composedSceneGraphParent).toBe(scene)
 
 		expect(node.three.parent).toBe(scene.three)
 		expect(node.threeCSS.parent).toBe(scene.threeCSS)
@@ -75,13 +74,12 @@ describe('ShadowDOM support', () => {
 		expect(node.parentElement).toBe(container)
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(scene.querySelector('slot'))
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
+		expect(node.composedSceneGraphParent).toBe(scene)
 		expect(node.three.parent).toBe(scene.three)
 		expect(node.threeCSS.parent).toBe(scene.threeCSS)
 
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(node)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(node)
 		expect(scene.three.children.length).toBe(1)
 		expect(scene.three.children[0]).toBe(node.three)
 		expect(scene.threeCSS.children.length).toBe(1)
@@ -89,7 +87,7 @@ describe('ShadowDOM support', () => {
 
 		expect(scene.parentNode).toBe(root)
 		expect(scene.composedParent).toBe(container)
-		expect(scene.composedLumeParent).toBe(null)
+		expect(scene.composedSceneGraphParent).toBe(null)
 		expect(scene.three.parent).toBe(null)
 		expect(scene.threeCSS.parent).toBe(null)
 	})
@@ -117,12 +115,12 @@ describe('ShadowDOM support', () => {
 		expect(node2.parentNode).toBe(shadow)
 		expect(node2.parentLumeElement).toBe(null)
 		expect(node2.composedParent).toBe(node)
-		expect(node2.composedLumeParent).toBe(node)
+		expect(node2.composedSceneGraphParent).toBe(node)
 		expect(node2.three.parent).toBe(node.three)
 		expect(node2.threeCSS.parent).toBe(node.threeCSS)
 
-		expect(node.composedLumeChildren.length).toBe(1)
-		expect(node.composedLumeChildren[0]).toBe(node2)
+		expect(node.composedSceneGraphChildren.length).toBe(1)
+		expect(node.composedSceneGraphChildren[0]).toBe(node2)
 		expect(node.three.children.length).toBe(1)
 		expect(node.three.children[0]).toBe(node2.three)
 		expect(node.threeCSS.children.length).toBe(1)
@@ -146,7 +144,7 @@ describe('ShadowDOM support', () => {
 		const root = container.attachShadow({mode: 'open'})
 		root.append(scene)
 
-		// TODO get it work without a timeout (ths is difficult considering
+		// TODO get it work without a timeout (this is difficult considering
 		// that the implementation currently relies on MutationObserver
 		// which triggers reactions deferred).
 		await new Promise(r => setTimeout(r, 10))
@@ -155,12 +153,12 @@ describe('ShadowDOM support', () => {
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(null)
 		expect(node.composedParent).toBe(null)
-		expect(node.composedLumeParent).toBe(null)
+		expect(node.composedSceneGraphParent).toBe(null)
 		expect(node.three.parent).toBe(null)
 		expect(node.threeCSS.parent).toBe(null)
 
-		expect(node2._composedChildren.length).toBe(0)
-		expect(node2.composedLumeChildren.length).toBe(0)
+		expect(node2.composedChildren.length).toBe(0)
+		expect(node2.composedSceneGraphChildren.length).toBe(0)
 		expect(node2.three.children.length).toBe(0)
 		expect(node2.threeCSS.children.length).toBe(0)
 	})
@@ -199,15 +197,14 @@ describe('ShadowDOM support', () => {
 		expect(node.parentElement).toBe(container)
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(middle.querySelector('slot'))
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
+		expect(node.composedSceneGraphParent).toBe(scene)
 		expect(node.three.parent).toBe(scene.three)
 		expect(node.threeCSS.parent).toBe(scene.threeCSS)
 
 		expect(scene.children.length).toBe(1)
 		expect(scene.children[0]!.tagName).toBe('SLOT')
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(node)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(node)
 		expect(scene.three.children.length).toBe(1)
 		expect(scene.three.children[0]).toBe(node.three)
 		expect(scene.threeCSS.children.length).toBe(1)
@@ -215,7 +212,7 @@ describe('ShadowDOM support', () => {
 
 		expect(scene.parentNode).toBe(deeper)
 		expect(scene.composedParent).toBe(deeper)
-		expect(scene.composedLumeParent).toBe(null)
+		expect(scene.composedSceneGraphParent).toBe(null)
 		expect(scene.three.parent).toBe(null)
 		expect(scene.threeCSS.parent).toBe(null)
 	})
@@ -259,22 +256,21 @@ describe('ShadowDOM support', () => {
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(null)
 		expect(node.composedParent).toBe(null)
-		expect(node.composedLumeParent).toBe(null)
+		expect(node.composedSceneGraphParent).toBe(null)
 		expect(node.three.parent).toBe(null)
 		expect(node.threeCSS.parent).toBe(null)
 
 		expect(sphere.parentElement).toBe(slot)
 		expect(sphere.parentLumeElement).toBe(null)
 		expect(sphere.assignedSlot).toBe(null)
-		expect(sphere.composedParent).toBe(scene)
-		expect(sphere.composedLumeParent).toBe(scene)
+		expect(sphere.composedSceneGraphParent).toBe(scene)
 		expect(sphere.three.parent).toBe(scene.three)
 		expect(sphere.threeCSS.parent).toBe(scene.threeCSS)
 
 		expect(scene.children.length).toBe(1)
 		expect(scene.children[0]).toBe(slot)
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(sphere)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(sphere)
 		expect(scene.three.children.length).toBe(1)
 		expect(scene.three.children[0]).toBe(sphere.three)
 		expect(scene.threeCSS.children.length).toBe(1)
@@ -319,8 +315,7 @@ describe('ShadowDOM support', () => {
 		expect(node.parentElement).toBe(container)
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(middle.querySelector('slot'))
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
+		expect(node.composedSceneGraphParent).toBe(scene)
 		expect(node.three.parent).toBe(scene.three)
 		expect(node.threeCSS.parent).toBe(scene.threeCSS)
 
@@ -328,14 +323,14 @@ describe('ShadowDOM support', () => {
 		expect(sphere.parentLumeElement).toBe(null)
 		expect(sphere.assignedSlot).toBe(null)
 		expect(sphere.composedParent).toBe(null)
-		expect(sphere.composedLumeParent).toBe(null)
+		expect(sphere.composedSceneGraphParent).toBe(null)
 		expect(sphere.three.parent).toBe(null)
 		expect(sphere.threeCSS.parent).toBe(null)
 
 		expect(scene.children.length).toBe(1)
 		expect(scene.children[0]).toBe(slot)
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(node)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(node)
 		expect(scene.three.children.length).toBe(1)
 		expect(scene.three.children[0]).toBe(node.three)
 		expect(scene.threeCSS.children.length).toBe(1)
@@ -371,7 +366,7 @@ describe('ShadowDOM support', () => {
 		expect(box.parentLumeElement).toBe(node)
 		expect(box.assignedSlot).toBe(slot)
 		expect(box.composedParent).toBe(node)
-		expect(box.composedLumeParent).toBe(node)
+		expect(box.composedSceneGraphParent).toBe(node)
 		expect(box.three.parent).toBe(node.three)
 		expect(box.threeCSS.parent).toBe(node.threeCSS)
 
@@ -380,12 +375,12 @@ describe('ShadowDOM support', () => {
 		expect(sphere.parentLumeElement).toBe(node)
 		expect(sphere.assignedSlot).toBe(null)
 		expect(sphere.composedParent).toBe(null)
-		expect(sphere.composedLumeParent).toBe(null)
+		expect(sphere.composedSceneGraphParent).toBe(null)
 		expect(sphere.three.parent).toBe(null)
 		expect(sphere.threeCSS.parent).toBe(null)
 
-		expect(node.composedLumeChildren.length).toBe(1)
-		expect(node.composedLumeChildren[0]).toBe(box)
+		expect(node.composedSceneGraphChildren.length).toBe(1)
+		expect(node.composedSceneGraphChildren[0]).toBe(box)
 		expect(node.three.children.length).toBe(1)
 		expect(node.three.children[0]).toBe(box.three)
 		expect(node.threeCSS.children.length).toBe(1)
@@ -424,19 +419,300 @@ describe('ShadowDOM support', () => {
 		expect(node.parentLumeElement).toBe(null)
 		expect(node.assignedSlot).toBe(middleSlot)
 		expect(node.composedParent).toBe(middleNode)
-		expect(node.composedLumeParent).toBe(middleNode)
+		expect(node.composedSceneGraphParent).toBe(middleNode)
 		expect(node.three.parent).toBe(middleNode.three)
 		expect(node.threeCSS.parent).toBe(middleNode.threeCSS)
 
 		expect(middleNode.children.length).toBe(1)
 		expect(middleNode.children[0]).toBe(middleSlot)
-		expect(middleNode.composedLumeChildren.length).toBe(1)
-		expect(middleNode.composedLumeChildren[0]).toBe(node)
+		expect(middleNode.composedSceneGraphChildren.length).toBe(1)
+		expect(middleNode.composedSceneGraphChildren[0]).toBe(node)
 		expect(middleNode.three.children.length).toBe(1)
 		expect(middleNode.three.children[0]).toBe(node.three)
 		expect(middleNode.threeCSS.children.length).toBe(1)
 		expect(middleNode.threeCSS.children[0]).toBe(node.threeCSS)
 	})
+
+	it('tracks direct vs terminal slottedParent through forwarded slot chains', async () => {
+		// Element A has a ShadowRoot.
+		const A = document.createElement('lume-element3d')
+		const rootA = A.attachShadow({mode: 'open'})
+
+		// Element B is a direct child of A, assigned to one of two slots in A's ShadowRoot.
+		const B = document.createElement('lume-element3d')
+		B.setAttribute('slot', 'slot1')
+		A.append(B)
+
+		container.append(A)
+
+		// C1 and C2 are siblings in A's ShadowRoot, each owning one slot.
+		// Both slots forward to their owner's own shadow which contains a
+		// terminal slot.  This way moving B from slot1 to slot2 changes
+		// B's slottedParent and terminalSlottedParent.
+		const C1 = document.createElement('lume-element3d')
+		const slot1 = document.createElement('slot')
+		slot1.setAttribute('name', 'slot1')
+		slot1.setAttribute('slot', 'terminal')
+		C1.append(slot1)
+		rootA.append(C1)
+
+		const C2 = document.createElement('lume-element3d')
+		const slot2 = document.createElement('slot')
+		slot2.setAttribute('name', 'slot2')
+		slot2.setAttribute('slot', 'terminal')
+		C2.append(slot2)
+		rootA.append(C2)
+
+		// Each C* has a ShadowRoot containing a D* with a terminal slot.
+		const rootC1 = C1.attachShadow({mode: 'open'})
+		const D1 = document.createElement('lume-element3d')
+		const terminalSlot1 = document.createElement('slot')
+		terminalSlot1.setAttribute('name', 'terminal')
+		D1.append(terminalSlot1)
+		rootC1.append(D1)
+
+		const rootC2 = C2.attachShadow({mode: 'open'})
+		const D2 = document.createElement('lume-element3d')
+		const terminalSlot2 = document.createElement('slot')
+		terminalSlot2.setAttribute('name', 'terminal')
+		D2.append(terminalSlot2)
+		rootC2.append(D2)
+
+		await new Promise(r => setTimeout(r, 10))
+
+		// --- Verify initial state: B → slot1 → terminal1 ---
+
+		// Direct slottedParent: C1 (owner of slot1)
+		expect(B.slottedParent).toBe(C1)
+		// Terminal slottedParent: D1 (owner of terminal slot in C1's shadow)
+		expect(B.terminalSlottedParent).toBe(D1)
+
+		// C1 has B as a direct slotted child.
+		expect(C1.slottedChildren!.size).toBe(1)
+		expect(C1.slottedChildren!.has(B)).toBe(true)
+		expect(C1.terminalSlottedChildren).toBeNull()
+
+		// C2 has nothing — B is not assigned to slot2 yet.
+		expect(C2.slottedChildren).toBeNull()
+		expect(C2.terminalSlottedChildren).toBeNull()
+
+		// D1 has B as a terminal slotted child.
+		expect(D1.terminalSlottedChildren!.size).toBe(1)
+		expect(D1.terminalSlottedChildren!.has(B)).toBe(true)
+
+		// D2 has nothing.
+		expect(D2.terminalSlottedChildren).toBeNull()
+
+		// --- Move B from slot1 to slot2 ---
+
+		B.setAttribute('slot', 'slot2')
+
+		await new Promise(r => setTimeout(r, 10))
+
+		// B's direct slottedParent changed: C1 → C2.
+		expect(B.slottedParent).toBe(C2)
+		// B's terminal slottedParent changed: D1 → D2.
+		expect(B.terminalSlottedParent).toBe(D2)
+
+		// C1's slottedChildren is now empty (B left slot1).
+		expect(C1.slottedChildren).toBeNull()
+		expect(C1.terminalSlottedChildren).toBeNull()
+
+		// C2 now has B as a direct slotted child.
+		expect(C2.slottedChildren!.size).toBe(1)
+		expect(C2.slottedChildren!.has(B)).toBe(true)
+		expect(C2.terminalSlottedChildren).toBeNull()
+
+		// D1's terminal children empty.
+		expect(D1.terminalSlottedChildren).toBeNull()
+
+		// D2 now has B as a terminal slotted child.
+		expect(D2.terminalSlottedChildren!.size).toBe(1)
+		expect(D2.terminalSlottedChildren!.has(B)).toBe(true)
+	})
+
+	it('tracks direct vs terminal slottedParent through a three-layer forwarded slot chain', async () => {
+			// Helper to instrument an element's composition callbacks for testing.
+			const trackCallbacks = (el: HTMLElement) => {
+				const log: any[] = []
+				const origComposed = (el as any).composedCallback
+				const origUncomposed = (el as any).uncomposedCallback
+				const origChildComposed = (el as any).childComposedCallback
+				const origChildUncomposed = (el as any).childUncomposedCallback
+
+				;(el as any).composedCallback = function(parent: any, type: string) {
+					log.push({event: 'composed', other: parent, compositionType: type})
+					return origComposed?.call(this, parent, type)
+				}
+				;(el as any).uncomposedCallback = function(parent: any, type: string) {
+					log.push({event: 'uncomposed', other: parent, compositionType: type})
+					return origUncomposed?.call(this, parent, type)
+				}
+				;(el as any).childComposedCallback = function(child: any, type: string) {
+					log.push({event: 'childComposed', other: child, compositionType: type})
+					return origChildComposed?.call(this, child, type)
+				}
+				;(el as any).childUncomposedCallback = function(child: any, type: string) {
+					log.push({event: 'childUncomposed', other: child, compositionType: type})
+					return origChildUncomposed?.call(this, child, type)
+				}
+				return log
+			}
+
+			// Layer 1: A's ShadowRoot
+			const A = document.createElement('lume-element3d')
+			const A_log = trackCallbacks(A)
+			const rootA = A.attachShadow({mode: 'open'})
+
+			// Element B is a direct child of A.
+			const B = document.createElement('lume-element3d')
+			const B_log = trackCallbacks(B)
+			B.setAttribute('slot', 'slotA')
+			A.append(B)
+
+			container.append(A)
+
+			// C1 owns slotA (forwarded to "mid"). C2 owns slotB (also forwarded
+			// to "mid"). X is assigned directly to "mid".  All three sit alongside
+			// D (mid slot owner) in A's ShadowRoot so they share a common
+			// three-layer chain: B → C1/C2's slot → D's mid slot → E's terminal.
+			const C1 = document.createElement('lume-element3d')
+			const C1_log = trackCallbacks(C1)
+			const slotA = document.createElement('slot')
+			slotA.setAttribute('name', 'slotA')
+			slotA.setAttribute('slot', 'mid')
+			C1.append(slotA)
+			rootA.append(C1)
+
+			const C2 = document.createElement('lume-element3d')
+			const C2_log = trackCallbacks(C2)
+			const slotB = document.createElement('slot')
+			slotB.setAttribute('name', 'slotB')
+			slotB.setAttribute('slot', 'mid')
+			C2.append(slotB)
+			rootA.append(C2)
+
+			const X = document.createElement('lume-element3d')
+			const X_log = trackCallbacks(X)
+			X.setAttribute('slot', 'mid')
+			rootA.append(X)
+
+			// Layer 2: D (mid slot, forwarded to "terminal"), also in A's ShadowRoot
+			const D = document.createElement('lume-element3d')
+			const D_log = trackCallbacks(D)
+			const midSlot = document.createElement('slot')
+			midSlot.setAttribute('name', 'mid')
+			midSlot.setAttribute('slot', 'terminal')
+			D.append(midSlot)
+			rootA.append(D)
+
+			// Layer 3: D's ShadowRoot → E (terminal slot, final destination)
+			const rootD = D.attachShadow({mode: 'open'})
+			const E = document.createElement('lume-element3d')
+			const E_log = trackCallbacks(E)
+			const terminalSlot = document.createElement('slot')
+			terminalSlot.setAttribute('name', 'terminal')
+			E.append(terminalSlot)
+			rootD.append(E)
+
+			await new Promise(r => setTimeout(r, 10))
+
+			// --- Verify initial state ---
+
+			// B's direct slottedParent: C1 (slotA's owner, first in chain)
+			expect(B.slottedParent).toBe(C1)
+			// B's terminal slottedParent: E (terminal slot's owner, final in chain)
+			expect(B.terminalSlottedParent).toBe(E)
+
+			// X's direct slottedParent: D (mid slot's owner)
+			expect(X.slottedParent).toBe(D)
+			// X's terminal slottedParent: E (same terminal slot)
+			expect(X.terminalSlottedParent).toBe(E)
+
+			// C1 has B as a direct slotted child (via slotA), but NOT X.
+			expect(C1.slottedChildren!.size).toBe(1)
+			expect(C1.slottedChildren!.has(B)).toBe(true)
+			expect(C1.slottedChildren!.has(X)).toBe(false)
+			expect(C1.terminalSlottedChildren).toBeNull()
+
+			// C2 has nothing — B is not assigned to slotB yet.
+			expect(C2.slottedChildren).toBeNull()
+			expect(C2.terminalSlottedChildren).toBeNull()
+
+			// D has BOTH B (passthrough from C1's slot) and X (directly assigned
+			// to "mid").  D has one more slottedChildren element than C1.
+			expect(D.slottedChildren!.size).toBe(2)
+			expect(D.slottedChildren!.has(B)).toBe(true)
+			expect(D.slottedChildren!.has(X)).toBe(true)
+			expect(D.terminalSlottedChildren).toBeNull()
+
+			// E has BOTH B and X as terminal slotted children (final sink).
+			expect(E.slottedChildren).toBeNull()
+			expect(E.terminalSlottedChildren!.size).toBe(2)
+			expect(E.terminalSlottedChildren!.has(B)).toBe(true)
+			expect(E.terminalSlottedChildren!.has(X)).toBe(true)
+
+			// --- Callback verification ---
+
+			// B was composed to C1 with "slot" type (direct slot parent).
+			expect(B_log.filter(e => e.event === 'composed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
+			expect(C1_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+
+			// X was composed to D with "slot" type (mid slot is first slot for X).
+			expect(X_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(1)
+			expect(D_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'slot').length).toBe(1)
+
+			// B did NOT get "slot" composed to D or C2.
+			expect(B_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(0)
+			expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(0)
+
+			// Both B and X got "terminal-slot" composed to E.
+			expect(B_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
+			expect(X_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
+			expect(E_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'terminal-slot').length).toBe(1)
+			expect(E_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'terminal-slot').length).toBe(1)
+
+			// --- Move B from slotA to slotB (C1 → C2, same terminal E) ---
+
+			// Reset logs to check what fires during the move.
+			A_log.length = B_log.length = C1_log.length = C2_log.length = D_log.length = E_log.length = X_log.length = 0
+
+			B.setAttribute('slot', 'slotB')
+
+			await new Promise(r => setTimeout(r, 10))
+
+			// B's direct slottedParent changed: C1 → C2.
+			expect(B.slottedParent).toBe(C2)
+			// B's terminal slottedParent unchanged: still E.
+			expect(B.terminalSlottedParent).toBe(E)
+
+			// C1's slottedChildren is now empty.
+			expect(C1.slottedChildren).toBeNull()
+
+			// C2 now has B as a direct slotted child.
+			expect(C2.slottedChildren!.size).toBe(1)
+			expect(C2.slottedChildren!.has(B)).toBe(true)
+
+			// D still has both B and X.
+			expect(D.slottedChildren!.size).toBe(2)
+			expect(D.slottedChildren!.has(B)).toBe(true)
+			expect(D.slottedChildren!.has(X)).toBe(true)
+
+			// E still has both B and X as terminal children.
+			expect(E.terminalSlottedChildren!.size).toBe(2)
+			expect(E.terminalSlottedChildren!.has(B)).toBe(true)
+			expect(E.terminalSlottedChildren!.has(X)).toBe(true)
+
+			// B got uncomposed from C1 (slot type) and composed to C2 (slot type).
+			expect(B_log.filter(e => e.event === 'uncomposed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
+			expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(1)
+			expect(C1_log.filter(e => e.event === 'childUncomposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+			expect(C2_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+
+			// No terminal-slot callbacks fired (terminal is still E for both).
+			expect(B_log.filter(e => e.compositionType === 'terminal-slot').length).toBe(0)
+			expect(E_log.filter(e => e.compositionType === 'terminal-slot').length).toBe(0)
+		})
 
 	////// TODO /////////////////////////////////////////////////////////////////////////////
 	////// TODO /////////////////////////////////////////////////////////////////////////////
@@ -468,12 +744,11 @@ describe('ShadowDOM support', () => {
 		await new Promise(r => setTimeout(r, 10))
 
 		expect(node.parentLumeElement).toBe(scene)
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(node)
+		expect(node.composedSceneGraphParent).toBe(scene)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(node)
 		expect(scene.composedParent).toBe(container)
-		expect(scene.composedLumeParent).toBe(null)
+		expect(scene.composedSceneGraphParent).toBe(null)
 	})
 
 	// TODO slotting of scenes is not currently supported.
@@ -491,13 +766,13 @@ describe('ShadowDOM support', () => {
 		const scene = container.querySelector('lume-scene')!
 		const node = container.querySelector('lume-element3d')!
 
-		const distributedParent = html`
+		const slottableParent = html`
 			<div>
 				<slot></slot>
 			</div>
 		` as HTMLDivElement
 
-		root.append(distributedParent)
+		root.append(slottableParent)
 
 		// TODO get it work without a timeout (ths is difficult considering
 		// that the implementation currently relies on MutationObserver
@@ -505,12 +780,11 @@ describe('ShadowDOM support', () => {
 		await new Promise(r => setTimeout(r, 10))
 
 		expect(node.parentLumeElement).toBe(scene)
-		expect(node.composedParent).toBe(scene)
-		expect(node.composedLumeParent).toBe(scene)
-		expect(scene.composedLumeChildren.length).toBe(1)
-		expect(scene.composedLumeChildren[0]).toBe(node)
-		expect(scene.composedParent).toBe(distributedParent)
-		expect(scene.composedLumeParent).toBe(null)
+		expect(node.composedSceneGraphParent).toBe(scene)
+		expect(scene.composedSceneGraphChildren.length).toBe(1)
+		expect(scene.composedSceneGraphChildren[0]).toBe(node)
+		expect(scene.composedParent).toBe(slottableParent)
+		expect(scene.composedSceneGraphParent).toBe(null)
 	})
 
 	// TODO tests for features that rely on the composed tree

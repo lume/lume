@@ -9,6 +9,7 @@ export type MeshComponentType = 'geometry' | 'material';
  * @class MeshBehavior
  *
  * @extends RenderableBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child behavior elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare abstract class MeshBehavior extends RenderableBehavior {
     element: Mesh | Points | InstancedMesh | Line;

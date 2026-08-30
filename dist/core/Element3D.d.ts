@@ -76,7 +76,7 @@ declare class Element3D extends SharedAPI {
      *
      * *readonly*
      *
-     * Always `true` for things that are or inherit from `Element3D`.
+     * Always `true` for elements that are or inherit from `Element3D`.
      */
     readonly isElement3D = true;
     /**
@@ -132,8 +132,9 @@ declare class Element3D extends SharedAPI {
      */
     constructor();
     /**
-     * @method traverseSceneGraph - This traverses the composed tree of
-     * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+     * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
+     * elements (the scene graph) including this element, in pre-order. It skips
+     * non-LUME elements.
      *
      * This is similar to
      * [`Scene#traverseSceneGraph`](./Scene.md#traversescenegraph) but traversal
@@ -149,7 +150,7 @@ declare class Element3D extends SharedAPI {
      * ```
      *
      * @param {(node: Element3D) => void} visitor - A function called for each
-     * LUME node in the scene graph (the composed tree).
+     * LUME node participating in the render scene graph (traverses the flat tree).
      * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
      * the traversal will wait for custom elements to be defined (with
      * customElements.whenDefined) before traversing to them.
@@ -160,7 +161,7 @@ declare class Element3D extends SharedAPI {
      * returned so that it is possible to wait for the traversal to complete.
      */
     traverseSceneGraph(visitor: (node: Element3D) => void, waitForUpgrade?: boolean): Promise<void> | void;
-    connectedCallback(): void;
+    __updateVisible(): void;
     static css: string;
 }
 declare module 'solid-js' {

@@ -12,6 +12,9 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type TdsModelBehaviorAttributes = 'src'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-tds-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class TdsModelBehavior extends RenderableBehavior {

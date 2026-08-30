@@ -1,7 +1,7 @@
 import { Object3D } from 'three/src/core/Object3D.js';
 import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
-import type { Element3D } from './Element3D.js';
+import { Element3D } from './Element3D.js';
 import type { Scene } from './Scene.js';
 import { type CompositionType } from './CompositionTracker.js';
 import type { TransformableAttributes } from './Transformable.js';
@@ -10,7 +10,7 @@ export type BaseAttributes = TransformableAttributes | 'opacity';
 declare const SharedAPI_base: {
     new (...args: any[]): {
         initialBehaviors?: Record<string, string>;
-        "__#18@#setBehaviors"(): void;
+        "__#19@#setBehaviors"(): void;
         connectedCallback?(): void;
         disconnectedCallback?(): void;
         adoptedCallback?(): void;
@@ -121,6 +121,7 @@ declare const SharedAPI_base: {
         setPointerCapture(pointerId: number): void;
         toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
+        readonly behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
         readonly firstChild: ChildNode | null;
@@ -235,7 +236,6 @@ declare const SharedAPI_base: {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         replaceChildren(...nodes: (Node | string)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
-        behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly attributeStyleMap: StylePropertyMap;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
@@ -381,6 +381,14 @@ export declare class SharedAPI extends SharedAPI_base {
      */
     isElement3D: boolean;
     /**
+     *
+     * @deprecated Use the behavior elements from `src/behavior-elements/`
+     * instead. Those behaviors are used as child elements instead of via the
+     * `has=` attribute. Behaviors that are applied via the `has=` attribute
+     * will no longer be updated, and will eventually be removed.
+     */
+    has: string;
+    /**
      * @property {string | number | null} opacity -
      *
      * *attribute*
@@ -431,8 +439,8 @@ export declare class SharedAPI extends SharedAPI_base {
      * if the element is not a descendant of a Scene, `null` if the child is a
      * descendant of a Scene that is not connected into the DOM, or `null` if
      * the element is a descendant of a connected Scene but the element is not
-     * participating in the composed tree (i.e. the element is not distributed
-     * to a `<slot>` element of a ShadowRoot of the element's parent).
+     * participating in the flat tree (i.e. the element is not assigned
+     * to a `<slot>` element in a ShadowRoot of the element's parent).
      */
     get scene(): Scene | null;
     /**
@@ -469,32 +477,35 @@ export declare class SharedAPI extends SharedAPI_base {
      * can only be updated via the constructor, requiring us to make a new object.
      */
     recreateThreeCSS(): void;
-    connectedCallback(): void;
+    hasCheckEffect(): void;
+    resizeEffect(): void;
+    parentSizeChangeEffect(): void;
+    transformChangeEffect(): void;
     disconnectedCallback(): void;
     composedCallback(composedParent: Element, compositionType: CompositionType): void;
     uncomposedCallback(uncomposedParent: Element, compositionType: CompositionType): void;
     /**
-     * Called whenever a child element is composed to this element.
-     * This is called with a `compositionType` argument that tells us how the element is
-     * composed relative to the ["composed tree"](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
+     * Called whenever a child element is composed to this element in the flat tree.
+     * This is called with a `compositionType` argument that tells us via which avenue the child
+     * is composed relative to this parent in the ["flat tree"](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
      *
      * @param  {"root" | "slot" | "actual"} compositionType - If the value is
      * `"root"`, then the child was composed as a child of a shadow root of the
-     * current element. If the value is `"slot"`, then the child was composed (i.e. distributed, or assigned) to
+     * current element. If the value is `"slot"`, then the child was composed (i.e. slotted, distributed, or assigned) to
      * the current element via a [`<slot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) element.
      * If the value is `"actual"`, then the child was composed to the current
      * element as a regular child (`childComposedCallback` with `"actual"` passed
      * in is essentially the same as [`ChildTracker`](./ChildTracker)'s [`childConnectedCallback`](./ChildTracker#childconnectedcallback)).
      */
-    childComposedCallback(child: Element, _compositionType: CompositionType): void;
-    childUncomposedCallback(child: Element, _compositionType: CompositionType): void;
+    childComposedCallback(child: Element, compositionType: CompositionType): void;
+    /**
+     * Similar to `childComposedCallback`, but called when the element is
+     * _uncomposed_ from this element in the flat tree. See
+     * [`childComposedCallback`](#childComposedCallback) for more detail.
+     */
+    childUncomposedCallback(child: Element, compositionType: CompositionType): void;
     /** @abstract */
     traverseSceneGraph(_visitor: (el: SharedAPI) => void, _waitForUpgrade?: boolean): Promise<void> | void;
-    /**
-     * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
-     * that parents are `SharedAPI` (`Element3D` or `Scene`) instances.
-     */
-    get parentLumeElement(): SharedAPI | null;
     /**
      * @method needsUpdate - Schedules a rendering update for the element.
      * Usually you don't need to call this when using the outer APIs, as setting
@@ -521,7 +532,6 @@ export declare class SharedAPI extends SharedAPI_base {
      */
     needsUpdate(): void;
     get _elementOperations(): ElementOperations;
-    get composedLumeChildren(): Element3D[];
     /**
      * @method makeThreeObject3d -
      *
@@ -545,8 +555,44 @@ export declare class SharedAPI extends SharedAPI_base {
      * [THREE.CSS3DObject](https://github.com/mrdoob/three.js/blob/b13eccc8bf1b6aeecf6e5652ba18d2425f6ec22f/examples/js/renderers/CSS3DRenderer.js#L7).
      */
     makeThreeCSSObject(): Object3D;
-    get composedLumeParent(): SharedAPI | null;
+    /**
+     * Returns the parent element as it participates in the Lume 3D scene graph.
+     *
+     * Scene's ShadowRoot is an internal rendering implementation. For Scene's
+     * direct children, the composed parent in the flat tree may resolve to an
+     * element inside Scene's shadow — this getter returns the Scene itself instead.
+     *
+     * For all other cases, filters the flat-tree composed parent to Lume types.
+     */
     get composedSceneGraphParent(): SharedAPI | null;
+    /**
+     * Returns the children that participate in the Lume 3D scene graph.
+     *
+     * For Scene elements, returns `composedChildren` filtered to Element3D
+     * (using the non-shadow branch), plus slotted children. Scene's internal
+     * ShadowRoot is invisible for scene-graph purposes.
+     *
+     * For non-Scene elements, returns `composedChildren` filtered to Element3D.
+     */
+    get composedSceneGraphChildren(): Element3D[];
+    /**
+     * The parent element if it is a Scene or Element3D instance, otherwise null.
+     */
+    get parentLumeElement(): SharedAPI | null;
+    /**
+     * @property {(Scene | Element3D)[]} lumeChildren -
+     *
+     * *readonly*
+     *
+     * An array of this element's LUME-specific children. This returns a new
+     * static array each time, so and modifying this array directly does not
+     * effect the current set of children. Use DOM methods like
+     * [`parent.append(child)`](https://developer.mozilla.org/en-US/docs/Web/API/Element/append)
+     * and
+     * [`child.remove()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/remove)
+     * to modify children.
+     */
+    get lumeChildren(): (Scene | Element3D)[];
     /**
      * Takes all the current component values (position, rotation, etc) and
      * calculates a transformation matrix from them (currently a THREE.Matrix4,
@@ -584,7 +630,6 @@ export declare class SharedAPI extends SharedAPI_base {
     /** @deprecated Use `dispatchEvent()` instead. */
     emit(eventName: string, data?: any): void;
     setAttribute(attr: string, value: any): void;
-    get _composedChildren(): SharedAPI[];
     static css: string;
 }
 export {};

@@ -52,6 +52,7 @@ import { toRadians } from '../../../core/utils/index.js';
  * [`tubeThickness`](#tubethickness).
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-torus-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let TorusGeometryBehavior = (() => {
     let _classDecorators = [behavior];

@@ -80,13 +80,10 @@ export const ShimmerCube = element('shimmer-cube')(
 			return html`
 				<lume-box
 					id=${() => (this.id ? `${this.id}-box` : '')}
-					color="#364659"
 					size-mode="proportional proportional proportional"
 					size="1 1 1"
-					opacity="0.06"
-					has="physical-material"
-					roughness="0.4"
 				>
+					<lume-physical-material color="#364659" material-opacity="0.06" roughness="0.4"></lume-physical-material>
 					<slot></slot>
 				</lume-box>
 				${cubeFaceOrientations.map(

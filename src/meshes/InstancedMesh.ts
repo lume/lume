@@ -1,8 +1,6 @@
 import {batch, untrack} from 'solid-js'
 import {element, numberAttribute, stringAttribute, type ElementAttributes} from '@lume/element'
 import {InstancedMesh as ThreeInstancedMesh} from 'three/src/objects/InstancedMesh.js'
-import {BoxGeometry} from 'three/src/geometries/BoxGeometry.js'
-import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
 import {DynamicDrawUsage} from 'three/src/constants.js'
 import {Quaternion} from 'three/src/math/Quaternion.js'
 import {Vector3} from 'three/src/math/Vector3.js'
@@ -13,8 +11,6 @@ import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import {stringToNumberArray} from './utils.js'
 import {queueMicrotaskOnceOnly} from '../utils/queueMicrotaskOnceOnly.js'
-
-import type {GeometryBehavior, MaterialBehavior} from '../behaviors/index.js'
 
 export type InstancedMeshAttributes = MeshAttributes | 'count' | 'rotations' | 'positions' | 'scales' | 'colors'
 
@@ -41,8 +37,8 @@ const appliedPosition = [0, 0, 0]
  * as separate Mesh instances would otherwise incur one draw call to the GPU
  * per mesh which will be slower.
  *
- * For sake of simplicity, `<lume-instanced-mesh>` has a box-geometry and
- * phong-material by default.
+ * A `<lume-instanced-mesh>` has a `<lume-box-geometry>` and
+ * `<lume-physical-material>` by default.
  *
  * ## Example
  *
@@ -136,22 +132,14 @@ class InstancedMesh extends Mesh {
 
 	#colors: number[] = []
 
-	override initialBehaviors = {geometry: 'box', material: 'physical'}
-
 	// This class will have a THREE.InstancedMesh for its .three property.
 	override makeThreeObject3d() {
-		let geometryBehavior: GeometryBehavior | null = null
-		let materialBehavior: MaterialBehavior | null = null
-
-		for (const [name, behavior] of this.behaviors) {
-			if (name.endsWith('-geometry')) geometryBehavior = behavior as GeometryBehavior
-			else if (name.endsWith('-material')) materialBehavior = behavior as MaterialBehavior
-		}
-
-		// Use the existing geometry and material from the behaviors in case we are in the recreateThree process.
 		const mesh = new ThreeInstancedMesh(
-			geometryBehavior?.meshComponent || new BoxGeometry(),
-			materialBehavior?.meshComponent || new MeshPhongMaterial(),
+			// We pass undefined here, and the geometry and material behaviors
+			// react to changes in .three and set .geometry and .material as
+			// needed.
+			undefined,
+			undefined,
 			this.#biggestCount,
 		)
 
@@ -423,6 +411,8 @@ class InstancedMesh extends Mesh {
 				})
 			}
 
+			// Untrack because we call recreateThree on count change above. Is
+			// this better off in a separate effect?
 			untrack(() => (this.three.count = this.count))
 
 			this.needsUpdate()

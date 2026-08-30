@@ -46,6 +46,7 @@ import { MaterialBehavior } from './MaterialBehavior.js';
  * Backed by Three.js [`THREE.MeshStandardMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshStandardMaterial)
  *
  * @extends MaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-standard-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let StandardMaterialBehavior = (() => {
     let _classDecorators = [behavior];

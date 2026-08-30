@@ -1,6 +1,6 @@
 import * as LUME from 'lume'
 
-const shaderMat = document.querySelector('shader-material')
+const shaderMat = document.querySelector('lume-shader-material')
 
 const outerCubes = true
 const outerCubeGlows = true
@@ -16,17 +16,19 @@ for (const i of Array(8).keys()) {
 				align-point="0.5 0.5 0.5"
 				mount-point="0.5 0.5 0.5"
 				position=${[i % 4 < 2 ? 400 : -400, i < 4 ? 400 : -400, (i + 1) % 2 ? -400 : 400]}
-				has="physical-material"
-				receive-shadow="false"
 				size="400 400 400"
-				sidedness="double"
 				opacity="1"
-				color="white"
-				clearcoat="1"
-				transmission="1"
-				metalness="0.0"
-				roughness="0.55"
-			></lume-sphere>
+			>
+				<lume-physical-material
+					receive-shadow="false"
+					sidedness="double"
+					color="white"
+					clearcoat="1"
+					transmission="1"
+					metalness="0.0"
+					roughness="0.55"
+				></lume-physical-material>
+			</lume-sphere>
 		`
 
 		centerBox.append(box)
@@ -42,7 +44,7 @@ for (const i of Array(8).keys()) {
 				receive-shadow="false"
 				size="200 200 200"
 			>
-				<shader-material
+				<lume-shader-material
 					sidedness="double"
 					uniforms=${
 						// use the attribute string instead of the JS prop so we don't share the same uniforms object
@@ -50,7 +52,7 @@ for (const i of Array(8).keys()) {
 					}
 					vertex-shader=${shaderMat.vertexShader}
 					fragment-shader=${shaderMat.fragmentShader}
-				></shader-material>
+				></lume-shader-material>
 			</lume-sphere>
 		`
 

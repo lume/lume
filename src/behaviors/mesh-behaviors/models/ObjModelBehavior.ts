@@ -8,6 +8,7 @@ import {behavior} from '../../Behavior.js'
 import {receiver} from '../../PropReceiver.js'
 import {Events} from '../../../core/Events.js'
 import {RenderableBehavior} from '../../RenderableBehavior.js'
+import {thro} from '../../../utils/thro.js'
 
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {MaterialBehavior} from '../materials/MaterialBehavior.js'
@@ -21,6 +22,9 @@ declare global {
 
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-obj-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class ObjModelBehavior extends RenderableBehavior {
@@ -152,7 +156,3 @@ class ObjModelBehavior extends RenderableBehavior {
 
 if (globalThis.window?.document && !elementBehaviors.has('obj-model'))
 	elementBehaviors.define('obj-model', ObjModelBehavior)
-
-const thro = (err: any) => {
-	throw err
-}

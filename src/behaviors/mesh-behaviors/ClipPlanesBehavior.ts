@@ -6,7 +6,6 @@ import {receiver} from '../PropReceiver.js'
 import {ClipPlane} from '../../core/ClipPlane.js'
 import {MeshBehavior} from './MeshBehavior.js'
 import type {MaterialBehavior} from './index.js'
-import type {Scene} from '../../core/Scene.js'
 
 export type ClipPlanesBehaviorAttributes =
 	| 'clipPlanes'
@@ -32,6 +31,7 @@ let refCount = 0
  * </script>
  *
  * @extends MeshBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-clipper>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export
 @behavior
@@ -201,12 +201,10 @@ class ClipPlanesBehavior extends MeshBehavior {
 	override connectedCallback() {
 		super.connectedCallback()
 
-		let lastScene: Scene | null = null
-
 		this.createEffect(() => {
-			if (!this.element.scene) return
+			const scene = this.element.scene
 
-			lastScene = this.element.scene
+			if (!scene) return
 
 			// Trigger the setter again in case it returned early if there was
 			// no scene. Depending on code load order, el.scene inside of set
@@ -216,7 +214,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 			// worrying about code execution order. https://github.com/lume/lume/issues/279
 			this.clipPlanes = this.#rawClipPlanes
 
-			if (!refCount) this.element.scene.localClipping = true
+			if (!refCount) scene.localClipping = true
 			refCount++
 
 			// TODO we need to observe all the way up the composed tree, or we
@@ -265,8 +263,7 @@ class ClipPlanesBehavior extends MeshBehavior {
 				this.#observer = null
 
 				refCount--
-				if (!refCount) lastScene!.localClipping = false
-				lastScene = null
+				if (!refCount) scene!.localClipping = false
 			})
 		})
 	}

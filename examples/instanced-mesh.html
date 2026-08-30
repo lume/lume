@@ -9,33 +9,67 @@
 	}
 </style>
 
-<lume-scene id="scene" perspective="800" webgl physically-correct-lights>
-	<lume-point-light position="200 -200 200" intensity="3000" color="white"></lume-point-light>
-	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-ambient-light color="white" intensity="3"></lume-ambient-light>
 
-	<lume-camera-rig
-		active
-		distance="2000"
-		max-distance="3000"
-		min-distance="100"
-		position="1000 1000 1000"
-	></lume-camera-rig>
-
-	<lume-instanced-mesh id="mesh" color="white" count="0" size="30 30 30"></lume-instanced-mesh>
+	<lume-sphere id="stars" size="10000 10000 10000" receive-shadow="false" mount-point="0.5 0.5 0.5">
+		<lume-basic-material
+			texture="../apps/docs/examples/hello-world/galaxy_starfield.png"
+			sidedness="back"
+			color="white"
+		></lume-basic-material>
+	</lume-sphere>
 </lume-scene>
 
 <script type="module">
 	import {html, Motor} from 'lume'
+	import {Color} from 'three'
 
-	const numberOfObjects = 50_000
-	const maxObjects = 200_000
-
-	mesh.count = numberOfObjects
-	mesh.rotations = Array.from({length: maxObjects * 3}).map(() => Math.random())
-	mesh.positions = Array.from({length: maxObjects * 3}).map(() => 2000 * Math.random())
-	mesh.scales = Array.from({length: maxObjects * 3}).map(() => Math.random())
+	const numberOfObjects = 10_000
+	const maxObjects = 20_000
+	const maxPosition = 1000
 	const colorPhases = Array.from({length: maxObjects * 3}).map(() => 2 * Math.random())
-	mesh.colors = Array.from({length: maxObjects * 3}).map(() => 0)
+	const lightColor = new Color(1, 0, 0)
+	const animateColor = false
+	const everyOther = 10
+
+	scene.append(
+		...html/*html*/ `
+			<lume-point-light
+				id="light"
+				shadow-bias="-0.001"
+				intensity="2000000"
+				color=${lightColor}
+				position=${[maxPosition / 2, maxPosition / 2, maxPosition / 2]}
+			>
+				<lume-sphere id="stars" size="20 20 20" cast-shadow="false" mount-point="0.5 0.5 0.5">
+					<lume-basic-material id="sphereMat" color=${lightColor}></lume-basic-material>
+				</lume-sphere>
+			</lume-point-light>
+
+			<lume-camera-rig
+				active
+				distance=${maxPosition / 1.5}
+				max-distance=${maxPosition * 3.5}
+				min-distance=${maxPosition * 0.1}
+				position=${[maxPosition / 2, maxPosition / 2, maxPosition / 2]}
+			></lume-camera-rig>
+
+			<lume-instanced-mesh
+				id="mesh"
+				size="20 20 20"
+				count=${numberOfObjects}
+				rotations=${Array.from({length: maxObjects * 3}).map((_, i) =>
+					Math.floor(i / 3) % everyOther === 0 ? Math.random() : 0,
+				)}
+				positions=${Array.from({length: maxObjects * 3}).map(() => maxPosition * Math.random())}
+				scales=${Array.from({length: maxObjects * 3}).map(() => Math.random())}
+				colors=${Array.from({length: maxObjects * 3}).map(() => 0.01)}
+			>
+				<lume-sphere-geometry horizontal-segments="6" vertical-segments="6"></lume-sphere-geometry>
+			</lume-instanced-mesh>
+		`,
+	)
 
 	const demoOptions = {
 		// When true, all instances are animated, which is the most costly.
@@ -56,6 +90,19 @@
 	Motor.addRenderTask(t => {
 		const rotations = mesh.rotations
 
+		// formula: https://www.desmos.com/calculator/soatbmcram
+		lightColor.r = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[0]) + 0.5
+		lightColor.g = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[1]) + 0.5
+		lightColor.b = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[2]) + 0.5
+		light.color = lightColor
+		sphereMat.color = lightColor
+
+		light.position = [
+			(maxPosition / 4) * Math.sin(t * 0.0001) + maxPosition / 2,
+			(maxPosition / 4) * Math.cos(t * 0.0002) + maxPosition / 2,
+			(maxPosition / 4) * Math.sin(t * 0.0003) + maxPosition / 2,
+		]
+
 		if (demoOptions.animateAll) {
 			let i = 0
 
@@ -67,10 +114,12 @@
 			i = 0
 			const colors = mesh.colors
 
-			for (const col of colors) {
-				// formula: https://www.desmos.com/calculator/soatbmcram
-				colors[i] = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i]) + 0.5
-				i++
+			if (animateColor) {
+				for (const col of colors) {
+					// formula: https://www.desmos.com/calculator/soatbmcram
+					colors[i] = 0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i]) + 0.5
+					i++
+				}
 			}
 
 			// Modifying the arrays in place does not trigger reactivity (arrays are
@@ -78,15 +127,15 @@
 			// instances re-render. The trick is to set them to the same values.
 			//
 			// NOTE: Triggering an update this way is fine if you are updating
-			// all instances. However if you wish to update on some instances,
+			// all instances. However if you wish to update only some instances,
 			// this approach is not ideal because it re-calculates all matrices
-			// and coloes of all instances even if they all didn't change.
+			// and colors of all instances even if they all didn't change.
 			mesh.rotations = mesh.rotations
 			mesh.colors = mesh.colors
 		} else {
 			for (let i = 0; i < numberOfObjects; i += 1) {
 				// Animate only every 50th instance.
-				if (i % 50 !== 0) continue
+				if (i % everyOther !== 0) continue
 
 				// Set an individual instance.
 				//
@@ -100,12 +149,14 @@
 					rotations[i * 3 + 1] + 0.01,
 					rotations[i * 3 + 2] + 0.01,
 				)
-				mesh.setInstanceColor(
-					i,
-					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 0]) + 0.5,
-					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 1]) + 0.5,
-					0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 2]) + 0.5,
-				)
+				if (animateColor) {
+					mesh.setInstanceColor(
+						i,
+						0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 0]) + 0.5,
+						0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 1]) + 0.5,
+						0.5 * Math.sin(Math.PI * (t * 0.001) - Math.PI * colorPhases[i * 3 + 2]) + 0.5,
+					)
+				}
 
 				// NOTE! If you use this method to update *all* instances, it
 				// will *not* be faster than updating the array directly and

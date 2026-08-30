@@ -1,3 +1,4 @@
+import {effect, signal} from 'classy-solid'
 import {Color} from 'three/src/math/Color.js'
 import {Light as ThreeLight} from 'three/src/lights/Light.js'
 import {attribute, element, numberAttribute} from '@lume/element'
@@ -67,18 +68,17 @@ abstract class Light extends Element3D {
 		return new ThreeLight()
 	}
 
-	override connectedCallback() {
-		super.connectedCallback()
-
-		this.createEffect(() => {
-			if (typeof this.color === 'object') this.three.color = this.color
-			this.three.color = new Color(this.color)
-			this.needsUpdate()
-		})
-
-		this.createEffect(() => {
-			this.three.intensity = this.intensity
-			this.needsUpdate()
-		})
+	@effect colorEffect() {
+		if (typeof this.color === 'object') this.three.color = this.color
+		this.three.color = new Color(this.color)
+		this.needsUpdate()
 	}
+
+	@effect intensityEffect() {
+		this.three.intensity = this.intensity
+		this.needsUpdate()
+	}
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }

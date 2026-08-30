@@ -11,23 +11,18 @@ export type ShapeAttributes = MeshAttributes | ShapeGeometryBehaviorAttributes;
  *
  * Default behaviors:
  *
- * - [`shape-geometry`](../behaviors/mesh-behaviors/geometries/ShapeGeometryBehavior.md)
- * - [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior.md)
+ * - [`<lume-shape-geometry>`](../behavior-elements/mesh-behaviors/geometries/ShapeGeometry.md)
+ * - [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial.md)
  *
  * <live-code id="example"></live-code>
  * <script>
  *   example.content = shapesExample
  * </script>
  *
- * Inherits attribute properties from [`ShapeGeometryBehavior`](../behaviors/geometries/ShapeGeometryBehavior.md).
- *
  * @extends Mesh
  */
 export declare class Shape extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
 }
 export interface Shape extends ElementWithBehaviors<ShapeGeometryBehavior, ShapeGeometryBehaviorAttributes> {
 }

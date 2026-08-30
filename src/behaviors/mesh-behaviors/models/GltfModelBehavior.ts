@@ -23,6 +23,9 @@ let dracoLoaders = new Map<string, {count: number; dracoLoader: DRACOLoader}>()
 
 export type GltfModelBehaviorAttributes = 'src' | 'dracoDecoder' | 'centerGeometry'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-gltf-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class GltfModelBehavior extends RenderableBehavior {

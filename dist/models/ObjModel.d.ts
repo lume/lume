@@ -1,15 +1,15 @@
 import { type ElementAttributes } from '@lume/element';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import type { Group } from 'three/src/objects/Group.js';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
-import type { ObjModelBehavior, ObjModelBehaviorAttributes } from '../behaviors/index.js';
-export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttributes;
+export type ObjModelAttributes = Element3DAttributes | 'obj' | 'mtl';
 /**
  * @element lume-obj-model
  * @class ObjModel -
  *
- * Defines the `<lume-obj-model>` element, short for `<lume-element3d
- * has="obj-model">`, for loading 3D models in the OBJ format (`.obj` files
- * paired with `.mtl` files).
+ * Defines the `<lume-obj-model>` element for loading 3D models in the OBJ
+ * format (`.obj` files paired with `.mtl` files).
  *
  * HTML Example:
  *
@@ -36,11 +36,13 @@ export type ObjModelAttributes = Element3DAttributes | ObjModelBehaviorAttribute
  * ```
  */
 export declare class ObjModel extends Element3D {
-    initialBehaviors: {
-        model: string;
-    };
-}
-export interface ObjModel extends ElementWithBehaviors<ObjModelBehavior, ObjModelBehaviorAttributes> {
+    #private;
+    obj: string;
+    mtl: string;
+    model?: Group;
+    objLoader: OBJLoader;
+    mtlLoader: MTLLoader;
+    connectedCallback(): void;
 }
 declare module 'solid-js' {
     namespace JSX {

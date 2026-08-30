@@ -36,7 +36,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
     if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
-import { reactive, signal } from 'classy-solid';
+import { signal } from 'classy-solid';
 import { getInheritedDescriptor } from 'lowclass/dist/getInheritedDescriptor.js';
 import { stringToArray } from './utils.js';
 import { batch } from 'solid-js';
@@ -52,10 +52,6 @@ const defaultValues = { x: undefined, y: undefined, z: undefined };
  * {x:'foo', y:'bar', z:'baz'}
  */
 let XYZValues = (() => {
-    let _classDecorators = [reactive];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
     let _classSuper = Object;
     let _private_x_decorators;
     let _private_x_initializers = [];
@@ -69,8 +65,7 @@ let XYZValues = (() => {
     let _private_z_initializers = [];
     let _private_z_extraInitializers = [];
     let _private_z_descriptor;
-    var XYZValues = class extends _classSuper {
-        static { _classThis = this; }
+    return class XYZValues extends _classSuper {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _private_x_decorators = [signal];
@@ -79,10 +74,7 @@ let XYZValues = (() => {
             __esDecorate(this, _private_x_descriptor = { get: __setFunctionName(function () { return this.#x_accessor_storage; }, "#x", "get"), set: __setFunctionName(function (value) { this.#x_accessor_storage = value; }, "#x", "set") }, _private_x_decorators, { kind: "accessor", name: "#x", static: false, private: true, access: { has: obj => #x in obj, get: obj => obj.#x, set: (obj, value) => { obj.#x = value; } }, metadata: _metadata }, _private_x_initializers, _private_x_extraInitializers);
             __esDecorate(this, _private_y_descriptor = { get: __setFunctionName(function () { return this.#y_accessor_storage; }, "#y", "get"), set: __setFunctionName(function (value) { this.#y_accessor_storage = value; }, "#y", "set") }, _private_y_decorators, { kind: "accessor", name: "#y", static: false, private: true, access: { has: obj => #y in obj, get: obj => obj.#y, set: (obj, value) => { obj.#y = value; } }, metadata: _metadata }, _private_y_initializers, _private_y_extraInitializers);
             __esDecorate(this, _private_z_descriptor = { get: __setFunctionName(function () { return this.#z_accessor_storage; }, "#z", "get"), set: __setFunctionName(function (value) { this.#z_accessor_storage = value; }, "#z", "set") }, _private_z_decorators, { kind: "accessor", name: "#z", static: false, private: true, access: { has: obj => #z in obj, get: obj => obj.#z, set: (obj, value) => { obj.#z = value; } }, metadata: _metadata }, _private_z_initializers, _private_z_extraInitializers);
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            XYZValues = _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
+            if (_metadata) Object.defineProperty(this, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
         #x_accessor_storage = __runInitializers(this, _private_x_initializers, undefined);
         get #x() { return _private_x_descriptor.get.call(this); }
@@ -437,7 +429,6 @@ let XYZValues = (() => {
             return this;
         });
     };
-    return XYZValues = _classThis;
 })();
 export { XYZValues };
 // TODO make this a decorator

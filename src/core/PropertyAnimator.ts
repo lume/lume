@@ -30,9 +30,14 @@ const isInstance = Symbol()
  * deltaTime, and should return the new desired opacity.
  */
 export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(Base: T = Object as any) {
+	if (Base.prototype instanceof PropertyAnimator)
+		throw new Error('Base class already extends PropertyAnimator, no need to apply the mixin again.')
+
 	return class PropertyAnimator extends Base {
-		// @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
-		[isInstance as any] = true
+		// Use `any` to prevent subclass "has or is using private name" errors.
+		get [isInstance as any]() {
+			return true
+		}
 
 		_setPropertyXYZ<K extends keyof this, V>(name: K, xyz: XYZValues, newValue: V) {
 			// @ts-ignore
@@ -140,13 +145,13 @@ export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(B
 	}
 }
 
-Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {
-	value(obj: any): boolean {
-		if (!obj) return false
-		if (obj[isInstance]) return true
-		return false
-	},
-})
+export type AnyPropertyAnimator = InstanceType<ReturnType<typeof PropertyAnimator>>
+
+export function isAnyPropertyAnimator(o: any): o is AnyPropertyAnimator {
+	return o[isInstance]
+}
+
+Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {value: isAnyPropertyAnimator})
 
 // the following type guards are used above just to satisfy the type system,
 // though the actual runtime check does not guarantee that the functions are of

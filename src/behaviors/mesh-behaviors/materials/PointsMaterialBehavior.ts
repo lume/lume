@@ -7,6 +7,9 @@ import {MaterialBehavior, type MaterialBehaviorAttributes} from './MaterialBehav
 
 export type PointsMaterialBehaviorAttributes = MaterialBehaviorAttributes | 'texture' | 'sizeAttenuation' | 'pointSize'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-points-material>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class PointsMaterialBehavior extends MaterialBehavior {

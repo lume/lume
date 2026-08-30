@@ -4,8 +4,8 @@
 // have it accept a single element to rotate, and it would apply DragFling (or
 // whichever fling is provided, easy to compose things).
 
-import {Effects, reactive, signal} from 'classy-solid'
-import {onCleanup} from 'solid-js'
+import {effect, Effects, signal} from 'classy-solid'
+import {onCleanup, untrack} from 'solid-js'
 import {clamp} from '../math/clamp.js'
 import type {Element3D} from '../core/Element3D.js'
 
@@ -26,9 +26,9 @@ type Options = Partial<
 	>
 >
 
-export
-@reactive
-class FlingRotation extends Effects {
+type DraggableTargets = HTMLElement | SVGElement | MathMLElement | Document | Window
+
+export class FlingRotation extends Effects {
 	/** The object that will be rotated on Y. Required. */
 	@signal rotationYTarget!: Element3D
 
@@ -40,9 +40,10 @@ class FlingRotation extends Effects {
 
 	/**
 	 * The element on which the pointer should be placed down on in order to
-	 * initiate drag tracking. This defaults to rotationXTarget.
+	 * initiate drag tracking. This falls back to interactionContainer if not
+	 * specified.
 	 */
-	@signal interactionInitiator!: Element
+	@signal interactionInitiator?: DraggableTargets
 
 	/**
 	 * The area in which drag tacking will happen. Defaults to
@@ -50,7 +51,7 @@ class FlingRotation extends Effects {
 	 */
 	// TODO we only need the initiator (just call it target) and we can remove
 	// this in favor of pointer capture.
-	@signal interactionContainer: Element = document.documentElement
+	@signal interactionContainer: DraggableTargets = document.documentElement
 
 	/**
 	 * The X rotation can not go below this value. Defaults to -90 which means
@@ -95,8 +96,7 @@ class FlingRotation extends Effects {
 		Object.assign(this, options)
 	}
 
-	#mainPointer = -1
-	#pointerCount = 0
+	#firstPointer = -1
 
 	// The last X/Y only for a single pointer (the rest are ignored).
 	#lastX = 0
@@ -107,12 +107,20 @@ class FlingRotation extends Effects {
 
 	#moveTimestamp = 0
 
-	#onPointerDown = (event: PointerEvent) => {
-		this.#pointerCount++
-		if (this.#pointerCount === 1) this.#mainPointer = event.pointerId
-		else return
+	@signal accessor #isStarted = false
 
-		this.interactionContainer.setPointerCapture(this.#mainPointer)
+	get isStarted() {
+		return this.#isStarted
+	}
+
+	#onPointerDown = (event: PointerEvent) => {
+		if (this.#firstPointer !== -1) return
+
+		this.#firstPointer = event.pointerId
+
+		event.preventDefault()
+
+		captureTarget(this.interactionContainer).setPointerCapture(this.#firstPointer)
 
 		this.#stopAnimation()
 
@@ -124,11 +132,27 @@ class FlingRotation extends Effects {
 		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.addEventListener('pointermove', this.#onMove, {signal: this.#aborter.signal})
 
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.addEventListener('pointerup', this.#onPointerUp, {signal: this.#aborter.signal})
+
+		// Chrome bug workaround: pointerleave is fired after pointerup
+		// normally, after letting go outside the target element and when
+		// pointer capture was used. But in Chrome the pointerup event fails to
+		// fire if a pointermove happened in the same tick as the pointerup, so
+		// we also run onPointerUp in pointerleave to catch the Chrome edge
+		// case. https://issues.chromium.org/issues/40919532
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.addEventListener('pointerleave', this.#onPointerUp, {signal: this.#aborter.signal})
+
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.addEventListener( 'pointercancel', this.#onInteractionLost, {signal: this.#aborter.signal} )
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.addEventListener( 'lostpointercapture', this.#onPointerUp, {signal: this.#aborter.signal} )
 	}
 
 	#onMove = (event: PointerEvent) => {
-		if (event.pointerId !== this.#mainPointer) return
+		if (this.#firstPointer === -1) return
+		if (event.pointerId !== this.#firstPointer) return
 
 		this.#moveTimestamp = performance.now()
 
@@ -155,19 +179,28 @@ class FlingRotation extends Effects {
 		)
 	}
 
-	#onPointerUp = () => {
-		this.#pointerCount--
+	#onPointerUp = (event: PointerEvent) => {
+		if (this.#firstPointer === -1) return
+		if (event.pointerId !== this.#firstPointer) return
 
-		if (this.#pointerCount === 0) {
-			if (this.interactionContainer.hasPointerCapture(this.#mainPointer))
-				this.interactionContainer.releasePointerCapture(this.#mainPointer)
-			this.#mainPointer = -1
-			this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp)
-		}
+		this.#firstPointer = -1
+
+		// TODO this may not be needed, capture is automatically released if
+		// the capture pointer goes up. Test and confirm.
+		if (captureTarget(this.interactionContainer).hasPointerCapture(this.#firstPointer))
+			captureTarget(this.interactionContainer).releasePointerCapture(this.#firstPointer)
 
 		// stop dragging
 		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
 		this.interactionContainer.removeEventListener('pointermove', this.#onMove)
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.removeEventListener('pointerup', this.#onPointerUp)
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.removeEventListener('pointerleave', this.#onPointerUp)
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.removeEventListener('pointercancel', this.#onInteractionLost)
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		this.interactionContainer.removeEventListener('lostpointercapture', this.#onPointerUp)
 
 		if ((this.#deltaX === 0 && this.#deltaY === 0) || performance.now() - this.#moveTimestamp > 100) return
 
@@ -199,56 +232,52 @@ class FlingRotation extends Effects {
 		}
 	}
 
+	// Hack needed for Chrome (works fine in Firefox) otherwise
+	// pointercancel breaks the drag handling. See
+	// https://crbug.com/1166044
+	#onInteractionLost = (event: PointerEvent) => {
+		console.error(
+			'Pointer interaction lost. If this happened while the app was focused, please kindly open an issue at https://github.com/lume/lume/issues.',
+		)
+		this.#onPointerUp(event)
+	}
+
 	#onDragStart = (event: DragEvent) => event.preventDefault()
 
-	#isStarted = false
-
 	start(): this {
-		if (this.#isStarted) return this
+		if (untrack(() => this.#isStarted)) return this
 		this.#isStarted = true
 
-		this.createEffect(() => {
-			// We need all these things for interaction to continue.
-			if (!(this.rotationYTarget && this.rotationXTarget && this.interactionInitiator && this.interactionContainer))
-				return
-
-			this.#aborter = new AbortController()
-
-			// @ts-expect-error, whyyyy TypeScript TODO fix TypeScript lib.dom types.
-			this.interactionInitiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
-
-			// Hack needed for Chrome (works fine in Firefox) otherwise
-			// pointercancel breaks the drag handling. See
-			// https://crbug.com/1166044
-			// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
-			this.interactionInitiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
-			this.interactionInitiator.addEventListener(
-				'pointercancel',
-				() => {
-					console.error(
-						'Pointercancel should not be happening. If so, please kindly open an issue at https://github.com/lume/lume/issues.',
-					)
-				},
-				{signal: this.#aborter.signal},
-			)
-
-			onCleanup(() => {
-				this.#mainPointer = -1
-				this.#pointerCount = 0
-
-				this.#stopAnimation()
-
-				this.#aborter.abort()
-			})
-		})
+		this.startEffects()
 
 		return this
 	}
 
+	@effect flingRotationEffect() {
+		// We need all these things for interaction to continue.
+		if (!(this.rotationYTarget && this.rotationXTarget && this.interactionContainer))
+			return
+
+		this.#aborter = new AbortController()
+
+		const initiator = this.interactionInitiator ?? this.interactionContainer
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent. TODO fix TypeScript lib.dom types.
+		initiator.addEventListener('pointerdown', this.#onPointerDown, {signal: this.#aborter.signal})
+		// @ts-expect-error, whyyyy TypeScript It says that event type is Event instead of PointerEvent
+		initiator.addEventListener('dragstart', this.#onDragStart, {signal: this.#aborter.signal})
+
+		onCleanup(() => {
+			this.#firstPointer = -1
+			this.#stopAnimation()
+			this.#aborter.abort()
+		})
+	}
+
 	stop(): this {
-		if (!this.#isStarted) return this
+		if (!untrack(() => this.#isStarted)) return this
 		this.#isStarted = false
 
+		// CONTINUE Fix/update/delete all stopEffects() usage.
 		this.stopEffects()
 
 		return this
@@ -259,4 +288,13 @@ class FlingRotation extends Effects {
 		this.rotationXTarget.rotation = () => false
 		this.rotationYTarget.rotation = () => false
 	}
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
+}
+
+function captureTarget(target: DraggableTargets) {
+	return target instanceof Window || target instanceof Document
+		? document.documentElement
+		: target
 }
