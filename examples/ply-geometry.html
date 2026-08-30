@@ -2,7 +2,8 @@
 
 <style>
 	body {
-		background: #111;
+		/* radial gradient */
+		background: radial-gradient(circle, #005656, #001111 80%);
 	}
 </style>
 
@@ -11,30 +12,34 @@ points shimmer, coupled with the dark color of the points, makes a higher
 contrast between dark and bright points for effect. -->
 
 <lume-scene id="scene" perspective="800" webgl physically-correct-lights>
-	<lume-point-light id="light" position="200 -200 200" intensity="600000" color="cyan" align-point="0.5 0.5">
+	<lume-point-light id="light" position="200 -200 200" intensity="1000000" color="cyan" align-point="0.5 0.5">
 		<!-- uncomment the sphere to visualize the light position -->
-		<lume-sphere has="basic-material" color="cyan" size="10" align-point="0.5 0.5"></lume-sphere>
+		<lume-sphere size="10" align-point="0.5 0.5">
+			<lume-basic-material color="cyan"></lume-basic-material>
+		</lume-sphere>
 	</lume-point-light>
 
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active distance="200" max-distance="700" min-distance="100" align-point="0.5 0.5"></lume-camera-rig>
-
-	<lume-points
-		id="model"
-		has="ply-geometry phong-material"
-		src="./models/shelby-gt350.ply"
-		rotation="90 0 0"
-		position="-250 0 0"
-		size="0 0 0"
-		scale="50 50 50"
-		color="#003333"
-		align-point="0.5 0.5"
-	></lume-points>
 </lume-scene>
 
 <script type="module">
-	import 'lume'
+	import {html} from 'lume'
+
+	const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
+	const useShimmer = isFirefox // works only in Firefox
+	// TODO ^ when we switch to WebGPURenderer we can easily have compose the shimmer effect for all browsers
+
+	scene.append(html/*html*/ `
+		<lume-points id="model" rotation="90 0 0" position="-250 0 0" size="1 1 1" scale="50 50 50" align-point="0.5 0.5">
+			<lume-ply-geometry src="./models/shelby-gt350.ply"></lume-ply-geometry>
+
+			${useShimmer
+				? html/*html*/ `<lume-phong-material color="#009999"></lume-phong-material>`
+				: html/*html*/ `<lume-points-material color="#00ffff"></lume-points-material>`}
+		</lume-points>
+	`)
 
 	const lightDisplacement = 100
 	const movementRate = 0.002

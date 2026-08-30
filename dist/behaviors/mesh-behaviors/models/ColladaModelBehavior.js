@@ -41,6 +41,9 @@ import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
 import { onCleanup } from 'solid-js';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-collada-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let ColladaModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;

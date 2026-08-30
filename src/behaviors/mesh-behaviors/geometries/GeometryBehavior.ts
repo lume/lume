@@ -11,6 +11,7 @@ import type {MeshComponentType} from '../MeshBehavior.js'
  * `THREE.BufferGeometry` by default.
  *
  * @extends GeometryOrMaterialBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child geometry elements instead. Legacy behaviors will be removed in a future version.
  */
 export abstract class GeometryBehavior extends GeometryOrMaterialBehavior {
 	type: MeshComponentType = 'geometry'

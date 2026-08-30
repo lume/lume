@@ -23,6 +23,7 @@ export function behavior(nameOrClass, context) {
  * - Forwards the properties specified in `receivedProperties` from `observedObject` to `this` any time `receivedProperties` on `observedObject` change. Useful for forwarding JS properties from the host element to the behavior. This functionality comes from the [`PropReceiver`](./PropReceiver) class.
  *
  * @extends PropReceiver
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child behavior elements instead. Legacy behaviors will be removed in a future version.
  */
 export class Behavior extends PropReceiver() {
     // If true, elementBehaviors will wait for a custom element to be defined

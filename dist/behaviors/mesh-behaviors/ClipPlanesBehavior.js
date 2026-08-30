@@ -55,6 +55,7 @@ let refCount = 0;
  * </script>
  *
  * @extends MeshBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-clipper>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let ClipPlanesBehavior = (() => {
     let _classDecorators = [behavior];
@@ -276,11 +277,10 @@ let ClipPlanesBehavior = (() => {
         #observer = (__runInitializers(this, _clipDisabled_extraInitializers), null);
         connectedCallback() {
             super.connectedCallback();
-            let lastScene = null;
             this.createEffect(() => {
-                if (!this.element.scene)
+                const scene = this.element.scene;
+                if (!scene)
                     return;
-                lastScene = this.element.scene;
                 // Trigger the setter again in case it returned early if there was
                 // no scene. Depending on code load order, el.scene inside of set
                 // clipPlanes might be null despite that it is a valid Lume element.
@@ -289,7 +289,7 @@ let ClipPlanesBehavior = (() => {
                 // worrying about code execution order. https://github.com/lume/lume/issues/279
                 this.clipPlanes = this.#rawClipPlanes;
                 if (!refCount)
-                    this.element.scene.localClipping = true;
+                    scene.localClipping = true;
                 refCount++;
                 // TODO we need to observe all the way up the composed tree, or we
                 // should make the querying scoped only to the nearest root, for
@@ -328,8 +328,7 @@ let ClipPlanesBehavior = (() => {
                     this.#observer = null;
                     refCount--;
                     if (!refCount)
-                        lastScene.localClipping = false;
-                    lastScene = null;
+                        scene.localClipping = false;
                 });
             });
         }

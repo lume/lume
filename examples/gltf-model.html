@@ -4,9 +4,6 @@
 	id="scene"
 	perspective="800"
 	webgl
-	background="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-	background-intensity="0.6"
-	equirectangular-background="true"
 	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 	physically-correct-lights
 >
@@ -16,18 +13,13 @@
 	<lume-camera-rig active distance="200" max-distance="700" min-distance="100"></lume-camera-rig>
 
 	<!-- background -->
-	<!-- Try setting visible="true" on this sphere to see how it compares to the
-	scene's `background`. For some reason Three.js washes out `scene.background`
-	color. -->
-	<lume-sphere
-		visible="false"
-		has="basic-material"
-		color="white"
-		sidedness="double"
-		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-		size="4000"
-		mount-point="0.5 0.5 0.5"
-	></lume-sphere>
+	<lume-sphere visible="true" size="4000" mount-point="0.5 0.5 0.5" scale="1 1 -1">
+		<lume-basic-material
+			color="white"
+			sidedness="double"
+			texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+		></lume-basic-material>
+	</lume-sphere>
 
 	<lume-gltf-model
 		id="model"

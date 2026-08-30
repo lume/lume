@@ -41,7 +41,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
 };
 import { createEffect, onCleanup, untrack } from 'solid-js';
 import html from 'solid-js/html';
-import { signal } from 'classy-solid';
+import { effect, signal } from 'classy-solid';
 import { booleanAttribute, attribute, numberAttribute, element, stringAttribute, noSignal, } from '@lume/element';
 import { Scene as ThreeScene } from 'three/src/scenes/Scene.js';
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
@@ -54,10 +54,13 @@ import { WebglRendererThree } from '../renderers/WebglRendererThree.js';
 import { Css3dRendererThree } from '../renderers/Css3dRendererThree.js';
 import { SharedAPI } from './SharedAPI.js';
 import { Motor } from './Motor.js';
+import { isElement3D } from './utils/isThisOrThat.js';
 import { autoDefineElements } from '../LumeConfig.js';
 import { version } from '../index.js'; // TODO replace with version.ts for vanilla ES Module tree shakability
 import { defaultScenePerspective } from '../constants.js';
-const magic = () => ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
+function magic() {
+    return ` LUME ✨ v${version} 👉 https://github.com/lume/lume `;
+}
 // Queue a microtask because otherwise this fires before the module graph has
 // executed the version variable initializer.
 queueMicrotask(() => console.info(magic()));
@@ -170,10 +173,28 @@ let Scene = (() => {
     let _localClipping_decorators;
     let _localClipping_initializers = [];
     let _localClipping_extraInitializers = [];
+    let __glLayer_decorators;
+    let __glLayer_initializers = [];
+    let __glLayer_extraInitializers = [];
+    let __cssLayer_decorators;
+    let __cssLayer_initializers = [];
+    let __cssLayer_extraInitializers = [];
+    let __miscLayer_decorators;
+    let __miscLayer_initializers = [];
+    let __miscLayer_extraInitializers = [];
+    let _glRendererEffect_decorators;
+    let _fogEffect_decorators;
+    let _cameraNearFarEffect_decorators;
+    let _cameraEffect_decorators;
+    let _parentSizeEffect_decorators;
+    let _cssRendererEffect_decorators;
     let _private_elementParentSize_decorators;
     let _private_elementParentSize_initializers = [];
     let _private_elementParentSize_extraInitializers = [];
     let _private_elementParentSize_descriptor;
+    let ___init_effects_ignore_decorators;
+    let ___init_effects_ignore_initializers = [];
+    let ___init_effects_ignore_extraInitializers = [];
     var Scene = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -204,11 +225,27 @@ let Scene = (() => {
             _private_defaultThreeCamera_decorators = [signal];
             _private_camera_decorators = [signal];
             _localClipping_decorators = [signal];
+            __glLayer_decorators = [signal];
+            __cssLayer_decorators = [signal];
+            __miscLayer_decorators = [signal];
+            _glRendererEffect_decorators = [effect];
+            _fogEffect_decorators = [effect];
+            _cameraNearFarEffect_decorators = [effect];
+            _cameraEffect_decorators = [effect];
+            _parentSizeEffect_decorators = [effect];
+            _cssRendererEffect_decorators = [effect];
             _private_elementParentSize_decorators = [signal];
+            ___init_effects_ignore_decorators = [signal];
             __esDecorate(this, null, _get_shadowmapType_decorators, { kind: "getter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, get: obj => obj.shadowmapType }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_shadowmapType_decorators, { kind: "setter", name: "shadowmapType", static: false, private: false, access: { has: obj => "shadowmapType" in obj, set: (obj, value) => { obj.shadowmapType = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private_defaultThreeCamera_descriptor = { get: __setFunctionName(function () { return this.#defaultThreeCamera_accessor_storage; }, "#defaultThreeCamera", "get"), set: __setFunctionName(function (value) { this.#defaultThreeCamera_accessor_storage = value; }, "#defaultThreeCamera", "set") }, _private_defaultThreeCamera_decorators, { kind: "accessor", name: "#defaultThreeCamera", static: false, private: true, access: { has: obj => #defaultThreeCamera in obj, get: obj => obj.#defaultThreeCamera, set: (obj, value) => { obj.#defaultThreeCamera = value; } }, metadata: _metadata }, _private_defaultThreeCamera_initializers, _private_defaultThreeCamera_extraInitializers);
             __esDecorate(this, _private_camera_descriptor = { get: __setFunctionName(function () { return this.#camera_accessor_storage; }, "#camera", "get"), set: __setFunctionName(function (value) { this.#camera_accessor_storage = value; }, "#camera", "set") }, _private_camera_decorators, { kind: "accessor", name: "#camera", static: false, private: true, access: { has: obj => #camera in obj, get: obj => obj.#camera, set: (obj, value) => { obj.#camera = value; } }, metadata: _metadata }, _private_camera_initializers, _private_camera_extraInitializers);
+            __esDecorate(this, null, _glRendererEffect_decorators, { kind: "method", name: "glRendererEffect", static: false, private: false, access: { has: obj => "glRendererEffect" in obj, get: obj => obj.glRendererEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _fogEffect_decorators, { kind: "method", name: "fogEffect", static: false, private: false, access: { has: obj => "fogEffect" in obj, get: obj => obj.fogEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _cameraNearFarEffect_decorators, { kind: "method", name: "cameraNearFarEffect", static: false, private: false, access: { has: obj => "cameraNearFarEffect" in obj, get: obj => obj.cameraNearFarEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _cameraEffect_decorators, { kind: "method", name: "cameraEffect", static: false, private: false, access: { has: obj => "cameraEffect" in obj, get: obj => obj.cameraEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _parentSizeEffect_decorators, { kind: "method", name: "parentSizeEffect", static: false, private: false, access: { has: obj => "parentSizeEffect" in obj, get: obj => obj.parentSizeEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _cssRendererEffect_decorators, { kind: "method", name: "cssRendererEffect", static: false, private: false, access: { has: obj => "cssRendererEffect" in obj, get: obj => obj.cssRendererEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private_elementParentSize_descriptor = { get: __setFunctionName(function () { return this.#elementParentSize_accessor_storage; }, "#elementParentSize", "get"), set: __setFunctionName(function (value) { this.#elementParentSize_accessor_storage = value; }, "#elementParentSize", "set") }, _private_elementParentSize_decorators, { kind: "accessor", name: "#elementParentSize", static: false, private: true, access: { has: obj => #elementParentSize in obj, get: obj => obj.#elementParentSize, set: (obj, value) => { obj.#elementParentSize = value; } }, metadata: _metadata }, _private_elementParentSize_initializers, _private_elementParentSize_extraInitializers);
             __esDecorate(null, null, _enableCss_decorators, { kind: "field", name: "enableCss", static: false, private: false, access: { has: obj => "enableCss" in obj, get: obj => obj.enableCss, set: (obj, value) => { obj.enableCss = value; } }, metadata: _metadata }, _enableCss_initializers, _enableCss_extraInitializers);
             __esDecorate(null, null, _webgl_decorators, { kind: "field", name: "webgl", static: false, private: false, access: { has: obj => "webgl" in obj, get: obj => obj.webgl, set: (obj, value) => { obj.webgl = value; } }, metadata: _metadata }, _webgl_initializers, _webgl_extraInitializers);
@@ -232,6 +269,10 @@ let Scene = (() => {
             __esDecorate(null, null, _cameraFar_decorators, { kind: "field", name: "cameraFar", static: false, private: false, access: { has: obj => "cameraFar" in obj, get: obj => obj.cameraFar, set: (obj, value) => { obj.cameraFar = value; } }, metadata: _metadata }, _cameraFar_initializers, _cameraFar_extraInitializers);
             __esDecorate(null, null, _perspective_decorators, { kind: "field", name: "perspective", static: false, private: false, access: { has: obj => "perspective" in obj, get: obj => obj.perspective, set: (obj, value) => { obj.perspective = value; } }, metadata: _metadata }, _perspective_initializers, _perspective_extraInitializers);
             __esDecorate(null, null, _localClipping_decorators, { kind: "field", name: "localClipping", static: false, private: false, access: { has: obj => "localClipping" in obj, get: obj => obj.localClipping, set: (obj, value) => { obj.localClipping = value; } }, metadata: _metadata }, _localClipping_initializers, _localClipping_extraInitializers);
+            __esDecorate(null, null, __glLayer_decorators, { kind: "field", name: "_glLayer", static: false, private: false, access: { has: obj => "_glLayer" in obj, get: obj => obj._glLayer, set: (obj, value) => { obj._glLayer = value; } }, metadata: _metadata }, __glLayer_initializers, __glLayer_extraInitializers);
+            __esDecorate(null, null, __cssLayer_decorators, { kind: "field", name: "_cssLayer", static: false, private: false, access: { has: obj => "_cssLayer" in obj, get: obj => obj._cssLayer, set: (obj, value) => { obj._cssLayer = value; } }, metadata: _metadata }, __cssLayer_initializers, __cssLayer_extraInitializers);
+            __esDecorate(null, null, __miscLayer_decorators, { kind: "field", name: "_miscLayer", static: false, private: false, access: { has: obj => "_miscLayer" in obj, get: obj => obj._miscLayer, set: (obj, value) => { obj._miscLayer = value; } }, metadata: _metadata }, __miscLayer_initializers, __miscLayer_extraInitializers);
+            __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Scene = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
@@ -245,13 +286,6 @@ let Scene = (() => {
          */
         // TODO @readonly jsdoc tag
         isScene = (__runInitializers(this, _instanceExtraInitializers), true);
-        // Skip ShadowRoot observation for Scene instances, and consider composed
-        // children to always be the Scene's direct children, not any in its
-        // ShadowRoot. Only a Scene's actual children or distributed children are
-        // considered to be in the LUME scene graph because Scene's ShadowRoot
-        // serves a specific purpose in the rendering implementation and is not the
-        // user's.
-        skipShadowObservation = this.isScene;
         /**
          * @property {boolean} enableCss -
          *
@@ -1077,6 +1111,7 @@ let Scene = (() => {
         }
         constructor() {
             super();
+            __runInitializers(this, ___init_effects_ignore_extraInitializers);
             // Used by the `scene` getter in SharedAPI
             // TODO set this in connectedCallback, unset in disconnectedCallback, so
             // it has the same semantics as with Element3D (this.scene is not null when
@@ -1119,42 +1154,51 @@ let Scene = (() => {
             this.needsUpdate();
         }
         // WebGLRendererThree appends its content into here.
-        _glLayer = (__runInitializers(this, _localClipping_extraInitializers), null);
+        _glLayer = (__runInitializers(this, _localClipping_extraInitializers), __runInitializers(this, __glLayer_initializers, null
         // CSS3DRendererThree appends its content into here.
-        _cssLayer = null;
+        ));
+        // CSS3DRendererThree appends its content into here.
+        _cssLayer = (__runInitializers(this, __glLayer_extraInitializers), __runInitializers(this, __cssLayer_initializers, null
         // Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
-        _miscLayer = null;
+        ));
+        // Miscellaneous layer. The "Enter VR/AR" button is placed here by Scene, for example.
+        _miscLayer = (__runInitializers(this, __cssLayer_extraInitializers), __runInitializers(this, __miscLayer_initializers, null));
         drawScene() {
             this.#glRenderer?.drawScene(this);
             this.#cssRenderer?.drawScene(this);
         }
         connectedCallback() {
             super.connectedCallback();
-            //////////////////////// GL
-            // We don't let Three update any matrices, we supply our own world
-            // matrices.
-            // @ts-expect-error legacy
-            this.three.autoUpdate = false; // three <0.144
-            this.three.matrixWorldAutoUpdate = false; // three >=0.144
             // TODO: default ambient light when no AmbientLight elements are
             // present in the Scene.
             //const ambientLight = new AmbientLight( 0x353535 )
             //this.three.add( ambientLight )
-            this.createEffect(this.glRendererEffect);
-            this.createEffect(this.fogEffect);
-            this.createEffect(this.cameraNearFarEffect);
-            this.createEffect(this.cameraEffect);
-            //////////////////////// CSS
-            this.createEffect(this.cssRendererEffect);
-            ////////////////////////
-            this.createEffect(this.parentSizeEffect);
             // Queue a microtask because with autoDefineElements true then
             // connectedCallback fires before the module graph has executed the
             // version variable initializer.
             queueMicrotask(() => this.shadowRoot.prepend(new Comment(magic())));
         }
-        glRendererEffect = () => {
-            if (!this.webgl)
+        /**
+         * Scene's ShadowRoot is an internal rendering implementation detail.
+         * Compose Element3D children directly to Scene via the public composition
+         * hooks, so that they participate in the 3D scene graph.
+         */
+        childConnectedCallback(child) {
+            super.childConnectedCallback(child);
+            if (isElement3D(child)) {
+                this.childComposedCallback?.(child, 'actual');
+                child.composedCallback?.(this, 'actual');
+            }
+        }
+        childDisconnectedCallback(child) {
+            super.childDisconnectedCallback(child);
+            if (isElement3D(child)) {
+                child.uncomposedCallback?.(this, 'actual');
+                this.childUncomposedCallback?.(child, 'actual');
+            }
+        }
+        glRendererEffect() {
+            if (!this.webgl || !this._glLayer)
                 return;
             this.#glRenderer = WebglRendererThree.singleton();
             this.#glRenderer.initialize(this);
@@ -1183,6 +1227,8 @@ let Scene = (() => {
                 this.needsUpdate();
             });
             createEffect(() => {
+                if (!this.webgl || !this._miscLayer)
+                    return;
                 this.#glRenderer.enableVR(this, this.vr);
                 if (this.vr) {
                     Motor.setFrameRequester(fn => {
@@ -1245,8 +1291,8 @@ let Scene = (() => {
                 const { x, y } = this.calculatedSize;
                 this.#glRenderer.updateResolution(this, x, y);
             });
-        };
-        fogEffect = () => {
+        }
+        fogEffect() {
             if (this.fogMode === 'none') {
                 this.three.fog = null;
             }
@@ -1262,22 +1308,25 @@ let Scene = (() => {
                 fog.density = this.fogDensity;
             }
             this.needsUpdate();
-        };
-        cameraNearFarEffect = () => {
+        }
+        cameraNearFarEffect() {
             const { cameraNear, cameraFar } = this;
             if (!(this.#defaultThreeCamera instanceof ThreePerspectiveCamera))
                 return;
             this.#defaultThreeCamera.near = cameraNear;
             this.#defaultThreeCamera.far = cameraFar;
             this.needsUpdate();
-        };
-        cameraEffect = () => {
+        }
+        cameraEffect() {
             this._updateCameraAspect();
             this._updateCameraPerspective();
             this._updateCameraProjection();
             this.needsUpdate();
-        };
-        parentSizeEffect = () => {
+        }
+        // This effect is created in connectedCallback because it relies on
+        // this.composedParent which is currently not reactive. See further comments
+        // there.
+        parentSizeEffect() {
             // If no rendering is enbled
             if (!this.webgl && !this.enableCss)
                 return;
@@ -1296,9 +1345,9 @@ let Scene = (() => {
             // nested scene rendering (f.e. a WebGL Scene rendered on a plane or
             // as a texture inside a parent Scene, to make portals and objects
             // with dynamic looks, etc).
-        };
-        cssRendererEffect = () => {
-            if (!this.enableCss)
+        }
+        cssRendererEffect() {
+            if (!this.enableCss || !this._cssLayer)
                 return;
             this.#cssRenderer = Css3dRendererThree.singleton();
             this.#cssRenderer.initialize(this);
@@ -1310,7 +1359,7 @@ let Scene = (() => {
                 const { x, y } = this.calculatedSize;
                 this.#cssRenderer.updateResolution(this, x, y);
             });
-        };
+        }
         // For now workaround with Super instead of super due to TS issue (https://discord.com/channels/508357248330760243/1265203824478392331/1284671647240163368)
         static observedAttributes = [...(Super.observedAttributes || []), 'slot'];
         // static override observedAttributes = [...(super.observedAttributes || []), 'slot']
@@ -1323,13 +1372,21 @@ let Scene = (() => {
             }
         }
         makeThreeObject3d() {
-            return new ThreeScene();
+            const scene = new ThreeScene();
+            // We don't let Three update any matrices, we supply our own world
+            // matrices.
+            // @ts-expect-error legacy
+            scene.autoUpdate = false; // three <0.144
+            scene.matrixWorldAutoUpdate = false; // three >=0.144
+            return scene;
         }
         makeThreeCSSObject() {
+            // CONTINUE apparently we weren't applying matrixWorldAutoUpdate=false
+            // to the CSS scene similar to makeThreeObject3d. Do we need to?
             return new ThreeScene();
         }
         /**
-         * @method traverseSceneGraph - This traverses the composed tree of LUME 3D
+         * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
          * elements (the scene graph) not including the scene element, starting from
          * the scene's children, in pre-order. It skips non-LUME elements. The given
          * callback will be called for each element in the traversal.
@@ -1349,7 +1406,7 @@ let Scene = (() => {
          * ```
          *
          * @param {(el: Element3D) => void} visitor - A function called for each
-         * LUME element in the scene graph (the composed tree).
+         * LUME element in the render scene graph (traverses the flat tree).
          * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
          * the traversal will wait for custom elements to be defined (with
          * customElements.whenDefined) before traversing to them.
@@ -1360,15 +1417,16 @@ let Scene = (() => {
          * returned so that it is possible to wait for the traversal to complete.
          */
         traverseSceneGraph(visitor, waitForUpgrade = false) {
+            // visitor(this) // Explicitly disabled for Scene, so that we only traverse child Element3D elements.
             if (!waitForUpgrade) {
-                for (const child of this.composedLumeChildren)
+                for (const child of this.composedSceneGraphChildren)
                     child.traverseSceneGraph(visitor, waitForUpgrade);
                 return;
             }
             // if waitForUpgrade is true, we make a promise chain so that
             // traversal order is still the same as when waitForUpgrade is false.
             let promise = Promise.resolve();
-            for (const child of this.composedLumeChildren) {
+            for (const child of this.composedSceneGraphChildren) {
                 const isUpgraded = child.matches(':defined');
                 if (isUpgraded) {
                     promise = promise.then(() => child.traverseSceneGraph(visitor, waitForUpgrade));
@@ -1424,7 +1482,7 @@ let Scene = (() => {
         // means no camera elements are in the DOM, but this.#threeCamera
         // will still have a reference to the default camera that scenes
         // are rendered with when no camera elements exist).
-        #activeCameras;
+        #activeCameras = __runInitializers(this, __miscLayer_extraInitializers);
         _addCamera(camera) {
             if (!this.#activeCameras)
                 this.#activeCameras = new Set();
@@ -1456,7 +1514,7 @@ let Scene = (() => {
          * elements don't have the concept of Z size and are always flat.
          */
         get parentSize() {
-            return this.composedLumeParent?.calculatedSize ?? this.#elementParentSize;
+            return this.composedSceneGraphParent?.calculatedSize ?? this.#elementParentSize;
         }
         #setCamera(camera) {
             if (!camera) {
@@ -1585,6 +1643,8 @@ let Scene = (() => {
 
 			/* Prevent default browser behaviors like drag-and-drop to avoid pointercancel interfering with interaction features. */
 			touch-action: none;
+			user-select: none;
+			-webkit-user-select: none;
 		}
 
 		/* The purpose of this is to contain the position:absolute layers so they don't break out of the Scene layout. */
@@ -1637,6 +1697,8 @@ let Scene = (() => {
 			border-color: black;
 		}
 	`;
+        // @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+        __init_effects_ignore = __runInitializers(this, ___init_effects_ignore_initializers, 0);
         static {
             __runInitializers(_classThis, _classExtraInitializers);
         }

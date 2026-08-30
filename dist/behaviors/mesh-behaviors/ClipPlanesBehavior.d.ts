@@ -16,6 +16,7 @@ export type ClipPlanesBehaviorAttributes = 'clipPlanes' | 'clipIntersection' | '
  * </script>
  *
  * @extends MeshBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-clipper>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class ClipPlanesBehavior extends MeshBehavior {
     #private;

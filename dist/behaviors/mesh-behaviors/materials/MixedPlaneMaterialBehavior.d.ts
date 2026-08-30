@@ -10,6 +10,7 @@ import type { ElementWithBehaviors } from 'element-behaviors';
  * <live-code src="../../../../../examples/buttons-with-shadow/example.html"></live-code>
  *
  * @extends PhysicalMaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-mixedplane-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class MixedPlaneMaterialBehavior extends PhysicalMaterialBehavior {
     constructor(element: ElementWithBehaviors);

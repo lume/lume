@@ -320,7 +320,7 @@ export declare class CameraRig extends Element3D {
     flingRotation: FlingRotation;
     scrollFling: ScrollFling;
     pinchFling: PinchFling;
-    connectedCallback(): void;
+    effects(): void;
     template: () => Node | Node[];
 }
 declare module 'solid-js' {

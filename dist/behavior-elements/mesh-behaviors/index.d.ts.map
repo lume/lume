@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/behavior-elements/mesh-behaviors/index.ts"],"names":[],"mappings":"AAAA,cAAc,mBAAmB,CAAA;AACjC,cAAc,yBAAyB,CAAA;AAEvC,cAAc,uBAAuB,CAAA;AACrC,cAAc,sBAAsB,CAAA;AACpC,cAAc,mBAAmB,CAAA"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/behavior-elements/mesh-behaviors/index.ts"],"names":[],"mappings":"AAAA,cAAc,qBAAqB,CAAA;AACnC,cAAc,cAAc,CAAA;AAE5B,cAAc,uBAAuB,CAAA;AACrC,cAAc,sBAAsB,CAAA"}

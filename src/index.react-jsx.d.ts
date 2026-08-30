@@ -1,3 +1,4 @@
+import type {} from './behavior-elements/index.react-jsx'
 import type {} from './cameras/index.react-jsx'
 import type {} from './core/index.react-jsx'
 import type {} from './examples/index.react-jsx'

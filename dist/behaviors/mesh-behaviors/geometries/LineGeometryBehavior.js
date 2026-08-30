@@ -57,6 +57,7 @@ import { receiver } from '../../PropReceiver.js';
  * </script>
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-line-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let LineGeometryBehavior = (() => {
     let _classDecorators = [behavior];

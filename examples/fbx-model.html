@@ -23,15 +23,13 @@
 	></lume-fbx-model>
 
 	<!-- Background -->
-	<lume-sphere
-		id="env"
-		has="basic-material sphere-geometry"
-		color="white"
-		sidedness="double"
-		texture="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
-		size="4000"
-		mount-point="0.5 0.5 0.5"
-	></lume-sphere>
+	<lume-sphere id="env" size="4000" mount-point="0.5 0.5 0.5" scale="1 1 -1">
+		<lume-basic-material
+			color="white"
+			sidedness="double"
+			texture="https://docs.lume.io/examples/nasa-astrobee-robot/luna-station.jpg"
+		></lume-basic-material>
+	</lume-sphere>
 </lume-scene>
 
 <script type="module">

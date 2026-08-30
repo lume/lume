@@ -1,4 +1,4 @@
-import { Behavior } from './Behavior.js';
+import { BehaviorEl } from './Behavior.js';
 import { Element3D } from '../core/Element3D.js';
 /**
  * @class RenderableBehavior
@@ -6,7 +6,7 @@ import { Element3D } from '../core/Element3D.js';
  *
  * @extends HTMLElement
  */
-export declare abstract class RenderableBehavior extends Behavior {
+export declare abstract class RenderableBehaviorEl extends BehaviorEl {
     readonly composedParent: Element3D | null;
     requiredParentType(): (typeof Element3D)[];
     protected _parentDefinedEffect(parent?: NonNullable<this['composedParent']>): void;

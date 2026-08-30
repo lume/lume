@@ -50,6 +50,8 @@ export declare abstract class Light extends Element3D {
      */
     intensity: number;
     makeThreeObject3d(): any;
-    connectedCallback(): void;
+    colorEffect(): void;
+    intensityEffect(): void;
+    private __init_effects_ignore;
 }
 //# sourceMappingURL=Light.d.ts.map

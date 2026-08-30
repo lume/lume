@@ -1,9 +1,7 @@
-import {attribute, element, type ElementAttributes} from '@lume/element'
-import html from 'solid-js/html'
+import {element, type ElementAttributes} from '@lume/element'
 import {Mesh} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {MeshAttributes} from './Mesh.js'
-import {Show} from 'solid-js'
 
 export type BoxAttributes = MeshAttributes
 
@@ -12,10 +10,10 @@ export type BoxAttributes = MeshAttributes
  *
  * Element: `<lume-box>`
  *
- * Extends from `Mesh` to apply default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
+ * A `Mesh` subclass with a default
+ * [`<lume-box-geometry>`](../behavior-elements/mesh-behaviors/geometries/BoxGeometry)
  * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial).
  *
  * The dimensions of the box are determined by the
  * [`size`](../core/Sizeable#size) of the element.
@@ -24,30 +22,7 @@ export type BoxAttributes = MeshAttributes
  */
 export
 @element('lume-box', autoDefineElements)
-class Box extends Mesh {
-	// override initialBehaviors = {geometry: 'box', material: 'physical'}
-
-	override hasShadow = true
-
-	// Legacy behavior support: if the has attribute has values, disable the
-	// behavior element slots, so that explicitly-defined legacy behaviors
-	// continue to work and take precedence, for now.
-	@attribute has = ''
-
-	override template = () => html`
-		<${Show} when=${!this.has}>
-			<slot name="geometry">
-				<box-geometry></box-geometry>
-			</slot>
-
-			<slot name="material">
-				<physical-material></physical-material>
-			</slot>
-		</>
-
-		<slot></slot>
-	`
-}
+class Box extends Mesh {}
 
 declare module 'solid-js' {
 	namespace JSX {

@@ -1,6 +1,7 @@
 import { Effects } from 'classy-solid';
 import type { Element3D } from '../core/Element3D.js';
 type Options = Partial<Pick<FlingRotation, 'rotationXTarget' | 'rotationYTarget' | 'interactionInitiator' | 'interactionContainer' | 'minFlingRotationX' | 'maxFlingRotationX' | 'minFlingRotationY' | 'maxFlingRotationY' | 'factor' | 'epsilon' | 'slowdownAmount'>>;
+type DraggableTargets = HTMLElement | SVGElement | MathMLElement | Document | Window;
 export declare class FlingRotation extends Effects {
     #private;
     /** The object that will be rotated on Y. Required. */
@@ -12,14 +13,15 @@ export declare class FlingRotation extends Effects {
     rotationXTarget: Element3D;
     /**
      * The element on which the pointer should be placed down on in order to
-     * initiate drag tracking. This defaults to rotationXTarget.
+     * initiate drag tracking. This falls back to interactionContainer if not
+     * specified.
      */
-    interactionInitiator: Element;
+    interactionInitiator?: DraggableTargets;
     /**
      * The area in which drag tacking will happen. Defaults to
      * document.documentElement for tracking in the whole viewport.
      */
-    interactionContainer: Element;
+    interactionContainer: DraggableTargets;
     /**
      * The X rotation can not go below this value. Defaults to -90 which means
      * facing straight up.
@@ -50,8 +52,11 @@ export declare class FlingRotation extends Effects {
      */
     slowdownAmount: number;
     constructor(options?: Options);
+    get isStarted(): boolean;
     start(): this;
+    flingRotationEffect(): void;
     stop(): this;
+    private __init_effects_ignore;
 }
 export {};
 //# sourceMappingURL=FlingRotation.d.ts.map

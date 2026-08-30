@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,14 +32,12 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
+var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
+    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { onCleanup, untrack } from 'solid-js';
+import { effect } from 'classy-solid';
 import { booleanAttribute, element, numberAttribute } from '@lume/element';
 import { Camera as ThreeCamera } from 'three/src/cameras/Camera.js';
 import { Element3D } from '../core/Element3D.js';
@@ -50,6 +55,7 @@ let Camera = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
+    let _instanceExtraInitializers = [];
     let _aspect_decorators;
     let _aspect_initializers = [];
     let _aspect_extraInitializers = [];
@@ -65,6 +71,8 @@ let Camera = (() => {
     let _zoom_decorators;
     let _zoom_initializers = [];
     let _zoom_extraInitializers = [];
+    let _private_activeCameraEffect_decorators;
+    let _private_activeCameraEffect_descriptor;
     var Camera = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -74,6 +82,15 @@ let Camera = (() => {
             _far_decorators = [numberAttribute];
             _active_decorators = [booleanAttribute];
             _zoom_decorators = [numberAttribute];
+            _private_activeCameraEffect_decorators = [effect];
+            __esDecorate(this, _private_activeCameraEffect_descriptor = { value: __setFunctionName(function () {
+                    // If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
+                    const scene = this.scene;
+                    if (!scene || !this.active)
+                        return;
+                    untrack(() => scene._addCamera(this));
+                    onCleanup(() => scene._removeCamera(this));
+                }, "#activeCameraEffect") }, _private_activeCameraEffect_decorators, { kind: "method", name: "#activeCameraEffect", static: false, private: true, access: { has: obj => #activeCameraEffect in obj, get: obj => obj.#activeCameraEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _aspect_decorators, { kind: "field", name: "aspect", static: false, private: false, access: { has: obj => "aspect" in obj, get: obj => obj.aspect, set: (obj, value) => { obj.aspect = value; } }, metadata: _metadata }, _aspect_initializers, _aspect_extraInitializers);
             __esDecorate(null, null, _near_decorators, { kind: "field", name: "near", static: false, private: false, access: { has: obj => "near" in obj, get: obj => obj.near, set: (obj, value) => { obj.near = value; } }, metadata: _metadata }, _near_initializers, _near_extraInitializers);
             __esDecorate(null, null, _far_decorators, { kind: "field", name: "far", static: false, private: false, access: { has: obj => "far" in obj, get: obj => obj.far, set: (obj, value) => { obj.far = value; } }, metadata: _metadata }, _far_initializers, _far_extraInitializers);
@@ -96,7 +113,7 @@ let Camera = (() => {
          * case of stretched or squished display, this can be adjusted appropriately
          * to unstretch or unsquish the view of the 3d world.
          */
-        aspect = __runInitializers(this, _aspect_initializers, 0
+        aspect = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _aspect_initializers, 0
         /**
          * @property {number} near
          *
@@ -106,7 +123,7 @@ let Camera = (() => {
          *
          * Anything closer to the camera than this value will not be rendered.
          */
-        );
+        ));
         /**
          * @property {number} near
          *
@@ -191,25 +208,12 @@ let Camera = (() => {
         zoom = (__runInitializers(this, _active_extraInitializers), __runInitializers(this, _zoom_initializers, 1
         // TODO lookat property
         // @attribute lookAt: string | Element3D | null = null
+        // @ts-expect-error private effect
         ));
         // TODO lookat property
         // @attribute lookAt: string | Element3D | null = null
-        connectedCallback() {
-            super.connectedCallback();
-            let lastScene = this.scene;
-            // Run logic once the scene exists.
-            this.createEffect(() => {
-                // If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
-                if (!this.scene || !this.active)
-                    return;
-                lastScene = this.scene;
-                untrack(() => this.scene._addCamera(this));
-                onCleanup(() => {
-                    lastScene._removeCamera(this);
-                    lastScene = null;
-                });
-            });
-        }
+        // @ts-expect-error private effect
+        get #activeCameraEffect() { return _private_activeCameraEffect_descriptor.value; }
         // This is not called because this class is abstract and should be extended
         // by concrete camera elements, but it provides types for locations that use
         // `Camera` as a type place holder f.e. in the `Scene` class.

@@ -37,9 +37,9 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 import { untrack } from 'solid-js';
-import { signal } from 'classy-solid';
+import { effect, signal } from 'classy-solid';
 import { Object3D } from 'three/src/core/Object3D.js';
-import { element, booleanAttribute, numberAttribute } from '@lume/element';
+import { element, booleanAttribute, numberAttribute, attribute } from '@lume/element';
 import { Transformable } from './Transformable.js';
 import { ElementOperations } from './ElementOperations.js';
 import { Motor } from './Motor.js';
@@ -48,8 +48,9 @@ import { disposeObject } from '../utils/three.js';
 import { Settable } from '../utils/Settable.js';
 import { toRadians } from './utils/index.js';
 import { InitialBehaviors } from '../behaviors/InitialBehaviors.js';
-import { isDomEnvironment, isElement3D } from './utils/isThisOrThat.js';
-import {} from './CompositionTracker.js';
+import { isDomEnvironment, isElement3D, isScene } from './utils/isThisOrThat.js';
+import { Element3D } from './Element3D.js';
+import { isAnyCompositionTracker } from './CompositionTracker.js';
 const threeJsPostAdjustment = [0, 0, 0];
 const alignAdjustment = [0, 0, 0];
 const mountPointAdjustment = [0, 0, 0];
@@ -82,6 +83,9 @@ let SharedAPI = (() => {
     let _classThis;
     let _classSuper = InitialBehaviors(/*ChildTracker(*/ Settable(Transformable) /*)*/);
     let _instanceExtraInitializers = [];
+    let _has_decorators;
+    let _has_initializers = [];
+    let _has_extraInitializers = [];
     let _set_opacity_decorators;
     let _get_opacity_decorators;
     let _debug_decorators;
@@ -91,6 +95,14 @@ let SharedAPI = (() => {
     let _private_scene_initializers = [];
     let _private_scene_extraInitializers = [];
     let _private_scene_descriptor;
+    let _private_three_decorators;
+    let _private_three_initializers = [];
+    let _private_three_extraInitializers = [];
+    let _private_three_descriptor;
+    let _hasCheckEffect_decorators;
+    let _resizeEffect_decorators;
+    let _parentSizeChangeEffect_decorators;
+    let _transformChangeEffect_decorators;
     let _version_decorators;
     let _version_initializers = [];
     let _version_extraInitializers = [];
@@ -98,14 +110,26 @@ let SharedAPI = (() => {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _has_decorators = [attribute];
             _set_opacity_decorators = [numberAttribute];
             _get_opacity_decorators = [numberAttribute];
             _debug_decorators = [booleanAttribute];
             _private_scene_decorators = [signal];
+            _private_three_decorators = [signal];
+            _hasCheckEffect_decorators = [effect];
+            _resizeEffect_decorators = [effect];
+            _parentSizeChangeEffect_decorators = [effect];
+            _transformChangeEffect_decorators = [effect];
             _version_decorators = [signal];
             __esDecorate(this, null, _set_opacity_decorators, { kind: "setter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, set: (obj, value) => { obj.opacity = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_opacity_decorators, { kind: "getter", name: "opacity", static: false, private: false, access: { has: obj => "opacity" in obj, get: obj => obj.opacity }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private_scene_descriptor = { get: __setFunctionName(function () { return this.#scene_accessor_storage; }, "#scene", "get"), set: __setFunctionName(function (value) { this.#scene_accessor_storage = value; }, "#scene", "set") }, _private_scene_decorators, { kind: "accessor", name: "#scene", static: false, private: true, access: { has: obj => #scene in obj, get: obj => obj.#scene, set: (obj, value) => { obj.#scene = value; } }, metadata: _metadata }, _private_scene_initializers, _private_scene_extraInitializers);
+            __esDecorate(this, _private_three_descriptor = { get: __setFunctionName(function () { return this.#three_accessor_storage; }, "#three", "get"), set: __setFunctionName(function (value) { this.#three_accessor_storage = value; }, "#three", "set") }, _private_three_decorators, { kind: "accessor", name: "#three", static: false, private: true, access: { has: obj => #three in obj, get: obj => obj.#three, set: (obj, value) => { obj.#three = value; } }, metadata: _metadata }, _private_three_initializers, _private_three_extraInitializers);
+            __esDecorate(this, null, _hasCheckEffect_decorators, { kind: "method", name: "hasCheckEffect", static: false, private: false, access: { has: obj => "hasCheckEffect" in obj, get: obj => obj.hasCheckEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _resizeEffect_decorators, { kind: "method", name: "resizeEffect", static: false, private: false, access: { has: obj => "resizeEffect" in obj, get: obj => obj.resizeEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _parentSizeChangeEffect_decorators, { kind: "method", name: "parentSizeChangeEffect", static: false, private: false, access: { has: obj => "parentSizeChangeEffect" in obj, get: obj => obj.parentSizeChangeEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _transformChangeEffect_decorators, { kind: "method", name: "transformChangeEffect", static: false, private: false, access: { has: obj => "transformChangeEffect" in obj, get: obj => obj.transformChangeEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(null, null, _has_decorators, { kind: "field", name: "has", static: false, private: false, access: { has: obj => "has" in obj, get: obj => obj.has, set: (obj, value) => { obj.has = value; } }, metadata: _metadata }, _has_initializers, _has_extraInitializers);
             __esDecorate(null, null, _debug_decorators, { kind: "field", name: "debug", static: false, private: false, access: { has: obj => "debug" in obj, get: obj => obj.debug, set: (obj, value) => { obj.debug = value; } }, metadata: _metadata }, _debug_initializers, _debug_extraInitializers);
             __esDecorate(null, null, _version_decorators, { kind: "field", name: "version", static: false, private: false, access: { has: obj => "version" in obj, get: obj => obj.version, set: (obj, value) => { obj.version = value; } }, metadata: _metadata }, _version_initializers, _version_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -125,6 +149,30 @@ let SharedAPI = (() => {
          * @property {boolean} isElement3D - True if a subclass of this class is an `Element3D`.
          */
         isElement3D = false;
+        //  Legacy behavior support: if the has attribute has values, disable the
+        //  behavior element slots, so that explicitly-defined legacy behaviors
+        //  continue to work and take precedence, for now.
+        /**
+         *
+         * @deprecated Use the behavior elements from `src/behavior-elements/`
+         * instead. Those behaviors are used as child elements instead of via the
+         * `has=` attribute. Behaviors that are applied via the `has=` attribute
+         * will no longer be updated, and will eventually be removed.
+         */
+        has = __runInitializers(this, _has_initializers, ''
+        /**
+         * @property {string | number | null} opacity -
+         *
+         * *attribute*
+         *
+         * Default: `1`
+         *
+         * Set the object's opacity.
+         *
+         * The value should be a number from `0` to `1`. `0` is fully transparent, and `1` is fully opaque.
+         */
+        // TODO convert opacity to multiplicative down the tree for gl materials.
+        );
         /**
          * @property {string | number | null} opacity -
          *
@@ -157,7 +205,7 @@ let SharedAPI = (() => {
          * When `true`, show debug visuals for the object. Not all objects implement
          * debug visuals yet.
          */
-        debug = __runInitializers(this, _debug_initializers, false
+        debug = (__runInitializers(this, _has_extraInitializers), __runInitializers(this, _debug_initializers, false
         /**
          * @deprecated
          * @property {boolean} glLoaded
@@ -166,7 +214,7 @@ let SharedAPI = (() => {
          *
          * *readonly*
          */
-        );
+        ));
         /**
          * @deprecated
          * @property {boolean} glLoaded
@@ -199,8 +247,8 @@ let SharedAPI = (() => {
          * if the element is not a descendant of a Scene, `null` if the child is a
          * descendant of a Scene that is not connected into the DOM, or `null` if
          * the element is a descendant of a connected Scene but the element is not
-         * participating in the composed tree (i.e. the element is not distributed
-         * to a `<slot>` element of a ShadowRoot of the element's parent).
+         * participating in the flat tree (i.e. the element is not assigned
+         * to a `<slot>` element in a ShadowRoot of the element's parent).
          */
         ));
         // stores a ref to this element's root Scene when/if this element is
@@ -216,12 +264,23 @@ let SharedAPI = (() => {
          * if the element is not a descendant of a Scene, `null` if the child is a
          * descendant of a Scene that is not connected into the DOM, or `null` if
          * the element is a descendant of a connected Scene but the element is not
-         * participating in the composed tree (i.e. the element is not distributed
-         * to a `<slot>` element of a ShadowRoot of the element's parent).
+         * participating in the flat tree (i.e. the element is not assigned
+         * to a `<slot>` element in a ShadowRoot of the element's parent).
          */
         get scene() {
             return this.#scene;
         }
+        #three_accessor_storage = (__runInitializers(this, _private_scene_extraInitializers), __runInitializers(this, _private_three_initializers, undefined
+        /**
+         * @property {Object3D} three -
+         *
+         * *readonly*
+         *
+         * The WebGL rendering content of this element. Useful if you know Three.js
+         * APIs. See
+         * [`Object3D`](https://threejs.org/docs/index.html#api/en/core/Object3D).
+         */
+        ));
         // We use F-Bounded Polymorphism in the following `three` and `threeCSS`
         // properties by referring to `this` in their type definitions to make
         // it possible for subclasses to define the types of the three and
@@ -236,7 +295,8 @@ let SharedAPI = (() => {
         // https://www.typescriptlang.org/play?#code/MYGwhgzhAECCB2BLAtmE0DeAoa0BmA9gdALzQCMATAMxYC+WWokMAwmAC7QCmAHh93gATGAhRpMOaACMwAJ1LQOcgK7d6jYAXgQuqANbcxqdGQDKAT2TSCIABQBKTeChwkJgDIEAbtwXYpAAc5RG9ObmgAfUiwdzQAfgAuaAAlbg4VOXgAFQtA7gAeDgALRAgAbQ487gI8aAMjOJAAXQA+RlwAek7oACFICOZXYJ9EIW4YMGhwAC8LaDluMCFtEHmAc3SBOQAaaAgVaSGICf3ighUQIWh4Ai54bm5rjmJFgFpxvEQHpVKIADopN1oNk-tAyuD4AJhE98AQFIJrioTnIYHZ8gRAiAIrc9GB9N91vtDscJnsQIhDNAABLZACyHk6ABEAPJ0+qxRCBS6ceEQByA3CbLickyOZJpDJZXL5Ip-SrVWocwzGNBtSS4XCIOp2ACEJTK-2iorQDl+huNTUUBoqDVVLUc0EgqXSmRy1TlZQVGLqdqabQ6muBTOIEAIyAiwVC4RkA2gx32GTwdQA7ogSuaAZbxCBA7hFlL4JmjTEmlIGECeqCITWoYjYYQFAcji5JioSnzoHY8P9uP9oBisRFPt9CTduCmlNUYEraQzmWyeNiI1D+VJyn6c81xW4cxrNQW3ePJ-by4HdJxEMBlY0c8kqj6b-bFJuTBomK3oOwOF5fAj+IiohNL+fj7sCzYJsAsTQJiHCINoaBrDBf4hOMmZ7C80ArAO8hwcAPIKAa8DrDAaYZiUETfBe8DAH2672iBcj-K+ao7t++75q6WTHl+nBnhWWg6Fw15kA8k7foxmjaLoTqKMA-wmiAQA
         // Original documentation on F-Bounded Polymorphism in TypeScript:
         // https://www.typescriptlang.org/docs/handbook/advanced-types.html#polymorphic-this-types
-        #three = __runInitializers(this, _private_scene_extraInitializers);
+        get #three() { return _private_three_descriptor.get.call(this); }
+        set #three(value) { return _private_three_descriptor.set.call(this, value); }
         /**
          * @property {Object3D} three -
          *
@@ -284,7 +344,7 @@ let SharedAPI = (() => {
             if (children && children.length)
                 this.three.add(...children);
         }
-        #threeCSS;
+        #threeCSS = __runInitializers(this, _private_three_extraInitializers);
         /**
          * @property {Object3D} threeCSS -
          *
@@ -331,68 +391,73 @@ let SharedAPI = (() => {
             if (children && children.length)
                 this.threeCSS.add(...children);
         }
-        connectedCallback() {
-            super.connectedCallback();
-            this.createEffect(() => {
-                this.scene;
-                this.sizeMode.asDependency();
-                this.size.asDependency();
-                untrack(() => {
-                    // TODO: Size calculation should happen in a render task
-                    // just like _calculateMatrix, instead of on each property
-                    // change, unless the calculatedSize prop is acessed by the
-                    // user in which case it should trigger a calculation (sort
-                    // of like DOM properties that cause re-layout). We should
-                    // document to prefer not to force calculation, and instead
-                    // observe the property changes (f.e. with createEffect()).
-                    this._calcSize();
-                    this.needsUpdate();
-                });
-            });
-            this.createEffect(() => {
-                // If the parent size changes,
-                this.parentSize;
-                untrack(() => {
-                    const { x, y, z } = this.sizeMode;
-                    if (
-                    // then we only need to update if any size dimension is proportional,
-                    x === 'proportional' ||
-                        x === 'p' ||
-                        y === 'proportional' ||
-                        y === 'p' ||
-                        z === 'proportional' ||
-                        z === 'p') {
-                        // TODO #66 defer _calcSize to an animation frame (via needsUpdate),
-                        // unless explicitly requested by a user (f.e. they read a prop so
-                        // the size must be calculated). https://github.com/lume/lume/issues/66
-                        this._calcSize();
-                    }
-                });
-                // update regardless if we calculated size, in order to update
-                // matrices (align-point depends on parent size).
-                this.needsUpdate();
-            });
-            this.createEffect(() => {
-                this.position.asDependency();
-                this.rotation.asDependency();
-                this.scale.asDependency();
-                this.origin.asDependency();
-                this.alignPoint.asDependency();
-                this.mountPoint.asDependency();
-                this.opacity;
+        hasCheckEffect() {
+            if (this.has.trim() === '')
+                return;
+            console.warn('The `has` attribute is deprecated. Use the behavior elements from `src/behavior-elements/` instead. Those behaviors are used as child elements instead of via the `has=` attribute. Behaviors that are applied via the `has=` attribute will no longer be updated, and will eventually be removed.');
+        }
+        resizeEffect() {
+            this.scene;
+            this.sizeMode.asDependency();
+            this.size.asDependency();
+            untrack(() => {
+                // TODO: Size calculation should happen in a render task
+                // just like _calculateMatrix, instead of on each property
+                // change, unless the calculatedSize prop is acessed by the
+                // user in which case it should trigger a calculation (sort
+                // of like DOM properties that cause re-layout). We should
+                // document to prefer not to force calculation, and instead
+                // observe the property changes (f.e. with createEffect()).
+                this._calcSize();
                 this.needsUpdate();
             });
         }
+        parentSizeChangeEffect() {
+            // If the parent size changes,
+            this.parentSize;
+            untrack(() => {
+                const { x, y, z } = this.sizeMode;
+                if (
+                // then we only need to update if any size dimension is proportional,
+                x === 'proportional' ||
+                    x === 'p' ||
+                    y === 'proportional' ||
+                    y === 'p' ||
+                    z === 'proportional' ||
+                    z === 'p') {
+                    // TODO #66 defer _calcSize to an animation frame (via needsUpdate),
+                    // unless explicitly requested by a user (f.e. they read a prop so
+                    // the size must be calculated). https://github.com/lume/lume/issues/66
+                    this._calcSize();
+                }
+            });
+            // update regardless if we calculated size, in order to update
+            // matrices (align-point depends on parent size).
+            this.needsUpdate();
+        }
+        transformChangeEffect() {
+            this.position.asDependency();
+            this.rotation.asDependency();
+            this.scale.asDependency();
+            this.origin.asDependency();
+            this.alignPoint.asDependency();
+            this.mountPoint.asDependency();
+            this.opacity;
+            this.needsUpdate();
+        }
         disconnectedCallback() {
             super.disconnectedCallback();
-            this.stopEffects();
             // TODO Keep the .three object around (dispose it, but no need to delete
             // it and recreate it, it will be GC'd with the element if the element
             // is unref'd)
             this.#disposeThree();
             this.#disposeThreeCSS();
-            this.#scene = null;
         }
+        /*
+        These composedCallback and uncomposedCallback hooks ensure that render
+        objects (f.e. Three.js objects) are connected in the same shape as the DOM
+        flat tree.
+        */
         composedCallback(composedParent, compositionType) {
             super.composedCallback?.(composedParent, compositionType);
             if (this.isScene) {
@@ -421,25 +486,31 @@ let SharedAPI = (() => {
             });
         }
         /**
-         * Called whenever a child element is composed to this element.
-         * This is called with a `compositionType` argument that tells us how the element is
-         * composed relative to the ["composed tree"](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
+         * Called whenever a child element is composed to this element in the flat tree.
+         * This is called with a `compositionType` argument that tells us via which avenue the child
+         * is composed relative to this parent in the ["flat tree"](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
          *
          * @param  {"root" | "slot" | "actual"} compositionType - If the value is
          * `"root"`, then the child was composed as a child of a shadow root of the
-         * current element. If the value is `"slot"`, then the child was composed (i.e. distributed, or assigned) to
+         * current element. If the value is `"slot"`, then the child was composed (i.e. slotted, distributed, or assigned) to
          * the current element via a [`<slot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) element.
          * If the value is `"actual"`, then the child was composed to the current
          * element as a regular child (`childComposedCallback` with `"actual"` passed
          * in is essentially the same as [`ChildTracker`](./ChildTracker)'s [`childConnectedCallback`](./ChildTracker#childconnectedcallback)).
          */
-        // TODO update MDN docs on "composed trees", https://github.com/mdn/content/pull/20703
-        childComposedCallback(child, _compositionType) {
+        childComposedCallback(child, compositionType) {
+            super.childComposedCallback?.(child, compositionType);
             if (!(child instanceof SharedAPI))
                 return;
             this.needsUpdate(); // Maybe not needed but its a no-op if called extra times.
         }
-        childUncomposedCallback(child, _compositionType) {
+        /**
+         * Similar to `childComposedCallback`, but called when the element is
+         * _uncomposed_ from this element in the flat tree. See
+         * [`childComposedCallback`](#childComposedCallback) for more detail.
+         */
+        childUncomposedCallback(child, compositionType) {
+            super.childUncomposedCallback?.(child, compositionType);
             if (!(child instanceof SharedAPI))
                 return;
             // Update the parent because the child is gone, but the scene needs a
@@ -449,22 +520,6 @@ let SharedAPI = (() => {
         /** @abstract */
         traverseSceneGraph(_visitor, _waitForUpgrade = false) {
             throw 'Element3D and Scene implement this';
-        }
-        /**
-         * Overrides [`TreeNode.parentLumeElement`](./TreeNode?id=parentLumeElement) to assert
-         * that parents are `SharedAPI` (`Element3D` or `Scene`) instances.
-         */
-        // This override serves to change the type of `parentLumeElement` for
-        // subclasses of SharedAPI.
-        // Element3D instances (f.e. Mesh, Sphere, etc) and Scenes should always have parents
-        // that are Element3Ds or Scenes (at least for now).
-        // @prod-prune
-        get parentLumeElement() {
-            const parent = super.parentLumeElement;
-            // @prod-prune
-            if (parent && !(parent instanceof SharedAPI))
-                throw new TypeError('Parent must be type SharedAPI.');
-            return parent;
         }
         /**
          * @method needsUpdate - Schedules a rendering update for the element.
@@ -497,14 +552,6 @@ let SharedAPI = (() => {
             if (!elOps.has(this))
                 elOps.set(this, new ElementOperations(this));
             return elOps.get(this);
-        }
-        // Overrides to filter out any non-Element3Ds (f.e. Scenes).
-        get composedLumeChildren() {
-            const result = [];
-            for (const child of super.composedLumeChildren)
-                if (isElement3D(child))
-                    result.push(child);
-            return result;
         }
         /**
          * @method makeThreeObject3d -
@@ -541,40 +588,85 @@ let SharedAPI = (() => {
         }
         #reconnectThree() {
             this.composedSceneGraphParent?.three.add(this.three);
-            for (const child of this.composedLumeChildren) {
+            for (const child of this.composedSceneGraphChildren) {
                 this.three.add(child.three);
             }
             this.needsUpdate();
         }
         #reconnectThreeCSS() {
             this.composedSceneGraphParent?.threeCSS.add(this.threeCSS);
-            for (const child of this.composedLumeChildren) {
+            for (const child of this.composedSceneGraphChildren) {
                 this.threeCSS.add(child.threeCSS);
             }
             this.needsUpdate();
         }
-        get composedLumeParent() {
-            const result = super.composedLumeParent;
-            if (!(result instanceof SharedAPI))
-                return null;
-            return result;
-        }
+        /**
+         * Returns the parent element as it participates in the Lume 3D scene graph.
+         *
+         * Scene's ShadowRoot is an internal rendering implementation. For Scene's
+         * direct children, the composed parent in the flat tree may resolve to an
+         * element inside Scene's shadow — this getter returns the Scene itself instead.
+         *
+         * For all other cases, filters the flat-tree composed parent to Lume types.
+         */
         get composedSceneGraphParent() {
-            // read first, to track the dependency
-            const composedLumeParent = this.composedLumeParent;
-            // check if parentLumeElement is a Scene because Scenes always have shadow
-            // roots as part of their implementation (users will not be adding
-            // shadow roots to them), and we treat distribution into a Scene shadow
-            // root different than with all other Element3Ds (users can add shadow roots
-            // to those). Otherwise _distributedParent for a lume-element3d that is
-            // child of a lume-scene will be a non-LUME element that is inside of
-            // the lume-scene's ShadowRoot, and things will not work in that case
-            // because the top-level Element3D elements will not be composed to
-            // the Scene element itself. TODO: perhaps the Scene can make the
-            // connection by observing the children in its ShadowRoot.
+            // Scene's direct children compose to Scene in the scene graph.
             if (this.parentLumeElement?.isScene)
                 return this.parentLumeElement;
-            return composedLumeParent;
+            // Slot-distributed children may have their composed parent set to
+            // Scene by the slot handler. Check slottedParent (direct slot assignment,
+            // not terminal — Scene's slots may forward to renderer-internal slots).
+            if (isScene(this.slottedParent))
+                return this.slottedParent;
+            // Otherwise, filter the composed parent to Lume types.
+            if (isScene(this.composedParent) || isElement3D(this.composedParent))
+                return this.composedParent;
+            // Fall back to slottedParent when composedParent is not yet resolved
+            // (e.g. the terminal-slot handler hasn't fired yet). This keeps
+            // composedCallback working for elements that go through slot chains
+            // without having to set __composedParent prematurely.
+            if (isElement3D(this.slottedParent))
+                return this.slottedParent;
+            return null;
+        }
+        /**
+         * Returns the children that participate in the Lume 3D scene graph.
+         *
+         * For Scene elements, returns `composedChildren` filtered to Element3D
+         * (using the non-shadow branch), plus slotted children. Scene's internal
+         * ShadowRoot is invisible for scene-graph purposes.
+         *
+         * For non-Scene elements, returns `composedChildren` filtered to Element3D.
+         */
+        get composedSceneGraphChildren() {
+            if (this.isScene) {
+                const slotted = this.slottedChildren ? [...this.slottedChildren] : [];
+                const direct = Array.from(this.children).filter((n) => isAnyCompositionTracker(n));
+                return [...slotted, ...direct].filter(child => isElement3D(child));
+            }
+            return this.composedChildren.filter(child => isElement3D(child));
+        }
+        /**
+         * The parent element if it is a Scene or Element3D instance, otherwise null.
+         */
+        get parentLumeElement() {
+            return (isScene(this.parentElement) || isElement3D(this.parentElement)) ? this.parentElement : null;
+        }
+        /**
+         * @property {(Scene | Element3D)[]} lumeChildren -
+         *
+         * *readonly*
+         *
+         * An array of this element's LUME-specific children. This returns a new
+         * static array each time, so and modifying this array directly does not
+         * effect the current set of children. Use DOM methods like
+         * [`parent.append(child)`](https://developer.mozilla.org/en-US/docs/Web/API/Element/append)
+         * and
+         * [`child.remove()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/remove)
+         * to modify children.
+         */
+        get lumeChildren() {
+            return Array.prototype.filter.call(this.children, c => isScene(c) || isElement3D(c));
         }
         /**
          * Takes all the current component values (position, rotation, etc) and
@@ -701,11 +793,13 @@ let SharedAPI = (() => {
          */
         version = __runInitializers(this, _version_initializers, 0);
         updateWorldMatrices(traverse = true) {
-            this.three.updateWorldMatrix(false, false);
+            // @ts-ignore 3rd arg needed for Three.js r185+
+            this.three.updateWorldMatrix(false, false, true);
             for (const child of this.three.children)
                 if (!isManagedByUs(child))
                     child.updateMatrixWorld(true);
-            this.threeCSS.updateWorldMatrix(false, false);
+            // @ts-ignore 3rd arg needed for Three.js r185+
+            this.threeCSS.updateWorldMatrix(false, false, true);
             for (const child of this.threeCSS.children)
                 if (!isManagedByUs(child))
                     child.updateMatrixWorld(true);
@@ -739,26 +833,6 @@ let SharedAPI = (() => {
         // TODO: make setAttribute accept non-string values.
         setAttribute(attr, value) {
             super.setAttribute(attr, value);
-        }
-        // FIXME This object/array spreading and cloning is sloooooooow, and becomes
-        // apparent the more ShadowRoots a tree has.
-        get _composedChildren() {
-            if (!this.isScene && this.exposedShadowRoot) {
-                // FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
-                return [
-                    ...this._distributedShadowRootChildren.filter(n => n instanceof SharedAPI),
-                    ...this._shadowRootChildren.filter(n => n instanceof SharedAPI),
-                ];
-            }
-            else {
-                // FIXME why is TypeScript requiring a cast here when I've clearly filtered the elements for the correct type?
-                return [
-                    // TODO perhaps use slot.assignedElements instead?
-                    ...[...(this.slottedChildren || [])].filter(n => n instanceof SharedAPI),
-                    // We only care about other elements of the same type.
-                    ...Array.from(this.children).filter((n) => n instanceof SharedAPI),
-                ];
-            }
         }
         static css = /*css*/ `
 		:host {

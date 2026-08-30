@@ -9,6 +9,7 @@ export type CameraAttributes = Element3DAttributes | 'aspect' | 'near' | 'far' |
  * @extends Element3D
  */
 export declare class Camera extends Element3D {
+    #private;
     /**
      * @property {number} aspect
      *
@@ -68,7 +69,6 @@ export declare class Camera extends Element3D {
      * [`fov`](#fov).
      */
     zoom: number;
-    connectedCallback(): void;
     makeThreeObject3d(): ThreeCamera;
 }
 //# sourceMappingURL=Camera.d.ts.map

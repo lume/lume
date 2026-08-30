@@ -52,6 +52,7 @@ import { GeometryBehavior } from './GeometryBehavior.js';
  *
  * @extends GeometryBehavior
  * @behavior plane-geometry TODO @behavior jsdoc tag
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-plane-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let PlaneGeometryBehavior = (() => {
     let _classDecorators = [behavior];

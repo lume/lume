@@ -10,6 +10,7 @@ export type MaterialBehaviorAttributes = 'alphaTest' | 'colorWrite' | 'depthTest
  * Base class for material behaviors.
  *
  * @extends GeometryOrMaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use child material elements instead. Legacy behaviors will be removed in a future version.
  */
 export declare class MaterialBehavior extends GeometryOrMaterialBehavior {
     #private;

@@ -22,9 +22,13 @@ const isInstance = Symbol();
  * ```
  */
 export function Settable(Base = Object) {
+    if (Base.prototype instanceof Settable)
+        throw new Error('Base class already extends Settable, no need to apply the mixin again.');
     return class Settable extends Base {
-        // @ts-expect-error, use `any` to prevent downstream "has or is using private name" errors.
-        [isInstance] = true;
+        // Use `any` to prevent subclass "has or is using private name" errors.
+        get [isInstance]() {
+            return true;
+        }
         /**
          * @method set - Convenience method for setting all (or some)
          * properties of a Settable at once. For example:
@@ -51,13 +55,8 @@ export function Settable(Base = Object) {
         }
     };
 }
-Object.defineProperty(Settable, Symbol.hasInstance, {
-    value(obj) {
-        if (!obj)
-            return false;
-        if (obj[isInstance])
-            return true;
-        return false;
-    },
-});
+export function isAnySettable(o) {
+    return o[isInstance];
+}
+Object.defineProperty(Settable, Symbol.hasInstance, { value: isAnySettable });
 //# sourceMappingURL=Settable.js.map

@@ -1,6 +1,6 @@
-import {reactive, signal, Effects} from 'classy-solid'
+import {signal, Effects} from 'classy-solid'
 import {WebGLRenderer} from 'three/src/renderers/WebGLRenderer.js'
-import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap} from 'three/src/constants.js'
+import {BasicShadowMap, PCFSoftShadowMap, PCFShadowMap, SRGBColorSpace} from 'three/src/constants.js'
 import {PMREMGenerator} from 'three/src/extras/PMREMGenerator.js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
 import {Motor} from '../core/Motor.js'
@@ -35,9 +35,7 @@ export type ShadowMapTypeString = 'pcf' | 'pcfsoft' | 'basic'
  * A singleton responsible for setting up and
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
-export
-@reactive
-class WebglRendererThree {
+export class WebglRendererThree {
 	static singleton() {
 		if (instance) return instance
 		else {
@@ -115,9 +113,10 @@ class WebglRendererThree {
 
 		scene._glLayer?.removeChild(sceneState.renderer.domElement)
 
-		sceneState.renderer.dispose()
 		sceneState.pmremgen?.dispose()
 		sceneState.effects.stopEffects()
+		sceneState.renderer.dispose()
+		sceneState.renderer.forceContextLoss() // Without this, some browsers (f.e. Chrome) keep the WebGL context alive, leaking.
 
 		this.sceneStates.delete(scene)
 	}
@@ -261,6 +260,8 @@ class WebglRendererThree {
 		const version = this.#bgVersion
 
 		new TextureLoader().load(scene.background ?? '', tex => {
+			tex.colorSpace = SRGBColorSpace
+
 			// In case state changed during load, ignore a loaded texture that
 			// corresponds to previous state:
 			if (version !== this.#bgVersion) return

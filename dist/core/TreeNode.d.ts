@@ -1,14 +1,16 @@
 import { Element as LumeElement } from '@lume/element';
 declare const TreeNode_base: (new (...a: any[]) => {
-    "__#1@#effects": Set<import("classy-solid").Effect>;
+    "__#1@#effectFunctions": Array<() => void>;
+    "__#1@#started": boolean;
     createEffect(fn: () => void): void;
+    addEffectFn(fn: () => void): void;
+    "__#1@#isRestarting": boolean;
+    startEffects(): void;
     stopEffects(): void;
-    "__#1@#createEffect1"(fn: () => void): void;
-    "__#1@#stopEffects1"(): void;
+    clearEffects(): void;
     "__#1@#owner": import("solid-js").Owner | null;
     "__#1@#dispose": (() => void) | null;
-    "__#1@#createEffect2"(fn: () => void): void;
-    "__#1@#stopEffects2"(): void;
+    "__#1@#createEffect"(fn: () => void): void;
 }) & (new (...a: any[]) => {
     "__#1@#eventMap": Map<string, Set<[Function, any]>> | null;
     on(eventName: string, callback: Function, context?: any): void;

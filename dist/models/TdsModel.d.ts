@@ -1,18 +1,14 @@
 import { type ElementAttributes } from '@lume/element';
+import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
+import type { Group } from 'three/src/objects/Group.js';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
-import type { TdsModelBehavior, TdsModelBehaviorAttributes } from '../behaviors/index.js';
-export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttributes;
+export type TdsModelAttributes = Element3DAttributes | 'src';
 /**
  * @element lume-3ds-model
  * @class TdsModel -
  *
- * Defines the `<lume-3ds-model>` element, short for `<lume-element3d
- * has="3ds-model">`, for loading 3D models in the 3DS format (`.3ds`
- * files).
- *
- * See [`TdsModelBehavior`](../behaviors/mesh-behaviors/models/TdsModelBehavior)
- * for attributes/properties available on this element.
+ * Defines the `<lume-3ds-model>` element for loading 3D models in the
+ * 3DS format (`.3ds` files).
  *
  * HTML Example:
  *
@@ -38,11 +34,12 @@ export type TdsModelAttributes = Element3DAttributes | TdsModelBehaviorAttribute
  * ```
  */
 export declare class TdsModel extends Element3D {
-    initialBehaviors: {
-        model: string;
-    };
-}
-export interface TdsModel extends ElementWithBehaviors<TdsModelBehavior, TdsModelBehaviorAttributes> {
+    #private;
+    /** Path to a .3ds file. */
+    src: string;
+    loader: TDSLoader;
+    model?: Group;
+    connectedCallback(): void;
 }
 declare module 'solid-js' {
     namespace JSX {

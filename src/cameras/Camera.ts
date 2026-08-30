@@ -1,4 +1,5 @@
 import {onCleanup, untrack} from 'solid-js'
+import {effect} from 'classy-solid'
 import {booleanAttribute, element, numberAttribute} from '@lume/element'
 import {Camera as ThreeCamera} from 'three/src/cameras/Camera.js'
 import {Element3D, type Element3DAttributes} from '../core/Element3D.js'
@@ -83,25 +84,14 @@ class Camera extends Element3D {
 	// TODO lookat property
 	// @attribute lookAt: string | Element3D | null = null
 
-	override connectedCallback() {
-		super.connectedCallback()
+	// @ts-expect-error private effect
+	@effect #activeCameraEffect() {
+		// If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
+		const scene = this.scene
+		if (!scene || !this.active) return
 
-		let lastScene = this.scene
-
-		// Run logic once the scene exists.
-		this.createEffect(() => {
-			// If we have a scene, we're composed, otherwise we're not (could be connected, but not slotted)
-			if (!this.scene || !this.active) return
-
-			lastScene = this.scene
-
-			untrack(() => this.scene!._addCamera(this))
-
-			onCleanup(() => {
-				lastScene!._removeCamera(this)
-				lastScene = null
-			})
-		})
+		untrack(() => scene._addCamera(this))
+		onCleanup(() => scene._removeCamera(this))
 	}
 
 	// This is not called because this class is abstract and should be extended

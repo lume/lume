@@ -44,7 +44,6 @@ export declare class Scene extends Super {
      * Always `true` for things that are or inherit from `Scene`.
      */
     readonly isScene = true;
-    skipShadowObservation: boolean;
     /**
      * @property {boolean} enableCss -
      *
@@ -480,18 +479,25 @@ export declare class Scene extends Super {
     _miscLayer: HTMLDivElement | null;
     drawScene(): void;
     connectedCallback(): void;
-    glRendererEffect: () => void;
-    fogEffect: () => void;
-    cameraNearFarEffect: () => void;
-    cameraEffect: () => void;
-    parentSizeEffect: () => void;
-    cssRendererEffect: () => void;
+    /**
+     * Scene's ShadowRoot is an internal rendering implementation detail.
+     * Compose Element3D children directly to Scene via the public composition
+     * hooks, so that they participate in the 3D scene graph.
+     */
+    childConnectedCallback(child: Element): void;
+    childDisconnectedCallback(child: Element): void;
+    glRendererEffect(): void;
+    fogEffect(): void;
+    cameraNearFarEffect(): void;
+    cameraEffect(): void;
+    parentSizeEffect(): void;
+    cssRendererEffect(): void;
     static observedAttributes: string[];
     attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null): void;
     makeThreeObject3d(): ThreeScene;
     makeThreeCSSObject(): ThreeScene;
     /**
-     * @method traverseSceneGraph - This traverses the composed tree of LUME 3D
+     * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
      * elements (the scene graph) not including the scene element, starting from
      * the scene's children, in pre-order. It skips non-LUME elements. The given
      * callback will be called for each element in the traversal.
@@ -511,7 +517,7 @@ export declare class Scene extends Super {
      * ```
      *
      * @param {(el: Element3D) => void} visitor - A function called for each
-     * LUME element in the scene graph (the composed tree).
+     * LUME element in the render scene graph (traverses the flat tree).
      * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
      * the traversal will wait for custom elements to be defined (with
      * customElements.whenDefined) before traversing to them.
@@ -541,6 +547,7 @@ export declare class Scene extends Super {
     get parentSize(): XYZValuesObject<number>;
     template: () => Node | Node[];
     static css: string;
+    private __init_effects_ignore;
 }
 declare module 'solid-js' {
     namespace JSX {

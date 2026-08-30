@@ -41,7 +41,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
 };
 import { onCleanup } from 'solid-js';
 import html from 'solid-js/html';
-import { signal, syncSignals } from 'classy-solid';
+import { effect, signal, syncSignals } from 'classy-solid';
 import { element, numberAttribute, booleanAttribute } from '@lume/element';
 import { autoDefineElements } from '../LumeConfig.js';
 import { Element3D } from '../core/Element3D.js';
@@ -164,6 +164,7 @@ let CameraRig = (() => {
     let _rotationXTarget_decorators;
     let _rotationXTarget_initializers = [];
     let _rotationXTarget_extraInitializers = [];
+    let _effects_decorators;
     var CameraRig = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -202,6 +203,7 @@ let CameraRig = (() => {
             _threeCamera_decorators = [signal];
             _rotationYTarget_decorators = [signal];
             _rotationXTarget_decorators = [signal];
+            _effects_decorators = [effect];
             __esDecorate(this, null, _get_initialPolarAngle_decorators, { kind: "getter", name: "initialPolarAngle", static: false, private: false, access: { has: obj => "initialPolarAngle" in obj, get: obj => obj.initialPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _set_initialPolarAngle_decorators, { kind: "setter", name: "initialPolarAngle", static: false, private: false, access: { has: obj => "initialPolarAngle" in obj, set: (obj, value) => { obj.initialPolarAngle = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _get_minPolarAngle_decorators, { kind: "getter", name: "minPolarAngle", static: false, private: false, access: { has: obj => "minPolarAngle" in obj, get: obj => obj.minPolarAngle }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -213,6 +215,7 @@ let CameraRig = (() => {
             __esDecorate(this, null, _set_initialDistance_decorators, { kind: "setter", name: "initialDistance", static: false, private: false, access: { has: obj => "initialDistance" in obj, set: (obj, value) => { obj.initialDistance = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, _private_appliedMinDistance_descriptor = { get: __setFunctionName(function () { return this.#appliedMinDistance_accessor_storage; }, "#appliedMinDistance", "get"), set: __setFunctionName(function (value) { this.#appliedMinDistance_accessor_storage = value; }, "#appliedMinDistance", "set") }, _private_appliedMinDistance_decorators, { kind: "accessor", name: "#appliedMinDistance", static: false, private: true, access: { has: obj => #appliedMinDistance in obj, get: obj => obj.#appliedMinDistance, set: (obj, value) => { obj.#appliedMinDistance = value; } }, metadata: _metadata }, _private_appliedMinDistance_initializers, _private_appliedMinDistance_extraInitializers);
             __esDecorate(this, _private_appliedMaxDistance_descriptor = { get: __setFunctionName(function () { return this.#appliedMaxDistance_accessor_storage; }, "#appliedMaxDistance", "get"), set: __setFunctionName(function (value) { this.#appliedMaxDistance_accessor_storage = value; }, "#appliedMaxDistance", "set") }, _private_appliedMaxDistance_decorators, { kind: "accessor", name: "#appliedMaxDistance", static: false, private: true, access: { has: obj => #appliedMaxDistance in obj, get: obj => obj.#appliedMaxDistance, set: (obj, value) => { obj.#appliedMaxDistance = value; } }, metadata: _metadata }, _private_appliedMaxDistance_initializers, _private_appliedMaxDistance_extraInitializers);
+            __esDecorate(this, null, _effects_decorators, { kind: "method", name: "effects", static: false, private: false, access: { has: obj => "effects" in obj, get: obj => obj.effects }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _verticalAngle_decorators, { kind: "field", name: "verticalAngle", static: false, private: false, access: { has: obj => "verticalAngle" in obj, get: obj => obj.verticalAngle, set: (obj, value) => { obj.verticalAngle = value; } }, metadata: _metadata }, _verticalAngle_initializers, _verticalAngle_extraInitializers);
             __esDecorate(null, null, _minVerticalAngle_decorators, { kind: "field", name: "minVerticalAngle", static: false, private: false, access: { has: obj => "minVerticalAngle" in obj, get: obj => obj.minVerticalAngle, set: (obj, value) => { obj.minVerticalAngle = value; } }, metadata: _metadata }, _minVerticalAngle_initializers, _minVerticalAngle_extraInitializers);
             __esDecorate(null, null, _maxVerticalAngle_decorators, { kind: "field", name: "maxVerticalAngle", static: false, private: false, access: { has: obj => "maxVerticalAngle" in obj, get: obj => obj.maxVerticalAngle, set: (obj, value) => { obj.maxVerticalAngle = value; } }, metadata: _metadata }, _maxVerticalAngle_initializers, _maxVerticalAngle_extraInitializers);
@@ -776,105 +779,101 @@ let CameraRig = (() => {
         scrollFling = new ScrollFling();
         pinchFling = new PinchFling();
         get #derivedInputDistance() {
-            return this.distance !== -1 ? this.distance : this.scene?.perspective ?? defaultScenePerspective;
+            return this.distance !== -1 ? this.distance : (this.scene?.perspective ?? defaultScenePerspective);
         }
-        connectedCallback() {
-            super.connectedCallback();
+        effects() {
+            // We start interaction if we have a scene (we're in the composed
+            // tree) and have the needed DOM nodes.
+            if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera))
+                return;
+            // TODO replace with @memo once that's out in classy-solid
             this.createEffect(() => {
-                // We start interaction if we have a scene (we're in the composed
-                // tree) and have the needed DOM nodes.
-                if (!(this.scene && this.rotationYTarget && this.rotationXTarget && this.threeCamera))
+                this.#appliedDistance = this.#derivedInputDistance;
+                this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2;
+                this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2;
+            });
+            // We set position here instead of in the template, otherwise
+            // pre-upgrade values from the template running before element
+            // upgrade (due to how Solid templates using cloneNode making them
+            // non-upgraded until connected) will override the initial
+            // appliedDistance value.
+            this.createEffect(() => (this.threeCamera.position.z = this.#appliedDistance));
+            const { scrollFling, pinchFling, flingRotation } = this;
+            flingRotation.interactionContainer = this.scene;
+            flingRotation.rotationYTarget = this.rotationYTarget;
+            flingRotation.rotationXTarget = this.rotationXTarget;
+            scrollFling.target = this.scene;
+            pinchFling.target = this.scene;
+            // Sync appliedDistance to scrollFling.y and vice versa
+            syncSignals(() => this.#appliedDistance, (d) => (this.#appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
+            // Sync scrollFling.y to pinchFling.x and vice versa
+            syncSignals(() => this.scrollFling.y, (y) => (this.scrollFling.y = y), () => this.pinchFling.x, (x) => (this.pinchFling.x = x));
+            this.createEffect(() => {
+                flingRotation.minFlingRotationX = this.minVerticalAngle;
+                flingRotation.maxFlingRotationX = this.maxVerticalAngle;
+                flingRotation.minFlingRotationY = this.minHorizontalAngle;
+                flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
+                flingRotation.factor = this.rotationSpeed;
+                flingRotation.epsilon = this.rotationEpsilon;
+                flingRotation.slowdownAmount = this.rotationSlowdown;
+                scrollFling.minY = pinchFling.minX = this.#appliedMinDistance;
+                scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance;
+                scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed;
+                scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon;
+                scrollFling.lerpAmount = this.dollyScrollLerp;
+                pinchFling.slowdownAmount = this.dollyPinchSlowdown;
+            });
+            this.createEffect(() => {
+                if (!this.dynamicDolly)
                     return;
-                // TODO replace with @memo once that's out in classy-solid
-                this.createEffect(() => {
-                    this.#appliedDistance = this.#derivedInputDistance;
-                    this.#appliedMinDistance = this.minDistance !== -1 ? this.minDistance : this.#derivedInputDistance / 2;
-                    this.#appliedMaxDistance = this.maxDistance !== -1 ? this.maxDistance : this.#derivedInputDistance * 2;
-                });
-                // We set position here instead of in the template, otherwise
-                // pre-upgrade values from the template running before element
-                // upgrade (due to how Solid templates using cloneNode making them
-                // non-upgraded until connected) will override the initial
-                // appliedDistance value.
-                this.createEffect(() => (this.threeCamera.position.z = this.#appliedDistance));
-                const { scrollFling, pinchFling, flingRotation } = this;
-                flingRotation.interactionInitiator = this.scene;
-                flingRotation.interactionContainer = this.scene;
-                flingRotation.rotationYTarget = this.rotationYTarget;
-                flingRotation.rotationXTarget = this.rotationXTarget;
-                scrollFling.target = this.scene;
-                pinchFling.target = this.scene;
-                // Sync appliedDistance to scrollFling.y and vice versa
-                syncSignals(() => this.#appliedDistance, (d) => (this.#appliedDistance = d), () => this.scrollFling.y, (y) => (this.scrollFling.y = y));
-                // Sync scrollFling.y to pinchFling.x and vice versa
-                syncSignals(() => this.scrollFling.y, (y) => (this.scrollFling.y = y), () => this.pinchFling.x, (x) => (this.pinchFling.x = x));
-                this.createEffect(() => {
-                    flingRotation.minFlingRotationX = this.minVerticalAngle;
-                    flingRotation.maxFlingRotationX = this.maxVerticalAngle;
-                    flingRotation.minFlingRotationY = this.minHorizontalAngle;
-                    flingRotation.maxFlingRotationY = this.maxHorizontalAngle;
-                    flingRotation.factor = this.rotationSpeed;
-                    flingRotation.epsilon = this.rotationEpsilon;
-                    flingRotation.slowdownAmount = this.rotationSlowdown;
-                    scrollFling.minY = pinchFling.minX = this.#appliedMinDistance;
-                    scrollFling.maxY = pinchFling.maxX = this.#appliedMaxDistance;
-                    scrollFling.sensitivity = pinchFling.sensitivity = this.dollySpeed;
-                    scrollFling.epsilon = pinchFling.epsilon = this.dollyEpsilon;
-                    scrollFling.lerpAmount = this.dollyScrollLerp;
-                    pinchFling.slowdownAmount = this.dollyPinchSlowdown;
-                });
-                this.createEffect(() => {
-                    if (!this.dynamicDolly)
-                        return;
-                    // Dolly speed when position is at minDistance
-                    const minDollySpeed = 0.001;
-                    // Dolly speed when position is at maxDistance
-                    const maxDollySpeed = 2 * this.dollySpeed;
-                    // Scroll sensitivity is linear between min/max dolly speed and min/max distance.
-                    const sens = ((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
-                        (this.threeCamera.position.z - this.minDistance) +
-                        minDollySpeed;
-                    scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens;
-                });
-                this.createEffect(() => {
-                    if (!this.dynamicRotation)
-                        return;
-                    // This only depends on the size of the scene and the FOV of the camera. The only
-                    // issue is the camera's FOV is not reactive and is set by the scene at some point.
-                    // In the case where the camera's FOV is not set yet, use the scene's perspective.
-                    const perspective = this.threeCamera.three.fov
-                        ? this.scene.calculatedSize.y / 2 / Math.tan((this.threeCamera.three.fov * Math.PI) / 360)
-                        : this.scene.perspective;
-                    // Plane positioned at origin facing camera with width equal to `minDistance`.
-                    // `minDistance` is doubled because the expected `minDistance` should barely touch
-                    // the object, whose size would be double `minDistance`.
-                    const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera.position.z;
-                    const degreesPerPixel = 180 / planeSize;
-                    // Counteract the FlingRotation's delta modifier to get exact angular movement.
-                    const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed;
-                    this.flingRotation.factor = sens <= 0 ? 1 : sens;
-                });
-                this.createEffect(() => {
-                    if (this.interactive && !this.pinchFling?.interacting)
-                        flingRotation.start();
-                    else
-                        flingRotation.stop();
-                });
-                this.createEffect(() => {
-                    if (this.interactive) {
-                        scrollFling.start();
-                        pinchFling.start();
-                    }
-                    else {
-                        scrollFling.stop();
-                        pinchFling.stop();
-                    }
-                });
-                onCleanup(() => {
-                    this.flingRotation.stop();
-                    this.scrollFling.stop();
-                    this.pinchFling.stop();
-                });
+                // Dolly speed when position is at minDistance
+                const minDollySpeed = 0.001;
+                // Dolly speed when position is at maxDistance
+                const maxDollySpeed = 2 * this.dollySpeed;
+                // Scroll sensitivity is linear between min/max dolly speed and min/max distance.
+                const sens = ((maxDollySpeed - minDollySpeed) / (this.maxDistance - this.minDistance)) *
+                    (this.threeCamera.position.z - this.minDistance) +
+                    minDollySpeed;
+                scrollFling.sensitivity = sens < minDollySpeed ? minDollySpeed : sens;
+            });
+            this.createEffect(() => {
+                if (!this.dynamicRotation)
+                    return;
+                // This only depends on the size of the scene and the FOV of the camera. The only
+                // issue is the camera's FOV is not reactive and is set by the scene at some point.
+                // In the case where the camera's FOV is not set yet, use the scene's perspective.
+                const perspective = this.threeCamera.three.fov
+                    ? this.scene.calculatedSize.y / 2 / Math.tan((this.threeCamera.three.fov * Math.PI) / 360)
+                    : this.scene.perspective;
+                // Plane positioned at origin facing camera with width equal to `minDistance`.
+                // `minDistance` is doubled because the expected `minDistance` should barely touch
+                // the object, whose size would be double `minDistance`.
+                const planeSize = (perspective * (this.minDistance * 2)) / this.threeCamera.position.z;
+                const degreesPerPixel = 180 / planeSize;
+                // Counteract the FlingRotation's delta modifier to get exact angular movement.
+                const sens = (1 / 0.15) * degreesPerPixel * this.rotationSpeed;
+                this.flingRotation.factor = sens <= 0 ? 1 : sens;
+            });
+            this.createEffect(() => {
+                if (this.interactive && !this.pinchFling?.interacting)
+                    flingRotation.start();
+                else
+                    flingRotation.stop();
+            });
+            this.createEffect(() => {
+                if (this.interactive) {
+                    scrollFling.start();
+                    pinchFling.start();
+                }
+                else {
+                    scrollFling.stop();
+                    pinchFling.stop();
+                }
+            });
+            onCleanup(() => {
+                this.flingRotation.stop();
+                this.scrollFling.stop();
+                this.pinchFling.stop();
             });
         }
         template = () => html `

@@ -1,6 +1,7 @@
 import {element, type ElementAttributes} from '@lume/element'
+import html from 'solid-js/html'
 import {Line as ThreeLine} from 'three/src/objects/Line.js'
-import {Element3D} from '../core/Element3D.js'
+import {MeshLike} from './MeshLike.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
@@ -12,6 +13,11 @@ import type {
 	LineGeometryBehavior,
 	LineGeometryBehaviorAttributes,
 } from '../behaviors/index.js'
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/LineGeometry.js')
+import('../behavior-elements/mesh-behaviors/materials/BasiclineMaterial.js')
 
 export type LineAttributes = Element3DAttributes | BehaviorAttributes
 
@@ -22,11 +28,11 @@ export type LineAttributes = Element3DAttributes | BehaviorAttributes
  *
  * Default behaviors:
  *
- * - [`line-geometry`](../behaviors/mesh-behaviors/geometries/LineGeometryBehavior.md)
- * - [`line-material`](../behaviors/mesh-behaviors/materials/LineBasicMaterialBehavior.md)
+ * - [`<lume-line-geometry>`](../behavior-elements/mesh-behaviors/geometries/LineGeometry.md)
+ * - [`<lume-basicline-material>`](../behavior-elements/mesh-behaviors/materials/BasiclineMaterial.md)
  *
  * It can be useful to have
- * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
+ * [`<lume-ply-geometry>`](../behavior-elements/mesh-behaviors/geometries/PlyGeometry.md)
  * behavior on this element to load a set of points from a file.
  *
  * <live-code id="example"></live-code>
@@ -34,11 +40,12 @@ export type LineAttributes = Element3DAttributes | BehaviorAttributes
  *   example.content = lineExample
  * </script>
  *
- * @extends Element3D
+ * @extends MeshLike
  */
 @element('lume-line', autoDefineElements)
-export class Line extends Element3D {
-	override initialBehaviors = {geometry: 'line', material: 'line'}
+export class Line extends MeshLike {
+	protected override _defaultGeometry = () => html`<lume-line-geometry></lume-line-geometry>`
+	protected override _defaultMaterial = () => html`<lume-basicline-material></lume-basicline-material>`
 
 	override makeThreeObject3d() {
 		return new ThreeLine()

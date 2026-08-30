@@ -12,9 +12,7 @@
 	},
 	"workspaces": [
 		"apps/*",
-		"packages/*",
-		"examples/react",
-		"examples/react-typescript"
+		"packages/*"
 	],
 	"// NOTE": "Any field starting with `//` is intended as a comment.",
 	"scripts": {
@@ -49,10 +47,13 @@
 		"XXXX OTHER PACKAGES XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "",
 		"fresh": "npm run submodules:sync && npm run link && npx lume install-browsers",
 		"refresh": "npm run unlink && npm run link",
-		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume",
+		"// FIXME": "symlink-dir is used to manually link lume because yarn install workspaces is failing for some reason.",
+		"link": "corepack yarn install && symlink-dir . apps/docs/node_modules/lume && symlink-dir . apps/first-person-shooter/node_modules/lume && symlink-dir . examples/frameworks/react/node_modules/lume && symlink-dir . examples/frameworks/react-typescript/node_modules/lume",
+		"corepack": "corepack",
 		"unlink": "npm run unlink:unix || npm run --script-shell=pwsh unlink:windows",
-		"unlink:unix": "rm -rf `find . -name node_modules`",
+		"unlink:unix": "find . -name 'node_modules' -type d -prune -exec rm -rf {} +",
 		"unlink:windows": "Get-ChildItem -r -i node_modules | rm -r -fo",
+		"//unlink:windows (TODO test this faster version)": "mkdir empty_dir; robocopy empty_dir node_modules /mir /xj /r:0 /w:0; rmdir empty_dir; rmdir node_modules",
 		"submodules:sync": "git submodule update --init --recursive",
 		"build:all": "corepack yarn lerna run build",
 		"dev:all": "corepack yarn lerna run dev --parallel --scope lume --include-dependencies",
@@ -73,10 +74,10 @@
 	},
 	"dependencies": {
 		"@lume/autolayout": "^0.10.0",
-		"@lume/element": "^0.16.0",
-		"@lume/eventful": "^0.3.0",
-		"@lume/three-projected-material": "^0.3.0",
-		"classy-solid": "^0.4.0",
+		"@lume/element": "^0.17.1",
+		"@lume/eventful": "^0.3.3",
+		"@lume/three-projected-material": "^0.4.0",
+		"classy-solid": "^0.5.2",
 		"element-behaviors": "^5.0.0",
 		"james-bond": "^0.7.0",
 		"lowclass": "^8.0.0",
@@ -98,6 +99,13 @@
 		"symlink-dir": "^5.2.0",
 		"three": ">=0.139.0",
 		"typescript": "^5.0.0"
+	},
+	"// dev quick fix for yargs breakage in Node 25/26": "",
+	"overrides": {
+		"yargs": "^17.7.3 || ^18.0.0"
+	},
+	"resolutions": {
+		"yargs": "^17.7.3 || ^18.0.0"
 	},
 	"repository": {
 		"type": "git",
@@ -185,5 +193,5 @@
 		"web-component",
 		"webcomponent"
 	],
-	"packageManager": "yarn@4.0.0"
+	"packageManager": "yarn@4.18.0"
 }

@@ -1,18 +1,13 @@
 import { type ElementAttributes } from '@lume/element';
 import { Element3D, type Element3DAttributes } from '../core/Element3D.js';
-import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
-import type { ColladaModelBehavior, ColladaModelBehaviorAttributes } from '../behaviors/index.js';
-export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorAttributes;
+import { ColladaLoader, type Collada } from 'three/examples/jsm/loaders/ColladaLoader.js';
+export type ColladaModelAttributes = Element3DAttributes | 'src';
 /**
  * @element lume-collada-model
  * @class ColladaModel -
  *
- * Defines the `<lume-collada-model>` element, short for `<lume-element3d
- * has="collada-model">`, for loading 3D models in the Collada format (`.dae`
- * files).
- *
- * See [`ColladaModelBehavior`](../behaviors/mesh-behaviors/models/ColladaModelBehavior)
- * for attributes/properties available on this element.
+ * Defines the `<lume-collada-model>` element for loading 3D models in the
+ * Collada format (`.dae` files).
  *
  * HTML Example:
  *
@@ -40,11 +35,12 @@ export type ColladaModelAttributes = Element3DAttributes | ColladaModelBehaviorA
  * @extends Element3D
  */
 export declare class ColladaModel extends Element3D {
-    initialBehaviors: {
-        model: string;
-    };
-}
-export interface ColladaModel extends ElementWithBehaviors<ColladaModelBehavior, ColladaModelBehaviorAttributes> {
+    #private;
+    /** Path to a .dae file. */
+    src: string;
+    loader: ColladaLoader;
+    model?: Collada;
+    connectedCallback(): void;
 }
 declare module 'solid-js' {
     namespace JSX {

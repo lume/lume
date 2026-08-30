@@ -1,4 +1,4 @@
-import {reactive, signal} from 'classy-solid'
+import {signal} from 'classy-solid'
 import {getInheritedDescriptor} from 'lowclass/dist/getInheritedDescriptor.js'
 import {stringToArray} from './utils.js'
 import {batch} from 'solid-js'
@@ -21,9 +21,7 @@ const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: unde
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-export
-@reactive
-abstract class XYZValues<T = any> extends Object {
+export abstract class XYZValues<T = any> extends Object {
 	@signal accessor #x: T = undefined!
 	@signal accessor #y: T = undefined!
 	@signal accessor #z: T = undefined!

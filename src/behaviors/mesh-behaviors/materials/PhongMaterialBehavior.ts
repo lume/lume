@@ -42,6 +42,7 @@ export type PhongMaterialBehaviorAttributes =
  * Backed by Three.js [`THREE.MeshPhongMaterial`](https://threejs.org/docs/index.html#api/en/materials/MeshPhongMaterial).
  *
  * @extends MaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-phong-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export
 @behavior
