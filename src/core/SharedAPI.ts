@@ -541,7 +541,15 @@ class SharedAPI extends InitialBehaviors(/*ChildTracker(*/ Settable(Transformabl
 		if (isScene(this.slottedParent)) return this.slottedParent
 
 		// Otherwise, filter the composed parent to Lume types.
-		return (isScene(this.composedParent) || isElement3D(this.composedParent)) ? this.composedParent : null
+		if (isScene(this.composedParent) || isElement3D(this.composedParent)) return this.composedParent
+
+		// Fall back to slottedParent when composedParent is not yet resolved
+		// (e.g. the terminal-slot handler hasn't fired yet). This keeps
+		// composedCallback working for elements that go through slot chains
+		// without having to set __composedParent prematurely.
+		if (isElement3D(this.slottedParent)) return this.slottedParent
+
+		return null
 	}
 
 	/**

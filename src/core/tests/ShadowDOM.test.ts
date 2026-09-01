@@ -573,145 +573,213 @@ describe('ShadowDOM support', () => {
 			container.append(A)
 
 			// C1 owns slotA (forwarded to "mid"). C2 owns slotB (also forwarded
-			// to "mid"). X is assigned directly to "mid".  All three sit alongside
-			// D (mid slot owner) in A's ShadowRoot so they share a common
-			// three-layer chain: B → C1/C2's slot → D's mid slot → E's terminal.
-			const C1 = document.createElement('lume-element3d')
-			const C1_log = trackCallbacks(C1)
-			const slotA = document.createElement('slot')
-			slotA.setAttribute('name', 'slotA')
-			slotA.setAttribute('slot', 'mid')
-			C1.append(slotA)
-			rootA.append(C1)
+					// to "mid"). X is assigned directly to "mid" in C1's shadow.
+					// The three-layer chain is: B → slotA → midSlot (in D, C1's shadow)
+					// → terminalSlot (in E, D's shadow).
+					const C1 = document.createElement('lume-element3d')
+					const C1_log = trackCallbacks(C1)
+					const slotA = document.createElement('slot')
+					slotA.setAttribute('name', 'slotA')
+					slotA.setAttribute('slot', 'mid')
+					C1.append(slotA)
 
-			const C2 = document.createElement('lume-element3d')
-			const C2_log = trackCallbacks(C2)
-			const slotB = document.createElement('slot')
-			slotB.setAttribute('name', 'slotB')
-			slotB.setAttribute('slot', 'mid')
-			C2.append(slotB)
-			rootA.append(C2)
+					const X = document.createElement('lume-element3d')
+					const X_log = trackCallbacks(X)
+					X.setAttribute('slot', 'mid')
+					C1.append(X)
+					rootA.append(C1)
 
-			const X = document.createElement('lume-element3d')
-			const X_log = trackCallbacks(X)
-			X.setAttribute('slot', 'mid')
-			rootA.append(X)
+					const C2 = document.createElement('lume-element3d')
+					const C2_log = trackCallbacks(C2)
+					const slotB = document.createElement('slot')
+					slotB.setAttribute('name', 'slotB')
+					slotB.setAttribute('slot', 'mid2')
+					C2.append(slotB)
+					rootA.append(C2)
 
-			// Layer 2: D (mid slot, forwarded to "terminal"), also in A's ShadowRoot
-			const D = document.createElement('lume-element3d')
-			const D_log = trackCallbacks(D)
-			const midSlot = document.createElement('slot')
-			midSlot.setAttribute('name', 'mid')
-			midSlot.setAttribute('slot', 'terminal')
-			D.append(midSlot)
-			rootA.append(D)
+					// Layer 2: D in C1's shadow (mid slot, forwarded to "terminal")
+					const rootC1 = C1.attachShadow({mode: 'open'})
+					const D = document.createElement('lume-element3d')
+					const D_log = trackCallbacks(D)
+					const midSlot = document.createElement('slot')
+					midSlot.setAttribute('name', 'mid')
+					midSlot.setAttribute('slot', 'terminal')
+					D.append(midSlot)
+					rootC1.append(D)
 
-			// Layer 3: D's ShadowRoot → E (terminal slot, final destination)
-			const rootD = D.attachShadow({mode: 'open'})
-			const E = document.createElement('lume-element3d')
-			const E_log = trackCallbacks(E)
-			const terminalSlot = document.createElement('slot')
-			terminalSlot.setAttribute('name', 'terminal')
-			E.append(terminalSlot)
-			rootD.append(E)
+					// Layer 2b: D2 in C2's shadow (separate chain for slotB)
+					const rootC2 = C2.attachShadow({mode: 'open'})
+					const D2 = document.createElement('lume-element3d')
+					const D2_log = trackCallbacks(D2)
+					const midSlot2 = document.createElement('slot')
+					midSlot2.setAttribute('name', 'mid2')
+					midSlot2.setAttribute('slot', 'terminal2')
+					D2.append(midSlot2)
+					rootC2.append(D2)
 
-			await new Promise(r => setTimeout(r, 10))
+			// Layer 3: D's ShadowRoot → E (terminal slot, final destination for C1 chain)
+					const rootD = D.attachShadow({mode: 'open'})
+					const E = document.createElement('lume-element3d')
+					const E_log = trackCallbacks(E)
+					const terminalSlot = document.createElement('slot')
+					terminalSlot.setAttribute('name', 'terminal')
+					E.append(terminalSlot)
+					rootD.append(E)
 
-			// --- Verify initial state ---
+					// Layer 3b: D2's ShadowRoot → E2 (terminal slot for C2 chain)
+					const rootD2 = D2.attachShadow({mode: 'open'})
+					const E2 = document.createElement('lume-element3d')
+					const E2_log = trackCallbacks(E2)
+					const terminalSlot2 = document.createElement('slot')
+					terminalSlot2.setAttribute('name', 'terminal2')
+					E2.append(terminalSlot2)
+					rootD2.append(E2)
 
-			// B's direct slottedParent: C1 (slotA's owner, first in chain)
-			expect(B.slottedParent).toBe(C1)
-			// B's terminal slottedParent: E (terminal slot's owner, final in chain)
-			expect(B.terminalSlottedParent).toBe(E)
+					await new Promise(r => setTimeout(r, 10))
 
-			// X's direct slottedParent: D (mid slot's owner)
-			expect(X.slottedParent).toBe(D)
-			// X's terminal slottedParent: E (same terminal slot)
-			expect(X.terminalSlottedParent).toBe(E)
+					// --- Verify initial state ---
 
-			// C1 has B as a direct slotted child (via slotA), but NOT X.
-			expect(C1.slottedChildren!.size).toBe(1)
-			expect(C1.slottedChildren!.has(B)).toBe(true)
-			expect(C1.slottedChildren!.has(X)).toBe(false)
-			expect(C1.terminalSlottedChildren).toBeNull()
+					// B's direct slottedParent: C1 (slotA's owner, first in chain)
+					expect(B.slottedParent).toBe(C1)
+					// B's terminal slottedParent: E (terminal slot's owner, final in chain for C1)
+					expect(B.terminalSlottedParent).toBe(E)
 
-			// C2 has nothing — B is not assigned to slotB yet.
-			expect(C2.slottedChildren).toBeNull()
-			expect(C2.terminalSlottedChildren).toBeNull()
+					// X's direct slottedParent: D (mid slot's owner, X is in C1's light DOM)
+					expect(X.slottedParent).toBe(D)
+					// X's terminal slottedParent: E (same terminal slot)
+					expect(X.terminalSlottedParent).toBe(E)
 
-			// D has BOTH B (passthrough from C1's slot) and X (directly assigned
-			// to "mid").  D has one more slottedChildren element than C1.
-			expect(D.slottedChildren!.size).toBe(2)
-			expect(D.slottedChildren!.has(B)).toBe(true)
-			expect(D.slottedChildren!.has(X)).toBe(true)
-			expect(D.terminalSlottedChildren).toBeNull()
+					// C1 has B as a direct slotted child (via slotA), but NOT X (X is assigned
+					// directly to midSlot in C1's shadow, bypassing C1's slot ownership).
+					expect(C1.slottedChildren!.size).toBe(1)
+					expect(C1.slottedChildren!.has(B)).toBe(true)
+					expect(C1.slottedChildren!.has(X)).toBe(false)
+					expect(C1.terminalSlottedChildren).toBeNull()
 
-			// E has BOTH B and X as terminal slotted children (final sink).
-			expect(E.slottedChildren).toBeNull()
-			expect(E.terminalSlottedChildren!.size).toBe(2)
-			expect(E.terminalSlottedChildren!.has(B)).toBe(true)
-			expect(E.terminalSlottedChildren!.has(X)).toBe(true)
+					// C2 has nothing — B is not assigned to slotB yet.
+					expect(C2.slottedChildren).toBeNull()
+					expect(C2.terminalSlottedChildren).toBeNull()
 
-			// --- Callback verification ---
+					// D has BOTH B (passthrough from slotA) and X (directly assigned to "mid").
+					expect(D.slottedChildren!.size).toBe(2)
+					expect(D.slottedChildren!.has(B)).toBe(true)
+					expect(D.slottedChildren!.has(X)).toBe(true)
+					expect(D.terminalSlottedChildren).toBeNull()
 
-			// B was composed to C1 with "slot" type (direct slot parent).
-			expect(B_log.filter(e => e.event === 'composed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
-			expect(C1_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+					// D2 has nothing (separate chain, no elements assigned to mid2 yet).
+					expect(D2.slottedChildren).toBeNull()
+					expect(D2.terminalSlottedChildren).toBeNull()
 
-			// X was composed to D with "slot" type (mid slot is first slot for X).
-			expect(X_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(1)
-			expect(D_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'slot').length).toBe(1)
+					// E has BOTH B and X as terminal slotted children (final sink for C1 chain).
+					// slottedChildren mirrors terminalSlottedChildren for terminal slots.
+					expect(E.slottedChildren!.size).toBe(2)
+					expect(E.slottedChildren!.has(B)).toBe(true)
+					expect(E.slottedChildren!.has(X)).toBe(true)
+					expect(E.terminalSlottedChildren!.size).toBe(2)
+					expect(E.terminalSlottedChildren!.has(B)).toBe(true)
+					expect(E.terminalSlottedChildren!.has(X)).toBe(true)
 
-			// B did NOT get "slot" composed to D or C2.
-			expect(B_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(0)
-			expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(0)
+					// composedParent is the terminal slot owner (E).
+					console.log('[3L-TEST] B.__composedParent:', (B as any).__composedParent?.tagName)
+					console.log('[3L-TEST] B.terminalSlottedParent:', B.terminalSlottedParent?.tagName)
+					console.log('[3L-TEST] B.composedParent:', B.composedParent?.tagName)
+					console.log('[3L-TEST] E:', E.tagName)
+					console.log('[3L-TEST] E === B.__composedParent:', E === (B as any).__composedParent)
+					console.log('[3L-TEST] E === B.composedParent:', E === B.composedParent)
+					expect(B.composedParent).toBe(E)
+					expect(X.composedParent).toBe(E)
 
-			// Both B and X got "terminal-slot" composed to E.
-			expect(B_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
-			expect(X_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
-			expect(E_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'terminal-slot').length).toBe(1)
-			expect(E_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'terminal-slot').length).toBe(1)
+					// E2 has nothing (separate chain, no terminal2 assignments yet).
+					expect(E2.terminalSlottedChildren).toBeNull()
 
-			// --- Move B from slotA to slotB (C1 → C2, same terminal E) ---
+					// --- Callback verification ---
 
-			// Reset logs to check what fires during the move.
-			A_log.length = B_log.length = C1_log.length = C2_log.length = D_log.length = E_log.length = X_log.length = 0
+					// B was composed to C1 with "slot" type (direct slot parent).
+					expect(B_log.filter(e => e.event === 'composed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
+					expect(C1_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
 
-			B.setAttribute('slot', 'slotB')
+					// D received childComposed for B (passthrough) and X (direct) with "slot" type.
+					expect(D_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+					expect(D_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'slot').length).toBe(1)
 
-			await new Promise(r => setTimeout(r, 10))
+					// X was composed to D with "slot" type (mid slot is first slot for X).
+					expect(X_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(1)
 
-			// B's direct slottedParent changed: C1 → C2.
-			expect(B.slottedParent).toBe(C2)
-			// B's terminal slottedParent unchanged: still E.
-			expect(B.terminalSlottedParent).toBe(E)
+					// B did NOT get "slot" composed to D or C2.
+					expect(B_log.filter(e => e.event === 'composed' && e.other === D && e.compositionType === 'slot').length).toBe(0)
+					expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(0)
 
-			// C1's slottedChildren is now empty.
-			expect(C1.slottedChildren).toBeNull()
+					// Both B and X got "terminal-slot" composed to E.
+					expect(B_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(X_log.filter(e => e.event === 'composed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(E_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(E_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'terminal-slot').length).toBe(1)
 
-			// C2 now has B as a direct slotted child.
-			expect(C2.slottedChildren!.size).toBe(1)
-			expect(C2.slottedChildren!.has(B)).toBe(true)
+					// --- Move B from slotA to slotB (C1 → C2, different D/E chain) ---
 
-			// D still has both B and X.
-			expect(D.slottedChildren!.size).toBe(2)
-			expect(D.slottedChildren!.has(B)).toBe(true)
-			expect(D.slottedChildren!.has(X)).toBe(true)
+					// Reset logs to check what fires during the move.
+					A_log.length = B_log.length = C1_log.length = C2_log.length = D_log.length = D2_log.length = E_log.length = E2_log.length = X_log.length = 0
 
-			// E still has both B and X as terminal children.
-			expect(E.terminalSlottedChildren!.size).toBe(2)
-			expect(E.terminalSlottedChildren!.has(B)).toBe(true)
-			expect(E.terminalSlottedChildren!.has(X)).toBe(true)
+					B.setAttribute('slot', 'slotB')
 
-			// B got uncomposed from C1 (slot type) and composed to C2 (slot type).
-			expect(B_log.filter(e => e.event === 'uncomposed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
-			expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(1)
-			expect(C1_log.filter(e => e.event === 'childUncomposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
-			expect(C2_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+					await new Promise(r => setTimeout(r, 10))
 
-			// No terminal-slot callbacks fired (terminal is still E for both).
-			expect(B_log.filter(e => e.compositionType === 'terminal-slot').length).toBe(0)
-			expect(E_log.filter(e => e.compositionType === 'terminal-slot').length).toBe(0)
+					// B's direct slottedParent changed: C1 → C2.
+					expect(B.slottedParent).toBe(C2)
+					// B's terminal slottedParent changed: E → E2 (different terminal chain).
+					expect(B.terminalSlottedParent).toBe(E2)
+
+					// C1's slottedChildren is now empty.
+					expect(C1.slottedChildren).toBeNull()
+
+					// C2 now has B as a direct slotted child.
+					expect(C2.slottedChildren!.size).toBe(1)
+					expect(C2.slottedChildren!.has(B)).toBe(true)
+
+					// D still has X, but B left the chain.
+					expect(D.slottedChildren!.size).toBe(1)
+					expect(D.slottedChildren!.has(X)).toBe(true)
+					expect(D.terminalSlottedChildren).toBeNull()
+
+					// D2 now has B as passthrough from C2's slotB.
+					expect(D2.slottedChildren!.size).toBe(1)
+					expect(D2.slottedChildren!.has(B)).toBe(true)
+					expect(D2.terminalSlottedChildren).toBeNull()
+
+					// E still has X, but B left.
+					expect(E.terminalSlottedChildren!.size).toBe(1)
+					expect(E.terminalSlottedChildren!.has(X)).toBe(true)
+					// slottedChildren mirrors terminal — B was removed.
+					expect(E.slottedChildren!.size).toBe(1)
+					expect(E.slottedChildren!.has(X)).toBe(true)
+					expect(E.slottedChildren!.has(B)).toBe(false)
+
+					// E2 now has B as terminal child.
+					expect(E2.terminalSlottedChildren!.size).toBe(1)
+					expect(E2.terminalSlottedChildren!.has(B)).toBe(true)
+					// slottedChildren mirrors terminal.
+					expect(E2.slottedChildren!.size).toBe(1)
+					expect(E2.slottedChildren!.has(B)).toBe(true)
+
+					// composedParent follows the terminal slot owner.
+					expect(B.composedParent).toBe(E2)
+					expect(X.composedParent).toBe(E)
+
+					// B got uncomposed from C1 (slot type) and composed to C2 (slot type).
+					expect(B_log.filter(e => e.event === 'uncomposed' && e.other === C1 && e.compositionType === 'slot').length).toBe(1)
+					expect(B_log.filter(e => e.event === 'composed' && e.other === C2 && e.compositionType === 'slot').length).toBe(1)
+					expect(C1_log.filter(e => e.event === 'childUncomposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+					expect(C2_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+
+					// D got childUncomposed for B (passthrough left), D2 got childComposed (passthrough arrived).
+					expect(D_log.filter(e => e.event === 'childUncomposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+					expect(D2_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'slot').length).toBe(1)
+
+					// Terminal callbacks: B left E (terminal-slot), arrived at E2 (terminal-slot).
+					expect(B_log.filter(e => e.event === 'uncomposed' && e.other === E && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(B_log.filter(e => e.event === 'composed' && e.other === E2 && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(E_log.filter(e => e.event === 'childUncomposed' && e.other === B && e.compositionType === 'terminal-slot').length).toBe(1)
+					expect(E2_log.filter(e => e.event === 'childComposed' && e.other === B && e.compositionType === 'terminal-slot').length).toBe(1)
 		})
 
 	////// TODO /////////////////////////////////////////////////////////////////////////////

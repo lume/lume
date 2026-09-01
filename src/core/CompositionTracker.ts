@@ -473,7 +473,19 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 						if (!this.slottedChildren.size) this.slottedChildren = null
 					}
 
-					this.__triggerChildUncomposedCallback(this, removedNode, 'slot')
+					// First-slot owner: fire hooks without touching __composedParent.
+					this.childUncomposedCallback?.(removedNode, 'slot')
+					removedNode.uncomposedCallback?.(this, 'slot')
+				} else if (isForwarded && this.slottedChildren?.has(removedNode)) {
+					// Passthrough: element is leaving this owner's slottedChildren
+					// but its slottedParent belongs to a different owner. Only
+					// remove it from slottedChildren and fire the parent-side
+					// callback, without touching slottedParent or firing the
+					// element's uncomposedCallback. Only forwarded slots have
+					// passthrough children.
+					this.slottedChildren.delete(removedNode)
+					if (!this.slottedChildren.size) this.slottedChildren = null
+					this.childUncomposedCallback?.(removedNode, 'slot')
 				}
 
 				// --- Terminal slotted* (only when NOT forwarded) ---
@@ -484,7 +496,17 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 						if (!this.terminalSlottedChildren.size) this.terminalSlottedChildren = null
 					}
 
-					this.__triggerChildUncomposedCallback(this, removedNode, 'terminal-slot')
+					// Terminal slot owner was the composed parent. Clear it.
+					removedNode.__composedParent = null
+
+					// Also remove from slottedChildren (passthrough added it).
+					if (this.slottedChildren) {
+						this.slottedChildren.delete(removedNode)
+						if (!this.slottedChildren.size) this.slottedChildren = null
+					}
+
+					this.childUncomposedCallback?.(removedNode, 'terminal-slot')
+					removedNode.uncomposedCallback?.(this, 'terminal-slot')
 				}
 			}
 
@@ -503,7 +525,32 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 					if (!this.slottedChildren) this.slottedChildren = new Set()
 					this.slottedChildren.add(addedNode)
 
-					this.__triggerChildComposedCallback(this, addedNode, 'slot')
+					// First-slot owner: fire hooks directly without setting
+					// __composedParent. The terminal slot owner will set
+					// __composedParent to the true flat-tree parent.
+					const trigger = () => {
+						this.childComposedCallback?.(addedNode, 'slot')
+						addedNode.composedCallback?.(this, 'slot')
+					}
+					const isUpgraded = addedNode.matches(':defined')
+					if (isUpgraded) trigger()
+					else customElements.whenDefined(addedNode.tagName.toLowerCase()).then(trigger)
+				} else {
+					// Passthrough: element is already owned by an earlier slot
+					// owner. Add it to this owner's slottedChildren regardless
+					// of whether this slot is forwarded or terminal. Terminal
+					// slots mirror terminalSlottedChildren here.
+					if (!this.slottedChildren) this.slottedChildren = new Set()
+					this.slottedChildren.add(addedNode)
+
+					if (isForwarded) {
+						// Forwarded slot: fire only the parent-side callback
+						// with 'slot' type.
+						const trigger = () => this.childComposedCallback?.(addedNode, 'slot')
+						const isUpgraded = addedNode.matches(':defined')
+						if (isUpgraded) trigger()
+						else customElements.whenDefined(addedNode.tagName.toLowerCase()).then(trigger)
+					}
 				}
 
 				// --- Terminal slotted* (only when NOT forwarded) ---
@@ -542,7 +589,25 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 					// shadow root host, then composed to a slot parent, etc).
 					if (addedNode.__composedParent) addedNode.__discrepancy = true
 
-					this.__triggerChildComposedCallback(this, addedNode, 'terminal-slot')
+					console.log('[TERMINAL-ADD] this:', (this as any).tagName, 'added:', (addedNode as any).tagName, '__CP before:', (addedNode as any).__composedParent?.tagName)
+
+					// Terminal slot owner is the composed parent in the flat
+					// tree. Update __composedParent directly — skip the guard
+					// in __triggerChildComposedCallback (which returns early
+					// when __composedParent is already set by a first-slot owner).
+					addedNode.__composedParent = this
+					addedNode.__lastComposedParent = this as CompositionTracker
+					addedNode.__lastCompositionType = 'terminal-slot'
+
+					console.log('[TERMINAL-ADD] SET __CP of', (addedNode as any).tagName, 'to', (this as any).tagName, '__CP now:', (addedNode as any).__composedParent?.tagName)
+
+					const trigger = () => {
+						this.childComposedCallback?.(addedNode, 'terminal-slot')
+						addedNode.composedCallback?.(this, 'terminal-slot')
+					}
+					const isUpgraded = addedNode.matches(':defined')
+					if (isUpgraded) trigger()
+					else customElements.whenDefined(addedNode.tagName.toLowerCase()).then(trigger)
 				}
 			}
 
@@ -566,8 +631,15 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 					if (!isAnyCompositionTracker(addedNode)) continue
 					if (addedNode.isConnected && addedNode.__discrepancy) {
 						addedNode.__discrepancy = false
-						this.__triggerChildUncomposedCallback(this, addedNode, 'terminal-slot')
-						this.__triggerChildComposedCallback(this, addedNode, 'terminal-slot')
+						// Re-fire terminal hooks with correct ordering.
+						addedNode.__composedParent = null
+						this.childUncomposedCallback?.(addedNode, 'terminal-slot')
+						addedNode.uncomposedCallback?.(this, 'terminal-slot')
+						addedNode.__composedParent = this
+						addedNode.__lastComposedParent = this as CompositionTracker
+						addedNode.__lastCompositionType = 'terminal-slot'
+						this.childComposedCallback?.(addedNode, 'terminal-slot')
+						addedNode.composedCallback?.(this, 'terminal-slot')
 					}
 				}
 			})
