@@ -50,11 +50,11 @@
 	}
 
 	const location = basedLocation()
-	const isGithack = location.origin.includes('githack.com')
+	const isLocal = location.origin.includes('localhost') || location.origin.includes('127.0.0.1')
 
-	// Special case for raw.githack.com for viewing examples directly off of GitHub
+	// When not local serving, get dependencies directly from GitHub.
 	// Maybe we can do better than hand-writing two import maps? How can we version the lume packages URLs? Perhaps use an importmap generator like `jspm` cli.
-	const map = isGithack ? makeGithackImportmap() : localMap
+	const map = isLocal ? localMap : makeGithackImportmap()
 
 	document.write(/*html*/ `<script type="importmap">${JSON.stringify(map, undefined, '\t')}</script>`)
 
