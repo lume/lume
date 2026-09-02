@@ -33,6 +33,7 @@
 
 	import {Element3D, element, attribute, Motor, html} from 'lume'
 	import {onCleanup} from 'solid-js'
+	import {memoify} from 'classy-solid'
 
 	class BitMae extends Base {
 		template() {
@@ -122,6 +123,7 @@
 		class ParticleExplode extends Element3D {
 			static observedAttributeHandlers = {
 				count: attribute.number,
+				maxLights: attribute.number,
 				decayTime: attribute.number,
 				velocity: attribute.number,
 				colors: attribute.string,
@@ -130,6 +132,8 @@
 
 			/** Number of particles (instances + matching lights). */
 			count = 30
+
+			maxLights = 100
 
 			/** Time in seconds for particles to fully decay. */
 			decayTime = 2.0
@@ -142,6 +146,15 @@
 
 			/** Initial total light intensity of all particles. Individual particle intensity is `intensity / count`. */
 			intensity = 4_000_000
+
+			get lightCount() {
+				return Math.min(this.count, this.maxLights)
+			}
+
+			constructor() {
+				super()
+				memoify(this, 'lightCount')
+			}
 
 			template() {
 				return html`
@@ -157,6 +170,16 @@
 						></lume-sphere-geometry>
 
 						<lume-basic-material></lume-basic-material>
+
+						<!-- Create per-particle point-lights as children of the
+						instanced-mesh so their positions are relative to it. -->
+						${() => Array.from({length: this.lightCount}).map(() => html`
+							<lume-point-light
+								mount-point="0.5 0.5 0.5"
+								cast-shadow="false"
+								intensity=${() => this.intensity / this.lightCount}
+							></lume-point-light>
+						`)}
 					</lume-instanced-mesh>
 				`
 			}
@@ -245,33 +268,16 @@
 					if (!this.isConnected) return
 
 					this.#mesh = this.querySelector('#particles')
-
-					const MAX_LIGHTS = 20
-
-					// Create per-particle point-lights as children of the
-					// instanced-mesh so their positions are relative to it.
-					// Keep a reasonable count to avoid GPU texture-unit limits.
-					const lightCount = Math.min(this.count, MAX_LIGHTS)
-					const frag = document.createDocumentFragment()
-					for (let i = 0; i < lightCount; i++) {
-						const light = document.createElement('lume-point-light').set({
-							intensity: this.intensity / lightCount,
-							position: [0, 0, 0],
-							shadowBias: -0.01,
-							mountPoint: [0.5, 0.5, 0.5],
-							castShadow: false,
-						})
-						frag.appendChild(light)
-						this.#lights.push({el: light, particleIndex: Math.floor((i / lightCount) * this.count)})
-					}
-					this.#mesh.appendChild(frag)
+					this.#lights = [...this.#mesh.querySelectorAll('lume-point-light')].map((light, i) => ({
+						el: light,
+						// Evenly associate lights across particles.
+						particleIndex: Math.floor((i / this.lightCount) * this.count),
+					}))
 				})
 
 				// Register the render task that drives particle animation.
 				this.createEffect(() => {
-					const removeTask = Motor.addRenderTask((time) => {
-						this.#_tick(time)
-					})
+					const removeTask = Motor.addRenderTask((time) => this.#_tick(time))
 					onCleanup(removeTask)
 				})
 			}
