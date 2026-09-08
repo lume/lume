@@ -158,28 +158,23 @@
 
 			template() {
 				return html`
-					<lume-instanced-mesh
-						id="particles"
-						size="5 5 5"
-						mount-point="0.5 0.5 0.5"
-						count=${() => this.count}
-					>
-						<lume-sphere-geometry
-							horizontal-segments="6"
-							vertical-segments="6"
-						></lume-sphere-geometry>
+					<lume-instanced-mesh id="particles" size="5 5 5" mount-point="0.5 0.5 0.5" count=${() => this.count}>
+						<lume-sphere-geometry horizontal-segments="6" vertical-segments="6"></lume-sphere-geometry>
 
 						<lume-basic-material></lume-basic-material>
 
 						<!-- Create per-particle point-lights as children of the
 						instanced-mesh so their positions are relative to it. -->
-						${() => Array.from({length: this.lightCount}).map(() => html`
-							<lume-point-light
-								mount-point="0.5 0.5 0.5"
-								cast-shadow="false"
-								intensity=${() => this.intensity / this.lightCount}
-							></lume-point-light>
-						`)}
+						${() =>
+							Array.from({length: this.lightCount}).map(
+								() => html`
+									<lume-point-light
+										mount-point="0.5 0.5 0.5"
+										cast-shadow="false"
+										intensity=${() => this.intensity / this.lightCount}
+									></lume-point-light>
+								`,
+							)}
 					</lume-instanced-mesh>
 				`
 			}
@@ -277,7 +272,7 @@
 
 				// Register the render task that drives particle animation.
 				this.createEffect(() => {
-					const removeTask = Motor.addRenderTask((time) => this.#_tick(time))
+					const removeTask = Motor.addRenderTask(time => this.#_tick(time))
 					onCleanup(removeTask)
 				})
 			}
@@ -338,13 +333,10 @@
 					light.position = [positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]]
 					light.intensity = (this.intensity / this.#lights.length) * lives[i]
 
-					light.color = `rgb(${
-						Math.min(255, Math.round(this.#originalColors[i * 3] * 255))
-					},${
-						Math.min(255, Math.round(this.#originalColors[i * 3 + 1] * 255))
-					},${
-						Math.min(255, Math.round(this.#originalColors[i * 3 + 2] * 255))
-					})`
+					light.color = `rgb(${Math.min(255, Math.round(this.#originalColors[i * 3] * 255))},${Math.min(
+						255,
+						Math.round(this.#originalColors[i * 3 + 1] * 255),
+					)},${Math.min(255, Math.round(this.#originalColors[i * 3 + 2] * 255))})`
 				}
 
 				// Push updated arrays back to the instanced-mesh.
