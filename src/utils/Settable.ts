@@ -64,7 +64,7 @@ export function Settable<T extends Constructor>(Base: T = Object as any) {
 export type AnySettable = InstanceType<ReturnType<typeof Settable>>
 
 export function isAnySettable(o: any): o is AnySettable {
-	return o[isInstance]
+	return Boolean(o && o[isInstance])
 }
 
 Object.defineProperty(Settable, Symbol.hasInstance, {value: isAnySettable})

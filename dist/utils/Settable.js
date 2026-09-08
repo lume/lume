@@ -56,7 +56,7 @@ export function Settable(Base = Object) {
     };
 }
 export function isAnySettable(o) {
-    return o[isInstance];
+    return Boolean(o && o[isInstance]);
 }
 Object.defineProperty(Settable, Symbol.hasInstance, { value: isAnySettable });
 //# sourceMappingURL=Settable.js.map

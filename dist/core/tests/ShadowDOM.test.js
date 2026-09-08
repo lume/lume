@@ -583,7 +583,16 @@ describe('ShadowDOM support', () => {
         expect(E_log.filter(e => e.event === 'childComposed' && e.other === X && e.compositionType === 'terminal-slot').length).toBe(1);
         // --- Move B from slotA to slotB (C1 → C2, different D/E chain) ---
         // Reset logs to check what fires during the move.
-        A_log.length = B_log.length = C1_log.length = C2_log.length = D_log.length = D2_log.length = E_log.length = E2_log.length = X_log.length = 0;
+        A_log.length =
+            B_log.length =
+                C1_log.length =
+                    C2_log.length =
+                        D_log.length =
+                            D2_log.length =
+                                E_log.length =
+                                    E2_log.length =
+                                        X_log.length =
+                                            0;
         B.setAttribute('slot', 'slotB');
         await new Promise(r => setTimeout(r, 10));
         // B's direct slottedParent changed: C1 → C2.

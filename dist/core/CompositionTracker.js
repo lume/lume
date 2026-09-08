@@ -714,7 +714,7 @@ export function CompositionTracker(Base) {
     };
 }
 export function isAnyCompositionTracker(o) {
-    return o[isInstance];
+    return Boolean(o && o[isInstance]);
 }
 Object.defineProperty(CompositionTracker, Symbol.hasInstance, { value: isAnyCompositionTracker });
 const shadowHosts = new WeakSet();

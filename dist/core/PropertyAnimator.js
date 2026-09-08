@@ -121,7 +121,7 @@ export function PropertyAnimator(Base = Object) {
     };
 }
 export function isAnyPropertyAnimator(o) {
-    return o[isInstance];
+    return Boolean(o && o[isInstance]);
 }
 Object.defineProperty(PropertyAnimator, Symbol.hasInstance, { value: isAnyPropertyAnimator });
 // the following type guards are used above just to satisfy the type system,

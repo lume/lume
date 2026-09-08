@@ -828,7 +828,7 @@ export function CompositionTracker<T extends Constructor<HTMLElement>>(Base: T) 
 export type AnyCompositionTracker = InstanceType<ReturnType<typeof CompositionTracker>>
 
 export function isAnyCompositionTracker(o: any): o is AnyCompositionTracker {
-	return o[isInstance]
+	return Boolean(o && o[isInstance])
 }
 
 Object.defineProperty(CompositionTracker, Symbol.hasInstance, {value: isAnyCompositionTracker})

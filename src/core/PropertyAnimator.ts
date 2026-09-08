@@ -148,7 +148,7 @@ export function PropertyAnimator<T extends Constructor<PossiblyCustomElement>>(B
 export type AnyPropertyAnimator = InstanceType<ReturnType<typeof PropertyAnimator>>
 
 export function isAnyPropertyAnimator(o: any): o is AnyPropertyAnimator {
-	return o[isInstance]
+	return Boolean(o && o[isInstance])
 }
 
 Object.defineProperty(PropertyAnimator, Symbol.hasInstance, {value: isAnyPropertyAnimator})

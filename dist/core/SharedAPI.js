@@ -468,6 +468,7 @@ let SharedAPI = (() => {
             this.#scene = this.composedSceneGraphParent.scene;
             if (this.#scene)
                 this.#giveSceneToChildren();
+            this.needsUpdate();
         }
         uncomposedCallback(uncomposedParent, compositionType) {
             super.uncomposedCallback?.(uncomposedParent, compositionType);
@@ -546,6 +547,10 @@ let SharedAPI = (() => {
          * ```
          */
         needsUpdate() {
+            // CONTINUE ensure this works, so we skip elements that have been
+            // removed from the render tree (the DOM flat tree).
+            if (!this.isConnected || !this.isComposed)
+                return;
             Motor.needsUpdate(this);
         }
         get _elementOperations() {
@@ -650,7 +655,7 @@ let SharedAPI = (() => {
          * The parent element if it is a Scene or Element3D instance, otherwise null.
          */
         get parentLumeElement() {
-            return (isScene(this.parentElement) || isElement3D(this.parentElement)) ? this.parentElement : null;
+            return isScene(this.parentElement) || isElement3D(this.parentElement) ? this.parentElement : null;
         }
         /**
          * @property {(Scene | Element3D)[]} lumeChildren -

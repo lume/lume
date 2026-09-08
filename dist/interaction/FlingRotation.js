@@ -300,8 +300,6 @@ let FlingRotation = (() => {
 })();
 export { FlingRotation };
 function captureTarget(target) {
-    return target instanceof Window || target instanceof Document
-        ? document.documentElement
-        : target;
+    return target instanceof Window || target instanceof Document ? document.documentElement : target;
 }
 //# sourceMappingURL=FlingRotation.js.map
