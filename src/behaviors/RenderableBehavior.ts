@@ -7,8 +7,8 @@ import {Element3D} from '../core/Element3D.js'
  * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).
  *
  * @extends Behavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child behavior elements instead. Legacy behaviors will be removed in a future version.
  */
-// @Xts-expect-error broken type checking in latest TypeScript (https://github.com/microsoft/TypeScript/issues/56330)
 export abstract class RenderableBehavior extends Effectful(Behavior) {
 	declare element: Element3D
 

@@ -92,7 +92,7 @@ class PointLight extends LightWithShadow {
 	 * In [physically correct mode](../core/Scene#physicallycorrectlights), a
 	 * decay value of `2` leads to physically realistic light falloff.
 	 */
-	@numberAttribute decay = 1
+	@numberAttribute decay = 2
 
 	/**
 	 * @property {number} power -

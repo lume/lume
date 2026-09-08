@@ -4,91 +4,40 @@
 	id="scene"
 	perspective="800"
 	webgl
-	Xbackground="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-	Xequirectangular-background="true"
+	background="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
+	equirectangular-background="true"
 	environment="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
 >
 	<lume-point-light position="200 -200 200" intensity="0.6" color="white"></lume-point-light>
 	<lume-ambient-light color="white" intensity="0.6"></lume-ambient-light>
 
 	<lume-camera-rig active distance="5" max-distance="70000" min-distance="0.2" dolly-speed="0.005"></lume-camera-rig>
-
-	<!-- background -->
-	<lume-sphere
-		has="basic-material"
-		color="white"
-		sidedness="double"
-		texture="https://assets.codepen.io/191583/airplane-hanger-env-map.jpg"
-		size="4000"
-		mount-point="0.5 0.5 0.5"
-	></lume-sphere>
 </lume-scene>
 
 <script type="module">
-	import {html, For, render} from 'lume'
+	import {For, render} from 'lume'
+	import {html} from 'https://cdn.jsdelivr.net/npm/nimble-html@0.1.4/html.js'
 
 	const positions = [-3, -2, -1, 0, 1, 2, 3]
 
-	/** @type {'solid-html' | 'plain-html' | 'js'} */
-	const method =
-		//
-		'solid-html'
-	// 'plain-html'
-	// 'js'
-
-	if (method === 'solid-html') {
-		// The model is ~1/50th of one unit across, so scale by 50
-		// prettier-ignore
-		render(
-			() => html`
-				<${For} each=${() => positions}>
-					${pos => html`
+	// The model is ~1/50th of one unit across, so scale by 50
+	scene.append(
+		...html/*html*/ `
+			<lume-element3d>
+				${positions.map(
+					pos => html/*html*/ `
 						<lume-gltf-model
-							attr:id=${"debug-model-" + pos}
+							id=${'debug-model-' + pos}
 							rotation="0 45 0"
 							size="0.02 0.02 0"
 							src="./models/boombox/BoomBox.gltf"
 							draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
 							scale="50 50 50"
-							attr:position=${pos * 1.2}
+							.position=${pos * 1.2}
 						></lume-gltf-model>
-					`}
-				</>
-			`,
-			scene,
-		)
-	} else if (method === 'plain-html') {
-		let content = ''
-		// prettier-ignore
-		for (const pos of positions) {
-			content += /*html*/ `
-						<lume-gltf-model
-							id="${"debug-model-" + pos}"
-							rotation="0 45 0"
-							size="0.02 0.02 0"
-							src="./models/boombox/BoomBox.gltf"
-							draco-decoder="https://www.gstatic.com/draco/v1/decoders/"
-							scale="50 50 50"
-							position="${pos * 1.2}"
-							align-point="0.01 0.01"
-						></lume-gltf-model>
-			`
-		}
-		scene.insertAdjacentHTML('beforeend', content)
-	} else if (method === 'js') {
-		let content = []
-		for (const pos of positions) {
-			const gltf = document.createElement('lume-gltf-model')
-			content.push(gltf)
-			gltf.setAttribute('id', 'debug-model-' + pos)
-			gltf.setAttribute('rotation', '0 45 0')
-			gltf.setAttribute('size', '0.02 0.02 0')
-			gltf.setAttribute('src', './models/boombox/BoomBox.gltf')
-			gltf.setAttribute('draco-decoder', 'https://www.gstatic.com/draco/v1/decoders/')
-			gltf.setAttribute('scale', '50 50 50')
-			gltf.setAttribute('position', String(pos * 1.2))
-			gltf.setAttribute('align-point', '0.01 0.01')
-		}
-		scene.append(...content)
-	}
+					`,
+				)}
+			</lume-element3d>
+		`(scene),
+	)
 </script>

@@ -1,0 +1,181 @@
+<script src="./template.js" template="./template.html" title="<lume-instanced-mesh>"></script>
+
+<!-- See https://cocopon.github.io/tweakpane/ -->
+<script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js"></script>
+
+<style>
+	body {
+		background: black;
+	}
+</style>
+
+<lume-scene id="scene" perspective="800" webgl>
+	<lume-ambient-light color="white" intensity="3"></lume-ambient-light>
+
+	<lume-sphere id="stars" size="10000 10000 10000" receive-shadow="false" mount-point="0.5 0.5 0.5">
+		<lume-basic-material
+			texture="../apps/docs/examples/hello-world/galaxy_starfield.png"
+			sidedness="back"
+			color="white"
+		></lume-basic-material>
+	</lume-sphere>
+</lume-scene>
+
+<script type="module">
+	import {Motor} from 'lume'
+	import {Color} from 'three'
+	// import {html} from 'https://cdn.jsdelivr.net/npm/nimble-html@0.1.4/html.js'
+	import {html} from 'https://rawcdn.githack.com/lume/nimble-html/71f9f9af383b444c595529ba55766420c7f53da8/html.js'
+
+	const numberOfObjects = 5_000
+	const maxObjects = 200_000
+	const maxPosition = 1000
+	const colorPhases = Array.from({length: maxObjects * 3}).map(() => 2 * Math.random())
+	let lightColor = new Color(1, 0, 0)
+	const animateColor = false
+	const everyOther = 10
+
+	let rotations = Array.from({length: maxObjects * 3}).map((_, i) =>
+		Math.floor(i / 3) % everyOther === 0 ? Math.random() : 0,
+	)
+	const positions = Array.from({length: maxObjects * 3}).map(() => maxPosition * Math.random())
+	const scales = Array.from({length: maxObjects * 3}).map(() => Math.random())
+	let colors = Array.from({length: maxObjects * 3}).map(() => 0.01)
+
+	let t = performance.now()
+
+	const template = () =>
+		html/*html*/ `
+			<lume-point-light
+				id="light"
+				.position=${[
+					(maxPosition / 4) * Math.sin(t * 0.0001) + maxPosition / 2,
+					(maxPosition / 4) * Math.cos(t * 0.0002) + maxPosition / 2,
+					(maxPosition / 4) * Math.sin(t * 0.0003) + maxPosition / 2,
+				]}
+				intensity="2000000"
+				.color=${lightColor}
+			>
+				<lume-sphere id="stars" size="20 20 20" cast-shadow="false" mount-point="0.5 0.5 0.5">
+					<lume-basic-material id="sphereMat" .color=${lightColor}></lume-basic-material>
+				</lume-sphere>
+			</lume-point-light>
+
+			<lume-camera-rig
+				active
+				.distance=${maxPosition * 2}
+				.maxDistance=${maxPosition * 3.5}
+				.minDistance=${maxPosition * 0.1}
+				.position=${[maxPosition / 2, maxPosition / 2, maxPosition / 2]}
+			></lume-camera-rig>
+
+			<lume-instanced-mesh
+				id="mesh"
+				size="30 30 30"
+				.count=${numberOfObjects}
+				!.rotations=${rotations}
+				.positions=${positions}
+				.scales=${scales}
+				!.colors=${colors}
+			>
+				<lume-sphere-geometry></lume-sphere-geometry>
+			</lume-instanced-mesh>
+		`(scene)
+
+	scene.append(...template())
+
+	const demoOptions = {
+		// When true, all instances are animated, which is the most costly.
+		// When false, only some instances are updated, and this shows how to bypass updating all matrices.
+		animateAll: false,
+	}
+
+	function makeOptionsUI() {
+		const pane = new Tweakpane.Pane()
+		const folder = pane.addFolder({title: 'demo options', expanded: false})
+
+		folder.addInput(demoOptions, 'animateAll')
+		folder.addInput(mesh, 'count', {min: 10, max: maxObjects, step: 1})
+	}
+
+	makeOptionsUI()
+
+	Motor.addRenderTask(time => {
+		t = time
+
+		// formula: https://www.desmos.com/calculator/soatbmcram
+		lightColor = new Color(
+			0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[0]) + 0.5,
+			0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[1]) + 0.5,
+			0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[2]) + 0.5,
+		)
+
+		if (demoOptions.animateAll) {
+			let i = 0
+			for (const rot of rotations) {
+				rotations[i] += 0.01
+				i++
+			}
+
+			if (animateColor) {
+				i = 0
+				for (const col of colors) {
+					// formula: https://www.desmos.com/calculator/soatbmcram
+					colors[i] = 0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[i]) + 0.5
+					i++
+				}
+			}
+
+			// Modifying the arrays in place does not trigger reactivity (arrays
+			// are currently not reactive) so we need to trigger reactivity to
+			// make the instances re-render. The trick with nimble-html is to
+			// set them to new array values.
+			//
+			// NOTE: Triggering an update this way is fine if you are updating
+			// all instances. However if you wish to update only some instances
+			// (instead of all of them redundantly), this approach is not ideal
+			// because it re-calculates all matrices and colors of all instances
+			// even if they all didn't change.
+		} else {
+			for (let i = 0; i < numberOfObjects; i += 1) {
+				// Animate only every 50th instance.
+				if (i % everyOther !== 0) continue
+
+				// Set an individual instance.
+				//
+				// NOTE: When you need to set only some instances, doing it this
+				// way will be more performant, otherwise triggering reactivity
+				// by assignment will update all matrices instead of only the
+				// ones you modify directly.
+				mesh.setInstanceRotation(
+					i,
+					rotations[i * 3 + 0] + 0.01,
+					rotations[i * 3 + 1] + 0.01,
+					rotations[i * 3 + 2] + 0.01,
+				)
+
+				if (animateColor) {
+					mesh.setInstanceColor(
+						i,
+						0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[i * 3 + 0]) + 0.5,
+						0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[i * 3 + 1]) + 0.5,
+						0.5 * Math.sin(Math.PI * (time * 0.001) - Math.PI * colorPhases[i * 3 + 2]) + 0.5,
+					)
+				}
+
+				// NOTE! If you use this method to update *all* instances, it
+				// will *not* be faster than updating the array directly and
+				// then triggering the reactive setter. It depends on what
+				// you're doing!
+			}
+		}
+
+		// Always update the template (f.e. for the light color change). This
+		// doesn't set new values if they haven't changed.  For example in the
+		// demoOptions.animateAll case, the rotations is updated to a new array,
+		// so that updates the instanced mesh, but in the other case it remains
+		// the same array, so no update occurs for that and instead we update
+		// individual values directly with mesh.setInstanceRotation().
+		template()
+	})
+</script>

@@ -1,10 +1,10 @@
-import {Color} from 'three/src/math/Color.js'
+import {effect, signal} from 'classy-solid'
 import {Light as ThreeLight} from 'three/src/lights/Light.js'
-import {attribute, element, numberAttribute} from '@lume/element'
+import {element, numberAttribute} from '@lume/element'
 import {Element3D} from '../core/Element3D.js'
-
 import type {TColor} from '../utils/three.js'
 import type {Element3DAttributes} from '../core/Element3D.js'
+import {Colorful} from '../core/Colorful.js'
 
 export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
 
@@ -21,9 +21,9 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity'
  */
 export
 @element({autoDefine: false})
-abstract class Light extends Element3D {
+abstract class Light extends Colorful(Element3D) {
 	/**
-	 * @property {string | number | THREE.Color} color -
+	 * @property {string | number | THREE.Color | [number, number, number]} color -
 	 *
 	 * `attribute`
 	 *
@@ -31,18 +31,9 @@ abstract class Light extends Element3D {
 	 *
 	 * The color of light that is emitted.
 	 *
-	 * A string value can be any valid CSS color string, f.e. `"#ff6600"` or
-	 * `"rgb(10,20,30)"`.
-	 *
-	 * A number value represents a hex color value, f.e.
-	 * `0xff6600`.
-	 *
-	 * A `THREE.Color` instance can be assigned, and it will be copied to the
-	 * element's internal color value upon assignment. Mutating the assigned
-	 * `THREE.Color` after assignment will have no effect; instead you can
-	 * assign it again each time you wish to update the color.
+	 * See `Colorful.color` for detail on supported color values.
 	 */
-	@attribute color: TColor = 'white'
+	declare color: TColor
 
 	/**
 	 * @property {number} intensity -
@@ -67,18 +58,11 @@ abstract class Light extends Element3D {
 		return new ThreeLight()
 	}
 
-	override connectedCallback() {
-		super.connectedCallback()
-
-		this.createEffect(() => {
-			if (typeof this.color === 'object') this.three.color = this.color
-			this.three.color = new Color(this.color)
-			this.needsUpdate()
-		})
-
-		this.createEffect(() => {
-			this.three.intensity = this.intensity
-			this.needsUpdate()
-		})
+	@effect intensityEffect() {
+		this.three.intensity = this.intensity
+		this.needsUpdate()
 	}
+
+	// @ts-expect-error Dummy signal field finalizes effects after private fields to prevent TDZ
+	@signal private __init_effects_ignore = 0
 }

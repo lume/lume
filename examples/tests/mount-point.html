@@ -4,6 +4,7 @@
 	html,
 	body {
 		background: #333;
+		color: white;
 	}
 
 	.cube {
@@ -36,37 +37,37 @@
 
 <lume-scene id="scene" perspective="700" webgl physically-correct-lights>
 	<lume-ambient-light intensity="0.3"></lume-ambient-light>
-	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 410" intensity="1500"></lume-point-light>
+	<lume-point-light align-point="0.5 0.5 0.5" position="-200 -200 410" intensity="500000"></lume-point-light>
 
 	<lume-camera-rig align-point="0.5 0.5" horizontal-angle="-30" vertical-angle="10"></lume-camera-rig>
 
 	<lume-element3d id="root" size="0 0 0" align-point="0.5 0.5 0.5" xrotation="-10 30 0">
 		<!-- prettier-ignore -->
 		<lume-element3d>
-			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100" color="springgreen"></lume-sphere>
-			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150" color="springgreen"></lume-sphere>
+			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 100"></lume-sphere>
+			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" position="0 0 150"></lume-sphere>
 		</lume-element3d>
 
 		<!-- axis helpers -->
 		<!-- prettier-ignore -->
 		<lume-element3d>
-			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0"></lume-mixed-plane>
-			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0"></lume-mixed-plane>
-			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 45 0"></lume-mixed-plane>
-			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -45 0"></lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="x-axis" size="1000 1 0">x</lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="y-axis" size="1 1000 0">y</lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 0 0"></lume-mixed-plane>
+			<lume-mixed-plane align-point="0.5 0.5 0" mount-point="0.5 0.5 0" class="z-axis" size="1 1000 0" rotation="90 -90 0">z</lume-mixed-plane>
 		</lume-element3d>
 
 		<!-- prettier-ignore -->
 		<lume-box class="cube" mount-point="0.5 0.5 0" align-point="0.5 0.5 0" size="100 100 100">
-			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 -100"></lume-mixed-plane>
-			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 0"></lume-mixed-plane>
-			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 100"></lume-mixed-plane>
-			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 200"></lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 -100">yo</lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 0">yo</lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 100">yo</lume-mixed-plane>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 0" align-point="0 0 0.5" position="0 0 200">yo</lume-mixed-plane>
 		</lume-box>
 
 		<lume-box origin="0 0 0" align-point="0.5 0.5" mount-point="0.5 0.5 0" size="100 100 100" position="0 -100 0">
-			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5" color="springgreen"></lume-sphere>
-			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 100" position="0 0 100"></lume-mixed-plane>
+			<lume-sphere align-point="1 1 1" size="10 10 10" mount-point="0.5 0.5 0.5"></lume-sphere>
+			<lume-mixed-plane class="plane" opacity="0.5" size="100 100 100" position="0 0 100">yo</lume-mixed-plane>
 		</lume-box>
 	</lume-element3d>
 </lume-scene>
@@ -74,11 +75,22 @@
 <script type="module">
 	import 'lume'
 
-	// TODO replace with CSS, once that's ready
-	document.querySelectorAll('lume-scene *').forEach(n => {
-		n.color = 'deeppink'
-		n.materialOpacity = 0.4
-	})
+	// A timeout is needed to give slotchange handling time to run, to connect
+	// geometries and materials.
+	// TODO can we avoid the timeout? Maybe manual slot assignment needs to run
+	// eagerly on element connect somehow?
+	setTimeout(() => {
+		scene.traverseComposed(el => {
+			if (!el.tagName.endsWith('-MATERIAL')) return
 
+			// TODO replace with CSS, once that's ready
+			el.color = 'deeppink'
+			el.materialOpacity = 0.8
+		})
+	}, 0)
+
+	// This tests that toggling WebGL rendering on/off works. It's not just
+	// about the WebGL context, but ensuring all the elements properly re-create
+	// all their expected WebGL state that will be rendered.
 	setInterval(() => (scene.webgl = !scene.webgl), 1500)
 </script>

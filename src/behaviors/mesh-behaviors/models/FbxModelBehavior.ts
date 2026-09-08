@@ -14,6 +14,9 @@ import type {Group} from 'three/src/objects/Group.js'
 
 export type FbxModelBehaviorAttributes = 'src' | 'centerGeometry'
 
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-fbx-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export
 @behavior
 class FbxModelBehavior extends RenderableBehavior {

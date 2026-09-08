@@ -8,11 +8,16 @@ import { MeshBehavior } from './MeshBehavior.js';
  * _createComponent() - return a BufferGeometry or Material instance.
  *
  * @extends MeshBehavior
+ * @deprecated Legacy behavior system via `has=""` attribute is deprecated. Use child geometry/material elements instead. Legacy behaviors will be removed in a future version.
  */
 export class GeometryOrMaterialBehavior extends MeshBehavior {
     connectedCallback() {
         super.connectedCallback();
         this.createEffect(() => this.resetMeshComponent());
+    }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        console.warn('Dynamically removing legacy has-attribute mesh behaviors is deprecated, quirky, and will be eventually removed. Migrate to element-based mesh behaviors.');
     }
     resetMeshComponent() {
         this.#setMeshComponent();

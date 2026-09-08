@@ -75,6 +75,7 @@ const isPathStringRe = /^[mlhvcsqtaz][^a-z]/i;
  * </script>
  *
  * @extends GeometryBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-shape-geometry>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 let ShapeGeometryBehavior = (() => {
     let _classDecorators = [behavior];

@@ -33,17 +33,20 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import this lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/SphereGeometry.js');
 /**
  * @class Sphere -
  *
  * Element: `<lume-sphere>`
  *
- * Extends from `Mesh` to apply default behaviors of
- * [`sphere-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
- * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * Extends from `Mesh` to apply a default
+ * [`<lume-sphere-geometry>`](../behavior-elements/mesh-behaviors/geometries/SphereGeometry).
  *
  * The diameter of the sphere is determined by the `x` size of the element.
  *
@@ -64,7 +67,7 @@ let Sphere = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'sphere', material: 'physical' };
+        _defaultGeometry = () => html `<lume-sphere-geometry></lume-sphere-geometry>`;
     };
     return Sphere = _classThis;
 })();

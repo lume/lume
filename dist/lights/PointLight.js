@@ -195,7 +195,7 @@ let PointLight = (() => {
          * In [physically correct mode](../core/Scene#physicallycorrectlights), a
          * decay value of `2` leads to physically realistic light falloff.
          */
-        decay = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, _decay_initializers, 1
+        decay = (__runInitializers(this, _distance_extraInitializers), __runInitializers(this, _decay_initializers, 2
         /**
          * @property {number} power -
          *

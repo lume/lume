@@ -34,26 +34,43 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 };
 import { Mesh as ThreeMesh } from 'three/src/objects/Mesh.js';
 import { booleanAttribute, element } from '@lume/element';
-import { Element3D } from '../core/Element3D.js';
+import { MeshLike } from './MeshLike.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
  * @class Mesh -
  *
  * Element: `<lume-mesh>`
  *
- * An element that renders a particular 3D shape (geometry) along with a
- * particular style (material). This is a generic element with no particular
- * shape. Elements like `<lume-box>` extend from `Mesh` in order to define
- * behaviors they ship with by default. For example a `<lume-box>` element
- * (backed by the [`Box`](./Box) class) extends from this `Mesh` class and
- * applies two default behaviors:
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
- * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * An element that renders a particular 3D shape (a geometry formed by a set of
+ * vertices) along with a particular style (a material). Every three vertices in
+ * the shape are drawn as a triangle.
  *
- * A `<lume-mesh>` does not have any behaviors by default, a geometry behavior
- * and material behavior need to be added for it to render something, using the
- * `has=""` attribute, for example `has="box-geometry phong-material"`.
+ * It defaults to having a box geometry (using a `<lume-box-geometry>` child
+ * element) and a physical material (using a `<lume-physical-material>` child
+ * element), unless otherwise specified.
+ *
+ * Elements like `<lume-box>` extend from `Mesh` in order to define different
+ * default geometry or material. For example a `<lume-sphere>` element
+ * (implemented by the [`Sphere`](./Sphere) class) extends from `Mesh` and
+ * applies a
+ * [`<lume-sphere-geometry>`](../behavior-elements/mesh-behaviors/geometries/SphereGeometry)
+ * child element to override the default `<lume-box-geometry>`.
+ *
+ * ```html
+ * <!-- This renders a box with a physical material colored white by default. -->
+ * <lume-mesh size="10 20 30"></lume-mesh>
+ *
+ * <!-- This renders a sphere with a phong material specifically colored blue. -->
+ * <lume-mesh size="10">
+ *   <lume-sphere-geometry></lume-sphere-geometry>
+ *   <lume-phong-material color="blue"></lume-phong-material>
+ * </lume-mesh>
+
+ * <!-- This renders a sphere with a phong material specifically colored blue (shortcut). -->
+ * <lume-sphere size="10">
+ *   <lume-phong-material color="blue"></lume-phong-material>
+ * </lume-sphere>
+ * ```
  *
  * ## Example
  *
@@ -62,7 +79,7 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   liveExample.content = meshExample()
  * </script>
  *
- * @extends Element3D
+ * @extends MeshLike
  * @element lume-mesh TODO @element jsdoc tag
  *
  */
@@ -71,7 +88,7 @@ let Mesh = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = MeshLike;
     let _castShadow_decorators;
     let _castShadow_initializers = [];
     let _castShadow_extraInitializers = [];

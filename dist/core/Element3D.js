@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,14 +32,8 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 import { booleanAttribute, element } from '@lume/element';
+import { effect } from 'classy-solid';
 import { SharedAPI } from './SharedAPI.js';
 import { autoDefineElements } from '../LumeConfig.js';
 /**
@@ -108,26 +109,30 @@ let Element3D = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = SharedAPI;
+    let _instanceExtraInitializers = [];
     let _visible_decorators;
     let _visible_initializers = [];
     let _visible_extraInitializers = [];
+    let ___updateVisible_decorators;
     var Element3D = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
             _visible_decorators = [booleanAttribute];
+            ___updateVisible_decorators = [effect];
+            __esDecorate(this, null, ___updateVisible_decorators, { kind: "method", name: "__updateVisible", static: false, private: false, access: { has: obj => "__updateVisible" in obj, get: obj => obj.__updateVisible }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _visible_decorators, { kind: "field", name: "visible", static: false, private: false, access: { has: obj => "visible" in obj, get: obj => obj.visible, set: (obj, value) => { obj.visible = value; } }, metadata: _metadata }, _visible_initializers, _visible_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             Element3D = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
-        hasShadow = false;
+        hasShadow = (__runInitializers(this, _instanceExtraInitializers), false);
         /**
          * @property {true} isElement3D -
          *
          * *readonly*
          *
-         * Always `true` for things that are or inherit from `Element3D`.
+         * Always `true` for elements that are or inherit from `Element3D`.
          */
         isElement3D = true;
         /**
@@ -157,10 +162,11 @@ let Element3D = (() => {
          * *reactive*
          */
         get parentSize() {
-            const composedLumeParent = this.composedLumeParent;
+            // read first, to track the dependency
+            const parent = this.composedSizeableParent;
             if (this.scene && this.scene === this.parentElement)
                 return this.scene.calculatedSize;
-            return composedLumeParent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
+            return parent?.calculatedSize ?? { x: 0, y: 0, z: 0 };
         }
         /**
          * @constructor - Create a `Element3D` instance.
@@ -195,7 +201,7 @@ let Element3D = (() => {
             // element.
             // TODO Remove this after we make _calcSize lazy and deferred to a
             // render task.
-            if (this.composedLumeParent) {
+            if (this.composedSceneGraphParent) {
                 this._calcSize();
                 // No harm deferring, plus we need to because this may end up
                 // calling a super method of a super class that relies on a private
@@ -205,8 +211,9 @@ let Element3D = (() => {
             }
         }
         /**
-         * @method traverseSceneGraph - This traverses the composed tree of
-         * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+         * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
+         * elements (the scene graph) including this element, in pre-order. It skips
+         * non-LUME elements.
          *
          * This is similar to
          * [`Scene#traverseSceneGraph`](./Scene.md#traversescenegraph) but traversal
@@ -222,7 +229,7 @@ let Element3D = (() => {
          * ```
          *
          * @param {(node: Element3D) => void} visitor - A function called for each
-         * LUME node in the scene graph (the composed tree).
+         * LUME node participating in the render scene graph (traverses the flat tree).
          * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
          * the traversal will wait for custom elements to be defined (with
          * customElements.whenDefined) before traversing to them.
@@ -235,14 +242,14 @@ let Element3D = (() => {
         traverseSceneGraph(visitor, waitForUpgrade = false) {
             visitor(this);
             if (!waitForUpgrade) {
-                for (const child of this.composedLumeChildren)
+                for (const child of this.composedSceneGraphChildren)
                     child.traverseSceneGraph(visitor, waitForUpgrade);
                 return;
             }
             // if waitForUpgrade is true, we make a promise chain so that
             // traversal order is still the same as when waitForUpgrade is false.
             let promise = Promise.resolve();
-            for (const child of this.composedLumeChildren) {
+            for (const child of this.composedSceneGraphChildren) {
                 const isUpgraded = child.matches(':defined');
                 if (isUpgraded) {
                     promise = promise.then(() => child.traverseSceneGraph(visitor, waitForUpgrade));
@@ -255,13 +262,10 @@ let Element3D = (() => {
             }
             return promise;
         }
-        connectedCallback() {
-            super.connectedCallback();
-            this.createEffect(() => {
-                this._elementOperations.shouldRender = this.visible;
-                this.three.visible = this.visible;
-                this.needsUpdate();
-            });
+        __updateVisible() {
+            this._elementOperations.shouldRender = this.visible;
+            this.three.visible = this.visible;
+            this.needsUpdate();
         }
         static css = /*css*/ `
 		${Reflect.get(_classSuper, "css", _classThis)}

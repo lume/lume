@@ -43,6 +43,9 @@ import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { Events } from '../../../core/Events.js';
 import { RenderableBehavior } from '../../RenderableBehavior.js';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-fbx-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let FbxModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;

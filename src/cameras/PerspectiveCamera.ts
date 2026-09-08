@@ -1,4 +1,5 @@
 import {numberAttribute, element, type ElementAttributes} from '@lume/element'
+import {effect} from 'classy-solid'
 import {PerspectiveCamera as ThreePerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 import {Camera, type CameraAttributes} from './Camera.js'
 import {autoDefineElements} from '../LumeConfig.js'
@@ -43,76 +44,72 @@ class PerspectiveCamera extends Camera {
 	 */
 	@numberAttribute fov = 0
 
-	override connectedCallback() {
-		super.connectedCallback()
-
-		this.createEffect(() => {
-			if (this.fov !== 0) {
-				this.three.fov = this.fov
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-				return
-			}
-
-			// AUTO FOV //////////////////////////
-			// Uses the scene `perspective` to match behavior of CSS `perspective`
-
-			const perspective = this.scene?.perspective ?? defaultScenePerspective
-			const sceneSize = this.scene?.calculatedSize ?? {x: 1, y: 1, z: 0}
-
-			// This math is what sets the FOV of the default camera so that a
-			// viewport-sized plane will fit exactly within the view when it is
-			// positioned at the world origin 0,0,0, as described in the
-			// `perspective` property's description.
-			// For more details: https://discourse.threejs.org/t/269/28
-			this.three.fov = (180 * (2 * Math.atan(sceneSize.y / 2 / perspective))) / Math.PI
-
-			////////////////////////////
-
+	@effect __updateProjection() {
+		if (this.fov !== 0) {
+			this.three.fov = this.fov
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
-		})
+			return
+		}
 
-		this.createEffect(() => {
-			// Any value other than zero means the user supplied an aspect
-			// ratio manually. Stop auto-aspect in that case.
-			if (this.aspect !== 0) {
-				this.three.aspect = this.aspect
-				this.three.updateProjectionMatrix()
-				this.needsUpdate()
-				return
-			}
+		// AUTO FOV //////////////////////////
+		// Uses the scene `perspective` to match behavior of CSS `perspective`
 
-			// AUTO ASPECT /////////////////////////////
+		const perspective = this.scene?.perspective ?? defaultScenePerspective
+		const sceneSize = this.scene?.calculatedSize ?? {x: 1, y: 1, z: 0}
 
-			const sceneSize = this.scene?.calculatedSize || {x: 1, y: 1}
+		// This math is what sets the FOV of the default camera so that a
+		// viewport-sized plane will fit exactly within the view when it is
+		// positioned at the world origin 0,0,0, as described in the
+		// `perspective` property's description.
+		// For more details: https://discourse.threejs.org/t/269/28
+		this.three.fov = (180 * (2 * Math.atan(sceneSize.y / 2 / perspective))) / Math.PI
 
-			// '|| 1' in case of a 0 or NaN (f.e. 0 / 0 == NaN)
-			this.three.aspect = sceneSize.x / sceneSize.y || 1
+		////////////////////////////
 
-			////////////////////////////
+		this.three.updateProjectionMatrix()
+		this.needsUpdate()
+	}
 
+	@effect __updateAspect() {
+		// Any value other than zero means the user supplied an aspect
+		// ratio manually. Stop auto-aspect in that case.
+		if (this.aspect !== 0) {
+			this.three.aspect = this.aspect
 			this.three.updateProjectionMatrix()
 			this.needsUpdate()
-		})
+			return
+		}
 
-		this.createEffect(() => {
-			this.three.near = this.near
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
+		// AUTO ASPECT /////////////////////////////
 
-		this.createEffect(() => {
-			this.three.far = this.far
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
+		const sceneSize = this.scene?.calculatedSize || {x: 1, y: 1}
 
-		this.createEffect(() => {
-			this.three.zoom = this.zoom
-			this.three.updateProjectionMatrix()
-			this.needsUpdate()
-		})
+		// '|| 1' in case of a 0 or NaN (f.e. 0 / 0 == NaN)
+		this.three.aspect = sceneSize.x / sceneSize.y || 1
+
+		////////////////////////////
+
+		this.three.updateProjectionMatrix()
+		this.needsUpdate()
+	}
+
+	@effect __updateNear() {
+		this.three.near = this.near
+		this.three.updateProjectionMatrix()
+		this.needsUpdate()
+	}
+
+	@effect __updateFar() {
+		this.three.far = this.far
+		this.three.updateProjectionMatrix()
+		this.needsUpdate()
+	}
+
+	@effect __updateZoom() {
+		this.three.zoom = this.zoom
+		this.three.updateProjectionMatrix()
+		this.needsUpdate()
 	}
 
 	override makeThreeObject3d() {

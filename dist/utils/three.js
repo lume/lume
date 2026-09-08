@@ -53,7 +53,7 @@ export function setRandomColorPhongMaterial(obj, dispose, traverse) {
 }
 export function setColorPhongMaterial(obj, color, dispose, traverse = true) {
     const material = new MeshPhongMaterial();
-    material.color = new Color(color);
+    material.color = new Color(...(Array.isArray(color) ? color : [color]));
     if (traverse)
         obj.traverse(node => applyMaterial(node, material, dispose));
     else

@@ -18,7 +18,7 @@ export type ClipPlaneAttributes = Element3DAttributes
 /**
  * @class ClipPlane
  *
- * Element: `lume-clip-plane`
+ * Element: `<lume-clip-plane>`
  *
  * An non-rendered plane that can be placed anywhere in 3D space to clip an
  * element on one side of the plane. The plane is infinite.
@@ -27,8 +27,8 @@ export type ClipPlaneAttributes = Element3DAttributes
  * child of a `<lume-clip-plane>`, as in the below example.
  *
  * To clip an element, add a
- * [`clip-planes`](../behaviors/mesh-behaviors/ClipPlanesBehavior) behavior to the
- * element with the `has=""` attribute, then assign any number of connected
+ * [`<lume-clipper>`](../behavior-elements/mesh-behaviors/ClipPlanes) behavior to the
+ * element as a child element, then assign any number of connected
  * `<lume-clip-plane>` elements to the element's `clipPlanes` property.
  *
  * <live-code id="clipExample"></live-code>

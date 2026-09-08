@@ -3,11 +3,23 @@ import { Mesh, type MeshAttributes } from './Mesh.js';
 import type { ElementWithBehaviors } from '../behaviors/ElementWithBehaviors.js';
 import type { RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes } from '../behaviors/index.js';
 export type RoundedRectangleAttributes = MeshAttributes | RoundedRectangleGeometryBehaviorAttributes;
+/**
+ * @class RoundedRectangle -
+ *
+ * Element: `<lume-rounded-rectangle>`
+ *
+ * Applies default behaviors of
+ * [`<lume-roundedrect-geometry>`](../behavior-elements/mesh-behaviors/geometries/RoundedrectGeometry)
+ * and
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial).
+ *
+ * The dimensions of the rounded rectangle are determined by the
+ * [`size`](../core/Sizeable#size) of the element.
+ *
+ * @extends Mesh
+ */
 export declare class RoundedRectangle extends Mesh {
-    initialBehaviors: {
-        geometry: string;
-        material: string;
-    };
+    protected _defaultGeometry: () => Node | Node[];
 }
 export interface RoundedRectangle extends ElementWithBehaviors<RoundedRectangleGeometryBehavior, RoundedRectangleGeometryBehaviorAttributes> {
 }

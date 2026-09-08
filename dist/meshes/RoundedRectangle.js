@@ -33,8 +33,28 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Mesh } from './Mesh.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/RoundedrectGeometry.js');
+/**
+ * @class RoundedRectangle -
+ *
+ * Element: `<lume-rounded-rectangle>`
+ *
+ * Applies default behaviors of
+ * [`<lume-roundedrect-geometry>`](../behavior-elements/mesh-behaviors/geometries/RoundedrectGeometry)
+ * and
+ * [`<lume-physical-material>`](../behavior-elements/mesh-behaviors/materials/PhysicalMaterial).
+ *
+ * The dimensions of the rounded rectangle are determined by the
+ * [`size`](../core/Sizeable#size) of the element.
+ *
+ * @extends Mesh
+ */
 let RoundedRectangle = (() => {
     let _classDecorators = [element('lume-rounded-rectangle', autoDefineElements)];
     let _classDescriptor;
@@ -50,7 +70,7 @@ let RoundedRectangle = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'rounded-rectangle', material: 'physical' };
+        _defaultGeometry = () => html `<lume-roundedrect-geometry></lume-roundedrect-geometry>`;
     };
     return RoundedRectangle = _classThis;
 })();

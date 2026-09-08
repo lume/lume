@@ -38,6 +38,9 @@ import { PointsMaterial } from 'three/src/materials/PointsMaterial.js';
 import { behavior } from '../../Behavior.js';
 import { receiver } from '../../PropReceiver.js';
 import { MaterialBehavior } from './MaterialBehavior.js';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-points-material>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let PointsMaterialBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;

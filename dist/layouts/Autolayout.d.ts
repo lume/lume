@@ -33,7 +33,7 @@ export declare class Autolayout extends Element3D {
      * @return {Autolayout} this
      */
     constructor(options: any);
-    connectedCallback(): void;
+    visualFormatEffect(): void;
     childConnectedCallback(child: Element3D): void;
     childDisconnectedCallback(child: Element3D): void;
     /**
@@ -75,6 +75,7 @@ export declare class Autolayout extends Element3D {
      * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
      */
     removeFromLayout(child: Element3D, id: string): void;
+    private __init_effects_ignore;
 }
 declare module 'solid-js' {
     namespace JSX {

@@ -1,3 +1,10 @@
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -25,15 +32,9 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
 import { numberAttribute, element } from '@lume/element';
 import { onCleanup } from 'solid-js';
+import { effect } from 'classy-solid';
 import { DirectionalLight as ThreeDirectionalLight } from 'three/src/lights/DirectionalLight.js';
 import { DirectionalLightHelper } from 'three/src/helpers/DirectionalLightHelper.js';
 import { CameraHelper } from 'three/src/helpers/CameraHelper.js';
@@ -76,6 +77,7 @@ let DirectionalLight = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = LightWithShadow;
+    let _instanceExtraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
     let _intensity_extraInitializers = [];
@@ -91,6 +93,8 @@ let DirectionalLight = (() => {
     let _shadowCameraLeft_decorators;
     let _shadowCameraLeft_initializers = [];
     let _shadowCameraLeft_extraInitializers = [];
+    let _lightShadowEffect_decorators;
+    let _debugHelpersEffect_decorators;
     var DirectionalLight = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -100,6 +104,10 @@ let DirectionalLight = (() => {
             _shadowCameraRight_decorators = [numberAttribute];
             _shadowCameraBottom_decorators = [numberAttribute];
             _shadowCameraLeft_decorators = [numberAttribute];
+            _lightShadowEffect_decorators = [effect];
+            _debugHelpersEffect_decorators = [effect];
+            __esDecorate(this, null, _lightShadowEffect_decorators, { kind: "method", name: "lightShadowEffect", static: false, private: false, access: { has: obj => "lightShadowEffect" in obj, get: obj => obj.lightShadowEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _debugHelpersEffect_decorators, { kind: "method", name: "debugHelpersEffect", static: false, private: false, access: { has: obj => "debugHelpersEffect" in obj, get: obj => obj.debugHelpersEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
             __esDecorate(null, null, _shadowCameraTop_decorators, { kind: "field", name: "shadowCameraTop", static: false, private: false, access: { has: obj => "shadowCameraTop" in obj, get: obj => obj.shadowCameraTop, set: (obj, value) => { obj.shadowCameraTop = value; } }, metadata: _metadata }, _shadowCameraTop_initializers, _shadowCameraTop_extraInitializers);
             __esDecorate(null, null, _shadowCameraRight_decorators, { kind: "field", name: "shadowCameraRight", static: false, private: false, access: { has: obj => "shadowCameraRight" in obj, get: obj => obj.shadowCameraRight, set: (obj, value) => { obj.shadowCameraRight = value; } }, metadata: _metadata }, _shadowCameraRight_initializers, _shadowCameraRight_extraInitializers);
@@ -122,54 +130,52 @@ let DirectionalLight = (() => {
          * The intensity of this element does not change behavior when [physically
          * correct lighting](../core/Scene#physicallycorrectlights) is enabled.
          */
-        intensity = __runInitializers(this, _intensity_initializers, 1
+        intensity = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _intensity_initializers, 1
         // These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
-        );
+        ));
         // These map to THREE.DirectionalLightShadow properties, which uses an orthographic camera for shadow projection.
         // https://threejs.org/docs/index.html?q=light#api/en/lights/shadows/DirectionalLightShadow
         shadowCameraTop = (__runInitializers(this, _intensity_extraInitializers), __runInitializers(this, _shadowCameraTop_initializers, 1000));
         shadowCameraRight = (__runInitializers(this, _shadowCameraTop_extraInitializers), __runInitializers(this, _shadowCameraRight_initializers, 1000));
         shadowCameraBottom = (__runInitializers(this, _shadowCameraRight_extraInitializers), __runInitializers(this, _shadowCameraBottom_initializers, -1000));
         shadowCameraLeft = (__runInitializers(this, _shadowCameraBottom_extraInitializers), __runInitializers(this, _shadowCameraLeft_initializers, -1000));
-        connectedCallback() {
-            super.connectedCallback();
-            this.three.castShadow = true;
-            this.createEffect(() => {
-                const light = this.three;
-                const shadow = light.shadow;
-                shadow.camera.top = this.shadowCameraTop;
-                shadow.camera.right = this.shadowCameraRight;
-                shadow.camera.bottom = this.shadowCameraBottom;
-                shadow.camera.left = this.shadowCameraLeft;
-                shadow.needsUpdate = true;
-                this.needsUpdate();
+        lightShadowEffect() {
+            const light = this.three;
+            const shadow = light.shadow;
+            shadow.camera.top = this.shadowCameraTop;
+            shadow.camera.right = this.shadowCameraRight;
+            shadow.camera.bottom = this.shadowCameraBottom;
+            shadow.camera.left = this.shadowCameraLeft;
+            shadow.needsUpdate = true;
+            this.needsUpdate();
+        }
+        debugHelpersEffect() {
+            if (!this.debug)
+                return;
+            if (!this.scene)
+                return;
+            const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom);
+            this.scene.three.add(lightHelper);
+            const camHelper = new CameraHelper(this.three.shadow.camera);
+            this.scene.three.add(camHelper);
+            const task = Motor.addRenderTask(() => {
+                lightHelper.update();
+                camHelper.update();
+                this.scene.needsUpdate();
             });
-            this.createEffect(() => {
-                if (!this.debug)
-                    return;
-                if (!this.scene)
-                    return;
-                const lightHelper = new DirectionalLightHelper(this.three, this.shadowCameraTop - this.shadowCameraBottom);
-                this.scene.three.add(lightHelper);
-                const camHelper = new CameraHelper(this.three.shadow.camera);
-                this.scene.three.add(camHelper);
-                const task = Motor.addRenderTask(() => {
-                    lightHelper.update();
-                    camHelper.update();
-                    this.scene.needsUpdate();
-                });
-                onCleanup(() => {
-                    Motor.removeRenderTask(task);
-                    lightHelper.dispose();
-                    this.scene.three.remove(lightHelper);
-                    camHelper.dispose();
-                    this.scene.three.remove(camHelper);
-                });
+            onCleanup(() => {
+                Motor.removeRenderTask(task);
+                lightHelper.dispose();
+                this.scene.three.remove(lightHelper);
+                camHelper.dispose();
+                this.scene.three.remove(camHelper);
             });
         }
         makeThreeObject3d() {
-            return new ThreeDirectionalLight();
+            const light = new ThreeDirectionalLight();
+            light.castShadow = true;
+            return light;
         }
         constructor() {
             super(...arguments);

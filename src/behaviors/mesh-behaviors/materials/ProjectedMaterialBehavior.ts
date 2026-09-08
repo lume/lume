@@ -48,6 +48,7 @@ export type ProjectedMaterialBehaviorAttributes =
  * </script>
  *
  * @extends PhysicalMaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-projected-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 export
 @behavior
@@ -96,7 +97,9 @@ class ProjectedMaterialBehavior extends PhysicalMaterialBehavior {
 	 * (in the near future we will allow multiple projectors to project).
 	 *
 	 * ```html
-	 * <lume-box has="projected-material" texture-projectors=".foo, .bar, #baz"></lume-box>
+	 * <lume-box>
+	 *   <lume-projected-material slot="material" texture-projectors=".foo, .bar, #baz"></lume-projected-material>
+	 * </lume-box>
 	 * ```
 	 *
 	 * The `textureProjectors` JS property can be set with a string of comma

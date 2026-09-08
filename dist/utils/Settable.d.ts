@@ -44,5 +44,6 @@ export declare function Settable<T extends Constructor>(Base?: T): {
         set<T_1 extends any, K extends keyof T_1, V extends T_1[K]>(props: Partial<Record<K, V>>): any;
     };
 } & T;
-export type SettableInstance = InstanceType<ReturnType<typeof Settable>>;
+export type AnySettable = InstanceType<ReturnType<typeof Settable>>;
+export declare function isAnySettable(o: any): o is AnySettable;
 //# sourceMappingURL=Settable.d.ts.map

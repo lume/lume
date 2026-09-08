@@ -1,0 +1,37 @@
+import {BehaviorEl} from './Behavior.js'
+import {Element3D} from '../core/Element3D.js'
+import {createEffect, onCleanup} from 'solid-js'
+
+/**
+ * @class RenderableBehavior
+ * Base class for element behaviors that provide rendering features (f.e. geometries, materials, etc).
+ *
+ * @extends HTMLElement
+ */
+export abstract class RenderableBehaviorEl extends BehaviorEl {
+	declare readonly composedParent: Element3D | null
+
+	override requiredParentType() {
+		return [Element3D]
+	}
+
+	needsUpdate() {
+		this.composedParent?.needsUpdate?.() // guard with ?. in case parent not yet upgraded
+	}
+
+	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {
+		super._parentDefinedEffect(parent)
+		this.needsUpdate()
+		onCleanup(() => this.needsUpdate())
+
+		// Trigger needsUpdate() for any reactive keys by default, as
+		// anything that changes in these RenderableBehaviorEl elements
+		// typically needs re-rendering of the Lume Element3D parent.
+		// NOTE! This catches only own properties.
+		const keys = Object.keys(this) as (keyof this)[]
+		createEffect(() => {
+			for (const k of keys) this[k]
+			this.needsUpdate()
+		})
+	}
+}

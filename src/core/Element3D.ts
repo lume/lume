@@ -1,4 +1,5 @@
 import {booleanAttribute, element, type ElementAttributes} from '@lume/element'
+import {effect} from 'classy-solid'
 import {SharedAPI} from './SharedAPI.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {BaseAttributes} from './SharedAPI.js'
@@ -84,7 +85,7 @@ class Element3D extends SharedAPI {
 	 *
 	 * *readonly*
 	 *
-	 * Always `true` for things that are or inherit from `Element3D`.
+	 * Always `true` for elements that are or inherit from `Element3D`.
 	 */
 	override readonly isElement3D = true
 
@@ -112,9 +113,10 @@ class Element3D extends SharedAPI {
 	 * *reactive*
 	 */
 	override get parentSize() {
-		const composedLumeParent = this.composedLumeParent
+		// read first, to track the dependency
+		const parent = this.composedSizeableParent
 		if (this.scene && this.scene === this.parentElement) return this.scene.calculatedSize
-		return composedLumeParent?.calculatedSize ?? {x: 0, y: 0, z: 0}
+		return parent?.calculatedSize ?? {x: 0, y: 0, z: 0}
 	}
 
 	/**
@@ -150,7 +152,7 @@ class Element3D extends SharedAPI {
 		// element.
 		// TODO Remove this after we make _calcSize lazy and deferred to a
 		// render task.
-		if (this.composedLumeParent) {
+		if (this.composedSceneGraphParent) {
 			this._calcSize()
 
 			// No harm deferring, plus we need to because this may end up
@@ -162,8 +164,9 @@ class Element3D extends SharedAPI {
 	}
 
 	/**
-	 * @method traverseSceneGraph - This traverses the composed tree of
-	 * LUME 3D elements (the scene graph) including this element, in pre-order. It skips non-LUME elements.
+	 * @method traverseSceneGraph - This traverses the flat tree of LUME 3D
+	 * elements (the scene graph) including this element, in pre-order. It skips
+	 * non-LUME elements.
 	 *
 	 * This is similar to
 	 * [`Scene#traverseSceneGraph`](./Scene.md#traversescenegraph) but traversal
@@ -179,7 +182,7 @@ class Element3D extends SharedAPI {
 	 * ```
 	 *
 	 * @param {(node: Element3D) => void} visitor - A function called for each
-	 * LUME node in the scene graph (the composed tree).
+	 * LUME node participating in the render scene graph (traverses the flat tree).
 	 * @param {boolean} waitForUpgrade - Defaults to `false`. If `true`,
 	 * the traversal will wait for custom elements to be defined (with
 	 * customElements.whenDefined) before traversing to them.
@@ -193,7 +196,7 @@ class Element3D extends SharedAPI {
 		visitor(this)
 
 		if (!waitForUpgrade) {
-			for (const child of this.composedLumeChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
+			for (const child of this.composedSceneGraphChildren) child.traverseSceneGraph(visitor, waitForUpgrade)
 			return
 		}
 
@@ -201,7 +204,7 @@ class Element3D extends SharedAPI {
 		// traversal order is still the same as when waitForUpgrade is false.
 		let promise: Promise<any> = Promise.resolve()
 
-		for (const child of this.composedLumeChildren) {
+		for (const child of this.composedSceneGraphChildren) {
 			const isUpgraded = child.matches(':defined')
 
 			if (isUpgraded) {
@@ -216,14 +219,10 @@ class Element3D extends SharedAPI {
 		return promise
 	}
 
-	override connectedCallback() {
-		super.connectedCallback()
-
-		this.createEffect(() => {
-			this._elementOperations.shouldRender = this.visible
-			this.three.visible = this.visible
-			this.needsUpdate()
-		})
+	@effect __updateVisible() {
+		this._elementOperations.shouldRender = this.visible
+		this.three.visible = this.visible
+		this.needsUpdate()
 	}
 
 	static override css = /*css*/ `

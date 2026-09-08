@@ -52,6 +52,9 @@ import { RenderableBehavior } from '../../RenderableBehavior.js';
 const defaultDracoDecoder = 'https://www.gstatic.com/draco/v1/decoders/';
 /** One DRACOLoader per draco decoder URL. */
 let dracoLoaders = new Map();
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-gltf-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 let GltfModelBehavior = (() => {
     let _classDecorators = [behavior];
     let _classDescriptor;

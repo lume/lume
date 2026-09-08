@@ -33,9 +33,15 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Line as ThreeLine } from 'three/src/objects/Line.js';
-import { Element3D } from '../core/Element3D.js';
+import { MeshLike } from './MeshLike.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/LineGeometry.js');
+import('../behavior-elements/mesh-behaviors/materials/BasiclineMaterial.js');
 /**
  * @class Line - Renders a line based on a sequence of points.
  *
@@ -43,11 +49,11 @@ import { autoDefineElements } from '../LumeConfig.js';
  *
  * Default behaviors:
  *
- * - [`line-geometry`](../behaviors/mesh-behaviors/geometries/LineGeometryBehavior.md)
- * - [`line-material`](../behaviors/mesh-behaviors/materials/LineBasicMaterialBehavior.md)
+ * - [`<lume-line-geometry>`](../behavior-elements/mesh-behaviors/geometries/LineGeometry.md)
+ * - [`<lume-basicline-material>`](../behavior-elements/mesh-behaviors/materials/BasiclineMaterial.md)
  *
  * It can be useful to have
- * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
+ * [`<lume-ply-geometry>`](../behavior-elements/mesh-behaviors/geometries/PlyGeometry.md)
  * behavior on this element to load a set of points from a file.
  *
  * <live-code id="example"></live-code>
@@ -55,14 +61,14 @@ import { autoDefineElements } from '../LumeConfig.js';
  *   example.content = lineExample
  * </script>
  *
- * @extends Element3D
+ * @extends MeshLike
  */
 let Line = (() => {
     let _classDecorators = [element('lume-line', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = MeshLike;
     var Line = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -72,7 +78,8 @@ let Line = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'line', material: 'line' };
+        _defaultGeometry = () => html `<lume-line-geometry></lume-line-geometry>`;
+        _defaultMaterial = () => html `<lume-basicline-material></lume-basicline-material>`;
         makeThreeObject3d() {
             return new ThreeLine();
         }

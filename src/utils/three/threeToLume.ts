@@ -2,7 +2,9 @@ import type {Object3D} from 'three/src/Three'
 import {Vector3} from 'three/src/math/Vector3.js'
 import {radToDeg} from 'three/src/math/MathUtils.js'
 import {isMesh} from './is.js'
-import {setBehaviors} from '../../behaviors/InitialBehaviors.js'
+import type {Mesh} from 'src/meshes/Mesh.js'
+import type {Element3D} from 'src/core/Element3D.js'
+import type {GeometryBehaviorEl} from 'src/behavior-elements/index.js'
 
 /**
  * Converts a tree of Three.js objects to a tree of Lume elements.
@@ -31,7 +33,7 @@ import {setBehaviors} from '../../behaviors/InitialBehaviors.js'
  */
 export function threeToLume(three: Object3D) {
 	/** @type {HTMLElement} */
-	let el
+	let el: Mesh | Element3D
 
 	if (isMesh(three)) {
 		el = document.createElement('lume-mesh')
@@ -56,13 +58,20 @@ export function threeToLume(three: Object3D) {
 		box.getSize(size)
 		el.size.set(size.x, size.y, size.z)
 
-		// TODO set behaviors and copy properties over, instead
-		// of setting geometry/material directly on three,
-		// because then these are out of the control of the
-		// behaviors.
-		el.three.geometry = newGeometry
+		const geometry = document.createElement('lume-box-geometry') as GeometryBehaviorEl
+		geometry.slot = 'geometry'
+		el.append(geometry)
 
-		setBehaviors(el, {material: 'projected'})
+		// Timeout here so that the lume-box-geometry won't override our value
+		// with a new BoxGeometry during its initialization.
+		// TODO we need a generic `<lume-geometry>` element that has no specific
+		// shape: more semantic for when setting custom geometry, and won't
+		// override custom values.
+		setTimeout(() => (geometry.meshComponent = newGeometry), 0)
+
+		const projectedMaterial = document.createElement('lume-projected-material')
+		projectedMaterial.slot = 'material'
+		el.append(projectedMaterial)
 		// TODO copy properties from three.material
 
 		el.needsUpdate()

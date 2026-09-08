@@ -32,19 +32,30 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { element } from '@lume/element';
+import { attribute, booleanAttribute, element, stringAttribute } from '@lume/element';
+import { createEffect, createMemo, onCleanup, untrack } from 'solid-js';
 import { Element3D } from '../core/Element3D.js';
 import { autoDefineElements } from '../LumeConfig.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { Box3 } from 'three/src/math/Box3.js';
+import { Vector3 } from 'three/src/math/Vector3.js';
+import { Scene } from 'three/src/scenes/Scene.js';
+import { disposeObjectTree } from '../utils/three.js';
+import { Events } from '../core/Events.js';
+/**
+ * The recommended CDN for retrieving Draco decoder files.
+ * More info: https://github.com/google/draco#wasm-and-javascript-decoders
+ */
+const defaultDracoDecoder = 'https://www.gstatic.com/draco/v1/decoders/';
+/** One DRACOLoader per draco decoder URL. */
+let dracoLoaders = new Map();
 /**
  * @element lume-gltf-model
  * @class GltfModel -
  *
- * Defines the `<lume-gltf-model>` element, short for `<lume-element3d
- * has="gltf-model">`, for loading 3D models in the glTF format (`.gltf` or
- * `.glb` files).
- *
- * See [`GltfModelBehavior`](../behaviors/mesh-behaviors/models/GltfModelBehavior)
- * for attributes/properties available on this element.
+ * Defines the `<lume-gltf-model>` element for loading 3D models in the
+ * glTF format (`.gltf` or `.glb` files).
  *
  * HTML Example:
  *
@@ -75,18 +86,177 @@ let GltfModel = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     let _classSuper = Element3D;
+    let _src_decorators;
+    let _src_initializers = [];
+    let _src_extraInitializers = [];
+    let _dracoDecoder_decorators;
+    let _dracoDecoder_initializers = [];
+    let _dracoDecoder_extraInitializers = [];
+    let _centerGeometry_decorators;
+    let _centerGeometry_initializers = [];
+    let _centerGeometry_extraInitializers = [];
     var GltfModel = class extends _classSuper {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
+            _src_decorators = [attribute];
+            _dracoDecoder_decorators = [stringAttribute];
+            _centerGeometry_decorators = [booleanAttribute];
+            __esDecorate(null, null, _src_decorators, { kind: "field", name: "src", static: false, private: false, access: { has: obj => "src" in obj, get: obj => obj.src, set: (obj, value) => { obj.src = value; } }, metadata: _metadata }, _src_initializers, _src_extraInitializers);
+            __esDecorate(null, null, _dracoDecoder_decorators, { kind: "field", name: "dracoDecoder", static: false, private: false, access: { has: obj => "dracoDecoder" in obj, get: obj => obj.dracoDecoder, set: (obj, value) => { obj.dracoDecoder = value; } }, metadata: _metadata }, _dracoDecoder_initializers, _dracoDecoder_extraInitializers);
+            __esDecorate(null, null, _centerGeometry_decorators, { kind: "field", name: "centerGeometry", static: false, private: false, access: { has: obj => "centerGeometry" in obj, get: obj => obj.centerGeometry, set: (obj, value) => { obj.centerGeometry = value; } }, metadata: _metadata }, _centerGeometry_initializers, _centerGeometry_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
             GltfModel = _classThis = _classDescriptor.value;
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { model: 'gltf' };
+        /** @property {string | null} src - Path to a `.gltf` or `.glb` file. */
+        src = __runInitializers(this, _src_initializers, ''
+        /**
+         * @property {string | null} dracoDecoder -
+         *
+         * `attribute`
+         *
+         * Path to the draco decoder that
+         * will unpack decode compressed assets of the GLTF file. This does not need
+         * to be supplied unless you explicitly know you need it.
+         */
+        );
+        /**
+         * @property {string | null} dracoDecoder -
+         *
+         * `attribute`
+         *
+         * Path to the draco decoder that
+         * will unpack decode compressed assets of the GLTF file. This does not need
+         * to be supplied unless you explicitly know you need it.
+         */
+        dracoDecoder = (__runInitializers(this, _src_extraInitializers), __runInitializers(this, _dracoDecoder_initializers, defaultDracoDecoder
+        /**
+         * @property {boolean} centerGeometry -
+         *
+         * `attribute`
+         *
+         * When `true`, all geometry of the
+         * loaded model will be centered at the local origin.
+         *
+         * Note, changing this value at runtime is expensive because the whole model
+         * will be re-created. We improve this by tracking the initial center
+         * position to revert to when centerGeometry goes back to `false` (PRs
+         * welcome!).
+         */
+        ));
+        /**
+         * @property {boolean} centerGeometry -
+         *
+         * `attribute`
+         *
+         * When `true`, all geometry of the
+         * loaded model will be centered at the local origin.
+         *
+         * Note, changing this value at runtime is expensive because the whole model
+         * will be re-created. We improve this by tracking the initial center
+         * position to revert to when centerGeometry goes back to `false` (PRs
+         * welcome!).
+         */
+        centerGeometry = (__runInitializers(this, _dracoDecoder_extraInitializers), __runInitializers(this, _centerGeometry_initializers, false));
+        loader = (__runInitializers(this, _centerGeometry_extraInitializers), new GLTFLoader());
+        model = null;
+        // This is incremented any time we need to cancel a pending load() (f.e. on
+        // src change, or on disconnect), so that the loader will ignore the
+        // result when a version change has happened.
+        #version = 0;
+        connectedCallback() {
+            super.connectedCallback();
+            this.createEffect(() => {
+                const decoderPath = createMemo(() => this.dracoDecoder);
+                createEffect(() => {
+                    if (!decoderPath())
+                        return;
+                    const dracoLoader = getDracoLoader(decoderPath());
+                    this.loader.dracoLoader = dracoLoader;
+                    onCleanup(() => {
+                        disposeDracoLoader(decoderPath());
+                        this.loader.dracoLoader = null;
+                    });
+                });
+                // Use memos to avoid effect re-runs triggered by same-value
+                // changes, or else models may be loaded multiple times (expensive).
+                const gltfPath = createMemo(() => this.src);
+                const center = createMemo(() => this.centerGeometry);
+                createEffect(() => {
+                    gltfPath();
+                    decoderPath();
+                    center();
+                    untrack(() => this.#loadModel());
+                    onCleanup(() => {
+                        if (this.model)
+                            disposeObjectTree(this.model.scene);
+                        this.model = null;
+                        // Increment this in case the loader is still loading, so it will ignore the result.
+                        this.#version++;
+                    });
+                });
+            });
+        }
+        #loadModel() {
+            const { src } = this;
+            const version = this.#version;
+            if (!src)
+                return;
+            // In the following loader.load() callbacks, if #version doesn't
+            // match, it means this.src or this.dracoDecoder changed while
+            // a previous model was loading, in which case we ignore that
+            // result and wait for the next model to load.
+            this.loader.load(src, model => version == this.#version && this.#setModel(model), progress => version == this.#version && this.emit(Events.PROGRESS, progress), error => version == this.#version && this.#onError(error));
+        }
+        #onError(error) {
+            const message = `Failed to load ${this.tagName.toLowerCase()} with src "${this.src}" and dracoDecoder "${this.dracoDecoder}". See the following error.`;
+            console.warn(message);
+            const err = error instanceof ErrorEvent && error.error ? error.error : error;
+            console.error(err);
+            this.emit(Events.MODEL_ERROR, err);
+        }
+        #setModel(model) {
+            this.model = model;
+            model.scene = model.scene || new Scene().add(...model.scenes);
+            if (this.centerGeometry) {
+                const box = new Box3();
+                box.setFromObject(model.scene);
+                const center = new Vector3();
+                box.getCenter(center);
+                model.scene.position.copy(center.negate());
+            }
+            this.three.add(model.scene);
+            this.emit(Events.MODEL_LOAD, { format: 'gltf', model });
+            this.needsUpdate();
+        }
     };
     return GltfModel = _classThis;
 })();
 export { GltfModel };
+function getDracoLoader(url) {
+    let dracoLoader;
+    if (!dracoLoaders.has(url)) {
+        dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath(url);
+        dracoLoaders.set(url, { count: 1, dracoLoader });
+    }
+    else {
+        const ref = dracoLoaders.get(url);
+        ref.count++;
+        dracoLoader = ref.dracoLoader;
+    }
+    return dracoLoader;
+}
+function disposeDracoLoader(url) {
+    if (!dracoLoaders.has(url))
+        return;
+    const ref = dracoLoaders.get(url);
+    ref.count--;
+    if (!ref.count) {
+        ref.dracoLoader.dispose();
+        dracoLoaders.delete(url);
+    }
+}
 //# sourceMappingURL=GltfModel.js.map

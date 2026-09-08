@@ -33,35 +33,42 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     return useValue ? value : void 0;
 };
 import { element } from '@lume/element';
+import html from 'solid-js/html';
 import { Points as ThreePoints } from 'three/src/objects/Points.js';
-import { Element3D } from '../core/Element3D.js';
+import { MeshLike } from './MeshLike.js';
 import { autoDefineElements } from '../LumeConfig.js';
+// Import this lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/materials/PointsMaterial.js');
 /**
  * @class Points -
  *
  * Element: `<lume-points>`
  *
- * Applies default behaviors of
- * [`box-geometry`](../behaviors/mesh-behaviors/geometries/BoxGeometryBehavior)
- * and
- * [`points-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
- *
  * A `<lume-points>` element is similar to a `<lume-mesh>` element, except that
- * the `points-material` is used by default, which renders any geometry's
- * verticies as points instead of filled triangles.
+ * the `<lume-points-material>` is used by default, which renders any geometry's
+ * vertices as points instead of filled triangles.
  *
- * It can be useful to have
- * [`ply-geometry`](../behaviors/mesh-behaviors/geometries/PlyGeometryBehavior)
- * behavior on this element to load a set of points from a file for example.
+ * Applies default behaviors of
+ * [`<lume-box-geometry>`](../behavior-elements/mesh-behaviors/geometries/BoxGeometry)
+ * and
+ * [`<lume-points-material>`](../behavior-elements/mesh-behaviors/materials/PointsMaterial).
  *
- * @extends Element3D
+ * It can be useful along with a
+ * [`<lume-ply-geometry>`](../behavior-elements/mesh-behaviors/geometries/PlyGeometry)
+ * child element to load a set of points from a file. For example:
+ *
+ * <live-code src="../../examples/shelby-gt350-points/example.html"></live-code>
+ *
+ * @extends MeshLike
  */
 let Points = (() => {
     let _classDecorators = [element('lume-points', autoDefineElements)];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = MeshLike;
     var Points = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -71,7 +78,7 @@ let Points = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        initialBehaviors = { geometry: 'box', material: 'points' };
+        _defaultMaterial = () => html `<lume-points-material></lume-points-material>`;
         makeThreeObject3d() {
             return new ThreePoints();
         }

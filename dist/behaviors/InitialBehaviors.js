@@ -1,7 +1,18 @@
 import { Constructor } from 'lowclass/dist/Constructor.js';
 import { r } from 'regexr';
+/**
+ * @deprecated Use child element behaviors instead. For default behaviors,
+ * define them in `<slot>` elements of the mesh element as shown in the
+ * `<lume-box>` and `<lume-points>` examples.
+ */
 export function InitialBehaviors(Base) {
     return class InitialBehaviors extends Constructor(Base) {
+        /**
+         * @deprecated This, and the has= attribute, are deprecated. Use child
+         * behavior elements instead. For example see how the `Sphere` class
+         * specifies a default `<lume-sphere-geometry>` element instead of a
+         * legacy attribute-based behavior.
+         */
         initialBehaviors;
         constructor(...args) {
             super(...args);
@@ -14,7 +25,7 @@ export function InitialBehaviors(Base) {
         }
     };
 }
-export function setBehaviors(el, behaviors, replace = true) {
+function setBehaviors(el, behaviors, replace = true) {
     let has = el.getAttribute('has') ?? '';
     const parts = has.split(' ');
     for (const [category, type] of Object.entries(behaviors)) {

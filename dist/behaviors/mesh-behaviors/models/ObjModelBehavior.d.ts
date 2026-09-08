@@ -9,6 +9,9 @@ declare global {
     }
 }
 export type ObjModelBehaviorAttributes = 'obj' | 'mtl';
+/**
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-obj-model>` child elements instead. Legacy behaviors will be removed in a future version.
+ */
 export declare class ObjModelBehavior extends RenderableBehavior {
     #private;
     obj: string;

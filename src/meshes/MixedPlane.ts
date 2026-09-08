@@ -1,6 +1,12 @@
 import {element, type ElementAttributes} from '@lume/element'
+import html from 'solid-js/html'
 import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
+// Import these lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/MixedplaneGeometry.js')
+import('../behavior-elements/mesh-behaviors/materials/MixedplaneMaterial.js')
 
 // TODO We need attributes from behaviors too.
 export type MixedPlaneAttributes = MeshAttributes
@@ -20,7 +26,7 @@ export type MixedPlaneAttributes = MeshAttributes
  * border radius (for now), otherwise transparent parts of the regular DOM
  * content will not receal 3D content that would be expected to be behind them.
  *
- * See [`MixedPlaneGeometryBehavior`](../behaviors/mesh-behaviors/geometries/MixedPlaneGeometryBehavior) and [`MixedPlaneMaterialBehavior`](../behaviors/mesh-behaviors/materials/MixedPlaneMaterialBehavior) for
+ * See [`<lume-mixed-plane-geometry>`](../behavior-elements/mesh-behaviors/geometries/MixedPlaneGeometry) and [`<lume-mixed-plane-material>`](../behavior-elements/mesh-behaviors/materials/MixedPlaneMaterial) for
  * available properties.
  *
  * <live-code src="../../../examples/buttons-with-shadow/example.html"></live-code>
@@ -30,7 +36,8 @@ export type MixedPlaneAttributes = MeshAttributes
 export
 @element('lume-mixed-plane', autoDefineElements)
 class MixedPlane extends Mesh {
-	override initialBehaviors = {geometry: 'mixedplane', material: 'mixedplane'}
+	protected override _defaultGeometry = () => html`<lume-mixedplane-geometry></lume-mixedplane-geometry>`
+	protected override _defaultMaterial = () => html`<lume-mixedplane-material></lume-mixedplane-material>`
 }
 
 declare module 'solid-js' {

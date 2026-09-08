@@ -1,20 +1,16 @@
 {
 	// This password should be READONLY for the lume repo!
-	// Create this representation of the token with `new
-	// TextEncoder.encode(btoa(github_token))`, or else the token will be
-	// auto-expired upon pushing to GitHub.
+	// Create this representation of the token with
+	// ```
+	// '[' + new TextEncoder().encode(btoa(github_token)).toString() + ']'
+	// ```
+	// or else the token will be auto-expired upon pushing to GitHub.
 
 	const authkey = atob(
 		new TextDecoder().decode(
 			// prettier-ignore
 			new Uint8Array([
-				90, 50, 108, 48, 97, 72, 86, 105, 88, 51, 66, 104, 100, 70, 56, 120, 77, 85,
-				70, 66, 81, 48, 108, 87, 86, 70, 69, 119, 83, 85, 78, 85, 85, 106, 86, 82, 90,
-				87, 104, 111, 78, 108, 86, 106, 88, 48, 100, 90, 85, 109, 116, 90, 89, 49, 66,
-				71, 77, 86, 100, 75, 98, 85, 86, 53, 77, 71, 100, 53, 83, 122, 108, 86, 77,
-				68, 104, 82, 90, 84, 74, 51, 100, 107, 116, 68, 84, 50, 90, 109, 86, 86, 78,
-				85, 77, 108, 86, 79, 99, 85, 57, 88, 89, 122, 78, 69, 77, 48, 49, 85, 83, 107,
-				53, 73, 82, 51, 78, 66, 100, 106, 82, 77, 97, 50, 82, 109,
+				90,50,108,48,97,72,86,105,88,51,66,104,100,70,56,120,77,85,70,66,81,48,108,87,86,70,69,119,81,110,100,106,87,85,112,50,98,87,74,69,78,68,90,122,88,51,66,108,90,85,49,73,89,49,90,71,101,69,53,49,90,108,74,86,90,71,82,49,97,68,108,67,90,85,53,111,84,49,74,88,84,109,70,51,85,71,99,53,83,108,108,53,78,48,107,121,84,109,78,78,85,86,104,86,86,107,90,81,78,86,70,86,84,71,78,72,84,108,78,119,97,86,78,89
 			]),
 		),
 	)
@@ -40,17 +36,21 @@
 			'solid-js/web': '/node_modules/solid-js/web/dist/web.js',
 			'solid-js/html': '/node_modules/solid-js/html/dist/html.js',
 			'solid-js/store': '/node_modules/solid-js/store/dist/store.js',
+			'@solid-primitives/memo': '/node_modules/classy-solid/node_modules/@solid-primitives/memo/dist/index.js',
+			'@solid-primitives/scheduled':
+				'/node_modules/classy-solid/node_modules/@solid-primitives/scheduled/dist/index.js',
+			'@solid-primitives/utils': '/node_modules/classy-solid/node_modules/@solid-primitives/utils/dist/index.js',
 			three: '/node_modules/three/src/Three.js',
 			'three/': '/node_modules/three/',
 		},
 	}
 
 	const location = basedLocation()
-	const isGithack = location.origin.includes('githack.com')
+	const isLocal = location.origin.includes('localhost') || location.origin.includes('127.0.0.1')
 
-	// Special case for raw.githack.com for viewing examples directly off of GitHub
+	// When not local serving, get dependencies directly from GitHub.
 	// Maybe we can do better than hand-writing two import maps? How can we version the lume packages URLs? Perhaps use an importmap generator like `jspm` cli.
-	const map = isGithack ? makeGithackImportmap() : localMap
+	const map = isLocal ? localMap : makeGithackImportmap()
 
 	document.write(/*html*/ `<script type="importmap">${JSON.stringify(map, undefined, '\t')}</script>`)
 
@@ -85,6 +85,9 @@
 				'solid-js/web': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/web/dist/web.js',
 				'solid-js/html': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/html/dist/html.js',
 				'solid-js/store': 'https://cdn.jsdelivr.net/npm/solid-js@1.9.1/store/dist/store.js',
+				'@solid-primitives/memo': 'https://cdn.jsdelivr.net/npm/@solid-primitives/memo@1.5.1/dist/index.js',
+				'@solid-primitives/scheduled': 'https://cdn.jsdelivr.net/npm/@solid-primitives/scheduled@1.5.3/dist/index.js',
+				'@solid-primitives/utils': 'https://cdn.jsdelivr.net/npm/@solid-primitives/utils@6.4.1/dist/index.js',
 				three: 'https://raw.githack.com/mrdoob/three.js/r168/build/three.module.js',
 				'three/': 'https://raw.githack.com/mrdoob/three.js/r168/',
 			},

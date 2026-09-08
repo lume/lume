@@ -49,7 +49,8 @@ export declare class DirectionalLight extends LightWithShadow {
     shadowCameraRight: number;
     shadowCameraBottom: number;
     shadowCameraLeft: number;
-    connectedCallback(): void;
+    lightShadowEffect(): void;
+    debugHelpersEffect(): void;
     makeThreeObject3d(): ThreeDirectionalLight;
 }
 declare module 'solid-js' {

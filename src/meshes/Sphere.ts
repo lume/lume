@@ -1,8 +1,13 @@
 import {element, type ElementAttributes} from '@lume/element'
+import html from 'solid-js/html'
 import {Mesh, type MeshAttributes} from './Mesh.js'
 import {autoDefineElements} from '../LumeConfig.js'
 import type {ElementWithBehaviors} from '../behaviors/ElementWithBehaviors.js'
 import type {SphereGeometryBehavior, SphereGeometryBehaviorAttributes} from '../behaviors/index.js'
+// Import this lazily just in case the user is importing this class
+// directly. We can't do it at the top level because it creates a
+// circular dependency error during module execution.
+import('../behavior-elements/mesh-behaviors/geometries/SphereGeometry.js')
 
 export type SphereAttributes = MeshAttributes
 
@@ -11,10 +16,8 @@ export type SphereAttributes = MeshAttributes
  *
  * Element: `<lume-sphere>`
  *
- * Extends from `Mesh` to apply default behaviors of
- * [`sphere-geometry`](../behaviors/mesh-behaviors/geometries/SphereGeometryBehavior)
- * and
- * [`phong-material`](../behaviors/mesh-behaviors/materials/PhongMaterialBehavior).
+ * Extends from `Mesh` to apply a default
+ * [`<lume-sphere-geometry>`](../behavior-elements/mesh-behaviors/geometries/SphereGeometry).
  *
  * The diameter of the sphere is determined by the `x` size of the element.
  *
@@ -23,7 +26,7 @@ export type SphereAttributes = MeshAttributes
 export
 @element('lume-sphere', autoDefineElements)
 class Sphere extends Mesh {
-	override initialBehaviors = {geometry: 'sphere', material: 'physical'}
+	protected override _defaultGeometry = () => html`<lume-sphere-geometry></lume-sphere-geometry>`
 }
 
 export interface Sphere extends ElementWithBehaviors<SphereGeometryBehavior, SphereGeometryBehaviorAttributes> {}

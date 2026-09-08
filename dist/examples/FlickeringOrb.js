@@ -101,14 +101,13 @@ let FlickeringOrb = (() => {
 		>
 			<lume-sphere
 				ref=${(s) => (this.sphere = s)}
-				has="basic-material"
-				color=${() => this.color}
-				opacity="0.5"
 				mount-point="0.5 0.5 0.5"
 				size="10 10 10"
 				cast-shadow="false"
 				receive-shadow="false"
-			></lume-sphere>
+			>
+				<lume-basic-material color=${() => this.color} material-opacity="0.5"></lume-basic-material>
+			</lume-sphere>
 		</lume-point-light>
 	`;
         connectedCallback() {

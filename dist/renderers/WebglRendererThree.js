@@ -32,9 +32,9 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
     }
     return useValue ? value : void 0;
 };
-import { reactive, signal, Effects } from 'classy-solid';
+import { signal, Effects } from 'classy-solid';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
-import { BasicShadowMap, PCFSoftShadowMap, PCFShadowMap } from 'three/src/constants.js';
+import { BasicShadowMap, PCFSoftShadowMap, PCFShadowMap, SRGBColorSpace } from 'three/src/constants.js';
 import { PMREMGenerator } from 'three/src/extras/PMREMGenerator.js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { Motor } from '../core/Motor.js';
@@ -49,23 +49,15 @@ let isCreatingSingleton = false;
  * drawing a WebGL scene for a given core/Scene using Three.js
  */
 let WebglRendererThree = (() => {
-    let _classDecorators = [reactive];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
     let _localClippingEnabled_decorators;
     let _localClippingEnabled_initializers = [];
     let _localClippingEnabled_extraInitializers = [];
-    var WebglRendererThree = class {
-        static { _classThis = this; }
+    return class WebglRendererThree {
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
             _localClippingEnabled_decorators = [signal];
             __esDecorate(null, null, _localClippingEnabled_decorators, { kind: "field", name: "localClippingEnabled", static: false, private: false, access: { has: obj => "localClippingEnabled" in obj, get: obj => obj.localClippingEnabled, set: (obj, value) => { obj.localClippingEnabled = value; } }, metadata: _metadata }, _localClippingEnabled_initializers, _localClippingEnabled_extraInitializers);
-            __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-            WebglRendererThree = _classThis = _classDescriptor.value;
-            if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-            __runInitializers(_classThis, _classExtraInitializers);
+            if (_metadata) Object.defineProperty(this, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         }
         static singleton() {
             if (instance)
@@ -127,9 +119,10 @@ let WebglRendererThree = (() => {
             if (!sceneState)
                 return;
             scene._glLayer?.removeChild(sceneState.renderer.domElement);
-            sceneState.renderer.dispose();
             sceneState.pmremgen?.dispose();
             sceneState.effects.stopEffects();
+            sceneState.renderer.dispose();
+            sceneState.renderer.forceContextLoss(); // Without this, some browsers (f.e. Chrome) keep the WebGL context alive, leaking.
             this.sceneStates.delete(scene);
         }
         drawScene(scene) {
@@ -253,6 +246,7 @@ let WebglRendererThree = (() => {
                 throw new ReferenceError('Internal error: Scene not registered with WebGLRendererThree.');
             const version = this.#bgVersion;
             new TextureLoader().load(scene.background ?? '', tex => {
+                tex.colorSpace = SRGBColorSpace;
                 // In case state changed during load, ignore a loaded texture that
                 // corresponds to previous state:
                 if (version !== this.#bgVersion)
@@ -364,7 +358,6 @@ let WebglRendererThree = (() => {
             return VRButton.createButton(renderer);
         }
     };
-    return WebglRendererThree = _classThis;
 })();
 export { WebglRendererThree };
 export function releaseWebGLRendererThree() {

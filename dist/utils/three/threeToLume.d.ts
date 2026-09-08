@@ -1,4 +1,6 @@
 import type { Object3D } from 'three/src/Three';
+import type { Mesh } from 'src/meshes/Mesh.js';
+import type { Element3D } from 'src/core/Element3D.js';
 /**
  * Converts a tree of Three.js objects to a tree of Lume elements.
  *
@@ -24,5 +26,5 @@ import type { Object3D } from 'three/src/Three';
  * attributes are available but with default values not from the loaded model
  * (TODO).
  */
-export declare function threeToLume(three: Object3D): import("../../index.js").Element3D;
+export declare function threeToLume(three: Object3D): Element3D | Mesh;
 //# sourceMappingURL=threeToLume.d.ts.map

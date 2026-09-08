@@ -1,4 +1,4 @@
-import { TreeNode } from './TreeNode.js';
+import { Element as LumeElement } from '@lume/element';
 import { XYZSizeModeValues } from '../xyz-values/XYZSizeModeValues.js';
 import { XYZNonNegativeValues } from '../xyz-values/XYZNonNegativeValues.js';
 import { type XYZNonNegativeNumberValuesProperty, type XYZNonNegativeNumberValuesPropertyFunction, type XYZSizeModeValuesProperty } from './PropertyAnimator.js';
@@ -7,11 +7,11 @@ declare const Sizeable_base: {
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: import("../xyz-values/XYZValues.js").XYZValues, newValue: V): void;
         _setPropertySingle<K extends keyof any, V>(name: K, setter: (newValue: any[K]) => void, newValue: V): void;
-        "__#16@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
-        "__#16@#settingValueFromPropFunction": boolean;
-        "__#16@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues): void;
-        "__#16@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
-        "__#16@#removePropertyFunction"(name: keyof any): void;
+        "__#17@#propertyFunctions": Map<string, import("./Motor.js").RenderTask> | null;
+        "__#17@#settingValueFromPropFunction": boolean;
+        "__#17@#handleXYZPropertyFunction"(fn: import("./PropertyAnimator.js").XYZNumberValuesPropertyFunction, name: keyof any, xyz: import("../xyz-values/XYZValues.js").XYZValues): void;
+        "__#17@#handleSinglePropertyFunction"(fn: import("./PropertyAnimator.js").SinglePropertyFunction, name: keyof any): void;
+        "__#17@#removePropertyFunction"(name: keyof any): void;
         removeAllPropertyFunctions(): void;
         disconnectedCallback(): void;
         connectedCallback?(): void;
@@ -19,50 +19,57 @@ declare const Sizeable_base: {
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
 } & {
-    new (...a: any[]): {
-        isScene: boolean;
-        isElement3D: boolean;
-        skipShadowObservation: boolean;
+    new (...args: any[]): {
         attachShadow(options: ShadowRootInit): ShadowRoot;
-        readonly _hasShadowRoot: boolean;
-        readonly _isPossiblyDistributedToShadowRoot: boolean;
-        readonly _shadowRootParent: any | null;
-        readonly _shadowRootChildren: any[];
-        readonly _distributedShadowRootChildren: any[];
-        readonly _distributedParent: any | null;
-        readonly _distributedChildren: any[] | null;
+        readonly shadowRootChildren: any[];
+        readonly shadowRootSlottedChildren: any[];
         __composedParent: Element | null;
         readonly composedParent: Element | null;
-        readonly __isComposed: Element | null;
-        readonly isComposed: Element | null;
+        readonly isComposed: boolean;
         __getComposedParent(): HTMLElement | null;
-        readonly _composedChildren: any[];
+        readonly composedChildren: any[];
         exposedShadowRoot?: ShadowRoot;
         isPossiblySlotted: boolean;
-        "__#12@#prevAssignedNodes"?: WeakMap<HTMLSlotElement, Element[]>;
+        __prevAssignedNodes?: WeakMap<HTMLSlotElement, Element[]>;
         readonly __previousSlotAssignedNodes: WeakMap<HTMLSlotElement, Element[]>;
-        slottedParent: any | null;
+        terminalSlottedParent: any | null;
         shadowParent: any | null;
+        terminalSlottedChildren: Set<any> | null;
+        slottedParent: any | null;
         slottedChildren: Set<any> | null;
-        "__#12@#this": any;
-        "__#12@#shadowRootChildAdded"(child: Element): void;
-        "__#12@#shadowRootChildRemoved"(child: Element): void;
+        __shadowRootChildAdded(child: Element): void;
+        __shadowRootChildRemoved(child: Element): void;
         readonly __onChildSlotChange: (event: Event) => void;
         __onChildSlotChange__?: ((event: Event) => void) | undefined;
         childComposedCallback?(composedChild: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         childUncomposedCallback?(uncomposedChild: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         composedCallback?(composedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
         uncomposedCallback?(uncomposedParent: Element, compositionType: import("./CompositionTracker.js").CompositionType): void;
-        "__#12@#discrepancy": boolean;
+        __lastComposedParent: any | null;
+        __lastCompositionType: import("./CompositionTracker.js").CompositionType;
+        __discrepancy: boolean;
+        __triggerChildComposedCallback(parent: any, child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
+        __triggerChildUncomposedCallback(parent: any, child: any, compositionType: import("./CompositionTracker.js").CompositionType): void;
+        connectedCallback(): void;
+        disconnectedCallback(): void;
         __handleSlottedChildren(slot: HTMLSlotElement): void;
         __getSlottedChildDifference(slot: HTMLSlotElement): {
             added: Node[];
             removed: Node[];
         };
-        "__#12@#getCurrentAssignedNodes"(slot: HTMLSlotElement): Element[];
+        childConnectedCallback(child: Element): void;
+        childDisconnectedCallback(child: Element): void;
         traverseComposed(visitor: (el: any) => void, waitForUpgrade?: boolean): Promise<void> | void;
-        connectedCallback?(): void;
-        disconnectedCallback?(): void;
+        awaitChildrenDefined: boolean;
+        syncChildCallbacks: boolean;
+        "__#12@#awaitedChildren": Set<Element>;
+        "__#12@#runChildConnectedCallbacks"(): void;
+        "__#12@#runChildConnect"(child: Element): void;
+        "__#12@#runChildDisconnectedCallbacks"(): void;
+        "__#12@#runChildDisconnect"(child: Element): void;
+        "__#12@#unobserveChildren": (() => void) | null;
+        "__#12@#createObserver"(): void;
+        "__#12@#destroyObserver"(): void;
         adoptedCallback?(): void;
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
         accessKey: string;
@@ -170,6 +177,7 @@ declare const Sizeable_base: {
         setPointerCapture(pointerId: number): void;
         toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
+        readonly behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
         readonly firstChild: ChildNode | null;
@@ -284,7 +292,6 @@ declare const Sizeable_base: {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         replaceChildren(...nodes: (Node | string)[]): void;
         readonly assignedSlot: HTMLSlotElement | null;
-        behaviors: import("packages/element-behaviors/dist/BehaviorMap.js").BehaviorMap;
         readonly attributeStyleMap: StylePropertyMap;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
@@ -398,17 +405,30 @@ declare const Sizeable_base: {
         focus(options?: FocusOptions): void;
     };
     observedAttributes?: string[];
-} & typeof TreeNode;
+} & (new (...a: any[]) => {
+    "__#1@#eventMap": Map<string, Set<[Function, any]>> | null;
+    on(eventName: string, callback: Function, context?: any): void;
+    off(eventName: string, callback?: Function, context?: any): void;
+    emit(eventName: string, data?: any): void;
+}) & typeof LumeElement;
 /**
  * @class Sizeable - Provides features for defining the size volume of an object in 3D space.
  *
  * The properties of `Sizeable` all follow a common usage pattern,
  * described in the [`Common Attributes`](../../guide/common-attributes) doc.
  *
- * @extends TreeNode
+ * @extends LumeElement
  */
 export declare class Sizeable extends Sizeable_base {
     #private;
+    /**
+     * @property {true} isSizeable -
+     *
+     * *readonly*
+     *
+     * Always `true` for elements that are or inherit from `Sizeable`.
+     */
+    readonly isSizeable = true;
     /**
      * @property {string | [x?: string, y?: string, z?: string] | {x?: string, y?: string, z?: string} | XYZSizeModeValues | null} sizeMode -
      *
@@ -478,8 +498,10 @@ export declare class Sizeable extends Sizeable_base {
         y: number;
         z: number;
     };
-    get composedLumeParent(): Sizeable | null;
-    get composedLumeChildren(): Sizeable[];
+    /** Returns the composed parent (flat tree parent) only if it is a Sizeable instance, null otherwise. */
+    get composedSizeableParent(): Sizeable | null;
+    /** Returns the composed children (flat tree children) that are Sizeable instances if any. */
+    get composedSizeableChildren(): Sizeable[];
     /**
      * @property {{x: number, y: number, z: number}} parentSize
      *

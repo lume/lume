@@ -24,28 +24,25 @@
 		min-distance="450"
 	></lume-camera-rig>
 
-	<lume-sphere
-		has="phong-material"
-		texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_atmos_2048.jpg"
-		bump-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_normal_2048.jpg"
-		specular-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_specular_2048.jpg"
-		color="white"
-		size="1 1 1"
-		scale="800 800 800"
-		mount-point="0.5 0.5 0.5"
-		><lume-sphere
-			id="clouds"
-			texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_clouds_1024.png"
-			opacity="0.7"
-			size="1.01 1.01 1.01"
-			size="800 800 800"
-			mount-point="0.5 0.5 0.5"
-			align-point="0.5 0.5 0.5"
+	<lume-sphere size="1 1 1" scale="800 800 800" mount-point="0.5 0.5 0.5">
+		<lume-phong-material
+			texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_atmos_2048.jpg"
+			bump-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_normal_2048.jpg"
+			specular-map="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_specular_2048.jpg"
 			color="white"
-		></lume-sphere
-	></lume-sphere>
+		></lume-phong-material>
+
+		<lume-sphere id="clouds" opacity="0.9999" size="1.01 1.01 1.01" mount-point="0.5 0.5 0.5" align-point="0.5 0.5 0.5">
+			<lume-phong-material
+				color="white"
+				texture="https://rawcdn.githack.com/mrdoob/three.js/28636b09ca1d0c4bb31dc34ca2d3f73d12865352/examples/textures/planets/earth_clouds_1024.png"
+			></lume-phong-material>
+		</lume-sphere>
+	</lume-sphere>
 </lume-scene>
 
 <script type="module">
 	import 'lume'
+
+	clouds.rotation = (x, y, z, t, dt) => [x, y + dt * 0.0005, z]
 </script>

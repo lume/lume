@@ -24,6 +24,7 @@ export type LineBasicMaterialBehaviorAttributes = MaterialBehaviorAttributes | '
  * </script>
  *
  * @extends MaterialBehavior
+ * @deprecated Legacy behavior via `has=""` attribute is deprecated. Use `<lume-line-basic-material>` child elements instead. Legacy behaviors will be removed in a future version.
  */
 @behavior
 export class LineBasicMaterialBehavior extends MaterialBehavior {

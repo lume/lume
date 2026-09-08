@@ -30,11 +30,11 @@ export declare function PropertyAnimator<T extends Constructor<PossiblyCustomEle
     new (...a: any[]): {
         _setPropertyXYZ<K extends keyof any, V>(name: K, xyz: XYZValues, newValue: V): void;
         _setPropertySingle<K extends keyof any, V>(name: K, setter: (newValue: any[K]) => void, newValue: V): void;
-        "__#16@#propertyFunctions": Map<string, RenderTask> | null;
-        "__#16@#settingValueFromPropFunction": boolean;
-        "__#16@#handleXYZPropertyFunction"(fn: XYZNumberValuesPropertyFunction, name: keyof any, xyz: XYZValues): void;
-        "__#16@#handleSinglePropertyFunction"(fn: SinglePropertyFunction, name: keyof any): void;
-        "__#16@#removePropertyFunction"(name: keyof any): void;
+        "__#17@#propertyFunctions": Map<string, RenderTask> | null;
+        "__#17@#settingValueFromPropFunction": boolean;
+        "__#17@#handleXYZPropertyFunction"(fn: XYZNumberValuesPropertyFunction, name: keyof any, xyz: XYZValues): void;
+        "__#17@#handleSinglePropertyFunction"(fn: SinglePropertyFunction, name: keyof any): void;
+        "__#17@#removePropertyFunction"(name: keyof any): void;
         removeAllPropertyFunctions(): void;
         disconnectedCallback(): void;
         connectedCallback?(): void;
@@ -42,6 +42,8 @@ export declare function PropertyAnimator<T extends Constructor<PossiblyCustomEle
         attributeChangedCallback?(name: string, oldVal: string | null, newVal: string | null): void;
     };
 } & T;
+export type AnyPropertyAnimator = InstanceType<ReturnType<typeof PropertyAnimator>>;
+export declare function isAnyPropertyAnimator(o: any): o is AnyPropertyAnimator;
 export type XYZValuesProperty<XYZValuesType extends XYZValues, DataType> = XYZValuesType | XYZPartialValuesArray<DataType> | XYZPartialValuesObject<DataType> | string;
 export type XYZNumberValuesProperty = XYZValuesProperty<XYZNumberValues, number>;
 export type XYZNonNegativeNumberValuesProperty = XYZValuesProperty<XYZNonNegativeValues, number>;

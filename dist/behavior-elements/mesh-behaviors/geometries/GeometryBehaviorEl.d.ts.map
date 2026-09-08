@@ -1,0 +1,1 @@
+{"version":3,"file":"GeometryBehaviorEl.d.ts","sourceRoot":"","sources":["../../../../src/behavior-elements/mesh-behaviors/geometries/GeometryBehaviorEl.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,cAAc,EAAC,MAAM,kCAAkC,CAAA;AAC/D,OAAO,EAAC,4BAA4B,EAAC,MAAM,oCAAoC,CAAA;AAE/E;;;;;;;;GAQG;AACH,8BAAsB,kBAAmB,SAAQ,4BAA4B;IAC5E,QAAQ,CAAC,IAAI,cAAa;IAEjB,gBAAgB,IAAI,cAAc;CAG3C"}

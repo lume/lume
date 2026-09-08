@@ -1,4 +1,4 @@
-<script src="./template.js" template="./template.html" title="mount-point"></script>
+<script src="./template.js" template="./template.html" title="autolayout"></script>
 
 <style>
 	body {
@@ -12,30 +12,32 @@
 	}
 </style>
 
-<lume-scene id="scene" webgl physically-correct-lights>
-	<lume-ambient-light intensity="0.1"></lume-ambient-light>
+<lume-scene id="scene" webgl>
+	<lume-ambient-light intensity="0.2"></lume-ambient-light>
+
 	<lume-point-light
 		id="light"
 		color="white"
 		position="300 300 120"
 		size="0 0 0"
 		cast-shadow="true"
-		intensity="200"
+		intensity="20000"
 		shadow-radius="2"
 		distance="800"
 		shadow-bias="-0.01"
 	>
 		<lume-mesh
-			has="sphere-geometry basic-material"
 			size="10 10 10"
-			color="white"
 			receive-shadow="false"
 			cast-shadow="false"
 			mount-point="0.5 0.5 0.5"
 			style="pointer-events: none"
 		>
+			<lume-sphere-geometry></lume-sphere-geometry>
+			<lume-basic-material color="white"></lume-basic-material>
 		</lume-mesh>
 	</lume-point-light>
+
 	<lume-autolayout
 		id="layout"
 		size="100 100 0"
@@ -58,26 +60,31 @@
 			|-[child3(child4,child5)]-[child4]-[child5]-|
 		"
 	>
-		<lume-mixed-plane size="1 1 0" color="deeppink" class="child1"
-			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
-			awesomeness can be observed in its fullness.</lume-mixed-plane
-		>
-		<lume-mixed-plane size="1 1 0" color="deeppink" class="child2"
-			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
-			awesomeness can be observed in its fullness.</lume-mixed-plane
-		>
-		<lume-mixed-plane size="1 1 0" color="deeppink" class="child3"
-			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
-			awesomeness can be observed in its fullness.</lume-mixed-plane
-		>
-		<lume-mixed-plane size="1 1 0" color="deeppink" class="child4"
-			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
-			awesomeness can be observed in its fullness.</lume-mixed-plane
-		>
-		<lume-mixed-plane size="1 1 0" color="deeppink" class="child5"
-			>This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
-			awesomeness can be observed in its fullness.</lume-mixed-plane
-		>
+		<lume-mixed-plane size="1 1 0" class="child1">
+			<lume-mixedplane-material color="deeppink"></lume-mixedplane-material>
+			This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.
+		</lume-mixed-plane>
+		<lume-mixed-plane size="1 1 0" class="child2">
+			<lume-mixedplane-material color="deeppink"></lume-mixedplane-material>
+			This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.
+		</lume-mixed-plane>
+		<lume-mixed-plane size="1 1 0" class="child3">
+			<lume-mixedplane-material color="deeppink"></lume-mixedplane-material>
+			This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.
+		</lume-mixed-plane>
+		<lume-mixed-plane size="1 1 0" class="child4">
+			<lume-mixedplane-material color="deeppink"></lume-mixedplane-material>
+			This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.
+		</lume-mixed-plane>
+		<lume-mixed-plane size="1 1 0" class="child5">
+			<lume-mixedplane-material color="deeppink"></lume-mixedplane-material>
+			This is a paragraph of text to show that it reflows when the size of the layout changes size so that the
+			awesomeness can be observed in its fullness.
+		</lume-mixed-plane>
 	</lume-autolayout>
 </lume-scene>
 

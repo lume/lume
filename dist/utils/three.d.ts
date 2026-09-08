@@ -1,4 +1,4 @@
-import { Color } from 'three/src/math/Color.js';
+import { type ColorRepresentation } from 'three/src/math/Color.js';
 import type { Object3D } from 'three/src/core/Object3D.js';
 import type { Material } from 'three/src/materials/Material.js';
 import type { RenderItem } from 'three/src/renderers/webgl/WebGLRenderLists.js';
@@ -6,7 +6,7 @@ import type { Quaternion } from 'three/src/math/Quaternion.js';
 import type { Camera } from 'three/src/cameras/Camera.js';
 import type { OrthographicCamera } from 'three/src/cameras/OrthographicCamera.js';
 import type { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-export type TColor = Color | string | number;
+export type TColor = ColorRepresentation | [r: number, g: number, b: number];
 export declare function isRenderItem(obj: any): obj is RenderItem;
 export declare function disposeMaterial(obj: Object3D): void;
 export declare function disposeObject(obj: Object3D, removeFromParent?: boolean, destroyGeometry?: boolean, destroyMaterial?: boolean): void;
