@@ -1,7 +1,7 @@
 // TODO move into utils/three/ folder
 
 import {MeshPhongMaterial} from 'three/src/materials/MeshPhongMaterial.js'
-import {Color} from 'three/src/math/Color.js'
+import {Color, type ColorRepresentation} from 'three/src/math/Color.js'
 
 import type {Object3D} from 'three/src/core/Object3D.js'
 import type {Material} from 'three/src/materials/Material.js'
@@ -11,7 +11,7 @@ import type {Camera} from 'three/src/cameras/Camera.js'
 import type {OrthographicCamera} from 'three/src/cameras/OrthographicCamera.js'
 import type {PerspectiveCamera} from 'three/src/cameras/PerspectiveCamera.js'
 
-export type TColor = Color | string | number
+export type TColor = ColorRepresentation | [r: number, g: number, b: number]
 
 export function isRenderItem(obj: any): obj is RenderItem {
 	return 'geometry' in obj && 'material' in obj
@@ -78,7 +78,7 @@ export function setRandomColorPhongMaterial(obj: Object3D, dispose?: boolean, tr
 
 export function setColorPhongMaterial(obj: Object3D, color: TColor, dispose?: boolean, traverse = true) {
 	const material = new MeshPhongMaterial()
-	material.color = new Color(color)
+	material.color = new Color(...(Array.isArray(color) ? color : [color]))
 
 	if (traverse) obj.traverse(node => applyMaterial(node, material, dispose))
 	else applyMaterial(obj, material, dispose)

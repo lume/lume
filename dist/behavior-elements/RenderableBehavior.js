@@ -11,19 +11,22 @@ export class RenderableBehaviorEl extends BehaviorEl {
     requiredParentType() {
         return [Element3D];
     }
+    needsUpdate() {
+        this.composedParent?.needsUpdate?.(); // guard with ?. in case parent not yet upgraded
+    }
     _parentDefinedEffect(parent = this.composedParent) {
         super._parentDefinedEffect(parent);
-        parent.needsUpdate();
-        onCleanup(() => parent.needsUpdate());
-        // Trigger parent.needsUpdate() for any reactive keys by default, as
+        this.needsUpdate();
+        onCleanup(() => this.needsUpdate());
+        // Trigger needsUpdate() for any reactive keys by default, as
         // anything that changes in these RenderableBehaviorEl elements
-        // typically needs re-rendering of the Lume Element3D parent. This
-        // catches only own properties.
+        // typically needs re-rendering of the Lume Element3D parent.
+        // NOTE! This catches only own properties.
         const keys = Object.keys(this);
         createEffect(() => {
             for (const k of keys)
                 this[k];
-            parent.needsUpdate();
+            this.needsUpdate();
         });
     }
 }

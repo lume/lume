@@ -52,7 +52,7 @@ class PhysicalMaterial extends StandardMaterial {
 	@stringAttribute transmissionMap = ''
 
 	override _createComponent() {
-		return new MeshPhysicalMaterial({})
+		return new MeshPhysicalMaterial()
 	}
 
 	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {

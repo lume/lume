@@ -33,10 +33,10 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     done = true;
 };
 import { effect, signal } from 'classy-solid';
-import { Color } from 'three/src/math/Color.js';
 import { Light as ThreeLight } from 'three/src/lights/Light.js';
-import { attribute, element, numberAttribute } from '@lume/element';
+import { element, numberAttribute } from '@lume/element';
 import { Element3D } from '../core/Element3D.js';
+import { Colorful } from '../core/Colorful.js';
 /**
  * @abstract
  * @class Light -
@@ -53,15 +53,11 @@ let Light = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = Element3D;
+    let _classSuper = Colorful(Element3D);
     let _instanceExtraInitializers = [];
-    let _color_decorators;
-    let _color_initializers = [];
-    let _color_extraInitializers = [];
     let _intensity_decorators;
     let _intensity_initializers = [];
     let _intensity_extraInitializers = [];
-    let _colorEffect_decorators;
     let _intensityEffect_decorators;
     let ___init_effects_ignore_decorators;
     let ___init_effects_ignore_initializers = [];
@@ -70,14 +66,10 @@ let Light = (() => {
         static { _classThis = this; }
         static {
             const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(_classSuper[Symbol.metadata] ?? null) : void 0;
-            _color_decorators = [attribute];
             _intensity_decorators = [numberAttribute];
-            _colorEffect_decorators = [effect];
             _intensityEffect_decorators = [effect];
             ___init_effects_ignore_decorators = [signal];
-            __esDecorate(this, null, _colorEffect_decorators, { kind: "method", name: "colorEffect", static: false, private: false, access: { has: obj => "colorEffect" in obj, get: obj => obj.colorEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _intensityEffect_decorators, { kind: "method", name: "intensityEffect", static: false, private: false, access: { has: obj => "intensityEffect" in obj, get: obj => obj.intensityEffect }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(null, null, _color_decorators, { kind: "field", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, _color_initializers, _color_extraInitializers);
             __esDecorate(null, null, _intensity_decorators, { kind: "field", name: "intensity", static: false, private: false, access: { has: obj => "intensity" in obj, get: obj => obj.intensity, set: (obj, value) => { obj.intensity = value; } }, metadata: _metadata }, _intensity_initializers, _intensity_extraInitializers);
             __esDecorate(null, null, ___init_effects_ignore_decorators, { kind: "field", name: "__init_effects_ignore", static: false, private: false, access: { has: obj => "__init_effects_ignore" in obj, get: obj => obj.__init_effects_ignore, set: (obj, value) => { obj.__init_effects_ignore = value; } }, metadata: _metadata }, ___init_effects_ignore_initializers, ___init_effects_ignore_extraInitializers);
             __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -86,27 +78,6 @@ let Light = (() => {
             __runInitializers(_classThis, _classExtraInitializers);
         }
         /**
-         * @property {string | number | THREE.Color} color -
-         *
-         * `attribute`
-         *
-         * Default: `"white"`
-         *
-         * The color of light that is emitted.
-         *
-         * A string value can be any valid CSS color string, f.e. `"#ff6600"` or
-         * `"rgb(10,20,30)"`.
-         *
-         * A number value represents a hex color value, f.e.
-         * `0xff6600`.
-         *
-         * A `THREE.Color` instance can be assigned, and it will be copied to the
-         * element's internal color value upon assignment. Mutating the assigned
-         * `THREE.Color` after assignment will have no effect; instead you can
-         * assign it again each time you wish to update the color.
-         */
-        color = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _color_initializers, 'white'
-        /**
          * @property {number} intensity -
          *
          * `abstract`
@@ -119,21 +90,7 @@ let Light = (() => {
          * is enabled, the units of intensity depend on the type of light (f.e.
          * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
          */
-        ));
-        /**
-         * @property {number} intensity -
-         *
-         * `abstract`
-         *
-         * Default: `1`
-         *
-         * The intensity of the light.
-         *
-         * When [physically correct lighting](../core/Scene#physicallycorrectlights)
-         * is enabled, the units of intensity depend on the type of light (f.e.
-         * [`PointLight`](./PointLight) or [`SpotLight`](./SpotLight)).
-         */
-        intensity = (__runInitializers(this, _color_extraInitializers), __runInitializers(this, _intensity_initializers, 1
+        intensity = (__runInitializers(this, _instanceExtraInitializers), __runInitializers(this, _intensity_initializers, 1
         // This is not used in practice because this class is abstract, but this enforces
         // (in TypeScript) that subclasses that override this will return a subtype of
         // ThreeLight.
@@ -144,12 +101,6 @@ let Light = (() => {
         makeThreeObject3d() {
             // @ts-expect-error Threelight is abstract
             return new ThreeLight();
-        }
-        colorEffect() {
-            if (typeof this.color === 'object')
-                this.three.color = this.color;
-            this.three.color = new Color(this.color);
-            this.needsUpdate();
         }
         intensityEffect() {
             this.three.intensity = this.intensity;

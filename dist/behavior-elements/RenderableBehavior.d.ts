@@ -9,6 +9,7 @@ import { Element3D } from '../core/Element3D.js';
 export declare abstract class RenderableBehaviorEl extends BehaviorEl {
     readonly composedParent: Element3D | null;
     requiredParentType(): (typeof Element3D)[];
+    needsUpdate(): void;
     protected _parentDefinedEffect(parent?: NonNullable<this['composedParent']>): void;
 }
 //# sourceMappingURL=RenderableBehavior.d.ts.map

@@ -92,9 +92,7 @@ class PhongMaterial extends MaterialBehaviorEl {
 	@numberAttribute shininess = 30
 
 	override _createComponent() {
-		return new MeshPhongMaterial({
-			color: 0x00ff00,
-		})
+		return new MeshPhongMaterial()
 	}
 
 	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {

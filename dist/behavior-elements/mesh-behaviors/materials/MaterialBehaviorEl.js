@@ -2,13 +2,8 @@
 // a user makes a subclass or provides a custom three object with a material
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
+// EDIT: We now have behaviors as children, so we're set up to implement
+// multiple material behavior children to represent material arrays.
 var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
     function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
     var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -36,13 +31,20 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     if (target) Object.defineProperty(target, contextIn.name, descriptor);
     done = true;
 };
+var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
+    var useValue = arguments.length > 2;
+    for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+    }
+    return useValue ? value : void 0;
+};
 import { booleanAttribute, stringAttribute, numberAttribute, element } from '@lume/element';
 import { createEffect, createMemo, onCleanup } from 'solid-js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
-import { Color } from 'three/src/math/Color.js';
 import { DoubleSide, FrontSide, BackSide, SRGBColorSpace } from 'three/src/constants.js';
 import { Material } from 'three/src/materials/Material.js';
 import { GeometryOrMaterialBehaviorEl } from '../GeometryOrMaterialBehaviorEl.js';
+import { Colorful } from '../../../core/Colorful.js';
 /**
  * @class MaterialBehaviorEl -
  * An abstract base class for material behavior elements.
@@ -58,8 +60,7 @@ let MaterialBehaviorEl = (() => {
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    let _classSuper = GeometryOrMaterialBehaviorEl;
-    let _instanceExtraInitializers = [];
+    let _classSuper = Colorful(GeometryOrMaterialBehaviorEl, { path: '.meshComponent.color' });
     let _alphaTest_decorators;
     let _alphaTest_initializers = [];
     let _alphaTest_extraInitializers = [];
@@ -87,8 +88,6 @@ let MaterialBehaviorEl = (() => {
     let _materialOpacity_decorators;
     let _materialOpacity_initializers = [];
     let _materialOpacity_extraInitializers = [];
-    let _get_color_decorators;
-    let _set_color_decorators;
     var MaterialBehaviorEl = class extends _classSuper {
         static { _classThis = this; }
         static {
@@ -102,10 +101,6 @@ let MaterialBehaviorEl = (() => {
             _wireframe_decorators = [booleanAttribute];
             _sidedness_decorators = [stringAttribute];
             _materialOpacity_decorators = [numberAttribute];
-            _get_color_decorators = [stringAttribute];
-            _set_color_decorators = [stringAttribute];
-            __esDecorate(this, null, _get_color_decorators, { kind: "getter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, get: obj => obj.color }, metadata: _metadata }, null, _instanceExtraInitializers);
-            __esDecorate(this, null, _set_color_decorators, { kind: "setter", name: "color", static: false, private: false, access: { has: obj => "color" in obj, set: (obj, value) => { obj.color = value; } }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(null, null, _alphaTest_decorators, { kind: "field", name: "alphaTest", static: false, private: false, access: { has: obj => "alphaTest" in obj, get: obj => obj.alphaTest, set: (obj, value) => { obj.alphaTest = value; } }, metadata: _metadata }, _alphaTest_initializers, _alphaTest_extraInitializers);
             __esDecorate(null, null, _colorWrite_decorators, { kind: "field", name: "colorWrite", static: false, private: false, access: { has: obj => "colorWrite" in obj, get: obj => obj.colorWrite, set: (obj, value) => { obj.colorWrite = value; } }, metadata: _metadata }, _colorWrite_initializers, _colorWrite_extraInitializers);
             __esDecorate(null, null, _depthTest_decorators, { kind: "field", name: "depthTest", static: false, private: false, access: { has: obj => "depthTest" in obj, get: obj => obj.depthTest, set: (obj, value) => { obj.depthTest = value; } }, metadata: _metadata }, _depthTest_initializers, _depthTest_extraInitializers);
@@ -120,7 +115,7 @@ let MaterialBehaviorEl = (() => {
             if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
             __runInitializers(_classThis, _classExtraInitializers);
         }
-        type = (__runInitializers(this, _instanceExtraInitializers), 'material');
+        type = 'material';
         /**
          * @property {number} alphaTest -
          *
@@ -355,36 +350,21 @@ let MaterialBehaviorEl = (() => {
          * whereas modifying an element's `opacity` affects CSS rendering including
          * the element's children.
          */
-        materialOpacity = (__runInitializers(this, _sidedness_extraInitializers), __runInitializers(this, _materialOpacity_initializers, 1));
-        #color = (__runInitializers(this, _materialOpacity_extraInitializers), 'white');
+        materialOpacity = (__runInitializers(this, _sidedness_extraInitializers), __runInitializers(this, _materialOpacity_initializers, 1
         /**
-         * @property {string | number | Color} color -
+         * @property {string | number | THREE.Color | [number, number, number]} color -
          *
-         * Default: `THREE.Color("white")`
+         * `attribute`
+         *
+         * Default: `"white"`
          *
          * Color of the material.
          *
-         * The property can be set with a CSS color value string (f.e. `"#ff6600"`
-         * or `rgb(20, 40, 50)`), a
-         * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color),
-         * or a number representing the color in hex (f.e. `0xff6600`).
-         *
-         * The property always returns the color normalized to a
-         * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color)
-         * object.
+         * See `Colorful.color` for detail on supported color values.
          */
-        get color() {
-            return this.#color;
-        }
-        set color(val) {
-            // TODO always converting to string with getStyle is wasteful
-            if (typeof val === 'object')
-                this.#color = val.getStyle();
-            else
-                this.#color = val;
-        }
+        ));
         // TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
-        #transparent = () => (this.composedParent.opacity < 1 || this.materialOpacity < 1 ? true : false);
+        #transparent = (__runInitializers(this, _materialOpacity_extraInitializers), () => (this.composedParent.opacity < 1 || this.materialOpacity < 1 ? true : false));
         /**
          * @property {} transparent -
          *
@@ -451,13 +431,6 @@ let MaterialBehaviorEl = (() => {
             });
             createEffect(() => {
                 const mat = this.meshComponent;
-                if (!(mat && isColoredMaterial(mat)))
-                    return;
-                mat.color.set(this.color);
-                parent.needsUpdate();
-            });
-            createEffect(() => {
-                const mat = this.meshComponent;
                 if (!mat)
                     return;
                 mat.opacity = parent.opacity * this.materialOpacity;
@@ -517,9 +490,6 @@ let MaterialBehaviorEl = (() => {
     return MaterialBehaviorEl = _classThis;
 })();
 export { MaterialBehaviorEl };
-function isColoredMaterial(mat) {
-    return 'color' in mat;
-}
 function isWireframeMaterial(mat) {
     return 'wireframe' in mat;
 }

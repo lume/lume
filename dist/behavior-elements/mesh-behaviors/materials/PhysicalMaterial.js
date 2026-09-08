@@ -132,7 +132,7 @@ let PhysicalMaterial = (() => {
         transmission = (__runInitializers(this, _reflectivity_extraInitializers), __runInitializers(this, _transmission_initializers, 0));
         transmissionMap = (__runInitializers(this, _transmission_extraInitializers), __runInitializers(this, _transmissionMap_initializers, ''));
         _createComponent() {
-            return new MeshPhysicalMaterial({});
+            return new MeshPhysicalMaterial();
         }
         _parentDefinedEffect(parent = this.composedParent) {
             super._parentDefinedEffect(parent);

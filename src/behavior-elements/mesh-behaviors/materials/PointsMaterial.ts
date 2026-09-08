@@ -40,7 +40,7 @@ class PointsMaterial extends MaterialBehaviorEl {
 	// hardwareSized = false
 
 	override _createComponent() {
-		return new ThreePointsMaterial({color: 0x00ff00})
+		return new ThreePointsMaterial()
 	}
 
 	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {

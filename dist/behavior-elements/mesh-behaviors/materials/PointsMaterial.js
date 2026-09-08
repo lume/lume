@@ -109,7 +109,7 @@ let PointsMaterial = (() => {
         // (f.e. across monitors with different ratios)
         // hardwareSized = false
         _createComponent() {
-            return new ThreePointsMaterial({ color: 0x00ff00 });
+            return new ThreePointsMaterial();
         }
         _parentDefinedEffect(parent = this.composedParent) {
             super._parentDefinedEffect(parent);

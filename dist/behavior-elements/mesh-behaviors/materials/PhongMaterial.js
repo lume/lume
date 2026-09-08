@@ -232,9 +232,7 @@ let PhongMaterial = (() => {
         #specular = (__runInitializers(this, _specularMap_extraInitializers), '#111');
         shininess = __runInitializers(this, _shininess_initializers, 30);
         _createComponent() {
-            return new MeshPhongMaterial({
-                color: 0x00ff00,
-            });
+            return new MeshPhongMaterial();
         }
         _parentDefinedEffect(parent = this.composedParent) {
             super._parentDefinedEffect(parent);

@@ -31,7 +31,7 @@ class LambertMaterial extends MaterialBehaviorEl {
 	@stringAttribute specularMap = ''
 
 	override _createComponent() {
-		return new MeshLambertMaterial({color: 0x00ff00})
+		return new MeshLambertMaterial()
 	}
 
 	protected override _parentDefinedEffect(parent: NonNullable<this['composedParent']> = this.composedParent!) {

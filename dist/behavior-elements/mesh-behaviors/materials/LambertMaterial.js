@@ -83,7 +83,7 @@ let LambertMaterial = (() => {
         texture = __runInitializers(this, _texture_initializers, '');
         specularMap = (__runInitializers(this, _texture_extraInitializers), __runInitializers(this, _specularMap_initializers, ''));
         _createComponent() {
-            return new MeshLambertMaterial({ color: 0x00ff00 });
+            return new MeshLambertMaterial();
         }
         _parentDefinedEffect(parent = this.composedParent) {
             super._parentDefinedEffect(parent);

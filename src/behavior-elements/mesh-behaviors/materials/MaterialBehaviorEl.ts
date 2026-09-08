@@ -2,15 +2,18 @@
 // a user makes a subclass or provides a custom three object with a material
 // array, we set properties onto each material, assuming they're all the same
 // type. Perhaps we need an HTML syntax for multiple materials on an element.
+// EDIT: We now have behaviors as children, so we're set up to implement
+// multiple material behavior children to represent material arrays.
 
 import {booleanAttribute, stringAttribute, numberAttribute, element} from '@lume/element'
 import {createEffect, createMemo, onCleanup} from 'solid-js'
 import {TextureLoader} from 'three/src/loaders/TextureLoader.js'
-import {Color} from 'three/src/math/Color.js'
 import {DoubleSide, FrontSide, BackSide, type Side, SRGBColorSpace} from 'three/src/constants.js'
 import {Material} from 'three/src/materials/Material.js'
 import type {Texture} from 'three'
 import {GeometryOrMaterialBehaviorEl} from '../GeometryOrMaterialBehaviorEl.js'
+import {Colorful} from '../../../core/Colorful.js'
+import type {TColor} from '../../../utils/three.js'
 
 export type MaterialBehaviorElAttributes =
 	| 'alphaTest'
@@ -35,7 +38,7 @@ export type MaterialBehaviorElAttributes =
  */
 export
 @element({autoDefine: false})
-class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
+class MaterialBehaviorEl extends Colorful(GeometryOrMaterialBehaviorEl, {path: '.meshComponent.color'}) {
 	readonly type = 'material'
 
 	/**
@@ -173,32 +176,18 @@ class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
 	 */
 	@numberAttribute materialOpacity = 1
 
-	#color: string | number = 'white'
-
 	/**
-	 * @property {string | number | Color} color -
+	 * @property {string | number | THREE.Color | [number, number, number]} color -
 	 *
-	 * Default: `THREE.Color("white")`
+	 * `attribute`
+	 *
+	 * Default: `"white"`
 	 *
 	 * Color of the material.
 	 *
-	 * The property can be set with a CSS color value string (f.e. `"#ff6600"`
-	 * or `rgb(20, 40, 50)`), a
-	 * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color),
-	 * or a number representing the color in hex (f.e. `0xff6600`).
-	 *
-	 * The property always returns the color normalized to a
-	 * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color)
-	 * object.
+	 * See `Colorful.color` for detail on supported color values.
 	 */
-	@stringAttribute get color(): string | number {
-		return this.#color
-	}
-	@stringAttribute set color(val: string | number | Color) {
-		// TODO always converting to string with getStyle is wasteful
-		if (typeof val === 'object') this.#color = val.getStyle()
-		else this.#color = val
-	}
+	declare color: TColor
 
 	// TODO use @memo (once implemented in classy-solid) on `get transparent` instead of making this extra prop with createMemo.
 	#transparent = () => (this.composedParent!.opacity < 1 || this.materialOpacity < 1 ? true : false)
@@ -280,13 +269,6 @@ class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
 
 		createEffect(() => {
 			const mat = this.meshComponent
-			if (!(mat && isColoredMaterial(mat))) return
-			mat.color.set(this.color)
-			parent.needsUpdate()
-		})
-
-		createEffect(() => {
-			const mat = this.meshComponent
 			if (!mat) return
 
 			mat.opacity = parent.opacity * this.materialOpacity
@@ -362,10 +344,6 @@ class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
 			})
 		})
 	}
-}
-
-function isColoredMaterial(mat: Material): mat is Material & {color: Color} {
-	return 'color' in mat
 }
 
 function isWireframeMaterial(mat: Material): mat is Material & {wireframe: boolean} {

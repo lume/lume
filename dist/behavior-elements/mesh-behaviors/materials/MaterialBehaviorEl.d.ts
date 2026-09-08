@@ -1,8 +1,14 @@
-import { Color } from 'three/src/math/Color.js';
 import { Material } from 'three/src/materials/Material.js';
 import type { Texture } from 'three';
 import { GeometryOrMaterialBehaviorEl } from '../GeometryOrMaterialBehaviorEl.js';
+import type { TColor } from '../../../utils/three.js';
 export type MaterialBehaviorElAttributes = 'alphaTest' | 'colorWrite' | 'depthTest' | 'depthWrite' | 'dithering' | 'wireframe' | 'sidedness' | 'color' | 'materialOpacity';
+declare const MaterialBehaviorEl_base: {
+    new (...a: any[]): {
+        color: TColor;
+        colorEffect(): void;
+    };
+} & typeof GeometryOrMaterialBehaviorEl;
 /**
  * @class MaterialBehaviorEl -
  * An abstract base class for material behavior elements.
@@ -13,7 +19,7 @@ export type MaterialBehaviorElAttributes = 'alphaTest' | 'colorWrite' | 'depthTe
  *
  * @extends GeometryOrMaterialBehaviorEl
  */
-export declare class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
+export declare class MaterialBehaviorEl extends MaterialBehaviorEl_base {
     #private;
     readonly type = "material";
     /**
@@ -132,23 +138,17 @@ export declare class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
      */
     materialOpacity: number;
     /**
-     * @property {string | number | Color} color -
+     * @property {string | number | THREE.Color | [number, number, number]} color -
      *
-     * Default: `THREE.Color("white")`
+     * `attribute`
+     *
+     * Default: `"white"`
      *
      * Color of the material.
      *
-     * The property can be set with a CSS color value string (f.e. `"#ff6600"`
-     * or `rgb(20, 40, 50)`), a
-     * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color),
-     * or a number representing the color in hex (f.e. `0xff6600`).
-     *
-     * The property always returns the color normalized to a
-     * [`THREE.Color`](https://threejs.org/docs/index.html?q=material#api/en/math/Color)
-     * object.
+     * See `Colorful.color` for detail on supported color values.
      */
-    get color(): string | number;
-    set color(val: string | number | Color);
+    color: TColor;
     /**
      * @property {} transparent -
      *
@@ -164,4 +164,5 @@ export declare class MaterialBehaviorEl extends GeometryOrMaterialBehaviorEl {
     _createComponent(): Material;
     _handleTexture(textureUrl: () => string, setTexture: (mat: NonNullable<this['meshComponent']>, t: Texture | null) => void, hasTexture: (mat: NonNullable<this['meshComponent']>) => boolean, onLoad?: () => void, isColor?: boolean): void;
 }
+export {};
 //# sourceMappingURL=MaterialBehaviorEl.d.ts.map

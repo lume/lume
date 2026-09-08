@@ -2,6 +2,12 @@ import { Element3D } from '../core/Element3D.js';
 import type { TColor } from '../utils/three.js';
 import type { Element3DAttributes } from '../core/Element3D.js';
 export type LightAttributes = Element3DAttributes | 'color' | 'intensity';
+declare const Light_base: {
+    new (...a: any[]): {
+        color: TColor;
+        colorEffect(): void;
+    };
+} & typeof Element3D;
 /**
  * @abstract
  * @class Light -
@@ -13,9 +19,9 @@ export type LightAttributes = Element3DAttributes | 'color' | 'intensity';
  *
  * @extends Element3D
  */
-export declare abstract class Light extends Element3D {
+export declare abstract class Light extends Light_base {
     /**
-     * @property {string | number | THREE.Color} color -
+     * @property {string | number | THREE.Color | [number, number, number]} color -
      *
      * `attribute`
      *
@@ -23,16 +29,7 @@ export declare abstract class Light extends Element3D {
      *
      * The color of light that is emitted.
      *
-     * A string value can be any valid CSS color string, f.e. `"#ff6600"` or
-     * `"rgb(10,20,30)"`.
-     *
-     * A number value represents a hex color value, f.e.
-     * `0xff6600`.
-     *
-     * A `THREE.Color` instance can be assigned, and it will be copied to the
-     * element's internal color value upon assignment. Mutating the assigned
-     * `THREE.Color` after assignment will have no effect; instead you can
-     * assign it again each time you wish to update the color.
+     * See `Colorful.color` for detail on supported color values.
      */
     color: TColor;
     /**
@@ -50,8 +47,8 @@ export declare abstract class Light extends Element3D {
      */
     intensity: number;
     makeThreeObject3d(): any;
-    colorEffect(): void;
     intensityEffect(): void;
     private __init_effects_ignore;
 }
+export {};
 //# sourceMappingURL=Light.d.ts.map
